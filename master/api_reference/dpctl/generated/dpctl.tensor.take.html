@@ -769,19 +769,24 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array that elements will be taken from.</p></li>
 <li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
-<li><p><strong>axis</strong> – The axis along which the values will be selected.
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be selected.
 If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
-<code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code> - clamps indices to (-n &lt;= i &lt; n), then wraps
-negative indices.
-<code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code> - clips indices to (0 &lt;= i &lt; n)
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
+are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps
+negative indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code>: clips indices to (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>).</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array with shape x.shape[:axis] + indices.shape + x.shape[axis + 1:]
-filled with elements from x.</p>
+<dd class="field-even"><p>Array with shape
+<code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis</span> <span class="pre">+</span> <span class="pre">1:]</span></code>
+filled with elements from <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>

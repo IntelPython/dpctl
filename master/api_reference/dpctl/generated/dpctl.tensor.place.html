@@ -764,18 +764,18 @@
 <dt class="sig sig-object py" id="dpctl.tensor.place">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_indexing_functions.html#place"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.place" title="Permalink to this definition">#</a></dt>
 <dd><p>Change elements of an array based on conditional and input values.</p>
-<p>If <cite>mask</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> is
+<p>If <code class="docutils literal notranslate"><span class="pre">mask</span></code> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span> <span class="pre">=</span> <span class="pre">vals</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arr</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array to put data into.</p></li>
-<li><p><strong>mask</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Boolean mask array. Must have the same size as <cite>arr</cite>.</p></li>
-<li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>sequence</em>) – Values to put into <cite>arr</cite>. Only the first N elements are
-used, where N is the number of True values in <cite>mask</cite>. If
-<cite>vals</cite> is smaller than N, it will be repeated, and if
-elements of <cite>arr</cite> are to be masked, this sequence must be
-non-empty. Array <cite>vals</cite> must be one dimensional.</p></li>
+<li><p><strong>mask</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Boolean mask array. Must have the same size as <code class="docutils literal notranslate"><span class="pre">arr</span></code>.</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>sequence</em>) – Values to put into <code class="docutils literal notranslate"><span class="pre">arr</span></code>. Only the first N elements are
+used, where N is the number of True values in <code class="docutils literal notranslate"><span class="pre">mask</span></code>. If
+<code class="docutils literal notranslate"><span class="pre">vals</span></code> is smaller than N, it will be repeated, and if
+elements of <code class="docutils literal notranslate"><span class="pre">arr</span></code> are to be masked, this sequence must be
+non-empty. Array <code class="docutils literal notranslate"><span class="pre">vals</span></code> must be one dimensional.</p></li>
 </ul>
 </dd>
 </dl>

@@ -768,27 +768,70 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – <p>One-dimensional array of indices.</p>
-<p>Note that if indices are not unique, a race
-condition will result, and the value written to
-<code class="docutils literal notranslate"><span class="pre">x</span></code> will not be deterministic.
-<code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.unique()</span></code> can be used to
-guarantee unique elements in <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p>
-</p></li>
-<li><p><strong>vals</strong> – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
+<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 Must be broadcastable to the result shape
 <code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
-<li><p><strong>axis</strong> – The axis along which the values will be placed.
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
 If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>mode</strong> – How out-of-bounds indices will be handled.
-<code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code> - clamps indices to (-n &lt;= i &lt; n), then wraps
-negative indices.
-<code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code> - clips indices to (0 &lt;= i &lt; n)
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
+are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps
+negative indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code>: clips indices to (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>).</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If input array <code class="docutils literal notranslate"><span class="pre">indices</span></code> contains duplicates, a race condition
+occurs, and the value written into corresponding positions in <code class="docutils literal notranslate"><span class="pre">x</span></code>
+may vary from run to run. Preserving sequential semantics in handing
+the duplicates to achieve deterministic behavior requires additional
+work, e.g.</p>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
+
+<span class="k">def</span> <span class="nf">put_vec_duplicates</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+    <span class="s2">&quot;Put values into vec, handling possible duplicates in ind&quot;</span>
+    <span class="k">assert</span> <span class="n">vec</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+
+    <span class="c1"># find positions of last occurences of each</span>
+    <span class="c1"># unique index</span>
+    <span class="n">ind_flipped</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+    <span class="n">ind_uniq</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_all</span><span class="p">(</span><span class="n">ind_flipped</span><span class="p">)</span><span class="o">.</span><span class="n">indices</span>
+    <span class="n">has_dups</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_uniq</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_dups</span><span class="p">:</span>
+        <span class="n">ind_uniq</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
+
+    <span class="n">dpt</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">)))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+<span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+<span class="c1"># Values corresponding to last positions of</span>
+<span class="c1"># duplicate indices are written into the vector x</span>
+<span class="n">put_vec_duplicates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+
+<span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+<span class="n">expected</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">expected</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>

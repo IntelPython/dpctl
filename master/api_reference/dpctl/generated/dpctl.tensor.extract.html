@@ -764,20 +764,21 @@
 <dt class="sig sig-object py" id="dpctl.tensor.extract">
 <span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_indexing_functions.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.extract" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the elements of an array that satisfies the condition.</p>
-<p>If <cite>condition</cite> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code> is
+<p>If <code class="docutils literal notranslate"><span class="pre">condition</span></code> is boolean <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">arr[condition]</span></code>.</p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.place</span></code> does the opposite of
 <code class="docutils literal notranslate"><span class="pre">dpctl.tensor.extract</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conditions</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An array whose non-zero or True entries indicate the element
-of <cite>arr</cite> to extract.</p></li>
-<li><p><strong>arr</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array of the same size as <cite>condition</cite>.</p></li>
+<li><p><strong>conditions</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – An array whose non-zero or <code class="docutils literal notranslate"><span class="pre">True</span></code> entries indicate the element
+of <code class="docutils literal notranslate"><span class="pre">arr</span></code> to extract.</p></li>
+<li><p><strong>arr</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array of the same size as <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Rank 1 array of values from <cite>arr</cite> where <cite>condition</cite> is True.</p>
+<dd class="field-even"><p>Rank 1 array of values from <code class="docutils literal notranslate"><span class="pre">arr</span></code> where <code class="docutils literal notranslate"><span class="pre">condition</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
