@@ -793,10 +793,9 @@
 <span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span>
 
 <span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">WeakBooleanType</span><span class="p">,</span>
     <span class="n">WeakComplexType</span><span class="p">,</span>
-    <span class="n">WeakFloatingType</span><span class="p">,</span>
     <span class="n">WeakIntegralType</span><span class="p">,</span>
+    <span class="n">_is_weak_dtype</span><span class="p">,</span>
     <span class="n">_strong_dtype_num_kind</span><span class="p">,</span>
     <span class="n">_weak_type_num_kind</span><span class="p">,</span>
 <span class="p">)</span>
@@ -806,29 +805,10 @@
     <span class="s2">&quot;Resolves weak data types per NEP-0050,&quot;</span>
     <span class="s2">&quot;where the second and third arguments are&quot;</span>
     <span class="s2">&quot;permitted to be weak types&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">st_dtype</span><span class="p">,</span>
-        <span class="p">(</span>
-            <span class="n">WeakBooleanType</span><span class="p">,</span>
-            <span class="n">WeakIntegralType</span><span class="p">,</span>
-            <span class="n">WeakFloatingType</span><span class="p">,</span>
-            <span class="n">WeakComplexType</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">dtype1</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
-    <span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">dtype2</span><span class="p">,</span>
-            <span class="p">(</span>
-                <span class="n">WeakBooleanType</span><span class="p">,</span>
-                <span class="n">WeakIntegralType</span><span class="p">,</span>
-                <span class="n">WeakFloatingType</span><span class="p">,</span>
-                <span class="n">WeakComplexType</span><span class="p">,</span>
-            <span class="p">),</span>
-        <span class="p">):</span>
+    <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype2</span><span class="p">):</span>
             <span class="n">kind_num1</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype1</span><span class="p">)</span>
             <span class="n">kind_num2</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype2</span><span class="p">)</span>
             <span class="n">st_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">)</span>
@@ -879,10 +859,7 @@
             <span class="k">return</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">dev</span><span class="p">),</span> <span class="n">dtype2</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">max_dtype</span><span class="p">,</span> <span class="n">dtype2</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">dtype2</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
-    <span class="p">):</span>
+    <span class="k">elif</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype2</span><span class="p">):</span>
         <span class="n">max_dt_num_kind</span><span class="p">,</span> <span class="n">max_dtype</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="p">(</span><span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">),</span> <span class="n">st_dtype</span><span class="p">),</span>
@@ -911,15 +888,9 @@
 
 <span class="k">def</span> <span class="nf">_resolve_one_strong_one_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="s2">&quot;Resolves one weak data type with one strong data type per NEP-0050&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">st_dtype</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">dtype</span><span class="p">,</span>
-        <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
         <span class="n">st_kind_num</span> <span class="o">=</span> <span class="n">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">)</span>
         <span class="n">kind_num</span> <span class="o">=</span> <span class="n">_weak_type_num_kind</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">kind_num</span> <span class="o">&gt;</span> <span class="n">st_kind_num</span><span class="p">:</span>
