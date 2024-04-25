@@ -36,7 +36,6 @@
 #include "utils/type_utils.hpp"
 
 #include "full_ctor.hpp"
-#include "unboxing_helper.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -79,14 +78,7 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
                              char *dst_p,
                              const std::vector<sycl::event> &depends)
 {
-    dstTy fill_v;
-
-    PythonObjectUnboxer<dstTy> unboxer{};
-    try {
-        fill_v = unboxer(py_value);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
+    dstTy fill_v = py::cast<dstTy>(py_value);
 
     using dpctl::tensor::kernels::constructors::full_contig_impl;
 

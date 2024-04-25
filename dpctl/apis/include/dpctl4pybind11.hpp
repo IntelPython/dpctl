@@ -671,6 +671,54 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
                       _("dpctl.program.SyclProgram"));
 };
+
+/* This type caster associates
+ * ``sycl::half`` C++ class with Python :class:`float` for the purposes
+ * of generation of Python bindings by pybind11.
+ */
+template <> struct type_caster<sycl::half>
+{
+public:
+    bool load(handle src, bool convert)
+    {
+        double py_value;
+
+        if (!src) {
+            return false;
+        }
+
+        PyObject *source = src.ptr();
+
+        if (convert || PyFloat_Check(source)) {
+            py_value = PyFloat_AsDouble(source);
+        }
+        else {
+            return false;
+        }
+
+        bool py_err = py_value == double(-1) && PyErr_Occurred();
+
+        if (py_err) {
+            PyErr_Clear();
+            if (py_err && convert && (PyNumber_Check(source) != 0)) {
+                auto tmp = reinterpret_steal<object>(PyNumber_Float(source));
+                PyErr_Clear();
+                return load(tmp, false);
+            }
+            return false;
+        }
+        value = static_cast<sycl::half>(py_value);
+        return true;
+    }
+
+    static handle cast(sycl::half src, return_value_policy, handle)
+    {
+        return PyFloat_FromDouble(static_cast<double>(src));
+    }
+
+    PYBIND11_TYPE_CASTER(sycl::half, _("float"));
+};
+
 } // namespace detail
 } // namespace pybind11
 
