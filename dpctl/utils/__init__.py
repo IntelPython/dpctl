@@ -27,6 +27,7 @@ from ._compute_follows_data import (
 )
 from ._device_queries import (
     intel_device_info_device_id,
+    intel_device_info_free_memory,
     intel_device_info_gpu_eu_count,
     intel_device_info_gpu_eu_count_per_subslice,
     intel_device_info_gpu_eu_simd_width,
@@ -34,6 +35,8 @@ from ._device_queries import (
     intel_device_info_gpu_slices,
     intel_device_info_gpu_subslices_per_slice,
     intel_device_info_max_mem_bandwidth,
+    intel_device_info_memory_bus_width,
+    intel_device_info_memory_clock_rate,
 )
 from ._onetrace_context import onetrace_enabled
 
@@ -62,6 +65,8 @@ def intel_device_info(dev, /):
         Number of EUs in subslice
     max_mem_bandwidth:
         Maximum memory bandwidth in bytes/second
+    free_memory:
+        Global memory available on the device in units of bytes
 
     Unsupported descriptors are omitted from the dictionary.
 
@@ -97,6 +102,15 @@ def intel_device_info(dev, /):
         bw = intel_device_info_max_mem_bandwidth(dev)
         if bw:
             res["max_mem_bandwidth"] = bw
+        fm = intel_device_info_free_memory(dev)
+        if fm:
+            res["free_memory"] = fm
+        mcr = intel_device_info_memory_clock_rate(dev)
+        if mcr:
+            res["memory_clock_rate"] = mcr
+        mbw = intel_device_info_memory_bus_width(dev)
+        if mbw:
+            res["memory_bus_width"] = mbw
         return res
     return dict()
 
