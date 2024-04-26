@@ -1,0 +1,10 @@
+﻿dpctl.tensor.pow
+================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: pow
+    :no-value:
+
+
