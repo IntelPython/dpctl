@@ -78,6 +78,12 @@ __all__ = [
 
 include "_sycl_usm_array_interface_utils.pxi"
 
+cdef extern from "_opaque_smart_ptr.hpp":
+    void * OpaqueSmartPtr_Make(void *, DPCTLSyclQueueRef) nogil
+    void * OpaqueSmartPtr_Copy(void *) nogil
+    void OpaqueSmartPtr_Delete(void *) nogil
+    void * OpaqueSmartPtr_Get(void *) nogil
+
 class USMAllocationError(Exception):
     """
     An exception raised when Universal Shared Memory (USM) allocation
@@ -152,7 +158,8 @@ cdef class _Memory:
         MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
     """
     cdef _cinit_empty(self):
-        self.memory_ptr = NULL
+        self._memory_ptr = NULL
+        self._opaque_ptr = NULL
         self.nbytes = 0
         self.queue = None
         self.refobj = None
@@ -198,7 +205,8 @@ cdef class _Memory:
                 )
 
             if (p):
-                self.memory_ptr = p
+                self._memory_ptr = p
+                self._opaque_ptr = OpaqueSmartPtr_Make(p, QRef)
                 self.nbytes = nbytes
                 self.queue = queue
             else:
@@ -214,18 +222,22 @@ cdef class _Memory:
         cdef _Memory other_mem
         if isinstance(other, _Memory):
             other_mem = <_Memory> other
-            self.memory_ptr = other_mem.memory_ptr
             self.nbytes = other_mem.nbytes
             self.queue = other_mem.queue
-            if other_mem.refobj is None:
-                self.refobj = other
+            if other_mem._opaque_ptr is NULL:
+                self._memory_ptr = other_mem._memory_ptr
+                self._opaque_ptr = NULL
+                self.refobj = other.reference_obj
             else:
-                self.refobj = other_mem.refobj
+                self._memory_ptr = other_mem._memory_ptr
+                self._opaque_ptr = OpaqueSmartPtr_Copy(other_mem._opaque_ptr)
+                self.refobj = None
         elif hasattr(other, '__sycl_usm_array_interface__'):
             other_iface = other.__sycl_usm_array_interface__
             if isinstance(other_iface, dict):
                 other_buf = _USMBufferData.from_sycl_usm_ary_iface(other_iface)
-                self.memory_ptr = other_buf.p
+                self._opaque_ptr = NULL
+                self._memory_ptr = <DPCTLSyclUSMRef>other_buf.p
                 self.nbytes = other_buf.nbytes
                 self.queue = other_buf.queue
                 self.refobj = other
@@ -241,23 +253,25 @@ cdef class _Memory:
             )
 
     def __dealloc__(self):
-        if (self.refobj is None):
-            if self.memory_ptr:
-                if (type(self.queue) is SyclQueue):
-                    DPCTLfree_with_queue(
-                        self.memory_ptr, self.queue.get_queue_ref()
-                    )
+        if not (self._opaque_ptr is NULL):
+            OpaqueSmartPtr_Delete(self._opaque_ptr)
         self._cinit_empty()
+
+    cdef DPCTLSyclUSMRef get_data_ptr(self):
+        return self._memory_ptr
+
+    cdef void* get_opaque_ptr(self):
+        return self._opaque_ptr
 
     cdef _getbuffer(self, Py_buffer *buffer, int flags):
         # memory_ptr is Ref which is pointer to SYCL type. For USM it is void*.
         cdef SyclContext ctx = self._context
         cdef _usm_type UsmTy = DPCTLUSM_GetPointerType(
-            self.memory_ptr, ctx.get_context_ref()
+            self._memory_ptr, ctx.get_context_ref()
         )
         if UsmTy == _usm_type._USM_DEVICE:
             raise ValueError("USM Device memory is not host accessible")
-        buffer.buf = <char*>self.memory_ptr
+        buffer.buf = <void *>self._memory_ptr
         buffer.format = 'B'                     # byte
         buffer.internal = NULL                  # see References
         buffer.itemsize = 1
@@ -285,7 +299,7 @@ cdef class _Memory:
         represented as Python integer.
         """
         def __get__(self):
-            return <size_t>(self.memory_ptr)
+            return <size_t>(self._memory_ptr)
 
     property _context:
         """:class:`dpctl.SyclContext` the USM pointer is bound to. """
@@ -333,7 +347,7 @@ cdef class _Memory:
             .format(
                 self.get_usm_type(),
                 self.nbytes,
-                hex(<object>(<size_t>self.memory_ptr))
+                hex(<object>(<size_t>self._memory_ptr))
             )
         )
 
@@ -377,7 +391,7 @@ cdef class _Memory:
         """
         def __get__(self):
             cdef dict iface = {
-                "data": (<size_t>(<void *>self.memory_ptr),
+                "data": (<size_t>(<void *>self._memory_ptr),
                          True),  # bool(self.writable)),
                 "shape": (self.nbytes,),
                 "strides": None,
@@ -402,18 +416,18 @@ cdef class _Memory:
         if syclobj is None:
             ctx = self._context
             return _Memory.get_pointer_type(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             ).decode("UTF-8")
         elif isinstance(syclobj, SyclContext):
             ctx = <SyclContext>(syclobj)
             return _Memory.get_pointer_type(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             ).decode("UTF-8")
         elif isinstance(syclobj, SyclQueue):
             q = <SyclQueue>(syclobj)
             ctx = q.get_sycl_context()
             return _Memory.get_pointer_type(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             ).decode("UTF-8")
         raise TypeError(
             "syclobj keyword can be either None, or an instance of "
@@ -435,18 +449,18 @@ cdef class _Memory:
         if syclobj is None:
             ctx = self._context
             return _Memory.get_pointer_type_enum(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             )
         elif isinstance(syclobj, SyclContext):
             ctx = <SyclContext>(syclobj)
             return _Memory.get_pointer_type_enum(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             )
         elif isinstance(syclobj, SyclQueue):
             q = <SyclQueue>(syclobj)
             ctx = q.get_sycl_context()
             return _Memory.get_pointer_type_enum(
-                self.memory_ptr, ctx
+                self._memory_ptr, ctx
             )
         raise TypeError(
             "syclobj keyword can be either None, or an instance of "
@@ -475,8 +489,8 @@ cdef class _Memory:
         # call kernel to copy from
         ERef = DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
-            <void *>&host_buf[0],     # destination
-            <void *>self.memory_ptr,  # source
+            <void *>&host_buf[0],      # destination
+            <void *>self._memory_ptr,  # source
             <size_t>self.nbytes
         )
         with nogil: DPCTLEvent_Wait(ERef)
@@ -500,8 +514,8 @@ cdef class _Memory:
         # call kernel to copy from
         ERef = DPCTLQueue_Memcpy(
             self.queue.get_queue_ref(),
-            <void *>self.memory_ptr,  # destination
-            <void *>&host_buf[0],     # source
+            <void *>self._memory_ptr,  # destination
+            <void *>&host_buf[0],      # source
             <size_t>buf_len
         )
         with nogil: DPCTLEvent_Wait(ERef)
@@ -542,7 +556,7 @@ cdef class _Memory:
             if (same_contexts):
                 ERef = DPCTLQueue_Memcpy(
                     this_queue.get_queue_ref(),
-                    <void *>self.memory_ptr,
+                    <void *>self._memory_ptr,
                     <void *>src_buf.p,
                     <size_t>src_buf.nbytes
                 )
@@ -550,8 +564,8 @@ cdef class _Memory:
                 DPCTLEvent_Delete(ERef)
             else:
                 copy_via_host(
-                    <void *>self.memory_ptr, this_queue,  # dest
-                    <void *>src_buf.p, src_queue,     # src
+                    <void *>self._memory_ptr, this_queue, # dest
+                    <void *>src_buf.p, src_queue,         # src
                     <size_t>src_buf.nbytes
                 )
         else:
@@ -565,7 +579,7 @@ cdef class _Memory:
 
         ERef = DPCTLQueue_Memset(
             self.queue.get_queue_ref(),
-            <void *>self.memory_ptr,  # destination
+            <void *>self._memory_ptr,  # destination
             <int> val,
             self.nbytes)
 
@@ -703,20 +717,29 @@ cdef class _Memory:
         res = _Memory.__new__(_Memory)
         _mem = <_Memory> res
         _mem._cinit_empty()
-        _mem.memory_ptr = USMRef
         _mem.nbytes = nbytes
         QRef_copy = DPCTLQueue_Copy(QRef)
         if QRef_copy is NULL:
             raise ValueError("Referenced queue could not be copied.")
         try:
-            _mem.queue = SyclQueue._create(QRef_copy)  # consumes the copy
+            # _create steals ownership of QRef_copy
+            _mem.queue = SyclQueue._create(QRef_copy)
         except dpctl.SyclQueueCreationError as sqce:
             raise ValueError(
                 "SyclQueue object could not be created from "
                 "copy of referenced queue"
             ) from sqce
-        _mem.refobj = memory_owner
-        return mem_ty(res)
+        if memory_owner is None:
+            _mem._memory_ptr = USMRef
+            # assume ownership of USM allocation via smart pointer
+            _mem._opaque_ptr = OpaqueSmartPtr_Make(<void *>USMRef, QRef)
+            _mem.refobj = None
+        else:
+            _mem._memory_ptr = USMRef
+            _mem._opaque_ptr = NULL
+            _mem.refobj = memory_owner
+        _out = mem_ty(<object>_mem)
+        return _out
 
 
 cdef class MemoryUSMShared(_Memory):
@@ -908,10 +931,13 @@ def as_usm_memory(obj):
             format(obj)
         )
 
+cdef api void * Memory_GetOpaquePointer(_Memory obj):
+    "Opaque pointer value"
+    return obj.get_opaque_ptr()
 
 cdef api DPCTLSyclUSMRef Memory_GetUsmPointer(_Memory obj):
     "Pointer of USM allocation"
-    return obj.memory_ptr
+    return obj.get_data_ptr()
 
 cdef api DPCTLSyclContextRef Memory_GetContextRef(_Memory obj):
     "Context reference to which USM allocation is bound"
