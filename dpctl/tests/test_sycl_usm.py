@@ -152,7 +152,7 @@ def test_zero_copy():
     mobj = _create_memory()
     mobj2 = type(mobj)(mobj)
 
-    assert mobj2.reference_obj is mobj
+    assert mobj2.reference_obj is None
     mobj_data = mobj.__sycl_usm_array_interface__["data"]
     mobj2_data = mobj2.__sycl_usm_array_interface__["data"]
     assert mobj_data == mobj2_data

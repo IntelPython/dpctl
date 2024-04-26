@@ -25,6 +25,9 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpmem
 
+from .._backend cimport DPCTLSyclUSMRef
+from .._sycl_device_factory cimport _cached_default_device
+
 from ._data_types import bool as dpt_bool
 from ._device import Device
 from ._print import usm_ndarray_repr, usm_ndarray_str
@@ -952,10 +955,10 @@ cdef class usm_ndarray:
             arr_buf = <c_dpmem._Memory> self.usm_data
             QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
             view_buffer = c_dpmem._Memory.create_from_usm_pointer_size_qref(
-                arr_buf.memory_ptr,
+                <DPCTLSyclUSMRef>arr_buf.get_data_ptr(),
                 arr_buf.nbytes,
                 QRef,
-                memory_owner = arr_buf
+                memory_owner=arr_buf
             )
             res = usm_ndarray(
                 self.shape,
