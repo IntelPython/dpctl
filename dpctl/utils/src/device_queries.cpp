@@ -168,7 +168,7 @@ PYBIND11_MODULE(_device_queries, m)
           py::arg("device"));
 
     m.def("intel_device_info_free_memory", &py_intel_free_memory,
-          "Returns the memory avialble on the device in units of bytes.",
+          "Returns the memory available on the device in units of bytes.",
           py::arg("device"));
 
     m.def("intel_device_info_memory_clock_rate", &py_intel_memory_clock_rate,
