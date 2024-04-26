@@ -700,9 +700,8 @@ public:
 
         if (py_err) {
             PyErr_Clear();
-            if (py_err && convert && (PyNumber_Check(source) != 0)) {
+            if (convert && (PyNumber_Check(source) != 0)) {
                 auto tmp = reinterpret_steal<object>(PyNumber_Float(source));
-                PyErr_Clear();
                 return load(tmp, false);
             }
             return false;
