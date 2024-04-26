@@ -696,7 +696,7 @@ public:
             return false;
         }
 
-        bool py_err = py_value == double(-1) && PyErr_Occurred();
+        bool py_err = (py_value == double(-1)) && PyErr_Occurred();
 
         if (py_err) {
             PyErr_Clear();
