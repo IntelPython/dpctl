@@ -36,7 +36,6 @@
 #include "utils/type_utils.hpp"
 
 #include "linear_sequences.hpp"
-#include "unboxing_helper.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -86,16 +85,8 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
                                 char *array_data,
                                 const std::vector<sycl::event> &depends)
 {
-    Ty start_v;
-    Ty step_v;
-
-    const auto &unboxer = PythonObjectUnboxer<Ty>{};
-    try {
-        start_v = unboxer(start);
-        step_v = unboxer(step);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
+    Ty start_v = py::cast<Ty>(start);
+    Ty step_v = py::cast<Ty>(step);
 
     using dpctl::tensor::kernels::constructors::lin_space_step_impl;
 
@@ -143,14 +134,8 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
                                   char *array_data,
                                   const std::vector<sycl::event> &depends)
 {
-    Ty start_v, end_v;
-    const auto &unboxer = PythonObjectUnboxer<Ty>{};
-    try {
-        start_v = unboxer(start);
-        end_v = unboxer(end);
-    } catch (const py::error_already_set &e) {
-        throw;
-    }
+    Ty start_v = py::cast<Ty>(start);
+    Ty end_v = py::cast<Ty>(end);
 
     using dpctl::tensor::kernels::constructors::lin_space_affine_impl;
 
