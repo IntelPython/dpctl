@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.tensor" href="tensor.html" /><link rel="prev" title="dpctl.program.SyclProgramCompilationError" href="generated/dpctl.program.SyclProgramCompilationError.html" />
 
-    <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>dpctl.utils - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,12 +759,12 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="module-dpctl.utils">
-<span id="dpctl-utils"></span><span id="dpctl-utils-pyapi"></span><h1><a class="reference internal" href="#module-dpctl.utils" title="dpctl.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a><a class="headerlink" href="#module-dpctl.utils" title="Permalink to this heading">#</a></h1>
+<span id="dpctl-utils"></span><span id="dpctl-utils-pyapi"></span><h1><a class="reference internal" href="#module-dpctl.utils" title="dpctl.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a><a class="headerlink" href="#module-dpctl.utils" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.get_execution_queue">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_execution_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_execution_queue" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_execution_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_execution_queue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get execution queue from queues associated with input arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -781,7 +783,7 @@ or <code class="docutils literal notranslate"><span class="pre">None</span></cod
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.get_coerced_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_coerced_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_types</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_coerced_usm_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">get_coerced_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_types</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.get_coerced_usm_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get USM type of the output array for a function combining
 arrays of given USM types using compute-follows-data execution
 model.</p>
@@ -803,7 +805,7 @@ for input arrays</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.validate_usm_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">validate_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.validate_usm_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">validate_usm_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">usm_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.validate_usm_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises an exception if <cite>usm_type</cite> is invalid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -834,7 +836,7 @@ Default: <cite>True</cite>.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.onetrace_enabled">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> collection for kernels executed in this context.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -873,7 +875,7 @@ Device Timeline (queue: 0x555aee86bed0): dpctl::tensor::kernels::constructors::l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.intel_device_info">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sycl_device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils.html#intel_device_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.intel_device_info" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">intel_device_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sycl_device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils.html#intel_device_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.intel_device_info" title="Permalink to this definition">¶</a></dt>
 <dd><p>For Intel(R) GPU devices returns a dictionary
 with device architectural details, and an empty
 dictionary otherwise. The dictionary contains
@@ -903,7 +905,7 @@ for <code class="xref py py-class docutils literal notranslate"><span class="pre
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dpctl.utils.ExecutionPlacementError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">ExecutionPlacementError</span></span><a class="headerlink" href="#dpctl.utils.ExecutionPlacementError" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">ExecutionPlacementError</span></span><a class="headerlink" href="#dpctl.utils.ExecutionPlacementError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised when execution placement target can not
 be unambiguously determined from input arrays.</p>
 <p>Make sure that input arrays are associated with the same
@@ -990,7 +992,7 @@ or migrate data to the same <a class="reference internal" href="generated/dpctl.
 </div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>

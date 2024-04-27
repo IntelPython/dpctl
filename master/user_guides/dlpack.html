@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Environment variables" href="environment_variables.html" /><link rel="prev" title="oneAPI programming model" href="execution_model.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>DLPack exchange of USM allocated arrays - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,11 +759,11 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="dlpack-exchange-of-usm-allocated-arrays">
-<span id="dpctl-tensor-dlpack-support"></span><h1>DLPack exchange of USM allocated arrays<a class="headerlink" href="#dlpack-exchange-of-usm-allocated-arrays" title="Permalink to this heading">#</a></h1>
+<span id="dpctl-tensor-dlpack-support"></span><h1>DLPack exchange of USM allocated arrays<a class="headerlink" href="#dlpack-exchange-of-usm-allocated-arrays" title="Permalink to this heading">¶</a></h1>
 <section id="dlpack-overview">
-<h2>DLPack overview<a class="headerlink" href="#dlpack-overview" title="Permalink to this heading">#</a></h2>
+<h2>DLPack overview<a class="headerlink" href="#dlpack-overview" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://dmlc.github.io/dlpack/latest/">DLPack</a> is a commonly used C-ABI compatible data structure that allows data exchange
 between major frameworks. DLPack strives to be minimal, intentionally leaves allocators API and
 device API out of scope.</p>
@@ -775,10 +777,10 @@ It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</
 <code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_filter_selector</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_default_platform_context</span></code> to operate.</p>
 </section>
 <section id="exporting-usm-allocation-to-dlpack">
-<h2>Exporting USM allocation to DLPack<a class="headerlink" href="#exporting-usm-allocation-to-dlpack" title="Permalink to this heading">#</a></h2>
+<h2>Exporting USM allocation to DLPack<a class="headerlink" href="#exporting-usm-allocation-to-dlpack" title="Permalink to this heading">¶</a></h2>
 <p>When sharing USM allocation (of any <code class="docutils literal notranslate"><span class="pre">sycl::usm::kind</span></code>) with <code class="docutils literal notranslate"><span class="pre">void</span> <span class="pre">*</span> <span class="pre">ptr</span></code> bound to <code class="docutils literal notranslate"><span class="pre">sycl::context</span> <span class="pre">ctx</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Protocol for exporting USM allocation as DLPack</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Protocol for exporting USM allocation as DLPack</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Input: void *ptr:</span>
 <span class="c1">//             USM allocation pointer</span>
 <span class="c1">//        sycl::context ctx:</span>
@@ -828,9 +830,9 @@ It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</
 </div>
 </section>
 <section id="importing-dlpack-with-device-type-kdloneapi">
-<h2>Importing DLPack with <code class="docutils literal notranslate"><span class="pre">device_type</span> <span class="pre">==</span> <span class="pre">kDLOneAPI</span></code><a class="headerlink" href="#importing-dlpack-with-device-type-kdloneapi" title="Permalink to this heading">#</a></h2>
+<h2>Importing DLPack with <code class="docutils literal notranslate"><span class="pre">device_type</span> <span class="pre">==</span> <span class="pre">kDLOneAPI</span></code><a class="headerlink" href="#importing-dlpack-with-device-type-kdloneapi" title="Permalink to this heading">¶</a></h2>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Protocol for recognizing DLPack as a valid USM allocation</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Protocol for recognizing DLPack as a valid USM allocation</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Input: ptr = dlm_tensor-&gt;dl_tensor.data</span>
 <span class="c1">//        device_id = dlm_tensor-&gt;dl_tensor.device.device_id</span>
 
@@ -875,7 +877,7 @@ It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</
 </div>
 </section>
 <section id="support-of-dlpack-with-kdloneapi-device-type">
-<h2>Support of DLPack with <code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code> device type<a class="headerlink" href="#support-of-dlpack-with-kdloneapi-device-type" title="Permalink to this heading">#</a></h2>
+<h2>Support of DLPack with <code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code> device type<a class="headerlink" href="#support-of-dlpack-with-kdloneapi-device-type" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> supports DLPack v0.8. Exchange of USM allocations made using Level-Zero backend
 is supported with <code class="docutils literal notranslate"><span class="pre">torch.Tensor(device='xpu')</span></code> for PyTorch when using <a class="reference external" href="https://github.com/intel/intel-extension-for-pytorch">intel-extension-for-pytorch</a>,
 as well as for TensorFlow when <a class="reference external" href="https://github.com/intel/intel-extension-for-tensorflow">intel-extension-for-tensorflow</a> is used.</p>
@@ -956,7 +958,7 @@ as well as for TensorFlow when <a class="reference external" href="https://githu
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

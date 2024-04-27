@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Element-wise functions" href="tensor.elementwise_functions.html" /><link rel="prev" title="dpctl.tensor.result_type" href="generated/dpctl.tensor.result_type.html" />
 
-    <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Data types - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,9 +759,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="data-types">
-<span id="dpctl-tensor-data-types"></span><h1>Data types<a class="headerlink" href="#data-types" title="Permalink to this heading">#</a></h1>
+<span id="dpctl-tensor-data-types"></span><h1>Data types<a class="headerlink" href="#data-types" title="Permalink to this heading">¶</a></h1>
 <p><a class="reference internal" href="tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> supports the following data types:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -823,26 +825,26 @@ evaluates to <code class="docutils literal notranslate"><span class="pre">True</
 special method <code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor.dtype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dpctl.tensor.dtype" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#dpctl.tensor.dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.tensor.dtype.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.dtype.__eq__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.dtype.__eq__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if data-type instances are equal.</p>
 </dd></dl>
 
 </dd></dl>
 
 <section id="default-integral-data-type">
-<h2>Default integral data type<a class="headerlink" href="#default-integral-data-type" title="Permalink to this heading">#</a></h2>
+<h2>Default integral data type<a class="headerlink" href="#default-integral-data-type" title="Permalink to this heading">¶</a></h2>
 <p>The default integral data type is <code class="xref py py-attr docutils literal notranslate"><span class="pre">int64</span></code> for all supported devices.</p>
 </section>
 <section id="default-indexing-data-type">
-<h2>Default indexing data type<a class="headerlink" href="#default-indexing-data-type" title="Permalink to this heading">#</a></h2>
+<h2>Default indexing data type<a class="headerlink" href="#default-indexing-data-type" title="Permalink to this heading">¶</a></h2>
 <p>The default indexing data type is <code class="xref py py-attr docutils literal notranslate"><span class="pre">int64</span></code> for all supported devices.</p>
 </section>
 <section id="default-real-floating-point-data-type">
-<h2>Default real floating-point data type<a class="headerlink" href="#default-real-floating-point-data-type" title="Permalink to this heading">#</a></h2>
+<h2>Default real floating-point data type<a class="headerlink" href="#default-real-floating-point-data-type" title="Permalink to this heading">¶</a></h2>
 <p>The default real floating-point type depends on the capabilities of device where array is allocated.
 If the device support double precision floating-point types, the default real floating-point type
 is <code class="xref py py-attr docutils literal notranslate"><span class="pre">float64</span></code>, otherwise <code class="xref py py-attr docutils literal notranslate"><span class="pre">float32</span></code>.</p>
@@ -850,13 +852,13 @@ is <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 precision floating-point type.</p>
 </section>
 <section id="default-complex-floating-point-data-type">
-<h2>Default complex floating-point data type<a class="headerlink" href="#default-complex-floating-point-data-type" title="Permalink to this heading">#</a></h2>
+<h2>Default complex floating-point data type<a class="headerlink" href="#default-complex-floating-point-data-type" title="Permalink to this heading">¶</a></h2>
 <p>Like for the default real floating-point type, the default complex floating-point type depends on
 capabilities of device. If the device support double precision real floating-point types, the default
 complex floating-point type is <code class="xref py py-attr docutils literal notranslate"><span class="pre">complex128</span></code>, otherwise <code class="xref py py-attr docutils literal notranslate"><span class="pre">complex64</span></code>.</p>
 </section>
 <section id="querying-default-data-types-programmatically">
-<h2>Querying default data types programmatically<a class="headerlink" href="#querying-default-data-types-programmatically" title="Permalink to this heading">#</a></h2>
+<h2>Querying default data types programmatically<a class="headerlink" href="#querying-default-data-types-programmatically" title="Permalink to this heading">¶</a></h2>
 <p>The data type can be discovered programmatically using Array API <a class="reference internal" href="tensor.inspection.html#dpctl-tensor-inspection"><span class="std std-ref">inspection functions</span></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span>
 <span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
@@ -872,7 +874,7 @@ complex floating-point type is <code class="xref py py-attr docutils literal not
 </div>
 </section>
 <section id="type-promotion-rules">
-<h2>Type promotion rules<a class="headerlink" href="#type-promotion-rules" title="Permalink to this heading">#</a></h2>
+<h2>Type promotion rules<a class="headerlink" href="#type-promotion-rules" title="Permalink to this heading">¶</a></h2>
 <p>Type promotion rules govern the behavior of an array library when a function does not have
 a dedicated implementation for the data type(s) of the input array(s).</p>
 <p>In such a case, input arrays may be cast to data types for which a dedicated implementation
@@ -965,7 +967,7 @@ truncated by removing nodes corresponding to unsupported data types and edges th
 </div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>

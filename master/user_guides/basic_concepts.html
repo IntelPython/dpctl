@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="oneAPI programming model" href="execution_model.html" /><link rel="prev" title="User guides" href="index.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Heterogeneous Systems and Programming Concepts - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,9 +759,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="heterogeneous-systems-and-programming-concepts">
-<span id="basic-concepts"></span><h1>Heterogeneous Systems and Programming Concepts<a class="headerlink" href="#heterogeneous-systems-and-programming-concepts" title="Permalink to this heading">#</a></h1>
+<span id="basic-concepts"></span><h1>Heterogeneous Systems and Programming Concepts<a class="headerlink" href="#heterogeneous-systems-and-programming-concepts" title="Permalink to this heading">¶</a></h1>
 <p>This section introduces the basic concepts defined by SYCL standard
 for programming heterogeneous system, and used by <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>.</p>
 <div class="admonition note">
@@ -768,7 +770,7 @@ for programming heterogeneous system, and used by <a class="reference internal" 
 such as the <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL 2020 spec</a>.</p>
 </div>
 <section id="definitions">
-<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this heading">#</a></h2>
+<h2>Definitions<a class="headerlink" href="#definitions" title="Permalink to this heading">¶</a></h2>
 <ul>
 <li><dl class="simple">
 <dt><strong>Heterogeneous computing</strong></dt><dd><p>Refers to computing on multiple devices in a program.</p>
@@ -882,7 +884,7 @@ platform abstraction.</p>
 </ul>
 </section>
 <section id="platform">
-<h2>Platform<a class="headerlink" href="#platform" title="Permalink to this heading">#</a></h2>
+<h2>Platform<a class="headerlink" href="#platform" title="Permalink to this heading">¶</a></h2>
 <p>A platform abstracts one or more SYCL devices that are connected to
 a host and can be programmed by the same underlying framework.</p>
 <p>The <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> class represents a platform and
@@ -896,7 +898,7 @@ the same platform, by <a class="reference internal" href="../beginners_guides/ma
 a <a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a>.</p>
 </section>
 <section id="context">
-<h2>Context<a class="headerlink" href="#context" title="Permalink to this heading">#</a></h2>
+<h2>Context<a class="headerlink" href="#context" title="Permalink to this heading">¶</a></h2>
 <p>A context is an entity that is associated with the state of device as managed by the
 backend. The context is required to map unified address space pointer to the device
 where it was allocated unambiguously.</p>
@@ -916,14 +918,14 @@ the default context, check whether <code class="docutils literal notranslate"><s
 of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> or raises an exception.</p>
 </section>
 <section id="queue">
-<span id="user-guide-queues"></span><h2>Queue<a class="headerlink" href="#queue" title="Permalink to this heading">#</a></h2>
+<span id="user-guide-queues"></span><h2>Queue<a class="headerlink" href="#queue" title="Permalink to this heading">¶</a></h2>
 <p>SYCL queue is an entity associated with scheduling computational tasks for execution
 on a targeted SYCL device and using some specific SYCL context.</p>
 <p>Queue constructor generally requires both to be specified. For platforms that support the
 default platform context, a shortcut queue constructor call that specifies only a device would
 use the default platform context associated with the platform given device is a part of.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Queues constructed from device instance or filter string that selects it have the same context</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Queues constructed from device instance or filter string that selects it have the same context</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -945,7 +947,7 @@ could not be combined in a call to the same function that implements
 </div>
 </section>
 <section id="event">
-<h2>Event<a class="headerlink" href="#event" title="Permalink to this heading">#</a></h2>
+<h2>Event<a class="headerlink" href="#event" title="Permalink to this heading">¶</a></h2>
 <p>SYCL event is an entity created when a task is submitted to SYCL queue for execution. The event are be used to
 order execution of computational tasks by the DPC++ runtime. They may also contain profiling information associated
 with the submitted task, provided the queue was created with “enable_profiling” property.</p>
@@ -960,7 +962,7 @@ submission of computation tasks implementing operations on <a class="reference i
 </div>
 </section>
 <section id="unified-shared-memory">
-<h2>Unified Shared Memory<a class="headerlink" href="#unified-shared-memory" title="Permalink to this heading">#</a></h2>
+<h2>Unified Shared Memory<a class="headerlink" href="#unified-shared-memory" title="Permalink to this heading">¶</a></h2>
 <p>Unified Shared Memory allocations of each kind are represented through Python classes
 <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>, <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>, and
 <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.memory.MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>.</p>
@@ -991,7 +993,7 @@ expose Python buffer interface.</p>
 </div>
 </section>
 <section id="backend">
-<h2>Backend<a class="headerlink" href="#backend" title="Permalink to this heading">#</a></h2>
+<h2>Backend<a class="headerlink" href="#backend" title="Permalink to this heading">¶</a></h2>
 <p>Intel(R) oneAPI Data Parallel C++ compiler ships with two backends:</p>
 <ol class="arabic simple">
 <li><p>OpenCL backend</p></li>
@@ -1085,7 +1087,7 @@ further details).</p>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

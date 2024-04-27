@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with DPCTLSyclInterface library" href="memory_ownership_sycl_interface.html" /><link rel="prev" title="Contributing to dpctl" href="index.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Building from the Source - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,9 +759,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="building-from-the-source">
-<span id="dpctl-building-from-source"></span><h1>Building from the Source<a class="headerlink" href="#building-from-the-source" title="Permalink to this heading">#</a></h1>
+<span id="dpctl-building-from-source"></span><h1>Building from the Source<a class="headerlink" href="#building-from-the-source" title="Permalink to this heading">¶</a></h1>
 <p>To build <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> from the source, you need DPC++ compiler.
 To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
@@ -767,11 +769,11 @@ available as part of oneAPI Base-Kit. However, it is possible to use a custom
 build of DPC++ to build <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, especially if you want to enable
 CUDA support or try latest features.</p>
 <section id="building-using-oneapi-dpc">
-<h2>Building using oneAPI DPC++<a class="headerlink" href="#building-using-oneapi-dpc" title="Permalink to this heading">#</a></h2>
+<h2>Building using oneAPI DPC++<a class="headerlink" href="#building-using-oneapi-dpc" title="Permalink to this heading">¶</a></h2>
 <p>Install oneAPI and graphics drivers to the system prior
 to proceeding further.</p>
 <section id="activate-oneapi">
-<h3>Activate oneAPI<a class="headerlink" href="#activate-oneapi" title="Permalink to this heading">#</a></h3>
+<h3>Activate oneAPI<a class="headerlink" href="#activate-oneapi" title="Permalink to this heading">¶</a></h3>
 <p>On Linux OS</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span><span class="si">${</span><span class="nv">ONEAPI_ROOT</span><span class="si">}</span>/setvars.sh
 </pre></div>
@@ -782,7 +784,7 @@ to proceeding further.</p>
 </div>
 </section>
 <section id="build-and-install-using-conda-build">
-<h3>Build and Install Using Conda-Build<a class="headerlink" href="#build-and-install-using-conda-build" title="Permalink to this heading">#</a></h3>
+<h3>Build and Install Using Conda-Build<a class="headerlink" href="#build-and-install-using-conda-build" title="Permalink to this heading">¶</a></h3>
 <p>You can use the conda-recipe included with the sources to build the dpctl
 package. The advantage of this approach is that all oneAPI library dependencies are
 pulled in from oneAPI’s local conda channel that is installed as a part of oneAPI.</p>
@@ -802,7 +804,7 @@ conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span c
 </div>
 </section>
 <section id="build-and-install-with-scikit-build">
-<h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this heading">#</a></h3>
+<h3>Build and Install with scikit-build<a class="headerlink" href="#build-and-install-with-scikit-build" title="Permalink to this heading">¶</a></h3>
 <p>To build using Python <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>, install the following Python packages:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cython</span></code></p></li>
@@ -869,7 +871,7 @@ Windows</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="building-using-custom-dpc">
-<h2>Building Using Custom DPC++<a class="headerlink" href="#building-using-custom-dpc" title="Permalink to this heading">#</a></h2>
+<h2>Building Using Custom DPC++<a class="headerlink" href="#building-using-custom-dpc" title="Permalink to this heading">¶</a></h2>
 <p>You can build dpctl from the source using the <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md">DPC++ toolchain</a>
 instead of the DPC++ compiler that comes with oneAPI.</p>
 <p>Following steps in the <a class="reference internal" href="#build-and-install-with-scikit-build">Build and install with scikit-build</a> use a command-line option to set
@@ -886,7 +888,7 @@ the relevant CMake variables, for example:</p>
 </section>
 </section>
 <section id="building-the-libsyclinterface-library">
-<h1>Building the libsyclinterface Library<a class="headerlink" href="#building-the-libsyclinterface-library" title="Permalink to this heading">#</a></h1>
+<h1>Building the libsyclinterface Library<a class="headerlink" href="#building-the-libsyclinterface-library" title="Permalink to this heading">¶</a></h1>
 <p>The libsyclinterface is a shared library used by the Python package.
 To build the library, you need:</p>
 <ul class="simple">
@@ -1011,7 +1013,7 @@ make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><sp
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

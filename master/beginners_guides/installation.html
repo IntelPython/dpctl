@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Managing devices" href="managing_devices.html" /><link rel="prev" title="Beginner’s guides" href="index.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Installing dpctl - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,11 +759,11 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="installing-dpctl">
-<span id="dpctl-installation"></span><h1>Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code><a class="headerlink" href="#installing-dpctl" title="Permalink to this heading">#</a></h1>
+<span id="dpctl-installation"></span><h1>Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code><a class="headerlink" href="#installing-dpctl" title="Permalink to this heading">¶</a></h1>
 <section id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this heading">#</a></h2>
+<h2>License<a class="headerlink" href="#license" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is licensed under Apache License 2.0 that can be found in
 <a class="reference external" href="https://github.com/IntelPython/dpctl/blob/master/LICENSE">LICENSE</a> file.
 All usage and contributions to the project are subject to the terms and
@@ -769,20 +771,20 @@ conditions of this license.</p>
 <p>See user guide  <a class="reference internal" href="../license.html#user-guide-dpctl-license"><span class="std std-ref">document</span></a> for additional information.</p>
 </section>
 <section id="installation-using-conda">
-<h2>Installation using conda<a class="headerlink" href="#installation-using-conda" title="Permalink to this heading">#</a></h2>
+<h2>Installation using conda<a class="headerlink" href="#installation-using-conda" title="Permalink to this heading">¶</a></h2>
 <p>Binary builds of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> are available for the <a class="reference external" href="https://docs.conda.io/projects/conda/en/stable/">conda package manager</a>
 ecosystem.</p>
 <p>Released versions of the package can be installed from Intel channel, as
 indicated by <code class="docutils literal notranslate"><span class="pre">--channel</span> <span class="pre">intel</span></code> option:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Getting latest released version of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> using conda</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Getting latest released version of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> using conda</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>dpctl_env<span class="w"> </span>--channel<span class="w"> </span>intel<span class="w"> </span>dpctl
 </pre></div>
 </div>
 </div>
 <p>Development builds of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be accessed from <code class="docutils literal notranslate"><span class="pre">dppy/label/dev</span></code> channel:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Getting latest development version</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Getting latest development version</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>dpctl_nightly<span class="w"> </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>intel<span class="w"> </span>dpctl
 </pre></div>
 </div>
@@ -794,10 +796,10 @@ please check <a class="reference internal" href="#building-from-source">Building
 </div>
 </section>
 <section id="installation-using-pip">
-<h2>Installation using pip<a class="headerlink" href="#installation-using-pip" title="Permalink to this heading">#</a></h2>
+<h2>Installation using pip<a class="headerlink" href="#installation-using-pip" title="Permalink to this heading">¶</a></h2>
 <p>Binary wheels are published with Python Package Index (<a class="reference external" href="https://pypi.org/project/dpctl/">https://pypi.org/project/dpctl/</a>).</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Getting latest released version of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> using <code class="docutils literal notranslate"><span class="pre">pip</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Getting latest released version of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> using <code class="docutils literal notranslate"><span class="pre">pip</span></code></span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>dpctl
 </pre></div>
 </div>
@@ -822,14 +824,14 @@ please check <a class="reference internal" href="#building-from-source">Building
 </div>
 </section>
 <section id="installation-via-intel-r-distribution-for-python">
-<h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">#</a></h2>
+<h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.15.0dev1+41.g174a388a7c)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.15.0dev1+42.gbcd8a90900)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
 <section id="system-requirements">
-<h2>System requirements<a class="headerlink" href="#system-requirements" title="Permalink to this heading">#</a></h2>
+<h2>System requirements<a class="headerlink" href="#system-requirements" title="Permalink to this heading">¶</a></h2>
 <p>Since <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is compiled using Intel(R) oneAPI DPC++ compiler,
 the <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/articles/system-requirements/intel-oneapi-dpcpp-system-requirements.html">compiler’s system requirements for runtime</a> must be met.</p>
 <p>In order for DPC++ runtime to recognize supported hardware appropriate drivers must be installed.
@@ -844,7 +846,7 @@ instructions on how to install required drivers on Linux.</p>
 </div>
 </section>
 <section id="building-from-source">
-<h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this heading">#</a></h2>
+<h2>Building from source<a class="headerlink" href="#building-from-source" title="Permalink to this heading">¶</a></h2>
 <p>There are several reasons to want to build <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> from source:</p>
 <ol class="arabic simple">
 <li><p>To use it with Python version for which binary artifacts are not available</p></li>
@@ -853,12 +855,12 @@ avoid installing them into Python environment</p></li>
 <li><p>To build for custom SYCL targets, such as <code class="docutils literal notranslate"><span class="pre">nvptx64-nvidia-cuda</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;amdgcn-amd-amdhsa&quot;</span></code>.</p></li>
 </ol>
 <section id="building-locally-for-use-with-oneapi-dpc-installation">
-<h3>Building locally for use with oneAPI DPC++ installation<a class="headerlink" href="#building-locally-for-use-with-oneapi-dpc-installation" title="Permalink to this heading">#</a></h3>
+<h3>Building locally for use with oneAPI DPC++ installation<a class="headerlink" href="#building-locally-for-use-with-oneapi-dpc-installation" title="Permalink to this heading">¶</a></h3>
 <p>Working with <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> in this mode assumes that the DPC++ compiler is activated, and that
 Python environment has all build and runtime dependencies of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> installed.</p>
 <p>One way to create such environment is as follows:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Creation of environment to build <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> locally</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Creation of environment to build <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> locally</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>dev_dpctl<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>pip
 conda<span class="w"> </span>activate<span class="w"> </span>dev_dpctl
 pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>numpy<span class="w"> </span>cython<span class="w"> </span>scikit-build<span class="w"> </span>cmake<span class="w"> </span>ninja<span class="w"> </span>pytest
@@ -875,7 +877,7 @@ pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span cl
 </div>
 </section>
 <section id="building-for-custom-sycl-targets">
-<h3>Building for custom SYCL targets<a class="headerlink" href="#building-for-custom-sycl-targets" title="Permalink to this heading">#</a></h3>
+<h3>Building for custom SYCL targets<a class="headerlink" href="#building-for-custom-sycl-targets" title="Permalink to this heading">¶</a></h3>
 <p>Project <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is written using generic SYCL and supports building for
 multiple SYCL targets, subject to limitations of <a class="reference external" href="https://codeplay.com/">CodePlay</a>
 plugins implementing  SYCL programming model for classes of devices.</p>
@@ -895,9 +897,9 @@ The following plugins from CodePlay are supported:</p>
 </section>
 </section>
 <section id="running-examples-and-tests">
-<h2>Running Examples and Tests<a class="headerlink" href="#running-examples-and-tests" title="Permalink to this heading">#</a></h2>
+<h2>Running Examples and Tests<a class="headerlink" href="#running-examples-and-tests" title="Permalink to this heading">¶</a></h2>
 <section id="running-the-examples">
-<h3>Running the Examples<a class="headerlink" href="#running-the-examples" title="Permalink to this heading">#</a></h3>
+<h3>Running the Examples<a class="headerlink" href="#running-the-examples" title="Permalink to this heading">¶</a></h3>
 <p>After setting up dpctl, you can test the Python examples as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>script<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>ls<span class="w"> </span>examples/python/<span class="sb">`</span>
 <span class="k">do</span>
@@ -913,7 +915,7 @@ with <a class="reference internal" href="../api_reference/dpctl/index.html#modul
 each example Python project and how to execute its test suite.</p>
 </section>
 <section id="running-the-python-tests">
-<h3>Running the Python Tests<a class="headerlink" href="#running-the-python-tests" title="Permalink to this heading">#</a></h3>
+<h3>Running the Python Tests<a class="headerlink" href="#running-the-python-tests" title="Permalink to this heading">¶</a></h3>
 <p>You can execute Python test suite of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> as follow:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--pyargs<span class="w"> </span>dpctl
 </pre></div>
@@ -1007,7 +1009,7 @@ each example Python project and how to execute its test suite.</p>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

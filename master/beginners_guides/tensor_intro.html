@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="History of dpctl name" href="misc.html" /><link rel="prev" title="Managing devices" href="managing_devices.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Intro to dpctl.tensor - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,11 +759,11 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="intro-to-dpctl-tensor">
-<span id="beginners-guide-tensor-intro"></span><h1>Intro to <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><a class="headerlink" href="#intro-to-dpctl-tensor" title="Permalink to this heading">#</a></h1>
+<span id="beginners-guide-tensor-intro"></span><h1>Intro to <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><a class="headerlink" href="#intro-to-dpctl-tensor" title="Permalink to this heading">¶</a></h1>
 <section id="supported-array-data-types">
-<h2>Supported array data types<a class="headerlink" href="#supported-array-data-types" title="Permalink to this heading">#</a></h2>
+<h2>Supported array data types<a class="headerlink" href="#supported-array-data-types" title="Permalink to this heading">¶</a></h2>
 <p>The tensor submodule provides an N-dimensional array object for a tensor whose values have the same data type
 from the <a class="reference internal" href="../api_reference/dpctl/tensor.data_types.html#dpctl-tensor-data-types"><span class="std std-ref">following list</span></a>:</p>
 <div class="table-wrapper docutils container">
@@ -792,7 +794,7 @@ from the <a class="reference internal" href="../api_reference/dpctl/tensor.data_
 </div>
 </section>
 <section id="creating-an-array">
-<h2>Creating an array<a class="headerlink" href="#creating-an-array" title="Permalink to this heading">#</a></h2>
+<h2>Creating an array<a class="headerlink" href="#creating-an-array" title="Permalink to this heading">¶</a></h2>
 <p>Array <a class="reference internal" href="../api_reference/dpctl/tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">creation functions</span></a> support keyword arguments that
 control the device where the array is allocated as well as aspects of
 <a class="reference internal" href="../api_reference/dpctl/memory.html#dpctl-memory-pyapi"><span class="std std-ref">Unified Shared Memory allocation</span></a> for the array.</p>
@@ -831,7 +833,7 @@ using <a class="reference internal" href="../api_reference/dpctl/generated/gener
 is allocated on <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> and is bound to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> targeted by this queue.</p>
 </section>
 <section id="execution-model">
-<span id="dpctl-tensor-compute-follows-data"></span><h2>Execution model<a class="headerlink" href="#execution-model" title="Permalink to this heading">#</a></h2>
+<span id="dpctl-tensor-compute-follows-data"></span><h2>Execution model<a class="headerlink" href="#execution-model" title="Permalink to this heading">¶</a></h2>
 <p>When one of more instances of <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> objects are passed to a function in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> other than creation function,
 a “compute follows data” execution model is followed.</p>
 <p>The model requires that <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> instances associated with each array compared equal to one another, signifying that
@@ -848,14 +850,14 @@ one with <cite>“enable_profiling”</cite> set and another without it.</p>
 User must explicitly migrate the data to unambiguously control the execution placement.</p>
 </section>
 <section id="migrating-arrays">
-<span id="dpctl-tensor-array-migration"></span><h2>Migrating arrays<a class="headerlink" href="#migrating-arrays" title="Permalink to this heading">#</a></h2>
+<span id="dpctl-tensor-array-migration"></span><h2>Migrating arrays<a class="headerlink" href="#migrating-arrays" title="Permalink to this heading">¶</a></h2>
 <p>Array content can be migrated to a different device <a class="reference internal" href="../api_reference/dpctl/tensor.usm_ndarray.html#dpctl-tensor-usm-ndarray-to-device-example"><span class="std std-ref">using</span></a>
 either <a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.tensor.usm_ndarray.to_device.html#dpctl.tensor.usm_ndarray.to_device" title="dpctl.tensor.usm_ndarray.to_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.to_device()</span></code></a> method, or by using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a> function.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">arr.to_device(device=target_device)</span></code> method will be zero-copy if the <code class="docutils literal notranslate"><span class="pre">arr.sycl_queue</span></code> and the <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>
 instance associated with new target device have the same underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code> and <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> instances.</p>
 <p>Here is an example of migration without a copy using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> method:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Use <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Use <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
@@ -882,7 +884,7 @@ instance associated with new target device have the same underlying <code class=
 <p>Data migration when the current and the target SYCL contexts are different is performed via host. That means that data are copied from
 the current device to the host, and then from the host to the target device:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
@@ -894,7 +896,7 @@ the current device to the host, and then from the host to the target device:</p>
 </div>
 <p>An alternative way to migrate data is to use <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">asarray()</span></code></a> and specify device-placement keyword arguments:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">asarray</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">asarray</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
@@ -907,7 +909,7 @@ the current device to the host, and then from the host to the target device:</p>
 <p>An advantage of using the function <code class="docutils literal notranslate"><span class="pre">asarray</span></code> is that migration from <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances allocated on different
 devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
@@ -924,7 +926,7 @@ devices as well migration from <a class="reference external" href="https://numpy
 of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a>. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
 new array is created on the same device where <cite>fill_value</cite> array was allocated.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="c1"># Zero-dimensional array allocated on CPU device</span>
@@ -941,7 +943,7 @@ new array is created on the same device where <cite>fill_value</cite> array was 
 </div>
 </section>
 <section id="combining-arrays-with-different-usm-types">
-<h2>Combining arrays with different USM types<a class="headerlink" href="#combining-arrays-with-different-usm-types" title="Permalink to this heading">#</a></h2>
+<h2>Combining arrays with different USM types<a class="headerlink" href="#combining-arrays-with-different-usm-types" title="Permalink to this heading">¶</a></h2>
 <p>For functions with single argument the returned array has the same <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> as the input array.</p>
 <p>Functions that combine several <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances the <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> of the output array is determined
 using the following coercion rule:</p>
@@ -989,7 +991,7 @@ following this convention:</p>
 </div>
 </section>
 <section id="sharing-data-between-devices-and-python">
-<h2>Sharing data between devices and Python<a class="headerlink" href="#sharing-data-between-devices-and-python" title="Permalink to this heading">#</a></h2>
+<h2>Sharing data between devices and Python<a class="headerlink" href="#sharing-data-between-devices-and-python" title="Permalink to this heading">¶</a></h2>
 <p>Python objects, such as sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a> objects,
 or NumPy arrays can be converted to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a>
 function.</p>
@@ -1120,7 +1122,7 @@ a NumPy array using <code class="xref py py-func docutils literal notranslate"><
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
