@@ -72,6 +72,10 @@ def intel_device_info(dev, /):
 
     Descriptors other than the PCI identifier are supported only
     for :class:`.SyclDevices` with Level-Zero backend.
+
+    .. note::
+        Environment variable ``ZES_ENABLE_SYSMAN`` may need to be set
+        to ``1`` for the ``"free_memory"`` key to be reported.
     """
     if not isinstance(dev, SyclDevice):
         raise TypeError(f"Expected dpctl.SyclDevice, got {type(dev)}")
