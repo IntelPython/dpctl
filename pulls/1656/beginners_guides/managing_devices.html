@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Intro to dpctl.tensor" href="tensor_intro.html" /><link rel="prev" title="Installing dpctl" href="installation.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Managing devices - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,23 +759,23 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="managing-devices">
-<span id="beginners-guide-managing-devices"></span><h1>Managing devices<a class="headerlink" href="#managing-devices" title="Permalink to this heading">#</a></h1>
+<span id="beginners-guide-managing-devices"></span><h1>Managing devices<a class="headerlink" href="#managing-devices" title="Permalink to this heading">¶</a></h1>
 <section id="enumerating-available-devices">
-<span id="beginners-guide-enumerating-devices"></span><h2>Enumerating available devices<a class="headerlink" href="#enumerating-available-devices" title="Permalink to this heading">#</a></h2>
+<span id="beginners-guide-enumerating-devices"></span><h2>Enumerating available devices<a class="headerlink" href="#enumerating-available-devices" title="Permalink to this heading">¶</a></h2>
 <section id="listing-platform-from-command-line">
-<h3>Listing platform from command-line<a class="headerlink" href="#listing-platform-from-command-line" title="Permalink to this heading">#</a></h3>
+<h3>Listing platform from command-line<a class="headerlink" href="#listing-platform-from-command-line" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> provides command-line interface to list available platforms:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">List platforms with detailed information on devices</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">List platforms with detailed information on devices</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w"> </span>--full-list
 </pre></div>
 </div>
 </div>
 <p>A sample output of executing such a command on a laptop:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Sample output of running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">dpctl</span> <span class="pre">--full-list</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Sample output of running <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">dpctl</span> <span class="pre">--full-list</span></code></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Platform  0 ::
     Name        Intel(R) FPGA Emulation Platform for OpenCL(TM)
     Version     OpenCL 1.2 Intel(R) FPGA SDK for OpenCL(TM), Version 20.3
@@ -825,11 +827,11 @@ It is implemented using <a class="reference internal" href="../api_reference/dpc
 </div>
 </section>
 <section id="listing-devices-programmatically">
-<h3>Listing devices programmatically<a class="headerlink" href="#listing-devices-programmatically" title="Permalink to this heading">#</a></h3>
+<h3>Listing devices programmatically<a class="headerlink" href="#listing-devices-programmatically" title="Permalink to this heading">¶</a></h3>
 <p>Devices can also be discovered programmatically, either by using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.lsplatform.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsplatform()</span></code></a> to <a class="reference external" href="https://docs.python.org/3/library/functions.html#print" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code></a> the listing or
 by using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_devices.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_devices()</span></code></a> to obtain a list of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> objects suitable for further processing.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Example: Obtaining list of available devices for processing</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Obtaining list of available devices for processing</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
 <span class="c1"># get all available devices</span>
@@ -842,7 +844,7 @@ by using <a class="reference internal" href="../api_reference/dpctl/generated/dp
 </div>
 </section>
 <section id="interaction-with-dpc-environment-variables">
-<span id="beginners-guide-oneapi-device-selector"></span><h3>Interaction with DPC++ environment variables<a class="headerlink" href="#interaction-with-dpc-environment-variables" title="Permalink to this heading">#</a></h3>
+<span id="beginners-guide-oneapi-device-selector"></span><h3>Interaction with DPC++ environment variables<a class="headerlink" href="#interaction-with-dpc-environment-variables" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> relies on DPC++ runtime for device discovery and is <a class="reference internal" href="../user_guides/environment_variables.html#user-guides-env-variables"><span class="std std-ref">subject</span></a> to
 environment variables that influence behavior of the runtime.
 Setting <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code> environment variable may restrict the set of devices visible to DPC++ runtime,
@@ -880,7 +882,7 @@ of valid settings are:</p>
 </table>
 </div>
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Example: Setting <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR=*:cpu</span></code> renders GPU devices unavailable even if they are present</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Setting <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR=*:cpu</span></code> renders GPU devices unavailable even if they are present</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_DEVICE_SELECTOR</span><span class="o">=</span>*:cpu
 <span class="c1"># would only show CPU device</span>
 python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w"> </span>-f
@@ -894,11 +896,11 @@ python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w"> </
 </section>
 </section>
 <section id="device-selection">
-<span id="beginners-guide-device-selection"></span><h2>Device selection<a class="headerlink" href="#device-selection" title="Permalink to this heading">#</a></h2>
+<span id="beginners-guide-device-selection"></span><h2>Device selection<a class="headerlink" href="#device-selection" title="Permalink to this heading">¶</a></h2>
 <p>DPC++ runtime provides a way to select a device with a highest score to for a set of selection scoring strategies.
 Amongst these are a default selector, CPU selector, GPU selector, as well as filter-string selector.</p>
 <section id="using-fixed-device-selectors">
-<h3>Using fixed device selectors<a class="headerlink" href="#using-fixed-device-selectors" title="Permalink to this heading">#</a></h3>
+<h3>Using fixed device selectors<a class="headerlink" href="#using-fixed-device-selectors" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> exposes device selection using fixed selectors as free functions:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
@@ -937,10 +939,10 @@ Amongst these are a default selector, CPU selector, GPU selector, as well as fil
 </dl>
 </section>
 <section id="selecting-device-based-on-aspects">
-<h3>Selecting device based on aspects<a class="headerlink" href="#selecting-device-based-on-aspects" title="Permalink to this heading">#</a></h3>
+<h3>Selecting device based on aspects<a class="headerlink" href="#selecting-device-based-on-aspects" title="Permalink to this heading">¶</a></h3>
 <p>In addition, <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_device_with_aspects.html#dpctl.select_device_with_aspects" title="dpctl.select_device_with_aspects"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_device_with_aspects()</span></code></a> permits selecting a device based on aspects it is required to have:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Example: Selecting devices based on their aspects</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Selecting devices based on their aspects</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
 <span class="c1"># select a device that support float64 data type</span>
@@ -957,11 +959,11 @@ Amongst these are a default selector, CPU selector, GPU selector, as well as fil
 <p>An aspect string <code class="docutils literal notranslate"><span class="pre">asp</span></code> is valid if <code class="docutils literal notranslate"><span class="pre">hasattr(dpctl.SyclDevice,</span> <span class="pre">&quot;has_aspect_&quot;</span> <span class="pre">+</span> <span class="pre">asp)</span></code> evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </section>
 <section id="selecting-device-using-filter-selector-string">
-<h3>Selecting device using filter selector string<a class="headerlink" href="#selecting-device-using-filter-selector-string" title="Permalink to this heading">#</a></h3>
+<h3>Selecting device using filter selector string<a class="headerlink" href="#selecting-device-using-filter-selector-string" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> may also be created using <a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a> specified
 as argument to the class constructor:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Example: Creating device based on filter-selector string</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Creating device based on filter-selector string</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
 <span class="c1"># create any GPU device</span>
@@ -978,7 +980,7 @@ as argument to the class constructor:</p>
 </div>
 </section>
 <section id="selecting-device-using-oneapi-device-selector">
-<span id="beginners-guide-oneapi-device-selector-usecase"></span><h3>Selecting device using <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code><a class="headerlink" href="#selecting-device-using-oneapi-device-selector" title="Permalink to this heading">#</a></h3>
+<span id="beginners-guide-oneapi-device-selector-usecase"></span><h3>Selecting device using <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code><a class="headerlink" href="#selecting-device-using-oneapi-device-selector" title="Permalink to this heading">¶</a></h3>
 <p>The device returned by <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.select_default_device.html#dpctl.select_default_device" title="dpctl.select_default_device"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_default_device()</span></code></a>, as well the behavior
 of default constructor of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> class is influenced by settings
 of <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code> as explained earlier.</p>
@@ -986,7 +988,7 @@ of <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SE
 which device that may be by setting this environment variable.
 For example, the following script:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Sample array computation script “run.py”</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Sample array computation script “run.py”</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
 
 <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.34</span>
@@ -1011,13 +1013,13 @@ For example, the following script:</p>
 </section>
 </section>
 <section id="obtaining-information-about-device">
-<span id="beginners-guide-device-info"></span><h2>Obtaining information about device<a class="headerlink" href="#obtaining-information-about-device" title="Permalink to this heading">#</a></h2>
+<span id="beginners-guide-device-info"></span><h2>Obtaining information about device<a class="headerlink" href="#obtaining-information-about-device" title="Permalink to this heading">¶</a></h2>
 <p>An instance of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevice</span></code></a> provides access to a collection of
 descriptors characterizing underlying <code class="docutils literal notranslate"><span class="pre">sycl::device</span></code>.</p>
 <p>Properties <code class="docutils literal notranslate"><span class="pre">has_aspect_*</span></code> expose Boolean descriptors which can be either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>.
 Other descriptions are exposed as properties of the instance.</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Example: Obtaining information about a device</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Obtaining information about a device</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
 
 <span class="c1"># create default-selected device</span>
@@ -1039,7 +1041,7 @@ Other descriptions are exposed as properties of the instance.</p>
 </div>
 <p>For Intel GPU devices, additional architectural information can be access with <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.intel_device_info" title="dpctl.utils.intel_device_info"><code class="xref py py-func docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a> function:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Example: Intel GPU-specific information</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Intel GPU-specific information</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">dpctl</span><span class="o">,</span> <span class="nn">dpctl.utils</span>
 
 <span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">d_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
@@ -1062,7 +1064,7 @@ Other descriptions are exposed as properties of the instance.</p>
 for detailed explanation of these architectural descriptors.</p>
 </section>
 <section id="creating-sub-devices">
-<h2>Creating sub-devices<a class="headerlink" href="#creating-sub-devices" title="Permalink to this heading">#</a></h2>
+<h2>Creating sub-devices<a class="headerlink" href="#creating-sub-devices" title="Permalink to this heading">¶</a></h2>
 <p>Some SYCL devices may support partitioning into logical sub-devices.
 Devices created by way of partitioning are treated the same way as unpartitioned devices, and
 are represented as instances of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> class.</p>
@@ -1171,7 +1173,7 @@ study scaling, etc.</p>
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

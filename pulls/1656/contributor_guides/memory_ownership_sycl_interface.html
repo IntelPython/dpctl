@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Licenses" href="../license.html" /><link rel="prev" title="Building from the Source" href="building.html" />
 
-    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Working with DPCTLSyclInterface library - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,9 +759,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="working-with-dpctlsyclinterface-library">
-<span id="contributor-guides-syclinterface-memory-ownership"></span><h1>Working with DPCTLSyclInterface library<a class="headerlink" href="#working-with-dpctlsyclinterface-library" title="Permalink to this heading">#</a></h1>
+<span id="contributor-guides-syclinterface-memory-ownership"></span><h1>Working with DPCTLSyclInterface library<a class="headerlink" href="#working-with-dpctlsyclinterface-library" title="Permalink to this heading">¶</a></h1>
 <p>The DPCLSyclInterface library is a C-API library which does provide select C++ functions
 for casting from C opaque pointers to pointers to corresponding C++ classes.</p>
 <p>This document explains the memory ownership model adopted by DPCTLSyclInterface.</p>
@@ -776,7 +778,7 @@ with the object to which the token applies. Deletion functions, such as
 with the object to which the token applies. Functions to query integral device descriptors,
 such as <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLDevice_GetMaxComputeUnits()</span></code>, are examples of such functions.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Example: Example of use of DPCTLSyclInterface functions</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example: Example of use of DPCTLSyclInterface functions</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">// filename: example_syclinterface.c</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdint.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span>
@@ -805,7 +807,7 @@ such as <code class="xref c c-func docutils literal notranslate"><span class="pr
 </div>
 <p>Building the example:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Building the example into an executable</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Building the example into an executable</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>icx<span class="w"> </span>example_syclinterface.c<span class="w"> </span>-fsanitize<span class="o">=</span>address<span class="w">                 </span><span class="se">\</span>
 <span class="w">    </span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w"> </span>--includes<span class="k">)</span><span class="w"> </span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w"> </span>--library<span class="k">)</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>-o<span class="w"> </span>example
@@ -814,7 +816,7 @@ such as <code class="xref c c-func docutils literal notranslate"><span class="pr
 </div>
 <p>Running the example displays the following output without errors:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Execution of the executable and its output</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Execution of the executable and its output</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>$ ./a.x
 Device Intel(R) Graphics [0x9a49] has 96 compute units
 </pre></div>
@@ -874,7 +876,7 @@ Device Intel(R) Graphics [0x9a49] has 96 compute units
 </div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>

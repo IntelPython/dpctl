@@ -14,10 +14,10 @@
     </script>
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="namespace dpctl" href="namespace_dpctl.html" /><link rel="prev" title="Todo List" href="page_todo.html" />
 
-    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.01.29 -->
+    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.04.27 -->
         <title>Global Namespace - Data Parallel Control (dpctl) 0.17.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=437aa6ec" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -123,6 +123,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -757,13 +759,13 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <span class="target" id="global"></span><section id="global-namespace">
-<span id="index-0"></span><h1>Global Namespace<a class="headerlink" href="#global-namespace" title="Permalink to this heading">#</a></h1>
+<span id="index-0"></span><h1>Global Namespace<a class="headerlink" href="#global-namespace" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
 <pre class="highlight doxyrest-overview-code-block literal-block"><span></span><span class="c1">// namespaces</span>
 
 <span class="k">namespace</span> <a class="reference internal" href="namespace_dpctl.html#doxid-d2-df1-namespacedpctl"><span class="std std-ref">dpctl</span></a><span></span><span class="p">;</span>
@@ -1597,9 +1599,9 @@ DPCTL_API<span></span> <span class="kt">void</span>
 <span class="cp">#define </span><a class="reference internal" href="group_MemorySemantics.html#doxid-d2-d43-group-memory-semantics-1ga17fe5722d78d8ce138ca952889d07bc6"><span class="std std-ref">__dpctl_take</span></a></pre>
 </section>
 <section id="detailed-documentation">
-<span id="details-global"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">#</a></h2>
+<span id="details-global"></span><h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this heading">¶</a></h2>
 <section id="typedefs">
-<h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">#</a></h3>
+<h3>Typedefs<a class="headerlink" href="#typedefs" title="Permalink to this heading">¶</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span id="index-1"></span><span></span><span class="k">typedef</span> <span class="kt">void</span> <span class="n">error_handler_callback</span><span class="p">(</span><span class="kt">int</span> <span class="n">err_code</span><span class="p">)</span></pre>
 <p>Type of function to be used in SYCL async error handler provide by DPCTL.</p>
 <p class="rubric">Parameters:</p>
@@ -1638,7 +1640,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 <p>Used to pass a <code class="docutils literal notranslate"><span class="pre">sycl::usm</span></code> memory opaquely through DPCTL interfaces.</p>
 </section>
 <section id="global-functions">
-<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading">#</a></h3>
+<h3>Global Functions<a class="headerlink" href="#global-functions" title="Permalink to this heading">¶</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d5a-dpctl-sycl-device-interface-8h-1ac47e84e08c40272eb54358b6ab76c0f0"><span id="index-12"></span>DPCTL_API<span></span> <span class="kt">uint32_t</span>
 <span class="n">DPCTLDevice_GetGlobalMemCacheLineSize</span><span class="p">(</span><a class="reference internal" href="group_MemorySemantics.html#doxid-d2-d43-group-memory-semantics-1gadd48a0161309931574aed2025a16ade7"><span class="std std-ref">__dpctl_keep</span></a><span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">)</span></pre>
 <p>Wrapper over device.get_info&lt;<a class="reference external" href="info::device::global_mem_cache_line_size">info::device::global_mem_cache_line_size</a>&gt;</p>
@@ -2135,7 +2137,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </div>
 </section>
 <section id="macros">
-<h3>Macros<a class="headerlink" href="#macros" title="Permalink to this heading">#</a></h3>
+<h3>Macros<a class="headerlink" href="#macros" title="Permalink to this heading">¶</a></h3>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d64-dpctl-vector-8h-1a83a0669601a2adec6b227cc2276a1538"><span id="index-38"></span><span></span><span class="cp">#define DPCTL_DECLARE_VECTOR_TYPE(EL)</span></pre>
 <p>Declare an opaque pointer type for a std::vector of opaque pointers wrapping SYCL data types.</p>
 <pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1acd69981d54c27fe0ff514645dbfc6359"><span id="index-39"></span><span></span><span class="cp">#define HUGE_VALF</span></pre>
@@ -2227,7 +2229,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=eb4f882a"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../../_static/scripts/furo.js?v=4e2eecee"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../../_static/design-tabs.js?v=36754332"></script>
