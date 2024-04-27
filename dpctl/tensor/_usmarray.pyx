@@ -1612,6 +1612,11 @@ cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     return arr.get_offset()
 
 
+cdef api object UsmNDArray_GetUSMData(usm_ndarray arr):
+    """Get USM data object underlying the array"""
+    return arr.get_base()
+
+
 cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):
     """Set/unset USM_ARRAY_WRITABLE in the given array `arr`."""
     arr._set_writable_flag(flag)
