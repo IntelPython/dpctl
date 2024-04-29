@@ -100,6 +100,36 @@ std::uint64_t py_intel_max_mem_bandwidth(const sycl::device &d)
     return bandwidth_unavailable;
 }
 
+std::uint64_t py_intel_free_memory(const sycl::device &d)
+{
+    static constexpr std::uint64_t free_memory_unavailable = 0;
+
+    if (d.has(sycl::aspect::ext_intel_free_memory)) {
+        return d.get_info<sycl::ext::intel::info::device::free_memory>();
+    }
+    return free_memory_unavailable;
+}
+
+std::uint32_t py_intel_memory_clock_rate(const sycl::device &d)
+{
+    static constexpr std::uint32_t rate_unavailable = 0;
+
+    if (d.has(sycl::aspect::ext_intel_memory_clock_rate)) {
+        return d.get_info<sycl::ext::intel::info::device::memory_clock_rate>();
+    }
+    return rate_unavailable;
+}
+
+std::uint32_t py_intel_memory_bus_width(const sycl::device &d)
+{
+    static constexpr std::uint32_t width_unavailable = 0;
+
+    if (d.has(sycl::aspect::ext_intel_memory_bus_width)) {
+        return d.get_info<sycl::ext::intel::info::device::memory_bus_width>();
+    }
+    return width_unavailable;
+}
+
 }; // namespace
 
 PYBIND11_MODULE(_device_queries, m)
@@ -135,5 +165,17 @@ PYBIND11_MODULE(_device_queries, m)
 
     m.def("intel_device_info_max_mem_bandwidth", &py_intel_max_mem_bandwidth,
           "Returns the maximum memory bandwidth in units of bytes/second.",
+          py::arg("device"));
+
+    m.def("intel_device_info_free_memory", &py_intel_free_memory,
+          "Returns the memory available on the device in units of bytes.",
+          py::arg("device"));
+
+    m.def("intel_device_info_memory_clock_rate", &py_intel_memory_clock_rate,
+          "Returns the maximum clock rate of device's global memory in MHz.",
+          py::arg("device"));
+
+    m.def("intel_device_info_memory_bus_width", &py_intel_memory_bus_width,
+          "Returns the maximum bus width between device and memory in bits.",
           py::arg("device"));
 }

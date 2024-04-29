@@ -141,6 +141,9 @@ def test_intel_device_info():
         "gpu_subslices_per_slice",
         "gpu_eu_count_per_subslice",
         "max_mem_bandwidth",
+        "free_memory",
+        "memory_clock_rate",
+        "memory_bus_width",
     ]
     for descriptor_name in descr.keys():
         test = descriptor_name in allowed_names
