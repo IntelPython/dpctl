@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMDevice.get\_usm\_type
-===========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMDevice.get_usm_type
