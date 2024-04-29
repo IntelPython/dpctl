@@ -1243,7 +1243,7 @@ sycl::event keep_args_alive(sycl::queue &q,
             }
             cgh.host_task([shp_usm = std::move(shp_usm)]() {
                 // no body, but shared pointers are captured in
-                // the lamba, ensuring that USM allocation is
+                // the lambda, ensuring that USM allocation is
                 // kept alive
             });
         });
