@@ -788,6 +788,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._device_queries</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">intel_device_info_device_id</span><span class="p">,</span>
+    <span class="n">intel_device_info_free_memory</span><span class="p">,</span>
     <span class="n">intel_device_info_gpu_eu_count</span><span class="p">,</span>
     <span class="n">intel_device_info_gpu_eu_count_per_subslice</span><span class="p">,</span>
     <span class="n">intel_device_info_gpu_eu_simd_width</span><span class="p">,</span>
@@ -795,6 +796,8 @@
     <span class="n">intel_device_info_gpu_slices</span><span class="p">,</span>
     <span class="n">intel_device_info_gpu_subslices_per_slice</span><span class="p">,</span>
     <span class="n">intel_device_info_max_mem_bandwidth</span><span class="p">,</span>
+    <span class="n">intel_device_info_memory_bus_width</span><span class="p">,</span>
+    <span class="n">intel_device_info_memory_clock_rate</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._onetrace_context</span> <span class="kn">import</span> <span class="n">onetrace_enabled</span>
 
@@ -823,11 +826,17 @@
 <span class="sd">        Number of EUs in subslice</span>
 <span class="sd">    max_mem_bandwidth:</span>
 <span class="sd">        Maximum memory bandwidth in bytes/second</span>
+<span class="sd">    free_memory:</span>
+<span class="sd">        Global memory available on the device in units of bytes</span>
 
 <span class="sd">    Unsupported descriptors are omitted from the dictionary.</span>
 
 <span class="sd">    Descriptors other than the PCI identifier are supported only</span>
 <span class="sd">    for :class:`.SyclDevices` with Level-Zero backend.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Environment variable ``ZES_ENABLE_SYSMAN`` may need to be set</span>
+<span class="sd">        to ``1`` for the ``&quot;free_memory&quot;`` key to be reported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">SyclDevice</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclDevice, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -858,6 +867,15 @@
         <span class="n">bw</span> <span class="o">=</span> <span class="n">intel_device_info_max_mem_bandwidth</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bw</span><span class="p">:</span>
             <span class="n">res</span><span class="p">[</span><span class="s2">&quot;max_mem_bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bw</span>
+        <span class="n">fm</span> <span class="o">=</span> <span class="n">intel_device_info_free_memory</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fm</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;free_memory&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fm</span>
+        <span class="n">mcr</span> <span class="o">=</span> <span class="n">intel_device_info_memory_clock_rate</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mcr</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;memory_clock_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mcr</span>
+        <span class="n">mbw</span> <span class="o">=</span> <span class="n">intel_device_info_memory_bus_width</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mbw</span><span class="p">:</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;memory_bus_width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mbw</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span></div>
 

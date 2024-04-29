@@ -897,10 +897,17 @@ the following keys:</p>
 </dd>
 <dt>max_mem_bandwidth:</dt><dd><p>Maximum memory bandwidth in bytes/second</p>
 </dd>
+<dt>free_memory:</dt><dd><p>Global memory available on the device in units of bytes</p>
+</dd>
 </dl>
 <p>Unsupported descriptors are omitted from the dictionary.</p>
 <p>Descriptors other than the PCI identifier are supported only
 for <code class="xref py py-class docutils literal notranslate"><span class="pre">SyclDevices</span></code> with Level-Zero backend.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Environment variable <code class="docutils literal notranslate"><span class="pre">ZES_ENABLE_SYSMAN</span></code> may need to be set
+to <code class="docutils literal notranslate"><span class="pre">1</span></code> for the <code class="docutils literal notranslate"><span class="pre">&quot;free_memory&quot;</span></code> key to be reported.</p>
+</div>
 </dd></dl>
 
 <dl class="py exception">
