@@ -12,7 +12,7 @@
 .. rubric:: Use :meth:`usm_ndarray.device` to specify placement of new array
 
 .. code-block:: python
-    :caption: Create an USM-device empty array on the same device as another array
+    :caption: Create a USM-device empty array on the same device as another array
 
         from dpctl import tensor
 
