@@ -120,7 +120,7 @@ def test_complex_order(np_call, dpt_call, dtype):
         expected_Y = np_call(dpt.asnumpy(U))
         for ord in ["C", "F", "A", "K"]:
             Y = dpt_call(U, order=ord)
-            assert np.allclose(dpt.asnumpy(Y), expected_Y)
+            assert_allclose(dpt.asnumpy(Y), expected_Y)
 
 
 @pytest.mark.parametrize("dtype", ["c8", "c16"])

@@ -110,11 +110,11 @@ def test_sqrt_order(dtype):
     X[..., 0::2] = 16.0
     X[..., 1::2] = 23.0
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.sqrt(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.sqrt(U, order=ord)
-            expected_Y = np.sqrt(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,

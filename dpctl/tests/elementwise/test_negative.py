@@ -76,11 +76,11 @@ def test_negative_order(dtype):
     X[..., 0::2] = 1
     X[..., 1::2] = 0
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.negative(np.ones(U.shape, dtype=U.dtype))
+        expected_Y[..., 1::2] = 0
+        expected_Y = np.transpose(expected_Y, perms)
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.negative(U, order=ord)
-            expected_Y = np.negative(np.ones(Y.shape, dtype=Y.dtype))
-            expected_Y[..., 1::2] = 0
-            expected_Y = np.transpose(expected_Y, perms)
             assert np.allclose(dpt.asnumpy(Y), expected_Y)

@@ -103,11 +103,11 @@ def test_log_order(dtype):
     X[..., 0::2] = 4 * dpt.e
     X[..., 1::2] = 10 * dpt.e
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.log2(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.log2(U, order=ord)
-            expected_Y = np.log2(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,

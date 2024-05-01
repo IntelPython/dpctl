@@ -18,6 +18,7 @@ import itertools
 
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -90,9 +91,9 @@ def test_isfinite_order(dtype):
     input_shape = (10, 10, 10, 10)
     X = dpt.ones(input_shape, dtype=arg_dt, sycl_queue=q)
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
+        expected_Y = np.full(U.shape, fill_value=True, dtype=dpt.bool)
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.isfinite(U, order=ord)
-            expected_Y = np.full(Y.shape, True, dtype=Y.dtype)
-            assert np.allclose(dpt.asnumpy(Y), expected_Y)
+            assert_allclose(dpt.asnumpy(Y), expected_Y)

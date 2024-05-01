@@ -84,18 +84,19 @@ def test_abs_order(dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     arg_dt = np.dtype(dtype)
+    exp_dt = np.abs(np.ones(tuple(), dtype=arg_dt)).dtype
     input_shape = (10, 10, 10, 10)
     X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
     X[..., 0::2] = 1
     X[..., 1::2] = 0
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.ones(U.shape, dtype=exp_dt)
+        expected_Y[..., 1::2] = 0
+        expected_Y = np.transpose(expected_Y, perms)
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.abs(U, order=ord)
-            expected_Y = np.ones(Y.shape, dtype=Y.dtype)
-            expected_Y[..., 1::2] = 0
-            expected_Y = np.transpose(expected_Y, perms)
             assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
