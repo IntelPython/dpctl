@@ -27,7 +27,7 @@
 #pragma once
 
 #ifndef __cplusplus
-#error "C++ is required to compile this file
+#error "C++ is required to compile this file"
 #endif
 
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
