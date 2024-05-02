@@ -90,9 +90,9 @@ def test_isnan_order(dtype):
     input_shape = (10, 10, 10, 10)
     X = dpt.ones(input_shape, dtype=arg_dt, sycl_queue=q)
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[::2, ::-1, ::-1, ::5], perms)
+        expected_Y = np.full(U.shape, fill_value=False, dtype=dpt.bool)
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.isnan(U, order=ord)
-            expected_Y = np.full(Y.shape, False, dtype=Y.dtype)
             assert np.allclose(dpt.asnumpy(Y), expected_Y)

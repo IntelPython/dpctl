@@ -103,11 +103,11 @@ def test_log1p_order(dtype):
     X[..., 0::2] = dpt.e / 1000
     X[..., 1::2] = dpt.e / 100
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.log1p(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.log1p(U, order=ord)
-            expected_Y = np.log1p(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,

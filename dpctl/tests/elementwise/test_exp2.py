@@ -103,11 +103,11 @@ def test_exp2_order(dtype):
     X[..., 0::2] = 1 / 4
     X[..., 1::2] = 1 / 2
 
-    for ord in ["C", "F", "A", "K"]:
-        for perms in itertools.permutations(range(4)):
-            U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+    for perms in itertools.permutations(range(4)):
+        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
+        expected_Y = np.exp2(dpt.asnumpy(U))
+        for ord in ["C", "F", "A", "K"]:
             Y = dpt.exp2(U, order=ord)
-            expected_Y = np.exp2(dpt.asnumpy(U))
             tol = 8 * max(
                 dpt.finfo(Y.dtype).resolution,
                 np.finfo(expected_Y.dtype).resolution,
