@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import glob
-import importlib.machinery as imm
 import os.path
 import pathlib
 import shutil
@@ -24,19 +23,14 @@ import sys
 import skbuild
 import skbuild.setuptools_wrap
 import skbuild.utils
+import versioneer
 from skbuild.command.build_py import build_py as _skbuild_build_py
 from skbuild.command.install import install as _skbuild_install
-
-import versioneer
 
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader(
-    "version", os.path.join(thefile_path, "dpctl", "_version.py")
-).load_module()
-__version__ = version_mod.get_versions()["version"]
 
 
 def cleanup_destination(cmake_manifest):
@@ -136,7 +130,7 @@ def _get_cmdclass():
 
 
 skbuild.setup(
-    version=__version__,
+    version=versioneer.get_version(),
     cmdclass=_get_cmdclass(),
     url="https://github.com/IntelPython/dpctl",
     packages=[
