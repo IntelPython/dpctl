@@ -4,11 +4,10 @@ set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 "%PYTHON%" setup.py clean --all
-set "SKBUILD_ARGS=-G Ninja -- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
 
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
 if DEFINED OVERRIDE_INTEL_IPO (
-   set "SKBUILD_ARGS=%SKBUILD_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
+  set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 )
 
 FOR %%V IN (14.0.0 14 15.0.0 15 16.0.0 16 17.0.0 17) DO @(
@@ -32,20 +31,37 @@ if EXIST "%PLATFORM_DIR%" (
   if errorlevel 1 exit 1
 )
 
-if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
-    rem Install and assemble wheel package from the build bits
-    "%PYTHON%" setup.py install bdist_wheel --build-number %GIT_DESCRIBE_NUMBER% %SKBUILD_ARGS%
-    if errorlevel 1 exit 1
-    copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
-    if errorlevel 1 exit 1
-) ELSE (
-    rem Only install
-    "%PYTHON%" setup.py install %SKBUILD_ARGS%
-    if errorlevel 1 exit 1
+set "CC=icx"
+set "CXX=icx"
+
+set "CMAKE_GENERATOR=Ninja"
+:: Make CMake verbose
+set "VERBOSE=1"
+
+%PYTHON% -m build -w -n -x
+if %ERRORLEVEL% neq 0 exit 1
+
+:: `pip install dist\numpy*.whl` does not work on windows,
+:: so use a loop; there's only one wheel in dist/ anyway
+for /f %%f in ('dir /b /S .\dist') do (
+    %PYTHON% -m wheel tags --remove --build %GIT_DESCRIBE_NUMBER% %%f
+    if %ERRORLEVEL% neq 0 exit 1
 )
 
-if EXIST "%PLATFORM_DIR%" (
-  rem copy back
-  copy /Y "%FN%" "%PLATFORM_DIR%\%FN%"
-  if errorlevel 1 exit 1
+:: wheel file was renamed
+for /f %%f in ('dir /b /S .\dist') do (
+    %PYTHON% -m pip install %%f ^
+      --no-build-isolation ^
+      --no-deps ^
+      --only-binary :all: ^
+      --no-index ^
+      --prefix %PREFIX% ^
+      -vv
+    if %ERRORLEVEL% neq 0 exit 1
+)
+
+:: Copy wheel package
+if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
+    copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
+    if errorlevel 1 exit 1
 )

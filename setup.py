@@ -38,29 +38,6 @@ version_mod = imm.SourceFileLoader(
 ).load_module()
 __version__ = version_mod.get_versions()["version"]
 
-# Get long description
-with open("README.md", "r", encoding="utf-8") as file:
-    long_description = file.read()
-
-CLASSIFIERS = """\
-Development Status :: 4 - Beta
-Intended Audience :: Science/Research
-Intended Audience :: Developers
-License :: OSI Approved :: Apache Software License
-Programming Language :: C
-Programming Language :: Python
-Programming Language :: Python :: 3
-Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9
-Programming Language :: Python :: 3.10
-Programming Language :: Python :: Implementation :: CPython
-Topic :: Software Development
-Topic :: Scientific/Engineering
-Operating System :: Microsoft :: Windows
-Operating System :: POSIX
-Operating System :: Unix
-"""
-
 
 def cleanup_destination(cmake_manifest):
     """Delete library files from dpctl/ folder before
@@ -159,14 +136,8 @@ def _get_cmdclass():
 
 
 skbuild.setup(
-    name="dpctl",
     version=__version__,
     cmdclass=_get_cmdclass(),
-    description="A lightweight Python wrapper for a subset of SYCL.",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    license="Apache 2.0",
-    author="Intel Corporation",
     url="https://github.com/IntelPython/dpctl",
     packages=[
         "dpctl",
@@ -204,24 +175,5 @@ skbuild.setup(
         ]
     },
     include_package_data=False,
-    zip_safe=False,
-    setup_requires=["Cython"],
-    install_requires=[
-        "numpy",
-    ],
-    extras_require={
-        "docs": [
-            "Cython",
-            "sphinx",
-            "sphinx_rtd_theme",
-            "pydot",
-            "graphviz",
-            "sphinxcontrib-programoutput",
-        ],
-        "coverage": ["Cython", "pytest", "pytest-cov", "coverage", "tomli"],
-    },
-    keywords="dpctl",
-    classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
-    platforms=["Linux", "Windows"],
     cmake_process_manifest_hook=cleanup_destination,
 )

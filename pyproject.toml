@@ -1,3 +1,81 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [
+  # TODO: keep in sync with [project.dependencies]
+  "wheel>=0.43",
+  "build>=1.1",
+  "setuptools>=63.0.0",
+  "scikit-build>=0.17.0",
+  "ninja>=1.11.1; platform_system!='Windows'",
+  "cmake>=3.29.0",
+  "cython>=3.0.10",
+  "numpy >=1.24",
+  # WARNING: check with doc how to upgrade
+  "versioneer[toml]==0.29"
+]
+
+[project]
+authors = [{name = "Intel Corporation"}]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: C",
+  "Programming Language :: Pytho",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: POSIX",
+  "Operating System :: Unix"
+]
+dependencies = [
+  # TODO: keep in sync with [build-system.requires] and /conda-recipe/meta.yaml
+  # This restrictions are for dependabot, actual restrictions are set with
+  # conda.
+  # TODO: populate it during build process
+  # TODO: do we have to set sycl runtime dependencies here
+  # "dpcpp-cpp-rt>=0.59.0",
+  # "intel-cmplr-lib-rt>=0.59.0"
+  "numpy>=1.24.0"
+]
+description = "A lightweight Python wrapper for a subset of SYCL."
+dynamic = ["version"]
+keywords = [
+  "dpctl",
+  "intel",
+  "oneapi",
+  "dpcpp"
+]
+license = {text = "Apache 2.0"}
+name = "dpctl"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
+docs = [
+  "Cython",
+  "sphinx",
+  "sphinx_rtd_theme",
+  "pydot",
+  "graphviz",
+  "sphinxcontrib-programoutput"
+]
+
+[project.urls]
+Changelog = "https://github.com/IntelPython/dpctl/blob/main/CHANGELOG.md"
+Documentation = "https://intelpython.github.io/dpctl/"
+Homepage = "https://github.com/IntelPython/dpctl"
+Issues = "https://github.com/IntelPython/dpctl/issues"
+Repository = "https://github.com/IntelPython/dpctl.git"
+
 [tool.black]
 exclude = "versioneer.py|dpctl/_version.py"
 line-length = 80
