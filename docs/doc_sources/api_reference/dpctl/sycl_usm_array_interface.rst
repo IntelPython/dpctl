@@ -44,10 +44,9 @@ Python dictionary with the following fields:
     Python object from which SYCL context to which represented USM allocation is bound.
 
     ==============================================  =======================================
-    Filter selector string                          Platform's default context for the platform
-                                                    the SYCL device selected by the
-                                                    :ref:`filter selector string <filter_selector_string>`
-                                                    it is a part of.
+    Filter selector string                          The default context of the platform
+                                                    selected by
+                                                    :ref:`filter selector string <filter_selector_string>`.
     :py:class:`dpctl.SyclContext`                   An explicitly provided context.
     Python capsule with name ``"SyclContextRef"``   A Python capsule carrying a
                                                     ``DPCTLSyclContextRef`` opaque pointer.
