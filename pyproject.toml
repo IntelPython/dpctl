@@ -77,7 +77,7 @@ Issues = "https://github.com/IntelPython/dpctl/issues"
 Repository = "https://github.com/IntelPython/dpctl.git"
 
 [tool.black]
-exclude = "versioneer.py|dpctl/_version.py"
+exclude = "dpctl/_version.py"
 line-length = 80
 
 [tool.coverage.report]
@@ -107,7 +107,7 @@ force_grid_wrap = 0
 include_trailing_comma = true
 line_length = 80
 multi_line_output = 3
-skip = ["versioneer.py", "dpctl/_version.py"]
+skip = ["dpctl/_version.py"]
 use_parentheses = true
 
 [tool.pytest.ini.options]
@@ -132,3 +132,10 @@ norecursedirs = [
   "dist",
   "conda-recipe"
 ]
+
+[tool.versioneer]
+VCS = "git"
+parentdir_prefix = "dpctl-"
+style = "pep440"
+versionfile_build = "dpctl/_version.py"
+versionfile_source = "dpctl/_version.py"
