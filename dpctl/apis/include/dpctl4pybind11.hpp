@@ -793,7 +793,7 @@ public:
         return bool(opaque_ptr);
     }
 
-    std::shared_ptr<void> get_smart_ptr_owner() const
+    const std::shared_ptr<void> &get_smart_ptr_owner() const
     {
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
@@ -1114,17 +1114,20 @@ public:
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
-        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_))
+        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
             return false;
+        }
 
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(usm_data);
         const void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
 
+        Py_DECREF(usm_data);
         return bool(opaque_ptr);
     }
 
-    std::shared_ptr<void> get_smart_ptr_owner() const
+    const std::shared_ptr<void> &get_smart_ptr_owner() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
@@ -1133,6 +1136,7 @@ public:
         PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
         if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
             throw std::runtime_error(
                 "usm_ndarray object does not have Memory object "
                 "managing lifetime of USM allocation");
@@ -1141,6 +1145,7 @@ public:
         Py_MemoryObject *mem_obj =
             reinterpret_cast<Py_MemoryObject *>(usm_data);
         void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+        Py_DECREF(usm_data);
 
         if (opaque_ptr) {
             auto shptr_ptr =
@@ -1172,28 +1177,32 @@ namespace detail
 struct ManagedMemory
 {
 
-    static bool is_usm_managed_by_shared_ptr(const py::handle &h)
+    static bool is_usm_managed_by_shared_ptr(const py::object &h)
     {
         if (py::isinstance<dpctl::memory::usm_memory>(h)) {
-            auto usm_memory_inst = py::cast<dpctl::memory::usm_memory>(h);
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
             return usm_memory_inst.is_managed_by_smart_ptr();
         }
         else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
-            auto usm_array_inst = py::cast<dpctl::tensor::usm_ndarray>(h);
+            const auto &usm_array_inst =
+                py::cast<dpctl::tensor::usm_ndarray>(h);
             return usm_array_inst.is_managed_by_smart_ptr();
         }
 
         return false;
     }
 
-    static std::shared_ptr<void> extract_shared_ptr(const py::handle &h)
+    static const std::shared_ptr<void> &extract_shared_ptr(const py::object &h)
     {
         if (py::isinstance<dpctl::memory::usm_memory>(h)) {
-            auto usm_memory_inst = py::cast<dpctl::memory::usm_memory>(h);
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
             return usm_memory_inst.get_smart_ptr_owner();
         }
         else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
-            auto usm_array_inst = py::cast<dpctl::tensor::usm_ndarray>(h);
+            const auto &usm_array_inst =
+                py::cast<dpctl::tensor::usm_ndarray>(h);
             return usm_array_inst.get_smart_ptr_owner();
         }
 
@@ -1216,10 +1225,11 @@ sycl::event keep_args_alive(sycl::queue &q,
     std::array<std::shared_ptr<void>, num> shp_usm{};
 
     for (std::size_t i = 0; i < num; ++i) {
-        auto py_obj_i = py_objs[i];
+        const auto &py_obj_i = py_objs[i];
         if (detail::ManagedMemory::is_usm_managed_by_shared_ptr(py_obj_i)) {
-            shp_usm[n_usm_owners_held] =
+            const auto &shp =
                 detail::ManagedMemory::extract_shared_ptr(py_obj_i);
+            shp_usm[n_usm_owners_held] = shp;
             ++n_usm_owners_held;
         }
         else {
