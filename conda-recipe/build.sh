@@ -31,6 +31,12 @@ ${PYTHON} -m pip install dist/dpctl*.whl \
     --prefix "${PREFIX}" \
     -vv
 
+# Recover symbolic links
+# libDPCTLSyclInterface.so.0 -> libDPCTLSyclInterface.so.0.17
+# libDPCTLSyclInterface.so -> libDPCTLSyclInterface.so.0
+find $PREFIX | grep libDPCTLSyclInterface | sort -r | \
+awk '{if ($0=="") ln=""; else if (ln=="") ln = $0; else system("rm " $0 ";\tln -s " ln " " $0); ln = $0 }'
+
 # Copy wheel package
 if [[ -v WHEELS_OUTPUT_FOLDER ]]; then
     cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
