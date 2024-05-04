@@ -13,7 +13,7 @@ CUDA* support or try the latest features.
 Building using oneAPI DPC++
 ---------------------------
 
-prerequisites
+Prerequisites
 ~~~~~~~~~~~~~
 
 Install oneAPI and graphics drivers to the system.
