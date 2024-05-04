@@ -3,7 +3,7 @@
 pybind11 API
 ============
 
-:py:mod:`dpctl` builds on top of :ref:`C-API <dpctl_capi>` to integrate with
+:py:mod:`dpctl` builds on top of :ref:`C API <dpctl_capi>` to integrate with the
 `pybind11 <pybind11_url>`_ Python extension generator.
 
 .. code-block:: c++
@@ -23,7 +23,7 @@ pybind11 API
         m.def("get_device_name", &get_device_name);
     }
 
-The extension should be compiled using Intel(R) oneAPI DPC++ compiler:
+The extension should be compiled using the Intel(R) oneAPI DPC++ compiler:
 
 .. code-block:: bash
 

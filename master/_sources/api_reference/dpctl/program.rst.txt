@@ -4,7 +4,7 @@
 =======================
 
 :py:mod:`dpctl.program` provides a way to create a SYCL kernel
-from either an OpenCL program source code represented as a string
+from either an OpenCL* program source code represented as a string
 or a SPIR-V binary file.
 
 It implements creation of interoperability

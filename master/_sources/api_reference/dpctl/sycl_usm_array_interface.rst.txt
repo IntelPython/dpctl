@@ -6,7 +6,7 @@
 Python objects representing USM allocations, such as :py:class:`dpctl.memory.MemoryUSMDevice`,
 :py:class:`dpctl.memory.MemoryUSMShared`, :py:class:`dpctl.memory.MemoryUSMHost`,
 or :py:class:`dpctl.tensor.usm_ndarray`, distinguish themselves from other Python objects
-by providing ``__sycl_usm_array_interface__`` attribute describing the allocation in a
+by providing the ``__sycl_usm_array_interface__`` attribute describing the allocation in a
 Python dictionary with the following fields:
 
 ``"shape"``
@@ -32,23 +32,22 @@ Python dictionary with the following fields:
     is read-only).
 
 ``"strides"``
-    an optional tuple of integers describing number of array elements needed to jump
+    An optional tuple of integers describing number of array elements needed to jump
     to the next array element in the corresponding dimensions. The default value of ``None``
     implies a C-style contiguous (row-major compact) layout of the array.
 
 ``"offset"``
-    an optional Python integer encoding offset in number of elements from the pointer
+    An optional Python integer encoding offset in number of elements from the pointer
     provided in ``"data"`` field to the array element with zero indices. Default: `0`.
 
 ``"syclobj"``
     Python object from which SYCL context to which represented USM allocation is bound.
 
     ==============================================  =======================================
-    Filter selector string                          Platform's default context for platform
-                                                    the SYCL device selected by the
-                                                    :ref:`filter selector string <filter_selector_string>`
-                                                    is a part of.
-    :py:class:`dpctl.SyclContext`                   An explicitly provided context
+    Filter selector string                          The default context of the platform
+                                                    selected by
+                                                    :ref:`filter selector string <filter_selector_string>`.
+    :py:class:`dpctl.SyclContext`                   An explicitly provided context.
     Python capsule with name ``"SyclContextRef"``   A Python capsule carrying a
                                                     ``DPCTLSyclContextRef`` opaque pointer.
     :py:class:`dpctl.SyclQueue`                     An explicitly provided queue which
@@ -61,7 +60,7 @@ Python dictionary with the following fields:
     ==============================================  =======================================
 
 ``"version"``
-    version of the interface. At present, the only supported value is `1`.
+    Version of the interface. At present, the only supported value is `1`.
 
 
 .. _numpy_array_interface: https://numpy.org/doc/stable/reference/arrays.interface.html

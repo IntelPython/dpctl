@@ -713,7 +713,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pybind11.html">pybind11 API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cmake.html">CMake support</a></li>
@@ -799,13 +799,13 @@
 <td><p>A 64-bit unsigned integer type capable of representing <span class="math notranslate nohighlight">\(v\)</span> subject to <span class="math notranslate nohighlight">\(0 \le v &lt; 2^{64}\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float16</span></code></p></td>
-<td><p>An IEEE-754 half-precision (16-bits) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
+<td><p>An IEEE-754 half-precision (16-bit) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">float32</span></code></p></td>
-<td><p>An IEEE-754 single-precision (32-bits) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
+<td><p>An IEEE-754 single-precision (32-bit) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">float64</span></code></p></td>
-<td><p>An IEEE-754 double-precision (64-bits) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
+<td><p>An IEEE-754 double-precision (64-bit) binary floating-point number (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">complex64</span></code></p></td>
 <td><p>Single-precision (64-bit) complex floating-point number whose real and imaginary components are IEEE 754 single-precision (32-bit) binary floating-point numbers (see <a class="reference external" href="https://doi.org/10.1109%2FIEEESTD.2019.8766229">IEEE 754-2019</a>)</p></td>
@@ -820,7 +820,7 @@
 <p>Half-precision floating-point type <code class="docutils literal notranslate"><span class="pre">float16</span></code> is supported only for devices whose attribute <a class="reference internal" href="generated/generated/dpctl.SyclDevice.has_aspect_fp16.html#dpctl.SyclDevice.has_aspect_fp16" title="dpctl.SyclDevice.has_aspect_fp16"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclDevice.has_aspect_fp16</span></code></a> evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>Double-precision floating-point type <code class="docutils literal notranslate"><span class="pre">float64</span></code> and double-precision complex floating-point type <code class="docutils literal notranslate"><span class="pre">complex128</span></code> are supported only for devices whose attribute <a class="reference internal" href="generated/generated/dpctl.SyclDevice.has_aspect_fp64.html#dpctl.SyclDevice.has_aspect_fp64" title="dpctl.SyclDevice.has_aspect_fp64"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.SyclDevice.has_aspect_fp64</span></code></a>
 evaluates to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<p>Requests to create an instance of array object for these types on devices where these prerequisites are not met will raise an exception.</p>
+<p>If prerequisites are not met, requests to create an instance of an array object for these types will raise an exception.</p>
 <p>Data type objects are instances of <a class="reference internal" href="#dpctl.tensor.dtype" title="dpctl.tensor.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code></a> object, and support equality comparison by implementing
 special method <code class="xref py py-meth docutils literal notranslate"><span class="pre">__eq__()</span></code>.</p>
 <dl class="py class">
@@ -878,7 +878,7 @@ complex floating-point type is <code class="xref py py-attr docutils literal not
 <p>Type promotion rules govern the behavior of an array library when a function does not have
 a dedicated implementation for the data type(s) of the input array(s).</p>
 <p>In such a case, input arrays may be cast to data types for which a dedicated implementation
-exists. e.g., when <a class="reference internal" href="generated/dpctl.tensor.sin.html#dpctl.tensor.sin" title="dpctl.tensor.sin"><code class="xref py py-data docutils literal notranslate"><span class="pre">sin</span></code></a> is applied to array of integral values.</p>
+exists. For example, when <a class="reference internal" href="generated/dpctl.tensor.sin.html#dpctl.tensor.sin" title="dpctl.tensor.sin"><code class="xref py py-data docutils literal notranslate"><span class="pre">sin</span></code></a> is applied to array of integral values.</p>
 <p>Type promotion rules used in <a class="reference internal" href="tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> are consistent with the
 Python Array API specification’s <a class="reference external" href="https://data-apis.org/array-api/latest/API_specification/type_promotion.html">type promotion rules</a>
 for devices that support double precision floating-point type.</p>

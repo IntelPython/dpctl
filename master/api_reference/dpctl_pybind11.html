@@ -713,7 +713,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pybind11 API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpctl_cmake.html">CMake support</a></li>
@@ -762,7 +762,7 @@
         <article role="main" id="furo-main-content">
           <section id="pybind11-api">
 <span id="dpctl-pybind11-api"></span><h1>pybind11 API<a class="headerlink" href="#pybind11-api" title="Permalink to this heading">¶</a></h1>
-<p><a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> builds on top of <a class="reference internal" href="dpctl_capi.html#dpctl-capi"><span class="std std-ref">C-API</span></a> to integrate with
+<p><a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> builds on top of <a class="reference internal" href="dpctl_capi.html#dpctl-capi"><span class="std std-ref">C API</span></a> to integrate with the
 <a class="reference external" href="pybind11_url">pybind11</a> Python extension generator.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Example of pybind11 extension using <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> types</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
@@ -782,7 +782,7 @@
 </pre></div>
 </div>
 </div>
-<p>The extension should be compiled using Intel(R) oneAPI DPC++ compiler:</p>
+<p>The extension should be compiled using the Intel(R) oneAPI DPC++ compiler:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>icpx<span class="w"> </span>-fsycl<span class="w"> </span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>pybind11<span class="w"> </span>--includes<span class="k">)</span><span class="w"> </span><span class="k">$(</span>python<span class="w"> </span>-m<span class="w"> </span>dpctl<span class="w">  </span>--library<span class="k">)</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>_example.cpp<span class="w"> </span>-fPIC<span class="w"> </span>-shared<span class="w"> </span>-o<span class="w"> </span>_example.so
 </pre></div>
