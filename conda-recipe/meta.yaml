@@ -30,6 +30,7 @@ requirements:
         - python
         - pip >=24.0
         - level-zero-devel >=1.16
+        - pybind11 >=2.12
         - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
         # Ensure we are using latest version of setuptools, since we don't need
         # editable environments for release.
