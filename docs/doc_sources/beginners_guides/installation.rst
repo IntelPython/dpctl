@@ -97,7 +97,7 @@ Directions to install drivers for Intel GPU devices are available at https://dgp
 
 Once ``dpctl`` is installed, use ``python -m dpctl --full-list`` to list recognized devices.
 
-For ``dpctl`` to target Intel GPU devices, appropriate drivers should be installed system wide.
+For ``dpctl`` to target Intel GPU devices, appropriate drivers should be installed systemwide.
 Please refer to `GPU installation guide <gpu_stack_installation_guide_>`_ for detailed
 instructions on how to install required drivers on Linux.
 
