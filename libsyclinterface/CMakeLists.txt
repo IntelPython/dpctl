@@ -42,6 +42,8 @@ option(DPCTL_ENABLE_GLOG
     OFF
 )
 
+set(DPCTL_LEVEL_ZERO_INCLUDE_DIR "" CACHE STRING "Level zero header path")
+
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSyclCompiler 2021.3.0 REQUIRED)
@@ -51,8 +53,12 @@ endif()
 
 if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     set(DPCTL_ENABLE_L0_PROGRAM_CREATION 1)
-    include(GetLevelZeroHeaders)
-    get_level_zero_headers()
+    if(DPCTL_LEVEL_ZERO_INCLUDE_DIR)
+        set(LEVEL_ZERO_INCLUDE_DIR ${DPCTL_LEVEL_ZERO_INCLUDE_DIR})
+    else()
+        include(GetLevelZeroHeaders)
+        get_level_zero_headers()
+    endif()
     if (UNIX)
         find_library(PI_LEVEL_ZERO_LIB
             NAMES pi_level_zero

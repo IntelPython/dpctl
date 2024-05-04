@@ -19,6 +19,8 @@ export CMAKE_GENERATOR=Ninja
 # Make CMake verbose
 export VERBOSE=1
 
+CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero"
+
 # -wnx flags mean: --wheel --no-isolation --skip-dependency-check
 ${PYTHON} -m build -w -n -x
 ${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
