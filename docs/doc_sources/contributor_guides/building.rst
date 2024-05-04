@@ -3,18 +3,20 @@
 Building from the Source
 ========================
 
-To build :py:mod:`dpctl` from the source, you need DPC++ compiler.
+To build :py:mod:`dpctl` from the source, you need the Intel(R) oneAPI DPC++ compiler.
 To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
-available as part of oneAPI Base-Kit. However, it is possible to use a custom
+available as part of the oneAPI Base Kit. However, it is possible to use a custom
 build of DPC++ to build :py:mod:`dpctl`, especially if you want to enable
-CUDA support or try latest features.
+CUDA* support or try the latest features.
 
 Building using oneAPI DPC++
 ---------------------------
 
-Install oneAPI and graphics drivers to the system prior
-to proceeding further.
+prerequisites
+~~~~~~~~~~~~~
+
+Install oneAPI and graphics drivers to the system.
 
 Activate oneAPI
 ~~~~~~~~~~~~~~~
@@ -138,7 +140,7 @@ You can build dpctl from the source using the `DPC++ toolchain <https://github.c
 instead of the DPC++ compiler that comes with oneAPI.
 
 Following steps in the `Build and install with scikit-build`_ use a command-line option to set
-the relevant CMake variables, for example:
+the relevant CMake variables. For example:
 
 .. code-block:: bash
 
@@ -167,7 +169,7 @@ To build the library, you need:
 * ``ninja`` or ``make``
 * Optionally ``gtest 1.10`` if you want to build and run the test suite
 
-For example, on Linux OS the following script can be used to build the C oneAPI
+For example, on Linux* OS the following script can be used to build the C oneAPI
 library.
 
 .. code-block:: bash
