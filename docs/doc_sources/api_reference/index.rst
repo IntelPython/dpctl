@@ -13,7 +13,7 @@ The package ``dpctl`` provides
    - :ref:`API objects <dpctl_utils_pyapi>` in :py:mod:`dpctl.utils` namespace
 * SYCL-based Python array library
    - :ref:`API objects <dpctl_tensor_pyapi>` in :py:mod:`dpctl.tensor` namespace
-* Python C-API
+* Python C API
    - :ref:`C API <dpctl_capi>` for working with Python classes defined in :mod:`dpctl`
 * Extension generators
    - :ref:`Declarations <dpctl_cython_api>` for classes defined in :py:mod:`dpctl` and supporting functions for use in `Cython <cython_docs_>`_.

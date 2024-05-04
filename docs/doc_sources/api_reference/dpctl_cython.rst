@@ -38,5 +38,5 @@ File ``_backend.pxd`` redefines symbols from :ref:`DPCTLSyclInterface library <l
 
 File ``sycl.pxd`` provides casters from opaque types in "DPCTLSyclInterface" C library to SYCL C++ object pointers.
 
-Please refer to `examples/cython <https://github.com/IntelPython/dpctl/blob/master/examples/cython>`_ folder in the project
+Please refer to the `examples/cython <https://github.com/IntelPython/dpctl/blob/master/examples/cython>`_ folder in the project
 repository for a collection of examples.

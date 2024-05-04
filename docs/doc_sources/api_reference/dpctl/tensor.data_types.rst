@@ -28,11 +28,11 @@ Data types
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``uint64``     | A 64-bit unsigned integer type capable of representing :math:`v` subject to :math:`0 \le v < 2^{64}`                                                                                    |
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``float16``    | An IEEE-754 half-precision (16-bits) binary floating-point number (see `IEEE 754-2019`_)                                                                                                |
+| ``float16``    | An IEEE-754 half-precision (16-bit) binary floating-point number (see `IEEE 754-2019`_)                                                                                                 |
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``float32``    | An IEEE-754 single-precision (32-bits) binary floating-point number (see `IEEE 754-2019`_)                                                                                              |
+| ``float32``    | An IEEE-754 single-precision (32-bit) binary floating-point number (see `IEEE 754-2019`_)                                                                                               |
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``float64``    | An IEEE-754 double-precision (64-bits) binary floating-point number (see `IEEE 754-2019`_)                                                                                              |
+| ``float64``    | An IEEE-754 double-precision (64-bit) binary floating-point number (see `IEEE 754-2019`_)                                                                                               |
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``complex64``  | Single-precision (64-bit) complex floating-point number whose real and imaginary components are IEEE 754 single-precision (32-bit) binary floating-point numbers (see `IEEE 754-2019`_) |
 +----------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -48,7 +48,7 @@ Half-precision floating-point type ``float16`` is supported only for devices who
 Double-precision floating-point type ``float64`` and double-precision complex floating-point type ``complex128`` are supported only for devices whose attribute :attr:`dpctl.SyclDevice.has_aspect_fp64`
 evaluates to ``True``.
 
-Requests to create an instance of array object for these types on devices where these prerequisites are not met will raise an exception.
+If prerequisites are not met, requests to create an instance of an array object for these types will raise an exception.
 
 .. TODO: provide a note on support for sub-normal numbers
 
@@ -118,7 +118,7 @@ Type promotion rules govern the behavior of an array library when a function doe
 a dedicated implementation for the data type(s) of the input array(s).
 
 In such a case, input arrays may be cast to data types for which a dedicated implementation
-exists. e.g., when :data:`sin` is applied to array of integral values.
+exists. For example, when :data:`sin` is applied to array of integral values.
 
 Type promotion rules used in :py:mod:`dpctl.tensor` are consistent with the
 Python Array API specification's `type promotion rules <https://data-apis.org/array-api/latest/API_specification/type_promotion.html>`_

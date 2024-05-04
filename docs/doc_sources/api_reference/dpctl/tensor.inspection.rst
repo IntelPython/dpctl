@@ -5,7 +5,7 @@ Inspection API
 
 
 :mod:`dpctl.tensor` implements a way to introspect implementation- and device-
-capabilities of array library as specified in
+capabilities of an array library as specified in
 `Python Array API standard <array_api_inspection>`_:
 
 .. currentmodule:: dpctl.tensor
