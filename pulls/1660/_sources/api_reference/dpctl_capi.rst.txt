@@ -1,6 +1,6 @@
 .. _dpctl_capi:
 
-:py:mod:`dpctl` C-API
+:py:mod:`dpctl` C API
 =====================
 
 :py:mod:`dpctl` core classes are implemented in Cython. C declarations for Python objects
@@ -41,7 +41,7 @@ Exported typedefs
 
 .. c:struct:: PySyclProgramType
 
-In order to check whether a particular Python objct is an instance of :py:class:`dpctl.SyclQueue` one would write:
+To check whether a particular Python object is an instance of :py:class:`dpctl.SyclQueue`:
 
 .. code-block:: C
     :caption: Check if an object is of type :c:struct:`PySyclQueueType`
@@ -123,7 +123,7 @@ API for :c:struct:`Py_MemoryObject`
 .. c:function:: DPCTLSyclUSMRef Memory_GetUsmPointer(struct Py_MemoryObject *o)
 
     :param o: Input object
-    :returns: Opaque pointer to USM allocation represented by Python object
+    :returns: Opaque pointer to USM allocation represented by Python object.
 
 .. c:function:: DPCTLSyclContextRef Memory_GetSyclContext(struct Py_MemoryObject *o)
 
@@ -172,7 +172,7 @@ API for :c:struct:`PyUSMArrayObject`
 .. c:function:: Py_ssize_t * UsmNDArray_GetShape(struct PyUSMArrayObject *arr)
 
     :param arr: Input object
-    :returns: Pointer to array of sizes of array along each dimension
+    :returns: Pointer to array of sizes of array along each dimension.
 
     The array has at least as many elements as returned by :c:func:`UsmNDArray_GetNDim`
     applied to input object ``arr``.
@@ -180,8 +180,8 @@ API for :c:struct:`PyUSMArrayObject`
 .. c:function:: Py_ssize_t * UsmNDArray_GetStrides(struct PyUSMArrayObject *arr)
 
     :param arr: Input object
-    :returns: Pointer to array of strides of array along each dimension
-    :returns: NULL if array is C- or F-contiguous
+    :returns: Pointer to array of strides of array along each dimension.
+    :returns: NULL if array is C- or F-contiguous.
 
     The array has at least as many elements as returned by :c:func:`UsmNDArray_GetNDim`
     applied to input object ``arr``.
@@ -189,7 +189,7 @@ API for :c:struct:`PyUSMArrayObject`
 .. c:function:: int UsmNDarray_GetTypenum(struct PyUSMArrayObject *arr)
 
     :param arr: Input object
-    :returns: An integer encoding the type of array elements
+    :returns: An integer encoding the type of array elements.
 
     The encoding is consistent with that integral values corresponding to enums
     used by :py:mod:`numpy`. See `NumPy Dtype C-API <https://numpy.org/doc/stable/reference/c-api/dtype.html#enumerated-types>`_.
@@ -202,7 +202,7 @@ API for :c:struct:`PyUSMArrayObject`
 .. c:function:: int UsmNDarray_GetFlags(struct PyUSMArrayObject *arr)
 
     :param arr: Input object
-    :returns: An integer encoding flags attribute of the array
+    :returns: An integer encoding flags attribute of the array.
 
     The flag encodes whether the array is C-contiguous, F-contiguous,
     whether it is read-only, or can be modified.
@@ -219,12 +219,12 @@ API for :c:struct:`PyUSMArrayObject`
 
     :param arr: Input object
     :returns: Offset of zero multi-index array element from the beginning of
-              the USM allocation
+              the USM allocation.
 
 .. c:function:: void UsmNDArray_SetWritableFlag(struct PyUSMArrayObject *arr, int flag)
 
     :param arr: Input object
-    :param flags: Whether to set writable flag of the array to read-only, or to writable
+    :param flags: Whether to set writable flag of the array to read-only, or to writable.
 
     Non-zero value of ``flag`` parameter sets the array flag bit to writable, a zero-value
     of ``flag`` parameter sets the flag bit of the array to read-only.

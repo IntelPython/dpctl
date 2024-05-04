@@ -7,7 +7,7 @@
 
 .. currentmodule:: dpctl.tensor
 
-:py:mod:`dpctl.tensor` provides a reference implementation of
+:py:mod:`dpctl.tensor` provides a reference implementation of the
 :array_api:`Python Array API <>` specification. The implementation
 uses :ref:`data-parallel <parallelism_definitions>` algorithms suitable for execution on accelerators,
 such as GPUs.

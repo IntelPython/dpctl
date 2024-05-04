@@ -713,7 +713,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pybind11.html">pybind11 API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cmake.html">CMake support</a></li>
@@ -762,10 +762,10 @@
         <article role="main" id="furo-main-content">
           <section id="dpctl-memory">
 <span id="dpctl-memory-pyapi"></span><h1><a class="reference internal" href="#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a><a class="headerlink" href="#dpctl-memory" title="Permalink to this heading">¶</a></h1>
-<p>Subpackage <a class="reference internal" href="#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a> exposes Unified Shared Memory(USM) operations.</p>
+<p>Subpackage <a class="reference internal" href="#module-dpctl.memory" title="dpctl.memory"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a> exposes Unified Shared Memory (USM) operations.</p>
 <p>Unified Shared Memory is a pointer-based memory management in SYCL guaranteeing that
 the host and all devices use a <a class="reference external" href="https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_unified_addressing">unified address space</a>.
-Quoting from the SYCL specification:</p>
+As described in the SYCL specification:</p>
 <blockquote>
 <div><p>Pointer values in the unified address space will always refer to the same location in memory.
 The unified address space encompasses the host and one or more devices. Note that this does

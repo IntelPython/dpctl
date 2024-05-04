@@ -713,7 +713,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_pybind11.html">pybind11 API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dpctl_cmake.html">CMake support</a></li>
@@ -765,7 +765,7 @@
 <p>Python objects representing USM allocations, such as <a class="reference internal" href="generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a>,
 <a class="reference internal" href="generated/dpctl.memory.MemoryUSMShared.html#dpctl.memory.MemoryUSMShared" title="dpctl.memory.MemoryUSMShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMShared</span></code></a>, <a class="reference internal" href="generated/dpctl.memory.MemoryUSMHost.html#dpctl.memory.MemoryUSMHost" title="dpctl.memory.MemoryUSMHost"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMHost</span></code></a>,
 or <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, distinguish themselves from other Python objects
-by providing <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> attribute describing the allocation in a
+by providing the <code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> attribute describing the allocation in a
 Python dictionary with the following fields:</p>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">&quot;shape&quot;</span></code></dt><dd><p>a tuple of integers describing dimensions of an N-dimensional array</p>
@@ -800,11 +800,11 @@ corresponding to numeric and boolean data types:</p>
 The second entry in the tuple is a read-only flag (<code class="docutils literal notranslate"><span class="pre">True</span></code> means the data area
 is read-only).</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">&quot;strides&quot;</span></code></dt><dd><p>an optional tuple of integers describing number of array elements needed to jump
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;strides&quot;</span></code></dt><dd><p>An optional tuple of integers describing number of array elements needed to jump
 to the next array element in the corresponding dimensions. The default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>
 implies a C-style contiguous (row-major compact) layout of the array.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">&quot;offset&quot;</span></code></dt><dd><p>an optional Python integer encoding offset in number of elements from the pointer
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;offset&quot;</span></code></dt><dd><p>An optional Python integer encoding offset in number of elements from the pointer
 provided in <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code> field to the array element with zero indices. Default: <cite>0</cite>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">&quot;syclobj&quot;</span></code></dt><dd><p>Python object from which SYCL context to which represented USM allocation is bound.</p>
@@ -812,13 +812,12 @@ provided in <code class="docutils literal notranslate"><span class="pre">&quot;d
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p>Filter selector string</p></td>
-<td><p>Platform’s default context for platform
-the SYCL device selected by the
-<a class="reference internal" href="filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a>
-is a part of.</p></td>
+<td><p>The default context of the platform
+selected by
+<a class="reference internal" href="filter_selector_string.html#filter-selector-string"><span class="std std-ref">filter selector string</span></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclContext.html#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a></p></td>
-<td><p>An explicitly provided context</p></td>
+<td><p>An explicitly provided context.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Python capsule with name <code class="docutils literal notranslate"><span class="pre">&quot;SyclContextRef&quot;</span></code></p></td>
 <td><p>A Python capsule carrying a
@@ -841,7 +840,7 @@ capsule of the two supported kinds.</p></td>
 </table>
 </div>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">&quot;version&quot;</span></code></dt><dd><p>version of the interface. At present, the only supported value is <cite>1</cite>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;version&quot;</span></code></dt><dd><p>Version of the interface. At present, the only supported value is <cite>1</cite>.</p>
 </dd>
 </dl>
 </section>

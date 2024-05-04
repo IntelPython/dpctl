@@ -713,7 +713,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C-API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpctl_pybind11.html">pybind11 API</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">CMake support</a></li>
@@ -762,9 +762,9 @@
         <article role="main" id="furo-main-content">
           <section id="cmake-support">
 <span id="dpctl-cmake-support"></span><h1>CMake support<a class="headerlink" href="#cmake-support" title="Permalink to this heading">¶</a></h1>
-<p><a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> comes with configuration file <cite>dpctl-config.cmake</cite> which is installed
+<p><a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> comes with the configuration file <cite>dpctl-config.cmake</cite> which is installed
 on the <a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html">standard search path CMake uses to search for packages</a>.</p>
-<p>To build your extension that leverages <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> include the following line in your cmake script:</p>
+<p>To build your extension that leverages <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, include the following line in your CMake script:</p>
 <div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">find_package</span><span class="p">(</span><span class="s2">&quot;Dpctl&quot;</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
 </pre></div>
 </div>

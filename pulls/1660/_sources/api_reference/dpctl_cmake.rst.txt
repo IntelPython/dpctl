@@ -3,10 +3,10 @@
 CMake support
 =============
 
-:py:mod:`dpctl` comes with configuration file `dpctl-config.cmake` which is installed
+:py:mod:`dpctl` comes with the configuration file `dpctl-config.cmake` which is installed
 on the `standard search path CMake uses to search for packages <cmake_find_package_search_paths_>`_.
 
-To build your extension that leverages :py:mod:`dpctl` include the following line in your cmake script:
+To build your extension that leverages :py:mod:`dpctl`, include the following line in your CMake script:
 
 .. code-block:: cmake
 
