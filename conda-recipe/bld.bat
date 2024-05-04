@@ -38,6 +38,8 @@ set "CMAKE_GENERATOR=Ninja"
 :: Make CMake verbose
 set "VERBOSE=1"
 
+set "CMAKE_ARGS=%CMAKE_ARGS% -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=%PREFIX:\=/%/Library/include/level_zero"
+
 %PYTHON% -m build -w -n -x
 if %ERRORLEVEL% neq 0 exit 1
 

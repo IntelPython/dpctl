@@ -29,10 +29,7 @@ requirements:
     host:
         - python
         - pip >=24.0
-        - git
-        # In case use forces ssh over https for git repository interaction we
-        # must have compatible SSL library version
-        - openssh
+        - level-zero-devel >=1.16
         - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
         # Ensure we are using latest version of setuptools, since we don't need
         # editable environments for release.
@@ -58,7 +55,7 @@ requirements:
         - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
-        - level-zero  # [linux]
+        - {{ pin_compatible('level-zero', min_pin='x.x', max_pin='x') }} # [linux]
 
 test:
     requires:
