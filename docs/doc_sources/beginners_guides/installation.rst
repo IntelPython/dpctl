@@ -7,14 +7,14 @@ Installing ``dpctl``
 License
 =======
 
-:py:mod:`dpctl` is licensed under Apache License 2.0 that can be found in
+:py:mod:`dpctl` is licensed under Apache* License 2.0 that can be found in the
 `LICENSE <dpctl_license_>`_ file.
 All usage and contributions to the project are subject to the terms and
 conditions of this license.
 
 .. _dpctl_license: https://github.com/IntelPython/dpctl/blob/master/LICENSE
 
-See user guide  :ref:`document <user_guide_dpctl_license>` for additional information.
+See the user guide :ref:`document <user_guide_dpctl_license>` for additional information.
 
 Installation using conda
 ========================
@@ -24,7 +24,7 @@ ecosystem.
 
 .. _conda_docs: https://docs.conda.io/projects/conda/en/stable/
 
-Released versions of the package can be installed from Intel channel, as
+Released versions of the package can be installed from the Intel channel, as
 indicated by ``--channel intel`` option:
 
 .. code-block:: bash
@@ -32,7 +32,7 @@ indicated by ``--channel intel`` option:
 
     conda create --name dpctl_env --channel intel dpctl
 
-Development builds of ``dpctl`` can be accessed from ``dppy/label/dev`` channel:
+Development builds of ``dpctl`` can be accessed from the ``dppy/label/dev`` channel:
 
 .. code-block:: bash
     :caption: Getting latest development version
@@ -40,8 +40,8 @@ Development builds of ``dpctl`` can be accessed from ``dppy/label/dev`` channel:
     conda create -n dpctl_nightly -c dppy/label/dev -c intel dpctl
 
 .. note::
-    In case :py:mod:`dpctl` is not available for the Python version of interest,
-    please check `Building from source`_ section.
+    If :py:mod:`dpctl` is not available for the Python version of interest,
+    see `Building from source`_.
 
 
 Installation using pip
@@ -63,14 +63,14 @@ use
     python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
 
 .. note::
-    Installation using ``pip`` on Linux currently (as of April 2024) requires
+    As of April 2024, installation using ``pip`` on Linux* requires
     that host operating system had ``libstdc++.so`` library version 6.0.29
     or later.  Check the version you have by executing
     ``find /lib/x86_64-linux-gnu/ -name "libstdc++*"``
 
 .. note::
-    In case :py:mod:`dpctl` is not available for the Python version of interest,
-    please check `Building from source`_ section.
+    If :py:mod:`dpctl` is not available for the Python version of interest,
+    see `Building from source`_.
 
 
 Installation via Intel(R) Distribution for Python
@@ -87,7 +87,7 @@ Once the installed environment is activated, ``dpctl`` should be ready to use.
 System requirements
 ===================
 
-Since :py:mod:`dpctl` is compiled using Intel(R) oneAPI DPC++ compiler,
+Since :py:mod:`dpctl` is compiled using the Intel(R) oneAPI DPC++ compiler,
 the `compiler's system requirements for runtime <dpcpp_system_reqs_>`_ must be met.
 
 In order for DPC++ runtime to recognize supported hardware appropriate drivers must be installed.
@@ -97,14 +97,15 @@ Directions to install drivers for Intel GPU devices are available at https://dgp
 
 Once ``dpctl`` is installed, use ``python -m dpctl --full-list`` to list recognized devices.
 
-For ``dpctl`` to target Intel GPU devices, appropriate drivers should be installed systemwide.
+For ``dpctl`` to target Intel GPU devices, appropriate drivers should be installed system wide.
 Please refer to `GPU installation guide <gpu_stack_installation_guide_>`_ for detailed
 instructions on how to install required drivers on Linux.
 
 .. _gpu_stack_installation_guide: https://dgpu-docs.intel.com/
 
 .. note::
-    Instructions for setting up GPU drivers in Windows Subsystem for Linux (WSL) is forthcoming.
+    Instructions for setting up GPU drivers in Windows Subsystem for Linux (WSL)
+    will be added in a future release of this document.
 
 Building from source
 ====================
@@ -192,7 +193,7 @@ each example Python project and how to execute its test suite.
 Running the Python Tests
 ------------------------
 
-You can execute Python test suite of :py:mod:`dpctl` as follow:
+You can execute Python test suite of :py:mod:`dpctl` with:
 
 .. code-block:: bash
 
