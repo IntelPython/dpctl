@@ -3,20 +3,44 @@
 Building from the Source
 ========================
 
-To build :py:mod:`dpctl` from the source, you need the Intel(R) oneAPI DPC++ compiler.
+To build :py:mod:`dpctl` from the source, you need DPC++ compiler.
 To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
-available as part of the oneAPI Base Kit. However, it is possible to use a custom
+available as part of oneAPI Base-Kit. However, it is possible to use a custom
 build of DPC++ to build :py:mod:`dpctl`, especially if you want to enable
-CUDA* support or try the latest features.
+CUDA support or try latest features.
 
 Building using oneAPI DPC++
 ---------------------------
 
+
 Prerequisites
 ~~~~~~~~~~~~~
 
-Install oneAPI and graphics drivers to the system.
+Install oneAPI and graphics drivers according to your targeted hardware:
+
+
+- To target Intel GPUs, see the `Installation Page <https://dgpu-docs.intel.com/driver/installation.html>`_
+  of the Intel(R) software for general purpose GPU capabilities document for
+  driver information.
+- To target NVIDIA* or AMD* GPUs, see the vendor website for drivers, as well
+  as `CodePlay plugins <https://codeplay.com/solutions/oneapi/plugins/>`_ to
+  enable hardware targeting.
+- To target a CPU, the OpenCL* CPU driver is included as a part of the
+  oneAPI DPC++ Compiler installation. The CPU
+  driver is also packaged in conda, and is automatically made available using
+  conda activation scripts on Linux*, and on Windows* (in user-mode).
+  If conda is used with elevated privileges in Windows (similar to
+  GitHub Actions CI), a PowerShell script must be run:
+
+  .. code-block:: bash
+
+    ${CONDA_PREFIX}\\Scripts.
+
+Use the script ``set-intel-ocl-icd-registry.ps1`` to set
+appropriate registry key, and ``unset-intel-ocl-icd-registry.ps1``
+to remove it.
+
 
 Activate oneAPI
 ~~~~~~~~~~~~~~~
@@ -140,7 +164,7 @@ You can build dpctl from the source using the `DPC++ toolchain <https://github.c
 instead of the DPC++ compiler that comes with oneAPI.
 
 Following steps in the `Build and install with scikit-build`_ use a command-line option to set
-the relevant CMake variables. For example:
+the relevant CMake variables, for example:
 
 .. code-block:: bash
 
@@ -169,7 +193,7 @@ To build the library, you need:
 * ``ninja`` or ``make``
 * Optionally ``gtest 1.10`` if you want to build and run the test suite
 
-For example, on Linux* OS the following script can be used to build the C oneAPI
+For example, on Linux OS the following script can be used to build the C oneAPI
 library.
 
 .. code-block:: bash
