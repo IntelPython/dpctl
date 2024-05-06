@@ -331,6 +331,8 @@ private:
         this->USM_ARRAY_F_CONTIGUOUS_ = USM_ARRAY_F_CONTIGUOUS;
         this->USM_ARRAY_WRITABLE_ = USM_ARRAY_WRITABLE;
         this->UAR_BOOL_ = UAR_BOOL;
+        this->UAR_BYTE_ = UAR_BYTE;
+        this->UAR_UBYTE_ = UAR_UBYTE;
         this->UAR_SHORT_ = UAR_SHORT;
         this->UAR_USHORT_ = UAR_USHORT;
         this->UAR_INT_ = UAR_INT;
