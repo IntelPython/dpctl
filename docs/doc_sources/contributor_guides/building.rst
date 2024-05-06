@@ -35,7 +35,7 @@ Install oneAPI and graphics drivers according to your targeted hardware:
 
   .. code-block:: bash
 
-    ${CONDA_PREFIX}\\Scripts.
+    &${CONDA_PREFIX}\\Scripts\script_name.ps1
 
 Use the script ``set-intel-ocl-icd-registry.ps1`` to set
 appropriate registry key, and ``unset-intel-ocl-icd-registry.ps1``
