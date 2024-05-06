@@ -17,7 +17,7 @@ echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
 
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
     # Install packages and assemble wheel package from built bits
-    WHEELS_BUILD_ARGS="-p manylinux2014_x86_64 --build-number ${GIT_DESCRIBE_NUMBER}"
+    WHEELS_BUILD_ARGS="-p manylinux_2_28_x86_64 --build-number ${GIT_DESCRIBE_NUMBER}"
     ${PYTHON} setup.py install bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
     cp dist/dpctl*.whl ${WHEELS_OUTPUT_FOLDER}
 else
