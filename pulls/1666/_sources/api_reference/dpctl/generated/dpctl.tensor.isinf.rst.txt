@@ -1,0 +1,10 @@
+﻿dpctl.tensor.isinf
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: isinf
+    :no-value:
+
+
