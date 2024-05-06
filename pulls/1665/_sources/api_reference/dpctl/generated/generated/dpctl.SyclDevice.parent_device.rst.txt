@@ -1,0 +1,6 @@
+dpctl.SyclDevice.parent\_device
+===============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.parent_device
