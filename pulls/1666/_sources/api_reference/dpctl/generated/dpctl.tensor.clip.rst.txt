@@ -1,9 +1,0 @@
-﻿dpctl.tensor.clip
-=================
-
-.. currentmodule:: dpctl.tensor
-
-
-
-
-.. autofunction:: clip
