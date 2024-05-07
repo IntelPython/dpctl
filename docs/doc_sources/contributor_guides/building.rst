@@ -33,7 +33,7 @@ Install oneAPI and graphics drivers according to your targeted hardware:
   If conda is used with elevated privileges in Windows (similar to
   GitHub Actions CI), a PowerShell script must be run:
 
-  .. code-block:: bash
+  .. code-block:: powershell
 
     &${CONDA_PREFIX}\\Scripts\script_name.ps1
 
