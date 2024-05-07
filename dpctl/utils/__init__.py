@@ -18,7 +18,10 @@
 A collection of utility functions.
 """
 
+from contextvars import ContextVar
+
 from .._sycl_device import SyclDevice
+from .._sycl_event import SyclEvent
 from ._compute_follows_data import (
     ExecutionPlacementError,
     get_coerced_usm_type,
@@ -39,6 +42,7 @@ from ._device_queries import (
     intel_device_info_memory_clock_rate,
 )
 from ._onetrace_context import onetrace_enabled
+from ._seq_order_keeper import _OrderManager
 
 
 def intel_device_info(dev, /):
@@ -119,6 +123,67 @@ def intel_device_info(dev, /):
     return dict()
 
 
+class _SequentialOrderManager:
+    """
+    Class to orchestrate default sequential order
+    of the tasks offloaded from Python.
+    """
+
+    def __init__(self):
+        self._state = ContextVar("_seq_order_keeper", default=_OrderManager(16))
+
+    def __dealloc__(self):
+        _local = self._state.get()
+        SyclEvent.wait_for(_local.get_submitted_events())
+        SyclEvent.wait_for(_local.get_host_task_events())
+
+    def __repr__(self):
+        return "<dpctl.utils.SequentialOrderManager>"
+
+    def __str__(self):
+        return "<dpctl.utils.SequentialOrderManager>"
+
+    def add_event_pair(self, host_task_ev, comp_ev):
+        _local = self._state.get()
+        if isinstance(host_task_ev, SyclEvent) and isinstance(
+            comp_ev, SyclEvent
+        ):
+            _local.add_to_both_events(host_task_ev, comp_ev)
+        else:
+            if not isinstance(host_task_ev, (list, tuple)):
+                host_task_ev = (host_task_ev,)
+            if not isinstance(comp_ev, (list, tuple)):
+                comp_ev = (comp_ev,)
+            _local.add_vector_to_both_events(host_task_ev, comp_ev)
+
+    @property
+    def num_host_task_events(self):
+        _local = self._state.get()
+        return _local.get_num_host_task_events()
+
+    @property
+    def num_submitted_events(self):
+        _local = self._state.get()
+        return _local.get_num_submitted_events()
+
+    @property
+    def host_task_events(self):
+        _local = self._state.get()
+        return _local.get_host_task_events()
+
+    @property
+    def submitted_events(self):
+        _local = self._state.get()
+        return _local.get_submitted_events()
+
+    def wait(self):
+        _local = self._state.get()
+        return _local.wait()
+
+
+SequentialOrderManager = _SequentialOrderManager()
+SequentialOrderManager.__name__ = "SequentialOrderManager"
+
 __all__ = [
     "get_execution_queue",
     "get_coerced_usm_type",
@@ -126,4 +191,5 @@ __all__ = [
     "onetrace_enabled",
     "intel_device_info",
     "ExecutionPlacementError",
+    "SequentialOrderManager",
 ]
