@@ -983,8 +983,8 @@ devices as well migration from <a class="reference external" href="https://numpy
 </pre></div>
 </div>
 </div>
-<p>Migration may also occur during calls to other array creation functions, e.g. <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a> when the <cite>fill_value</cite> parameter is an instance
-of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a>. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
+<p>Migration may also occur during calls to other array creation functions, e.g., <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full" title="dpctl.tensor.full"><code class="xref py py-func docutils literal notranslate"><span class="pre">full()</span></code></a> when the <cite>fill_value</cite> parameter is an instance
+of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a>. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e., the
 new array is created on the same device where <cite>fill_value</cite> array was allocated.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
