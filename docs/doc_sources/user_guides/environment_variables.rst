@@ -5,7 +5,7 @@ Environment variables
 #####################
 
 Behavior of :py:mod:`dpctl` is affected by :dpcpp_envar:`environment variables <>` that
-affects DPC++ compiler runtime.
+affect DPC++ compiler runtime.
 
 Variable ``ONEAPI_DEVICE_SELECTOR``
 -----------------------------------
