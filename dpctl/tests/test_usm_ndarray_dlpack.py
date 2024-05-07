@@ -55,8 +55,12 @@ def typestr(request):
     return request.param
 
 
-def test_dlpack_device(usm_type):
-    all_root_devices = dpctl.get_devices()
+@pytest.fixture
+def all_root_devices():
+    return dpctl.get_devices()
+
+
+def test_dlpack_device(usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         X = dpt.empty((64,), dtype="u1", usm_type=usm_type, device=sycl_dev)
         dev = X.__dlpack_device__()
@@ -66,11 +70,10 @@ def test_dlpack_device(usm_type):
         assert sycl_dev == all_root_devices[dev[1]]
 
 
-def test_dlpack_exporter(typestr, usm_type):
+def test_dlpack_exporter(typestr, usm_type, all_root_devices):
     caps_fn = ctypes.pythonapi.PyCapsule_IsValid
     caps_fn.restype = bool
     caps_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
-    all_root_devices = dpctl.get_devices()
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty((64,), dtype=typestr, usm_type=usm_type, device=sycl_dev)
@@ -119,8 +122,7 @@ def test_dlpack_exporter_stream():
 
 
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
-def test_from_dlpack(shape, typestr, usm_type):
-    all_root_devices = dpctl.get_devices()
+def test_from_dlpack(shape, typestr, usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty(shape, dtype=typestr, usm_type=usm_type, device=sycl_dev)
@@ -139,8 +141,7 @@ def test_from_dlpack(shape, typestr, usm_type):
 
 
 @pytest.mark.parametrize("mod", [2, 5])
-def test_from_dlpack_strides(mod, typestr, usm_type):
-    all_root_devices = dpctl.get_devices()
+def test_from_dlpack_strides(mod, typestr, usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X0 = dpt.empty(

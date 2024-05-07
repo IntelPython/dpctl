@@ -116,8 +116,10 @@ cdef void _pycapsule_deleter(object dlt_capsule) noexcept:
 
 cdef void _managed_tensor_deleter(DLManagedTensor *dlm_tensor) noexcept with gil:
     if dlm_tensor is not NULL:
+        # we only delete shape, because we make single allocation to
+        # acommodate both shape and strides if strides are needed
         stdlib.free(dlm_tensor.dl_tensor.shape)
-        cpython.Py_DECREF(<usm_ndarray>dlm_tensor.manager_ctx)
+        cpython.Py_DECREF(<object>dlm_tensor.manager_ctx)
         dlm_tensor.manager_ctx = NULL
         stdlib.free(dlm_tensor)
 
@@ -296,8 +298,8 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
         stdlib.free(dlm_tensor)
         raise ValueError("Unrecognized array data type")
 
-    dlm_tensor.manager_ctx = <void*>usm_ary
-    cpython.Py_INCREF(usm_ary)
+    dlm_tensor.manager_ctx = <void*>ary_base
+    cpython.Py_INCREF(ary_base)
     dlm_tensor.deleter = _managed_tensor_deleter
 
     return cpython.PyCapsule_New(dlm_tensor, 'dltensor', _pycapsule_deleter)
@@ -308,7 +310,7 @@ cdef class _DLManagedTensorOwner:
     Helper class managing the lifetime of the DLManagedTensor struct
     transferred from a 'dlpack' capsule.
     """
-    cdef DLManagedTensor *dlm_tensor
+    cdef DLManagedTensor * dlm_tensor
 
     def __cinit__(self):
         self.dlm_tensor = NULL
@@ -316,6 +318,7 @@ cdef class _DLManagedTensorOwner:
     def __dealloc__(self):
         if self.dlm_tensor:
             self.dlm_tensor.deleter(self.dlm_tensor)
+            self.dlm_tensor = NULL
 
     @staticmethod
     cdef _DLManagedTensorOwner _create(DLManagedTensor *dlm_tensor_src):
