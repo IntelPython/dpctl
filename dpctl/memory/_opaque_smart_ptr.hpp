@@ -35,6 +35,9 @@
 #include <memory>
 #include <sycl/sycl.hpp>
 
+#include <exception>
+#include <iostream>
+
 namespace
 {
 
@@ -48,7 +51,13 @@ public:
     USMDeleter(const ::sycl::context &context) : _context(context) {}
     template <typename T> void operator()(T *ptr) const
     {
-        ::sycl::free(ptr, _context);
+        try {
+            ::sycl::free(ptr, _context);
+        } catch (const std::exception &e) {
+            std::cout << "Call to sycl::free caught an exception: " << e.what()
+                      << std::endl;
+            // std::terminate();
+        }
     }
 
 private:
