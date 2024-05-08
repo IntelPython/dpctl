@@ -18,6 +18,7 @@ import operator
 import numpy as np
 
 import dpctl.tensor as dpt
+import dpctl.utils
 from dpctl.tensor._tensor_impl import (
     _copy_usm_ndarray_for_reshape,
     _ravel_multi_index,
@@ -157,22 +158,25 @@ def reshape(X, /, shape, *, order="C", copy=None):
     copy_q = X.sycl_queue
     if copy_required or (copy is True):
         # must perform a copy
+        copy_q = X.sycl_queue
         flat_res = dpt.usm_ndarray(
             (X.size,),
             dtype=X.dtype,
             buffer=X.usm_type,
             buffer_ctor_kwargs={"queue": copy_q},
         )
+        _manager = dpctl.utils.SequentialOrderManager
+        dep_evs = _manager.submitted_events
         if order == "C":
-            hev, _ = _copy_usm_ndarray_for_reshape(
-                src=X, dst=flat_res, sycl_queue=copy_q
+            hev, r_e = _copy_usm_ndarray_for_reshape(
+                src=X, dst=flat_res, sycl_queue=copy_q, depends=dep_evs
             )
         else:
             X_t = dpt.permute_dims(X, range(X.ndim - 1, -1, -1))
-            hev, _ = _copy_usm_ndarray_for_reshape(
-                src=X_t, dst=flat_res, sycl_queue=copy_q
+            hev, r_e = _copy_usm_ndarray_for_reshape(
+                src=X_t, dst=flat_res, sycl_queue=copy_q, depends=dep_evs
             )
-        hev.wait()
+        _manager.add_event_pair(hev, r_e)
         return dpt.usm_ndarray(
             tuple(shape), dtype=X.dtype, buffer=flat_res, order=order
         )

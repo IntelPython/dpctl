@@ -1,9 +1,9 @@
 from numpy.core.numeric import normalize_axis_tuple
 
-import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
+import dpctl.utils as du
 
 
 def _boolean_reduction(x, axis, keepdims, func):
@@ -35,7 +35,8 @@ def _boolean_reduction(x, axis, keepdims, func):
     exec_q = x.sycl_queue
     res_usm_type = x.usm_type
 
-    wait_list = []
+    _manager = du.SequentialOrderManager
+    dep_evs = _manager.submitted_events
     # always allocate the temporary as
     # int32 and usm-device  to ensure that atomic updates
     # are supported
@@ -50,8 +51,9 @@ def _boolean_reduction(x, axis, keepdims, func):
         trailing_dims_to_reduce=red_nd,
         dst=res_tmp,
         sycl_queue=exec_q,
+        depends=dep_evs,
     )
-    wait_list.append(hev0)
+    _manager.add_event_pair(hev0, ev0)
 
     # copy to boolean result array
     res = dpt.empty(
@@ -60,16 +62,15 @@ def _boolean_reduction(x, axis, keepdims, func):
         usm_type=res_usm_type,
         sycl_queue=exec_q,
     )
-    hev1, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+    hev1, ev1 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=res_tmp, dst=res, sycl_queue=exec_q, depends=[ev0]
     )
-    wait_list.append(hev1)
+    _manager.add_event_pair(hev1, ev1)
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
-    dpctl.SyclEvent.wait_for(wait_list)
     return res
 
 

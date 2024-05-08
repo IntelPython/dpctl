@@ -24,6 +24,7 @@ import numpy as np
 
 import dpctl
 import dpctl.memory as dpmem
+import dpctl.utils as du
 
 from .._backend cimport DPCTLSyclUSMRef
 from .._sycl_device_factory cimport _cached_default_device
@@ -81,6 +82,7 @@ cdef class InternalUSMArrayError(Exception):
 cdef object _as_zero_dim_ndarray(object usm_ary):
     "Convert size-1 array to NumPy 0d array"
     mem_view = dpmem.as_usm_memory(usm_ary)
+    du.SequentialOrderManager.wait()
     host_buf = mem_view.copy_to_host()
     view = host_buf.view(usm_ary.dtype)
     view.shape = tuple()

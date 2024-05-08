@@ -25,7 +25,7 @@ from dpctl.tensor._type_utils import (
     _default_accumulation_dtype_fp_types,
     _to_device_supported_dtype,
 )
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 
 def _accumulate_common(
@@ -125,7 +125,9 @@ def _accumulate_common(
         if a1 != nd:
             out = dpt.permute_dims(out, perm)
 
-    host_tasks_list = []
+    final_ev = dpctl.SyclEvent()
+    _manager = SequentialOrderManager
+    depends = _manager.submitted_events
     if implemented_types:
         if not include_initial:
             ht_e, acc_ev = _accumulate_fn(
@@ -133,32 +135,32 @@ def _accumulate_common(
                 trailing_dims_to_accumulate=1,
                 dst=out,
                 sycl_queue=q,
+                depends=depends,
             )
         else:
             ht_e, acc_ev = _accumulate_include_initial_fn(
-                src=arr,
-                dst=out,
-                sycl_queue=q,
+                src=arr, dst=out, sycl_queue=q, depends=depends
             )
-        host_tasks_list.append(ht_e)
+        _manager.add_event_pair(ht_e, acc_ev)
         if not (orig_out is None or out is orig_out):
             # Copy the out data from temporary buffer to original memory
-            ht_e_cpy, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy, acc_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out, dst=orig_out, sycl_queue=q, depends=[acc_ev]
             )
-            host_tasks_list.append(ht_e_cpy)
+            _manager.add_event_pair(ht_e_cpy, acc_ev)
             out = orig_out
+        final_ev = acc_ev
     else:
         if _dtype_supported(res_dt, res_dt):
             tmp = dpt.empty(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=arr, dst=tmp, sycl_queue=q
+                src=arr, dst=tmp, sycl_queue=q, depends=depends
             )
-            host_tasks_list.append(ht_e_cpy)
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
             if not include_initial:
-                ht_e, acc_ev = _accumulate_fn(
+                ht_e, final_ev = _accumulate_fn(
                     src=tmp,
                     trailing_dims_to_accumulate=1,
                     dst=out,
@@ -166,26 +168,27 @@ def _accumulate_common(
                     depends=[cpy_e],
                 )
             else:
-                ht_e, acc_ev = _accumulate_include_initial_fn(
+                ht_e, final_ev = _accumulate_include_initial_fn(
                     src=tmp,
                     dst=out,
                     sycl_queue=q,
                     depends=[cpy_e],
                 )
+            _manager.add_event_pair(ht_e, final_ev)
         else:
             buf_dt = _default_accumulation_type_fn(inp_dt, q)
             tmp = dpt.empty(
                 arr.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=arr, dst=tmp, sycl_queue=q
+                src=arr, dst=tmp, sycl_queue=q, depends=depends
             )
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
             tmp_res = dpt.empty(
                 res_sh, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             if a1 != nd:
                 tmp_res = dpt.permute_dims(tmp_res, perm)
-            host_tasks_list.append(ht_e_cpy)
             if not include_initial:
                 ht_e, a_e = _accumulate_fn(
                     src=tmp,
@@ -201,18 +204,17 @@ def _accumulate_common(
                     sycl_queue=q,
                     depends=[cpy_e],
                 )
-            host_tasks_list.append(ht_e)
-            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            _manager.add_event_pair(ht_e, a_e)
+            ht_e_cpy2, final_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=tmp_res, dst=out, sycl_queue=q, depends=[a_e]
             )
-            host_tasks_list.append(ht_e_cpy2)
+            _manager.add_event_pair(ht_e_cpy2, final_ev)
 
     if appended_axis:
         out = dpt.squeeze(out)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         out = dpt.permute_dims(out, inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
 
     return out
 

@@ -343,15 +343,21 @@ def roll(X, /, shift, *, axis=None):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
+    _manager = dputils.SequentialOrderManager
     if axis is None:
         shift = operator.index(shift)
+        dep_evs = _manager.submitted_events
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
         )
-        hev, _ = ti._copy_usm_ndarray_for_roll_1d(
-            src=X, dst=res, shift=shift, sycl_queue=X.sycl_queue
+        hev, roll_ev = ti._copy_usm_ndarray_for_roll_1d(
+            src=X,
+            dst=res,
+            shift=shift,
+            sycl_queue=X.sycl_queue,
+            depends=dep_evs,
         )
-        hev.wait()
+        _manager.add_event_pair(hev, roll_ev)
         return res
     axis = normalize_axis_tuple(axis, X.ndim, allow_duplicate=True)
     broadcasted = np.broadcast(shift, axis)
@@ -367,10 +373,11 @@ def roll(X, /, shift, *, axis=None):
     res = dpt.empty(
         X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
     )
-    ht_e, _ = ti._copy_usm_ndarray_for_roll_nd(
-        src=X, dst=res, shifts=shifts, sycl_queue=exec_q
+    dep_evs = _manager.submitted_events
+    ht_e, roll_ev = ti._copy_usm_ndarray_for_roll_nd(
+        src=X, dst=res, shifts=shifts, sycl_queue=exec_q, depends=dep_evs
     )
-    ht_e.wait()
+    _manager.add_event_pair(ht_e, roll_ev)
     return res
 
 
@@ -439,31 +446,46 @@ def _concat_axis_None(arrays):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev_list = []
     fill_start = 0
+    _manager = dputils.SequentialOrderManager
+    deps = _manager.submitted_events
     for array in arrays:
         fill_end = fill_start + array.size
         if array.flags.c_contiguous:
-            hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=dpt.reshape(array, -1),
                 dst=res[fill_start:fill_end],
                 sycl_queue=exec_q,
+                depends=deps,
             )
+            _manager.add_event_pair(hev, cpy_ev)
         else:
             src_ = array
             # _copy_usm_ndarray_for_reshape requires src and dst to have
             # the same data type
             if not array.dtype == res_dtype:
-                src_ = dpt.astype(src_, res_dtype)
-            hev, _ = ti._copy_usm_ndarray_for_reshape(
-                src=src_,
-                dst=res[fill_start:fill_end],
-                sycl_queue=exec_q,
-            )
+                src2_ = dpt.empty_like(src_, dtype=res_dtype)
+                ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                    src=src_, dst=src2_, sycl_queue=exec_q, depends=deps
+                )
+                _manager.add_event_pair(ht_copy_ev, cpy_ev)
+                hev, reshape_copy_ev = ti._copy_usm_ndarray_for_reshape(
+                    src=src_,
+                    dst=res[fill_start:fill_end],
+                    sycl_queue=exec_q,
+                    depends=[cpy_ev],
+                )
+                _manager.add_event_pair(hev, reshape_copy_ev)
+            else:
+                hev, cpy_ev = ti._copy_usm_ndarray_for_reshape(
+                    src=src_,
+                    dst=res[fill_start:fill_end],
+                    sycl_queue=exec_q,
+                    depends=deps,
+                )
+                _manager.add_event_pair(hev, cpy_ev)
         fill_start = fill_end
-        hev_list.append(hev)
 
-    dpctl.SyclEvent.wait_for(hev_list)
     return res
 
 
@@ -516,7 +538,8 @@ def concat(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev_list = []
+    _manager = dputils.SequentialOrderManager
+    deps = _manager.submitted_events
     fill_start = 0
     for i in range(n):
         fill_end = fill_start + arrays[i].shape[axis]
@@ -524,13 +547,14 @@ def concat(arrays, /, *, axis=0):
             np.s_[fill_start:fill_end] if j == axis else np.s_[:]
             for j in range(X0.ndim)
         )
-        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i],
+            dst=res[c_shapes_copy],
+            sycl_queue=exec_q,
+            depends=deps,
         )
+        _manager.add_event_pair(hev, cpy_ev)
         fill_start = fill_end
-        hev_list.append(hev)
-
-    dpctl.SyclEvent.wait_for(hev_list)
 
     return res
 
@@ -581,17 +605,17 @@ def stack(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev_list = []
+    _manager = dputils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
     for i in range(n):
         c_shapes_copy = tuple(
             i if j == axis else np.s_[:] for j in range(res_ndim)
         )
-        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arrays[i], dst=res[c_shapes_copy], sycl_queue=exec_q
+        _dst = res[c_shapes_copy]
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=arrays[i], dst=_dst, sycl_queue=exec_q, depends=dep_evs
         )
-        hev_list.append(hev)
-
-    dpctl.SyclEvent.wait_for(hev_list)
+        _manager.add_event_pair(hev, cpy_ev)
 
     return res
 
@@ -838,6 +862,8 @@ def repeat(x, repeats, /, *, axis=None):
             f"got {type(repeats)}"
         )
 
+    _manager = dputils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
     if scalar:
         res_axis_size = repeats * axis_size
         if axis is not None:
@@ -848,14 +874,15 @@ def repeat(x, repeats, /, *, axis=None):
             res_shape, dtype=x.dtype, usm_type=usm_type, sycl_queue=exec_q
         )
         if res_axis_size > 0:
-            ht_rep_ev, _ = ti._repeat_by_scalar(
+            ht_rep_ev, rep_ev = ti._repeat_by_scalar(
                 src=x,
                 dst=res,
                 reps=repeats,
                 axis=axis,
                 sycl_queue=exec_q,
+                depends=dep_evs,
             )
-            ht_rep_ev.wait()
+            _manager.add_event_pair(ht_rep_ev, rep_ev)
     else:
         if repeats.dtype != dpt.int64:
             rep_buf = dpt.empty(
@@ -865,8 +892,9 @@ def repeat(x, repeats, /, *, axis=None):
                 sycl_queue=exec_q,
             )
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=repeats, dst=rep_buf, sycl_queue=exec_q
+                src=repeats, dst=rep_buf, sycl_queue=exec_q, depends=dep_evs
             )
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             cumsum = dpt.empty(
                 (axis_size,),
                 dtype=dpt.int64,
@@ -890,7 +918,7 @@ def repeat(x, repeats, /, *, axis=None):
                 sycl_queue=exec_q,
             )
             if res_axis_size > 0:
-                ht_rep_ev, _ = ti._repeat_by_sequence(
+                ht_rep_ev, rep_ev = ti._repeat_by_sequence(
                     src=x,
                     dst=res,
                     reps=rep_buf,
@@ -898,8 +926,7 @@ def repeat(x, repeats, /, *, axis=None):
                     axis=axis,
                     sycl_queue=exec_q,
                 )
-                ht_rep_ev.wait()
-            ht_copy_ev.wait()
+                _manager.add_event_pair(ht_rep_ev, rep_ev)
         else:
             cumsum = dpt.empty(
                 (axis_size,),
@@ -907,7 +934,9 @@ def repeat(x, repeats, /, *, axis=None):
                 usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-            res_axis_size = ti._cumsum_1d(repeats, cumsum, sycl_queue=exec_q)
+            res_axis_size = ti._cumsum_1d(
+                repeats, cumsum, sycl_queue=exec_q, depends=dep_evs
+            )
             if axis is not None:
                 res_shape = (
                     x_shape[:axis] + (res_axis_size,) + x_shape[axis + 1 :]
@@ -921,7 +950,7 @@ def repeat(x, repeats, /, *, axis=None):
                 sycl_queue=exec_q,
             )
             if res_axis_size > 0:
-                ht_rep_ev, _ = ti._repeat_by_sequence(
+                ht_rep_ev, rep_ev = ti._repeat_by_sequence(
                     src=x,
                     dst=res,
                     reps=repeats,
@@ -929,7 +958,7 @@ def repeat(x, repeats, /, *, axis=None):
                     axis=axis,
                     sycl_queue=exec_q,
                 )
-                ht_rep_ev.wait()
+                _manager.add_event_pair(ht_rep_ev, rep_ev)
     return res
 
 
@@ -1021,8 +1050,10 @@ def tile(x, repetitions, /):
             broadcast_sh,
         )
         # copy broadcast input into flat array
-        hev, _ = ti._copy_usm_ndarray_for_reshape(
-            src=x, dst=res, sycl_queue=exec_q
+        _manager = dputils.SequentialOrderManager
+        dep_evs = _manager.submitted_events
+        hev, cp_ev = ti._copy_usm_ndarray_for_reshape(
+            src=x, dst=res, sycl_queue=exec_q, depends=dep_evs
         )
-        hev.wait()
+        _manager.add_event_pair(hev, cp_ev)
     return dpt.reshape(res, res_shape)
