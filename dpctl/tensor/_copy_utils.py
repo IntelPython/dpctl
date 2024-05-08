@@ -33,7 +33,7 @@ __doc__ = (
     ":class:`dpctl.tensor.usm_ndarray`."
 )
 
-int32_t_max = 2147483648
+int32_t_max = 1 + np.iinfo(np.int32).max
 
 
 def _copy_to_numpy(ary):
@@ -41,11 +41,13 @@ def _copy_to_numpy(ary):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
     nb = ary.usm_data.nbytes
     hh = dpm.MemoryUSMHost(nb, queue=ary.sycl_queue)
-    hh.copy_from_device(ary.usm_data)
     h = np.ndarray(nb, dtype="u1", buffer=hh).view(ary.dtype)
     itsz = ary.itemsize
     strides_bytes = tuple(si * itsz for si in ary.strides)
     offset = ary.__sycl_usm_array_interface__.get("offset", 0) * itsz
+    # ensure that content of ary.usm_data is final
+    dpctl.utils.SequentialOrderManager.wait()
+    hh.copy_from_device(ary.usm_data)
     return np.ndarray(
         ary.shape,
         dtype=ary.dtype,
@@ -103,8 +105,11 @@ def _copy_from_numpy_into(dst, np_ary):
             src_ary = src_ary.astype(np.float32)
         elif src_ary_dt_c == "D":
             src_ary = src_ary.astype(np.complex64)
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_ev = _manager.submitted_events
+    # synchronizing call
     ti._copy_numpy_ndarray_into_usm_ndarray(
-        src=src_ary, dst=dst, sycl_queue=copy_q
+        src=src_ary, dst=dst, sycl_queue=copy_q, depends=dep_ev
     )
 
 
@@ -203,14 +208,16 @@ def _copy_overlapping(dst, src):
         order="C",
         buffer_ctor_kwargs={"queue": q},
     )
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
     hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=src, dst=tmp, sycl_queue=q
+        src=src, dst=tmp, sycl_queue=q, depends=dep_evs
     )
-    hcp2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+    _manager.add_event_pair(hcp1, cp1)
+    hcp2, cp2 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=tmp, dst=dst, sycl_queue=q, depends=[cp1]
     )
-    hcp2.wait()
-    hcp1.wait()
+    _manager.add_event_pair(hcp2, cp2)
 
 
 def _copy_same_shape(dst, src):
@@ -225,10 +232,12 @@ def _copy_same_shape(dst, src):
         _copy_overlapping(src=src, dst=dst)
         return
 
-    hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=src, dst=dst, sycl_queue=dst.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
+    hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=src, dst=dst, sycl_queue=dst.sycl_queue, depends=dep_evs
     )
-    hev.wait()
+    _manager.add_event_pair(hev, cpy_ev)
 
 
 if hasattr(np, "broadcast_shapes"):
@@ -715,22 +724,27 @@ def _extract_impl(ary, ary_mask, axis=0):
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
-    mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
+    )
     dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
     dst = dpt.empty(
         dst_shape, dtype=ary.dtype, usm_type=ary.usm_type, device=ary.device
     )
     if dst.size == 0:
         return dst
-    hev, _ = ti._extract(
+    hev, ev = ti._extract(
         src=ary,
         cumsum=cumsum,
         axis_start=pp,
         axis_end=pp + mask_nd,
         dst=dst,
         sycl_queue=exec_q,
+        depends=dep_evs,
     )
-    hev.wait()
+    _manager.add_event_pair(hev, ev)
     return dst
 
 
@@ -746,7 +760,11 @@ def _nonzero_impl(ary):
     cumsum = dpt.empty(
         mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
-    mask_count = ti.mask_positions(ary, cumsum, sycl_queue=exec_q)
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_evs = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary, cumsum, sycl_queue=exec_q, depends=dep_evs
+    )
     indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
     indexes = dpt.empty(
         (ary.ndim, mask_count),
@@ -755,9 +773,9 @@ def _nonzero_impl(ary):
         sycl_queue=exec_q,
         order="C",
     )
-    hev, _ = ti._nonzero(cumsum, indexes, ary.shape, exec_q)
+    hev, nz_ev = ti._nonzero(cumsum, indexes, ary.shape, exec_q)
     res = tuple(indexes[i, :] for i in range(ary.ndim))
-    hev.wait()
+    _manager.add_event_pair(hev, nz_ev)
     return res
 
 
@@ -819,10 +837,18 @@ def _take_multi_index(ary, inds, p):
     res = dpt.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
-    hev, _ = ti._take(
-        src=ary, ind=inds, dst=res, axis_start=p, mode=0, sycl_queue=exec_q
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_ev = _manager.submitted_events
+    hev, take_ev = ti._take(
+        src=ary,
+        ind=inds,
+        dst=res,
+        axis_start=p,
+        mode=0,
+        sycl_queue=exec_q,
+        depends=dep_ev,
     )
-    hev.wait()
+    _manager.add_event_pair(hev, take_ev)
     return res
 
 
@@ -864,7 +890,11 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
-    mask_count = ti.mask_positions(ary_mask, cumsum, sycl_queue=exec_q)
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_ev = _manager.submitted_events
+    mask_count = ti.mask_positions(
+        ary_mask, cumsum, sycl_queue=exec_q, depends=dep_ev
+    )
     expected_vals_shape = (
         ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
     )
@@ -873,15 +903,17 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     else:
         rhs = dpt.astype(vals, ary.dtype)
     rhs = dpt.broadcast_to(rhs, expected_vals_shape)
-    hev, _ = ti._place(
+    dep_ev = _manager.submitted_events
+    hev, pl_ev = ti._place(
         dst=ary,
         cumsum=cumsum,
         axis_start=pp,
         axis_end=pp + mask_nd,
         rhs=rhs,
         sycl_queue=exec_q,
+        depends=dep_ev,
     )
-    hev.wait()
+    _manager.add_event_pair(hev, pl_ev)
     return
 
 
@@ -958,8 +990,16 @@ def _put_multi_index(ary, inds, p, vals):
     else:
         rhs = dpt.astype(vals, ary.dtype)
     rhs = dpt.broadcast_to(rhs, expected_vals_shape)
-    hev, _ = ti._put(
-        dst=ary, ind=inds, val=rhs, axis_start=p, mode=0, sycl_queue=exec_q
+    _manager = dpctl.utils.SequentialOrderManager
+    dep_ev = _manager.submitted_events
+    hev, put_ev = ti._put(
+        dst=ary,
+        ind=inds,
+        val=rhs,
+        axis_start=p,
+        mode=0,
+        sycl_queue=exec_q,
+        depends=dep_ev,
     )
-    hev.wait()
+    _manager.add_event_pair(hev, put_ev)
     return

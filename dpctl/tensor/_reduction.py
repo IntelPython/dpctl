@@ -20,7 +20,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 from ._type_utils import (
     _default_accumulation_dtype,
@@ -108,31 +108,35 @@ def _reduction_over_axis(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
 
-    host_tasks_list = []
+    _manager = SequentialOrderManager
+    dep_evs = _manager.submitted_events
     if red_nd == 0:
         ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arr, dst=out, sycl_queue=q
+            src=arr, dst=out, sycl_queue=q, depends=dep_evs
         )
-        host_tasks_list.append(ht_e_cpy)
+        _manager.add_event_pair(ht_e_cpy, cpy_e)
         if not (orig_out is None or orig_out is out):
-            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out, dst=orig_out, sycl_queue=q, depends=[cpy_e]
             )
-            host_tasks_list.append(ht_e_cpy2)
+            _manager.add_event_pair(ht_e_cpy2, cpy2_e)
             out = orig_out
-        dpctl.SyclEvent.wait_for(host_tasks_list)
         return out
 
     if implemented_types:
         ht_e, red_e = _reduction_fn(
-            src=arr, trailing_dims_to_reduce=red_nd, dst=out, sycl_queue=q
+            src=arr,
+            trailing_dims_to_reduce=red_nd,
+            dst=out,
+            sycl_queue=q,
+            depends=dep_evs,
         )
-        host_tasks_list.append(ht_e)
+        _manager.add_event_pair(ht_e, red_e)
         if not (orig_out is None or orig_out is out):
-            ht_e_cpy, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out, dst=orig_out, sycl_queue=q, depends=[red_e]
             )
-            host_tasks_list.append(ht_e_cpy)
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt, res_usm_type, q):
@@ -140,29 +144,29 @@ def _reduction_over_axis(
                 arr.shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=arr, dst=tmp, sycl_queue=q
+                src=arr, dst=tmp, sycl_queue=q, depends=dep_evs
             )
-            host_tasks_list.append(ht_e_cpy)
-            ht_e_red, _ = _reduction_fn(
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
+            ht_e_red, red_ev = _reduction_fn(
                 src=tmp,
                 trailing_dims_to_reduce=red_nd,
                 dst=out,
                 sycl_queue=q,
                 depends=[cpy_e],
             )
-            host_tasks_list.append(ht_e_red)
+            _manager.add_event_pair(ht_e_red, red_ev)
         else:
             buf_dt = _default_reduction_type_fn(inp_dt, q)
             tmp = dpt.empty(
                 arr.shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
             ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=arr, dst=tmp, sycl_queue=q
+                src=arr, dst=tmp, sycl_queue=q, depends=dep_evs
             )
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
             tmp_res = dpt.empty(
                 res_shape, dtype=buf_dt, usm_type=res_usm_type, sycl_queue=q
             )
-            host_tasks_list.append(ht_e_cpy)
             ht_e_red, r_e = _reduction_fn(
                 src=tmp,
                 trailing_dims_to_reduce=red_nd,
@@ -170,18 +174,16 @@ def _reduction_over_axis(
                 sycl_queue=q,
                 depends=[cpy_e],
             )
-            host_tasks_list.append(ht_e_red)
-            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            _manager.add_event_pair(ht_e_red, r_e)
+            ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=tmp_res, dst=out, sycl_queue=q, depends=[r_e]
             )
-            host_tasks_list.append(ht_e_cpy2)
+            _manager.add_event_pair(ht_e_cpy2, cpy2_e)
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
-
     return out
 
 
@@ -498,19 +500,19 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
-    host_tasks_list = []
+    _manager = SequentialOrderManager
+    dep_evs = _manager.submitted_events
     if red_nd == 0:
         ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x_tmp, dst=out, sycl_queue=exec_q
+            src=x_tmp, dst=out, sycl_queue=exec_q, depends=dep_evs
         )
-        host_tasks_list.append(ht_e_cpy)
+        _manager.add_event_pair(ht_e_cpy, cpy_e)
         if not (orig_out is None or orig_out is out):
-            ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out, dst=orig_out, sycl_queue=exec_q, depends=[cpy_e]
             )
-            host_tasks_list.append(ht_e_cpy2)
+            _manager.add_event_pair(ht_e_cpy2, cpy2_e)
             out = orig_out
-        dpctl.SyclEvent.wait_for(host_tasks_list)
         return out
 
     hev, red_ev = _reduction_fn(
@@ -518,20 +520,20 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
         trailing_dims_to_reduce=red_nd,
         dst=out,
         sycl_queue=exec_q,
+        depends=dep_evs,
     )
-    host_tasks_list.append(hev)
+    _manager.add_event_pair(hev, red_ev)
     if not (orig_out is None or orig_out is out):
-        ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
             src=out, dst=orig_out, sycl_queue=exec_q, depends=[red_ev]
         )
-        host_tasks_list.append(ht_e_cpy2)
+        _manager.add_event_pair(ht_e_cpy2, cpy2_e)
         out = orig_out
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
     return out
 
 
@@ -667,33 +669,34 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
+    _manager = SequentialOrderManager
+    dep_evs = _manager.submitted_events
     if red_nd == 0:
-        ht_e_fill, _ = ti._full_usm_ndarray(
-            fill_value=0, dst=out, sycl_queue=exec_q
+        ht_e_fill, fill_ev = ti._full_usm_ndarray(
+            fill_value=0, dst=out, sycl_queue=exec_q, depends=dep_evs
         )
-        ht_e_fill.wait()
+        _manager.add_event_pair(ht_e_fill, fill_ev)
         return out
 
-    host_tasks_list = []
     hev, red_ev = _reduction_fn(
         src=x_tmp,
         trailing_dims_to_reduce=red_nd,
         dst=out,
         sycl_queue=exec_q,
+        depends=dep_evs,
     )
-    host_tasks_list.append(hev)
+    _manager.add_event_pair(hev, red_ev)
     if not (orig_out is None or orig_out is out):
-        ht_e_cpy2, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_e_cpy2, cpy2_e = ti._copy_usm_ndarray_into_usm_ndarray(
             src=out, dst=orig_out, sycl_queue=exec_q, depends=[red_ev]
         )
-        host_tasks_list.append(ht_e_cpy2)
+        _manager.add_event_pair(ht_e_cpy2, cpy2_e)
         out = orig_out
 
     if keepdims:
         res_shape = res_shape + (1,) * red_nd
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         out = dpt.permute_dims(dpt.reshape(out, res_shape), inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
     return out
 
 
