@@ -160,8 +160,10 @@ cdef void _pycapsule_versioned_deleter(object dlt_capsule) noexcept:
 
 cdef void _managed_tensor_versioned_deleter(DLManagedTensorVersioned *dlmv_tensor) noexcept with gil:
     if dlmv_tensor is not NULL:
+        # we only delete shape, because we make single allocation to
+        # acommodate both shape and strides if strides are needed
         stdlib.free(dlmv_tensor.dl_tensor.shape)
-        cpython.Py_DECREF(<usm_ndarray>dlmv_tensor.manager_ctx)
+        cpython.Py_DECREF(<object>dlmv_tensor.manager_ctx)
         dlmv_tensor.manager_ctx = NULL
         stdlib.free(dlmv_tensor)
 
@@ -543,7 +545,7 @@ cdef class _DLManagedTensorVersionedOwner:
     Helper class managing the lifetime of the DLManagedTensorVersioned
     struct transferred from a 'dlpack_versioned' capsule.
     """
-    cdef DLManagedTensorVersioned *dlmv_tensor
+    cdef DLManagedTensorVersioned * dlmv_tensor
 
     def __cinit__(self):
         self.dlmv_tensor = NULL
@@ -551,6 +553,7 @@ cdef class _DLManagedTensorVersionedOwner:
     def __dealloc__(self):
         if self.dlmv_tensor:
             self.dlmv_tensor.deleter(self.dlmv_tensor)
+            self.dlmv_tensor = NULL
 
     @staticmethod
     cdef _DLManagedTensorVersionedOwner _create(DLManagedTensorVersioned *dlmv_tensor_src):
