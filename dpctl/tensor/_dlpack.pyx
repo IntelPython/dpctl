@@ -405,15 +405,16 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
         if pDRef is not NULL:
             DPCTLDevice_Delete(pDRef)
             raise DLPackCreationError(
-                "to_dlpack_capsule: DLPack can only export arrays allocated "
-                "on non-partitioned SYCL devices on platforms where "
-                "default_context oneAPI extension is not supported."
+                "to_dlpack_versioned_capsule: DLPack can only export arrays "
+                "allocated on non-partitioned SYCL devices on platforms "
+                "where default_context oneAPI extension is not supported."
             )
     else:
         if not usm_ary.sycl_context == default_context:
             raise DLPackCreationError(
-                "to_dlpack_capsule: DLPack can only export arrays based on USM "
-                "allocations bound to a default platform SYCL context"
+                "to_dlpack_versioned_capsule: DLPack can only export arrays "
+                "based on USM allocations bound to a default platform SYCL "
+                "context"
             )
         # Find the unpartitioned parent of the allocation device
         pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
@@ -429,20 +430,22 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     device_id = ary_sycl_device.get_overall_ordinal()
     if device_id < 0:
         raise DLPackCreationError(
-            "to_dlpack_capsule: failed to determine device_id"
+            "to_dlpack_versioned_capsule: failed to determine device_id"
         )
 
     dlmv_tensor = <DLManagedTensorVersioned *> stdlib.malloc(
         sizeof(DLManagedTensorVersioned))
     if dlmv_tensor is NULL:
         raise MemoryError(
-            "to_dlpack_capsule: Could not allocate memory for DLManagedTensorVersioned"
+            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "for DLManagedTensorVersioned"
         )
     shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
     if shape_strides_ptr is NULL:
         stdlib.free(dlmv_tensor)
         raise MemoryError(
-            "to_dlpack_capsule: Could not allocate memory for shape/strides"
+            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "for shape/strides"
         )
     # this can be a separate function for handling shapes and strides
     shape_ptr = usm_ary.get_shape()
@@ -538,7 +541,7 @@ cdef class _DLManagedTensorOwner:
 cdef class _DLManagedTensorVersionedOwner:
     """
     Helper class managing the lifetime of the DLManagedTensorVersioned
-    struct transferred from a 'dlpack' capsule.
+    struct transferred from a 'dlpack_versioned' capsule.
     """
     cdef DLManagedTensorVersioned *dlmv_tensor
 
