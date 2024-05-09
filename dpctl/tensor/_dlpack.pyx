@@ -601,8 +601,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps):
             )
         else:
             raise TypeError(
-                " Python 'dltensor' capsule was expected, "
-                "got {type(dlm_tensor)}"
+                "`from_dlpack_capsule` expects a Python 'dltensor' capsule"
             )
     dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
             py_caps, "dltensor")
@@ -787,8 +786,8 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
             )
         else:
             raise TypeError(
-                "A Python 'dltensor_versioned' capsule was expected, "
-                "got {type(dlmv_tensor)}"
+                "`from_dlpack_versioned_capsule` expects a Python "
+                "'dltensor_versioned' capsule"
             )
     dlmv_tensor = <DLManagedTensorVersioned*>cpython.PyCapsule_GetPointer(
             py_caps, "dltensor_versioned")
@@ -829,6 +828,11 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
         if dlmv_tensor.dl_tensor.dtype.lanes != 1:
             raise BufferError(
                 "Can not import DLPack tensor with lanes != 1"
+            )
+        if dlmv_tensor.version.major > DLPACK_MAJOR_VERSION:
+            raise BufferError(
+                "Can not import DLPack tensor with major version "
+                f"greater than {DLPACK_MAJOR_VERSION}"
             )
         offset_min = 0
         if dlmv_tensor.dl_tensor.strides is NULL:
