@@ -164,8 +164,8 @@ def test_from_dlpack_strides(mod, typestr, usm_type, all_root_devices):
 
 
 def test_from_dlpack_input_validation():
-    vstr = dpt._dlpack.get_build_dlpack_version()
-    assert type(vstr) is str
+    v = dpt._dlpack.get_build_dlpack_version()
+    assert type(v) is tuple
     with pytest.raises(TypeError):
         dpt.from_dlpack(None)
 

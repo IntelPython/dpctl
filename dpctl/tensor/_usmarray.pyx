@@ -36,7 +36,11 @@ cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
 cimport dpctl.tensor._dlpack as c_dlpack
 
+from ._dlpack import get_build_dlpack_version
+
 from .._sycl_device_factory cimport _cached_default_device
+
+from enum import IntEnum
 
 import dpctl.tensor._flags as _flags
 from dpctl.tensor._tensor_impl import default_device_fp_type
@@ -44,6 +48,20 @@ from dpctl.tensor._tensor_impl import default_device_fp_type
 include "_stride_utils.pxi"
 include "_types.pxi"
 include "_slicing.pxi"
+
+
+class DLDeviceType(IntEnum):
+    kDLCPU = c_dlpack.device_CPU
+    kDLCUDA = c_dlpack.device_CUDA
+    kDLCUDAHost = c_dlpack.device_CUDAHost
+    kDLCUDAManaged = c_dlpack.device_CUDAManaged
+    kDLROCM = c_dlpack.device_DLROCM
+    kDLROCMHost = c_dlpack.device_ROCMHost
+    kDLOpenCL = c_dlpack.device_OpenCL
+    kDLVulkan = c_dlpack.device_Vulkan
+    kDLMetal = c_dlpack.device_Metal
+    kDLVPI = c_dlpack.device_VPI
+    kDLOneAPI = c_dlpack.device_OneAPI
 
 
 cdef class InternalUSMArrayError(Exception):
@@ -920,7 +938,7 @@ cdef class usm_ndarray:
         cdef c_dpmem._Memory arr_buf
         d = Device.create_device(target_device)
 
-        if (stream is None or type(stream) is not dpctl.SyclQueue or
+        if (stream is None or not isinstance(stream, dpctl.SyclQueue) or
             stream == self.sycl_queue):
             pass
         else:
@@ -1046,14 +1064,42 @@ cdef class usm_ndarray:
         "Implementation for operator.and"
         return dpctl.tensor.bitwise_and(self, other)
 
-    def __dlpack__(self, stream=None):
+    def __dlpack__(self, *, stream=None, max_version=None, dl_device=None, copy=None):
         """
         Produces DLPack capsule.
 
         Args:
             stream (:class:`dpctl.SyclQueue`, optional):
-                Execution queue to synchronize with. If ``None``,
-                synchronization is not performed.
+                Execution queue to synchronize with.
+                If ``None``, synchronization is not performed.
+                Default: ``None``.
+            max_version (tuple[int, int], optional):
+                The maximum DLPack version the consumer (caller of
+                ``__dlpack__``) supports. As ``__dlpack__`` may not
+                always return a DLPack capsule with version
+                `max_version`, the consumer must verify the version
+                even if this argument is passed.
+                Default: ``None``.
+            dl_device (tuple[enum.Enum, int], optional):
+                The device the returned DLPack capsule will be
+                placed on.
+                The device must be a 2-tuple matching the format of
+                ``__dlpack_device__`` method, an integer enumerator
+                representing the device type followed by an integer
+                representing the index of the device.
+                Default: ``None``.
+            copy (bool, optional):
+                Boolean indicating whether or not to copy the input.
+
+                * If ``copy`` is ``True``, the input will always be
+                  copied.
+                * If ``False``, a ``BufferError`` will be raised if a
+                  copy is deemed necessary.
+                * If ``None``, a copy will be made only if deemed
+                  necessary, otherwise, the existing memory buffer will
+                  be reused.
+
+                Default: ``None``.
 
         Raises:
             MemoryError:
@@ -1061,15 +1107,76 @@ cdef class usm_ndarray:
             DLPackCreationError:
                 when array is allocated on a partitioned
                 SYCL device, or with a non-default context.
+            BufferError:
+                when a copy is deemed necessary but ``copy``
+                is ``False`` or when the provided ``dl_device``
+                cannot be handled.
         """
-        _caps = c_dlpack.to_dlpack_capsule(self)
-        if (stream is None or type(stream) is not dpctl.SyclQueue or
-            stream == self.sycl_queue):
-            pass
+        if max_version is None:
+            # legacy path for DLManagedTensor
+            # copy kwarg ignored because copy flag can't be set
+            _caps = c_dlpack.to_dlpack_capsule(self)
+            if (stream is None or type(stream) is not dpctl.SyclQueue or
+                stream == self.sycl_queue):
+                pass
+            else:
+                ev = self.sycl_queue.submit_barrier()
+                stream.submit_barrier(dependent_events=[ev])
+            return _caps
         else:
-            ev = self.sycl_queue.submit_barrier()
-            stream.submit_barrier(dependent_events=[ev])
-        return _caps
+            dpctl_dlpack_version = get_build_dlpack_version()
+            if max_version >= dpctl_dlpack_version or max_version[0] == dpctl_dlpack_version[0]:
+                # DLManagedTensorVersioned path
+                # TODO: add logic for targeting a device
+                if dl_device is not None:
+                    if dl_device != self.__dlpack_device__():
+                        raise NotImplementedError(
+                            "targeting a device with `__dlpack__` is not "
+                            "currently implemented"
+                        )
+                if copy is None:
+                    copy = False
+                # TODO: strategy for handling stream on different device from dl_device
+                if copy:
+                    if (stream is None or type(stream) is not dpctl.SyclQueue or
+                        stream == self.sycl_queue):
+                        pass
+                    else:
+                        ev = self.sycl_queue.submit_barrier()
+                        stream.submit_barrier(dependent_events=[ev])
+                    nbytes = self.usm_data.nbytes
+                    copy_buffer = type(self.usm_data)(
+                        nbytes, queue=self.sycl_queue
+                    )
+                    copy_buffer.copy_from_device(self.usm_data)
+                    _copied_arr = usm_ndarray(
+                        self.shape,
+                        self.dtype,
+                        buffer=copy_buffer,
+                        strides=self.strides,
+                        offset=self.get_offset()
+                    )
+                    _copied_arr.flags_ = self.flags_
+                    _caps = c_dlpack.to_dlpack_versioned_capsule(_copied_arr, copy)
+                else:
+                    _caps = c_dlpack.to_dlpack_versioned_capsule(self, copy)
+                    if (stream is None or type(stream) is not dpctl.SyclQueue or
+                        stream == self.sycl_queue):
+                        pass
+                    else:
+                        ev = self.sycl_queue.submit_barrier()
+                        stream.submit_barrier(dependent_events=[ev])
+                return _caps
+            else:
+                # legacy path for DLManagedTensor
+                _caps = c_dlpack.to_dlpack_capsule(self)
+                if (stream is None or type(stream) is not dpctl.SyclQueue or
+                    stream == self.sycl_queue):
+                    pass
+                else:
+                    ev = self.sycl_queue.submit_barrier()
+                    stream.submit_barrier(dependent_events=[ev])
+                return _caps
 
     def __dlpack_device__(self):
         """
@@ -1090,7 +1197,7 @@ cdef class usm_ndarray:
             )
         else:
             return (
-                c_dlpack.device_oneAPI,
+                DLDeviceType.kDLOneAPI,
                 dev_id,
             )
 
