@@ -1631,8 +1631,9 @@ def tril(x, /, *, k=0):
             sycl_queue=q,
         )
         _manager = dpctl.utils.SequentialOrderManager
+        dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=res, sycl_queue=q
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
         )
         _manager.add_event_pair(hev, cpy_ev)
     elif k < -shape[nd - 2]:
@@ -1652,7 +1653,10 @@ def tril(x, /, *, k=0):
             sycl_queue=q,
         )
         _manager = dpctl.utils.SequentialOrderManager
-        hev, tril_ev = ti._tril(src=x, dst=res, k=k, sycl_queue=q)
+        dep_evs = _manager.submitted_events
+        hev, tril_ev = ti._tril(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
         _manager.add_event_pair(hev, tril_ev)
 
     return res
@@ -1713,8 +1717,9 @@ def triu(x, /, *, k=0):
             sycl_queue=q,
         )
         _manager = dpctl.utils.SequentialOrderManager
+        dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=res, sycl_queue=q
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
         )
         _manager.add_event_pair(hev, cpy_ev)
     else:
@@ -1726,7 +1731,10 @@ def triu(x, /, *, k=0):
             sycl_queue=q,
         )
         _manager = dpctl.utils.SequentialOrderManager
-        hev, triu_ev = ti._triu(src=x, dst=res, k=k, sycl_queue=q)
+        dep_evs = _manager.submitted_events
+        hev, triu_ev = ti._triu(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
         _manager.add_event_pair(hev, triu_ev)
 
     return res
