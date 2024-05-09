@@ -506,8 +506,8 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     dlmv_tensor.version.major = DLPACK_MAJOR_VERSION
     dlmv_tensor.version.minor = DLPACK_MINOR_VERSION
 
-    dlmv_tensor.manager_ctx = <void*>usm_ary
-    cpython.Py_INCREF(usm_ary)
+    dlmv_tensor.manager_ctx = <void*>ary_base
+    cpython.Py_INCREF(ary_base)
     dlmv_tensor.deleter = _managed_tensor_versioned_deleter
 
     return cpython.PyCapsule_New(dlmv_tensor, 'dltensor_versioned', _pycapsule_versioned_deleter)
