@@ -177,6 +177,7 @@ cdef class usm_ndarray:
         cdef int itemsize = 0
         cdef int err = 0
         cdef int contig_flag = 0
+        cdef int writable_flag = USM_ARRAY_WRITABLE
         cdef Py_ssize_t *shape_ptr = NULL
         cdef Py_ssize_t ary_nelems = 0
         cdef Py_ssize_t ary_nbytes = 0
@@ -269,6 +270,8 @@ cdef class usm_ndarray:
                     "an instance of `MemoryUSM*` object, or a usm_ndarray"
                      "").format(buffer))
         elif isinstance(buffer, usm_ndarray):
+            if not buffer.flags.writable:
+                writable_flag = 0
             _buffer = buffer.usm_data
         else:
             self._cleanup()
@@ -293,7 +296,7 @@ cdef class usm_ndarray:
         self.shape_ = shape_ptr
         self.strides_ = strides_ptr
         self.typenum_ = typenum
-        self.flags_ = (contig_flag | USM_ARRAY_WRITABLE)
+        self.flags_ = (contig_flag | writable_flag)
         self.nd_ = nd
         self.array_namespace_ = array_namespace
 
