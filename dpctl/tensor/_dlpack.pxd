@@ -34,6 +34,9 @@ cdef extern from 'dlpack/dlpack.h' nogil:
     int device_Metal 'kDLMetal'
     int device_VPI 'kDLVPI'
     int device_OneAPI 'kDLOneAPI'
+    int device_WebGPU 'kDLWebGPU'
+    int device_Hexagon 'kDLHexagon'
+    int device_MAIA 'kDLMAIA'
 
 cpdef object to_dlpack_capsule(usm_ndarray array) except +
 cpdef object to_dlpack_versioned_capsule(usm_ndarray array, bint copied) except +

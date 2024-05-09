@@ -62,6 +62,9 @@ class DLDeviceType(IntEnum):
     kDLMetal = c_dlpack.device_Metal
     kDLVPI = c_dlpack.device_VPI
     kDLOneAPI = c_dlpack.device_OneAPI
+    kDLWebGPU = c_dlpack.device_WebGPU
+    kDLHexagon = c_dlpack.device_Hexagon
+    kDLMAIA = c_dlpack.device_MAIA
 
 
 cdef class InternalUSMArrayError(Exception):

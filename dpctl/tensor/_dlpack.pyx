@@ -73,6 +73,9 @@ cdef extern from 'dlpack/dlpack.h' nogil:
         kDLMetal
         kDLVPI
         kDLOneAPI
+        kDLWebGPU
+        kDLHexagon
+        kDLMAIA
 
     ctypedef struct DLDevice:
         DLDeviceType device_type
