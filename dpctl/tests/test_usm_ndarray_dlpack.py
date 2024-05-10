@@ -229,9 +229,8 @@ def test_dlpack_from_subdevice():
     except dpctl.SyclSubDeviceCreationError:
         sdevs = None
     try:
-        sdevs = (
-            dev.create_sub_devices(partition=[1, 1]) if sdevs is None else sdevs
-        )
+        if sdevs is None:
+            sdevs = dev.create_sub_devices(partition=[1, 1])
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
@@ -255,19 +254,28 @@ def test_legacy_dlpack_capsule():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
 
-    cap = x.__dlpack__(max_version=(0, 8))
+    legacy_ver = (0, 8)
+
+    cap = x.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
     del cap
     assert x._pointer == y._pointer
 
     x2 = dpt.reshape(x, (10, 10)).mT
-    cap = x2.__dlpack__(max_version=(0, 8))
+    cap = x2.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+    del x2
+
+    x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
+    cap = x2.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
     del cap
     assert x2._pointer == y._pointer
 
     x3 = x[::-2]
-    cap = x3.__dlpack__(max_version=(0, 8))
+    cap = x3.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
     assert x3._pointer == y._pointer
     del x3, y, x
@@ -280,20 +288,34 @@ def test_versioned_dlpack_capsule():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
 
-    cap = x.__dlpack__(max_version=(1, 0))
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     del cap
     assert x._pointer == y._pointer
 
-    x2 = dpt.reshape(x, (10, 10)).mT
-    cap = x2.__dlpack__(max_version=(1, 0))
+    x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
+    cap = x2.__dlpack__(max_version=max_supported_ver)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     del cap
     assert x2._pointer == y._pointer
+    del x2
 
     x3 = x[::-2]
-    cap = x3.__dlpack__(max_version=(1, 0))
+    cap = x3.__dlpack__(max_version=max_supported_ver)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     assert x3._pointer == y._pointer
     del x3, y, x
     del cap
+
+    # read-only array
+    x = dpt.arange(100, dtype="i4")
+    x.flags["W"] = False
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x._pointer == y._pointer
+
+    # read-only array, and copy
+    cap = x.__dlpack__(max_version=max_supported_ver, copy=True)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x._pointer != y._pointer
