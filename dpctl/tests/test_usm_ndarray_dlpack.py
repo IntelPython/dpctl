@@ -22,6 +22,7 @@ from helper import skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._dlpack as _dlp
 
 device_oneAPI = 14  # DLDeviceType.kDLOneAPI
 
@@ -246,3 +247,53 @@ def test_dlpack_from_subdevice():
     ar = dpt.arange(n, dtype=dpt.int32, sycl_queue=q)
     ar2 = dpt.from_dlpack(ar)
     assert ar2.sycl_device == sdevs[0]
+
+
+def test_legacy_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    cap = x.__dlpack__(max_version=(0, 8))
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x._pointer == y._pointer
+
+    x2 = dpt.reshape(x, (10, 10)).mT
+    cap = x2.__dlpack__(max_version=(0, 8))
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+
+    x3 = x[::-2]
+    cap = x3.__dlpack__(max_version=(0, 8))
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x3._pointer == y._pointer
+    del x3, y, x
+    del cap
+
+
+def test_versioned_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    cap = x.__dlpack__(max_version=(1, 0))
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+    assert x._pointer == y._pointer
+
+    x2 = dpt.reshape(x, (10, 10)).mT
+    cap = x2.__dlpack__(max_version=(1, 0))
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+
+    x3 = x[::-2]
+    cap = x3.__dlpack__(max_version=(1, 0))
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x3._pointer == y._pointer
+    del x3, y, x
+    del cap
