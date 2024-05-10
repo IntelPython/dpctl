@@ -229,7 +229,7 @@ def cumulative_sum(
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int, ...]]):
+        axis (Optional[int]):
             axis along which cumulative sum must be computed.
             If `None`, the sum is computed over the entire array.
             If `x` is a one-dimensional array, providing an `axis` is optional;
@@ -308,7 +308,7 @@ def cumulative_prod(
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int, ...]]):
+        axis (Optional[int]):
             axis along which cumulative product must be computed.
             If `None`, the product is computed over the entire array.
             If `x` is a one-dimensional array, providing an `axis` is optional;
@@ -388,7 +388,7 @@ def cumulative_logsumexp(
     Args:
         x (usm_ndarray):
             input array.
-        axis (Optional[int, Tuple[int, ...]]):
+        axis (Optional[int]):
             axis along which cumulative logsumexp must be computed.
             If `None`, the logsumexp is computed over the entire array.
             If `x` is a one-dimensional array, providing an `axis` is optional;
