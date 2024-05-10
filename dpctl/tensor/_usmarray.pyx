@@ -1127,8 +1127,14 @@ cdef class usm_ndarray:
                 stream.submit_barrier(dependent_events=[ev])
             return _caps
         else:
+            if not isinstance(max_version, tuple) or len(max_version) != 2:
+                raise TypeError(
+                    "`__dlpack__` expects `max_version` to be a "
+                    "2-tuple of integers `(major, minor)`, instead "
+                    f"got {type(max_version)}"
+                )
             dpctl_dlpack_version = get_build_dlpack_version()
-            if max_version >= dpctl_dlpack_version or max_version[0] == dpctl_dlpack_version[0]:
+            if max_version[0] >= dpctl_dlpack_version[0]:
                 # DLManagedTensorVersioned path
                 # TODO: add logic for targeting a device
                 if dl_device is not None:
