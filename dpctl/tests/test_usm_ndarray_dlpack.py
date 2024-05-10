@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
 import ctypes
 
 import pytest
@@ -57,7 +58,18 @@ def typestr(request):
 
 @pytest.fixture
 def all_root_devices():
-    return dpctl.get_devices()
+    """
+    Caches root devices. For the sake of speed
+    of test suite execution, keep at most two
+    devices from each platform
+    """
+    devs = dpctl.get_devices()
+    devs_per_platform = collections.defaultdict(list)
+    for dev in devs:
+        devs_per_platform[dev.sycl_platform].append(dev)
+
+    pruned = map(lambda li: li[:2], devs_per_platform.values())
+    return sum(pruned, start=[])
 
 
 def test_dlpack_device(usm_type, all_root_devices):
