@@ -314,8 +314,10 @@ def test_versioned_dlpack_capsule():
     cap = x.__dlpack__(max_version=max_supported_ver)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     assert x._pointer == y._pointer
+    assert not y.flags.writable
 
     # read-only array, and copy
     cap = x.__dlpack__(max_version=max_supported_ver, copy=True)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     assert x._pointer != y._pointer
+    assert not y.flags.writable
