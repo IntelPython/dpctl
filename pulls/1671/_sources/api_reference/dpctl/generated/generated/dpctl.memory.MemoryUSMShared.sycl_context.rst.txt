@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.sycl\_context
-==========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMShared.sycl_context
