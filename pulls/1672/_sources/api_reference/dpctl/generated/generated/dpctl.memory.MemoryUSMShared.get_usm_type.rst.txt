@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMShared.get\_usm\_type
+===========================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMShared.get_usm_type
