@@ -423,3 +423,50 @@ def test_dlpack_size_0():
     cap = x.__dlpack__(max_version=max_supported_ver)
     y = _dlp.from_dlpack_versioned_capsule(cap)
     assert y._pointer == x._pointer
+
+
+def test_dlpack_max_version_validation():
+    try:
+        x = dpt.ones(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    with pytest.raises(
+        TypeError,
+        match=r"`__dlpack__` expects `max_version` to be a "
+        r"2-tuple of integers `\(major, minor\)`, instead "
+        r"got .*",
+    ):
+        x.__dlpack__(max_version=1)
+
+
+def test_dlpack_kwargs():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queues")
+    x = dpt.arange(100, dtype="i4", sycl_queue=q1)
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(stream=q2, max_version=legacy_ver, copy=True)
+    # `copy` ignored for legacy path
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y._pointer == x._pointer
+    del x, y
+    del cap
+
+    x1 = dpt.arange(100, dtype="i4", sycl_queue=q1)
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x1.__dlpack__(stream=q2, max_version=max_supported_ver, copy=False)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer == x1._pointer
+    del x1, y
+    del cap
+
+    x2 = dpt.arange(100, dtype="i4", sycl_queue=q1)
+    cap = x2.__dlpack__(stream=q2, max_version=max_supported_ver, copy=True)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer != x2._pointer
+    del x2, y
+    del cap
