@@ -337,3 +337,81 @@ def test_from_dlpack_kwargs():
 
     z = dpt.from_dlpack(x, device=x.sycl_device)
     assert z._pointer == x._pointer
+
+
+def test_dlpack_deleters():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    del cap
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    del cap
+
+
+def test_from_dlpack_device():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    out = dpt.from_dlpack(x, device=x.__dlpack_device__())
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+    out = dpt.from_dlpack(x, device=x.device)
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+    out = dpt.from_dlpack(x, device=x.sycl_device)
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+
+def test_used_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    _dlp.from_dlpack_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_capsule(cap)
+    del cap
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    _dlp.from_dlpack_versioned_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+
+
+def test_dlpack_size_0():
+    try:
+        x = dpt.ones(0, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y._pointer == x._pointer
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer == x._pointer
