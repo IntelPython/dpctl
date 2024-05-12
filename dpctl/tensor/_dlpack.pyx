@@ -211,7 +211,6 @@ cdef int get_array_dlpack_device_id(
     cdef c_dpctl.SyclQueue ary_sycl_queue
     cdef c_dpctl.SyclDevice ary_sycl_device
     cdef DPCTLSyclDeviceRef pDRef = NULL
-    cdef DPCTLSyclDeviceRef tDRef = NULL
     cdef int device_id = -1
 
     ary_sycl_queue = usm_ary.get_sycl_queue()
@@ -228,26 +227,18 @@ cdef int get_array_dlpack_device_id(
                 "on non-partitioned SYCL devices on platforms where "
                 "default_context oneAPI extension is not supported."
             )
+        device_id = ary_sycl_device.get_overall_ordinal()
     else:
         if not usm_ary.sycl_context == default_context:
             raise DLPackCreationError(
                 "to_dlpack_capsule: DLPack can only export arrays based on USM "
                 "allocations bound to a default platform SYCL context"
             )
-        # Find the unpartitioned parent of the allocation device
-        pDRef = DPCTLDevice_GetParentDevice(ary_sycl_device.get_device_ref())
-        if pDRef is not NULL:
-            tDRef = DPCTLDevice_GetParentDevice(pDRef)
-            while tDRef is not NULL:
-                DPCTLDevice_Delete(pDRef)
-                pDRef = tDRef
-                tDRef = DPCTLDevice_GetParentDevice(pDRef)
-            ary_sycl_device = c_dpctl.SyclDevice._create(pDRef)
+        device_id = get_parent_device_ordinal_id(ary_sycl_device)
 
-    device_id = ary_sycl_device.get_overall_ordinal()
     if device_id < 0:
         raise DLPackCreationError(
-            "to_dlpack_capsule: failed to determine device_id"
+            "get_array_dlpack_device_id: failed to determine device_id"
         )
 
     return device_id
@@ -294,11 +285,6 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     ary_base = usm_ary.get_base()
 
     device_id = get_array_dlpack_device_id(usm_ary)
-
-    if device_id < 0:
-        raise DLPackCreationError(
-            "to_dlpack_capsule: failed to determine device_id"
-        )
 
     dlm_tensor = <DLManagedTensor *> stdlib.malloc(
         sizeof(DLManagedTensor))

@@ -261,6 +261,7 @@ def test_legacy_dlpack_capsule():
     del cap
     assert x._pointer == y._pointer
 
+    x = dpt.arange(100, dtype="u4")
     x2 = dpt.reshape(x, (10, 10)).mT
     cap = x2.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
@@ -268,12 +269,14 @@ def test_legacy_dlpack_capsule():
     assert x2._pointer == y._pointer
     del x2
 
+    x = dpt.arange(100, dtype="f4")
     x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
     cap = x2.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
     del cap
     assert x2._pointer == y._pointer
 
+    x = dpt.arange(100, dtype="c8")
     x3 = x[::-2]
     cap = x3.__dlpack__(max_version=legacy_ver)
     y = _dlp.from_dlpack_capsule(cap)
@@ -321,3 +324,16 @@ def test_versioned_dlpack_capsule():
     y = _dlp.from_dlpack_versioned_capsule(cap)
     assert x._pointer != y._pointer
     assert not y.flags.writable
+
+
+def test_from_dlpack_kwargs():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    y = dpt.from_dlpack(x, copy=True)
+    assert x._pointer != y._pointer
+
+    z = dpt.from_dlpack(x, device=x.sycl_device)
+    assert z._pointer == x._pointer
