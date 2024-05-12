@@ -284,6 +284,14 @@ def test_legacy_dlpack_capsule():
     del x3, y, x
     del cap
 
+    x = dpt.ones(100, dtype="?")
+    x4 = x[::-2]
+    cap = x4.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x4._pointer == y._pointer
+    del x4, y, x
+    del cap
+
 
 def test_versioned_dlpack_capsule():
     try:
