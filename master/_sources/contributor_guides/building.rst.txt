@@ -13,8 +13,34 @@ CUDA support or try latest features.
 Building using oneAPI DPC++
 ---------------------------
 
-Install oneAPI and graphics drivers to the system prior
-to proceeding further.
+
+Prerequisites
+~~~~~~~~~~~~~
+
+Install oneAPI and graphics drivers according to your targeted hardware:
+
+
+- To target Intel GPUs, see the `Installation Page <https://dgpu-docs.intel.com/driver/installation.html>`_
+  of the Intel(R) software for general purpose GPU capabilities document for
+  driver information.
+- To target NVIDIA* or AMD* GPUs, see the vendor website for drivers, as well
+  as `CodePlay plugins <https://codeplay.com/solutions/oneapi/plugins/>`_ to
+  enable hardware targeting.
+- To target a CPU, the OpenCL* CPU driver is included as a part of the
+  oneAPI DPC++ Compiler installation. The CPU
+  driver is also packaged in conda, and is automatically made available using
+  conda activation scripts on Linux*, and on Windows* (in user-mode).
+  If conda is used with elevated privileges in Windows (similar to
+  GitHub Actions CI), a PowerShell script must be run:
+
+  .. code-block:: powershell
+
+    &$Env:CONDA_PREFIX\Scripts\script_name.ps1
+
+Use the script ``set-intel-ocl-icd-registry.ps1`` to set
+appropriate registry key, and ``unset-intel-ocl-icd-registry.ps1``
+to remove it.
+
 
 Activate oneAPI
 ~~~~~~~~~~~~~~~

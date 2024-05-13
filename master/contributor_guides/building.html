@@ -831,8 +831,31 @@ build of DPC++ to build <a class="reference internal" href="../api_reference/dpc
 CUDA support or try latest features.</p>
 <section id="building-using-oneapi-dpc">
 <h2>Building using oneAPI DPC++<a class="headerlink" href="#building-using-oneapi-dpc" title="Permalink to this heading">¶</a></h2>
-<p>Install oneAPI and graphics drivers to the system prior
-to proceeding further.</p>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
+<p>Install oneAPI and graphics drivers according to your targeted hardware:</p>
+<ul>
+<li><p>To target Intel GPUs, see the <a class="reference external" href="https://dgpu-docs.intel.com/driver/installation.html">Installation Page</a>
+of the Intel(R) software for general purpose GPU capabilities document for
+driver information.</p></li>
+<li><p>To target NVIDIA* or AMD* GPUs, see the vendor website for drivers, as well
+as <a class="reference external" href="https://codeplay.com/solutions/oneapi/plugins/">CodePlay plugins</a> to
+enable hardware targeting.</p></li>
+<li><p>To target a CPU, the OpenCL* CPU driver is included as a part of the
+oneAPI DPC++ Compiler installation. The CPU
+driver is also packaged in conda, and is automatically made available using
+conda activation scripts on Linux*, and on Windows* (in user-mode).
+If conda is used with elevated privileges in Windows (similar to
+GitHub Actions CI), a PowerShell script must be run:</p>
+<div class="highlight-powershell notranslate"><div class="highlight"><pre><span></span><span class="p">&amp;</span><span class="nv">$Env:CONDA_PREFIX</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">script_name</span><span class="p">.</span><span class="n">ps1</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Use the script <code class="docutils literal notranslate"><span class="pre">set-intel-ocl-icd-registry.ps1</span></code> to set
+appropriate registry key, and <code class="docutils literal notranslate"><span class="pre">unset-intel-ocl-icd-registry.ps1</span></code>
+to remove it.</p>
+</section>
 <section id="activate-oneapi">
 <h3>Activate oneAPI<a class="headerlink" href="#activate-oneapi" title="Permalink to this heading">¶</a></h3>
 <p>On Linux OS</p>
@@ -1053,6 +1076,7 @@ make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><sp
             <ul>
 <li><a class="reference internal" href="#">Building from the Source</a><ul>
 <li><a class="reference internal" href="#building-using-oneapi-dpc">Building using oneAPI DPC++</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li><a class="reference internal" href="#activate-oneapi">Activate oneAPI</a></li>
 <li><a class="reference internal" href="#build-and-install-using-conda-build">Build and Install Using Conda-Build</a></li>
 <li><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
