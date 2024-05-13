@@ -168,7 +168,7 @@ they do not compare equal, since they correspond to two independent scheduling e
 Event
 -----
 
-SYCL event is an entity created when a task is submitted to SYCL queue for execution. The event are be used to
+A SYCL event is an entity created when a task is submitted to SYCL queue for execution. The events are used to
 order execution of computational tasks by the DPC++ runtime. They may also contain profiling information associated
 with the submitted task, provided the queue was created with "enable_profiling" property.
 
@@ -196,7 +196,7 @@ queue. This queue argument is stored the instance of the class and is used to su
 tasks to when performing copying of elements from or to this allocation or when filling
 the allocation with values.
 
-Classes that represent host-accessible USM allocations, i.e. types USM-shared and USM-host,
+Classes that represent host-accessible USM allocations, i.e., types USM-shared and USM-host,
 expose Python buffer interface.
 
 .. code-block:: python
@@ -224,7 +224,7 @@ Backend
 
 Intel(R) oneAPI Data Parallel C++ compiler ships with two backends:
 
-#. OpenCL backend
+#. OpenCL* backend
 #. Level-Zero backend
 
 Additional backends can be added to the compiler by installing CodePlay's plugins:

@@ -18,13 +18,13 @@ description and :ref:`uses <beginners_guide_oneapi_device_selector_usecase>`.
 Variable ``SYCL_CACHE_PERSISTENT``
 ----------------------------------
 
-The binaries implementing :py:mod:`dpctl.tensor` created using DPC++ compiler contain sections
-with standardized intermediate forms (e.g. `SPIR-V <https://www.khronos.org/spir/>`_) that must be
+The binaries implementing :py:mod:`dpctl.tensor` created using the DPC++ compiler contain sections
+with standardized intermediate forms (e.g., `SPIR-V <https://www.khronos.org/spir/>`_) that must be
 further built using SYCL device drivers for execution on the specific target hardware.
 This step is known as just-in-time compiling (JIT-ing).
 
-By default, the result of JIT-ing persists for the duration of SYCL application, i.e. for the
-duration of the Python session where :py:mod:`dpctl.tensor` is used. Setting environment variable
+By default, the result of JIT-ing persists for the duration of SYCL application, i.e., for the
+duration of the Python session where :py:mod:`dpctl.tensor` is used. Setting the environment variable
 ``SYCL_CACHE_PERSISTENT`` to value of ``1`` instructs DPC++ runtime to save the result of JIT-ing to
 disk and reuse it in subsequent Python sessions (assuming the variable remains to be set when sessions
 are started).
@@ -37,7 +37,7 @@ Variable ``SYCL_PI_TRACE``
 --------------------------
 
 Setting this debugging variable enables specific levels of tracing for SYCL Programming Interfaces (PI).
-The value of the variable is a bit-mask, with the following supported values
+The value of the variable is a bit-mask, with the following supported values:
 
 .. list-table::
     :header-rows: 1

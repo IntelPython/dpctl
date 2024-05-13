@@ -8,7 +8,7 @@ oneAPI library and its Python interface
 =======================================
 
 Using oneAPI libraries, a user calls functions that take ``sycl::queue`` and a collection of
-``sycl::event`` objects among other arguments, e.g.
+``sycl::event`` objects among other arguments. For example:
 
 .. code-block:: cpp
     :caption: Prototypical call signature of oneMKL function
@@ -27,7 +27,7 @@ vector complete. If the vector is empty, the runtime begins the execution as soo
 ready. The function returns a ``sycl::event`` object representing completion of the set of
 computational tasks submitted by the ``compute`` function.
 
-Hence, in oneAPI programming model, the execution **queue** is used to specify which device the
+Hence, in the oneAPI programming model, the execution **queue** is used to specify which device the
 function will execute on. To create a queue, one must specify a device to target.
 
 In :mod:`dpctl`, the ``sycl::queue`` is represented by :class:`dpctl.SyclQueue` Python type,
@@ -42,8 +42,9 @@ and a Python API to call such a function might look like
     ) -> dpctl.SyclEvent:
         ...
 
-Even if Python API to an offloading Python function looks different from this, it must
-translate to a similar call under the hood.
+When building Python API for a SYCL offloading function, and you choose to
+map the SYCL API to a different API on the Python side, it must still translate to a
+similar call under the hood.
 
 The arguments to the function must be suitable for use in the offloading functions.
 Typically these are Python scalars, or objects representing USM allocations, such as
@@ -74,7 +75,7 @@ with the queue are used to make the allocation.
     Python type representing the USM allocation.
 
 This design choice allows :mod:`dpctl` to have a preferred queue to use when operating on any single
-USM allocation, i.e.
+USM allocation. For example:
 
 .. code-block:: python
 
@@ -141,7 +142,7 @@ can be combined together in accordance with compute-follows-data programming mod
     >>> # rules are not met
     >>> tensor.concat((y1, y2))
 
-Please refer to :ref:`array migration <dpctl_tensor_array_migration>` section of the introduction to
+Please refer to the :ref:`array migration <dpctl_tensor_array_migration>` section of the introduction to
 :mod:`dpctl.tensor` to examples on how to resolve ``ExecutionPlacementError`` exceptions.
 
 ..
