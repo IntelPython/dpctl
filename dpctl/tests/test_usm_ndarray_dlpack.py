@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
 import ctypes
 
 import pytest
@@ -21,6 +22,7 @@ from helper import skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.tensor as dpt
+import dpctl.tensor._dlpack as _dlp
 
 device_oneAPI = 14  # DLDeviceType.kDLOneAPI
 
@@ -55,8 +57,23 @@ def typestr(request):
     return request.param
 
 
-def test_dlpack_device(usm_type):
-    all_root_devices = dpctl.get_devices()
+@pytest.fixture
+def all_root_devices():
+    """
+    Caches root devices. For the sake of speed
+    of test suite execution, keep at most two
+    devices from each platform
+    """
+    devs = dpctl.get_devices()
+    devs_per_platform = collections.defaultdict(list)
+    for dev in devs:
+        devs_per_platform[dev.sycl_platform].append(dev)
+
+    pruned = map(lambda li: li[:2], devs_per_platform.values())
+    return sum(pruned, start=[])
+
+
+def test_dlpack_device(usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         X = dpt.empty((64,), dtype="u1", usm_type=usm_type, device=sycl_dev)
         dev = X.__dlpack_device__()
@@ -66,11 +83,10 @@ def test_dlpack_device(usm_type):
         assert sycl_dev == all_root_devices[dev[1]]
 
 
-def test_dlpack_exporter(typestr, usm_type):
+def test_dlpack_exporter(typestr, usm_type, all_root_devices):
     caps_fn = ctypes.pythonapi.PyCapsule_IsValid
     caps_fn.restype = bool
     caps_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
-    all_root_devices = dpctl.get_devices()
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty((64,), dtype=typestr, usm_type=usm_type, device=sycl_dev)
@@ -119,8 +135,7 @@ def test_dlpack_exporter_stream():
 
 
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
-def test_from_dlpack(shape, typestr, usm_type):
-    all_root_devices = dpctl.get_devices()
+def test_from_dlpack(shape, typestr, usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X = dpt.empty(shape, dtype=typestr, usm_type=usm_type, device=sycl_dev)
@@ -139,8 +154,7 @@ def test_from_dlpack(shape, typestr, usm_type):
 
 
 @pytest.mark.parametrize("mod", [2, 5])
-def test_from_dlpack_strides(mod, typestr, usm_type):
-    all_root_devices = dpctl.get_devices()
+def test_from_dlpack_strides(mod, typestr, usm_type, all_root_devices):
     for sycl_dev in all_root_devices:
         skip_if_dtype_not_supported(typestr, sycl_dev)
         X0 = dpt.empty(
@@ -163,8 +177,8 @@ def test_from_dlpack_strides(mod, typestr, usm_type):
 
 
 def test_from_dlpack_input_validation():
-    vstr = dpt._dlpack.get_build_dlpack_version()
-    assert type(vstr) is str
+    v = dpt._dlpack.get_build_dlpack_version()
+    assert type(v) is tuple
     with pytest.raises(TypeError):
         dpt.from_dlpack(None)
 
@@ -215,9 +229,8 @@ def test_dlpack_from_subdevice():
     except dpctl.SyclSubDeviceCreationError:
         sdevs = None
     try:
-        sdevs = (
-            dev.create_sub_devices(partition=[1, 1]) if sdevs is None else sdevs
-        )
+        if sdevs is None:
+            sdevs = dev.create_sub_devices(partition=[1, 1])
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
@@ -233,3 +246,227 @@ def test_dlpack_from_subdevice():
     ar = dpt.arange(n, dtype=dpt.int32, sycl_queue=q)
     ar2 = dpt.from_dlpack(ar)
     assert ar2.sycl_device == sdevs[0]
+
+
+def test_legacy_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+
+    cap = x.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x._pointer == y._pointer
+
+    x = dpt.arange(100, dtype="u4")
+    x2 = dpt.reshape(x, (10, 10)).mT
+    cap = x2.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+    del x2
+
+    x = dpt.arange(100, dtype="f4")
+    x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
+    cap = x2.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+
+    x = dpt.arange(100, dtype="c8")
+    x3 = x[::-2]
+    cap = x3.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x3._pointer == y._pointer
+    del x3, y, x
+    del cap
+
+    x = dpt.ones(100, dtype="?")
+    x4 = x[::-2]
+    cap = x4.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x4._pointer == y._pointer
+    del x4, y, x
+    del cap
+
+
+def test_versioned_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+    assert x._pointer == y._pointer
+
+    x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
+    cap = x2.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+    assert x2._pointer == y._pointer
+    del x2
+
+    x3 = x[::-2]
+    cap = x3.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x3._pointer == y._pointer
+    del x3, y, x
+    del cap
+
+    # read-only array
+    x = dpt.arange(100, dtype="i4")
+    x.flags["W"] = False
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x._pointer == y._pointer
+    assert not y.flags.writable
+
+    # read-only array, and copy
+    cap = x.__dlpack__(max_version=max_supported_ver, copy=True)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert x._pointer != y._pointer
+    assert not y.flags.writable
+
+
+def test_from_dlpack_kwargs():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    y = dpt.from_dlpack(x, copy=True)
+    assert x._pointer != y._pointer
+
+    z = dpt.from_dlpack(x, device=x.sycl_device)
+    assert z._pointer == x._pointer
+
+
+def test_dlpack_deleters():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    del cap
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    del cap
+
+
+def test_from_dlpack_device():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    out = dpt.from_dlpack(x, device=x.__dlpack_device__())
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+    out = dpt.from_dlpack(x, device=x.device)
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+    out = dpt.from_dlpack(x, device=x.sycl_device)
+    assert x.device == out.device
+    assert x._pointer == out._pointer
+
+
+def test_used_dlpack_capsule():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    _dlp.from_dlpack_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_capsule(cap)
+    del cap
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    _dlp.from_dlpack_versioned_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_versioned_capsule(cap)
+    del cap
+
+
+def test_dlpack_size_0():
+    try:
+        x = dpt.ones(0, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(max_version=legacy_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y._pointer == x._pointer
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer == x._pointer
+
+
+def test_dlpack_max_version_validation():
+    try:
+        x = dpt.ones(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    with pytest.raises(
+        TypeError,
+        match=r"`__dlpack__` expects `max_version` to be a "
+        r"2-tuple of integers `\(major, minor\)`, instead "
+        r"got .*",
+    ):
+        x.__dlpack__(max_version=1)
+
+
+def test_dlpack_kwargs():
+    try:
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queues")
+    x = dpt.arange(100, dtype="i4", sycl_queue=q1)
+
+    legacy_ver = (0, 8)
+    cap = x.__dlpack__(stream=q2, max_version=legacy_ver, copy=True)
+    # `copy` ignored for legacy path
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y._pointer == x._pointer
+    del x, y
+    del cap
+
+    x1 = dpt.arange(100, dtype="i4", sycl_queue=q1)
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x1.__dlpack__(stream=q2, max_version=max_supported_ver, copy=False)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer == x1._pointer
+    del x1, y
+    del cap
+
+    x2 = dpt.arange(100, dtype="i4", sycl_queue=q1)
+    cap = x2.__dlpack__(stream=q2, max_version=max_supported_ver, copy=True)
+    y = _dlp.from_dlpack_versioned_capsule(cap)
+    assert y._pointer != x2._pointer
+    del x2, y
+    del cap

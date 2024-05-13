@@ -148,6 +148,15 @@ def test_usm_ndarray_writable_flag_views():
     assert not a.imag.flags.writable
 
 
+def test_usm_ndarray_from_usm_ndarray_readonly():
+    get_queue_or_skip()
+
+    x1 = dpt.arange(10, dtype="f4")
+    x1.flags["W"] = False
+    x2 = dpt.usm_ndarray(x1.shape, dtype="f4", buffer=x1)
+    assert not x2.flags.writable
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
@@ -2159,9 +2168,6 @@ def test_meshgrid2():
     assert z1.shape == z2.shape and z2.shape == z3.shape
     assert y1.shape == (len(x2), len(x1), len(x3))
     assert z1.shape == (len(x1), len(x2), len(x3))
-    # FIXME: uncomment out once gh-921 is merged
-    # assert all(z.flags["C"]  for z in (z1, z2, z3))
-    # assert all(y.flags["C"]  for y in (y1, y2, y3))
 
 
 def test_common_arg_validation():
