@@ -67,7 +67,7 @@ void merge_impl(const std::size_t offset,
     const std::size_t local_size_2 = local_end_2 - local_start_2;
 
     const auto r_item_1 = in_acc[end_1 - 1];
-    const auto l_item_2 = in_acc[start_2];
+    const auto l_item_2 = (start_2 < end_2) ? in_acc[start_2] : r_item_1;
 
     // Copy if the sequences are sorted with respect to each other or merge
     // otherwise
