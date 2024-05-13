@@ -825,18 +825,49 @@
 <h1>dpctl.tensor.usm_ndarray.__dlpack__<a class="headerlink" href="#dpctl-tensor-usm-ndarray-dlpack" title="Permalink to this heading">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.tensor.usm_ndarray.__dlpack__">
-<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">__dlpack__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.__dlpack__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">__dlpack__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dl_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.__dlpack__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces DLPack capsule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>stream</strong> (<a class="reference internal" href="../dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – Execution queue to synchronize with. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-synchronization is not performed.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>stream</strong> (<a class="reference internal" href="../dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – Execution queue to synchronize with.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, synchronization is not performed.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>max_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The maximum DLPack version the consumer (caller of
+<code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>) supports. As <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> may not
+always return a DLPack capsule with version
+<cite>max_version</cite>, the consumer must verify the version
+even if this argument is passed.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>dl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><em>enum.Enum</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The device the returned DLPack capsule will be
+placed on.
+The device must be a 2-tuple matching the format of
+<code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method, an integer enumerator
+representing the device type followed by an integer
+representing the index of the device.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">copy</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be
+copied.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, a <code class="docutils literal notranslate"><span class="pre">BufferError</span></code> will be raised if a
+copy is deemed necessary.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a copy will be made only if deemed
+necessary, otherwise, the existing memory buffer will
+be reused.</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.12)"><strong>MemoryError</strong></a> – when host memory can not be allocated.</p></li>
 <li><p><strong>DLPackCreationError</strong> – when array is allocated on a partitioned
     SYCL device, or with a non-default context.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BufferError" title="(in Python v3.12)"><strong>BufferError</strong></a> – when a copy is deemed necessary but <code class="docutils literal notranslate"><span class="pre">copy</span></code>
+    is <code class="docutils literal notranslate"><span class="pre">False</span></code> or when the provided <code class="docutils literal notranslate"><span class="pre">dl_device</span></code>
+    cannot be handled.</p></li>
 </ul>
 </dd>
 </dl>
