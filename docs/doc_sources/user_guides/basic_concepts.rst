@@ -168,7 +168,7 @@ they do not compare equal, since they correspond to two independent scheduling e
 Event
 -----
 
-A SYCL event is an entity created when a task is submitted to SYCL queue for execution. The events are be used to
+A SYCL event is an entity created when a task is submitted to SYCL queue for execution. The events are used to
 order execution of computational tasks by the DPC++ runtime. They may also contain profiling information associated
 with the submitted task, provided the queue was created with "enable_profiling" property.
 
