@@ -1009,7 +1009,7 @@ could not be combined in a call to the same function that implements
 </section>
 <section id="event">
 <h2>Event<a class="headerlink" href="#event" title="Permalink to this heading">¶</a></h2>
-<p>SYCL event is an entity created when a task is submitted to SYCL queue for execution. The event are be used to
+<p>A SYCL event is an entity created when a task is submitted to SYCL queue for execution. The events are used to
 order execution of computational tasks by the DPC++ runtime. They may also contain profiling information associated
 with the submitted task, provided the queue was created with “enable_profiling” property.</p>
 <p>SYCL event can be used to synchronize execution of the associated task with execution on host by using
@@ -1032,7 +1032,7 @@ on the devices targeted by given SYCL queue, and are bound to the context from t
 queue. This queue argument is stored the instance of the class and is used to submit
 tasks to when performing copying of elements from or to this allocation or when filling
 the allocation with values.</p>
-<p>Classes that represent host-accessible USM allocations, i.e. types USM-shared and USM-host,
+<p>Classes that represent host-accessible USM allocations, i.e., types USM-shared and USM-host,
 expose Python buffer interface.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl.memory</span> <span class="k">as</span> <span class="nn">dpm</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -1057,7 +1057,7 @@ expose Python buffer interface.</p>
 <h2>Backend<a class="headerlink" href="#backend" title="Permalink to this heading">¶</a></h2>
 <p>Intel(R) oneAPI Data Parallel C++ compiler ships with two backends:</p>
 <ol class="arabic simple">
-<li><p>OpenCL backend</p></li>
+<li><p>OpenCL* backend</p></li>
 <li><p>Level-Zero backend</p></li>
 </ol>
 <p>Additional backends can be added to the compiler by installing CodePlay’s plugins:</p>

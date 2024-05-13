@@ -826,7 +826,7 @@
 <section id="oneapi-library-and-its-python-interface">
 <h2>oneAPI library and its Python interface<a class="headerlink" href="#oneapi-library-and-its-python-interface" title="Permalink to this heading">¶</a></h2>
 <p>Using oneAPI libraries, a user calls functions that take <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> and a collection of
-<code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> objects among other arguments, e.g.</p>
+<code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> objects among other arguments. For example:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Prototypical call signature of oneMKL function</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">sycl</span><span class="o">::</span><span class="n">event</span>
@@ -844,7 +844,7 @@ execution status is represented by <code class="docutils literal notranslate"><s
 vector complete. If the vector is empty, the runtime begins the execution as soon as the device is
 ready. The function returns a <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> object representing completion of the set of
 computational tasks submitted by the <code class="docutils literal notranslate"><span class="pre">compute</span></code> function.</p>
-<p>Hence, in oneAPI programming model, the execution <strong>queue</strong> is used to specify which device the
+<p>Hence, in the oneAPI programming model, the execution <strong>queue</strong> is used to specify which device the
 function will execute on. To create a queue, one must specify a device to target.</p>
 <p>In <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> is represented by <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> Python type,
 and a Python API to call such a function might look like</p>
@@ -856,8 +856,9 @@ and a Python API to call such a function might look like</p>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>Even if Python API to an offloading Python function looks different from this, it must
-translate to a similar call under the hood.</p>
+<p>When building Python API for a SYCL offloading function, and you choose to
+map the SYCL API to a different API on the Python side, it must still translate to a
+similar call under the hood.</p>
 <p>The arguments to the function must be suitable for use in the offloading functions.
 Typically these are Python scalars, or objects representing USM allocations, such as
 <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.memory.MemoryUSMDevice.html#dpctl.memory.MemoryUSMDevice" title="dpctl.memory.MemoryUSMDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory.MemoryUSMDevice</span></code></a> and friends.</p>
@@ -883,7 +884,7 @@ with the queue are used to make the allocation.</p>
 Python type representing the USM allocation.</p>
 </div>
 <p>This design choice allows <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> to have a preferred queue to use when operating on any single
-USM allocation, i.e.</p>
+USM allocation. For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unary_func</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
     <span class="n">code1</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">_func_impl</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
@@ -942,7 +943,7 @@ can be combined together in accordance with compute-follows-data programming mod
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>Please refer to <a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-array-migration"><span class="std std-ref">array migration</span></a> section of the introduction to
+<p>Please refer to the <a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-array-migration"><span class="std std-ref">array migration</span></a> section of the introduction to
 <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> to examples on how to resolve <code class="docutils literal notranslate"><span class="pre">ExecutionPlacementError</span></code> exceptions.</p>
 </section>
 </section>

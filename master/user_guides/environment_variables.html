@@ -834,12 +834,12 @@ description and <a class="reference internal" href="../beginners_guides/managing
 </section>
 <section id="variable-sycl-cache-persistent">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">SYCL_CACHE_PERSISTENT</span></code><a class="headerlink" href="#variable-sycl-cache-persistent" title="Permalink to this heading">¶</a></h2>
-<p>The binaries implementing <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> created using DPC++ compiler contain sections
-with standardized intermediate forms (e.g. <a class="reference external" href="https://www.khronos.org/spir/">SPIR-V</a>) that must be
+<p>The binaries implementing <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> created using the DPC++ compiler contain sections
+with standardized intermediate forms (e.g., <a class="reference external" href="https://www.khronos.org/spir/">SPIR-V</a>) that must be
 further built using SYCL device drivers for execution on the specific target hardware.
 This step is known as just-in-time compiling (JIT-ing).</p>
-<p>By default, the result of JIT-ing persists for the duration of SYCL application, i.e. for the
-duration of the Python session where <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> is used. Setting environment variable
+<p>By default, the result of JIT-ing persists for the duration of SYCL application, i.e., for the
+duration of the Python session where <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> is used. Setting the environment variable
 <code class="docutils literal notranslate"><span class="pre">SYCL_CACHE_PERSISTENT</span></code> to value of <code class="docutils literal notranslate"><span class="pre">1</span></code> instructs DPC++ runtime to save the result of JIT-ing to
 disk and reuse it in subsequent Python sessions (assuming the variable remains to be set when sessions
 are started).</p>
@@ -850,7 +850,7 @@ but requires sufficient disk space. The size of the disk footprint can be contro
 <section id="variable-sycl-pi-trace">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">SYCL_PI_TRACE</span></code><a class="headerlink" href="#variable-sycl-pi-trace" title="Permalink to this heading">¶</a></h2>
 <p>Setting this debugging variable enables specific levels of tracing for SYCL Programming Interfaces (PI).
-The value of the variable is a bit-mask, with the following supported values</p>
+The value of the variable is a bit-mask, with the following supported values:</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
