@@ -1,0 +1,6 @@
+﻿dpctl.tensor.sum
+================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: sum
