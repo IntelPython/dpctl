@@ -43,7 +43,7 @@ and a Python API to call such a function might look like
         ...
 
 When building Python API for a SYCL offloading function, and you choose to
-map the SYCL API to a different API on the Python side, it must translate to a
+map the SYCL API to a different API on the Python side, it must still translate to a
 similar call under the hood.
 
 The arguments to the function must be suitable for use in the offloading functions.
