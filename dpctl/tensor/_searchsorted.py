@@ -87,7 +87,7 @@ def searchsorted(
     x1_dt = x1.dtype
     x2_dt = x2.dtype
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     ev = dpctl.SyclEvent()
     if sorter is not None:

@@ -121,7 +121,7 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
         res_shape, dtype=x.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, take_ev = ti._take(
         x, (indices,), res, axis, mode, sycl_queue=exec_q, depends=deps_ev
@@ -278,7 +278,7 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         rhs = dpt.astype(vals, x.dtype)
     rhs = dpt.broadcast_to(rhs, val_shape)
 
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, put_ev = ti._put(
         x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
@@ -375,7 +375,7 @@ def place(arr, mask, vals):
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
     cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     nz_count = ti.mask_positions(
         mask, cumsum, sycl_queue=exec_q, depends=deps_ev

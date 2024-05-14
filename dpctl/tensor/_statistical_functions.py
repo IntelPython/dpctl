@@ -48,7 +48,7 @@ def _var_impl(x, axis, correction, keepdims):
     )
     res_usm_type = x.usm_type
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     if inp_dt != res_dt:
         buf = dpt.empty_like(x, dtype=res_dt)
@@ -220,7 +220,7 @@ def mean(x, axis=None, keepdims=False):
     if sum_nd == 0:
         return dpt.astype(x, res_dt, copy=True)
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     if tri._sum_over_axis_dtype_supported(inp_dt, res_dt, res_usm_type, q):
         res = dpt.empty(
@@ -374,10 +374,11 @@ def std(x, axis=None, correction=0.0, keepdims=False):
     if x.dtype.kind == "c":
         raise ValueError("`std` does not support complex types")
 
-    _manager = du.SequentialOrderManager
+    exec_q = x.sycl_queue
+    _manager = du.SequentialOrderManager[exec_q]
     res, deps = _var_impl(x, axis, correction, keepdims)
     ht_ev, sqrt_ev = tei._sqrt(
-        src=res, dst=res, sycl_queue=res.sycl_queue, depends=deps
+        src=res, dst=res, sycl_queue=exec_q, depends=deps
     )
     _manager.add_event_pair(ht_ev, sqrt_ev)
     return res

@@ -189,7 +189,7 @@ def tensordot(x1, x2, axes=2):
             "supported types according to the casting rule ''safe''."
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         out = dpt.empty(
             res_shape,
@@ -408,7 +408,7 @@ def vecdot(x1, x2, axis=-1):
             "supported types according to the casting rule ''safe''."
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         if x1.dtype.kind == "c":
             x1_tmp = _empty_like_orderK(x1, x1.dtype)
@@ -791,7 +791,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             else "C"
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         if out is None:
             if order == "K":

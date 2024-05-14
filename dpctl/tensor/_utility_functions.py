@@ -35,7 +35,7 @@ def _boolean_reduction(x, axis, keepdims, func):
     exec_q = x.sycl_queue
     res_usm_type = x.usm_type
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     # always allocate the temporary as
     # int32 and usm-device  to ensure that atomic updates

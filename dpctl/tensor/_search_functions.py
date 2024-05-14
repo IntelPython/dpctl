@@ -198,7 +198,7 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                     sycl_queue=exec_q,
                 )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if x1_dtype != out_dtype:
         if order == "K":

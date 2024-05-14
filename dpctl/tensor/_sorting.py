@@ -76,7 +76,7 @@ def sort(x, /, *, axis=-1, descending=False, stable=True):
         ]
         arr = dpt.permute_dims(x, perm)
     exec_q = x.sycl_queue
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     impl_fn = _sort_descending if descending else _sort_ascending
     if arr.flags.c_contiguous:
@@ -159,7 +159,7 @@ def argsort(x, axis=-1, descending=False, stable=True):
         ]
         arr = dpt.permute_dims(x, perm)
     exec_q = x.sycl_queue
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     impl_fn = _argsort_descending if descending else _argsort_ascending
     index_dt = ti.default_device_index_type(exec_q)
