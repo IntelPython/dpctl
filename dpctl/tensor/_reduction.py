@@ -108,7 +108,7 @@ def _reduction_over_axis(
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     if red_nd == 0:
         ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -500,7 +500,7 @@ def _comparison_over_axis(x, axis, keepdims, out, _reduction_fn):
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if red_nd == 0:
         ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
@@ -669,7 +669,7 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             res_shape, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
         )
 
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if red_nd == 0:
         ht_e_fill, fill_ev = ti._full_usm_ndarray(

@@ -236,7 +236,7 @@ class UnaryElementwiseFunc:
                 )
 
         exec_q = x.sycl_queue
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         if buf_dt is None:
             if out is None:
                 if order == "K":
@@ -632,7 +632,7 @@ class BinaryElementwiseFunc:
             )
 
         orig_out = out
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         if out is not None:
             if not isinstance(out, dpt.usm_ndarray):
                 raise TypeError(

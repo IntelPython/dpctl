@@ -165,7 +165,7 @@ def reshape(X, /, shape, *, order="C", copy=None):
             buffer=X.usm_type,
             buffer_ctor_kwargs={"queue": copy_q},
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[copy_q]
         dep_evs = _manager.submitted_events
         if order == "C":
             hev, r_e = _copy_usm_ndarray_for_reshape(

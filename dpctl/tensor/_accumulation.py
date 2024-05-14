@@ -126,7 +126,7 @@ def _accumulate_common(
             out = dpt.permute_dims(out, perm)
 
     final_ev = dpctl.SyclEvent()
-    _manager = SequentialOrderManager
+    _manager = SequentialOrderManager[q]
     depends = _manager.submitted_events
     if implemented_types:
         if not include_initial:

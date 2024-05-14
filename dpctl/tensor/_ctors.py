@@ -159,7 +159,7 @@ def _asarray_from_usm_ndarray(
         )
     eq = dpctl.utils.get_execution_queue([usm_ndary.sycl_queue, copy_q])
     if eq is not None:
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[eq]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=usm_ndary, dst=res, sycl_queue=eq, depends=dep_evs
@@ -415,7 +415,7 @@ def _asarray_from_seq(
             sycl_queue=alloc_q,
             order=order,
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[exec_q]
         _device_copy_walker(seq_obj, res, _manager)
         return res
     else:
@@ -854,7 +854,7 @@ def arange(
     else:
         _step = sc_ty(1)
     _start = _first
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     # populating newly allocated array, no task dependencies
     hev, lin_ev = ti._linspace_step(_start, _step, res, sycl_queue)
     _manager.add_event_pair(hev, lin_ev)
@@ -1001,7 +1001,7 @@ def ones(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
     hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
@@ -1100,7 +1100,7 @@ def full(
     elif fill_value_type is int and np.issubdtype(dtype, np.integer):
         fill_value = _to_scalar(fill_value, dtype)
 
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
     hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
     _manager.add_event_pair(hev, full_ev)
@@ -1480,7 +1480,7 @@ def linspace(
         start = float(start)
         stop = float(stop)
     res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     hev, la_ev = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
     )
@@ -1578,7 +1578,7 @@ def eye(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     if n_rows != 0 and n_cols != 0:
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
         hev, eye_ev = ti._eye(k, dst=res, sycl_queue=sycl_queue)
         _manager.add_event_pair(hev, eye_ev)
     return res
@@ -1630,7 +1630,7 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=res, sycl_queue=q, depends=dep_evs
@@ -1652,7 +1652,7 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, tril_ev = ti._tril(
             src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
@@ -1716,7 +1716,7 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=res, sycl_queue=q, depends=dep_evs
@@ -1730,7 +1730,7 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        _manager = dpctl.utils.SequentialOrderManager
+        _manager = dpctl.utils.SequentialOrderManager[q]
         dep_evs = _manager.submitted_events
         hev, triu_ev = ti._triu(
             src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs

@@ -343,18 +343,19 @@ def roll(X, /, shift, *, axis=None):
     """
     if not isinstance(X, dpt.usm_ndarray):
         raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    _manager = dputils.SequentialOrderManager
+    exec_q = X.sycl_queue
+    _manager = dputils.SequentialOrderManager[exec_q]
     if axis is None:
         shift = operator.index(shift)
         dep_evs = _manager.submitted_events
         res = dpt.empty(
-            X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=X.sycl_queue
+            X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
         )
         hev, roll_ev = ti._copy_usm_ndarray_for_roll_1d(
             src=X,
             dst=res,
             shift=shift,
-            sycl_queue=X.sycl_queue,
+            sycl_queue=exec_q,
             depends=dep_evs,
         )
         _manager.add_event_pair(hev, roll_ev)
@@ -369,7 +370,6 @@ def roll(X, /, shift, *, axis=None):
     for sh, ax in broadcasted:
         shifts[ax] += sh
 
-    exec_q = X.sycl_queue
     res = dpt.empty(
         X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
     )
@@ -447,7 +447,7 @@ def _concat_axis_None(arrays):
     )
 
     fill_start = 0
-    _manager = dputils.SequentialOrderManager
+    _manager = dputils.SequentialOrderManager[exec_q]
     deps = _manager.submitted_events
     for array in arrays:
         fill_end = fill_start + array.size
@@ -538,7 +538,7 @@ def concat(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    _manager = dputils.SequentialOrderManager
+    _manager = dputils.SequentialOrderManager[exec_q]
     deps = _manager.submitted_events
     fill_start = 0
     for i in range(n):
@@ -605,7 +605,7 @@ def stack(arrays, /, *, axis=0):
         res_shape, dtype=res_dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    _manager = dputils.SequentialOrderManager
+    _manager = dputils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     for i in range(n):
         c_shapes_copy = tuple(
@@ -862,7 +862,8 @@ def repeat(x, repeats, /, *, axis=None):
             f"got {type(repeats)}"
         )
 
-    _manager = dputils.SequentialOrderManager
+
+    _manager = dputils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if scalar:
         res_axis_size = repeats * axis_size
@@ -1050,7 +1051,7 @@ def tile(x, repetitions, /):
             broadcast_sh,
         )
         # copy broadcast input into flat array
-        _manager = dputils.SequentialOrderManager
+        _manager = dputils.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         hev, cp_ev = ti._copy_usm_ndarray_for_reshape(
             src=x, dst=res, sycl_queue=exec_q, depends=dep_evs

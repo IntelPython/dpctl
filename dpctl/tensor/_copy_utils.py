@@ -40,13 +40,14 @@ def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
     nb = ary.usm_data.nbytes
-    hh = dpm.MemoryUSMHost(nb, queue=ary.sycl_queue)
+    q = ary.sycl_queue
+    hh = dpm.MemoryUSMHost(nb, queue=q)
     h = np.ndarray(nb, dtype="u1", buffer=hh).view(ary.dtype)
     itsz = ary.itemsize
     strides_bytes = tuple(si * itsz for si in ary.strides)
     offset = ary.__sycl_usm_array_interface__.get("offset", 0) * itsz
     # ensure that content of ary.usm_data is final
-    dpctl.utils.SequentialOrderManager.wait()
+    q.wait()
     hh.copy_from_device(ary.usm_data)
     return np.ndarray(
         ary.shape,
@@ -105,7 +106,7 @@ def _copy_from_numpy_into(dst, np_ary):
             src_ary = src_ary.astype(np.float32)
         elif src_ary_dt_c == "D":
             src_ary = src_ary.astype(np.complex64)
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[copy_q]
     dep_ev = _manager.submitted_events
     # synchronizing call
     ti._copy_numpy_ndarray_into_usm_ndarray(
@@ -208,7 +209,7 @@ def _copy_overlapping(dst, src):
         order="C",
         buffer_ctor_kwargs={"queue": q},
     )
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
     hcp1, cp1 = ti._copy_usm_ndarray_into_usm_ndarray(
         src=src, dst=tmp, sycl_queue=q, depends=dep_evs
@@ -232,10 +233,11 @@ def _copy_same_shape(dst, src):
         _copy_overlapping(src=src, dst=dst)
         return
 
-    _manager = dpctl.utils.SequentialOrderManager
+    copy_q = dst.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[copy_q]
     dep_evs = _manager.submitted_events
     hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=src, dst=dst, sycl_queue=dst.sycl_queue, depends=dep_evs
+        src=src, dst=dst, sycl_queue=copy_q, depends=dep_evs
     )
     _manager.add_event_pair(hev, cpy_ev)
 
@@ -724,7 +726,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
@@ -760,7 +762,7 @@ def _nonzero_impl(ary):
     cumsum = dpt.empty(
         mask_nelems, dtype=cumsum_dt, sycl_queue=exec_q, order="C"
     )
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary, cumsum, sycl_queue=exec_q, depends=dep_evs
@@ -837,7 +839,7 @@ def _take_multi_index(ary, inds, p):
     res = dpt.empty(
         res_shape, dtype=ary.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, take_ev = ti._take(
         src=ary,
@@ -890,7 +892,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
     cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
     exec_q = cumsum.sycl_queue
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     mask_count = ti.mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_ev
@@ -990,7 +992,7 @@ def _put_multi_index(ary, inds, p, vals):
     else:
         rhs = dpt.astype(vals, ary.dtype)
     rhs = dpt.broadcast_to(rhs, expected_vals_shape)
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
     hev, put_ev = ti._put(
         dst=ary,

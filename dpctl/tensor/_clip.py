@@ -299,7 +299,7 @@ def _clip_none(x, val, out, order, _binary_fn):
             x = dpt.broadcast_to(x, res_shape)
         if val_ary.shape != res_shape:
             val_ary = dpt.broadcast_to(val_ary, res_shape)
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_binary_ev, binary_ev = _binary_fn(
             src1=x, src2=val_ary, dst=out, sycl_queue=exec_q, depends=dep_evs
@@ -322,7 +322,7 @@ def _clip_none(x, val, out, order, _binary_fn):
             buf = _empty_like_orderK(val_ary, res_dt)
         else:
             buf = dpt.empty_like(val_ary, dtype=res_dt, order=order)
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=val_ary, dst=buf, sycl_queue=exec_q, depends=dep_evs
@@ -449,7 +449,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             else:
                 out = dpt.empty_like(x, order=order)
 
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=out, sycl_queue=exec_q, depends=dep_evs
@@ -672,7 +672,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 a_min = dpt.broadcast_to(a_min, res_shape)
             if a_max.shape != res_shape:
                 a_max = dpt.broadcast_to(a_max, res_shape)
-            _manager = SequentialOrderManager
+            _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_binary_ev, binary_ev = ti._clip(
                 src=x,
@@ -700,7 +700,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 buf2 = _empty_like_orderK(a_max, buf2_dt)
             else:
                 buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
-            _manager = SequentialOrderManager
+            _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_max, dst=buf2, sycl_queue=exec_q, depends=dep_ev
@@ -756,7 +756,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 buf1 = _empty_like_orderK(a_min, buf1_dt)
             else:
                 buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
-            _manager = SequentialOrderManager
+            _manager = SequentialOrderManager[exec_q]
             dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=a_min, dst=buf1, sycl_queue=exec_q, depends=dep_ev
@@ -825,7 +825,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         else:
             buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
 
-        _manager = SequentialOrderManager
+        _manager = SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=a_min, dst=buf1, sycl_queue=exec_q, depends=dep_evs

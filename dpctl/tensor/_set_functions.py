@@ -87,7 +87,7 @@ def unique_values(x: dpt.usm_ndarray) -> dpt.usm_ndarray:
     if fx.size == 0:
         return fx
     s = dpt.empty_like(fx, order="C")
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _sort_ascending(
@@ -183,7 +183,7 @@ def unique_counts(x: dpt.usm_ndarray) -> UniqueCountsResult:
         return UniqueCountsResult(fx, dpt.empty_like(fx, dtype=ind_dt))
     s = dpt.empty_like(fx, order="C")
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _sort_ascending(
@@ -317,7 +317,7 @@ def unique_inverse(x):
     if fx.size == 0:
         return UniqueInverseResult(fx, dpt.reshape(unsorting_ids, x.shape))
 
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _argsort_ascending(
@@ -493,7 +493,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
             dpt.reshape(unsorting_ids, x.shape),
             dpt.empty_like(fx, dtype=ind_dt),
         )
-    _manager = du.SequentialOrderManager
+    _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     if fx.flags.c_contiguous:
         ht_ev, sort_ev = _argsort_ascending(

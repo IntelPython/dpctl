@@ -245,11 +245,12 @@ def _nd_corners(arr_in, edge_items):
         for i in range(arr_in.ndim)
     )
 
+    exec_q = arr_in.sycl_queue
     arr_out = dpt.empty(
         res_shape,
         dtype=arr_in.dtype,
         usm_type=arr_in.usm_type,
-        sycl_queue=arr_in.sycl_queue,
+        sycl_queue=exec_q,
     )
 
     blocks = []
@@ -264,10 +265,9 @@ def _nd_corners(arr_in, edge_items):
         else:
             blocks.append((np.s_[:],))
 
-    _manager = dpctl.utils.SequentialOrderManager
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     hev_list = []
-    exec_q = arr_in.sycl_queue
     for slc in itertools.product(*blocks):
         hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
             src=arr_in[slc],
