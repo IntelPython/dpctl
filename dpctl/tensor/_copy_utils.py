@@ -40,13 +40,14 @@ def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
     nb = ary.usm_data.nbytes
-    hh = dpm.MemoryUSMHost(nb, queue=ary.sycl_queue)
+    q = ary.sycl_queue
+    hh = dpm.MemoryUSMHost(nb, queue=q)
     h = np.ndarray(nb, dtype="u1", buffer=hh).view(ary.dtype)
     itsz = ary.itemsize
     strides_bytes = tuple(si * itsz for si in ary.strides)
     offset = ary.__sycl_usm_array_interface__.get("offset", 0) * itsz
     # ensure that content of ary.usm_data is final
-    ary.sycl_queue.wait()
+    q.wait()
     hh.copy_from_device(ary.usm_data)
     return np.ndarray(
         ary.shape,

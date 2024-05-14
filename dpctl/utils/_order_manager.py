@@ -1,6 +1,6 @@
-
-from contextvars import ContextVar
 from collections import defaultdict
+from contextvars import ContextVar
+
 from .._sycl_event import SyclEvent
 from .._sycl_queue import SyclQueue
 from ._seq_order_keeper import _OrderManager
@@ -66,14 +66,16 @@ class _SequentialOrderManager:
 class OrderManagerMap:
     """Utility class to ensure sequential ordering of offloaded
     tasks issued by dpctl.tensor functions"""
+
     def __init__(self):
         self._map = ContextVar(
-            'global_order_manager_map',
-            default=defaultdict(_SequentialOrderManager)
+            "global_order_manager_map",
+            default=defaultdict(_SequentialOrderManager),
         )
 
-    def __getitem__(self, q : SyclQueue) -> _SequentialOrderManager:
+    def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
         _local = self._map.get()
+        print(_local)
         if q in _local:
             return _local[q]
         else:
