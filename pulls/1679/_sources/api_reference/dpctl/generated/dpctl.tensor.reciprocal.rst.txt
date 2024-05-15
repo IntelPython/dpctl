@@ -1,0 +1,10 @@
+﻿dpctl.tensor.reciprocal
+=======================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: reciprocal
+    :no-value:
+
+
