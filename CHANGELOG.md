@@ -26,8 +26,9 @@ and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) o
 
 ### Fixed
 
-* Fixed race condition in accumulation kernel for custom operations that caused test failures with AMD CPUs: [gh-1624](https://github.com/IntelPython/dpctl/pull/1624)
+* Fixed initialization of byte type constants in `dpctl_capi` Python/C API loader class in `"dpctl4pybind11.hpp"`: [gh-1665](https://github.com/IntelPython/dpctl/pull/1665)
 * Fixed crash in `tensor.sort` reported for a CPU device and a CUDA device: [gh-1676](https://github.com/IntelPython/dpctl/pull/1676)
+* Fixed race condition in accumulation kernel for custom operations that caused test failures with AMD CPUs: [gh-1624](https://github.com/IntelPython/dpctl/pull/1624)
 * Fixed comparison operators for mixed signed and unsigned integral types: [gh-1650](https://github.com/IntelPython/dpctl/pull/1650)
 * Support use of index arrays of different integral types in indexing operations: [gh-47](https://github.com/IntelPython/dpctl/pull/1647)
 * Fixed source code to compile for NVidia(TM) GPUs with DPC++ 2024.1: [gh-1630](https://github.com/IntelPython/dpctl/pull/1630)
