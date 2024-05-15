@@ -18,7 +18,6 @@ import operator
 import numpy as np
 
 import dpctl.tensor as dpt
-from dpctl.tensor._copy_utils import _copy_from_usm_ndarray_to_usm_ndarray
 from dpctl.tensor._tensor_impl import (
     _copy_usm_ndarray_for_reshape,
     _ravel_multi_index,
@@ -155,24 +154,25 @@ def reshape(X, /, shape, *, order="C", copy=None):
             "Reshaping the array requires a copy, but no copying was "
             "requested by using copy=False"
         )
+    copy_q = X.sycl_queue
     if copy_required or (copy is True):
         # must perform a copy
         flat_res = dpt.usm_ndarray(
             (X.size,),
             dtype=X.dtype,
             buffer=X.usm_type,
-            buffer_ctor_kwargs={"queue": X.sycl_queue},
+            buffer_ctor_kwargs={"queue": copy_q},
         )
         if order == "C":
             hev, _ = _copy_usm_ndarray_for_reshape(
-                src=X, dst=flat_res, sycl_queue=X.sycl_queue
+                src=X, dst=flat_res, sycl_queue=copy_q
             )
-            hev.wait()
         else:
-            for i in range(X.size):
-                _copy_from_usm_ndarray_to_usm_ndarray(
-                    flat_res[i], X[np.unravel_index(i, X.shape, order=order)]
-                )
+            X_t = dpt.permute_dims(X, range(X.ndim - 1, -1, -1))
+            hev, _ = _copy_usm_ndarray_for_reshape(
+                src=X_t, dst=flat_res, sycl_queue=copy_q
+            )
+        hev.wait()
         return dpt.usm_ndarray(
             tuple(shape), dtype=X.dtype, buffer=flat_res, order=order
         )
@@ -182,5 +182,5 @@ def reshape(X, /, shape, *, order="C", copy=None):
         dtype=X.dtype,
         buffer=X,
         strides=tuple(newsts),
-        offset=X.__sycl_usm_array_interface__.get("offset", 0),
+        offset=X._element_offset,
     )
