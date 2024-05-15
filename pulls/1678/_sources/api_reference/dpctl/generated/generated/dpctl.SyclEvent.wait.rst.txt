@@ -1,6 +1,0 @@
-dpctl.SyclEvent.wait
-====================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclEvent.wait
