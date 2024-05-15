@@ -177,6 +177,10 @@ def reshape(X, /, shape, *, order="C", copy=None):
             tuple(shape), dtype=X.dtype, buffer=flat_res, order=order
         )
     # can form a view
+    if (len(shape) == X.ndim) and all(
+        s1 == s2 for s1, s2 in zip(shape, X.shape)
+    ):
+        return X
     return dpt.usm_ndarray(
         shape,
         dtype=X.dtype,
