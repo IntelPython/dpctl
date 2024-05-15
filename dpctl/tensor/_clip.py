@@ -791,17 +791,17 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
 
         if order == "K":
             if (
-                x.flags.f_contiguous
-                and a_min.flags.f_contiguous
-                and a_max.flags.f_contiguous
-            ):
-                order = "F"
-            elif (
                 x.flags.c_contiguous
                 and a_min.flags.c_contiguous
                 and a_max.flags.c_contiguous
             ):
                 order = "C"
+            elif (
+                x.flags.f_contiguous
+                and a_min.flags.f_contiguous
+                and a_max.flags.f_contiguous
+            ):
+                order = "F"
         if order == "K":
             buf1 = _empty_like_orderK(a_min, buf1_dt)
         else:
