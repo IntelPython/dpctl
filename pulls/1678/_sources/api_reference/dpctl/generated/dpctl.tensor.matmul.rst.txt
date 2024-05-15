@@ -1,0 +1,6 @@
+﻿dpctl.tensor.matmul
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: matmul

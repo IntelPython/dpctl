@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.size
+==============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.size
