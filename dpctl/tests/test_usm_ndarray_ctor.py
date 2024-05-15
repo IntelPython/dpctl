@@ -1471,6 +1471,16 @@ def test_reshape_orderF():
     assert np.array_equal(c_np, dpt.asnumpy(c))
 
 
+def test_reshape_noop():
+    """Per gh-1664"""
+    try:
+        a = dpt.ones((2, 1))
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    b = dpt.reshape(a, (2, 1))
+    assert b is a
+
+
 def test_reshape_zero_size():
     try:
         a = dpt.empty((0,))
