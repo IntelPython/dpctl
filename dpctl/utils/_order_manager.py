@@ -63,7 +63,7 @@ class _SequentialOrderManager:
         return res
 
 
-class OrderManagerMap:
+class SyclQueueToOrderManagerMap:
     """Utility class to ensure sequential ordering of offloaded
     tasks issued by dpctl.tensor functions"""
 
@@ -74,8 +74,10 @@ class OrderManagerMap:
         )
 
     def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
+        """Get order manager for given SyclQueue"""
         _local = self._map.get()
-        print(_local)
+        if not isinstance(q, SyclQueue):
+            raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
         if q in _local:
             return _local[q]
         else:
@@ -83,5 +85,10 @@ class OrderManagerMap:
             _local[q] = v
             return v
 
+    def clear(self):
+        """Clear content of internal dictionary"""
+        _local = self._map.get()
+        _local.clear()
 
-SequentialOrderManager = OrderManagerMap()
+
+SequentialOrderManager = SyclQueueToOrderManagerMap()
