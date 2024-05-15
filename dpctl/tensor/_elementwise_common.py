@@ -858,10 +858,10 @@ class BinaryElementwiseFunc:
             return out
 
         if order == "K":
-            if src1.flags.f_contiguous and src2.flags.f_contiguous:
-                order = "F"
-            elif src1.flags.c_contiguous and src2.flags.c_contiguous:
+            if src1.flags.c_contiguous and src2.flags.c_contiguous:
                 order = "C"
+            elif src1.flags.f_contiguous and src2.flags.f_contiguous:
+                order = "F"
         if order == "K":
             buf1 = _empty_like_orderK(src1, buf1_dt)
         else:

@@ -942,10 +942,10 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         return out
 
     if order == "K":
-        if x1.flags.f_contiguous and x2.flags.f_contiguous:
-            order = "F"
-        elif x1.flags.c_contiguous and x2.flags.c_contiguous:
+        if x1.flags.c_contiguous and x2.flags.c_contiguous:
             order = "C"
+        elif x1.flags.f_contiguous and x2.flags.f_contiguous:
+            order = "F"
     if order == "K":
         buf1 = _empty_like_orderK(x1, buf1_dt)
     else:
