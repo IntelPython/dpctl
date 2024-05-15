@@ -1454,6 +1454,23 @@ def test_reshape():
     assert A4.shape == requested_shape
 
 
+def test_reshape_orderF():
+    try:
+        a = dpt.arange(6 * 3 * 4, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    b = dpt.reshape(a, (6, 2, 6))
+    c = dpt.reshape(b, (9, 8), order="F")
+    assert c.flags.f_contiguous
+    assert c._pointer != b._pointer
+    assert b._pointer == a._pointer
+
+    a_np = np.arange(6 * 3 * 4, dtype="i4")
+    b_np = np.reshape(a_np, (6, 2, 6))
+    c_np = np.reshape(b_np, (9, 8), order="F")
+    assert np.array_equal(c_np, dpt.asnumpy(c))
+
+
 def test_reshape_zero_size():
     try:
         a = dpt.empty((0,))
