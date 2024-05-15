@@ -1608,17 +1608,17 @@
 
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-                <span class="ow">and</span> <span class="n">a_min</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-                <span class="ow">and</span> <span class="n">a_max</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-            <span class="p">):</span>
-                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
-            <span class="k">elif</span> <span class="p">(</span>
                 <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
                 <span class="ow">and</span> <span class="n">a_min</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
                 <span class="ow">and</span> <span class="n">a_max</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
             <span class="p">):</span>
                 <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_min</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+                <span class="ow">and</span> <span class="n">a_max</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
+            <span class="p">):</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
             <span class="n">buf1</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">a_min</span><span class="p">,</span> <span class="n">buf1_dt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
