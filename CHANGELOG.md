@@ -35,6 +35,8 @@ and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) o
 * Corrected `tensor.tile` for scalar inputs and empty repetitions: [gh-1628](https://github.com/IntelPython/dpctl/pull/1628)
 * Fixed support for `out` keyword in `tensor.matmul`: [gh-1610](https://github.com/IntelPython/dpctl/pull/1610)
 * Fixed bug in basic slicing of empty arrays: [gh-1680](https://github.com/IntelPython/dpctl/pull/1680)
+* Fixed bug in `tensor.bitwise_invert` for boolean input array: [gh-1681](https://github.com/IntelPython/dpctl/pull/1681)
+* Fixed bug in `tensor.repeat` on zero-size input arrays: [gh-1682](https://github.com/IntelPython/dpctl/pull/1682)
 
 
 ## [0.16.1] - Apr. 10, 2024
