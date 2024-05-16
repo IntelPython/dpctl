@@ -452,6 +452,30 @@ def test_slicing_basic():
     assert np.array_equal(Xh, Xnp[Xnp[2] : Xnp[5]])
 
 
+def test_slicing_empty():
+    try:
+        X = dpt.usm_ndarray((0, 10), dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    x = dpt.moveaxis(X, 1, 0)
+    # this used to raise ValueError
+    y = x[1]
+    assert y.ndim == 1
+    assert y.shape == (0,)
+    assert y.dtype == X.dtype
+    assert y.usm_type == X.usm_type
+    assert y.sycl_queue == X.sycl_queue
+    w = x[1:3]
+    assert w.ndim == 2
+    assert w.shape == (
+        2,
+        0,
+    )
+    assert w.dtype == X.dtype
+    assert w.usm_type == X.usm_type
+    assert w.sycl_queue == X.sycl_queue
+
+
 def test_ctor_invalid_shape():
     with pytest.raises(TypeError):
         dpt.usm_ndarray(dict())
