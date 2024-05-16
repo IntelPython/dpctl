@@ -54,7 +54,7 @@ consuming instances of ``sycl::local_accessor`` template type.
 * Fixed kernel submission error on NVidia CUDA GPUs during `dpctl.tensor.matmul` operation: [#1605](https://github.com/IntelPython/dpctl/pull/1605)
 * Fixed corruption of context cache table entries: [#1607](https://github.com/IntelPython/dpctl/pull/1607)
 * Fixed incorrect result from ``dpctl.tensor.tensordot`` reported in issue [#1570](https://github.com/IntelPython/dpctl/issues/1570): [#1608](https://github.com/IntelPython/dpctl/pull/1608)
-* Fixed output of ``python -m dpctl --library`` to fix specified library name: [#1615](https://github.com/IntelPython/dpctl/pull/1615)
+* Fixed library name output by ``python -m dpctl --library``: [#1615](https://github.com/IntelPython/dpctl/pull/1615)
 
 
 ## [0.16.0] - Feb. 16, 2024
