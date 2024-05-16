@@ -120,9 +120,11 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
         sh0 = _slice_len(sl_start, sl_stop, sl_step)
         str0 = sl_step * strides[0]
         new_strides = strides if (sl_step == 1 or sh0 == 0) else (str0,) + strides[1:]
-        new_offset = offset if sh0 == 0 else offset + sl_start * strides[0]
+        new_shape = (sh0, ) + shape[1:]
+        is_empty = any(sh_i == 0 for sh_i in new_shape)
+        new_offset = offset if is_empty else offset + sl_start * strides[0]
         return (
-            (sh0, ) + shape[1:],
+            new_shape,
             new_strides,
             new_offset,
             _no_advanced_ind,
@@ -135,11 +137,15 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
             return ((0,) + shape, (0,) + strides, offset, _no_advanced_ind, _no_advanced_pos)
     elif _is_integral(ind):
         ind = ind.__index__()
+        new_shape = shape[1:]
+        new_strides = strides[1:]
+        is_empty = any(sh_i == 0 for sh_i in new_shape)
         if 0 <= ind < shape[0]:
-            return (shape[1:], strides[1:], offset + ind * strides[0], _no_advanced_ind, _no_advanced_pos)
+            new_offset = offset if is_empty else offset + ind * strides[0]
+            return (new_shape, new_strides, new_offset, _no_advanced_ind, _no_advanced_pos)
         elif -shape[0] <= ind < 0:
-            return (shape[1:], strides[1:],
-                    offset + (shape[0] + ind) * strides[0], _no_advanced_ind, _no_advanced_pos)
+            new_offset = offset if is_empty else offset + (shape[0] + ind) * strides[0]
+            return (new_shape, new_strides, new_offset, _no_advanced_ind, _no_advanced_pos)
         else:
             raise IndexError(
                 "Index {0} is out of range for axes 0 with "
