@@ -1,6 +1,0 @@
-﻿dpctl.tensor.take
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: take
