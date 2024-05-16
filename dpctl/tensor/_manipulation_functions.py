@@ -838,9 +838,6 @@ def repeat(x, repeats, /, *, axis=None):
             f"got {type(repeats)}"
         )
 
-    if axis_size == 0:
-        return dpt.empty(x_shape, dtype=x.dtype, sycl_queue=exec_q)
-
     if scalar:
         res_axis_size = repeats * axis_size
         if axis is not None:
