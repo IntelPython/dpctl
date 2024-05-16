@@ -4,7 +4,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.0] - MMM. DD, YYYY
+## [0.17.0] - May. XX, 2024
+
+This release features updated documentation web-page https://intelpython.github.io/dpctl/latest/index.html, adds cumulative reductions,
+and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) of Python Array API specification.
+
+### Added
+
+* Added pybind11 caster for ``sycl::half`` to map to/from Python `float` to ``"dpctl4pybind11.hpp"`` header: [gh-1655](https://github.com/IntelPython/dpctl/pull/1655)
+* Added support for DLPack data interchange per Python Array API 2023.12 specification: [gh-1667](https://github.com/IntelPython/dpctl/pull/1667)
+* Implemented `tensor.cumulative_sum`, `tensor.cumulative_prod` and `tensor.cumulative_logsumexp`: [gh-1602](https://github.com/IntelPython/dpctl/pull/1602)
+
+### Changed
+
+* Expanded documentation for `dpctl`: [gh-1619](https://github.com/IntelPython/dpctl/pull/1619)
+* Expanded `utils.intel_device_info` functionality: [gh-1656](https://github.com/IntelPython/dpctl/pull/1656)
+* Improved performance of elementwise operations: [gh-1651](https://github.com/IntelPython/dpctl/pull/1651)
+* Efficiency improvement by avoiding unnecessary copying of ``sycl::queue``: [gh-1645](https://github.com/IntelPython/dpctl/pull/1645)
+* `dpctl` uses pybind11 2.12.0: [gh-1640](https://github.com/IntelPython/dpctl/pull/1640)
+* Improved performance of `tensor.reshape` operation with `order="F"` when copying is needed, or requested: [gh-1677](https://github.com/IntelPython/dpctl/pull/1677)
+
+### Fixed
+
+* Fixed initialization of byte type constants in `dpctl_capi` Python/C API loader class in `"dpctl4pybind11.hpp"`: [gh-1665](https://github.com/IntelPython/dpctl/pull/1665)
+* Fixed crash in `tensor.sort` reported for a CPU device and a CUDA device: [gh-1676](https://github.com/IntelPython/dpctl/pull/1676)
+* Fixed race condition in accumulation kernel for custom operations that caused test failures with AMD CPUs: [gh-1624](https://github.com/IntelPython/dpctl/pull/1624)
+* Fixed comparison operators for mixed signed and unsigned integral types: [gh-1650](https://github.com/IntelPython/dpctl/pull/1650)
+* Support use of index arrays of different integral types in indexing operations: [gh-47](https://github.com/IntelPython/dpctl/pull/1647)
+* Fixed source code to compile for NVidia(TM) GPUs with DPC++ 2024.1: [gh-1630](https://github.com/IntelPython/dpctl/pull/1630)
+* Corrected `tensor.tile` for scalar inputs and empty repetitions: [gh-1628](https://github.com/IntelPython/dpctl/pull/1628)
+* Fixed support for `out` keyword in `tensor.matmul`: [gh-1610](https://github.com/IntelPython/dpctl/pull/1610)
+* Fixed bug in basic slicing of empty arrays: [gh-1680](https://github.com/IntelPython/dpctl/pull/1680)
+* Fixed bug in `tensor.bitwise_invert` for boolean input array: [gh-1681](https://github.com/IntelPython/dpctl/pull/1681)
+* Fixed bug in `tensor.repeat` on zero-size input arrays: [gh-1682](https://github.com/IntelPython/dpctl/pull/1682)
+
+
+## [0.16.1] - Apr. 10, 2024
+
+This is a bug-fix release, which also provides a change needed by ``numba_dpex`` project to support dispatching kernels
+consuming instances of ``sycl::local_accessor`` template type.
+
+### Changed
+
+* Changed behavior of ``dpctl.tensor.usm_ndarray.__dlpack_device__`` method to return device id of the parent unpartitioned device if array is allocated on a sub-device instead of raising an exception: [#1604](https://github.com/IntelPython/dpctl/pull/1604)
+* Array creation functions and the ``usm_ndarray`` constructor in `dpctl.tensor` submodule now use cached default-selected device to improve performance: [#1606](https://github.com/IntelPython/dpctl/pull/1606)
+* Changed treatment of `axis` keyword for `dpctl.tensor.tensordot` and `dpctl.tensor.vecdot` to align with Python Array API 2023.12 specification: [#1608](https://github.com/IntelPython/dpctl/pull/1608)
+* Changed implementation of `DPCTLQueue_SubmitRange`, `DPCTLQueue_SubmitNDRange` in DPCTLSyclInterface library to support ``sycl::local_accessor`` arguments needed by ``numba_dpex``; the enum `DPCTLKernelArgType` to correspond to C++ disjoint types: [#1609](https://github.com/IntelPython/dpctl/pull/1609), [#1611](https://github.com/IntelPython/dpctl/pull/1611), [#1612](https://github.com/IntelPython/dpctl/pull/1612)
+
+### Fixed
+
+* Fixed a crash on Windows platform during execution of getter of `dpctl.SyclPlatfom.default_context` property: : [#1604](https://github.com/IntelPython/dpctl/pull/1604)
+* Fixed kernel submission error on NVidia CUDA GPUs during `dpctl.tensor.matmul` operation: [#1605](https://github.com/IntelPython/dpctl/pull/1605)
+* Fixed corruption of context cache table entries: [#1607](https://github.com/IntelPython/dpctl/pull/1607)
+* Fixed incorrect result from ``dpctl.tensor.tensordot`` reported in issue [#1570](https://github.com/IntelPython/dpctl/issues/1570): [#1608](https://github.com/IntelPython/dpctl/pull/1608)
+* Fixed library name output by ``python -m dpctl --library``: [#1615](https://github.com/IntelPython/dpctl/pull/1615)
+
+
+## [0.16.0] - Feb. 16, 2024
 
 This release will require DPC++ 2024.1.0, which no longer supports Intel Gen9 integrated GPUs found in Intel CPUs of 10th generation and older.
 Featurewise, this release is identical to 0.15.1.
