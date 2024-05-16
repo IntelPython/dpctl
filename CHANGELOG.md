@@ -20,7 +20,7 @@ and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) o
 * Expanded documentation for `dpctl`: [gh-1619](https://github.com/IntelPython/dpctl/pull/1619)
 * Expanded `utils.intel_device_info` functionality: [gh-1656](https://github.com/IntelPython/dpctl/pull/1656)
 * Improved performance of elementwise operations: [gh-1651](https://github.com/IntelPython/dpctl/pull/1651)
-* Efficiency improvement by avoiding unnecessary copying: [gh-1645](https://github.com/IntelPython/dpctl/pull/1645)
+* Efficiency improvement by avoiding unnecessary copying of ``sycl::queue``: [gh-1645](https://github.com/IntelPython/dpctl/pull/1645)
 * `dpctl` uses pybind11 2.12.0: [gh-1640](https://github.com/IntelPython/dpctl/pull/1640)
 
 
