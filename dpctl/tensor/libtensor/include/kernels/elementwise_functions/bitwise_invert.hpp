@@ -58,9 +58,8 @@ template <typename argT, typename resT> struct BitwiseInvertFunctor
 
     using is_constant = typename std::false_type;
     // constexpr resT constant_value = resT{};
-    using supports_vec = typename std::true_type;
+    using supports_vec = typename std::negation<std::is_same<argT, bool>>;
     using supports_sg_loadstore = typename std::true_type;
-    ;
 
     resT operator()(const argT &in) const
     {
@@ -75,16 +74,7 @@ template <typename argT, typename resT> struct BitwiseInvertFunctor
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
     {
-        if constexpr (std::is_same_v<argT, bool>) {
-            auto res_vec = !in;
-
-            using deducedT = typename std::remove_cv_t<
-                std::remove_reference_t<decltype(res_vec)>>::element_type;
-            return vec_cast<resT, deducedT, vec_sz>(res_vec);
-        }
-        else {
-            return ~in;
-        }
+        return ~in;
     }
 };
 

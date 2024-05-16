@@ -117,3 +117,13 @@ def test_bitwise_invert_order():
     ar1 = dpt.zeros((40, 40), dtype="i4", order="C")[:20, ::-2].mT
     r4 = dpt.bitwise_invert(ar1, order="K")
     assert r4.strides == (-1, 20)
+
+
+def test_bitwise_invert_large_boolean():
+    get_queue_or_skip()
+
+    x = dpt.tril(dpt.ones((32, 32), dtype="?"), k=-1)
+    res = dpt.astype(dpt.bitwise_invert(x), "i4")
+
+    assert dpt.all(res >= 0)
+    assert dpt.all(res <= 1)
