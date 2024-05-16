@@ -1,0 +1,10 @@
+﻿dpctl.tensor.tanh
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: tanh
+    :no-value:
+
+
