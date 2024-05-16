@@ -1,6 +1,0 @@
-﻿dpctl.tensor.copy
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: copy
