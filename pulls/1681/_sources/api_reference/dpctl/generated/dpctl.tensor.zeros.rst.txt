@@ -1,6 +1,0 @@
-﻿dpctl.tensor.zeros
-==================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: zeros
