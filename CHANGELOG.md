@@ -22,7 +22,7 @@ and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) o
 * Improved performance of elementwise operations: [gh-1651](https://github.com/IntelPython/dpctl/pull/1651)
 * Efficiency improvement by avoiding unnecessary copying of ``sycl::queue``: [gh-1645](https://github.com/IntelPython/dpctl/pull/1645)
 * `dpctl` uses pybind11 2.12.0: [gh-1640](https://github.com/IntelPython/dpctl/pull/1640)
-
+* Improved performance of `tensor.reshape` operation with `order="F"` when copying is needed, or requested: [gh-1677](https://github.com/IntelPython/dpctl/pull/1677)
 
 ### Fixed
 
@@ -34,6 +34,7 @@ and complies with revision [2023.12](https://data-apis.org/array-api/2023.12/) o
 * Fixed source code to compile for NVidia(TM) GPUs with DPC++ 2024.1: [gh-1630](https://github.com/IntelPython/dpctl/pull/1630)
 * Corrected `tensor.tile` for scalar inputs and empty repetitions: [gh-1628](https://github.com/IntelPython/dpctl/pull/1628)
 * Fixed support for `out` keyword in `tensor.matmul`: [gh-1610](https://github.com/IntelPython/dpctl/pull/1610)
+* Fixed bug in basic slicing of empty arrays: [gh-1680](https://github.com/IntelPython/dpctl/pull/1680)
 
 
 ## [0.16.1] - Apr. 10, 2024
