@@ -1,0 +1,6 @@
+﻿dpctl.tensor.expand\_dims
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: expand_dims
