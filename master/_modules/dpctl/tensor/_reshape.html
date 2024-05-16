@@ -835,7 +835,6 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._copy_utils</span> <span class="kn">import</span> <span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">,</span>
     <span class="n">_ravel_multi_index</span><span class="p">,</span>
@@ -972,34 +971,39 @@
             <span class="s2">&quot;Reshaping the array requires a copy, but no copying was &quot;</span>
             <span class="s2">&quot;requested by using copy=False&quot;</span>
         <span class="p">)</span>
+    <span class="n">copy_q</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="k">if</span> <span class="n">copy_required</span> <span class="ow">or</span> <span class="p">(</span><span class="n">copy</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">):</span>
         <span class="c1"># must perform a copy</span>
         <span class="n">flat_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">,),</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">buffer</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">},</span>
+            <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">copy_q</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
             <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">flat_res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">flat_res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">copy_q</span>
             <span class="p">)</span>
-            <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-                <span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span>
-                    <span class="n">flat_res</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)]</span>
-                <span class="p">)</span>
+            <span class="n">X_t</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">X_t</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">flat_res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">copy_q</span>
+            <span class="p">)</span>
+        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">flat_res</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span>
         <span class="p">)</span>
     <span class="c1"># can form a view</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span> <span class="k">for</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">X</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">buffer</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
         <span class="n">strides</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">newsts</span><span class="p">),</span>
-        <span class="n">offset</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">__sycl_usm_array_interface__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">_element_offset</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
         </article>
