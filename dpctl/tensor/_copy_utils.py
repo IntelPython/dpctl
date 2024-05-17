@@ -45,7 +45,7 @@ def _copy_to_numpy(ary):
     h = np.ndarray(nb, dtype="u1", buffer=hh).view(ary.dtype)
     itsz = ary.itemsize
     strides_bytes = tuple(si * itsz for si in ary.strides)
-    offset = ary.__sycl_usm_array_interface__.get("offset", 0) * itsz
+    offset = ary._element_offset * itsz
     # ensure that content of ary.usm_data is final
     q.wait()
     hh.copy_from_device(ary.usm_data)
@@ -645,7 +645,7 @@ def astype(
             target_dtype, d.has_aspect_fp16, d.has_aspect_fp64
         ):
             raise ValueError(
-                f"Requested dtype `{target_dtype}` is not supported by the "
+                f"Requested dtype '{target_dtype}' is not supported by the "
                 "target device"
             )
         usm_ary = usm_ary.to_device(device)

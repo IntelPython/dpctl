@@ -116,7 +116,7 @@ def permute_dims(X, /, axes):
         dtype=X.dtype,
         buffer=X,
         strides=newstrides,
-        offset=X.__sycl_usm_array_interface__.get("offset", 0),
+        offset=X._element_offset,
     )
 
 
@@ -244,7 +244,7 @@ def broadcast_to(X, /, shape):
         dtype=X.dtype,
         buffer=X,
         strides=new_sts,
-        offset=X.__sycl_usm_array_interface__.get("offset", 0),
+        offset=X._element_offset,
     )
 
 
@@ -817,8 +817,8 @@ def repeat(x, repeats, /, *, axis=None):
         dpctl.utils.validate_usm_type(usm_type, allow_none=False)
         if not dpt.can_cast(repeats.dtype, dpt.int64, casting="same_kind"):
             raise TypeError(
-                f"`repeats` data type `{repeats.dtype}` cannot be cast to "
-                "`int64` according to the casting rule ''safe.''"
+                f"'repeats' data type {repeats.dtype} cannot be cast to "
+                "'int64' according to the casting rule ''safe.''"
             )
         if repeats.size == 1:
             scalar = True
@@ -829,11 +829,11 @@ def repeat(x, repeats, /, *, axis=None):
         else:
             if repeats.size != axis_size:
                 raise ValueError(
-                    "`repeats` array must be broadcastable to the size of "
+                    "'repeats' array must be broadcastable to the size of "
                     "the repeated axis"
                 )
             if not dpt.all(repeats >= 0):
-                raise ValueError("`repeats` elements must be positive")
+                raise ValueError("'repeats' elements must be positive")
 
     elif isinstance(repeats, (tuple, list, range)):
         usm_type = x.usm_type
@@ -861,7 +861,6 @@ def repeat(x, repeats, /, *, axis=None):
             "Expected int, sequence, or `usm_ndarray` for second argument,"
             f"got {type(repeats)}"
         )
-
 
     _manager = dputils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
