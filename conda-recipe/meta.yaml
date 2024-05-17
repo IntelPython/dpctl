@@ -1,4 +1,4 @@
-{% set required_compiler_version = "2024.0" %}
+{% set required_compiler_version = "2024.2.0" %}
 {% set runtime_lower_bound = required_compiler_version %}
 {% set runtime_upper_bound = "2024.3.0a0" %}
 
