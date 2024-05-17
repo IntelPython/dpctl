@@ -72,7 +72,7 @@ jobs:
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   build_windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     strategy:
       matrix:
@@ -217,7 +217,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
         experimental: [false]
-        runner: [windows-latest]
+        runner: [windows-2019]
     continue-on-error: ${{ matrix.experimental }}
     env:
       workdir: '${{ github.workspace }}'
@@ -372,7 +372,7 @@ jobs:
   upload_windows:
     needs: test_windows
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
