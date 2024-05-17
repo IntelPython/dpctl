@@ -21,7 +21,7 @@ author = "Intel Corp."
 
 version = dpctl.__version__.strip(".dirty")
 # The full version, including alpha/beta/rc tags
-release, _ = dpctl.__version__.strip(".dirty").split("+")
+release = dpctl.__version__.strip(".dirty").split("+")[0]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
