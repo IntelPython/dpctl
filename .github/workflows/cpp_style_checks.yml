@@ -18,12 +18,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4.1.5
     - name: Run clang-format style check for C/C++ programs.
-      uses: jidicula/clang-format-action@v4.11.0
+      uses: jidicula/clang-format-action@v4.12.0
       with:
         clang-format-version: '11'
         check-path: 'libsyclinterface'
     - name: Run clang-format style check for api headers.
-      uses: jidicula/clang-format-action@v4.11.0
+      uses: jidicula/clang-format-action@v4.12.0
       with:
         clang-format-version: '11'
         check-path: 'dpctl/apis'
