@@ -1,6 +1,0 @@
-﻿dpctl.tensor.matrix\_transpose
-==============================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: matrix_transpose
