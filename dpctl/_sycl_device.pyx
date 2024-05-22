@@ -779,6 +779,20 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
+    def has_aspect_emulated(self):
+        """ Returns ``True`` if this device is somehow emulated, ``False``
+        otherwise. A device with this aspect is not intended for performance,
+        and instead will generally have another purpose such as emulation
+        or profiling.
+
+        Returns:
+            bool:
+                Indicates if device is somehow emulated.
+        """
+        cdef _aspect_type AT = _aspect_type._emulated
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
     def image_2d_max_width(self):
         """ Returns the maximum width of a 2D image or 1D image in pixels.
             The minimum value is 8192 if the SYCL device has

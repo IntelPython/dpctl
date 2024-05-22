@@ -163,13 +163,12 @@ list_of_supported_aspects = [
     "atomic64",
     "usm_atomic_host_allocations",
     "usm_atomic_shared_allocations",
+    "emulated",
 ]
 
 # SYCL 2020 spec aspects not presently
 # supported in DPC++, and dpctl
-list_of_unsupported_aspects = [
-    "emulated",
-]
+list_of_unsupported_aspects = []
 
 
 @pytest.fixture(params=list_of_supported_aspects)
@@ -199,13 +198,13 @@ def test_supported_aspect(supported_aspect):
 
 def test_unsupported_aspect(unsupported_aspect):
     try:
-        dpctl.select_device_with_aspects(unsupported_aspect)
+        d = dpctl.SyclDevice()
+        has_it = hasattr(d, "has_aspect_" + unsupported_aspect)
+    except dpctl.SyclDeviceCreationError:
+        has_it = False
+    if has_it:
         raise AttributeError(
             f"The {unsupported_aspect} aspect is now supported in dpctl"
-        )
-    except AttributeError:
-        pytest.skip(
-            f"The {unsupported_aspect} aspect is not supported in dpctl"
         )
 
 

@@ -123,7 +123,8 @@ auto build_params()
                            sycl::aspect::usm_atomic_host_allocations),
             std::make_pair("usm_atomic_shared_allocations",
                            sycl::aspect::usm_atomic_shared_allocations),
-            std::make_pair("host_debuggable", sycl::aspect::host_debuggable));
+            std::make_pair("host_debuggable", sycl::aspect::host_debuggable),
+            std::make_pair("emulated", sycl::aspect::emulated));
 
     auto pairs =
         build_param_pairs<const char *, std::pair<const char *, sycl::aspect>,
@@ -165,7 +166,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);
-        } catch (sycl::exception const &e) {
+        } catch (sycl::exception const &) {
         }
     }
 

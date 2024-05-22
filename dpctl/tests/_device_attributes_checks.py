@@ -245,6 +245,13 @@ def check_has_aspect_host_debuggable(device):
         pytest.fail("has_aspect_host_debuggable call failed")
 
 
+def check_has_aspect_emulated(device):
+    try:
+        device.has_aspect_emulated
+    except Exception:
+        pytest.fail("has_aspect_emulated call failed")
+
+
 def check_is_accelerator(device):
     try:
         device.is_accelerator
@@ -698,6 +705,7 @@ list_of_checks = [
     check_has_aspect_usm_atomic_host_allocations,
     check_has_aspect_usm_atomic_shared_allocations,
     check_has_aspect_host_debuggable,
+    check_has_aspect_emulated,
     check_max_read_image_args,
     check_max_write_image_args,
     check_image_2d_max_width,

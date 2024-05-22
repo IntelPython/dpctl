@@ -95,6 +95,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _usm_atomic_host_allocations        'usm_atomic_host_allocations',
         _usm_atomic_shared_allocations      'usm_atomic_shared_allocations',
         _host_debuggable                    'host_debuggable',
+        _emulated                           'emulated',
 
     ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',
