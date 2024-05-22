@@ -326,6 +326,8 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::usm_atomic_shared_allocations;
     case DPCTLSyclAspectType::host_debuggable:
         return aspect::host_debuggable;
+    case DPCTLSyclAspectType::emulated:
+        return aspect::emulated;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -370,6 +372,8 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::usm_atomic_shared_allocations;
     case aspect::host_debuggable:
         return DPCTLSyclAspectType::host_debuggable;
+    case aspect::emulated:
+        return DPCTLSyclAspectType::emulated;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
