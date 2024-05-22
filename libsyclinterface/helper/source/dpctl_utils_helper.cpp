@@ -214,6 +214,9 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::host_debuggable:
         ss << "host_debuggable";
         break;
+    case aspect::emulated:
+        ss << "emulated";
+        break;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -279,6 +282,9 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     }
     else if (aspectTyStr == "host_debuggable") {
         aspectTy = aspect::host_debuggable;
+    }
+    else if (aspectTyStr == "emulated") {
+        aspectTy = aspect::emulated;
     }
     else {
         // \todo handle the error
