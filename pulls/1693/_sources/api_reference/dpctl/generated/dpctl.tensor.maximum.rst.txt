@@ -1,0 +1,10 @@
+﻿dpctl.tensor.maximum
+====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: maximum
+    :no-value:
+
+
