@@ -193,13 +193,21 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
         return "unknown"
 
 
-cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef):
+cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef) except *:
     "Populate attributes of device from opaque device reference DRef"
     device._device_ref = DRef
     device._name = DPCTLDevice_GetName(DRef)
+    if device._name is NULL:
+        raise RuntimeError("Descriptor 'name' not available")
     device._driver_version = DPCTLDevice_GetDriverVersion(DRef)
+    if device._driver_version is NULL:
+        raise RuntimeError("Descriptor 'driver_version' not available")
     device._vendor = DPCTLDevice_GetVendor(DRef)
+    if device._vendor is NULL:
+        raise RuntimeError("Descriptor 'vendor' not available")
     device._max_work_item_sizes = DPCTLDevice_GetMaxWorkItemSizes3d(DRef)
+    if device._max_work_item_sizes is NULL:
+        raise RuntimeError("Descriptor 'max_work_item_sizes3d' not available")
 
 
 @functools.lru_cache(maxsize=None)
@@ -938,6 +946,8 @@ cdef class SyclDevice(_SyclDevice):
         max_work_item_sizes1d = DPCTLDevice_GetMaxWorkItemSizes1d(
             self._device_ref
         )
+        if max_work_item_sizes1d is NULL:
+            raise RuntimeError("error obtaining 'max_work_item_sizes1d'")
         s0 = max_work_item_sizes1d[0]
         DPCTLSize_t_Array_Delete(max_work_item_sizes1d)
         return (s0, )
@@ -960,6 +970,8 @@ cdef class SyclDevice(_SyclDevice):
         max_work_item_sizes2d = DPCTLDevice_GetMaxWorkItemSizes2d(
             self._device_ref
         )
+        if max_work_item_sizes2d is NULL:
+            raise RuntimeError("error obtaining 'max_work_item_sizes2d'")
         s0 = max_work_item_sizes2d[0]
         s1 = max_work_item_sizes2d[1]
         DPCTLSize_t_Array_Delete(max_work_item_sizes2d)
