@@ -1,6 +1,0 @@
-dpctl.SyclQueue.submit\_barrier
-===============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.submit_barrier
