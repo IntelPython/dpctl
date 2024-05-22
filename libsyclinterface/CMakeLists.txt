@@ -125,6 +125,20 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} -O0 -ggdb3 -DDEBUG"
     )
+    set(CMAKE_C_FLAGS_COVERAGE
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_COVERAGE
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE
+        "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}"
+    )
+    mark_as_advanced(
+        CMAKE_CXX_FLAGS_COVERAGE
+        CMAKE_C_FLAGS_COVERAGE
+        CMAKE_MODULE_LINKER_FLAGS_COVERAGE
+    )
 elseif(UNIX)
     string(CONCAT WARNING_FLAGS
         "-Wall "
@@ -164,6 +178,20 @@ elseif(UNIX)
     )
     set(CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -ggdb3 -DDEBUG"
+    )
+    set(CMAKE_C_FLAGS_COVERAGE
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_COVERAGE
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE
+        "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}"
+    )
+    mark_as_advanced(
+        CMAKE_CXX_FLAGS_COVERAGE
+        CMAKE_C_FLAGS_COVERAGE
+        CMAKE_MODULE_LINKER_FLAGS_COVERAGE
     )
 else()
     message(FATAL_ERROR "Unsupported system.")
