@@ -1,0 +1,10 @@
+﻿dpctl.tensor.multiply
+=====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: multiply
+    :no-value:
+
+
