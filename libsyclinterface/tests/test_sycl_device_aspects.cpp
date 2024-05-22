@@ -166,7 +166,7 @@ struct TestDPCTLSyclDeviceInterfaceAspects
         auto syclAspect = GetParam().second.second;
         try {
             hasAspect = D->has(syclAspect);
-        } catch (sycl::exception const &e) {
+        } catch (sycl::exception const &) {
         }
     }
 
