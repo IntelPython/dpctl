@@ -340,22 +340,29 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
     int simplified_nd = needles_nd;
 
     using shT = std::vector<py::ssize_t>;
-
     shT simplified_common_shape;
     shT simplified_needles_strides;
     shT simplified_positions_strides;
     py::ssize_t needles_offset(0);
     py::ssize_t positions_offset(0);
 
-    dpctl::tensor::py_internal::simplify_iteration_space(
-        // modified by refernce
-        simplified_nd,
-        // read-only inputs
-        needles_shape_ptr, needles_strides, positions_strides,
-        // output, modified by reference
-        simplified_common_shape, simplified_needles_strides,
-        simplified_positions_strides, needles_offset, positions_offset);
-
+    if (simplified_nd == 0) {
+        // needles and positions have same nd
+        simplified_nd = 1;
+        simplified_common_shape.push_back(1);
+        simplified_needles_strides.push_back(0);
+        simplified_positions_strides.push_back(0);
+    }
+    else {
+        dpctl::tensor::py_internal::simplify_iteration_space(
+            // modified by refernce
+            simplified_nd,
+            // read-only inputs
+            needles_shape_ptr, needles_strides, positions_strides,
+            // output, modified by reference
+            simplified_common_shape, simplified_needles_strides,
+            simplified_positions_strides, needles_offset, positions_offset);
+    }
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
