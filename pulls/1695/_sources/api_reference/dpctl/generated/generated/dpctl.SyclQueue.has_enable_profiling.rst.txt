@@ -1,0 +1,6 @@
+dpctl.SyclQueue.has\_enable\_profiling
+======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclQueue.has_enable_profiling
