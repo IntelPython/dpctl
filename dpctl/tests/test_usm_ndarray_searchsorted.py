@@ -355,3 +355,19 @@ def test_out_of_bound_sorter_values():
     p = dpt.searchsorted(x, x2, sorter=sorter)
     # verify that they were applied with mode="wrap"
     assert dpt.all(p == dpt.arange(3, dtype=p.dtype))
+
+
+def test_searchsorted_strided_scalar_needle():
+    get_queue_or_skip()
+
+    a_max = 255
+
+    hay_stack = dpt.flip(
+        dpt.repeat(dpt.arange(a_max - 1, -1, -1, dtype=dpt.int32), 4)
+    )
+    needles_np = np.squeeze(
+        np.random.randint(0, a_max, dtype=dpt.int32, size=1), axis=0
+    )
+    needles = dpt.asarray(needles_np)
+
+    _check(hay_stack, needles, needles_np)
