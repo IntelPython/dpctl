@@ -23,12 +23,24 @@ if(WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Ox ${WARNING_FLAGS} ${SDL_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ox ${WARNING_FLAGS} ${SDL_FLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG -Xsycl-target-frontend=spir64 \"-g0\""
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O0 -g1 -DDEBUG -Xsycl-target-frontend=spir64 \"-g0\""
     )
+    set(CMAKE_C_FLAGS_COVERAGE
+        "${CMAKE_C_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_COVERAGE
+        "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
     set(DPCTL_LDFLAGS "/NXCompat;/DynamicBase")
+    mark_as_advanced(
+        CMAKE_CXX_FLAGS_COVERAGE
+        CMAKE_C_FLAGS_COVERAGE
+        CMAKE_MODULE_LINKER_FLAGS_COVERAGE
+    )
 elseif(UNIX)
     string(CONCAT WARNING_FLAGS
         "-Wall "
@@ -64,12 +76,24 @@ elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 ${CFLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 ${CXXFLAGS}")
     set(CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O0 -g -DDEBUG -Xsycl-target-frontend=spir64 \"-g0\""
     )
     set(CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -g1 -DDEBUG"
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O0 -g -DDEBUG -Xsycl-target-frontend=spir64 \"-g0\""
     )
+    set(CMAKE_C_FLAGS_COVERAGE
+        "${CMAKE_C_FLAGS_DEBUG} ${CFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_CXX_FLAGS_COVERAGE
+        "${CMAKE_CXX_FLAGS_DEBUG} ${CXXFLAGS} -O1 -g1 -DDEBUG"
+    )
+    set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
     set(DPCTL_LDFLAGS "-z,noexecstack,-z,relro,-z,now")
+    mark_as_advanced(
+        CMAKE_CXX_FLAGS_COVERAGE
+        CMAKE_C_FLAGS_COVERAGE
+        CMAKE_MODULE_LINKER_FLAGS_COVERAGE
+    )
 else()
     message(FATAL_ERROR "Unsupported system.")
 endif()
