@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.imag
-==============================
-
-.. currentmodule:: dpctl.tensor
-
-.. autoattribute:: usm_ndarray.imag
