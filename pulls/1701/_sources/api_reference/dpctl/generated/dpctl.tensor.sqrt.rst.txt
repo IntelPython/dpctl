@@ -1,0 +1,10 @@
+﻿dpctl.tensor.sqrt
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: sqrt
+    :no-value:
+
+

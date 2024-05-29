@@ -1,0 +1,6 @@
+﻿dpctl.tensor.prod
+=================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: prod
