@@ -12,7 +12,7 @@ to Python through invocations of oneAPI-based native libraries, their Python int
 or by using DPC++-based Python native extensions built using :mod:`dpctl` integration with
 Python native extension generators.
 
-The :py:mod:`dpctl` runtime is built on top of the C++ SYCL-2020 standard as implemented in
+The :py:mod:`dpctl` runtime is built on top of the C++ SYCL 2020 standard as implemented in the
 `Intel(R) oneAPI DPC++ compiler <dpcpp_compiler>`_ and is designed to be both vendor and
 architecture agnostic.
 

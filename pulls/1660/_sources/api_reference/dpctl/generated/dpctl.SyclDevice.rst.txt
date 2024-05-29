@@ -39,6 +39,7 @@
       ~SyclDevice.has_aspect_atomic64
       ~SyclDevice.has_aspect_cpu
       ~SyclDevice.has_aspect_custom
+      ~SyclDevice.has_aspect_emulated
       ~SyclDevice.has_aspect_fp16
       ~SyclDevice.has_aspect_fp64
       ~SyclDevice.has_aspect_gpu

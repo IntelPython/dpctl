@@ -3,7 +3,7 @@
 Working with DPCTLSyclInterface library
 =======================================
 
-The DPCLSyclInterface library is a C-API library which does provide select C++ functions
+The DPCLSyclInterface library is a C-API library which provides select C++ functions
 for casting from C opaque pointers to pointers to corresponding C++ classes.
 
 This document explains the memory ownership model adopted by DPCTLSyclInterface.

@@ -169,8 +169,8 @@ devices as well migration from :py:class:`numpy.ndarray` may be accomplished in 
     # Array w has shape (3, 10, 10)
     w = tensor.asarray([x_cpu, x_gpu, x_np], device="level_zero:gpu")
 
-Migration may also occur during calls to other array creation functions, e.g. :py:func:`full` when the `fill_value` parameter is an instance
-of :py:class:`usm_ndarray`. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e. the
+Migration may also occur during calls to other array creation functions, e.g., :py:func:`full` when the `fill_value` parameter is an instance
+of :py:class:`usm_ndarray`. In such a case default values of device placement keywords are interpreted to avoid data migration, i.e., the
 new array is created on the same device where `fill_value` array was allocated.
 
 .. code-block:: python
