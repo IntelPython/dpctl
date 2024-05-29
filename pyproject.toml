@@ -62,11 +62,16 @@ requires-python = ">=3.9"
 coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
 docs = [
   "Cython",
-  "sphinx",
-  "sphinx_rtd_theme",
-  "pydot",
   "graphviz",
-  "sphinxcontrib-programoutput"
+  "pydot",
+  "furo",
+  "sphinx",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "sphinxcontrib-googleanalytics",
+  "sphinxcontrib-jsmath",
+  "sphinxcontrib-programoutput",
+  "sphinxcontrib-spelling"
 ]
 
 [project.urls]
