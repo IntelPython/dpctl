@@ -8,6 +8,9 @@ echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot 
 export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG="$(pwd)/icpx_for_conda.cfg"
 
+read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
+    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
+
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
@@ -24,7 +27,8 @@ CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level
 # -wnx flags mean: --wheel --no-isolation --skip-dependency-check
 ${PYTHON} -m build -w -n -x
 ${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
-    --platform-tag manylinux2014_x86_64 dist/dpctl*.whl
+    --platform-tag "manylinux_${GLIBC_MAJOR}_${GLIBC_MINOR}_x86_64" \
+    dist/dpctl*.whl
 ${PYTHON} -m pip install dist/dpctl*.whl \
     --no-build-isolation \
     --no-deps \
