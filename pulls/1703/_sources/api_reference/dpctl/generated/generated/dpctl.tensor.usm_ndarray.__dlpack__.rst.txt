@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.\_\_dlpack\_\_
+========================================
+
+.. currentmodule:: dpctl.tensor
+
+.. automethod:: usm_ndarray.__dlpack__
