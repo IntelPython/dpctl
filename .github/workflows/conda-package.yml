@@ -140,9 +140,9 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build -c conda-forge --override-channels
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
@@ -425,9 +425,9 @@ jobs:
       BUILD_ENV_NAME: build_env
 
     steps:
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build python=${{ matrix.python }} -c conda-forge --override-channels
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
         uses: actions/checkout@v4.1.5
         with:
@@ -601,9 +601,9 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build -c conda-forge --override-channels
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
