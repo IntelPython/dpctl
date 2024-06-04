@@ -29,6 +29,7 @@ from ._device_queries import (
     intel_device_info_memory_clock_rate,
 )
 
+
 def intel_device_info(dev, /):
     """intel_device_info(sycl_device)
 
@@ -106,4 +107,7 @@ def intel_device_info(dev, /):
         return res
     return dict()
 
-__all__ = ["intel_device_info",]
+
+__all__ = [
+    "intel_device_info",
+]

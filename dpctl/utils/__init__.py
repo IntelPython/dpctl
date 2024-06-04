@@ -24,10 +24,9 @@ from ._compute_follows_data import (
     get_execution_queue,
     validate_usm_type,
 )
-from ._onetrace_context import onetrace_enabled
 from ._intel_device_info import intel_device_info
+from ._onetrace_context import onetrace_enabled
 from ._order_manager import SequentialOrderManager
-
 
 __all__ = [
     "get_execution_queue",
