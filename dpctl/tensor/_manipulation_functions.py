@@ -470,7 +470,7 @@ def _concat_axis_None(arrays):
                 )
                 _manager.add_event_pair(ht_copy_ev, cpy_ev)
                 hev, reshape_copy_ev = ti._copy_usm_ndarray_for_reshape(
-                    src=src_,
+                    src=src2_,
                     dst=res[fill_start:fill_end],
                     sycl_queue=exec_q,
                     depends=[cpy_ev],
