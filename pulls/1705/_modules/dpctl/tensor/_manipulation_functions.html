@@ -1288,7 +1288,7 @@
                 <span class="p">)</span>
                 <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_copy_ev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
                 <span class="n">hev</span><span class="p">,</span> <span class="n">reshape_copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">(</span>
-                    <span class="n">src</span><span class="o">=</span><span class="n">src_</span><span class="p">,</span>
+                    <span class="n">src</span><span class="o">=</span><span class="n">src2_</span><span class="p">,</span>
                     <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">[</span><span class="n">fill_start</span><span class="p">:</span><span class="n">fill_end</span><span class="p">],</span>
                     <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
                     <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">cpy_ev</span><span class="p">],</span>
