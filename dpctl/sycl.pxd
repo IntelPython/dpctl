@@ -22,6 +22,7 @@ from . cimport _backend as dpctl_backend
 
 cdef extern from "sycl/sycl.hpp" namespace "sycl":
     cdef cppclass queue "sycl::queue":
+        void wait() nogil
         pass
 
     cdef cppclass device "sycl::device":
@@ -31,6 +32,7 @@ cdef extern from "sycl/sycl.hpp" namespace "sycl":
         pass
 
     cdef cppclass event "sycl::event":
+        void wait() nogil
         pass
 
     cdef cppclass kernel "sycl::kernel":
