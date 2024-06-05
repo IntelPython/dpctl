@@ -152,7 +152,7 @@ def test_zero_copy():
     mobj = _create_memory()
     mobj2 = type(mobj)(mobj)
 
-    assert mobj2.reference_obj is mobj
+    assert mobj2.reference_obj is None
     mobj_data = mobj.__sycl_usm_array_interface__["data"]
     mobj2_data = mobj2.__sycl_usm_array_interface__["data"]
     assert mobj_data == mobj2_data
@@ -545,6 +545,7 @@ def test_cpython_api(memory_ctor):
     mod = sys.modules[mobj.__class__.__module__]
     # get capsules storing function pointers
     mem_ptr_fn_cap = mod.__pyx_capi__["Memory_GetUsmPointer"]
+    mem_opaque_ptr_fn_cap = mod.__pyx_capi__["Memory_GetOpaquePointer"]
     mem_q_ref_fn_cap = mod.__pyx_capi__["Memory_GetQueueRef"]
     mem_ctx_ref_fn_cap = mod.__pyx_capi__["Memory_GetContextRef"]
     mem_nby_fn_cap = mod.__pyx_capi__["Memory_GetNumBytes"]
@@ -555,6 +556,9 @@ def test_cpython_api(memory_ctor):
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
     mem_ptr_fn_ptr = cap_ptr_fn(
         mem_ptr_fn_cap, b"DPCTLSyclUSMRef (struct Py_MemoryObject *)"
+    )
+    mem_opaque_ptr_fn_ptr = cap_ptr_fn(
+        mem_opaque_ptr_fn_cap, b"void *(struct Py_MemoryObject *)"
     )
     mem_ctx_ref_fn_ptr = cap_ptr_fn(
         mem_ctx_ref_fn_cap, b"DPCTLSyclContextRef (struct Py_MemoryObject *)"
@@ -571,6 +575,7 @@ def test_cpython_api(memory_ctor):
     )
     callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
     get_ptr_fn = callable_maker(mem_ptr_fn_ptr)
+    get_opaque_ptr_fn = callable_maker(mem_opaque_ptr_fn_ptr)
     get_ctx_ref_fn = callable_maker(mem_ctx_ref_fn_ptr)
     get_q_ref_fn = callable_maker(mem_q_ref_fn_ptr)
     get_nby_fn = callable_maker(mem_nby_fn_ptr)
@@ -586,6 +591,8 @@ def test_cpython_api(memory_ctor):
     capi_ptr = get_ptr_fn(mobj)
     direct_ptr = mobj._pointer
     assert capi_ptr == direct_ptr
+    capi_opaque_ptr = get_opaque_ptr_fn(mobj)
+    assert capi_opaque_ptr != 0
     capi_ctx_ref = get_ctx_ref_fn(mobj)
     direct_ctx_ref = mobj._context.addressof_ref()
     assert capi_ctx_ref == direct_ctx_ref

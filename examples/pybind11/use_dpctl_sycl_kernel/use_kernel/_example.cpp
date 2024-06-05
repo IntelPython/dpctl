@@ -35,8 +35,8 @@
 
 namespace py = pybind11;
 
-void submit_custom_kernel(sycl::queue q,
-                          sycl::kernel krn,
+void submit_custom_kernel(sycl::queue &q,
+                          sycl::kernel &krn,
                           dpctl::tensor::usm_ndarray x,
                           dpctl::tensor::usm_ndarray y,
                           const std::vector<sycl::event> &depends = {})

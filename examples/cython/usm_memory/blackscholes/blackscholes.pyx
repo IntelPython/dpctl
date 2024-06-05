@@ -106,11 +106,15 @@ def black_scholes_price(c_dpt.usm_ndarray option_params_arr):
         call_put_prices = dpt.empty((n_opts, 2), dtype='d', sycl_queue=q)
         dp1 = <double *>option_params_arr.get_data()
         dp2 = <double *>call_put_prices.get_data()
+        # ensure content of dp1 and dp2 is no longer worked on
+        exec_q_ptr[0].wait()
         cpp_blackscholes[double](exec_q_ptr[0], n_opts, dp1, dp2)
     elif (typenum_ == c_dpt.UAR_FLOAT):
         call_put_prices = dpt.empty((n_opts, 2), dtype='f', sycl_queue=q)
         fp1 = <float *>option_params_arr.get_data()
         fp2 = <float *>call_put_prices.get_data()
+        # ensure content of fp1 and fp2 is no longer worked on
+        exec_q_ptr[0].wait()
         cpp_blackscholes[float](exec_q_ptr[0], n_opts, fp1, fp2)
     else:
         raise ValueError("Unsupported data-type")
@@ -196,11 +200,13 @@ def populate_params(
 
     if (typenum_ == c_dpt.UAR_DOUBLE):
         dp = <double *>option_params_arr.get_data()
+        exec_q_ptr[0].wait()
         cpp_populate_params[double](
             exec_q_ptr[0], n_opts, dp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
         )
     elif (typenum_ == c_dpt.UAR_FLOAT):
         fp = <float *>option_params_arr.get_data()
+        exec_q_ptr[0].wait()
         cpp_populate_params[float](
             exec_q_ptr[0], n_opts, fp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
         )

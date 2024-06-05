@@ -16,9 +16,9 @@
 
 from numpy.core.numeric import normalize_axis_index
 
-import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as du
 
 from ._tensor_sorting_impl import (
     _argsort_ascending,
@@ -76,33 +76,37 @@ def sort(x, /, *, axis=-1, descending=False, stable=True):
         ]
         arr = dpt.permute_dims(x, perm)
     exec_q = x.sycl_queue
-    host_tasks_list = []
+    _manager = du.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
     impl_fn = _sort_descending if descending else _sort_ascending
     if arr.flags.c_contiguous:
         res = dpt.empty_like(arr, order="C")
-        ht_ev, _ = impl_fn(
-            src=arr, trailing_dims_to_sort=1, dst=res, sycl_queue=exec_q
+        ht_ev, impl_ev = impl_fn(
+            src=arr,
+            trailing_dims_to_sort=1,
+            dst=res,
+            sycl_queue=exec_q,
+            depends=dep_evs,
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, impl_ev)
     else:
         tmp = dpt.empty_like(arr, order="C")
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arr, dst=tmp, sycl_queue=exec_q
+            src=arr, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, copy_ev)
         res = dpt.empty_like(arr, order="C")
-        ht_ev, _ = impl_fn(
+        ht_ev, impl_ev = impl_fn(
             src=tmp,
             trailing_dims_to_sort=1,
             dst=res,
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, impl_ev)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         res = dpt.permute_dims(res, inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
     return res
 
 
@@ -155,32 +159,36 @@ def argsort(x, axis=-1, descending=False, stable=True):
         ]
         arr = dpt.permute_dims(x, perm)
     exec_q = x.sycl_queue
-    host_tasks_list = []
+    _manager = du.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
     impl_fn = _argsort_descending if descending else _argsort_ascending
     index_dt = ti.default_device_index_type(exec_q)
     if arr.flags.c_contiguous:
         res = dpt.empty_like(arr, dtype=index_dt, order="C")
-        ht_ev, _ = impl_fn(
-            src=arr, trailing_dims_to_sort=1, dst=res, sycl_queue=exec_q
+        ht_ev, impl_ev = impl_fn(
+            src=arr,
+            trailing_dims_to_sort=1,
+            dst=res,
+            sycl_queue=exec_q,
+            depends=dep_evs,
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, impl_ev)
     else:
         tmp = dpt.empty_like(arr, order="C")
         ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arr, dst=tmp, sycl_queue=exec_q
+            src=arr, dst=tmp, sycl_queue=exec_q, depends=dep_evs
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, copy_ev)
         res = dpt.empty_like(arr, dtype=index_dt, order="C")
-        ht_ev, _ = impl_fn(
+        ht_ev, impl_ev = impl_fn(
             src=tmp,
             trailing_dims_to_sort=1,
             dst=res,
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
-        host_tasks_list.append(ht_ev)
+        _manager.add_event_pair(ht_ev, impl_ev)
     if a1 != nd:
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         res = dpt.permute_dims(res, inv_perm)
-    dpctl.SyclEvent.wait_for(host_tasks_list)
     return res

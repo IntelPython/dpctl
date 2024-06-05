@@ -149,3 +149,31 @@ def test_intel_device_info():
         test = descriptor_name in allowed_names
         err_msg = f"Key '{descriptor_name}' is not recognized"
         assert test, err_msg
+
+
+def test_order_manager():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not created for default-selected device")
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    assert isinstance(_mngr.num_host_task_events, int)
+    assert isinstance(_mngr.num_submitted_events, int)
+    assert isinstance(_mngr.submitted_events, list)
+    assert isinstance(_mngr.host_task_events, list)
+    _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+    _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+    _mngr.add_event_pair(dpctl.SyclEvent(), [dpctl.SyclEvent()])
+    _mngr.wait()
+    cpy = _mngr.__copy__()
+    _som.clear()
+    del cpy
+
+    try:
+        _passed = False
+        _som[None]
+    except TypeError:
+        _passed = True
+    finally:
+        assert _passed

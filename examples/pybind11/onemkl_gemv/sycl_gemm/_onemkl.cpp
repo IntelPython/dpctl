@@ -41,7 +41,7 @@ namespace py = pybind11;
 using dpctl::utils::keep_args_alive;
 
 std::pair<sycl::event, sycl::event>
-py_gemv(sycl::queue q,
+py_gemv(sycl::queue &q,
         dpctl::tensor::usm_ndarray matrix,
         dpctl::tensor::usm_ndarray vector,
         dpctl::tensor::usm_ndarray result,

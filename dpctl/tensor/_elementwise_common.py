@@ -24,7 +24,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
 from dpctl.tensor._usmarray import _is_object_with_buffer_protocol as _is_buffer
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 from ._copy_utils import _empty_like_orderK, _empty_like_pair_orderK
 from ._type_utils import (
@@ -236,6 +236,7 @@ class UnaryElementwiseFunc:
                 )
 
         exec_q = x.sycl_queue
+        _manager = SequentialOrderManager[exec_q]
         if buf_dt is None:
             if out is None:
                 if order == "K":
@@ -245,17 +246,20 @@ class UnaryElementwiseFunc:
                         order = "F" if x.flags.f_contiguous else "C"
                     out = dpt.empty_like(x, dtype=res_dt, order=order)
 
-            ht_unary_ev, unary_ev = self.unary_fn_(x, out, sycl_queue=exec_q)
+            dep_evs = _manager.submitted_events
+            ht_unary_ev, unary_ev = self.unary_fn_(
+                x, out, sycl_queue=exec_q, depends=dep_evs
+            )
+            _manager.add_event_pair(ht_unary_ev, unary_ev)
 
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out, dst=orig_out, sycl_queue=exec_q, depends=[unary_ev]
                 )
-                ht_copy_ev.wait()
+                _manager.add_event_pair(ht_copy_ev, cpy_ev)
                 out = orig_out
 
-            ht_unary_ev.wait()
             return out
 
         if order == "K":
@@ -265,18 +269,21 @@ class UnaryElementwiseFunc:
                 order = "F" if x.flags.f_contiguous else "C"
             buf = dpt.empty_like(x, dtype=buf_dt, order=order)
 
+        dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=buf, sycl_queue=exec_q
+            src=x, dst=buf, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_orderK(buf, res_dt)
             else:
                 out = dpt.empty_like(buf, dtype=res_dt, order=order)
 
-        ht, _ = self.unary_fn_(buf, out, sycl_queue=exec_q, depends=[copy_ev])
-        ht_copy_ev.wait()
-        ht.wait()
+        ht, uf_ev = self.unary_fn_(
+            buf, out, sycl_queue=exec_q, depends=[copy_ev]
+        )
+        _manager.add_event_pair(ht, uf_ev)
 
         return out
 
@@ -625,6 +632,7 @@ class BinaryElementwiseFunc:
             )
 
         orig_out = out
+        _manager = SequentialOrderManager[exec_q]
         if out is not None:
             if not isinstance(out, dpt.usm_ndarray):
                 raise TypeError(
@@ -676,28 +684,36 @@ class BinaryElementwiseFunc:
                         if buf2_dt is None:
                             if src2.shape != res_shape:
                                 src2 = dpt.broadcast_to(src2, res_shape)
-                            ht_, _ = self.binary_inplace_fn_(
-                                lhs=o1, rhs=src2, sycl_queue=exec_q
+                            dep_evs = _manager.submitted_events
+                            ht_, comp_ev = self.binary_inplace_fn_(
+                                lhs=o1,
+                                rhs=src2,
+                                sycl_queue=exec_q,
+                                depends=dep_evs,
                             )
-                            ht_.wait()
+                            _manager.add_event_pair(ht_, comp_ev)
                         else:
                             buf2 = dpt.empty_like(src2, dtype=buf2_dt)
+                            dep_evs = _manager.submitted_events
                             (
                                 ht_copy_ev,
                                 copy_ev,
                             ) = ti._copy_usm_ndarray_into_usm_ndarray(
-                                src=src2, dst=buf2, sycl_queue=exec_q
+                                src=src2,
+                                dst=buf2,
+                                sycl_queue=exec_q,
+                                depends=dep_evs,
                             )
+                            _manager.add_event_pair(ht_copy_ev, copy_ev)
 
                             buf2 = dpt.broadcast_to(buf2, res_shape)
-                            ht_, _ = self.binary_inplace_fn_(
+                            ht_, bf_ev = self.binary_inplace_fn_(
                                 lhs=o1,
                                 rhs=buf2,
                                 sycl_queue=exec_q,
                                 depends=[copy_ev],
                             )
-                            ht_copy_ev.wait()
-                            ht_.wait()
+                            _manager.add_event_pair(ht_, bf_ev)
 
                         return out
 
@@ -751,29 +767,36 @@ class BinaryElementwiseFunc:
                 src1 = dpt.broadcast_to(src1, res_shape)
             if src2.shape != res_shape:
                 src2 = dpt.broadcast_to(src2, res_shape)
+            deps_ev = _manager.submitted_events
             ht_binary_ev, binary_ev = self.binary_fn_(
-                src1=src1, src2=src2, dst=out, sycl_queue=exec_q
+                src1=src1,
+                src2=src2,
+                dst=out,
+                sycl_queue=exec_q,
+                depends=deps_ev,
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_binary_ev.wait()
             return out
         elif buf1_dt is None:
             if order == "K":
                 buf2 = _empty_like_orderK(src2, buf2_dt)
             else:
                 buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
+            dep_evs = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=src2, dst=buf2, sycl_queue=exec_q
+                src=src2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
             )
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             if out is None:
                 if order == "K":
                     out = _empty_like_pair_orderK(
@@ -798,27 +821,28 @@ class BinaryElementwiseFunc:
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_copy_ev.wait()
-            ht_binary_ev.wait()
             return out
         elif buf2_dt is None:
             if order == "K":
                 buf1 = _empty_like_orderK(src1, buf1_dt)
             else:
                 buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
+            dep_evs = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=src1, dst=buf1, sycl_queue=exec_q
+                src=src1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
             )
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             if out is None:
                 if order == "K":
                     out = _empty_like_pair_orderK(
@@ -843,18 +867,17 @@ class BinaryElementwiseFunc:
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_copy_ev.wait()
-            ht_binary_ev.wait()
             return out
 
         if order == "K":
@@ -866,16 +889,19 @@ class BinaryElementwiseFunc:
             buf1 = _empty_like_orderK(src1, buf1_dt)
         else:
             buf1 = dpt.empty_like(src1, dtype=buf1_dt, order=order)
+        dep_evs = _manager.submitted_events
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=src1, dst=buf1, sycl_queue=exec_q
+            src=src1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy1_ev, copy1_ev)
         if order == "K":
             buf2 = _empty_like_orderK(src2, buf2_dt)
         else:
             buf2 = dpt.empty_like(src2, dtype=buf2_dt, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=src2, dst=buf2, sycl_queue=exec_q
+            src=src2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy2_ev, copy2_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_pair_orderK(
@@ -892,12 +918,12 @@ class BinaryElementwiseFunc:
 
         buf1 = dpt.broadcast_to(buf1, res_shape)
         buf2 = dpt.broadcast_to(buf2, res_shape)
-        ht_, _ = self.binary_fn_(
+        ht_, bf_ev = self.binary_fn_(
             src1=buf1,
             src2=buf2,
             dst=out,
             sycl_queue=exec_q,
             depends=[copy1_ev, copy2_ev],
         )
-        dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+        _manager.add_event_pair(ht_, bf_ev)
         return out

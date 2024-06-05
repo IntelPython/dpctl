@@ -260,8 +260,8 @@ class TestPrintFns(TestPrint):
     def test_print_repr(self):
         q = get_queue_or_skip()
 
-        x = dpt.asarray(0, dtype="int64", sycl_queue=q)
-        assert repr(x) == "usm_ndarray(0)"
+        x = dpt.asarray(3, dtype="int64", sycl_queue=q)
+        assert repr(x) == "usm_ndarray(3)"
 
         x = dpt.asarray([np.nan, np.inf], sycl_queue=q)
         if x.sycl_device.has_aspect_fp64:
@@ -281,7 +281,10 @@ class TestPrintFns(TestPrint):
         )
 
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
-        assert repr(x) == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
+        x.sycl_queue.wait()
+        r = repr(x)
+        print(r)
+        assert r == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
 
         dpt.set_print_options(linewidth=1)
         np.testing.assert_equal(

@@ -31,7 +31,7 @@ from dpctl.tensor._elementwise_common import (
 )
 from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
 from dpctl.tensor._type_utils import _can_cast, _to_device_supported_dtype
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 from ._type_utils import (
     WeakComplexType,
@@ -299,18 +299,21 @@ def _clip_none(x, val, out, order, _binary_fn):
             x = dpt.broadcast_to(x, res_shape)
         if val_ary.shape != res_shape:
             val_ary = dpt.broadcast_to(val_ary, res_shape)
+        _manager = SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
         ht_binary_ev, binary_ev = _binary_fn(
-            src1=x, src2=val_ary, dst=out, sycl_queue=exec_q
+            src1=x, src2=val_ary, dst=out, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_binary_ev, binary_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[binary_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_out_ev, copy_ev)
             out = orig_out
         ht_binary_ev.wait()
         return out
@@ -319,9 +322,12 @@ def _clip_none(x, val, out, order, _binary_fn):
             buf = _empty_like_orderK(val_ary, res_dt)
         else:
             buf = dpt.empty_like(val_ary, dtype=res_dt, order=order)
+        _manager = SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=val_ary, dst=buf, sycl_queue=exec_q
+            src=val_ary, dst=buf, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_pair_orderK(
@@ -346,18 +352,17 @@ def _clip_none(x, val, out, order, _binary_fn):
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
+        _manager.add_event_pair(ht_binary_ev, binary_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[binary_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
-        ht_copy_ev.wait()
-        ht_binary_ev.wait()
         return out
 
 
@@ -444,20 +449,22 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             else:
                 out = dpt.empty_like(x, order=order)
 
+        _manager = SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=out, sycl_queue=exec_q
+            src=x, dst=out, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_ev, cpy_ev)
             out = orig_out
-        ht_copy_ev.wait()
         return out
     elif max is None:
         return _clip_none(x, min, out, order, tei._maximum)
@@ -665,20 +672,27 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 a_min = dpt.broadcast_to(a_min, res_shape)
             if a_max.shape != res_shape:
                 a_max = dpt.broadcast_to(a_max, res_shape)
+            _manager = SequentialOrderManager[exec_q]
+            dep_ev = _manager.submitted_events
             ht_binary_ev, binary_ev = ti._clip(
-                src=x, min=a_min, max=a_max, dst=out, sycl_queue=exec_q
+                src=x,
+                min=a_min,
+                max=a_max,
+                dst=out,
+                sycl_queue=exec_q,
+                depends=dep_ev,
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_binary_ev.wait()
             return out
 
         elif buf1_dt is None:
@@ -686,9 +700,12 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 buf2 = _empty_like_orderK(a_max, buf2_dt)
             else:
                 buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
+            _manager = SequentialOrderManager[exec_q]
+            dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a_max, dst=buf2, sycl_queue=exec_q
+                src=a_max, dst=buf2, sycl_queue=exec_q, depends=dep_ev
             )
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             if out is None:
                 if order == "K":
                     out = _empty_like_triple_orderK(
@@ -721,18 +738,17 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_copy_ev.wait()
-            ht_binary_ev.wait()
             return out
 
         elif buf2_dt is None:
@@ -740,9 +756,12 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 buf1 = _empty_like_orderK(a_min, buf1_dt)
             else:
                 buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+            _manager = SequentialOrderManager[exec_q]
+            dep_ev = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=a_min, dst=buf1, sycl_queue=exec_q
+                src=a_min, dst=buf1, sycl_queue=exec_q, depends=dep_ev
             )
+            _manager.add_event_pair(ht_copy_ev, copy_ev)
             if out is None:
                 if order == "K":
                     out = _empty_like_triple_orderK(
@@ -775,18 +794,17 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
                 sycl_queue=exec_q,
                 depends=[copy_ev],
             )
+            _manager.add_event_pair(ht_binary_ev, binary_ev)
             if not (orig_out is None or orig_out is out):
                 # Copy the out data from temporary buffer to original memory
-                ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+                ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                     src=out,
                     dst=orig_out,
                     sycl_queue=exec_q,
                     depends=[binary_ev],
                 )
-                ht_copy_out_ev.wait()
+                _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
                 out = orig_out
-            ht_copy_ev.wait()
-            ht_binary_ev.wait()
             return out
 
         if order == "K":
@@ -806,16 +824,21 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             buf1 = _empty_like_orderK(a_min, buf1_dt)
         else:
             buf1 = dpt.empty_like(a_min, dtype=buf1_dt, order=order)
+
+        _manager = SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_min, dst=buf1, sycl_queue=exec_q
+            src=a_min, dst=buf1, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy1_ev, copy1_ev)
         if order == "K":
             buf2 = _empty_like_orderK(a_max, buf2_dt)
         else:
             buf2 = dpt.empty_like(a_max, dtype=buf2_dt, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_max, dst=buf2, sycl_queue=exec_q
+            src=a_max, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy2_ev, copy2_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_triple_orderK(
@@ -833,7 +856,7 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         x = dpt.broadcast_to(x, res_shape)
         buf1 = dpt.broadcast_to(buf1, res_shape)
         buf2 = dpt.broadcast_to(buf2, res_shape)
-        ht_, _ = ti._clip(
+        ht_, clip_ev = ti._clip(
             src=x,
             min=buf1,
             max=buf2,
@@ -841,5 +864,5 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
             sycl_queue=exec_q,
             depends=[copy1_ev, copy2_ev],
         )
-        dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+        _manager.add_event_pair(ht_, clip_ev)
         return out

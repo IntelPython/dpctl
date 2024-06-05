@@ -87,7 +87,8 @@ def searchsorted(
     x1_dt = x1.dtype
     x2_dt = x2.dtype
 
-    host_evs = []
+    _manager = du.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
     ev = dpctl.SyclEvent()
     if sorter is not None:
         if not isdtype(sorter.dtype, "integral"):
@@ -110,38 +111,28 @@ def searchsorted(
             axis,
             wrap_out_of_bound_indices_mode,
             sycl_queue=q,
-            depends=[
-                ev,
-            ],
+            depends=dep_evs,
         )
         x1 = res
-        host_evs.append(ht_ev)
+        _manager.add_event_pair(ht_ev, ev)
 
     if x1_dt != x2_dt:
         dt = result_type(x1, x2)
         if x1_dt != dt:
             x1_buf = _empty_like_orderK(x1, dt)
+            dep_evs = _manager.submitted_events
             ht_ev, ev = ti_copy(
-                src=x1,
-                dst=x1_buf,
-                sycl_queue=q,
-                depends=[
-                    ev,
-                ],
+                src=x1, dst=x1_buf, sycl_queue=q, depends=dep_evs
             )
-            host_evs.append(ht_ev)
+            _manager.add_event_pair(ht_ev, ev)
             x1 = x1_buf
         if x2_dt != dt:
             x2_buf = _empty_like_orderK(x2, dt)
+            dep_evs = _manager.submitted_events
             ht_ev, ev = ti_copy(
-                src=x2,
-                dst=x2_buf,
-                sycl_queue=q,
-                depends=[
-                    ev,
-                ],
+                src=x2, dst=x2_buf, sycl_queue=q, depends=dep_evs
             )
-            host_evs.append(ht_ev)
+            _manager.add_event_pair(ht_ev, ev)
             x2 = x2_buf
 
     dst_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
@@ -149,28 +140,18 @@ def searchsorted(
 
     dst = _empty_like_orderK(x2, index_dt, usm_type=dst_usm_type)
 
+    dep_evs = _manager.submitted_events
     if side == "left":
-        ht_ev, _ = _searchsorted_left(
+        ht_ev, s_ev = _searchsorted_left(
             hay=x1,
             needles=x2,
             positions=dst,
             sycl_queue=q,
-            depends=[
-                ev,
-            ],
+            depends=dep_evs,
         )
     else:
-        ht_ev, _ = _searchsorted_right(
-            hay=x1,
-            needles=x2,
-            positions=dst,
-            sycl_queue=q,
-            depends=[
-                ev,
-            ],
+        ht_ev, s_ev = _searchsorted_right(
+            hay=x1, needles=x2, positions=dst, sycl_queue=q, depends=dep_evs
         )
-
-    host_evs.append(ht_ev)
-    dpctl.SyclEvent.wait_for(host_evs)
-
+    _manager.add_event_pair(ht_ev, s_ev)
     return dst

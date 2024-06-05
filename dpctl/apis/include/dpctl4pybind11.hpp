@@ -89,6 +89,7 @@ public:
 
     // memory
     DPCTLSyclUSMRef (*Memory_GetUsmPointer_)(Py_MemoryObject *);
+    void *(*Memory_GetOpaquePointer_)(Py_MemoryObject *);
     DPCTLSyclContextRef (*Memory_GetContextRef_)(Py_MemoryObject *);
     DPCTLSyclQueueRef (*Memory_GetQueueRef_)(Py_MemoryObject *);
     size_t (*Memory_GetNumBytes_)(Py_MemoryObject *);
@@ -115,6 +116,7 @@ public:
     int (*UsmNDArray_GetFlags_)(PyUSMArrayObject *);
     DPCTLSyclQueueRef (*UsmNDArray_GetQueueRef_)(PyUSMArrayObject *);
     py::ssize_t (*UsmNDArray_GetOffset_)(PyUSMArrayObject *);
+    PyObject *(*UsmNDArray_GetUSMData_)(PyUSMArrayObject *);
     void (*UsmNDArray_SetWritableFlag_)(PyUSMArrayObject *, int);
     PyObject *(*UsmNDArray_MakeSimpleFromMemory_)(int,
                                                   const py::ssize_t *,
@@ -233,15 +235,16 @@ private:
           SyclContext_Make_(nullptr), SyclEvent_GetEventRef_(nullptr),
           SyclEvent_Make_(nullptr), SyclQueue_GetQueueRef_(nullptr),
           SyclQueue_Make_(nullptr), Memory_GetUsmPointer_(nullptr),
-          Memory_GetContextRef_(nullptr), Memory_GetQueueRef_(nullptr),
-          Memory_GetNumBytes_(nullptr), Memory_Make_(nullptr),
-          SyclKernel_GetKernelRef_(nullptr), SyclKernel_Make_(nullptr),
-          SyclProgram_GetKernelBundleRef_(nullptr), SyclProgram_Make_(nullptr),
-          UsmNDArray_GetData_(nullptr), UsmNDArray_GetNDim_(nullptr),
-          UsmNDArray_GetShape_(nullptr), UsmNDArray_GetStrides_(nullptr),
-          UsmNDArray_GetTypenum_(nullptr), UsmNDArray_GetElementSize_(nullptr),
-          UsmNDArray_GetFlags_(nullptr), UsmNDArray_GetQueueRef_(nullptr),
-          UsmNDArray_GetOffset_(nullptr), UsmNDArray_SetWritableFlag_(nullptr),
+          Memory_GetOpaquePointer_(nullptr), Memory_GetContextRef_(nullptr),
+          Memory_GetQueueRef_(nullptr), Memory_GetNumBytes_(nullptr),
+          Memory_Make_(nullptr), SyclKernel_GetKernelRef_(nullptr),
+          SyclKernel_Make_(nullptr), SyclProgram_GetKernelBundleRef_(nullptr),
+          SyclProgram_Make_(nullptr), UsmNDArray_GetData_(nullptr),
+          UsmNDArray_GetNDim_(nullptr), UsmNDArray_GetShape_(nullptr),
+          UsmNDArray_GetStrides_(nullptr), UsmNDArray_GetTypenum_(nullptr),
+          UsmNDArray_GetElementSize_(nullptr), UsmNDArray_GetFlags_(nullptr),
+          UsmNDArray_GetQueueRef_(nullptr), UsmNDArray_GetOffset_(nullptr),
+          UsmNDArray_GetUSMData_(nullptr), UsmNDArray_SetWritableFlag_(nullptr),
           UsmNDArray_MakeSimpleFromMemory_(nullptr),
           UsmNDArray_MakeSimpleFromPtr_(nullptr),
           UsmNDArray_MakeFromPtr_(nullptr), USM_ARRAY_C_CONTIGUOUS_(0),
@@ -299,6 +302,7 @@ private:
 
         // dpctl.memory API
         this->Memory_GetUsmPointer_ = Memory_GetUsmPointer;
+        this->Memory_GetOpaquePointer_ = Memory_GetOpaquePointer;
         this->Memory_GetContextRef_ = Memory_GetContextRef;
         this->Memory_GetQueueRef_ = Memory_GetQueueRef;
         this->Memory_GetNumBytes_ = Memory_GetNumBytes;
@@ -320,6 +324,7 @@ private:
         this->UsmNDArray_GetFlags_ = UsmNDArray_GetFlags;
         this->UsmNDArray_GetQueueRef_ = UsmNDArray_GetQueueRef;
         this->UsmNDArray_GetOffset_ = UsmNDArray_GetOffset;
+        this->UsmNDArray_GetUSMData_ = UsmNDArray_GetUSMData;
         this->UsmNDArray_SetWritableFlag_ = UsmNDArray_SetWritableFlag;
         this->UsmNDArray_MakeSimpleFromMemory_ =
             UsmNDArray_MakeSimpleFromMemory;
@@ -779,6 +784,33 @@ public:
         return api.Memory_GetNumBytes_(mem_obj);
     }
 
+    bool is_managed_by_smart_ptr() const
+    {
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
+        const void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+
+        return bool(opaque_ptr);
+    }
+
+    const std::shared_ptr<void> &get_smart_ptr_owner() const
+    {
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);
+        void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+
+        if (opaque_ptr) {
+            auto shptr_ptr =
+                reinterpret_cast<std::shared_ptr<void> *>(opaque_ptr);
+            return *shptr_ptr;
+        }
+        else {
+            throw std::runtime_error(
+                "Memory object does not have smart pointer "
+                "managing lifetime of USM allocation");
+        }
+    }
+
 protected:
     static PyObject *as_usm_memory(PyObject *o)
     {
@@ -1065,6 +1097,71 @@ public:
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
 
+    /*! @brief Get usm_data property of array */
+    py::object get_usm_data() const
+    {
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
+
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        // UsmNDArray_GetUSMData_ gives a new reference
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
+
+        // pass reference ownership to py::object
+        return py::reinterpret_steal<py::object>(usm_data);
+    }
+
+    bool is_managed_by_smart_ptr() const
+    {
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
+
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
+
+        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
+            return false;
+        }
+
+        Py_MemoryObject *mem_obj =
+            reinterpret_cast<Py_MemoryObject *>(usm_data);
+        const void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+
+        Py_DECREF(usm_data);
+        return bool(opaque_ptr);
+    }
+
+    const std::shared_ptr<void> &get_smart_ptr_owner() const
+    {
+        PyUSMArrayObject *raw_ar = usm_array_ptr();
+
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+
+        PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
+
+        if (!PyObject_TypeCheck(usm_data, api.Py_MemoryType_)) {
+            Py_DECREF(usm_data);
+            throw std::runtime_error(
+                "usm_ndarray object does not have Memory object "
+                "managing lifetime of USM allocation");
+        }
+
+        Py_MemoryObject *mem_obj =
+            reinterpret_cast<Py_MemoryObject *>(usm_data);
+        void *opaque_ptr = api.Memory_GetOpaquePointer_(mem_obj);
+        Py_DECREF(usm_data);
+
+        if (opaque_ptr) {
+            auto shptr_ptr =
+                reinterpret_cast<std::shared_ptr<void> *>(opaque_ptr);
+            return *shptr_ptr;
+        }
+        else {
+            throw std::runtime_error(
+                "Memory object underlying usm_ndarray does not have "
+                "smart pointer managing lifetime of USM allocation");
+        }
+    }
+
 private:
     PyUSMArrayObject *usm_array_ptr() const
     {
@@ -1077,26 +1174,112 @@ private:
 namespace utils
 {
 
+namespace detail
+{
+
+struct ManagedMemory
+{
+
+    static bool is_usm_managed_by_shared_ptr(const py::object &h)
+    {
+        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
+            return usm_memory_inst.is_managed_by_smart_ptr();
+        }
+        else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst =
+                py::cast<dpctl::tensor::usm_ndarray>(h);
+            return usm_array_inst.is_managed_by_smart_ptr();
+        }
+
+        return false;
+    }
+
+    static const std::shared_ptr<void> &extract_shared_ptr(const py::object &h)
+    {
+        if (py::isinstance<dpctl::memory::usm_memory>(h)) {
+            const auto &usm_memory_inst =
+                py::cast<dpctl::memory::usm_memory>(h);
+            return usm_memory_inst.get_smart_ptr_owner();
+        }
+        else if (py::isinstance<dpctl::tensor::usm_ndarray>(h)) {
+            const auto &usm_array_inst =
+                py::cast<dpctl::tensor::usm_ndarray>(h);
+            return usm_array_inst.get_smart_ptr_owner();
+        }
+
+        throw std::runtime_error(
+            "Attempted extraction of shared_ptr on an unrecognized type");
+    }
+};
+
+} // end of namespace detail
+
 template <std::size_t num>
 sycl::event keep_args_alive(sycl::queue &q,
                             const py::object (&py_objs)[num],
                             const std::vector<sycl::event> &depends = {})
 {
-    sycl::event host_task_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        std::array<std::shared_ptr<py::handle>, num> shp_arr;
-        for (std::size_t i = 0; i < num; ++i) {
-            shp_arr[i] = std::make_shared<py::handle>(py_objs[i]);
-            shp_arr[i]->inc_ref();
-        }
-        cgh.host_task([shp_arr = std::move(shp_arr)]() {
-            py::gil_scoped_acquire acquire;
+    std::size_t n_objects_held = 0;
+    std::array<std::shared_ptr<py::handle>, num> shp_arr{};
 
-            for (std::size_t i = 0; i < num; ++i) {
-                shp_arr[i]->dec_ref();
+    std::size_t n_usm_owners_held = 0;
+    std::array<std::shared_ptr<void>, num> shp_usm{};
+
+    for (std::size_t i = 0; i < num; ++i) {
+        const auto &py_obj_i = py_objs[i];
+        if (detail::ManagedMemory::is_usm_managed_by_shared_ptr(py_obj_i)) {
+            const auto &shp =
+                detail::ManagedMemory::extract_shared_ptr(py_obj_i);
+            shp_usm[n_usm_owners_held] = shp;
+            ++n_usm_owners_held;
+        }
+        else {
+            shp_arr[n_objects_held] = std::make_shared<py::handle>(py_obj_i);
+            shp_arr[n_objects_held]->inc_ref();
+            ++n_objects_held;
+        }
+    }
+
+    bool use_depends = true;
+    sycl::event host_task_ev;
+
+    if (n_usm_owners_held > 0) {
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
             }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            cgh.host_task([shp_usm = std::move(shp_usm)]() {
+                // no body, but shared pointers are captured in
+                // the lambda, ensuring that USM allocation is
+                // kept alive
+            });
         });
-    });
+    }
+
+    if (n_objects_held > 0) {
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
+            }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            cgh.host_task([n_objects_held, shp_arr = std::move(shp_arr)]() {
+                py::gil_scoped_acquire acquire;
+
+                for (std::size_t i = 0; i < n_objects_held; ++i) {
+                    shp_arr[i]->dec_ref();
+                }
+            });
+        });
+    }
 
     return host_task_ev;
 }
