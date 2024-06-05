@@ -158,9 +158,9 @@ API for :c:struct:`Py_MemoryObject`
 
 .. c:function:: void * Memory_GetOpaquePointer(struct Py_MemoryObject *o)
 
-    :param o: Input ojbect
+    :param o: Input object
     :returns: Returns opaque pointer to `std::shared_ptr<void>` which manages the USM allocation,
-        or a `nullptr` if this USM allocation represented by `o` is not managed by the smart
+        or a `nullptr` if the USM allocation represented by `o` is not managed by the smart
         pointer.
 
 API for :c:struct:`PyUSMArrayObject`
