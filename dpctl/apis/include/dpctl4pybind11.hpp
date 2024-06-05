@@ -1097,13 +1097,16 @@ public:
         return static_cast<bool>(flags & api.USM_ARRAY_WRITABLE_);
     }
 
+    /*! @brief Get usm_data property of array */
     py::object get_usm_data() const
     {
         PyUSMArrayObject *raw_ar = usm_array_ptr();
 
         auto const &api = ::dpctl::detail::dpctl_capi::get();
+        // UsmNDArray_GetUSMData_ gives a new reference
         PyObject *usm_data = api.UsmNDArray_GetUSMData_(raw_ar);
 
+        // pass reference ownership to py::object
         return py::reinterpret_steal<py::object>(usm_data);
     }
 
