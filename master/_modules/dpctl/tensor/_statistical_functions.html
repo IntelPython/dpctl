@@ -834,11 +834,11 @@
 
 <span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">tei</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_reductions_impl</span> <span class="k">as</span> <span class="nn">tri</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
 
 
 <span class="k">def</span> <span class="nf">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">):</span>
@@ -866,15 +866,14 @@
     <span class="p">)</span>
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
 
-    <span class="n">deps</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="k">if</span> <span class="n">inp_dt</span> <span class="o">!=</span> <span class="n">res_dt</span><span class="p">:</span>
         <span class="n">buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">)</span>
         <span class="n">ht_e_buf</span><span class="p">,</span> <span class="n">c_e1</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_e1</span><span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_buf</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e_buf</span><span class="p">,</span> <span class="n">c_e1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">buf</span> <span class="o">=</span> <span class="n">x</span>
     <span class="c1"># calculate mean</span>
@@ -883,11 +882,11 @@
     <span class="c1"># use keepdims=True path for later broadcasting</span>
     <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
         <span class="n">ht_e1</span><span class="p">,</span> <span class="n">c_e2</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_e2</span><span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">,</span> <span class="n">c_e2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mean_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span>
@@ -895,15 +894,15 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
         <span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e1</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">buf2</span><span class="p">,</span>
             <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">red_nd</span><span class="p">,</span>
             <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-            <span class="n">depends</span><span class="o">=</span><span class="n">deps</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
-        <span class="n">deps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e1</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e1</span><span class="p">)</span>
 
         <span class="n">mean_ary_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
         <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
@@ -917,10 +916,11 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">nelems_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mean_ary_shape</span><span class="p">:</span>
         <span class="n">nelems_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">mean_ary_shape</span><span class="p">)</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span><span class="p">)</span>
     <span class="c1"># subtract mean from original array to get deviations</span>
     <span class="n">dev_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mean_ary_shape</span> <span class="o">!=</span> <span class="n">buf</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
@@ -928,18 +928,17 @@
     <span class="n">ht_e4</span><span class="p">,</span> <span class="n">su_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_subtract</span><span class="p">(</span>
         <span class="n">src1</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">src2</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">d_e1</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e4</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e4</span><span class="p">,</span> <span class="n">su_e</span><span class="p">)</span>
     <span class="c1"># square deviations</span>
     <span class="n">ht_e5</span><span class="p">,</span> <span class="n">sq_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_square</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">su_e</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e5</span><span class="p">)</span>
-    <span class="n">deps2</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e5</span><span class="p">,</span> <span class="n">sq_e</span><span class="p">)</span>
+
     <span class="c1"># take sum of squared deviations</span>
     <span class="n">dev_ary2</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">dev_ary</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">red_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dev_ary</span>
-        <span class="n">deps2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sq_e</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span>
@@ -954,8 +953,7 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
             <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">sq_e</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e6</span><span class="p">)</span>
-        <span class="n">deps2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e2</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e6</span><span class="p">,</span> <span class="n">r_e2</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
             <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">red_nd</span>
@@ -972,11 +970,12 @@
     <span class="c1"># divide in-place again</span>
     <span class="k">if</span> <span class="n">div_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
         <span class="n">div_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps2</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e7</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">[</span><span class="n">d_e2</span><span class="p">],</span> <span class="n">host_tasks_list</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">[</span><span class="n">d_e2</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="mean"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.mean.html#dpctl.tensor.mean">[docs]</a><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1039,25 +1038,28 @@
     <span class="k">if</span> <span class="n">sum_nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">s_e</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="k">if</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis_dtype_supported</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
         <span class="p">)</span>
         <span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e</span> <span class="o">=</span> <span class="n">tri</span><span class="o">.</span><span class="n">_sum_over_axis</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">sum_nd</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_reduce</span><span class="o">=</span><span class="n">sum_nd</span><span class="p">,</span>
+            <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">)</span>
-        <span class="n">s_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e1</span><span class="p">,</span> <span class="n">r_e</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">arr2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
         <span class="p">)</span>
         <span class="n">ht_e_cpy</span><span class="p">,</span> <span class="n">cpy_e</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e_cpy</span><span class="p">,</span> <span class="n">cpy_e</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
         <span class="p">)</span>
@@ -1068,8 +1070,7 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
             <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">cpy_e</span><span class="p">],</span>
         <span class="p">)</span>
-        <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e_red</span><span class="p">)</span>
-        <span class="n">s_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_e</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e_red</span><span class="p">,</span> <span class="n">r_e</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
         <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">sum_nd</span>
@@ -1084,11 +1085,11 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">nelems_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
         <span class="n">nelems_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
-    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">s_e</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">div_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
+        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">,</span> <span class="n">div_e</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -1139,8 +1140,7 @@
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`var` does not support complex types&quot;</span><span class="p">)</span>
 
-    <span class="n">res</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -1192,12 +1192,13 @@
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`std` does not support complex types&quot;</span><span class="p">)</span>
 
-    <span class="n">res</span><span class="p">,</span> <span class="n">deps</span><span class="p">,</span> <span class="n">host_tasks_list</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
-    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">(</span>
-        <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">deps</span> <span class="o">=</span> <span class="n">_var_impl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">correction</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span>
+    <span class="n">ht_ev</span><span class="p">,</span> <span class="n">sqrt_ev</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
     <span class="p">)</span>
-    <span class="n">host_tasks_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_tasks_list</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">sqrt_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
         </article>
