@@ -839,6 +839,7 @@
 <span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span>
 
 <span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_extract_impl</span><span class="p">,</span> <span class="n">_nonzero_impl</span>
 
@@ -938,8 +939,12 @@
         <span class="n">res_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
     <span class="p">)</span>
 
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">deps_ev</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">take_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_take</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps_ev</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">take_ev</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">res</span></div>
 
@@ -1091,8 +1096,12 @@
         <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">val_shape</span><span class="p">)</span>
 
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">rhs</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">deps_ev</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">put_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">indices</span><span class="p">,),</span> <span class="n">rhs</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps_ev</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">put_ev</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="extract"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.extract.html#dpctl.tensor.extract">[docs]</a><span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
@@ -1184,7 +1193,11 @@
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array sizes are not as required&quot;</span><span class="p">)</span>
     <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;i8&quot;</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
-    <span class="n">nz_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">deps_ev</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+    <span class="n">nz_count</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">mask_positions</span><span class="p">(</span>
+        <span class="n">mask</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps_ev</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">nz_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="k">if</span> <span class="n">vals</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1193,7 +1206,7 @@
         <span class="n">rhs</span> <span class="o">=</span> <span class="n">vals</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_place</span><span class="p">(</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">pl_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_place</span><span class="p">(</span>
         <span class="n">dst</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
         <span class="n">cumsum</span><span class="o">=</span><span class="n">cumsum</span><span class="p">,</span>
         <span class="n">axis_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -1201,7 +1214,7 @@
         <span class="n">rhs</span><span class="o">=</span><span class="n">rhs</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">pl_ev</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.nonzero.html#dpctl.tensor.nonzero">[docs]</a><span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
