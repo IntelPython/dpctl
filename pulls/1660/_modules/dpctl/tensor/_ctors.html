@@ -977,10 +977,12 @@
         <span class="p">)</span>
     <span class="n">eq</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">usm_ndary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">eq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">usm_ndary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">eq</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">eq</span><span class="p">]</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">usm_ndary</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">eq</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">usm_ndary</span><span class="p">)</span>
         <span class="n">res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
@@ -1129,25 +1131,27 @@
     <span class="k">raise</span> <span class="ne">TypeError</span>
 
 
-<span class="k">def</span> <span class="nf">_device_copy_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_device_copy_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">_manager</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="n">deps</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
         <span class="p">)</span>
-        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">):</span>
         <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">usm_ar</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="n">deps</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">usm_ar</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">deps</span>
         <span class="p">)</span>
-        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">seq_o</span><span class="p">):</span>
-            <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">events</span><span class="p">)</span>
+            <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">_manager</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="k">raise</span> <span class="ne">TypeError</span>
 
@@ -1229,9 +1233,8 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">alloc_q</span><span class="p">,</span>
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">ht_events</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">seq_obj</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">ht_events</span><span class="p">)</span>
-        <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">ht_events</span><span class="p">)</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+        <span class="n">_device_copy_walker</span><span class="p">(</span><span class="n">seq_obj</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">_manager</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
@@ -1669,8 +1672,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_step</span> <span class="o">=</span> <span class="n">sc_ty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">_start</span> <span class="o">=</span> <span class="n">_first</span>
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">_start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+    <span class="c1"># populating newly allocated array, no task dependencies</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">lin_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_step</span><span class="p">(</span><span class="n">_start</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">lin_ev</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_bool</span><span class="p">:</span>
         <span class="n">res_out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="p">(</span><span class="n">sh</span><span class="p">,),</span>
@@ -1679,8 +1684,11 @@
             <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
             <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
         <span class="p">)</span>
-        <span class="n">res_out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">res</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">res_out</span>
+        <span class="n">hev_cpy</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res_out</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">lin_ev</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev_cpy</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res_out</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -1745,6 +1753,7 @@
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
+    <span class="c1"># FIXME: replace with asynchronous call to ti</span>
     <span class="n">res</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">memset</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
@@ -1810,8 +1819,10 @@
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+    <span class="c1"># populating new allocation, no dependent events</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">full_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">full_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -1907,8 +1918,10 @@
     <span class="k">elif</span> <span class="n">fill_value_type</span> <span class="ow">is</span> <span class="nb">int</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="n">fill_value</span> <span class="o">=</span> <span class="n">_to_scalar</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+    <span class="c1"># populating new allocation, no dependent events</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">full_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_full_usm_ndarray</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">full_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -2285,10 +2298,11 @@
         <span class="n">start</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
-    <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_affine</span><span class="p">(</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">la_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_linspace_affine</span><span class="p">(</span>
         <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">include_endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
-    <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">la_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span> <span class="k">if</span> <span class="n">int_dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">int_dt</span><span class="p">)</span></div>
 
 
@@ -2382,8 +2396,9 @@
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">n_rows</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n_cols</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_eye</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">eye_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_eye</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">eye_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -2433,10 +2448,12 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">shape</span><span class="p">[</span><span class="n">nd</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
             <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
@@ -2453,8 +2470,12 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_tril</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">tril_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_tril</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">tril_ev</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">res</span></div>
 
@@ -2513,10 +2534,12 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">cpy_ev</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
@@ -2525,8 +2548,12 @@
             <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">hev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_triu</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
-        <span class="n">hev</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+        <span class="n">hev</span><span class="p">,</span> <span class="n">triu_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_triu</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">triu_ev</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">res</span></div>
 

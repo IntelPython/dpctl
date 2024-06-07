@@ -1138,8 +1138,27 @@ represented by input Python object is bound.</p>
 <li><p><strong>nbytes</strong> – The size of allocation in bytes</p></li>
 <li><p><strong>QRef</strong> – instance of <code class="xref c c-struct docutils literal notranslate"><span class="pre">PySyclQueueRef</span></code> corresponding
 to <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> to be associated with this allocation</p></li>
-<li><p><strong>owner</strong> – Python object instance whose deleter triggers freeing of this USM allocation</p></li>
+<li><p><strong>owner</strong> – Python object instance whose deleter triggers freeing of this USM allocation. Specify <cite>owner=None</cite>
+to pass ownership to created Python memory object, which will use <code class="docutils literal notranslate"><span class="pre">sycl::free(ptr,</span> <span class="pre">sycl_queue)</span></code> for
+deallocation.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.Memory_GetOpaquePointer">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">Memory_GetOpaquePointer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.Py_MemoryObject" title="Py_MemoryObject"><span class="n"><span class="pre">Py_MemoryObject</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">o</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.Memory_GetOpaquePointer" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o</strong> – Input object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns opaque pointer to <cite>std::shared_ptr&lt;void&gt;</cite> which manages the USM allocation,
+or a <cite>nullptr</cite> if the USM allocation represented by <cite>o</cite> is not managed by the smart
+pointer.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1293,6 +1312,21 @@ USM allocation.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Offset of zero multi-index array element from the beginning of
 the USM allocation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UsmNDArray_GetUSMData">
+<a class="reference external" href="https://docs.python.org/3/c-api/structures.html#c.PyObject" title="(in Python v3.12)"><span class="n"><span class="pre">PyObject</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">UsmNDArray_GetUSMData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#c.PyUSMArrayObject" title="PyUSMArrayObject"><span class="n"><span class="pre">PyUSMArrayObject</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">arr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UsmNDArray_GetUSMData" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> – Input object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Python memory object underlying input array <cite>arr</cite>.</p>
 </dd>
 </dl>
 </dd></dl>

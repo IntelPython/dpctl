@@ -905,7 +905,8 @@
     <span class="n">x1_dt</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
     <span class="n">x2_dt</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span>
 
-    <span class="n">host_evs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">sorter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">isdtype</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="s2">&quot;integral&quot;</span><span class="p">):</span>
@@ -928,38 +929,28 @@
             <span class="n">axis</span><span class="p">,</span>
             <span class="n">wrap_out_of_bound_indices_mode</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">ev</span><span class="p">,</span>
-            <span class="p">],</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">x1</span> <span class="o">=</span> <span class="n">res</span>
-        <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x1_dt</span> <span class="o">!=</span> <span class="n">x2_dt</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">result_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x1_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
             <span class="n">x1_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
             <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti_copy</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
-                <span class="n">dst</span><span class="o">=</span><span class="n">x1_buf</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-                <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">ev</span><span class="p">,</span>
-                <span class="p">],</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">x1_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
             <span class="p">)</span>
-            <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
             <span class="n">x1</span> <span class="o">=</span> <span class="n">x1_buf</span>
         <span class="k">if</span> <span class="n">x2_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
             <span class="n">x2_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+            <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
             <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">ti_copy</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
-                <span class="n">dst</span><span class="o">=</span><span class="n">x2_buf</span><span class="p">,</span>
-                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-                <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
-                    <span class="n">ev</span><span class="p">,</span>
-                <span class="p">],</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">x2_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
             <span class="p">)</span>
-            <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
             <span class="n">x2</span> <span class="o">=</span> <span class="n">x2_buf</span>
 
     <span class="n">dst_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
@@ -967,30 +958,20 @@
 
     <span class="n">dst</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">index_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">)</span>
 
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="k">if</span> <span class="n">side</span> <span class="o">==</span> <span class="s2">&quot;left&quot;</span><span class="p">:</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_left</span><span class="p">(</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">s_ev</span> <span class="o">=</span> <span class="n">_searchsorted_left</span><span class="p">(</span>
             <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
             <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
             <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">ev</span><span class="p">,</span>
-            <span class="p">],</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_searchsorted_right</span><span class="p">(</span>
-            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span>
-            <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span>
-            <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-            <span class="n">depends</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">ev</span><span class="p">,</span>
-            <span class="p">],</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">s_ev</span> <span class="o">=</span> <span class="n">_searchsorted_right</span><span class="p">(</span>
+            <span class="n">hay</span><span class="o">=</span><span class="n">x1</span><span class="p">,</span> <span class="n">needles</span><span class="o">=</span><span class="n">x2</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
-
-    <span class="n">host_evs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">host_evs</span><span class="p">)</span>
-
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">s_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dst</span></div>
 </pre></div>
         </article>

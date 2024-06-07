@@ -152,7 +152,16 @@ API for :c:struct:`Py_MemoryObject`
     :param nbytes: The size of allocation in bytes
     :param QRef: instance of :c:struct:`PySyclQueueRef` corresponding
         to ``sycl::queue`` to be associated with this allocation
-    :param owner: Python object instance whose deleter triggers freeing of this USM allocation
+    :param owner: Python object instance whose deleter triggers freeing of this USM allocation. Specify `owner=None`
+        to pass ownership to created Python memory object, which will use ``sycl::free(ptr, sycl_queue)`` for
+        deallocation.
+
+.. c:function:: void * Memory_GetOpaquePointer(struct Py_MemoryObject *o)
+
+    :param o: Input object
+    :returns: Returns opaque pointer to `std::shared_ptr<void>` which manages the USM allocation,
+        or a `nullptr` if the USM allocation represented by `o` is not managed by the smart
+        pointer.
 
 API for :c:struct:`PyUSMArrayObject`
 ------------------------------------
@@ -220,6 +229,11 @@ API for :c:struct:`PyUSMArrayObject`
     :param arr: Input object
     :returns: Offset of zero multi-index array element from the beginning of
               the USM allocation.
+
+.. c:function:: PyObject * UsmNDArray_GetUSMData(struct PyUSMArrayObject *arr)
+
+    :param arr: Input object
+    :returns: Python memory object underlying input array `arr`.
 
 .. c:function:: void UsmNDArray_SetWritableFlag(struct PyUSMArrayObject *arr, int flag)
 
