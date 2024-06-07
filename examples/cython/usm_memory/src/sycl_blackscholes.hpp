@@ -47,7 +47,7 @@ constexpr int CALL = 0;
 constexpr int PUT = 1;
 
 template <typename T>
-void cpp_blackscholes(sycl::queue q, size_t n_opts, T *params, T *callput)
+void cpp_blackscholes(sycl::queue &q, size_t n_opts, T *params, T *callput)
 {
     using data_t = T;
 
@@ -57,8 +57,7 @@ void cpp_blackscholes(sycl::queue q, size_t n_opts, T *params, T *callput)
         data_t half = one / two;
 
         cgh.parallel_for<class black_scholes_kernel<T>>(
-		sycl::range<1>(n_opts),
-		[=](sycl::id<1> idx)
+            sycl::range<1>(n_opts), [=](sycl::id<1> idx)
         {
             const size_t i = n_params * idx[0];
             const data_t opt_price = params[i + PRICE];
@@ -106,7 +105,7 @@ void cpp_blackscholes(sycl::queue q, size_t n_opts, T *params, T *callput)
             const size_t callput_i = n_prices * idx[0];
             callput[callput_i + CALL] = call_price;
             callput[callput_i + PUT] = put_price;
-        });
+            });
     });
 
     e.wait_and_throw();

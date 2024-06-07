@@ -127,12 +127,14 @@ def cg_solve(A, b):
     converged is False if solver has not converged, or the iteration number
     """
     exec_queue = A.sycl_queue
+    exec_queue.wait()
+
     x = dpt.zeros_like(b)
     Ap = dpt.empty_like(x)
 
     all_host_tasks = []
-    r = dpt.copy(b)  # synchronous copy
-    p = dpt.copy(b)  # synchronous copy
+    r = dpt.copy(b)
+    p = dpt.copy(b)
 
     rsold = sycl_gemm.norm_squared_blocking(exec_queue, r)
     if rsold < 1e-20:

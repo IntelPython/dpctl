@@ -18,7 +18,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.tensor._manipulation_functions import _broadcast_shapes
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
 from ._type_utils import _all_data_types, _can_cast
@@ -198,19 +198,18 @@ def where(condition, x1, x2, /, *, order="K", out=None):
                     sycl_queue=exec_q,
                 )
 
-    deps = []
-    wait_list = []
+    _manager = SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
     if x1_dtype != out_dtype:
         if order == "K":
             _x1 = _empty_like_orderK(x1, out_dtype)
         else:
             _x1 = dpt.empty_like(x1, dtype=out_dtype, order=order)
         ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x1, dst=_x1, sycl_queue=exec_q
+            src=x1, dst=_x1, sycl_queue=exec_q, depends=dep_evs
         )
         x1 = _x1
-        deps.append(copy1_ev)
-        wait_list.append(ht_copy1_ev)
+        _manager.add_event_pair(ht_copy1_ev, copy1_ev)
 
     if x2_dtype != out_dtype:
         if order == "K":
@@ -218,11 +217,10 @@ def where(condition, x1, x2, /, *, order="K", out=None):
         else:
             _x2 = dpt.empty_like(x2, dtype=out_dtype, order=order)
         ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x2, dst=_x2, sycl_queue=exec_q
+            src=x2, dst=_x2, sycl_queue=exec_q, depends=dep_evs
         )
         x2 = _x2
-        deps.append(copy2_ev)
-        wait_list.append(ht_copy2_ev)
+        _manager.add_event_pair(ht_copy2_ev, copy2_ev)
 
     if out is None:
         if order == "K":
@@ -242,25 +240,25 @@ def where(condition, x1, x2, /, *, order="K", out=None):
     x1 = dpt.broadcast_to(x1, res_shape)
     x2 = dpt.broadcast_to(x2, res_shape)
 
+    dep_evs = _manager.submitted_events
     hev, where_ev = ti._where(
         condition=condition,
         x1=x1,
         x2=x2,
         dst=out,
         sycl_queue=exec_q,
-        depends=deps,
+        depends=dep_evs,
     )
+    _manager.add_event_pair(hev, where_ev)
     if not (orig_out is None or orig_out is out):
         # Copy the out data from temporary buffer to original memory
-        ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+        ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
             src=out,
             dst=orig_out,
             sycl_queue=exec_q,
             depends=[where_ev],
         )
-        ht_copy_out_ev.wait()
+        _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
         out = orig_out
-    dpctl.SyclEvent.wait_for(wait_list)
-    hev.wait()
 
     return out

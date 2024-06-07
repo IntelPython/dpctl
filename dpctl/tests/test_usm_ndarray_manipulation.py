@@ -698,6 +698,14 @@ def test_concat_different_dtype():
     assert XY.shape == (5, 2)
     assert XY.sycl_queue == q
 
+    X1 = dpt.arange(10, dtype="i2", sycl_queue=q)
+    Y1 = dpt.arange(5, dtype="i4", sycl_queue=q)
+
+    XY1 = dpt.concat([X1[::2], Y1[::-1]], axis=None)
+    assert XY1.shape == (10,)
+    assert XY1.sycl_queue == q
+    assert XY1.dtype == Y1.dtype
+
 
 def test_concat_incorrect_ndim():
     q = get_queue_or_skip()

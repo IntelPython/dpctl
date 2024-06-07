@@ -81,7 +81,7 @@ template <typename argT, typename resT> struct RoundFunctor
 private:
     template <typename T> T round_func(const T &input) const
     {
-        return std::rint(input);
+        return sycl::rint(input);
     }
 };
 

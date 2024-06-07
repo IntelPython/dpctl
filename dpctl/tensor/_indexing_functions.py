@@ -21,6 +21,7 @@ from numpy.core.numeric import normalize_axis_index
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+import dpctl.utils
 
 from ._copy_utils import _extract_impl, _nonzero_impl
 
@@ -120,8 +121,12 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
         res_shape, dtype=x.dtype, usm_type=res_usm_type, sycl_queue=exec_q
     )
 
-    hev, _ = ti._take(x, (indices,), res, axis, mode, sycl_queue=exec_q)
-    hev.wait()
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    deps_ev = _manager.submitted_events
+    hev, take_ev = ti._take(
+        x, (indices,), res, axis, mode, sycl_queue=exec_q, depends=deps_ev
+    )
+    _manager.add_event_pair(hev, take_ev)
 
     return res
 
@@ -273,8 +278,12 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
         rhs = dpt.astype(vals, x.dtype)
     rhs = dpt.broadcast_to(rhs, val_shape)
 
-    hev, _ = ti._put(x, (indices,), rhs, axis, mode, sycl_queue=exec_q)
-    hev.wait()
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    deps_ev = _manager.submitted_events
+    hev, put_ev = ti._put(
+        x, (indices,), rhs, axis, mode, sycl_queue=exec_q, depends=deps_ev
+    )
+    _manager.add_event_pair(hev, put_ev)
 
 
 def extract(condition, arr):
@@ -366,7 +375,11 @@ def place(arr, mask, vals):
     if arr.shape != mask.shape or vals.ndim != 1:
         raise ValueError("Array sizes are not as required")
     cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
-    nz_count = ti.mask_positions(mask, cumsum, sycl_queue=exec_q)
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+    deps_ev = _manager.submitted_events
+    nz_count = ti.mask_positions(
+        mask, cumsum, sycl_queue=exec_q, depends=deps_ev
+    )
     if nz_count == 0:
         return
     if vals.size == 0:
@@ -375,7 +388,7 @@ def place(arr, mask, vals):
         rhs = vals
     else:
         rhs = dpt.astype(vals, arr.dtype)
-    hev, _ = ti._place(
+    hev, pl_ev = ti._place(
         dst=arr,
         cumsum=cumsum,
         axis_start=0,
@@ -383,7 +396,7 @@ def place(arr, mask, vals):
         rhs=rhs,
         sycl_queue=exec_q,
     )
-    hev.wait()
+    _manager.add_event_pair(hev, pl_ev)
 
 
 def nonzero(arr):

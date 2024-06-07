@@ -30,7 +30,7 @@ from dpctl.tensor._type_utils import (
     _find_buf_dtype2,
     _to_device_supported_dtype,
 )
-from dpctl.utils import ExecutionPlacementError
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
 
 def matrix_transpose(x):
@@ -189,6 +189,7 @@ def tensordot(x1, x2, axes=2):
             "supported types according to the casting rule ''safe''."
         )
 
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         out = dpt.empty(
             res_shape,
@@ -197,7 +198,8 @@ def tensordot(x1, x2, axes=2):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        dep_evs = _manager.submitted_events
+        ht_dot_ev, dot_ev = tli._dot(
             x1=arr1,
             x2=arr2,
             batch_dims=0,
@@ -206,16 +208,20 @@ def tensordot(x1, x2, axes=2):
             inner_dims=n_axes1,
             dst=out,
             sycl_queue=exec_q,
+            depends=dep_evs,
         )
-        ht_dot_ev.wait()
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
 
         return out
 
     elif buf1_dt is None:
         buf2 = _empty_like_orderK(arr2, buf2_dt)
+
+        dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arr2, dst=buf2, sycl_queue=exec_q
+            src=arr2, dst=buf2, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         out = dpt.empty(
             res_shape,
             dtype=res_dt,
@@ -223,7 +229,7 @@ def tensordot(x1, x2, axes=2):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=arr1,
             x2=buf2,
             batch_dims=0,
@@ -234,16 +240,17 @@ def tensordot(x1, x2, axes=2):
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
-        ht_copy_ev.wait()
-        ht_dot_ev.wait()
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
 
         return out
 
     elif buf2_dt is None:
         buf1 = _empty_like_orderK(arr1, buf1_dt)
+        dep_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=arr1, dst=buf1, sycl_queue=exec_q
+            src=arr1, dst=buf1, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         out = dpt.empty(
             res_shape,
             dtype=res_dt,
@@ -251,7 +258,7 @@ def tensordot(x1, x2, axes=2):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=buf1,
             x2=arr2,
             batch_dims=0,
@@ -262,19 +269,21 @@ def tensordot(x1, x2, axes=2):
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
-        ht_copy_ev.wait()
-        ht_dot_ev.wait()
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
 
         return out
 
     buf1 = _empty_like_orderK(arr1, buf1_dt)
+    deps_ev = _manager.submitted_events
     ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=arr1, dst=buf1, sycl_queue=exec_q
+        src=arr1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
     )
+    _manager.add_event_pair(ht_copy1_ev, copy1_ev)
     buf2 = _empty_like_orderK(arr2, buf2_dt)
     ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=arr2, dst=buf2, sycl_queue=exec_q
+        src=arr2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
     )
+    _manager.add_event_pair(ht_copy2_ev, copy2_ev)
     out = dpt.empty(
         res_shape,
         dtype=res_dt,
@@ -282,7 +291,7 @@ def tensordot(x1, x2, axes=2):
         sycl_queue=exec_q,
         order="C",
     )
-    ht_, _ = tli._dot(
+    ht_, dot_ev = tli._dot(
         x1=buf1,
         x2=buf2,
         batch_dims=0,
@@ -293,7 +302,7 @@ def tensordot(x1, x2, axes=2):
         sycl_queue=exec_q,
         depends=[copy1_ev, copy2_ev],
     )
-    dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+    _manager.add_event_pair(ht_, dot_ev)
 
     return out
 
@@ -399,18 +408,15 @@ def vecdot(x1, x2, axis=-1):
             "supported types according to the casting rule ''safe''."
         )
 
-    ht_list = []
-    deps = []
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         if x1.dtype.kind == "c":
             x1_tmp = _empty_like_orderK(x1, x1.dtype)
+            dep_evs = _manager.submitted_events
             ht_conj_ev, conj_ev = tei._conj(
-                src=x1,
-                dst=x1_tmp,
-                sycl_queue=exec_q,
+                src=x1, dst=x1_tmp, sycl_queue=exec_q, depends=dep_evs
             )
-            ht_list.append(ht_conj_ev)
-            deps.append(conj_ev)
+            _manager.add_event_pair(ht_conj_ev, conj_ev)
             x1 = x1_tmp
         if x1.shape != broadcast_sh:
             x1 = dpt.broadcast_to(x1, broadcast_sh)
@@ -425,7 +431,8 @@ def vecdot(x1, x2, axis=-1):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        dep_evs = _manager.submitted_events
+        ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=x2,
             batch_dims=len(res_sh),
@@ -434,28 +441,26 @@ def vecdot(x1, x2, axis=-1):
             inner_dims=1,
             dst=out,
             sycl_queue=exec_q,
-            depends=deps,
+            depends=dep_evs,
         )
-        ht_list.append(ht_dot_ev)
-        dpctl.SyclEvent.wait_for(ht_list)
-
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         return dpt.reshape(out, res_sh)
 
     elif buf1_dt is None:
         if x1.dtype.kind == "c":
             x1_tmp = _empty_like_orderK(x1, x1.dtype)
+            deps_ev = _manager.submitted_events
             ht_conj_ev, conj_e = tei._conj(
-                src=x1, dst=x1_tmp, sycl_queue=exec_q
+                src=x1, dst=x1_tmp, sycl_queue=exec_q, depends=deps_ev
             )
-            ht_list.append(ht_conj_ev)
-            deps.append(conj_e)
+            _manager.add_event_pair(ht_conj_ev, conj_e)
             x1 = x1_tmp
         buf2 = _empty_like_orderK(x2, buf2_dt)
+        deps_ev = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x2, dst=buf2, sycl_queue=exec_q
+            src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
         )
-        ht_list.append(ht_copy_ev)
-        deps.append(copy_ev)
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if x1.shape != broadcast_sh:
             x1 = dpt.broadcast_to(x1, broadcast_sh)
         if buf2.shape != broadcast_sh:
@@ -469,7 +474,7 @@ def vecdot(x1, x2, axis=-1):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=buf2,
             batch_dims=len(res_sh),
@@ -478,26 +483,23 @@ def vecdot(x1, x2, axis=-1):
             inner_dims=1,
             dst=out,
             sycl_queue=exec_q,
-            depends=deps,
+            depends=[copy_ev],
         )
-        ht_list.append(ht_dot_ev)
-        dpctl.SyclEvent.wait_for(ht_list)
-
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         return dpt.reshape(out, res_sh)
 
     elif buf2_dt is None:
         buf1 = _empty_like_orderK(x1, buf1_dt)
+        deps_ev = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x1, dst=buf1, sycl_queue=exec_q
+            src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
         )
-        ht_list.append(ht_copy_ev)
-        deps.append(copy_ev)
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if buf1.dtype.kind == "c":
             ht_conj_ev, conj_ev = tei._conj(
                 src=buf1, dst=buf1, sycl_queue=exec_q, depends=[copy_ev]
             )
-            ht_list.append(ht_conj_ev)
-            deps.append(conj_ev)
+            _manager.add_event_pair(ht_conj_ev, conj_ev)
         if buf1.shape != broadcast_sh:
             buf1 = dpt.broadcast_to(buf1, broadcast_sh)
         if x2.shape != broadcast_sh:
@@ -511,7 +513,8 @@ def vecdot(x1, x2, axis=-1):
             sycl_queue=exec_q,
             order="C",
         )
-        ht_dot_ev, _ = tli._dot(
+        deps_ev = _manager.submitted_events
+        ht_dot_ev, dot_ev = tli._dot(
             x1=buf1,
             x2=x2,
             batch_dims=len(res_sh),
@@ -520,31 +523,27 @@ def vecdot(x1, x2, axis=-1):
             inner_dims=1,
             dst=out,
             sycl_queue=exec_q,
-            depends=deps,
+            depends=deps_ev,
         )
-        ht_list.append(ht_dot_ev)
-        dpctl.SyclEvent.wait_for(ht_list)
-
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         return dpt.reshape(out, res_sh)
 
     buf1 = _empty_like_orderK(x1, buf1_dt)
+    deps_ev = _manager.submitted_events
     ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=x1, dst=buf1, sycl_queue=exec_q
+        src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
     )
-    ht_list.append(ht_copy1_ev)
-    deps.append(copy1_ev)
+    _manager.add_event_pair(ht_copy1_ev, copy1_ev)
     if buf1.dtype.kind == "c":
         ht_conj_ev, conj_ev = tei._conj(
             src=buf1, dst=buf1, sycl_queue=exec_q, depends=[copy1_ev]
         )
-        ht_list.append(ht_conj_ev)
-        deps.append(conj_ev)
+        _manager.add_event_pair(ht_conj_ev, conj_ev)
     buf2 = _empty_like_orderK(x2, buf2_dt)
     ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=x2, dst=buf2, sycl_queue=exec_q
+        src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
     )
-    ht_list.append(ht_copy2_ev)
-    deps.append(copy2_ev)
+    _manager.add_event_pair(ht_copy2_ev, copy2_ev)
     if buf1.shape != broadcast_sh:
         buf1 = dpt.broadcast_to(buf1, broadcast_sh)
     if buf2.shape != broadcast_sh:
@@ -558,7 +557,8 @@ def vecdot(x1, x2, axis=-1):
         sycl_queue=exec_q,
         order="C",
     )
-    ht_dot_ev, _ = tli._dot(
+    deps_ev = _manager.submitted_events
+    ht_dot_ev, dot_ev = tli._dot(
         x1=buf1,
         x2=buf2,
         batch_dims=len(res_sh),
@@ -567,11 +567,9 @@ def vecdot(x1, x2, axis=-1):
         inner_dims=1,
         dst=out,
         sycl_queue=exec_q,
-        depends=deps,
+        depends=deps_ev,
     )
-    ht_list.append(ht_dot_ev)
-    dpctl.SyclEvent.wait_for(ht_list)
-
+    _manager.add_event_pair(ht_dot_ev, dot_ev)
     return out
 
 
@@ -793,6 +791,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             else "C"
         )
 
+    _manager = SequentialOrderManager[exec_q]
     if buf1_dt is None and buf2_dt is None:
         if out is None:
             if order == "K":
@@ -811,6 +810,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             x1 = dpt.broadcast_to(x1, x1_broadcast_shape)
         if x2.shape != x2_broadcast_shape:
             x2 = dpt.broadcast_to(x2, x2_broadcast_shape)
+        deps_evs = _manager.submitted_events
         ht_dot_ev, dot_ev = tli._dot(
             x1=x1,
             x2=x2,
@@ -820,18 +820,19 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             inner_dims=1,
             dst=out,
             sycl_queue=exec_q,
+            depends=deps_evs,
         )
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[dot_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
-        ht_dot_ev.wait()
         if appended_axes:
             out = dpt.squeeze(out, tuple(appended_axes))
         return out
@@ -840,9 +841,11 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             buf2 = _empty_like_orderK(x2, buf2_dt)
         else:
             buf2 = dpt.empty_like(x2, dtype=buf2_dt, order=order)
+        deps_evs = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x2, dst=buf2, sycl_queue=exec_q
+            src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_evs
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_pair_orderK(
@@ -872,18 +875,17 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[dot_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
-        ht_copy_ev.wait()
-        ht_dot_ev.wait()
         if appended_axes:
             out = dpt.squeeze(out, tuple(appended_axes))
         return out
@@ -893,9 +895,11 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             buf1 = _empty_like_orderK(x1, buf1_dt)
         else:
             buf1 = dpt.empty_like(x1, dtype=buf1_dt, order=order)
+        deps_ev = _manager.submitted_events
         ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x1, dst=buf1, sycl_queue=exec_q
+            src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
         )
+        _manager.add_event_pair(ht_copy_ev, copy_ev)
         if out is None:
             if order == "K":
                 out = _empty_like_pair_orderK(
@@ -925,18 +929,17 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
             sycl_queue=exec_q,
             depends=[copy_ev],
         )
+        _manager.add_event_pair(ht_dot_ev, dot_ev)
         if not (orig_out is None or orig_out is out):
             # Copy the out data from temporary buffer to original memory
-            ht_copy_out_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_copy_out_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out,
                 dst=orig_out,
                 sycl_queue=exec_q,
                 depends=[dot_ev],
             )
-            ht_copy_out_ev.wait()
+            _manager.add_event_pair(ht_copy_out_ev, cpy_ev)
             out = orig_out
-        ht_copy_ev.wait()
-        ht_dot_ev.wait()
         if appended_axes:
             out = dpt.squeeze(out, tuple(appended_axes))
         return out
@@ -950,16 +953,19 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         buf1 = _empty_like_orderK(x1, buf1_dt)
     else:
         buf1 = dpt.empty_like(x1, dtype=buf1_dt, order=order)
+    deps_ev = _manager.submitted_events
     ht_copy1_ev, copy1_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=x1, dst=buf1, sycl_queue=exec_q
+        src=x1, dst=buf1, sycl_queue=exec_q, depends=deps_ev
     )
+    _manager.add_event_pair(ht_copy1_ev, copy1_ev)
     if order == "K":
         buf2 = _empty_like_orderK(x2, buf2_dt)
     else:
         buf2 = dpt.empty_like(x2, dtype=buf2_dt, order=order)
     ht_copy2_ev, copy2_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=x2, dst=buf2, sycl_queue=exec_q
+        src=x2, dst=buf2, sycl_queue=exec_q, depends=deps_ev
     )
+    _manager.add_event_pair(ht_copy2_ev, copy2_ev)
     if out is None:
         if order == "K":
             out = _empty_like_pair_orderK(
@@ -978,7 +984,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         buf1 = dpt.broadcast_to(buf1, x1_broadcast_shape)
     if buf2.shape != x2_broadcast_shape:
         buf2 = dpt.broadcast_to(buf2, x2_broadcast_shape)
-    ht_, _ = tli._dot(
+    ht_, dot_ev = tli._dot(
         x1=buf1,
         x2=buf2,
         batch_dims=len(res_shape[:-2]),
@@ -989,7 +995,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
         sycl_queue=exec_q,
         depends=[copy1_ev, copy2_ev],
     )
-    dpctl.SyclEvent.wait_for([ht_copy1_ev, ht_copy2_ev, ht_])
+    _manager.add_event_pair(ht_, dot_ev)
     if appended_axes:
         out = dpt.squeeze(out, tuple(appended_axes))
     return out

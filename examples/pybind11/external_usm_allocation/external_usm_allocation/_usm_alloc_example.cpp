@@ -114,6 +114,9 @@ py::dict construct_sua_iface(DMatrix &m)
     iface["typestr"] = "|f8";
     iface["syclobj"] = syclobj;
 
+    // ensure that content of array is flushed out
+    m.get_queue().wait();
+
     return iface;
 }
 

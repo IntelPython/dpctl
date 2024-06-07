@@ -25,6 +25,9 @@ import numpy as np
 import dpctl
 import dpctl.memory as dpmem
 
+from .._backend cimport DPCTLSyclUSMRef
+from .._sycl_device_factory cimport _cached_default_device
+
 from ._data_types import bool as dpt_bool
 from ._device import Device
 from ._print import usm_ndarray_repr, usm_ndarray_str
@@ -78,6 +81,7 @@ cdef class InternalUSMArrayError(Exception):
 cdef object _as_zero_dim_ndarray(object usm_ary):
     "Convert size-1 array to NumPy 0d array"
     mem_view = dpmem.as_usm_memory(usm_ary)
+    usm_ary.sycl_queue.wait()
     host_buf = mem_view.copy_to_host()
     view = host_buf.view(usm_ary.dtype)
     view.shape = tuple()
@@ -514,6 +518,8 @@ cdef class usm_ndarray:
                 "byte_offset is not a multiple of item_size.")
         elem_offset = byte_offset // item_size
         ary_iface['offset'] = elem_offset
+        # must wait for content of the memory to finalize
+        self.sycl_queue.wait()
         return ary_iface
 
     @property
@@ -952,10 +958,10 @@ cdef class usm_ndarray:
             arr_buf = <c_dpmem._Memory> self.usm_data
             QRef = (<c_dpctl.SyclQueue> d.sycl_queue).get_queue_ref()
             view_buffer = c_dpmem._Memory.create_from_usm_pointer_size_qref(
-                arr_buf.memory_ptr,
+                <DPCTLSyclUSMRef>arr_buf.get_data_ptr(),
                 arr_buf.nbytes,
                 QRef,
-                memory_owner = arr_buf
+                memory_owner=arr_buf
             )
             res = usm_ndarray(
                 self.shape,
@@ -1607,6 +1613,11 @@ cdef api Py_ssize_t UsmNDArray_GetOffset(usm_ndarray arr):
     """Get offset of zero-index array element from the beginning of the USM
     allocation"""
     return arr.get_offset()
+
+
+cdef api object UsmNDArray_GetUSMData(usm_ndarray arr):
+    """Get USM data object underlying the array"""
+    return arr.get_base()
 
 
 cdef api void UsmNDArray_SetWritableFlag(usm_ndarray arr, int flag):

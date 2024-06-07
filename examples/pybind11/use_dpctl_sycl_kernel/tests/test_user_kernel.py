@@ -64,6 +64,7 @@ def test_kernel_submit_through_extension():
     x = dpt.arange(0, stop=13, step=1, dtype="i4", sycl_queue=q)
     y = dpt.zeros_like(x)
 
+    q.wait()
     uk.submit_custom_kernel(q, krn, x, y, [])
 
     assert np.array_equal(dpt.asnumpy(y), np.arange(0, 26, step=2, dtype="i4"))

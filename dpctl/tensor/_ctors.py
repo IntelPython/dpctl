@@ -159,10 +159,12 @@ def _asarray_from_usm_ndarray(
         )
     eq = dpctl.utils.get_execution_queue([usm_ndary.sycl_queue, copy_q])
     if eq is not None:
-        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=usm_ndary, dst=res, sycl_queue=eq
+        _manager = dpctl.utils.SequentialOrderManager[eq]
+        dep_evs = _manager.submitted_events
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ndary, dst=res, sycl_queue=eq, depends=dep_evs
         )
-        hev.wait()
+        _manager.add_event_pair(hev, cpy_ev)
     else:
         tmp = dpt.asnumpy(usm_ndary)
         res[...] = tmp
@@ -311,25 +313,27 @@ def _usm_types_walker(o, usm_types_list):
     raise TypeError
 
 
-def _device_copy_walker(seq_o, res, events):
+def _device_copy_walker(seq_o, res, _manager):
     if isinstance(seq_o, dpt.usm_ndarray):
         exec_q = res.sycl_queue
-        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=seq_o, dst=res, sycl_queue=exec_q
+        deps = _manager.submitted_events
+        ht_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=seq_o, dst=res, sycl_queue=exec_q, depends=deps
         )
-        events.append(ht_ev)
+        _manager.add_event_pair(ht_ev, cpy_ev)
         return
     if hasattr(seq_o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(seq_o)
         exec_q = res.sycl_queue
-        ht_ev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=usm_ar, dst=res, sycl_queue=exec_q
+        deps = _manager.submitted_events
+        ht_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=usm_ar, dst=res, sycl_queue=exec_q, depends=deps
         )
-        events.append(ht_ev)
+        _manager.add_event_pair(ht_ev, cpy_ev)
         return
     if isinstance(seq_o, (list, tuple)):
         for i, el in enumerate(seq_o):
-            _device_copy_walker(el, res[i], events)
+            _device_copy_walker(el, res[i], _manager)
         return
     raise TypeError
 
@@ -411,9 +415,8 @@ def _asarray_from_seq(
             sycl_queue=alloc_q,
             order=order,
         )
-        ht_events = []
-        _device_copy_walker(seq_obj, res, ht_events)
-        dpctl.SyclEvent.wait_for(ht_events)
+        _manager = dpctl.utils.SequentialOrderManager[exec_q]
+        _device_copy_walker(seq_obj, res, _manager)
         return res
     else:
         res = dpt.empty(
@@ -851,8 +854,10 @@ def arange(
     else:
         _step = sc_ty(1)
     _start = _first
-    hev, _ = ti._linspace_step(_start, _step, res, sycl_queue)
-    hev.wait()
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating newly allocated array, no task dependencies
+    hev, lin_ev = ti._linspace_step(_start, _step, res, sycl_queue)
+    _manager.add_event_pair(hev, lin_ev)
     if is_bool:
         res_out = dpt.usm_ndarray(
             (sh,),
@@ -861,8 +866,11 @@ def arange(
             order="C",
             buffer_ctor_kwargs={"queue": sycl_queue},
         )
-        res_out[:] = res
-        res = res_out
+        hev_cpy, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=res, dst=res_out, sycl_queue=sycl_queue, depends=[lin_ev]
+        )
+        _manager.add_event_pair(hev_cpy, cpy_ev)
+        return res_out
     return res
 
 
@@ -927,6 +935,7 @@ def zeros(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
+    # FIXME: replace with asynchronous call to ti
     res.usm_data.memset()
     return res
 
@@ -992,8 +1001,10 @@ def ones(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    hev, _ = ti._full_usm_ndarray(1, res, sycl_queue)
-    hev.wait()
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating new allocation, no dependent events
+    hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
+    _manager.add_event_pair(hev, full_ev)
     return res
 
 
@@ -1089,8 +1100,10 @@ def full(
     elif fill_value_type is int and np.issubdtype(dtype, np.integer):
         fill_value = _to_scalar(fill_value, dtype)
 
-    hev, _ = ti._full_usm_ndarray(fill_value, res, sycl_queue)
-    hev.wait()
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating new allocation, no dependent events
+    hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
+    _manager.add_event_pair(hev, full_ev)
     return res
 
 
@@ -1467,10 +1480,11 @@ def linspace(
         start = float(start)
         stop = float(stop)
     res = dpt.empty(num, dtype=dt, usm_type=usm_type, sycl_queue=sycl_queue)
-    hev, _ = ti._linspace_affine(
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    hev, la_ev = ti._linspace_affine(
         start, stop, dst=res, include_endpoint=endpoint, sycl_queue=sycl_queue
     )
-    hev.wait()
+    _manager.add_event_pair(hev, la_ev)
     return res if int_dt is None else dpt.astype(res, int_dt)
 
 
@@ -1564,8 +1578,9 @@ def eye(
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
     if n_rows != 0 and n_cols != 0:
-        hev, _ = ti._eye(k, dst=res, sycl_queue=sycl_queue)
-        hev.wait()
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        hev, eye_ev = ti._eye(k, dst=res, sycl_queue=sycl_queue)
+        _manager.add_event_pair(hev, eye_ev)
     return res
 
 
@@ -1615,10 +1630,12 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=res, sycl_queue=q
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
         )
-        hev.wait()
+        _manager.add_event_pair(hev, cpy_ev)
     elif k < -shape[nd - 2]:
         res = dpt.zeros(
             x.shape,
@@ -1635,8 +1652,12 @@ def tril(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        hev, _ = ti._tril(src=x, dst=res, k=k, sycl_queue=q)
-        hev.wait()
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, tril_ev = ti._tril(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, tril_ev)
 
     return res
 
@@ -1695,10 +1716,12 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        hev, _ = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=x, dst=res, sycl_queue=q
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=res, sycl_queue=q, depends=dep_evs
         )
-        hev.wait()
+        _manager.add_event_pair(hev, cpy_ev)
     else:
         res = dpt.empty(
             x.shape,
@@ -1707,8 +1730,12 @@ def triu(x, /, *, k=0):
             usm_type=x.usm_type,
             sycl_queue=q,
         )
-        hev, _ = ti._triu(src=x, dst=res, k=k, sycl_queue=q)
-        hev.wait()
+        _manager = dpctl.utils.SequentialOrderManager[q]
+        dep_evs = _manager.submitted_events
+        hev, triu_ev = ti._triu(
+            src=x, dst=res, k=k, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(hev, triu_ev)
 
     return res
 

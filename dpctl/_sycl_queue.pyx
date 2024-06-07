@@ -342,7 +342,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
     cdef unsigned char[::1] dst_host_buf = None
 
     if isinstance(src, _Memory):
-        c_src_ptr = <void*>(<_Memory>src).memory_ptr
+        c_src_ptr = <void*>(<_Memory>src).get_data_ptr()
     elif _is_buffer(src):
         src_host_buf = src
         c_src_ptr = <void *>&src_host_buf[0]
@@ -354,7 +354,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
        )
 
     if isinstance(dst, _Memory):
-        c_dst_ptr = <void*>(<_Memory>dst).memory_ptr
+        c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
     elif _is_buffer(dst):
         dst_host_buf = dst
         c_dst_ptr = <void *>&dst_host_buf[0]
@@ -1265,7 +1265,7 @@ cdef class SyclQueue(_SyclQueue):
         cdef DPCTLSyclEventRef ERef = NULL
 
         if isinstance(mem, _Memory):
-            ptr = <void*>(<_Memory>mem).memory_ptr
+            ptr = <void*>(<_Memory>mem).get_data_ptr()
         else:
             raise TypeError("Parameter `mem` should have type _Memory")
 
@@ -1285,7 +1285,7 @@ cdef class SyclQueue(_SyclQueue):
         cdef DPCTLSyclEventRef ERef = NULL
 
         if isinstance(mem, _Memory):
-            ptr = <void*>(<_Memory>mem).memory_ptr
+            ptr = <void*>(<_Memory>mem).get_data_ptr()
         else:
             raise TypeError("Parameter `mem` should have type _Memory")
 

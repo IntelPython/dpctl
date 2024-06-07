@@ -709,6 +709,25 @@ def test_pyx_capi_get_offset():
     assert offset == X.__sycl_usm_array_interface__["offset"]
 
 
+def test_pyx_capi_get_usmdata():
+    try:
+        X = dpt.usm_ndarray(17, dtype="u2")[1::2]
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    get_usmdata_fn = _pyx_capi_fnptr_to_callable(
+        X,
+        "UsmNDArray_GetUSMData",
+        b"PyObject *(struct PyUSMArrayObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(ctypes.py_object,),
+    )
+    capi_usm_data = get_usmdata_fn(X)
+    assert isinstance(capi_usm_data, dpm._memory._Memory)
+    assert capi_usm_data.nbytes == X.usm_data.nbytes
+    assert capi_usm_data._pointer == X.usm_data._pointer
+    assert capi_usm_data.sycl_queue == X.usm_data.sycl_queue
+
+
 def test_pyx_capi_get_queue_ref():
     try:
         X = dpt.usm_ndarray(17, dtype="i2")[1::2]

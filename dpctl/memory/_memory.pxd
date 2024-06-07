@@ -33,7 +33,8 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
 
 
 cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
-    cdef DPCTLSyclUSMRef memory_ptr
+    cdef DPCTLSyclUSMRef _memory_ptr
+    cdef void* _opaque_ptr
     cdef Py_ssize_t nbytes
     cdef SyclQueue queue
     cdef object refobj
@@ -50,6 +51,8 @@ cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     cpdef memset(self, unsigned short val=*)
 
     cpdef bytes tobytes(self)
+    cdef DPCTLSyclUSMRef get_data_ptr(self)
+    cdef void * get_opaque_ptr(self)
 
     @staticmethod
     cdef SyclDevice get_pointer_device(

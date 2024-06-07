@@ -44,7 +44,7 @@ jobs:
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-build
-        run: conda install conda-build
+        run: conda install conda-build -c conda-forge --override-channels
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -140,9 +140,9 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
@@ -352,7 +352,7 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Install anaconda-client
-        run: conda install anaconda-client
+        run: conda install anaconda-client -c conda-forge --override-channels
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Package version
@@ -393,7 +393,7 @@ jobs:
           activate-environment: ""
 
       - name: Install anaconda-client
-        run: conda install anaconda-client
+        run: conda install anaconda-client -c conda-forge --override-channels
 
       - name: Package version
         shell: bash -el {0}
@@ -425,9 +425,9 @@ jobs:
       BUILD_ENV_NAME: build_env
 
     steps:
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build python=${{ matrix.python }}
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
         uses: actions/checkout@v4.1.5
         with:
@@ -450,7 +450,9 @@ jobs:
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          conda install $PACKAGE_NAME python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          cat lockfile
       - name: Set pkgs_dirs
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
@@ -468,7 +470,7 @@ jobs:
       - name: Install example requirements
         shell: bash -l {0}
         env:
-          DPCPP_CMPLR: dpcpp_linux-64">=2024.0"
+          DPCPP_CMPLR: dpcpp_linux-64">=2024.1"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
@@ -601,9 +603,9 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
-      - name: Install conda-build
+      - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-build
+        run: conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
@@ -712,7 +714,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install anaconda-client
-        run: conda install anaconda-client
+        run: conda install anaconda-client -c conda-forge --override-channels
 
       - name: Checkout repo
         uses: actions/checkout@v4.1.5

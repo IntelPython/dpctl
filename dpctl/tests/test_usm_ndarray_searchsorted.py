@@ -267,11 +267,14 @@ def test_searchsorted_coerce():
 
     x1_i4 = dpt.arange(5, dtype="i4")
     x1_i8 = dpt.arange(5, dtype="i8")
+    x2_i4 = dpt.arange(5, dtype="i4")
     x2_i8 = dpt.arange(5, dtype="i8")
 
     p1 = dpt.searchsorted(x1_i4, x2_i8)
     p2 = dpt.searchsorted(x1_i8, x2_i8)
+    p3 = dpt.searchsorted(x1_i8, x2_i4)
     assert dpt.all(p1 == p2)
+    assert dpt.all(p2 == p3)
 
 
 def test_searchsorted_validation():
