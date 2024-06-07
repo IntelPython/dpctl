@@ -1,6 +1,0 @@
-dpctl.SyclDevice.get\_filter\_string
-====================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclDevice.get_filter_string
