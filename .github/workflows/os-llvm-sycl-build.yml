@@ -164,4 +164,6 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         run: |
           source set_allvars.sh
-          python -m pytest -v dpctl/tests
+          # Skip the test that checks if there is only one hard
+          # copy of DPCTLSyclInterface library
+          python -m pytest -v dpctl/tests -k "not test_syclinterface"
