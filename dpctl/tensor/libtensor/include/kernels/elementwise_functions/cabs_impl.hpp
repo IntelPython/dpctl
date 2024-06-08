@@ -70,11 +70,7 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
         return q_nan;
     }
     else {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
         return exprm_ns::abs(exprm_ns::complex<realT>(z));
-#else
-        return std::hypot(std::real(z), std::imag(z));
-#endif
     }
 }
 

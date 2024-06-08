@@ -66,13 +66,9 @@ template <typename argT, typename resT> struct AngleFunctor
 
     resT operator()(const argT &in) const
     {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
         using rT = typename argT::value_type;
 
-        return exprm_ns::arg(exprm_ns::complex<rT>(in)); // std::arg(in);
-#else
-        return std::arg(in);
-#endif
+        return exprm_ns::arg(exprm_ns::complex<rT>(in)); // arg(in);
     }
 };
 

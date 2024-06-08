@@ -68,13 +68,9 @@ template <typename argT, typename resT> struct ConjFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using rT = typename argT::value_type;
 
-            return exprm_ns::conj(exprm_ns::complex<rT>(in)); // std::conj(in);
-#else
-            return std::conj(in);
-#endif
+            return exprm_ns::conj(exprm_ns::complex<rT>(in)); // conj(in);
         }
         else {
             if constexpr (!std::is_same_v<argT, bool>)

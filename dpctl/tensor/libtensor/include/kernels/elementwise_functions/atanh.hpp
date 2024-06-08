@@ -120,17 +120,13 @@ template <typename argT, typename resT> struct AtanhFunctor
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::atanh(
-                exprm_ns::complex<realT>(in)); // std::atanh(in);
-#else
-            return std::atanh(in);
-#endif
+                exprm_ns::complex<realT>(in)); // atanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::atanh(in);
+            return sycl::atanh(in);
         }
     }
 };

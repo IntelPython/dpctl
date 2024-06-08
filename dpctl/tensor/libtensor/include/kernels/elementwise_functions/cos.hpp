@@ -81,12 +81,8 @@ template <typename argT, typename resT> struct CosFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 return exprm_ns::cos(
-                    exprm_ns::complex<realT>(in)); // std::cos(in);
-#else
-                return std::cos(in);
-#endif
+                    exprm_ns::complex<realT>(in)); // cos(in);
             }
 
             /*
@@ -146,7 +142,7 @@ template <typename argT, typename resT> struct CosFunctor
                 if (!yfinite) {
                     return resT{x * x, sycl::copysign(q_nan, x)};
                 }
-                return resT{(x * x) * std::cos(y), x * std::sin(y)};
+                return resT{(x * x) * sycl::cos(y), x * sycl::sin(y)};
             }
 
             /*
@@ -161,7 +157,7 @@ template <typename argT, typename resT> struct CosFunctor
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::cos(in);
+            return sycl::cos(in);
         }
     }
 };

@@ -106,35 +106,26 @@ template <typename argT, typename resT> struct AsinhFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
 
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = exprm_ns::complex<realT>;
-                sycl_complexT log_in = (std::signbit(x))
+                sycl_complexT log_in = (sycl::signbit(x))
                                            ? exprm_ns::log(sycl_complexT(-in))
                                            : exprm_ns::log(sycl_complexT(in));
-                realT wx = log_in.real() + std::log(realT(2));
+                realT wx = log_in.real() + sycl::log(realT(2));
                 realT wy = log_in.imag();
-#else
-                auto log_in = std::log(std::signbit(x) ? -in : in);
-                realT wx = std::real(log_in) + std::log(realT(2));
-                realT wy = std::imag(log_in);
-#endif
+
                 const realT res_re = sycl::copysign(wx, x);
                 const realT res_im = sycl::copysign(wy, y);
                 return resT{res_re, res_im};
             }
 
             /* ordinary cases */
-#if USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::asinh(
-                exprm_ns::complex<realT>(in)); // std::asinh(in);
-#else
-            return std::asinh(in);
-#endif
+                exprm_ns::complex<realT>(in)); // asinh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::asinh(in);
+            return sycl::asinh(in);
         }
     }
 };

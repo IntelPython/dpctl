@@ -70,12 +70,8 @@ template <typename argT, typename resT> struct ReciprocalFunctor
         if constexpr (is_complex<argT>::value) {
 
             using realT = typename argT::value_type;
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
 
             return realT(1) / exprm_ns::complex<realT>(in);
-#else
-            return realT(1) / in;
-#endif
         }
         else {
             return argT(1) / in;

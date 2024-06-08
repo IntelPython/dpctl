@@ -96,7 +96,7 @@ template <typename argT, typename resT> struct AcoshFunctor
                 }
                 /* acos(0 + I*NaN) = Pi/2 + I*NaN with inexact */
                 else if (x == realT(0)) {
-                    const realT pi_half = std::atan(1) * 2;
+                    const realT pi_half = sycl::atan(realT(1)) * 2;
                     acos_in = resT{pi_half, q_nan};
                 }
                 else {
@@ -110,28 +110,18 @@ template <typename argT, typename resT> struct AcoshFunctor
              * For large x or y including acos(+-Inf + I*+-Inf)
              */
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = typename exprm_ns::complex<realT>;
                 const sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
                 const realT wx = log_in.real();
                 const realT wy = log_in.imag();
-#else
-                const resT log_in = std::log(in);
-                const realT wx = std::real(log_in);
-                const realT wy = std::imag(log_in);
-#endif
                 const realT rx = sycl::fabs(wy);
-                realT ry = wx + std::log(realT(2));
-                acos_in = resT{rx, (std::signbit(y)) ? ry : -ry};
+                realT ry = wx + sycl::log(realT(2));
+                acos_in = resT{rx, (sycl::signbit(y)) ? ry : -ry};
             }
             else {
                 /* ordinary cases */
-#if USE_SYCL_FOR_COMPLEX_TYPES
                 acos_in = exprm_ns::acos(
-                    exprm_ns::complex<realT>(in)); // std::acos(in);
-#else
-                acos_in = std::acos(in);
-#endif
+                    exprm_ns::complex<realT>(in)); // acos(in);
             }
 
             /* Now we calculate acosh(z) */
@@ -158,7 +148,7 @@ template <typename argT, typename resT> struct AcoshFunctor
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::acosh(in);
+            return sycl::acosh(in);
         }
     }
 };

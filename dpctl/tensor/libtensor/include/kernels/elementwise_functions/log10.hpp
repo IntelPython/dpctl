@@ -71,16 +71,12 @@ template <typename argT, typename resT> struct Log10Functor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
-            // return (std::log(in) / std::log(realT{10}));
+            // return (log(in) / log(realT{10}));
             return exprm_ns::log(exprm_ns::complex<realT>(in)) /
                    std::log(realT{10});
-#else
-            return (std::log(in) / std::log(realT{10}));
-#endif
         }
         else {
-            return std::log10(in);
+            return sycl::log10(in);
         }
     }
 

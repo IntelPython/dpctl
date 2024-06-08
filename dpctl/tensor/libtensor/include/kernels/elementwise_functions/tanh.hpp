@@ -96,7 +96,7 @@ template <typename argT, typename resT> struct TanhFunctor
                 }
                 const realT res_re = sycl::copysign(realT(1), x);
                 const realT res_im = sycl::copysign(
-                    realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
+                    realT(0), std::isinf(y) ? y : sycl::sin(y) * sycl::cos(y));
                 return resT{res_re, res_im};
             }
             /*
@@ -112,17 +112,13 @@ template <typename argT, typename resT> struct TanhFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::tanh(
-                exprm_ns::complex<realT>(in)); // std::tanh(in);
-#else
-            return std::tanh(in);
-#endif
+                exprm_ns::complex<realT>(in)); // tanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::tanh(in);
+            return sycl::tanh(in);
         }
     }
 };

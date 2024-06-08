@@ -81,12 +81,8 @@ template <typename argT, typename resT> struct CoshFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 return exprm_ns::cosh(
-                    exprm_ns::complex<realT>(in)); // std::cosh(in);
-#else
-                return std::cosh(in);
-#endif
+                    exprm_ns::complex<realT>(in)); // cosh(in);
             }
 
             /*
@@ -135,7 +131,7 @@ template <typename argT, typename resT> struct CoshFunctor
                 if (!yfinite) {
                     return resT{x * x, x * q_nan};
                 }
-                return resT{(x * x) * std::cos(y), x * std::sin(y)};
+                return resT{(x * x) * sycl::cos(y), x * sycl::sin(y)};
             }
 
             /*
@@ -150,7 +146,7 @@ template <typename argT, typename resT> struct CoshFunctor
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::cosh(in);
+            return sycl::cosh(in);
         }
     }
 };
