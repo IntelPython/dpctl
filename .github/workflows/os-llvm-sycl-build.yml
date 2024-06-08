@@ -166,4 +166,4 @@ jobs:
           source set_allvars.sh
           # Skip the test that checks if there is only one hard
           # copy of DPCTLSyclInterface library
-          python -m pytest -v dpctl/tests -k "not test_syclinterface"
+          python -m pytest -v dpctl/tests --no-sycl-interface-test
