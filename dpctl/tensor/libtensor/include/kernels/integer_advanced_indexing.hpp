@@ -81,7 +81,7 @@ public:
     void operator()(ssize_t max_item, ssize_t &ind) const
     {
         max_item = std::max<ssize_t>(max_item, 1);
-        ind = sycl::clamp<ssize_t>(ind, 0, max_item - 1);
+        ind = sycl::clamp<ssize_t>(ind, ssize_t(0), max_item - 1);
         return;
     }
 };
