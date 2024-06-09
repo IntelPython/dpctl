@@ -73,7 +73,7 @@ template <typename argT, typename resT> struct Log10Functor
             using realT = typename argT::value_type;
             // return (log(in) / log(realT{10}));
             return exprm_ns::log(exprm_ns::complex<realT>(in)) /
-                   std::log(realT{10});
+                   sycl::log(realT{10});
         }
         else {
             return sycl::log10(in);
@@ -158,7 +158,7 @@ template <typename fnT, typename T> struct Log10ContigFactory
 
 template <typename fnT, typename T> struct Log10TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::log10(T x) */
+    /*! @brief get typeid for output type of sycl::log10(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Log10OutputType<T>::value_type;

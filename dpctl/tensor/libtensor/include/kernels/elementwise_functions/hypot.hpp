@@ -58,7 +58,7 @@ template <typename argT1, typename argT2, typename resT> struct HypotFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return std::hypot(in1, in2);
+        return sycl::hypot(in1, in2);
     }
 
     template <int vec_sz>
@@ -160,7 +160,7 @@ template <typename fnT, typename T1, typename T2> struct HypotContigFactory
 
 template <typename fnT, typename T1, typename T2> struct HypotTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::hypot(T1 x, T2 y) */
+    /*! @brief get typeid for output type of sycl::hypot(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename HypotOutputType<T1, T2>::value_type;

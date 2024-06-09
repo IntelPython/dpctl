@@ -68,7 +68,7 @@ template <typename argT, typename resT> struct Exp2Functor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            const argT tmp = in * std::log(realT(2));
+            const argT tmp = in * sycl::log(realT(2));
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
@@ -92,7 +92,7 @@ template <typename argT, typename resT> struct Exp2Functor
                 }
             }
             else {
-                if (!std::signbit(x)) { /* x is +inf */
+                if (!sycl::signbit(x)) { /* x is +inf */
                     if (y == realT(0)) {
                         return resT{x, y};
                     }

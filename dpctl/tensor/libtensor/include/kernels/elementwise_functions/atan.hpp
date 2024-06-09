@@ -198,7 +198,7 @@ template <typename fnT, typename T> struct AtanContigFactory
 
 template <typename fnT, typename T> struct AtanTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::atan(T x) */
+    /*! @brief get typeid for output type of sycl::atan(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AtanOutputType<T>::value_type;

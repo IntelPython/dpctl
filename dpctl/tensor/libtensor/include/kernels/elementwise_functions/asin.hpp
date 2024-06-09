@@ -136,7 +136,7 @@ template <typename argT, typename resT> struct AsinFunctor
             }
             /* ordinary cases */
             return exprm_ns::asin(
-                exprm_ns::complex<realT>(in)); // std::asin(in);
+                exprm_ns::complex<realT>(in)); // sycl::asin(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
@@ -208,7 +208,7 @@ template <typename fnT, typename T> struct AsinContigFactory
 
 template <typename fnT, typename T> struct AsinTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::asin(T x) */
+    /*! @brief get typeid for output type of sycl::asin(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AsinOutputType<T>::value_type;

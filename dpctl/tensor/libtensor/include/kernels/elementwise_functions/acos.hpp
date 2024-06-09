@@ -188,7 +188,7 @@ template <typename fnT, typename T> struct AcosContigFactory
 
 template <typename fnT, typename T> struct AcosTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::acos(T x) */
+    /*! @brief get typeid for output type of sycl::acos(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AcosOutputType<T>::value_type;

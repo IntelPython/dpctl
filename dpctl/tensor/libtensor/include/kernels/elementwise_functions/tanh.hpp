@@ -184,7 +184,7 @@ template <typename fnT, typename T> struct TanhContigFactory
 
 template <typename fnT, typename T> struct TanhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::tanh(T x) */
+    /*! @brief get typeid for output type of sycl::tanh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename TanhOutputType<T>::value_type;

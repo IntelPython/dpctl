@@ -79,23 +79,23 @@ template <typename argT, typename resT> struct Log1pFunctor
             const realT y = std::imag(in);
 
             // imaginary part of result
-            const realT res_im = std::atan2(y, x + 1);
+            const realT res_im = sycl::atan2(y, x + 1);
 
             if (std::max(sycl::fabs(x), sycl::fabs(y)) < realT{.1}) {
                 const realT v = x * (2 + x) + y * y;
-                return resT{std::log1p(v) / 2, res_im};
+                return resT{sycl::log1p(v) / 2, res_im};
             }
             else {
                 // when not close to zero,
                 // prevent overflow
-                const realT m = std::hypot(x + 1, y);
-                return resT{std::log(m), res_im};
+                const realT m = sycl::hypot(x + 1, y);
+                return resT{sycl::log(m), res_im};
             }
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::log1p(in);
+            return sycl::log1p(in);
         }
     }
 };
@@ -163,7 +163,7 @@ template <typename fnT, typename T> struct Log1pContigFactory
 
 template <typename fnT, typename T> struct Log1pTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::log1p(T x) */
+    /*! @brief get typeid for output type of sycl::log1p(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Log1pOutputType<T>::value_type;

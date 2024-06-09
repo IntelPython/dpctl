@@ -191,7 +191,7 @@ template <typename fnT, typename T> struct AsinhContigFactory
 
 template <typename fnT, typename T> struct AsinhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::asinh(T x) */
+    /*! @brief get typeid for output type of sycl::asinh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AsinhOutputType<T>::value_type;

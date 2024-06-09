@@ -190,7 +190,7 @@ template <typename fnT, typename T> struct TanContigFactory
 
 template <typename fnT, typename T> struct TanTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::tan(T x) */
+    /*! @brief get typeid for output type of sycl::tan(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename TanOutputType<T>::value_type;

@@ -215,7 +215,7 @@ template <typename fnT, typename T> struct AcoshContigFactory
 
 template <typename fnT, typename T> struct AcoshTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::acosh(T x) */
+    /*! @brief get typeid for output type of sycl::acosh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AcoshOutputType<T>::value_type;

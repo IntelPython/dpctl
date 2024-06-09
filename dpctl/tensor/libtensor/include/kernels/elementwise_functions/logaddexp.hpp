@@ -177,7 +177,7 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpContigFactory
 
 template <typename fnT, typename T1, typename T2> struct LogAddExpTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::logaddexp(T1 x, T2 y) */
+    /*! @brief get typeid for output type of logaddexp(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename LogAddExpOutputType<T1, T2>::value_type;
