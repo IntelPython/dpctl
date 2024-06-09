@@ -158,7 +158,7 @@ template <typename argT, typename resT> struct SinFunctor
                 }
                 const realT sinh_re = x * sycl::cos(y);
                 const realT sinh_im =
-                    std::numeric_limits<realT>::infinity() * std::sin(y);
+                    std::numeric_limits<realT>::infinity() * sycl::sin(y);
                 return resT{sinh_im, -sinh_re};
             }
 
@@ -246,7 +246,7 @@ template <typename fnT, typename T> struct SinContigFactory
 
 template <typename fnT, typename T> struct SinTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::sin(T x) */
+    /*! @brief get typeid for output type of sycl::sin(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename SinOutputType<T>::value_type;

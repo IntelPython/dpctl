@@ -215,7 +215,7 @@ template <typename fnT, typename T> struct SinhContigFactory
 
 template <typename fnT, typename T> struct SinhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::sinh(T x) */
+    /*! @brief get typeid for output type of sycl::sinh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename SinhOutputType<T>::value_type;

@@ -118,16 +118,16 @@ template <typename T> T min_complex(const T &x1, const T &x2)
 template <typename T> T logaddexp(T x, T y)
 {
     if (x == y) { // handle signed infinities
-        const T log2 = std::log(T(2));
+        const T log2 = sycl::log(T(2));
         return x + log2;
     }
     else {
         const T tmp = x - y;
         if (tmp > 0) {
-            return x + std::log1p(std::exp(-tmp));
+            return x + sycl::log1p(sycl::exp(-tmp));
         }
         else if (tmp <= 0) {
-            return y + std::log1p(std::exp(tmp));
+            return y + sycl::log1p(sycl::exp(tmp));
         }
         else {
             return std::numeric_limits<T>::quiet_NaN();

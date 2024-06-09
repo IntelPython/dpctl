@@ -213,7 +213,7 @@ template <typename fnT, typename T> struct CoshContigFactory
 
 template <typename fnT, typename T> struct CoshTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::cosh(T x) */
+    /*! @brief get typeid for output type of sycl::cosh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename CoshOutputType<T>::value_type;

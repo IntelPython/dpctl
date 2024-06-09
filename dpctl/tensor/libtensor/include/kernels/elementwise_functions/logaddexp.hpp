@@ -91,8 +91,8 @@ template <typename argT1, typename argT2, typename resT> struct LogAddExpFunctor
 private:
     template <typename T> T impl_finite(T const &in) const
     {
-        return (in > 0) ? (in + std::log1p(std::exp(-in)))
-                        : std::log1p(std::exp(in));
+        return (in > 0) ? (in + sycl::log1p(sycl::exp(-in)))
+                        : sycl::log1p(sycl::exp(in));
     }
 };
 
