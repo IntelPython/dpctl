@@ -116,8 +116,7 @@ template <typename argT, typename resT> struct AcosFunctor
             }
 
             /* ordinary cases */
-            return exprm_ns::acos(
-                exprm_ns::complex<realT>(in)); // acos(in);
+            return exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

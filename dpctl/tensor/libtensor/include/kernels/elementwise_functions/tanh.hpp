@@ -112,8 +112,7 @@ template <typename argT, typename resT> struct TanhFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-            return exprm_ns::tanh(
-                exprm_ns::complex<realT>(in)); // tanh(in);
+            return exprm_ns::tanh(exprm_ns::complex<realT>(in)); // tanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

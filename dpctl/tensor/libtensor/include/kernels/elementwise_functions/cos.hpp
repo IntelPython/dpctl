@@ -81,8 +81,7 @@ template <typename argT, typename resT> struct CosFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-                return exprm_ns::cos(
-                    exprm_ns::complex<realT>(in)); // cos(in);
+                return exprm_ns::cos(exprm_ns::complex<realT>(in)); // cos(in);
             }
 
             /*

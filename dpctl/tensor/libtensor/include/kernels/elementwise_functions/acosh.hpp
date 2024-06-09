@@ -120,8 +120,8 @@ template <typename argT, typename resT> struct AcoshFunctor
             }
             else {
                 /* ordinary cases */
-                acos_in = exprm_ns::acos(
-                    exprm_ns::complex<realT>(in)); // acos(in);
+                acos_in =
+                    exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
             }
 
             /* Now we calculate acosh(z) */

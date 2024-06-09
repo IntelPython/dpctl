@@ -119,8 +119,7 @@ template <typename argT, typename resT> struct AsinhFunctor
             }
 
             /* ordinary cases */
-            return exprm_ns::asinh(
-                exprm_ns::complex<realT>(in)); // asinh(in);
+            return exprm_ns::asinh(exprm_ns::complex<realT>(in)); // asinh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

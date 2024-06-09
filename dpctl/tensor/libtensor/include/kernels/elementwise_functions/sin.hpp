@@ -79,8 +79,8 @@ template <typename argT, typename resT> struct SinFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-                resT res = exprm_ns::sin(
-                    exprm_ns::complex<realT>(in)); // sin(in);
+                resT res =
+                    exprm_ns::sin(exprm_ns::complex<realT>(in)); // sin(in);
                 if (in_re == realT(0)) {
                     res.real(sycl::copysign(realT(0), in_re));
                 }

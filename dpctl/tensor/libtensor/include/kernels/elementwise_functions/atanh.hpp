@@ -120,8 +120,7 @@ template <typename argT, typename resT> struct AtanhFunctor
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
-            return exprm_ns::atanh(
-                exprm_ns::complex<realT>(in)); // atanh(in);
+            return exprm_ns::atanh(exprm_ns::complex<realT>(in)); // atanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
