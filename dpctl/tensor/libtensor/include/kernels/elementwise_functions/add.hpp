@@ -63,36 +63,24 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
         if constexpr (tu_ns::is_complex<argT1>::value &&
                       tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using rT1 = typename argT1::value_type;
             using rT2 = typename argT2::value_type;
 
             return exprm_ns::complex<rT1>(in1) + exprm_ns::complex<rT2>(in2);
-#else
-            return in1 + in2;
-#endif
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
                            !tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using rT1 = typename argT1::value_type;
 
             return exprm_ns::complex<rT1>(in1) + in2;
-#else
-            return in1 + in2;
-#endif
         }
         else if constexpr (!tu_ns::is_complex<argT1>::value &&
                            tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using rT2 = typename argT2::value_type;
 
             return in1 + exprm_ns::complex<rT2>(in2);
-#else
-            return in1 + in2;
-#endif
         }
         else {
             return in1 + in2;

@@ -71,16 +71,13 @@ template <typename argT, typename resT> struct Log2Functor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
-            // std::log(in) / std::log(realT{2});
+
+            // log(in) / log(realT{2});
             return exprm_ns::log(exprm_ns::complex<realT>(in)) /
-                   std::log(realT{2});
-#else
-            return std::log(in) / std::log(realT{2});
-#endif
+                   sycl::log(realT{2});
         }
         else {
-            return std::log2(in);
+            return sycl::log2(in);
         }
     }
 
@@ -162,7 +159,7 @@ template <typename fnT, typename T> struct Log2ContigFactory
 
 template <typename fnT, typename T> struct Log2TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::log2(T x) */
+    /*! @brief get typeid for output type of sycl::log2(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Log2OutputType<T>::value_type;

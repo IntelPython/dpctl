@@ -89,7 +89,7 @@ template <typename argT, typename resT> struct AcosFunctor
                 }
                 /* acos(0 + I*NaN) = PI/2 + I*NaN with inexact */
                 if (x == realT(0)) {
-                    const realT res_re = std::atan(realT(1)) * 2; // PI/2
+                    const realT res_re = sycl::atan(realT(1)) * 2; // PI/2
                     return resT{res_re, q_nan};
                 }
 
@@ -103,7 +103,6 @@ template <typename argT, typename resT> struct AcosFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = exprm_ns::complex<realT>;
                 sycl_complexT log_in =
                     exprm_ns::log(exprm_ns::complex<realT>(in));
@@ -112,31 +111,17 @@ template <typename argT, typename resT> struct AcosFunctor
                 const realT wy = log_in.imag();
                 const realT rx = sycl::fabs(wy);
 
-                realT ry = wx + std::log(realT(2));
-                return resT{rx, (std::signbit(y)) ? ry : -ry};
-#else
-                resT log_in = std::log(in);
-                const realT wx = std::real(log_in);
-                const realT wy = std::imag(log_in);
-                const realT rx = sycl::fabs(wy);
-
-                realT ry = wx + std::log(realT(2));
-                return resT{rx, (std::signbit(y)) ? ry : -ry};
-#endif
+                realT ry = wx + sycl::log(realT(2));
+                return resT{rx, (sycl::signbit(y)) ? ry : -ry};
             }
 
             /* ordinary cases */
-#if USE_SYCL_FOR_COMPLEX_TYPES
-            return exprm_ns::acos(
-                exprm_ns::complex<realT>(in)); // std::acos(in);
-#else
-            return std::acos(in);
-#endif
+            return exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::acos(in);
+            return sycl::acos(in);
         }
     }
 };
@@ -203,7 +188,7 @@ template <typename fnT, typename T> struct AcosContigFactory
 
 template <typename fnT, typename T> struct AcosTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::acos(T x) */
+    /*! @brief get typeid for output type of sycl::acos(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AcosOutputType<T>::value_type;

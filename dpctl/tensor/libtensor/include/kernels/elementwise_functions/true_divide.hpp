@@ -64,37 +64,25 @@ struct TrueDivideFunctor
         if constexpr (tu_ns::is_complex<argT1>::value &&
                       tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
             return exprm_ns::complex<realT1>(in1) /
                    exprm_ns::complex<realT2>(in2);
-#else
-            return in1 / in2;
-#endif
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
                            !tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT1 = typename argT1::value_type;
 
             return exprm_ns::complex<realT1>(in1) / in2;
-#else
-            return in1 / in2;
-#endif
         }
         else if constexpr (!tu_ns::is_complex<argT1>::value &&
                            tu_ns::is_complex<argT2>::value)
         {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT2 = typename argT2::value_type;
 
             return in1 / exprm_ns::complex<realT2>(in2);
-#else
-            return in1 / in2;
-#endif
         }
         else {
             return in1 / in2;
@@ -422,27 +410,19 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
     {
         if constexpr (tu_ns::is_complex<resT>::value) {
             if constexpr (tu_ns::is_complex<argT>::value) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using res_rT = typename resT::value_type;
                 using arg_rT = typename argT::value_type;
 
                 auto res1 = exprm_ns::complex<res_rT>(res);
                 res1 /= exprm_ns::complex<arg_rT>(in);
                 res = res1;
-#else
-                res /= in;
-#endif
             }
             else {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using res_rT = typename resT::value_type;
 
                 auto res1 = exprm_ns::complex<res_rT>(res);
                 res1 /= in;
                 res = res1;
-#else
-                res /= in;
-#endif
             }
         }
         else {

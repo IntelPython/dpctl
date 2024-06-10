@@ -56,12 +56,12 @@ template <typename argT1, typename argT2, typename resT> struct Atan2Functor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        if (std::isinf(in2) && !std::signbit(in2)) {
+        if (std::isinf(in2) && !sycl::signbit(in2)) {
             if (std::isfinite(in1)) {
                 return sycl::copysign(resT(0), in1);
             }
         }
-        return std::atan2(in1, in2);
+        return sycl::atan2(in1, in2);
     }
 };
 
@@ -145,7 +145,7 @@ template <typename fnT, typename T1, typename T2> struct Atan2ContigFactory
 
 template <typename fnT, typename T1, typename T2> struct Atan2TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::hypot(T1 x, T2 y) */
+    /*! @brief get typeid for output type of sycl::atan2(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Atan2OutputType<T1, T2>::value_type;

@@ -67,15 +67,11 @@ template <typename argT, typename resT> struct LogFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT = typename argT::value_type;
-            return exprm_ns::log(exprm_ns::complex<realT>(in)); // std::log(in);
-#else
-            return std::log(in);
-#endif
+            return exprm_ns::log(exprm_ns::complex<realT>(in)); // log(in);
         }
         else {
-            return std::log(in);
+            return sycl::log(in);
         }
     }
 };
@@ -143,7 +139,7 @@ template <typename fnT, typename T> struct LogContigFactory
 
 template <typename fnT, typename T> struct LogTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::log(T x) */
+    /*! @brief get typeid for output type of sycl::log(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename LogOutputType<T>::value_type;

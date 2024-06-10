@@ -78,7 +78,7 @@ template <typename argT, typename resT> struct AbsFunctor
             else if constexpr (std::is_same_v<argT, sycl::half> ||
                                std::is_floating_point_v<argT>)
             {
-                return (std::signbit(x) ? -x : x);
+                return (sycl::signbit(x) ? -x : x);
             }
             else {
                 return sycl::abs(x);

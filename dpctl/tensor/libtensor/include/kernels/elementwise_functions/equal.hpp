@@ -68,12 +68,8 @@ template <typename argT1, typename argT2, typename resT> struct EqualFunctor
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::complex<realT1>(in1) ==
                    exprm_ns::complex<realT2>(in2);
-#else
-            return (in1 == in2);
-#endif
         }
         else {
             if constexpr (std::is_integral_v<argT1> &&

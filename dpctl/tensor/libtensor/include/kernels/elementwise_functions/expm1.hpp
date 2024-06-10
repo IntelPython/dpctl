@@ -84,8 +84,8 @@ template <typename argT, typename resT> struct Expm1Functor
                         return in;
                     }
                     else {
-                        return (resT{sycl::copysign(x, std::cos(y)),
-                                     sycl::copysign(x, std::sin(y))});
+                        return (resT{sycl::copysign(x, sycl::cos(y)),
+                                     sycl::copysign(x, sycl::sin(y))});
                     }
                 }
                 else {
@@ -97,7 +97,7 @@ template <typename argT, typename resT> struct Expm1Functor
                     }
                     else {
                         return resT{realT(-1),
-                                    sycl::copysign(realT(0), std::sin(y))};
+                                    sycl::copysign(realT(0), sycl::sin(y))};
                     }
                 }
             }
@@ -113,13 +113,13 @@ template <typename argT, typename resT> struct Expm1Functor
             }
 
             // x, y finite numbers
-            const realT cosY_val = std::cos(y);
-            const realT sinY_val = (y == 0) ? y : std::sin(y);
-            const realT sinhalfY_val = (y == 0) ? y : std::sin(y / 2);
+            const realT cosY_val = sycl::cos(y);
+            const realT sinY_val = (y == 0) ? y : sycl::sin(y);
+            const realT sinhalfY_val = (y == 0) ? y : sycl::sin(y / 2);
 
             const realT res_re =
-                std::expm1(x) * cosY_val - 2 * sinhalfY_val * sinhalfY_val;
-            realT res_im = std::exp(x) * sinY_val;
+                sycl::expm1(x) * cosY_val - 2 * sinhalfY_val * sinhalfY_val;
+            realT res_im = sycl::exp(x) * sinY_val;
             return resT{res_re, res_im};
         }
         else {
@@ -129,7 +129,7 @@ template <typename argT, typename resT> struct Expm1Functor
             if (in == 0) {
                 return in;
             }
-            return std::expm1(in);
+            return sycl::expm1(in);
         }
     }
 };
@@ -197,7 +197,7 @@ template <typename fnT, typename T> struct Expm1ContigFactory
 
 template <typename fnT, typename T> struct Expm1TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::expm1(T x) */
+    /*! @brief get typeid for output type of sycl::expm1(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Expm1OutputType<T>::value_type;

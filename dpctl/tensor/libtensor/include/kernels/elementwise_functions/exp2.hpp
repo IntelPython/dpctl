@@ -68,7 +68,7 @@ template <typename argT, typename resT> struct Exp2Functor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            const argT tmp = in * std::log(realT(2));
+            const argT tmp = in * sycl::log(realT(2));
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
@@ -76,11 +76,7 @@ template <typename argT, typename resT> struct Exp2Functor
             const realT y = std::imag(tmp);
             if (std::isfinite(x)) {
                 if (std::isfinite(y)) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                     return exprm_ns::exp(exprm_ns::complex<realT>(tmp));
-#else
-                    return std::exp(tmp);
-#endif
                 }
                 else {
                     return resT{q_nan, q_nan};
@@ -96,12 +92,12 @@ template <typename argT, typename resT> struct Exp2Functor
                 }
             }
             else {
-                if (!std::signbit(x)) { /* x is +inf */
+                if (!sycl::signbit(x)) { /* x is +inf */
                     if (y == realT(0)) {
                         return resT{x, y};
                     }
                     else if (std::isfinite(y)) {
-                        return resT{x * std::cos(y), x * std::sin(y)};
+                        return resT{x * sycl::cos(y), x * sycl::sin(y)};
                     }
                     else {
                         /* x = +inf, y = +-inf || nan */
@@ -110,8 +106,8 @@ template <typename argT, typename resT> struct Exp2Functor
                 }
                 else { /* x is -inf */
                     if (std::isfinite(y)) {
-                        realT exp_x = std::exp(x);
-                        return resT{exp_x * std::cos(y), exp_x * std::sin(y)};
+                        realT exp_x = sycl::exp(x);
+                        return resT{exp_x * sycl::cos(y), exp_x * sycl::sin(y)};
                     }
                     else {
                         /* x = -inf, y = +-inf || nan */
@@ -188,7 +184,7 @@ template <typename fnT, typename T> struct Exp2ContigFactory
 
 template <typename fnT, typename T> struct Exp2TypeMapFactory
 {
-    /*! @brief get typeid for output type of std::exp2(T x) */
+    /*! @brief get typeid for output type of sycl::exp2(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename Exp2OutputType<T>::value_type;

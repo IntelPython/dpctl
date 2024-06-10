@@ -231,7 +231,7 @@ foreach(_src_fn ${_no_fast_math_sources})
   )
 endforeach()
 
-set(_compiler_definitions "USE_SYCL_FOR_COMPLEX_TYPES")
+set(_compiler_definitions "")
 
 foreach(_src_fn ${_elementwise_sources})
   get_source_file_property(_cmpl_options_defs ${_src_fn} COMPILE_DEFINITIONS)

@@ -79,12 +79,8 @@ template <typename argT, typename resT> struct SinFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
-                resT res = exprm_ns::sin(
-                    exprm_ns::complex<realT>(in)); // std::sin(in);
-#else
-                resT res = std::sin(in);
-#endif
+                resT res =
+                    exprm_ns::sin(exprm_ns::complex<realT>(in)); // sin(in);
                 if (in_re == realT(0)) {
                     res.real(sycl::copysign(realT(0), in_re));
                 }
@@ -160,9 +156,9 @@ template <typename argT, typename resT> struct SinFunctor
                     const realT sinh_im = x * (y - y);
                     return resT{sinh_im, -sinh_re};
                 }
-                const realT sinh_re = x * std::cos(y);
+                const realT sinh_re = x * sycl::cos(y);
                 const realT sinh_im =
-                    std::numeric_limits<realT>::infinity() * std::sin(y);
+                    std::numeric_limits<realT>::infinity() * sycl::sin(y);
                 return resT{sinh_im, -sinh_re};
             }
 
@@ -183,7 +179,7 @@ template <typename argT, typename resT> struct SinFunctor
             if (in == 0) {
                 return in;
             }
-            return std::sin(in);
+            return sycl::sin(in);
         }
     }
 };
@@ -250,7 +246,7 @@ template <typename fnT, typename T> struct SinContigFactory
 
 template <typename fnT, typename T> struct SinTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::sin(T x) */
+    /*! @brief get typeid for output type of sycl::sin(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename SinOutputType<T>::value_type;

@@ -69,15 +69,11 @@ template <typename argT, typename resT> struct SquareFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
             using realT = typename argT::value_type;
 
             auto z = exprm_ns::complex<realT>(in);
 
             return z * z;
-#else
-            return in * in;
-#endif
         }
         else {
             return in * in;

@@ -117,50 +117,31 @@ template <typename argT, typename resT> struct AsinFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 using sycl_complexT = exprm_ns::complex<realT>;
                 const sycl_complexT z{x, y};
                 realT wx, wy;
-                if (!std::signbit(x)) {
+                if (!sycl::signbit(x)) {
                     const auto log_z = exprm_ns::log(z);
-                    wx = log_z.real() + std::log(realT(2));
+                    wx = log_z.real() + sycl::log(realT(2));
                     wy = log_z.imag();
                 }
                 else {
                     const auto log_mz = exprm_ns::log(-z);
-                    wx = log_mz.real() + std::log(realT(2));
+                    wx = log_mz.real() + sycl::log(realT(2));
                     wy = log_mz.imag();
                 }
-#else
-                const resT z{x, y};
-                realT wx, wy;
-                if (!std::signbit(x)) {
-                    const auto log_z = std::log(z);
-                    wx = std::real(log_z) + std::log(realT(2));
-                    wy = std::imag(log_z);
-                }
-                else {
-                    const auto log_mz = std::log(-z);
-                    wx = std::real(log_mz) + std::log(realT(2));
-                    wy = std::imag(log_mz);
-                }
-#endif
                 const realT asinh_re = sycl::copysign(wx, x);
                 const realT asinh_im = sycl::copysign(wy, y);
                 return resT{asinh_im, asinh_re};
             }
             /* ordinary cases */
-#if USE_SYCL_FOR_COMPLEX_TYPES
             return exprm_ns::asin(
-                exprm_ns::complex<realT>(in)); // std::asin(in);
-#else
-            return std::asin(in);
-#endif
+                exprm_ns::complex<realT>(in)); // sycl::asin(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::asin(in);
+            return sycl::asin(in);
         }
     }
 };
@@ -227,7 +208,7 @@ template <typename fnT, typename T> struct AsinContigFactory
 
 template <typename fnT, typename T> struct AsinTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::asin(T x) */
+    /*! @brief get typeid for output type of sycl::asin(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AsinOutputType<T>::value_type;

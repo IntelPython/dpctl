@@ -102,7 +102,7 @@ template <typename argT, typename resT> struct TanFunctor
                 }
                 const realT tanh_re = sycl::copysign(realT(1), x);
                 const realT tanh_im = sycl::copysign(
-                    realT(0), std::isinf(y) ? y : std::sin(y) * std::cos(y));
+                    realT(0), std::isinf(y) ? y : sycl::sin(y) * sycl::cos(y));
                 return resT{tanh_im, -tanh_re};
             }
             /*
@@ -118,16 +118,12 @@ template <typename argT, typename resT> struct TanFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
-            return exprm_ns::tan(exprm_ns::complex<realT>(in)); // std::tan(in);
-#else
-            return std::tan(in);
-#endif
+            return exprm_ns::tan(exprm_ns::complex<realT>(in)); // tan(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::tan(in);
+            return sycl::tan(in);
         }
     }
 };
@@ -194,7 +190,7 @@ template <typename fnT, typename T> struct TanContigFactory
 
 template <typename fnT, typename T> struct TanTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::tan(T x) */
+    /*! @brief get typeid for output type of sycl::tan(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename TanOutputType<T>::value_type;

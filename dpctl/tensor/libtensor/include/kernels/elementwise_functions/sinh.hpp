@@ -79,11 +79,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
                 return exprm_ns::sinh(exprm_ns::complex<realT>(in));
-#else
-                return std::sinh(in);
-#endif
             }
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
@@ -135,9 +131,9 @@ template <typename argT, typename resT> struct SinhFunctor
                 if (!yfinite) {
                     return resT{x * x, x * (y - y)};
                 }
-                return resT{x * std::cos(y),
+                return resT{x * sycl::cos(y),
                             std::numeric_limits<realT>::infinity() *
-                                std::sin(y)};
+                                sycl::sin(y)};
             }
 
             /*
@@ -152,7 +148,7 @@ template <typename argT, typename resT> struct SinhFunctor
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::sinh(in);
+            return sycl::sinh(in);
         }
     }
 };
@@ -219,7 +215,7 @@ template <typename fnT, typename T> struct SinhContigFactory
 
 template <typename fnT, typename T> struct SinhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::sinh(T x) */
+    /*! @brief get typeid for output type of sycl::sinh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename SinhOutputType<T>::value_type;

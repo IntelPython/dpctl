@@ -76,7 +76,7 @@ template <typename argT, typename resT> struct AtanhFunctor
             if (std::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)0 + I*+-PI/2 */
                 if (std::isinf(y)) {
-                    const realT pi_half = std::atan(realT(1)) * 2;
+                    const realT pi_half = sycl::atan(realT(1)) * 2;
 
                     const realT res_re = sycl::copysign(realT(0), x);
                     const realT res_im = sycl::copysign(pi_half, y);
@@ -113,24 +113,19 @@ template <typename argT, typename resT> struct AtanhFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > RECIP_EPSILON || sycl::fabs(y) > RECIP_EPSILON)
             {
-                const realT pi_half = std::atan(realT(1)) * 2;
+                const realT pi_half = sycl::atan(realT(1)) * 2;
 
                 const realT res_re = realT(0);
                 const realT res_im = sycl::copysign(pi_half, y);
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
-#ifdef USE_SYCL_FOR_COMPLEX_TYPES
-            return exprm_ns::atanh(
-                exprm_ns::complex<realT>(in)); // std::atanh(in);
-#else
-            return std::atanh(in);
-#endif
+            return exprm_ns::atanh(exprm_ns::complex<realT>(in)); // atanh(in);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
                           std::is_same_v<argT, sycl::half>);
-            return std::atanh(in);
+            return sycl::atanh(in);
         }
     }
 };
@@ -197,7 +192,7 @@ template <typename fnT, typename T> struct AtanhContigFactory
 
 template <typename fnT, typename T> struct AtanhTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::atanh(T x) */
+    /*! @brief get typeid for output type of sycl::atanh(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename AtanhOutputType<T>::value_type;
