@@ -1,6 +1,0 @@
-dpctl.SyclEvent.get\_wait\_list
-===============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclEvent.get_wait_list
