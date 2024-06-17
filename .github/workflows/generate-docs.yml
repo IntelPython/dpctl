@@ -58,7 +58,7 @@ jobs:
                       sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design \
                       sphinxcontrib-jsmath sphinx-copybutton sphinxcontrib-spelling
       - name: Checkout repo
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
           persist-credentials: false
