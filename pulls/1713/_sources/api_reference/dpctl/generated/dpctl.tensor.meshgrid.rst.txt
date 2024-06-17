@@ -1,6 +1,0 @@
-﻿dpctl.tensor.meshgrid
-=====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: meshgrid
