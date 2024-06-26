@@ -350,9 +350,9 @@ def test_where_arg_validation():
 
     with pytest.raises(TypeError):
         dpt.where(check, x1, x2)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.where(x1, check, x2)
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.where(x1, x2, check)
 
 
