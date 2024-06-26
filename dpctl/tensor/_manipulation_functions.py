@@ -265,6 +265,8 @@ def broadcast_arrays(*args):
             `device` and `usm_type` attributes as its corresponding input
             array.
     """
+    if len(args) == 0:
+        raise ValueError("`broadcast_arrays` requires at least one argument")
     for X in args:
         if not isinstance(X, dpt.usm_ndarray):
             raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
