@@ -121,16 +121,17 @@ def where(condition, x1, x2, /, *, order="K", out=None):
             and otherwise yields from ``x2``.
             Must be compatible with ``x1`` and ``x2`` according
             to broadcasting rules.
-        x1 (usm_ndarray): Array from which values are chosen when
-            ``condition`` is ``True``.
+        x1 (Union[usm_ndarray, bool, int, float, complex]):
+            Array from which values are chosen when ``condition`` is ``True``.
             Must be compatible with ``condition`` and ``x2`` according
             to broadcasting rules.
-        x2 (usm_ndarray): Array from which values are chosen when
-            ``condition`` is not ``True``.
+        x2 (Union[usm_ndarray, bool, int, float, complex]):
+            Array from which values are chosen when ``condition`` is not
+            ``True``.
             Must be compatible with ``condition`` and ``x2`` according
             to broadcasting rules.
         order (``"K"``, ``"C"``, ``"F"``, ``"A"``, optional):
-            Memory layout of the new output arra,
+            Memory layout of the new output array,
             if parameter ``out`` is ``None``.
             Default: ``"K"``.
         out (Optional[usm_ndarray]):
