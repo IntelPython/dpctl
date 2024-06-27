@@ -435,6 +435,11 @@ def test_incompatible_shapes_raise_valueerror(shapes):
         assert_broadcast_arrays_raise(input_shapes[::-1])
 
 
+def test_broadcast_arrays_no_args():
+    with pytest.raises(ValueError):
+        dpt.broadcast_arrays()
+
+
 def test_flip_axis_incorrect():
     q = get_queue_or_skip()
 
