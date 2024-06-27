@@ -76,6 +76,8 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     b_np = dpt.asnumpy(b)
     a_np = dpt.asnumpy(a)
+    print(b_np)
+    print(a_np)
 
     for r in (
         [
