@@ -76,7 +76,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     b_np = dpt.asnumpy(b)
     a_np = dpt.asnumpy(a)
-
+    q.wait()
     for r in (
         [
             n_elems,
@@ -92,12 +92,9 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
         c_np = dpt.asnumpy(c)
-        diff = c_np - ref_c
         assert np.allclose(
-            dpt.asnumpy(c), ref_c
-        ), "Failed for {} with diffs between {} and {}".format(
-            r, np.max(diff), np.min(diff)
-        )
+            c_np, ref_c
+        ), "Failed for {}, c was {}, ref_c was {}".format(r, c_np, ref_c)
 
     for gr, lr in (
         (
