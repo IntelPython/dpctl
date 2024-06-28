@@ -76,8 +76,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     b_np = dpt.asnumpy(b)
     a_np = dpt.asnumpy(a)
-    print(b_np)
-    print(a_np)
+    ref_c = a_np * np.array(d, dtype=dtype) + b_np
 
     for r in (
         [
@@ -90,7 +89,6 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         timer = dpctl.SyclTimer()
         with timer(q):
             q.submit(axpyKernel, args, r).wait()
-        ref_c = a_np * np.array(d, dtype=dtype) + b_np
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
         c_np = dpt.asnumpy(c)
