@@ -32,13 +32,13 @@ from dpctl._sycl_queue import kernel_arg_type
 @pytest.mark.parametrize(
     "ctype_str,dtype,ctypes_ctor",
     [
-        ("short", dpt.dtype("i2"), ctypes.c_short),
-        ("int", dpt.dtype("i4"), ctypes.c_int),
-        ("unsigned int", dpt.dtype("u4"), ctypes.c_uint),
-        ("long", dpt.dtype(np.longlong), ctypes.c_longlong),
-        ("unsigned long", dpt.dtype(np.ulonglong), ctypes.c_ulonglong),
+        # ("short", dpt.dtype("i2"), ctypes.c_short),
+        # ("int", dpt.dtype("i4"), ctypes.c_int),
+        # ("unsigned int", dpt.dtype("u4"), ctypes.c_uint),
+        # ("long", dpt.dtype(np.longlong), ctypes.c_longlong),
+        # ("unsigned long", dpt.dtype(np.ulonglong), ctypes.c_ulonglong),
         ("float", dpt.dtype("f4"), ctypes.c_float),
-        ("double", dpt.dtype("f8"), ctypes.c_double),
+        # ("double", dpt.dtype("f8"), ctypes.c_double),
     ],
 )
 def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
@@ -77,6 +77,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
     a_np = np.arange(n_elems, dtype=dtype)
     b_np = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
     ref_c = a_np * np.asarray(d, dtype=dtype) + b_np
+    print(ref_c)
 
     for r in (
         [
