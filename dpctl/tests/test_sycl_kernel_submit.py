@@ -74,10 +74,9 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     assert n_elems % lws == 0
 
-    b_np = dpt.asnumpy(dpt.copy(b))
-    a_np = dpt.asnumpy(dpt.copy(a))
+    a_np = np.arange(n_elems, dtype=dtype)
+    b_np = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
     ref_c = a_np * np.asarray(d, dtype=dtype) + b_np
-    print(a_np, b_np, ref_c)
 
     for r in (
         [
