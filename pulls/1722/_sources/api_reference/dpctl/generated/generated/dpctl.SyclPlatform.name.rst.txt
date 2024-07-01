@@ -1,0 +1,6 @@
+dpctl.SyclPlatform.name
+=======================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclPlatform.name
