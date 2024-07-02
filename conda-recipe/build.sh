@@ -8,21 +8,44 @@ echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot 
 export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG="$(pwd)/icpx_for_conda.cfg"
 
+read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
+    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
+
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
-export CMAKE_GENERATOR="Ninja"
-SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
-echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
 
-if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
-    # Install packages and assemble wheel package from built bits
-    WHEELS_BUILD_ARGS="-p manylinux_2_28_x86_64 --build-number ${GIT_DESCRIBE_NUMBER}"
-    ${PYTHON} setup.py install bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
-    cp dist/dpctl*.whl ${WHEELS_OUTPUT_FOLDER}
-else
-    # Perform regular install
-    ${PYTHON} setup.py install ${SKBUILD_ARGS}
+export CC=icx
+export CXX=icpx
+
+export CMAKE_GENERATOR=Ninja
+# Make CMake verbose
+export VERBOSE=1
+
+CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero"
+
+# -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+${PYTHON} -m build -w -n -x
+${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
+    --platform-tag "manylinux_${GLIBC_MAJOR}_${GLIBC_MINOR}_x86_64" \
+    dist/dpctl*.whl
+${PYTHON} -m pip install dist/dpctl*.whl \
+    --no-build-isolation \
+    --no-deps \
+    --only-binary :all: \
+    --no-index \
+    --prefix "${PREFIX}" \
+    -vv
+
+# Recover symbolic links
+# libDPCTLSyclInterface.so.0 -> libDPCTLSyclInterface.so.0.17
+# libDPCTLSyclInterface.so -> libDPCTLSyclInterface.so.0
+find $PREFIX | grep libDPCTLSyclInterface | sort -r | \
+awk '{if ($0=="") ln=""; else if (ln=="") ln = $0; else system("rm " $0 ";\tln -s " ln " " $0); ln = $0 }'
+
+# Copy wheel package
+if [[ -v WHEELS_OUTPUT_FOLDER ]]; then
+    cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi
 
 # need to create this folder so ensure that .dpctl-post-link.sh can work correctly
