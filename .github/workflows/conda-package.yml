@@ -17,7 +17,7 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -128,7 +128,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11']
         experimental: [false]
-        runner: [ubuntu-20.04]
+        runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c conda-forge --override-channels
@@ -336,7 +336,7 @@ jobs:
   upload_linux:
     needs: test_linux
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11']
@@ -417,7 +417,7 @@ jobs:
       matrix:
         python: ['3.10']
         experimental: [false]
-        runner: [ubuntu-20.04]
+        runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c conda-forge --override-channels
@@ -568,7 +568,7 @@ jobs:
       matrix:
         python: ['3.10']
         experimental: [false]
-        runner: [ubuntu-20.04]
+        runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
     env:
       CHANNELS: -c intel -c conda-forge --override-channels
