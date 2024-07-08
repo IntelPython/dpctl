@@ -707,6 +707,9 @@ def _extract_impl(ary, ary_mask, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
         )
+    dst_usm_type = dpctl.utils.get_coerced_usm_type(
+        (ary.usm_type, ary_mask.usm_type)
+    )
     exec_q = dpctl.utils.get_execution_queue(
         (ary.sycl_queue, ary_mask.sycl_queue)
     )
@@ -733,7 +736,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     )
     dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
     dst = dpt.empty(
-        dst_shape, dtype=ary.dtype, usm_type=ary.usm_type, device=ary.device
+        dst_shape, dtype=ary.dtype, usm_type=dst_usm_type, device=ary.device
     )
     if dst.size == 0:
         return dst
