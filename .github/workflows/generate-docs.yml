@@ -103,7 +103,7 @@ jobs:
           git push tokened_docs gh-pages
       - name: Save built docs as an artifact
         if: ${{ github.event.pull_request && github.event.pull_request.head.repo.fork && github.event.action != 'closed'}}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.4
         with:
           name: ${{ env.PACKAGE_NAME }} rendered documentation
           path: ~/docs
