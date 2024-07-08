@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMDevice.memset
-===================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMDevice.memset
