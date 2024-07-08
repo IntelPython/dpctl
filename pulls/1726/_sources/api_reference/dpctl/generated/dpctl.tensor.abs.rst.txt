@@ -1,0 +1,10 @@
+﻿dpctl.tensor.abs
+================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: abs
+    :no-value:
+
+

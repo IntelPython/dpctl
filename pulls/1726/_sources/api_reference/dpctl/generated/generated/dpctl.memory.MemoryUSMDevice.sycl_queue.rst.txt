@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.sycl\_queue
+========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMDevice.sycl_queue
