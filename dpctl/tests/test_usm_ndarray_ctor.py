@@ -485,6 +485,10 @@ def test_ctor_invalid_order():
     get_queue_or_skip()
     with pytest.raises(ValueError):
         dpt.usm_ndarray((5, 5, 3), order="Z")
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((10), strides=(1,), order="Z")
+    with pytest.raises(ValueError):
+        dpt.usm_ndarray((), order="Z")
 
 
 def test_ctor_buffer_kwarg():
