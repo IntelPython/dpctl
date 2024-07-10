@@ -72,6 +72,9 @@ cdef int _from_input_shape_strides(
     cdef Py_ssize_t* shape_arr
     cdef Py_ssize_t* strides_arr
 
+    if (int(order) not in [ord('C'), ord('F'), ord('c'), ord('f')]):
+        return ERROR_INCORRECT_ORDER
+
     # 0-d array
     if (nd == 0):
         contig[0] = (USM_ARRAY_C_CONTIGUOUS | USM_ARRAY_F_CONTIGUOUS)
@@ -109,10 +112,6 @@ cdef int _from_input_shape_strides(
     nelems[0] = elem_count
     if (strides is None):
         # no need to allocate and populate strides
-        if (int(order) not in [ord('C'), ord('F'), ord('c'), ord('f')]):
-            PyMem_Free(shape_ptr[0]);
-            shape_ptr[0] = <Py_ssize_t *>(<size_t>0)
-            return ERROR_INCORRECT_ORDER
         if order == <char> ord('C') or order == <char> ord('c'):
             contig[0] = USM_ARRAY_C_CONTIGUOUS
         else:
