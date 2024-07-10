@@ -418,7 +418,7 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
         ctx, {dev}, {kernel_id});
 
-    auto krn = kb.template get_kernel(kernel_id);
+    auto krn = kb.get_kernel(kernel_id);
 
     const std::uint32_t max_sg_size = krn.template get_info<
         sycl::info::kernel_device_specific::max_sub_group_size>(dev);
