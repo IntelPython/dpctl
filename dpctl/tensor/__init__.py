@@ -152,6 +152,7 @@ from ._elementwise_funcs import (
     minimum,
     multiply,
     negative,
+    nextafter,
     not_equal,
     positive,
     pow,
@@ -371,4 +372,5 @@ __all__ = [
     "cumulative_logsumexp",
     "cumulative_prod",
     "cumulative_sum",
+    "nextafter",
 ]
