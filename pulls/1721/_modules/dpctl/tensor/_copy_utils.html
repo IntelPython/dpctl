@@ -1525,6 +1525,9 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Expecting type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
+    <span class="n">dst_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
         <span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
     <span class="p">)</span>
@@ -1551,7 +1554,7 @@
     <span class="p">)</span>
     <span class="n">dst_shape</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">pp</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">mask_count</span><span class="p">,)</span> <span class="o">+</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">pp</span> <span class="o">+</span> <span class="n">mask_nd</span> <span class="p">:]</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">dst_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">dst_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">dst_usm_type</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">device</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">dst</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dst</span>
