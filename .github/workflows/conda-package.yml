@@ -229,6 +229,7 @@ jobs:
 
     steps:
       - name: Construct channels line
+        shell: pwsh
         run: |
           echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
       - name: Display channels line
