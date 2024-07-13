@@ -1,0 +1,6 @@
+﻿dpctl.tensor.zeros\_like
+========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: zeros_like
