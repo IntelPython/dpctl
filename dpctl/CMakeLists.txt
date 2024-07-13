@@ -116,12 +116,12 @@ function(build_dpctl_ext _trgt _src _dest)
             target_compile_options(
                 ${_trgt}
                 PRIVATE
-                -fsycl-targets=${_dpctl_sycl_targets}
+                ${_dpctl_sycl_target_compile_options}
             )
             target_link_options(
                 ${_trgt}
                 PRIVATE
-                -fsycl-targets=${_dpctl_sycl_targets}
+                ${_dpctl_sycl_target_link_options}
             )
         endif()
     endif()
