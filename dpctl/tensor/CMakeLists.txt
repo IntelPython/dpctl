@@ -300,12 +300,12 @@ foreach(python_module_name ${_py_trgts})
         target_compile_options(
             ${python_module_name}
             PRIVATE
-            -fsycl-targets=${_dpctl_sycl_targets}
+            ${_dpctl_sycl_target_compile_options}
         )
         target_link_options(
             ${python_module_name}
             PRIVATE
-            -fsycl-targets=${_dpctl_sycl_targets}
+            ${_dpctl_sycl_target_link_options}
         )
     endif()
     # TODO: update source so they refernece individual libraries instead of

@@ -55,16 +55,15 @@ add_sycl_to_target(
 )
 
 if(_dpctl_sycl_targets)
-    # make fat binary
     target_compile_options(
         dpctl_c_api_tests
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
+        ${_dpctl_sycl_target_compile_options}
     )
     target_link_options(
         dpctl_c_api_tests
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
+        ${_dpctl_sycl_target_link_options}
     )
 endif()
 
@@ -85,16 +84,15 @@ target_include_directories(dpctl_c_api_tests
 )
 
 if(_dpctl_sycl_targets)
-    # make fat binary
     target_compile_options(
         dpctl_c_api_tests
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
+        ${_dpctl_sycl_target_compile_options}
     )
     target_link_options(
         dpctl_c_api_tests
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
+        ${_dpctl_sycl_target_link_options}
     )
 endif()
 
