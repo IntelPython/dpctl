@@ -1,0 +1,10 @@
+﻿dpctl.tensor.angle
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: angle
+    :no-value:
+
+
