@@ -1,6 +1,0 @@
-﻿dpctl.tensor.can\_cast
-======================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: can_cast
