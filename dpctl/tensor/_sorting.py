@@ -14,12 +14,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from numpy.core.numeric import normalize_axis_index
-
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as du
 
+from ._numpy_helper import normalize_axis_index
 from ._tensor_sorting_impl import (
     _argsort_ascending,
     _argsort_descending,

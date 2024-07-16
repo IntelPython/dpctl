@@ -19,7 +19,6 @@ import itertools
 import operator
 
 import numpy as np
-from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 import dpctl
 import dpctl.tensor as dpt
@@ -27,6 +26,7 @@ import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
 
 from ._copy_utils import _broadcast_strides
+from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
 from ._type_utils import _supported_dtype, _to_device_supported_dtype
 
 __doc__ = (

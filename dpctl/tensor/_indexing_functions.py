@@ -16,14 +16,13 @@
 
 import operator
 
-from numpy.core.numeric import normalize_axis_index
-
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 
 from ._copy_utils import _extract_impl, _nonzero_impl
+from ._numpy_helper import normalize_axis_index
 
 
 def _get_indexing_mode(name):

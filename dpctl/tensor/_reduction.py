@@ -14,14 +14,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from numpy.core.numeric import normalize_axis_tuple
-
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
+from ._numpy_helper import normalize_axis_tuple
 from ._type_utils import (
     _default_accumulation_dtype,
     _default_accumulation_dtype_fp_types,
@@ -617,7 +616,9 @@ def _search_over_axis(x, axis, keepdims, out, _reduction_fn):
             axis = (axis,)
         else:
             raise TypeError(
-                f"`axis` argument expected `int` or `None`, got {type(axis)}"
+                f"'axis' argument expected to have type 'int' "
+                r"or be `None`, "
+                f"got type {type(axis)}"
             )
         axis = normalize_axis_tuple(axis, nd, "axis")
         perm = [i for i in range(nd) if i not in axis] + list(axis)
