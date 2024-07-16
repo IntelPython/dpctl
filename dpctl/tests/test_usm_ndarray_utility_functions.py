@@ -2,10 +2,10 @@ from random import randrange
 
 import numpy as np
 import pytest
-from numpy import AxisError
 from numpy.testing import assert_array_equal, assert_equal
 
 import dpctl.tensor as dpt
+from dpctl.tensor._numpy_helper import AxisError
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
