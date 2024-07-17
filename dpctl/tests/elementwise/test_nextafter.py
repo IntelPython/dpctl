@@ -85,8 +85,8 @@ def test_nextafter_special_cases_nan(dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
-    x1 = dpt.asarray([2.0, dpt.nan], dtype=dt)
-    x2 = dpt.asarray([dpt.nan, 2.0], dtype=dt)
+    x1 = dpt.asarray([2.0, dpt.nan, dpt.nan], dtype=dt)
+    x2 = dpt.asarray([dpt.nan, 2.0, dpt.nan], dtype=dt)
 
     y = dpt.nextafter(x1, x2)
     assert dpt.all(dpt.isnan(y))
@@ -98,13 +98,12 @@ def test_nextafter_special_cases_zero(dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
-    x1 = dpt.asarray([-0.0, 0.0], dtype=dt)
-    x2 = dpt.asarray([0.0, -0.0], dtype=dt)
+    x1 = dpt.asarray([-0.0, 0.0, -0.0, 0.0], dtype=dt)
+    x2 = dpt.asarray([0.0, -0.0, -0.0, 0.0], dtype=dt)
 
     y = dpt.nextafter(x1, x2)
     assert dpt.all(y == 0)
-    assert not dpt.signbit(y[0])
-    assert dpt.signbit(y[1])
+    assert dpt.all(dpt.signbit(y) == dpt.signbit(x2))
 
 
 @pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
@@ -120,12 +119,21 @@ def test_nextafter_basic(dt):
     expected_diff = dpt.asarray(dpt.finfo(dt).eps, dtype=dt, sycl_queue=q)
 
     assert dpt.all(r > 0)
-    assert dpt.allclose(r - x1, expected_diff)
+    assert dpt.all(r - x1 == expected_diff)
 
     x3 = dpt.zeros(s, dtype=dt, sycl_queue=q)
-    r = dpt.nextafter(x3, x1)
 
+    r = dpt.nextafter(x3, x1)
     assert dpt.all(r > 0)
 
     r = dpt.nextafter(x1, x3)
     assert dpt.all((r - x1) < 0)
+
+    r = dpt.nextafter(x1, 0)
+    assert dpt.all(x1 - r == (expected_diff) / 2)
+
+    r = dpt.nextafter(x3, dpt.inf)
+    assert dpt.all(r > 0)
+
+    r = dpt.nextafter(x3, -dpt.inf)
+    assert dpt.all(r < 0)
