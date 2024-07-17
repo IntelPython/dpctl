@@ -55,6 +55,12 @@ def pytest_addoption(parser):
         default=False,
         help="run broken complex tests",
     )
+    parser.addoption(
+        "--no-sycl-interface-test",
+        action="store_true",
+        default=False,
+        help="skip test_syclinterface",
+    )
 
 
 def pytest_collection_modifyitems(config, items):
