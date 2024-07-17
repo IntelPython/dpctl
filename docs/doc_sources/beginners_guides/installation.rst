@@ -25,19 +25,19 @@ ecosystem.
 .. _conda_docs: https://docs.conda.io/projects/conda/en/stable/
 
 Released versions of the package can be installed from the Intel channel, as
-indicated by ``--channel intel`` option:
+indicated by ``--channel`` option:
 
 .. code-block:: bash
     :caption: Getting latest released version of ``dpctl`` using conda
 
-    conda create --name dpctl_env --channel intel dpctl
+    conda create --name dpctl_env --channel https://software.repos.intel.com/python/conda/ dpctl
 
 Development builds of ``dpctl`` can be accessed from the ``dppy/label/dev`` channel:
 
 .. code-block:: bash
     :caption: Getting latest development version
 
-    conda create -n dpctl_nightly -c dppy/label/dev -c intel dpctl
+    conda create -n dpctl_nightly -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ dpctl
 
 .. note::
     If :py:mod:`dpctl` is not available for the Python version of interest,
