@@ -69,7 +69,7 @@ ln -s ${libdir}/${soxxx_name} ${libdir}/${sox_name}
 ln -s ${libdir}/${sox_name} ${libdir}/${so_name}
 
 # Copy wheel package
-if [[ -v WHEELS_OUTPUT_FOLDER ]]; then
+if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
     cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi
 
