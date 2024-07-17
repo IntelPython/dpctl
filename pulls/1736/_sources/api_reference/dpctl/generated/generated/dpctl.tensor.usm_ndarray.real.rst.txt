@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.real
+==============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.real
