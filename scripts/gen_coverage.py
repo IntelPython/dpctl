@@ -102,6 +102,7 @@ def run(
             "dpctl",
             "-vv",
             "--ignore=dpctl/tensor/libtensor/tests",
+            "--no-sycl-interface-test",
         ],
         cwd=setup_dir,
         shell=False,

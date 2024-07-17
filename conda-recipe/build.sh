@@ -8,21 +8,69 @@ echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot 
 export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG="$(pwd)/icpx_for_conda.cfg"
 
+read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
+    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
+
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
-export CMAKE_GENERATOR="Ninja"
-SKBUILD_ARGS="-- -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
-echo "${PYTHON} setup.py install ${SKBUILD_ARGS}"
 
-if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
-    # Install packages and assemble wheel package from built bits
-    WHEELS_BUILD_ARGS="-p manylinux_2_28_x86_64 --build-number ${GIT_DESCRIBE_NUMBER}"
-    ${PYTHON} setup.py install bdist_wheel ${WHEELS_BUILD_ARGS} ${SKBUILD_ARGS}
-    cp dist/dpctl*.whl ${WHEELS_OUTPUT_FOLDER}
-else
-    # Perform regular install
-    ${PYTHON} setup.py install ${SKBUILD_ARGS}
+export CC=icx
+export CXX=icpx
+
+export CMAKE_GENERATOR=Ninja
+# Make CMake verbose
+export VERBOSE=1
+
+CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero"
+
+# -wnx flags mean: --wheel --no-isolation --skip-dependency-check
+${PYTHON} -m build -w -n -x
+
+pushd dist
+${PYTHON} -m wheel unpack -d dpctl_wheel dpctl*.whl
+export lib_name=libDPCTLSyclInterface
+export so_full_path=$(find dpctl_wheel -regextype posix-extended -regex "^.*${lib_name}\.so")
+export sox_full_path=$(find dpctl_wheel -regextype posix-extended -regex "^.*${lib_name}\.so\.[0-9]*$")
+export soxxx_full_path=$(find dpctl_wheel -regextype posix-extended -regex "^.*${lib_name}\.so\.[0-9]*\.[0-9]*$")
+
+rm -rf ${so_full_path} ${soxxx_full_path}
+
+export so_name=$(basename ${so_full_path})
+export sox_name=$(basename ${sox_full_path})
+export soxxx_name=$(basename ${soxxx_full_path})
+export wheel_path=$(dirname $(dirname ${so_full_path}))
+
+# deal with hard copies
+${PYTHON} -m wheel pack ${wheel_path}
+
+rm -rf dpctl_wheel
+popd
+
+${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
+    --platform-tag "manylinux_${GLIBC_MAJOR}_${GLIBC_MINOR}_x86_64" \
+    dist/dpctl*.whl
+
+${PYTHON} -m pip install dist/dpctl*.whl \
+    --no-build-isolation \
+    --no-deps \
+    --only-binary :all: \
+    --no-index \
+    --prefix "${PREFIX}" \
+    -vv
+
+export libdir=$(find $PREFIX -name 'libDPCTLSyclInterface*' -exec dirname \{\} \;)
+
+# Recover symbolic links
+# libDPCTLSyclInterface.so.0 -> libDPCTLSyclInterface.so.0.17
+# libDPCTLSyclInterface.so -> libDPCTLSyclInterface.so.0
+mv ${libdir}/${sox_name} ${libdir}/${soxxx_name}
+ln -s ${libdir}/${soxxx_name} ${libdir}/${sox_name}
+ln -s ${libdir}/${sox_name} ${libdir}/${so_name}
+
+# Copy wheel package
+if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
+    cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi
 
 # need to create this folder so ensure that .dpctl-post-link.sh can work correctly

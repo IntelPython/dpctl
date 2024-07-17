@@ -39,7 +39,7 @@ function(get_level_zero_headers)
 
         if(NOT result EQUAL 0)
             message(FATAL_ERROR
-                "Could not update Level Zero sources. Return code: ${result}"
+                "Could not update Level Zero sources: ${error}. Return code: ${result}"
             )
         endif()
     else()
@@ -54,7 +54,7 @@ function(get_level_zero_headers)
 
         if(NOT result EQUAL 0)
             message(FATAL_ERROR
-                "Could not clone Level Zero sources from github.com/oneapi-src/level-zero. Return code: ${result}"
+                "Could not clone Level Zero sources from github.com/oneapi-src/level-zero: ${error}. Return code: ${result}"
             )
         endif()
     endif()
@@ -72,7 +72,7 @@ function(get_level_zero_headers)
 
     if(NOT result EQUAL 0)
         message(FATAL_ERROR
-            "Could not get the name for the latest release. Return code: ${result}"
+            "Could not get the name for the latest release: ${error}. Return code: ${result}"
         )
     endif()
 
@@ -88,7 +88,7 @@ function(get_level_zero_headers)
 
     if(NOT result EQUAL 0)
         message(FATAL_ERROR
-            "Could not checkout the latest release. Return code: ${result}"
+            "Could not checkout the latest release: ${error}. Return code: ${result}"
         )
     endif()
 

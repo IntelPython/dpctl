@@ -3,6 +3,9 @@
 {% set excluded_compiler_version2 = "2024.0.2" %}
 {% set excluded_compiler_version3 = "2024.0.3" %}
 
+{% set pyproject = load_file_data('pyproject.toml') %}
+{% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
+
 package:
     name: dpctl
     version: {{ GIT_DESCRIBE_TAG }}
@@ -17,26 +20,43 @@ build:
         - OVERRIDE_INTEL_IPO  # [win]
 
 requirements:
+    # TODO: keep in sync with /pyproject.toml
     build:
         - {{ compiler('cxx') }}
         - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }},!={{ excluded_compiler_version3 }}  # [win]
         - {{ compiler('dpcpp') }} >={{ required_compiler_version }},!={{ excluded_compiler_version1 }},!={{ excluded_compiler_version2 }}  # [linux]
         - sysroot_linux-64 >=2.28  # [linux]
     host:
-        - setuptools
-        - cmake  >=3.21
-        - ninja
-        - git
-        - cython
         - python
-        - scikit-build
-        - numpy
-        - wheel
+        - pip >=24.0
+        - level-zero-devel >=1.16
+        - pybind11 >=2.12
+        - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+        # Ensure we are using latest version of setuptools, since we don't need
+        # editable environments for release.
+        - setuptools >=69
+        {% for dep in py_build_deps %}
+        {% if dep.startswith('ninja') %}
+        - {{ dep.split(';')[0] }} # [not win]
+        {% elif dep.startswith('cmake') %}
+        # We need to pin cmake version on Windows, because we are patching
+        # cmake files distributed with it.
+        - cmake=3.26 # [win]
+        - {{ dep }} # [not win]
+        {% elif dep.startswith('build>=') %}
+        - {{ 'python-' ~ dep }}
+        {% else %}
+        - {{ dep|replace('_','-') }}
+        {% endif %}
+        {% endfor %}
+        # versioneer dependency
+        - tomli # [py<311]
     run:
         - python
+        - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
+        - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
-        - dpcpp-cpp-rt >={{ required_compiler_version }}
-        - level-zero  # [linux]
+        - {{ pin_compatible('level-zero', min_pin='x.x', max_pin='x') }} # [linux]
 
 test:
     requires:
@@ -67,3 +87,4 @@ extra:
         - diptorupd
         - oleksandr-pavlyk
         - ndgrigorian
+        - ZzEeKkAa

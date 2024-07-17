@@ -151,13 +151,21 @@ def test_dev_utils():
             device.parent_device
 
 
-def test_syclinterface():
+@pytest.fixture
+def should_skip_syclinterface(request):
+    return request.config.getoption("--no-sycl-interface-test")
+
+
+def test_syclinterface(should_skip_syclinterface):
     install_dir = os.path.dirname(os.path.abspath(dpctl.__file__))
     paths = glob.glob(os.path.join(install_dir, "*DPCTLSyclInterface*"))
     if "linux" in sys.platform:
-        assert len(paths) > 1 and any(
-            [os.path.islink(fn) for fn in paths]
-        ), "All library instances are hard links"
+        if should_skip_syclinterface:
+            pass
+        else:
+            assert len(paths) > 1 and any(
+                [os.path.islink(fn) for fn in paths]
+            ), "All library instances are hard links"
     elif sys.platform in ["win32", "cygwin"]:
         exts = []
         for fn in paths:
