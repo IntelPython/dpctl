@@ -19,6 +19,7 @@ import ctypes
 import numpy as np
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -103,7 +104,18 @@ def test_nextafter_special_cases_zero(dt):
 
     y = dpt.nextafter(x1, x2)
     assert dpt.all(y == 0)
-    assert dpt.all(dpt.signbit(y) == dpt.signbit(x2))
+
+    skip_checking_signs = (
+        x1.dtype == dpt.float16
+        and x1.sycl_device.backend == dpctl.backend_type.cuda
+    )
+    if skip_checking_signs:
+        pytest.skip(
+            "Skipped checking signs for nextafter due to "
+            "known issue in DPC++ support for CUDA devices"
+        )
+    else:
+        assert dpt.all(dpt.signbit(y) == dpt.signbit(x2))
 
 
 @pytest.mark.parametrize("dt", ["f2", "f4", "f8"])
