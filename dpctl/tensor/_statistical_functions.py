@@ -14,13 +14,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from numpy.core.numeric import normalize_axis_tuple
-
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as tei
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 import dpctl.utils as du
+
+from ._numpy_helper import normalize_axis_tuple
 
 
 def _var_impl(x, axis, correction, keepdims):
