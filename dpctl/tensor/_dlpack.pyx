@@ -34,8 +34,6 @@ from .._backend cimport (
 )
 from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, USM_ARRAY_WRITABLE, usm_ndarray
 
-from platform import system as sys_platform
-
 import numpy as np
 
 import dpctl
@@ -43,10 +41,6 @@ import dpctl.memory as dpmem
 
 from ._device import Device
 
-
-cdef bint _IS_LINUX = sys_platform() == "Linux"
-
-del sys_platform
 
 cdef extern from 'dlpack/dlpack.h' nogil:
     cdef int DLPACK_MAJOR_VERSION
@@ -170,12 +164,9 @@ cdef void _managed_tensor_versioned_deleter(DLManagedTensorVersioned *dlmv_tenso
 
 cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
     try:
-        if _IS_LINUX:
-            default_context = dev.sycl_platform.default_context
-        else:
-            default_context = None
+        default_context = dev.sycl_platform.default_context
     except RuntimeError:
-        # RT does not support default_context, e.g. Windows
+        # RT does not support default_context
         default_context = None
 
     return default_context
@@ -585,10 +576,7 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps):
         device_id = dlm_tensor.dl_tensor.device.device_id
         root_device = dpctl.SyclDevice(str(<int>device_id))
         try:
-            if _IS_LINUX:
-                default_context = root_device.sycl_platform.default_context
-            else:
-                default_context = get_device_cached_queue(root_device).sycl_context
+            default_context = root_device.sycl_platform.default_context
         except RuntimeError:
             default_context = get_device_cached_queue(root_device).sycl_context
         if dlm_tensor.dl_tensor.data is NULL:
@@ -771,10 +759,7 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
         device_id = dlmv_tensor.dl_tensor.device.device_id
         root_device = dpctl.SyclDevice(str(<int>device_id))
         try:
-            if _IS_LINUX:
-                default_context = root_device.sycl_platform.default_context
-            else:
-                default_context = get_device_cached_queue(root_device).sycl_context
+            default_context = root_device.sycl_platform.default_context
         except RuntimeError:
             default_context = get_device_cached_queue(root_device).sycl_context
         if dlmv_tensor.dl_tensor.data is NULL:
