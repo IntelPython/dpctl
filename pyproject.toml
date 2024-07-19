@@ -9,7 +9,7 @@ requires = [
   "ninja>=1.11.1; platform_system!='Windows'",
   "cmake>=3.29.0",
   "cython>=3.0.10",
-  "numpy >=1.24",
+  "numpy >=1.23",
   # WARNING: check with doc how to upgrade
   "versioneer[toml]==0.29"
 ]
