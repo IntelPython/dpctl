@@ -486,7 +486,7 @@ jobs:
       - name: Install example requirements
         shell: bash -l {0}
         env:
-          DPCPP_CMPLR: dpcpp_linux-64">=2024.1"
+          DPCPP_CMPLR: dpcpp_linux-64">=2024.2"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
