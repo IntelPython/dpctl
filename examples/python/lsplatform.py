@@ -24,7 +24,7 @@ def print_available_platforms():
     """
     Print information about SYCL platforms visible to runtime.
 
-    Environment variable `SYCL_DEVICE_FILTER` affects this list.
+    Environment variable `ONEAPI_DEVICE_SELECTOR` affects this list.
     """
     dpctl.lsplatform()
 
@@ -34,7 +34,7 @@ def list_available_platforms():
     Get a list of SyclPlatform instances corresponding to platforms
     visible to SYCL runtime.
 
-    Environment variable `SYCL_DEVICE_FILTER` affects this list.
+    Environment variable `ONEAPI_DEVICE_SELECTOR` affects this list.
     """
     for p in dpctl.get_platforms():
         print(p)
