@@ -43,7 +43,7 @@ dependencies = [
   # TODO: do we have to set sycl runtime dependencies here
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
-  "numpy>=1.24.0"
+  "numpy>=1.23.0"
 ]
 description = "A lightweight Python wrapper for a subset of SYCL."
 dynamic = ["version"]
