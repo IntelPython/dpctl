@@ -1,6 +1,0 @@
-﻿dpctl.tensor.vecdot
-===================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: vecdot
