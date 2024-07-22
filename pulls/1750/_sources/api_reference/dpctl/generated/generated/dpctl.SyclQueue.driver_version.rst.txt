@@ -1,6 +1,0 @@
-dpctl.SyclQueue.driver\_version
-===============================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclQueue.driver_version
