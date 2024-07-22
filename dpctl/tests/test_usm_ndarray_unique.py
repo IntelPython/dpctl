@@ -321,3 +321,25 @@ def test_set_functions_compute_follows_data():
     assert ind.sycl_queue == q
     assert inv_ind.sycl_queue == q
     assert uc.sycl_queue == q
+
+
+def test_gh_1738():
+    get_queue_or_skip()
+
+    ones = dpt.ones(10, dtype="i8")
+    iota = dpt.arange(10, dtype="i8")
+
+    assert ones.device == iota.device
+
+    dpt_info = dpt.__array_namespace_info__()
+    ind_dt = dpt_info.default_dtypes(device=ones.device)["indexing"]
+
+    dt = dpt.unique_inverse(ones).inverse_indices.dtype
+    assert dt == ind_dt
+    dt = dpt.unique_all(ones).inverse_indices.dtype
+    assert dt == ind_dt
+
+    dt = dpt.unique_inverse(iota).inverse_indices.dtype
+    assert dt == ind_dt
+    dt = dpt.unique_all(iota).inverse_indices.dtype
+    assert dt == ind_dt
