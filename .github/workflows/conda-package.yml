@@ -109,7 +109,7 @@ jobs:
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
-        run: conda build --no-test --python ${{ matrix.python }} -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} -c dppy/label/bootstrap -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.4
         with:
