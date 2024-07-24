@@ -67,7 +67,7 @@ guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installa
 To install `dpctl` from the Intel(R) conda channel, use the following command:
 
 ```bash
-conda install dpctl -c https://software.repos.intel.com/python/conda/
+conda install dpctl -c https://software.repos.intel.com/python/conda/ -c conda-forge
 ```
 
 ## Pip
@@ -86,7 +86,7 @@ To try out the latest features, install `dpctl` from our
 development channel on Anaconda cloud:
 
 ```bash
-conda install dpctl -c dppy/label/dev
+conda install dpctl -c dppy/label/dev -c conda-forge
 ```
 
 # Building
@@ -116,7 +116,8 @@ To run the tests, use:
 pytest --pyargs dpctl
 ```
 
-Running full test suite requires working C/C++ compiler. To run the test suite without one, use:
+Running full test suite requires working C/C++ compiler and installed Cython package.
+To run the test suite without these, use:
 
 ```bash
 pytest --pyargs dpctl -k "not test_cython_api and not test_c_headers"
