@@ -160,7 +160,7 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
-        size_t total_set{};
+        size_t total_set;
 
         {
             py::gil_scoped_release release;
