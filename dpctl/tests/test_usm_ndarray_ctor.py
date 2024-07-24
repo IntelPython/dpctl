@@ -2368,3 +2368,28 @@ def test_gh_1201():
     c = dpt.flip(dpt.empty(a.shape, dtype=a.dtype))
     c[:] = a
     assert (dpt.asnumpy(c) == a).all()
+
+
+class ObjWithSyclUsmArrayInterface:
+    def __init__(self, ary):
+        self._array_obj = ary
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        _suai = self._array_obj.__sycl_usm_array_interface__
+        return _suai
+
+
+def test_asarray_writable_flag():
+    try:
+        a = dpt.empty(8)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+
+    a.flags["W"] = False
+    wrapped = ObjWithSyclUsmArrayInterface(a)
+
+    b = dpt.asarray(wrapped)
+
+    assert not b.flags["W"]
+    assert b._pointer == a._pointer
