@@ -116,12 +116,15 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
     // check for applicability of special cases:
     //      (same type && (both C-contiguous || both F-contiguous)
-    bool both_c_contig =
+    const bool both_c_contig =
         ((src_flags & py::array::c_style) && dst.is_c_contiguous());
-    bool both_f_contig =
+    const bool both_f_contig =
         ((src_flags & py::array::f_style) && dst.is_f_contiguous());
+
+    const bool same_data_types = (src_type_id == dst_type_id);
+
     if (both_c_contig || both_f_contig) {
-        if (src_type_id == dst_type_id) {
+        if (same_data_types) {
             int src_elem_size = npy_src.itemsize();
 
             sycl::event copy_ev =
@@ -129,8 +132,13 @@ void copy_numpy_ndarray_into_usm_ndarray(
                               static_cast<const void *>(src_data),
                               src_nelems * src_elem_size, depends);
 
-            // wait for copy_ev to complete
-            copy_ev.wait();
+            {
+                // wait for copy_ev to complete
+                // release GIL to allow other threads (host_tasks)
+                // a chance to acquire GIL
+                py::gil_scoped_release lock{};
+                copy_ev.wait();
+            }
 
             return;
         }
@@ -202,6 +210,30 @@ void copy_numpy_ndarray_into_usm_ndarray(
         simplified_dst_strides.push_back(1);
     }
 
+    const bool can_use_memcpy =
+        (same_data_types && (nd == 1) && (src_offset == 0) &&
+         (dst_offset == 0) && (simplified_src_strides[0] == 1) &&
+         (simplified_dst_strides[0] == 1));
+
+    if (can_use_memcpy) {
+        int src_elem_size = npy_src.itemsize();
+
+        sycl::event copy_ev = exec_q.memcpy(
+            static_cast<void *>(dst_data), static_cast<const void *>(src_data),
+            src_nelems * src_elem_size, depends);
+
+        {
+            // wait for copy_ev to complete
+            // release GIL to allow other threads (host_tasks)
+            // a chance to acquire GIL
+            py::gil_scoped_release lock{};
+
+            copy_ev.wait();
+        }
+
+        return;
+    }
+
     // Minimum and maximum element offsets for source np.ndarray
     py::ssize_t npy_src_min_nelem_offset(src_offset);
     py::ssize_t npy_src_max_nelem_offset(src_offset);
@@ -230,17 +262,22 @@ void copy_numpy_ndarray_into_usm_ndarray(
     }
     const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
-    // Get implementation function pointer
-    auto copy_and_cast_from_host_blocking_fn =
-        copy_and_cast_from_host_blocking_dispatch_table[dst_type_id]
-                                                       [src_type_id];
+    {
+        // release GIL for the blocking call
+        py::gil_scoped_release lock{};
 
-    copy_and_cast_from_host_blocking_fn(
-        exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
-        npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
-        dst_offset, depends, {copy_shape_ev});
+        // Get implementation function pointer
+        auto copy_and_cast_from_host_blocking_fn =
+            copy_and_cast_from_host_blocking_dispatch_table[dst_type_id]
+                                                           [src_type_id];
 
-    sycl::free(shape_strides, exec_q);
+        copy_and_cast_from_host_blocking_fn(
+            exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
+            npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
+            dst_offset, depends, {copy_shape_ev});
+
+        sycl::free(shape_strides, exec_q);
+    }
 
     return;
 }
