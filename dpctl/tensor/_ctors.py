@@ -203,7 +203,7 @@ def _usm_ndarray_from_suai(obj):
         strides=sua_iface.get("strides", None),
     )
     _data_field = sua_iface["data"]
-    if isinstance(_data_field, tuple) and len(_data_field) == 2:
+    if isinstance(_data_field, tuple) and len(_data_field) > 1:
         ro_field = _data_field[1]
     else:
         ro_field = False
