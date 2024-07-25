@@ -1,0 +1,6 @@
+dpctl.SyclQueue.wait
+====================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.wait
