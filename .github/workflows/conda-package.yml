@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v4.1.7
         with:
@@ -54,7 +54,7 @@ jobs:
         run: |
           # use bootstrap channel to pull NumPy linked with OpenBLAS
           CHANNELS="-c dppy/label/bootstrap -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels"
-          VERSIONS="--python ${{ matrix.python }} --numpy 1.23"
+          VERSIONS="--python ${{ matrix.python }} --numpy 2.0"
           TEST="--no-test"
           conda build \
             $TEST \
@@ -77,7 +77,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
     env:
       conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
@@ -109,7 +109,7 @@ jobs:
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
-        run: conda build --no-test --python ${{ matrix.python }} -c dppy/label/bootstrap -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c dppy/label/bootstrap -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.4
         with:
