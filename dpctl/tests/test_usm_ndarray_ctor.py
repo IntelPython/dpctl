@@ -2380,16 +2380,17 @@ class ObjWithSyclUsmArrayInterface:
         return _suai
 
 
-def test_asarray_writable_flag():
+@pytest.mark.parametrize("ro_flag", [True, False])
+def test_asarray_writable_flag(ro_flag):
     try:
         a = dpt.empty(8)
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
 
-    a.flags["W"] = False
+    a.flags["W"] = not ro_flag
     wrapped = ObjWithSyclUsmArrayInterface(a)
 
     b = dpt.asarray(wrapped)
 
-    assert not b.flags["W"]
+    assert b.flags["W"] == (not ro_flag)
     assert b._pointer == a._pointer
