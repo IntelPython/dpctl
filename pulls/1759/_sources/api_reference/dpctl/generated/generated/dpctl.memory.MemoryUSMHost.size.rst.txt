@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.size
+===============================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMHost.size
