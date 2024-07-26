@@ -15,7 +15,6 @@ jobs:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
       DRIVER_PATH: 2023-WW27
       OCLCPUEXP_FN: oclcpuexp-2023.16.6.0.28_rel.tar.gz
-      FPGAEMU_FN: fpgaemu-2023.16.6.0.28_rel.tar.gz
       TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2021.9.0/
       TBB_INSTALL_DIR: oneapi-tbb-2021.9.0
       TBB_FN: oneapi-tbb-2021.9.0-lin.tgz
@@ -83,15 +82,12 @@ jobs:
               rm -rf ${ARTIFACT_NAME}.tar.gz
               wget ${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz && echo ${DEPLOY_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
               [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
-              [ -f ${FPGAEMU_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${FPGAEMU_FN} || rm -rf bundle_id.txt
               [ -f ${TBB_FN} ] || wget ${TBB_URL}/${TBB_FN} || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
               mkdir -p dpcpp_compiler
               tar xf ${ARTIFACT_NAME}.tar.gz -C dpcpp_compiler
               mkdir -p oclcpuexp
-              mkdir -p fpgaemu
               [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
-              [ -d fpgaemu/x64 ] || tar xf ${FPGAEMU_FN} -C fpgaemu
               [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
               cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
@@ -110,7 +106,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          pip install numpy"<1.26.0" cython setuptools pytest scikit-build cmake ninja versioneer[toml]==0.29
+          pip install numpy cython setuptools pytest scikit-build cmake ninja versioneer[toml]==0.29
 
       - name: Checkout repo
         uses: actions/checkout@v4.1.7
@@ -126,10 +122,9 @@ jobs:
           export PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin:${PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/lib:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/oclcpuexp/x64:${LD_LIBRARY_PATH}
-          export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/fpgaemu/x64:${LD_LIBRARY_PATH}
           export LD_LIBRARY_PATH=${SYCL_BUNDLE_FOLDER}/${TBB_INSTALL_DIR}/lib/intel64/gcc4.8:${LD_LIBRARY_PATH}
           export OCL_ICD_VENDORS=
-          export OCL_ICD_FILENAMES=libintelocl.so:libintelocl_emu.so
+          export OCL_ICD_FILENAMES=libintelocl.so
           EOF
           chmod +x set_allvars.sh
           cat set_allvars.sh
