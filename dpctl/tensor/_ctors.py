@@ -202,6 +202,13 @@ def _usm_ndarray_from_suai(obj):
         buffer=membuf,
         strides=sua_iface.get("strides", None),
     )
+    _data_field = sua_iface["data"]
+    if isinstance(_data_field, tuple) and len(_data_field) > 1:
+        ro_field = _data_field[1]
+    else:
+        ro_field = False
+    if ro_field:
+        ary.flags["W"] = False
     return ary
 
 
