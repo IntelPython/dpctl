@@ -127,7 +127,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -220,7 +220,7 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         experimental: [false]
         runner: [windows-2019]
     continue-on-error: ${{ matrix.experimental }}
@@ -350,7 +350,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
     steps:
       - name: Download conda artifact
         uses: actions/download-artifact@v4
@@ -386,7 +386,7 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -426,7 +426,7 @@ jobs:
     runs-on:  ${{ matrix.runner }}
     strategy:
       matrix:
-        python: ['3.10']
+        python: ['3.11']
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
