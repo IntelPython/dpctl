@@ -1010,9 +1010,9 @@ def test_pyx_capi_check_constants():
     assert uint_typenum == dpt.dtype(np.uintc).num
 
     long_typenum = _pyx_capi_int(X, "UAR_LONG")
-    assert long_typenum == dpt.dtype(np.int_).num
+    assert long_typenum == dpt.dtype("l").num
     ulong_typenum = _pyx_capi_int(X, "UAR_ULONG")
-    assert ulong_typenum == dpt.dtype(np.uint).num
+    assert ulong_typenum == dpt.dtype("L").num
 
     longlong_typenum = _pyx_capi_int(X, "UAR_LONGLONG")
     assert longlong_typenum == dpt.dtype(np.longlong).num
