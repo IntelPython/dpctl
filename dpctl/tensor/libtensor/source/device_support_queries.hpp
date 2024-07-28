@@ -39,6 +39,7 @@ namespace py_internal
 
 extern std::string default_device_fp_type(const py::object &);
 extern std::string default_device_int_type(const py::object &);
+extern std::string default_device_uint_type(const py::object &);
 extern std::string default_device_bool_type(const py::object &);
 extern std::string default_device_complex_type(const py::object &);
 extern std::string default_device_index_type(const py::object &);

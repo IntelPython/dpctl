@@ -49,11 +49,48 @@ std::string _default_device_fp_type(const sycl::device &d)
     }
 }
 
+int get_numpy_major_version()
+{
+    namespace py = pybind11;
+
+    py::module_ numpy = py::module_::import("numpy");
+    py::str version_string = numpy.attr("__version__");
+    py::module_ numpy_lib = py::module_::import("numpy.lib");
+
+    py::object numpy_version = numpy_lib.attr("NumpyVersion")(version_string);
+    int major_version = numpy_version.attr("major").cast<int>();
+
+    return major_version;
+}
+
 std::string _default_device_int_type(const sycl::device &)
 {
-    return "l"; // code for numpy.dtype('long') to be consistent
-                // with NumPy's default integer type across
-                // platforms.
+    const int np_ver = get_numpy_major_version();
+
+    if (np_ver >= 2) {
+        return "i8";
+    }
+    else {
+        // code for numpy.dtype('long') to be consistent
+        // with NumPy's default integer type across
+        // platforms.
+        return "l";
+    }
+}
+
+std::string _default_device_uint_type(const sycl::device &)
+{
+    const int np_ver = get_numpy_major_version();
+
+    if (np_ver >= 2) {
+        return "u8";
+    }
+    else {
+        // code for numpy.dtype('long') to be consistent
+        // with NumPy's default integer type across
+        // platforms.
+        return "L";
+    }
 }
 
 std::string _default_device_complex_type(const sycl::device &d)
@@ -106,6 +143,12 @@ std::string default_device_int_type(const py::object &arg)
 {
     const sycl::device &d = _extract_device(arg);
     return _default_device_int_type(d);
+}
+
+std::string default_device_uint_type(const py::object &arg)
+{
+    const sycl::device &d = _extract_device(arg);
+    return _default_device_uint_type(d);
 }
 
 std::string default_device_bool_type(const py::object &arg)

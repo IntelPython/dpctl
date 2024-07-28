@@ -208,7 +208,7 @@ def _get_device_default_dtype(dt_kind, sycl_dev):
     elif dt_kind == "i":
         return dpt.dtype(ti.default_device_int_type(sycl_dev))
     elif dt_kind == "u":
-        return dpt.dtype(ti.default_device_int_type(sycl_dev).upper())
+        return dpt.dtype(ti.default_device_uint_type(sycl_dev))
     elif dt_kind == "f":
         return dpt.dtype(ti.default_device_fp_type(sycl_dev))
     elif dt_kind == "c":
@@ -790,7 +790,7 @@ def _default_accumulation_dtype(inp_dt, q):
         if inp_dt.itemsize > res_dt.itemsize:
             res_dt = inp_dt
     elif inp_kind in "u":
-        res_dt = dpt.dtype(ti.default_device_int_type(q).upper())
+        res_dt = dpt.dtype(ti.default_device_uint_type(q))
         res_ii = dpt.iinfo(res_dt)
         inp_ii = dpt.iinfo(inp_dt)
         if inp_ii.min >= res_ii.min and inp_ii.max <= res_ii.max:
