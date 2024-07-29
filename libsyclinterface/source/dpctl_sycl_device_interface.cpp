@@ -598,6 +598,16 @@ DPCTLDevice_CreateSubDevicesEqually(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             return nullptr;
         }
         auto D = unwrap<device>(DRef);
+        const auto &supported_properties =
+            D->get_info<info::device::partition_properties>();
+        const auto &beg_it = supported_properties.begin();
+        const auto &end_it = supported_properties.end();
+        if (std::find(beg_it, end_it,
+                      info::partition_property::partition_equally) == end_it)
+        {
+            // device does not support partition equally
+            return nullptr;
+        }
         try {
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_equally>(count);
@@ -631,6 +641,16 @@ DPCTLDevice_CreateSubDevicesByCounts(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     if (DRef) {
         auto D = unwrap<device>(DRef);
+        const auto &supported_properties =
+            D->get_info<info::device::partition_properties>();
+        const auto &beg_it = supported_properties.begin();
+        const auto &end_it = supported_properties.end();
+        if (std::find(beg_it, end_it,
+                      info::partition_property::partition_by_counts) == end_it)
+        {
+            // device does not support partition by counts
+            return nullptr;
+        }
         std::vector<std::remove_pointer<decltype(D)>::type> subDevices;
         try {
             subDevices = D->create_sub_devices<
@@ -661,9 +681,29 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     vecTy *Devices = nullptr;
     auto D = unwrap<device>(DRef);
     if (D) {
+        const auto &supported_properties =
+            D->get_info<info::device::partition_properties>();
+        const auto &beg_it = supported_properties.begin();
+        const auto &end_it = supported_properties.end();
+        if (std::find(beg_it, end_it,
+                      info::partition_property::partition_by_affinity_domain) ==
+            end_it)
+        {
+            // device does not support partition by affinity domain
+            return nullptr;
+        }
         try {
             auto domain = DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
                 PartitionAffinityDomainTy);
+            const auto &supported_affinity_domains =
+                D->get_info<info::device::partition_affinity_domains>();
+            const auto &beg_it = supported_affinity_domains.begin();
+            const auto &end_it = supported_affinity_domains.end();
+            if (std::find(beg_it, end_it, domain) == end_it) {
+                // device does not support partitioning by this particular
+                // affinity domain
+                return nullptr;
+            }
             auto subDevices = D->create_sub_devices<
                 info::partition_property::partition_by_affinity_domain>(domain);
             Devices = new vecTy();

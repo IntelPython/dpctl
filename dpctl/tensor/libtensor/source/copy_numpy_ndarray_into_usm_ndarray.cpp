@@ -130,7 +130,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
                               src_nelems * src_elem_size, depends);
 
             // wait for copy_ev to complete
-            copy_ev.wait_and_throw();
+            copy_ev.wait();
 
             return;
         }

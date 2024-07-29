@@ -635,7 +635,7 @@ void copy_and_cast_from_host_impl(
 
     // perform explicit synchronization. Implicit synchronization would be
     // performed by sycl::buffer destructor.
-    copy_and_cast_from_host_ev.wait_and_throw();
+    copy_and_cast_from_host_ev.wait();
 
     return;
 }
