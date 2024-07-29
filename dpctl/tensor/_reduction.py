@@ -773,3 +773,15 @@ def argmin(x, /, *, axis=None, keepdims=False, out=None):
             default array index data type for the device of ``x``.
     """
     return _search_over_axis(x, axis, keepdims, out, tri._argmin_over_axis)
+
+
+def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
+    if x.dtype != dpt.bool:
+        x = dpt.astype(x, dpt.bool, copy=False)
+    return sum(
+        x,
+        axis=axis,
+        dtype=ti.default_device_index_type(x.sycl_device),
+        keepdims=keepdims,
+        out=None,
+    )

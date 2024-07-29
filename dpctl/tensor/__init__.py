@@ -176,6 +176,7 @@ from ._elementwise_funcs import (
 from ._reduction import (
     argmax,
     argmin,
+    count_nonzero,
     logsumexp,
     max,
     min,
@@ -374,4 +375,5 @@ __all__ = [
     "cumulative_sum",
     "nextafter",
     "diff",
+    "count_nonzero",
 ]
