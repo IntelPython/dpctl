@@ -814,5 +814,5 @@ def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
         axis=axis,
         dtype=ti.default_device_index_type(x.sycl_device),
         keepdims=keepdims,
-        out=None,
+        out=out,
     )
