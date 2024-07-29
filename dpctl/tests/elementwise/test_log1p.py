@@ -164,4 +164,6 @@ def test_log1p_special_cases():
 
     tol = dpt.finfo(X.dtype).resolution
     with np.errstate(invalid="ignore"):
-        assert_allclose(dpt.asnumpy(dpt.log1p(X)), res, atol=tol, rtol=tol)
+        dpt_res = dpt.asnumpy(dpt.log1p(X))
+        assert_allclose(np.real(dpt_res), np.real(res), atol=tol, rtol=tol)
+        assert_allclose(np.imag(dpt_res), np.imag(res), atol=tol, rtol=tol)

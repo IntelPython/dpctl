@@ -21,6 +21,7 @@ from numpy.testing import assert_, assert_array_equal, assert_raises_regex
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._numpy_helper import AxisError
 from dpctl.tests.helper import get_queue_or_skip
 from dpctl.utils import ExecutionPlacementError
 
@@ -59,7 +60,7 @@ def test_permute_dims_0d_1d():
     assert_array_equal(dpt.asnumpy(Y_1d), dpt.asnumpy(X_1d))
 
     pytest.raises(ValueError, dpt.permute_dims, X_1d, ())
-    pytest.raises(np.AxisError, dpt.permute_dims, X_1d, (1))
+    pytest.raises(AxisError, dpt.permute_dims, X_1d, (1))
     pytest.raises(ValueError, dpt.permute_dims, X_1d, (1, 0))
     pytest.raises(
         ValueError, dpt.permute_dims, dpt.reshape(X_1d, (2, 3)), (1, 1)
@@ -105,8 +106,8 @@ def test_expand_dims_0d():
     Ynp = np.expand_dims(Xnp, axis=-1)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=1)
-    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=-2)
+    pytest.raises(AxisError, dpt.expand_dims, X, axis=1)
+    pytest.raises(AxisError, dpt.expand_dims, X, axis=-2)
 
 
 @pytest.mark.parametrize("shapes", [(3,), (3, 3), (3, 3, 3)])
@@ -123,8 +124,8 @@ def test_expand_dims_1d_3d(shapes):
         Ynp = np.expand_dims(Xnp, axis=axis)
         assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=shape_len + 1)
-    pytest.raises(np.AxisError, dpt.expand_dims, X, axis=-shape_len - 2)
+    pytest.raises(AxisError, dpt.expand_dims, X, axis=shape_len + 1)
+    pytest.raises(AxisError, dpt.expand_dims, X, axis=-shape_len - 2)
 
 
 @pytest.mark.parametrize(
@@ -145,9 +146,9 @@ def test_expand_dims_incorrect_tuple():
         X = dpt.empty((3, 3, 3), dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    with pytest.raises(np.AxisError):
+    with pytest.raises(AxisError):
         dpt.expand_dims(X, axis=(0, -6))
-    with pytest.raises(np.AxisError):
+    with pytest.raises(AxisError):
         dpt.expand_dims(X, axis=(0, 5))
 
     with pytest.raises(ValueError):
@@ -181,10 +182,10 @@ def test_squeeze_0d():
     Ynp = Xnp.squeeze(-1)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.squeeze, X, 1)
-    pytest.raises(np.AxisError, dpt.squeeze, X, -2)
-    pytest.raises(np.AxisError, dpt.squeeze, X, (1))
-    pytest.raises(np.AxisError, dpt.squeeze, X, (-2))
+    pytest.raises(AxisError, dpt.squeeze, X, 1)
+    pytest.raises(AxisError, dpt.squeeze, X, -2)
+    pytest.raises(AxisError, dpt.squeeze, X, (1))
+    pytest.raises(AxisError, dpt.squeeze, X, (-2))
     pytest.raises(ValueError, dpt.squeeze, X, (0, 0))
 
 
@@ -446,10 +447,10 @@ def test_flip_axis_incorrect():
     X_np = np.ones((4, 4))
     X = dpt.asarray(X_np, sycl_queue=q)
 
-    pytest.raises(np.AxisError, dpt.flip, dpt.asarray(np.ones(4)), axis=1)
-    pytest.raises(np.AxisError, dpt.flip, X, axis=2)
-    pytest.raises(np.AxisError, dpt.flip, X, axis=-3)
-    pytest.raises(np.AxisError, dpt.flip, X, axis=(0, 3))
+    pytest.raises(AxisError, dpt.flip, dpt.asarray(np.ones(4)), axis=1)
+    pytest.raises(AxisError, dpt.flip, X, axis=2)
+    pytest.raises(AxisError, dpt.flip, X, axis=-3)
+    pytest.raises(AxisError, dpt.flip, X, axis=(0, 3))
 
 
 def test_flip_0d():
@@ -461,9 +462,9 @@ def test_flip_0d():
     Y = dpt.flip(X)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
-    pytest.raises(np.AxisError, dpt.flip, X, axis=0)
-    pytest.raises(np.AxisError, dpt.flip, X, axis=1)
-    pytest.raises(np.AxisError, dpt.flip, X, axis=-1)
+    pytest.raises(AxisError, dpt.flip, X, axis=0)
+    pytest.raises(AxisError, dpt.flip, X, axis=1)
+    pytest.raises(AxisError, dpt.flip, X, axis=-1)
 
 
 def test_flip_1d():
@@ -588,9 +589,9 @@ def test_roll_empty():
     Y = dpt.roll(X, 1)
     Ynp = np.roll(Xnp, 1)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
-    with pytest.raises(np.AxisError):
+    with pytest.raises(AxisError):
         dpt.roll(X, 1, axis=0)
-    with pytest.raises(np.AxisError):
+    with pytest.raises(AxisError):
         dpt.roll(X, 1, axis=1)
 
 
@@ -1086,13 +1087,13 @@ def test_moveaxis_errors():
         pytest.skip("No SYCL devices available")
     x = dpt.reshape(x_flat, (1, 2, 3))
     assert_raises_regex(
-        np.AxisError, "source.*out of bounds", dpt.moveaxis, x, 3, 0
+        AxisError, "source.*out of bounds", dpt.moveaxis, x, 3, 0
     )
     assert_raises_regex(
-        np.AxisError, "source.*out of bounds", dpt.moveaxis, x, -4, 0
+        AxisError, "source.*out of bounds", dpt.moveaxis, x, -4, 0
     )
     assert_raises_regex(
-        np.AxisError, "destination.*out of bounds", dpt.moveaxis, x, 0, 5
+        AxisError, "destination.*out of bounds", dpt.moveaxis, x, 0, 5
     )
     assert_raises_regex(
         ValueError, "repeated axis in `source`", dpt.moveaxis, x, [0, 0], [0, 1]

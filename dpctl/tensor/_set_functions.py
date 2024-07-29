@@ -425,8 +425,7 @@ def unique_inverse(x):
     )
     _manager.add_event_pair(ht_ev, sub_ev)
 
-    inv_dt = dpt.int64 if x.size > dpt.iinfo(dpt.int32).max else dpt.int32
-    inv = dpt.empty_like(x, dtype=inv_dt, order="C")
+    inv = dpt.empty_like(x, dtype=ind_dt, order="C")
     ht_ev, ssl_ev = _searchsorted_left(
         hay=unique_vals,
         needles=x,
@@ -608,8 +607,7 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     )
     _manager.add_event_pair(ht_ev, sub_ev)
 
-    inv_dt = dpt.int64 if x.size > dpt.iinfo(dpt.int32).max else dpt.int32
-    inv = dpt.empty_like(x, dtype=inv_dt, order="C")
+    inv = dpt.empty_like(x, dtype=ind_dt, order="C")
     ht_ev, ssl_ev = _searchsorted_left(
         hay=unique_vals,
         needles=x,

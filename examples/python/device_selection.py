@@ -25,8 +25,8 @@ def create_default_device():
     Create default SyclDevice using `sycl::default_selector`.
 
     Device created can be influenced by environment variable
-    SYCL_DEVICE_FILTER, which determines SYCL devices seen by the
-    SYCL runtime.
+    ONEAPI_DEVICE_SELECTOR, which determines SYCL devices seen by the
+    oneAPI DPC++ runtime.
     """
     d1 = dpctl.SyclDevice()
     d2 = dpctl.select_default_device()
@@ -40,8 +40,8 @@ def create_gpu_device():
     Create a GPU device.
 
     Device created can be influenced by environment variable
-    SYCL_DEVICE_FILTER, which determines SYCL devices seen by the
-    SYCL runtime.
+    ONEAPI_DEVICE_SELECTOR, which determines SYCL devices seen by the
+    oneAPI DPC++ runtime.
     """
     try:
         d1 = dpctl.SyclDevice("gpu")
@@ -60,8 +60,8 @@ def create_gpu_device_if_present():
     will be raised.
 
     Device created can be influenced by environment variable
-    SYCL_DEVICE_FILTER, which determines SYCL devices seen by the
-    SYCL runtime.
+    ONEAPI_DEVICE_SELECTOR, which determines SYCL devices seen by the
+    oneAPI DPC++ runtime.
     """
     d = dpctl.SyclDevice("gpu,cpu")
     print("Selected " + ("GPU" if d.is_gpu else "CPU") + " device")
@@ -72,8 +72,8 @@ def custom_select_device():
     Programmatically select among available devices.
 
     Device created can be influenced by environment variable
-    SYCL_DEVICE_FILTER, which determines SYCL devices seen by the
-    SYCL runtime.
+    ONEAPI_DEVICE_SELECTOR, which determines SYCL devices seen by the
+    oneAPI DPC++ runtime.
     """
     # select devices that support half-precision computation
     devs = [d for d in dpctl.get_devices() if d.has_aspect_fp16]

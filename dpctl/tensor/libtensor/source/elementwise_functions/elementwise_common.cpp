@@ -75,6 +75,7 @@
 #include "minimum.hpp"
 #include "multiply.hpp"
 #include "negative.hpp"
+#include "nextafter.hpp"
 #include "not_equal.hpp"
 #include "positive.hpp"
 #include "pow.hpp"
@@ -158,6 +159,7 @@ void init_elementwise_functions(py::module_ m)
     init_maximum(m);
     init_minimum(m);
     init_multiply(m);
+    init_nextafter(m);
     init_negative(m);
     init_not_equal(m);
     init_positive(m);

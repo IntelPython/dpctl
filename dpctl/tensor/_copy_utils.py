@@ -17,7 +17,6 @@ import builtins
 import operator
 
 import numpy as np
-from numpy.core.numeric import normalize_axis_index
 
 import dpctl
 import dpctl.memory as dpm
@@ -27,6 +26,8 @@ import dpctl.utils
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 from dpctl.tensor._type_utils import _dtype_supported_by_device_impl
+
+from ._numpy_helper import normalize_axis_index
 
 __doc__ = (
     "Implementation module for copy- and cast- operations on "
@@ -382,9 +383,11 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
     if min(st) < 0:
         st_sorted = [st[i] for i in perm]
         sl = tuple(
-            slice(None, None, -1)
-            if st_sorted[i] < 0
-            else slice(None, None, None)
+            (
+                slice(None, None, -1)
+                if st_sorted[i] < 0
+                else slice(None, None, None)
+            )
             for i in range(X.ndim)
         )
         R = R[sl]
@@ -435,9 +438,11 @@ def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
     if max(min(st1_sorted), min(st2_sorted)) < 0:
         sl = tuple(
-            slice(None, None, -1)
-            if (st1_sorted[i] < 0 and st2_sorted[i] < 0)
-            else slice(None, None, None)
+            (
+                slice(None, None, -1)
+                if (st1_sorted[i] < 0 and st2_sorted[i] < 0)
+                else slice(None, None, None)
+            )
             for i in range(nd1)
         )
         R = R[sl]
@@ -503,9 +508,15 @@ def _empty_like_triple_orderK(X1, X2, X3, dt, res_shape, usm_type, dev):
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
     if max(min(st1_sorted), min(st2_sorted), min(st3_sorted)) < 0:
         sl = tuple(
-            slice(None, None, -1)
-            if (st1_sorted[i] < 0 and st2_sorted[i] < 0 and st3_sorted[i] < 0)
-            else slice(None, None, None)
+            (
+                slice(None, None, -1)
+                if (
+                    st1_sorted[i] < 0
+                    and st2_sorted[i] < 0
+                    and st3_sorted[i] < 0
+                )
+                else slice(None, None, None)
+            )
             for i in range(nd1)
         )
         R = R[sl]
@@ -826,9 +837,9 @@ def _take_multi_index(ary, inds, p):
             )
         inds = tuple(
             map(
-                lambda ind: ind
-                if ind.dtype == ind_dt
-                else dpt.astype(ind, ind_dt),
+                lambda ind: (
+                    ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
+                ),
                 inds,
             )
         )
@@ -975,9 +986,9 @@ def _put_multi_index(ary, inds, p, vals):
             )
         inds = tuple(
             map(
-                lambda ind: ind
-                if ind.dtype == ind_dt
-                else dpt.astype(ind, ind_dt),
+                lambda ind: (
+                    ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
+                ),
                 inds,
             )
         )

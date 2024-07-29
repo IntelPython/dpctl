@@ -1487,6 +1487,40 @@ negative = UnaryElementwiseFunc(
 )
 del _negative_docstring_
 
+# B28: ==== NEXTAFTER    (x1, x2)
+_nextafter_docstring_ = r"""
+nextafter(x1, x2, /, \*, out=None, order='K')
+
+Calculates the next floating-point value after element `x1_i` of the input
+array `x1` toward the respective element `x2_i` of the input array `x2`.
+
+Args:
+    x1 (usm_ndarray):
+        First input array.
+    x2 (usm_ndarray):
+        Second input array.
+    out (Union[usm_ndarray, None], optional):
+        Output array to populate.
+        Array must have the correct shape and the expected data type.
+    order ("C","F","A","K", optional):
+        Memory layout of the new output array, if parameter
+        `out` is ``None``.
+        Default: "K".
+
+Returns:
+    usm_ndarray:
+        An array containing the element-wise next representable values of `x1`
+        in the direction of `x2`. The data type of the returned array is
+        determined by the Type Promotion Rules.
+"""
+nextafter = BinaryElementwiseFunc(
+    "nextafter",
+    ti._nextafter_result_type,
+    ti._nextafter,
+    _nextafter_docstring_,
+)
+del _nextafter_docstring_
+
 # B20: ==== NOT_EQUAL   (x1, x2)
 _not_equal_docstring_ = r"""
 not_equal(x1, x2, /, \*, out=None, order='K')

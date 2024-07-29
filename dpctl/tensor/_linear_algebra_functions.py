@@ -16,8 +16,6 @@
 
 import operator
 
-from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
-
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as tei
@@ -32,9 +30,11 @@ from dpctl.tensor._type_utils import (
 )
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
 
+from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
+
 
 def matrix_transpose(x):
-    """matrix_transpose(x)
+    r"""matrix_transpose(x)
 
     Transposes the innermost two dimensions of `x`, where `x` is a
     2-dimensional matrix or a stack of 2-dimensional matrices.
@@ -65,7 +65,7 @@ def matrix_transpose(x):
 
 
 def tensordot(x1, x2, axes=2):
-    """tensordot(x1, x2, axes=2)
+    r"""tensordot(x1, x2, axes=2)
 
     Returns a tensor contraction of `x1` and `x2` over specific axes.
 
@@ -308,7 +308,7 @@ def tensordot(x1, x2, axes=2):
 
 
 def vecdot(x1, x2, axis=-1):
-    """vecdot(x1, x2, axis=-1)
+    r"""vecdot(x1, x2, axis=-1)
 
     Computes the (vector) dot product of two arrays.
 
@@ -574,7 +574,7 @@ def vecdot(x1, x2, axis=-1):
 
 
 def matmul(x1, x2, out=None, dtype=None, order="K"):
-    """matmul(x1, x2, out=None, order="K")
+    r"""matmul(x1, x2, out=None, order="K")
 
     Computes the matrix product. Implements the same semantics
     as the built-in operator `@`.
@@ -721,7 +721,8 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 buf1_dt = res_dt
             else:
                 raise ValueError(
-                    f"`matmul` input `x1` cannot be cast from {x1_dtype} to "
+                    r"`matmul` input `x1` cannot be cast from "
+                    f"{x1_dtype} to "
                     f"requested type {res_dt} according to the casting rule "
                     "''same_kind''."
                 )
@@ -730,7 +731,8 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
                 buf2_dt = res_dt
             else:
                 raise ValueError(
-                    f"`matmul` input `x2` cannot be cast from {x2_dtype} to "
+                    r"`matmul` input `x2` cannot be cast from "
+                    f"{x2_dtype} to "
                     f"requested type {res_dt} according to the casting rule "
                     "''same_kind''."
                 )
@@ -762,7 +764,7 @@ def matmul(x1, x2, out=None, dtype=None, order="K"):
 
         if res_dt != out.dtype:
             raise ValueError(
-                f"Output array of type {res_dt} is needed," f"got {out.dtype}"
+                f"Output array of type {res_dt} is needed, got {out.dtype}"
             )
 
         if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:

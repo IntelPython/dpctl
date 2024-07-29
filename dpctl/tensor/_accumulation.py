@@ -14,8 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from numpy.core.numeric import normalize_axis_index
-
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_accumulation_impl as tai
@@ -26,6 +24,8 @@ from dpctl.tensor._type_utils import (
     _to_device_supported_dtype,
 )
 from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+
+from ._numpy_helper import normalize_axis_index
 
 
 def _accumulate_common(
