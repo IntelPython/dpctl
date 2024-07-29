@@ -14,12 +14,24 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import operator
+
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 import dpctl.utils as du
+from dpctl.tensor._clip import (
+    _resolve_one_strong_one_weak_types,
+    _resolve_one_strong_two_weak_types,
+)
+from dpctl.tensor._elementwise_common import (
+    _get_dtype,
+    _get_queue_usm_type,
+    _get_shape,
+    _validate_dtype,
+)
 
-from ._numpy_helper import normalize_axis_tuple
+from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
 
 
 def _boolean_reduction(x, axis, keepdims, func):
@@ -144,3 +156,272 @@ def any(x, /, *, axis=None, keepdims=False):
             containing the results of the logical OR reduction.
     """
     return _boolean_reduction(x, axis, keepdims, tri._any)
+
+
+def _validate_diff_shape(sh1, sh2, axis):
+    if not sh2:
+        # scalars will always be accepted
+        return True
+    else:
+        sh1_ndim = len(sh1)
+        if sh1_ndim == len(sh2) and all(
+            sh1[i] == sh2[i] for i in range(sh1_ndim) if i != axis
+        ):
+            return True
+        else:
+            return False
+
+
+def _concat_diff_input(arr, axis, prepend, append):
+    if prepend is not None and append is not None:
+        q1, x_usm_type = arr.sycl_queue, arr.usm_type
+        q2, prepend_usm_type = _get_queue_usm_type(prepend)
+        q3, append_usm_type = _get_queue_usm_type(append)
+        if q2 is None and q3 is None:
+            exec_q = q1
+            coerced_usm_type = x_usm_type
+        elif q3 is None:
+            exec_q = du.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise du.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            coerced_usm_type = du.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    prepend_usm_type,
+                )
+            )
+        elif q2 is None:
+            exec_q = du.get_execution_queue((q1, q3))
+            if exec_q is None:
+                raise du.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            coerced_usm_type = du.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    append_usm_type,
+                )
+            )
+        else:
+            exec_q = du.get_execution_queue((q1, q2, q3))
+            if exec_q is None:
+                raise du.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            coerced_usm_type = du.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    prepend_usm_type,
+                    append_usm_type,
+                )
+            )
+        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        arr_shape = arr.shape
+        prepend_shape = _get_shape(prepend)
+        append_shape = _get_shape(append)
+        if not all(
+            isinstance(s, (tuple, list))
+            for s in (
+                prepend_shape,
+                append_shape,
+            )
+        ):
+            raise TypeError(
+                "Shape of arguments can not be inferred. "
+                "Arguments are expected to be "
+                "lists, tuples, or both"
+            )
+        valid_prepend_shape = _validate_diff_shape(
+            arr_shape, prepend_shape, axis
+        )
+        if not valid_prepend_shape:
+            raise ValueError(
+                f"`diff` argument `prepend` with shape {prepend_shape} is "
+                f"invalid for first input with shape {arr_shape}"
+            )
+        valid_append_shape = _validate_diff_shape(arr_shape, append_shape, axis)
+        if not valid_append_shape:
+            raise ValueError(
+                f"`diff` argument `append` with shape {append_shape} is invalid"
+                f" for first input with shape {arr_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        arr_dtype = arr.dtype
+        prepend_dtype = _get_dtype(prepend, sycl_dev)
+        append_dtype = _get_dtype(append, sycl_dev)
+        if not all(_validate_dtype(o) for o in (prepend_dtype, append_dtype)):
+            raise ValueError("Operands have unsupported data types")
+        prepend_dtype, append_dtype = _resolve_one_strong_two_weak_types(
+            arr_dtype, prepend_dtype, append_dtype, sycl_dev
+        )
+        if isinstance(prepend, dpt.usm_ndarray):
+            a_prepend = prepend
+        else:
+            a_prepend = dpt.asarray(
+                prepend,
+                dtype=prepend_dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
+        if isinstance(append, dpt.usm_ndarray):
+            a_append = append
+        else:
+            a_append = dpt.asarray(
+                prepend,
+                dtype=append_dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
+        if not prepend_shape:
+            prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
+            a_prepend = dpt.broadcast_to(a_prepend, arr_shape)
+        if not append_shape:
+            append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
+            a_append = dpt.broadcast_to(a_append, arr_shape)
+        return dpt.concat((a_prepend, arr, a_append), axis=axis)
+    elif prepend is not None:
+        q1, x_usm_type = arr.sycl_queue, arr.usm_type
+        q2, prepend_usm_type = _get_queue_usm_type(prepend)
+        if q2 is None:
+            exec_q = q1
+            coerced_usm_type = x_usm_type
+        else:
+            exec_q = du.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise du.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            coerced_usm_type = du.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    prepend_usm_type,
+                )
+            )
+        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        arr_shape = arr.shape
+        prepend_shape = _get_shape(prepend)
+        if not isinstance(prepend_shape, (tuple, list)):
+            raise TypeError(
+                "Shape of argument can not be inferred. "
+                "Argument is expected to be a "
+                "list or tuple"
+            )
+        valid_prepend_shape = _validate_diff_shape(
+            arr_shape, prepend_shape, axis
+        )
+        if not valid_prepend_shape:
+            raise ValueError(
+                f"`diff` argument `prepend` with shape {prepend_shape} is "
+                f"invalid for first input with shape {arr_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        arr_dtype = arr.dtype
+        prepend_dtype = _get_dtype(prepend, sycl_dev)
+        if not _validate_dtype(prepend_dtype):
+            raise ValueError("Operand has unsupported data type")
+        prepend_dtype = _resolve_one_strong_one_weak_types(
+            arr_dtype, prepend_dtype, sycl_dev
+        )
+        if isinstance(prepend, dpt.usm_ndarray):
+            a_prepend = prepend
+        else:
+            a_prepend = dpt.asarray(
+                prepend,
+                dtype=prepend_dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
+        if not prepend_shape:
+            prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
+            a_prepend = dpt.broadcast_to(a_prepend, arr_shape)
+        return dpt.concat((a_prepend, arr), axis=axis)
+    elif append is not None:
+        q1, x_usm_type = arr.sycl_queue, arr.usm_type
+        q2, append_usm_type = _get_queue_usm_type(append)
+        if q2 is None:
+            exec_q = q1
+            coerced_usm_type = x_usm_type
+        else:
+            exec_q = du.get_execution_queue((q1, q2))
+            if exec_q is None:
+                raise du.ExecutionPlacementError(
+                    "Execution placement can not be unambiguously inferred "
+                    "from input arguments."
+                )
+            coerced_usm_type = du.get_coerced_usm_type(
+                (
+                    x_usm_type,
+                    append_usm_type,
+                )
+            )
+        du.validate_usm_type(coerced_usm_type, allow_none=False)
+        arr_shape = arr.shape
+        append_shape = _get_shape(append)
+        if not isinstance(append_shape, (tuple, list)):
+            raise TypeError(
+                "Shape of argument can not be inferred. "
+                "Argument is expected to be a "
+                "list or tuple"
+            )
+        valid_append_shape = _validate_diff_shape(arr_shape, append_shape, axis)
+        if not valid_append_shape:
+            raise ValueError(
+                f"`diff` argument `append` with shape {append_shape} is invalid"
+                f" for first input with shape {arr_shape}"
+            )
+        sycl_dev = exec_q.sycl_device
+        arr_dtype = arr.dtype
+        append_dtype = _get_dtype(append, sycl_dev)
+        if not _validate_dtype(append_dtype):
+            raise ValueError("Operand has unsupported data type")
+        append_dtype = _resolve_one_strong_one_weak_types(
+            arr_dtype, append_dtype, sycl_dev
+        )
+        if isinstance(append, dpt.usm_ndarray):
+            a_append = append
+        else:
+            a_append = dpt.asarray(
+                append,
+                dtype=append_dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
+        if not append_shape:
+            append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
+            a_append = dpt.broadcast_to(a_append, arr_shape)
+        return dpt.concat((arr, a_append), axis=axis)
+    else:
+        arr1 = arr
+    return arr1
+
+
+def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
+
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(
+            "Expecting dpctl.tensor.usm_ndarray type, " f"got {type(x)}"
+        )
+    x_nd = x.ndim
+    axis = normalize_axis_index(operator.index(axis), x_nd)
+    n = operator.index(n)
+
+    arr = _concat_diff_input(x, axis, prepend, append)
+
+    # form slices and recurse
+    sl0 = tuple(
+        slice(None) if i != axis else slice(1, None) for i in range(x_nd)
+    )
+    sl1 = tuple(
+        slice(None) if i != axis else slice(None, -1) for i in range(x_nd)
+    )
+
+    for _ in range(n):
+        arr = arr[sl0] - arr[sl1]
+
+    return arr
