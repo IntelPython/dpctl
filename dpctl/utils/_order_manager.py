@@ -1,3 +1,4 @@
+import weakref
 from collections import defaultdict
 from contextvars import ContextVar
 
@@ -88,7 +89,16 @@ class SyclQueueToOrderManagerMap:
     def clear(self):
         """Clear content of internal dictionary"""
         _local = self._map.get()
+        for v in _local.values():
+            v.wait()
         _local.clear()
 
 
 SequentialOrderManager = SyclQueueToOrderManagerMap()
+
+
+def _callback(som):
+    som.clear()
+
+
+f = weakref.finalize(SequentialOrderManager, _callback, SequentialOrderManager)

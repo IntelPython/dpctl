@@ -160,10 +160,14 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
-        size_t total_set = fn(exec_q, mask_size, mask_data, cumsum_data,
-                              host_task_events, depends);
+        size_t total_set;
+
         {
             py::gil_scoped_release release;
+
+            total_set = fn(exec_q, mask_size, mask_data, cumsum_data,
+                           host_task_events, depends);
+
             sycl::event::wait(host_task_events);
         }
         return total_set;
@@ -198,12 +202,13 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
-        copy_shape_ev.wait();
         {
             py::gil_scoped_release release;
+
+            copy_shape_ev.wait();
             sycl::event::wait(host_task_events);
+            sycl::free(shape_strides, exec_q);
         }
-        sycl::free(shape_strides, exec_q);
         throw std::runtime_error("Unexpected error");
     }
 
@@ -213,15 +218,17 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     dependent_events.insert(dependent_events.end(), depends.begin(),
                             depends.end());
 
-    size_t total_set =
-        strided_fn(exec_q, mask_size, mask_data, nd, shape_strides, cumsum_data,
-                   host_task_events, dependent_events);
+    size_t total_set;
 
     {
         py::gil_scoped_release release;
+
+        total_set = strided_fn(exec_q, mask_size, mask_data, nd, shape_strides,
+                               cumsum_data, host_task_events, dependent_events);
+
         sycl::event::wait(host_task_events);
+        sycl::free(shape_strides, exec_q);
     }
-    sycl::free(shape_strides, exec_q);
 
     return total_set;
 }
@@ -352,8 +359,12 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
     if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
-        copy_shape_ev.wait();
-        sycl::event::wait(host_task_events);
+        {
+            py::gil_scoped_release release;
+
+            copy_shape_ev.wait();
+            sycl::event::wait(host_task_events);
+        }
         sycl::free(shape_strides, exec_q);
         throw std::runtime_error("Unexpected error");
     }
