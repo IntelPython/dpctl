@@ -415,7 +415,9 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 )
             return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
         else:
-            if isinstance(o1_dtype, WeakIntegralType):
+            if o1_kind_num == o2_kind_num and isinstance(
+                o1_dtype, WeakIntegralType
+            ):
                 o1_val = o1_dtype.get()
                 o2_iinfo = dpt.iinfo(o2_dtype)
                 if (o1_val < o2_iinfo.min) or (o1_val > o2_iinfo.max):
@@ -436,7 +438,9 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
                 _to_device_supported_dtype(dpt.float64, dev),
             )
         else:
-            if isinstance(o2_dtype, WeakIntegralType):
+            if o1_kind_num == o2_kind_num and isinstance(
+                o2_dtype, WeakIntegralType
+            ):
                 o2_val = o2_dtype.get()
                 o1_iinfo = dpt.iinfo(o1_dtype)
                 if (o2_val < o1_iinfo.min) or (o2_val > o1_iinfo.max):
