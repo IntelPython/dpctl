@@ -1,0 +1,6 @@
+﻿dpctl.SyclContextCreationError
+==============================
+
+.. currentmodule:: dpctl
+
+.. autoexception:: SyclContextCreationError
