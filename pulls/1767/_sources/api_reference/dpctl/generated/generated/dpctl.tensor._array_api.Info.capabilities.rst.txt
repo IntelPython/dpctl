@@ -1,0 +1,6 @@
+dpctl.tensor.\_array\_api.Info.capabilities
+===========================================
+
+.. currentmodule:: dpctl.tensor._array_api
+
+.. automethod:: Info.capabilities
