@@ -393,10 +393,11 @@ def _resolve_weak_types(o1_dtype, o2_dtype, dev):
         return o1_dtype, o2_dtype
 
 
-def _resolve_weak_types_comparisons(o1_dtype, o2_dtype, dev):
-    "Resolves weak data type per NEP-0050 for comparisons,"
-    "where result type is known to be `bool` and special behavior"
-    "is needed to handle mixed integer kinds"
+def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
+    "Resolves weak data type per NEP-0050 for comparisons and"
+    " divide, where result type is known and special behavior"
+    "is needed to handle mixed integer kinds and Python integers"
+    "without overflow"
     if _is_weak_dtype(o1_dtype):
         if _is_weak_dtype(o2_dtype):
             raise ValueError
@@ -415,10 +416,10 @@ def _resolve_weak_types_comparisons(o1_dtype, o2_dtype, dev):
             return _to_device_supported_dtype(dpt.float64, dev), o2_dtype
         else:
             if isinstance(o1_dtype, WeakIntegralType):
-                if o2_dtype.kind == "u":
-                    # Python scalar may be negative, assumes mixed int loops
-                    # exist
-                    return dpt.dtype(ti.default_device_int_type(dev)), o2_dtype
+                o1_val = o1_dtype.get()
+                o2_iinfo = dpt.iinfo(o2_dtype)
+                if (o1_val < o2_iinfo.min) or (o1_val > o2_iinfo.max):
+                    return dpt.dtype(np.min_scalar_type(o1_val)), o2_dtype
             return o2_dtype, o2_dtype
     elif _is_weak_dtype(o2_dtype):
         o1_kind_num = _strong_dtype_num_kind(o1_dtype)
@@ -436,10 +437,10 @@ def _resolve_weak_types_comparisons(o1_dtype, o2_dtype, dev):
             )
         else:
             if isinstance(o2_dtype, WeakIntegralType):
-                if o1_dtype.kind == "u":
-                    # Python scalar may be negative, assumes mixed int loops
-                    # exist
-                    return o1_dtype, dpt.dtype(ti.default_device_int_type(dev))
+                o2_val = o2_dtype.get()
+                o1_iinfo = dpt.iinfo(o1_dtype)
+                if (o2_val < o1_iinfo.min) or (o2_val > o1_iinfo.max):
+                    return o1_dtype, dpt.dtype(np.min_scalar_type(o2_val))
             return o1_dtype, o1_dtype
     else:
         return o1_dtype, o2_dtype
@@ -834,7 +835,7 @@ __all__ = [
     "_acceptance_fn_negative",
     "_acceptance_fn_subtract",
     "_resolve_weak_types",
-    "_resolve_weak_types_comparisons",
+    "_resolve_weak_types_all_py_ints",
     "_weak_type_num_kind",
     "_strong_dtype_num_kind",
     "can_cast",
