@@ -450,6 +450,112 @@ def _resolve_weak_types_all_py_ints(o1_dtype, o2_dtype, dev):
         return o1_dtype, o2_dtype
 
 
+def _resolve_one_strong_two_weak_types(st_dtype, dtype1, dtype2, dev):
+    "Resolves weak data types per NEP-0050,"
+    "where the second and third arguments are"
+    "permitted to be weak types"
+    if _is_weak_dtype(st_dtype):
+        raise ValueError
+    if _is_weak_dtype(dtype1):
+        if _is_weak_dtype(dtype2):
+            kind_num1 = _weak_type_num_kind(dtype1)
+            kind_num2 = _weak_type_num_kind(dtype2)
+            st_kind_num = _strong_dtype_num_kind(st_dtype)
+
+            if kind_num1 > st_kind_num:
+                if isinstance(dtype1, WeakIntegralType):
+                    ret_dtype1 = dpt.dtype(ti.default_device_int_type(dev))
+                elif isinstance(dtype1, WeakComplexType):
+                    if st_dtype is dpt.float16 or st_dtype is dpt.float32:
+                        ret_dtype1 = dpt.complex64
+                    ret_dtype1 = _to_device_supported_dtype(dpt.complex128, dev)
+                else:
+                    ret_dtype1 = _to_device_supported_dtype(dpt.float64, dev)
+            else:
+                ret_dtype1 = st_dtype
+
+            if kind_num2 > st_kind_num:
+                if isinstance(dtype2, WeakIntegralType):
+                    ret_dtype2 = dpt.dtype(ti.default_device_int_type(dev))
+                elif isinstance(dtype2, WeakComplexType):
+                    if st_dtype is dpt.float16 or st_dtype is dpt.float32:
+                        ret_dtype2 = dpt.complex64
+                    ret_dtype2 = _to_device_supported_dtype(dpt.complex128, dev)
+                else:
+                    ret_dtype2 = _to_device_supported_dtype(dpt.float64, dev)
+            else:
+                ret_dtype2 = st_dtype
+
+            return ret_dtype1, ret_dtype2
+
+        max_dt_num_kind, max_dtype = max(
+            [
+                (_strong_dtype_num_kind(st_dtype), st_dtype),
+                (_strong_dtype_num_kind(dtype2), dtype2),
+            ]
+        )
+        dt1_kind_num = _weak_type_num_kind(dtype1)
+        if dt1_kind_num > max_dt_num_kind:
+            if isinstance(dtype1, WeakIntegralType):
+                return dpt.dtype(ti.default_device_int_type(dev)), dtype2
+            if isinstance(dtype1, WeakComplexType):
+                if max_dtype is dpt.float16 or max_dtype is dpt.float32:
+                    return dpt.complex64, dtype2
+                return (
+                    _to_device_supported_dtype(dpt.complex128, dev),
+                    dtype2,
+                )
+            return _to_device_supported_dtype(dpt.float64, dev), dtype2
+        else:
+            return max_dtype, dtype2
+    elif _is_weak_dtype(dtype2):
+        max_dt_num_kind, max_dtype = max(
+            [
+                (_strong_dtype_num_kind(st_dtype), st_dtype),
+                (_strong_dtype_num_kind(dtype1), dtype1),
+            ]
+        )
+        dt2_kind_num = _weak_type_num_kind(dtype2)
+        if dt2_kind_num > max_dt_num_kind:
+            if isinstance(dtype2, WeakIntegralType):
+                return dtype1, dpt.dtype(ti.default_device_int_type(dev))
+            if isinstance(dtype2, WeakComplexType):
+                if max_dtype is dpt.float16 or max_dtype is dpt.float32:
+                    return dtype1, dpt.complex64
+                return (
+                    dtype1,
+                    _to_device_supported_dtype(dpt.complex128, dev),
+                )
+            return dtype1, _to_device_supported_dtype(dpt.float64, dev)
+        else:
+            return dtype1, max_dtype
+    else:
+        # both are strong dtypes
+        # return unmodified
+        return dtype1, dtype2
+
+
+def _resolve_one_strong_one_weak_types(st_dtype, dtype, dev):
+    "Resolves one weak data type with one strong data type per NEP-0050"
+    if _is_weak_dtype(st_dtype):
+        raise ValueError
+    if _is_weak_dtype(dtype):
+        st_kind_num = _strong_dtype_num_kind(st_dtype)
+        kind_num = _weak_type_num_kind(dtype)
+        if kind_num > st_kind_num:
+            if isinstance(dtype, WeakIntegralType):
+                return dpt.dtype(ti.default_device_int_type(dev))
+            if isinstance(dtype, WeakComplexType):
+                if st_dtype is dpt.float16 or st_dtype is dpt.float32:
+                    return dpt.complex64
+                return _to_device_supported_dtype(dpt.complex128, dev)
+            return _to_device_supported_dtype(dpt.float64, dev)
+        else:
+            return st_dtype
+    else:
+        return dtype
+
+
 class finfo_object:
     """
     `numpy.finfo` subclass which returns Python floating-point scalars for
@@ -838,6 +944,8 @@ __all__ = [
     "_acceptance_fn_divide",
     "_acceptance_fn_negative",
     "_acceptance_fn_subtract",
+    "_resolve_one_strong_one_weak_types",
+    "_resolve_one_strong_two_weak_types",
     "_resolve_weak_types",
     "_resolve_weak_types_all_py_ints",
     "_weak_type_num_kind",

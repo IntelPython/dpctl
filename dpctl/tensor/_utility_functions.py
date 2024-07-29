@@ -20,10 +20,6 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 import dpctl.utils as du
-from dpctl.tensor._clip import (
-    _resolve_one_strong_one_weak_types,
-    _resolve_one_strong_two_weak_types,
-)
 from dpctl.tensor._elementwise_common import (
     _get_dtype,
     _get_queue_usm_type,
@@ -32,6 +28,10 @@ from dpctl.tensor._elementwise_common import (
 )
 
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
+from ._type_utils import (
+    _resolve_one_strong_one_weak_types,
+    _resolve_one_strong_two_weak_types,
+)
 
 
 def _boolean_reduction(x, axis, keepdims, func):
@@ -159,6 +159,8 @@ def any(x, /, *, axis=None, keepdims=False):
 
 
 def _validate_diff_shape(sh1, sh2, axis):
+    """Utility for validating that two shapes `sh1` and `sh2`
+    are possible to concatenate along `axis`."""
     if not sh2:
         # scalars will always be accepted
         return True
@@ -173,6 +175,9 @@ def _validate_diff_shape(sh1, sh2, axis):
 
 
 def _concat_diff_input(arr, axis, prepend, append):
+    """Concatenates `arr`, `prepend` and, `append` along `axis`,
+    where `arr` is an array and `prepend` and `append` are
+    any mixture of arrays and scalars."""
     if prepend is not None and append is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
         q2, prepend_usm_type = _get_queue_usm_type(prepend)
