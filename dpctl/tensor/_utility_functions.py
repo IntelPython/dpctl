@@ -407,6 +407,43 @@ def _concat_diff_input(arr, axis, prepend, append):
 
 
 def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
+    """
+    Calculates the `n`-th discrete forward difference of `x` along `axis`.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (int):
+            axis along which to compute the difference. A valid axis must be on
+            the interval `[-N, N)`, where `N` is the rank (number of
+            dimensions) of `x`.
+            Default: `-1`
+        n (int):
+            number of times to recursively compute the difference.
+            Default: `1`.
+        prepend (Union[usm_ndarray, bool, int, float, complex]):
+            value or values to prepend to the specified axis before taking the
+            difference.
+            Must have the same shape as `x` except along `axis`, which can have
+            any shape.
+            Default: `None`.
+        append (Union[usm_ndarray, bool, int, float, complex]):
+            value or values to append to the specified axis before taking the
+            difference.
+            Must have the same shape as `x` except along `axis`, which can have
+            any shape.
+            Default: `None`.
+
+    Returns:
+        usm_ndarray:
+            an array containing the `n`-th differences. The array will have the
+            same shape as `x`, except along `axis`, which will have shape
+
+            - prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n
+
+            The data type of the returned array is determined by the Type
+            Promotion Rules.
+    """
 
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(
@@ -417,7 +454,8 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
     n = operator.index(n)
 
     arr = _concat_diff_input(x, axis, prepend, append)
-
+    if n == 0:
+        return arr
     # form slices and recurse
     sl0 = tuple(
         slice(None) if i != axis else slice(1, None) for i in range(x_nd)
