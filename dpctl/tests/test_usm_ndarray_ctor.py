@@ -1063,7 +1063,30 @@ def test_tofrom_numpy(shape, dtype, usm_type):
     skip_if_dtype_not_supported(dtype, q)
     Xusm = dpt.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=q)
     Ynp = np.ones(shape, dtype=dtype)
+    Ynp[(0,) * len(shape)] = 0
     ind = (slice(None, None, None),) * Ynp.ndim
+    Xusm[ind] = Ynp
+    assert np.array_equal(dpt.to_numpy(Xusm), Ynp)
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
+def test_tofrom_numpy_permuted(dtype, usm_type):
+    shape = (3, 5, 7)
+    perm = (1, 2, 0)
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+    Xusm = dpt.permute_dims(
+        dpt.zeros(shape, dtype=dtype, usm_type=usm_type, sycl_queue=q), perm
+    )
+    Ynp = np.transpose(np.ones(shape, dtype=dtype), perm)
+    Ynp[:, ::2, ::2] = 0
+    ind = (slice(None, None, None),) * Ynp.ndim
+    # even though Xusm and Ynp are strided, simple memcpy could be done.
+    # This test validates that it is being done correctly
     Xusm[ind] = Ynp
     assert np.array_equal(dpt.to_numpy(Xusm), Ynp)
 
