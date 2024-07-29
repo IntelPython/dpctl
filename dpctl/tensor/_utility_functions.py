@@ -464,7 +464,8 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
         slice(None) if i != axis else slice(None, -1) for i in range(x_nd)
     )
 
+    diff_op = dpt.not_equal if x.dtype == dpt.bool else dpt.subtract
     for _ in range(n):
-        arr = arr[sl0] - arr[sl1]
+        arr = diff_op(arr[sl0], arr[sl1])
 
     return arr
