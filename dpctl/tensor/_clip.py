@@ -404,6 +404,11 @@ def clip(x, /, min=None, max=None, out=None, order="K"):
         )
     if order not in ["K", "C", "F", "A"]:
         order = "K"
+    if x.dtype.kind in "iu":
+        if isinstance(min, int) and min <= dpt.iinfo(x.dtype).min:
+            min = None
+        if isinstance(max, int) and max >= dpt.iinfo(x.dtype).max:
+            max = None
     if min is None and max is None:
         exec_q = x.sycl_queue
         orig_out = out

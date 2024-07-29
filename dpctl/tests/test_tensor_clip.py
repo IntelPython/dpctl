@@ -767,3 +767,11 @@ def test_clip_readonly_out():
 
     with pytest.raises(ValueError):
         dpt.clip(x, out=r)
+
+
+def test_clip_gh_1744():
+    get_queue_or_skip()
+    x = dpt.asarray([0, 255], dtype=dpt.uint8)
+    y = dpt.clip(x, -300, 300)
+
+    assert dpt.all(x == y)
