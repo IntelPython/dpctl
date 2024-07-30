@@ -14,6 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import builtins
 import operator
 
 import dpctl.tensor as dpt
@@ -166,7 +167,7 @@ def _validate_diff_shape(sh1, sh2, axis):
         return True
     else:
         sh1_ndim = len(sh1)
-        if sh1_ndim == len(sh2) and all(
+        if sh1_ndim == len(sh2) and builtins.all(
             sh1[i] == sh2[i] for i in range(sh1_ndim) if i != axis
         ):
             return True
@@ -229,7 +230,7 @@ def _concat_diff_input(arr, axis, prepend, append):
         arr_shape = arr.shape
         prepend_shape = _get_shape(prepend)
         append_shape = _get_shape(append)
-        if not all(
+        if not builtins.all(
             isinstance(s, (tuple, list))
             for s in (
                 prepend_shape,
