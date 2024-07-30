@@ -260,7 +260,9 @@ def _concat_diff_input(arr, axis, prepend, append):
         arr_dtype = arr.dtype
         prepend_dtype = _get_dtype(prepend, sycl_dev)
         append_dtype = _get_dtype(append, sycl_dev)
-        if not all(_validate_dtype(o) for o in (prepend_dtype, append_dtype)):
+        if not builtins.all(
+            _validate_dtype(o) for o in (prepend_dtype, append_dtype)
+        ):
             raise ValueError("Operands have unsupported data types")
         prepend_dtype, append_dtype = _resolve_one_strong_two_weak_types(
             arr_dtype, prepend_dtype, append_dtype, sycl_dev
