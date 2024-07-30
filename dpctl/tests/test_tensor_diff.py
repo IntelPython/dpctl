@@ -141,3 +141,56 @@ def test_diff_empty_array():
     prepend = dpt.ones((3, 2, 5))
     res = dpt.diff(x, axis=1, prepend=prepend)
     assert res.shape == (3, 1, 5)
+
+
+def test_diff_no_op():
+    get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="i4")
+    res = dpt.diff(x, n=0)
+    assert dpt.all(x == res)
+
+    res = dpt.diff(dpt.reshape(x, (2, 5)), n=0, axis=0)
+    assert dpt.all(x == res)
+
+
+@pytest.mark.parametrize("sh,axis", [((1,), 0), ((3, 4, 5), 1)])
+def test_diff_prepend_append_py_scalars(sh, axis):
+    get_queue_or_skip()
+
+    arrs = [
+        dpt.ones(sh, dtype="?"),
+        dpt.ones(sh, dtype="i4"),
+        dpt.ones(sh, dtype="f4"),
+        dpt.ones(sh, dtype="c8"),
+    ]
+
+    py_zeros = [
+        False,
+        0,
+        0.0,
+        complex(0, 0),
+    ]
+
+    py_ones = [
+        True,
+        1,
+        1.0,
+        complex(1, 0),
+    ]
+
+    for zero, one, arr in zip(py_zeros, py_ones, arrs):
+        n = 1
+        r = dpt.diff(arr, n=n, axis=axis, prepend=zero, append=one)
+        assert isinstance(r, dpt.usm_ndarray)
+        assert all(
+            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
+        )
+        assert r.shape[axis] == arr.shape[axis] + 2 - n
+
+        r = dpt.diff(arr, n=n, axis=axis, prepend=zero)
+        assert isinstance(r, dpt.usm_ndarray)
+        assert all(
+            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
+        )
+        assert r.shape[axis] == arr.shape[axis] + 1 - n
