@@ -682,9 +682,9 @@ def test_count_nonzero(dt):
     x = dpt.ones(10, dtype=dt, sycl_queue=q)
     res = dpt.count_nonzero(x)
     assert res == 10
-    assert x.dtype == expected_dt
+    assert res.dtype == expected_dt
 
     x[3:6] = 0
     res = dpt.count_nonzero(x)
     assert res == 7
-    assert x.dtype == expected_dt
+    assert res.dtype == expected_dt
