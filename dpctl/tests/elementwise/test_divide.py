@@ -256,3 +256,18 @@ def test_divide_inplace_dtype_matrix(op1_dtype, op2_dtype):
     else:
         with pytest.raises(ValueError):
             dpt.divide(ar1, ar2, out=ar2)
+
+
+def test_divide_gh_1711():
+    "See https://github.com/IntelPython/dpctl/issues/1711"
+    get_queue_or_skip()
+
+    res = dpt.divide(-4, dpt.asarray(1, dtype="u4"))
+    assert isinstance(res, dpt.usm_ndarray)
+    assert res.dtype.kind == "f"
+    assert dpt.allclose(res, -4 / dpt.asarray(1, dtype="i4"))
+
+    res = dpt.divide(dpt.asarray(3, dtype="u4"), -2)
+    assert isinstance(res, dpt.usm_ndarray)
+    assert res.dtype.kind == "f"
+    assert dpt.allclose(res, dpt.asarray(3, dtype="i4") / -2)
