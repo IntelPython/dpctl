@@ -17,6 +17,7 @@
 import pytest
 
 import dpctl.tensor as dpt
+from dpctl.tensor._type_utils import _to_device_supported_dtype
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
@@ -79,3 +80,45 @@ def test_diff_axis():
             expected_res[:, 1:, :], expected_res[:, :-1, :]
         )
     assert dpt.all(res == expected_res)
+
+
+def test_diff_prepend_append_type_promotion():
+    get_queue_or_skip()
+
+    dts = [
+        ("i1", "u1", "i8"),
+        ("i1", "u8", "u1"),
+        ("u4", "i4", "f4"),
+        ("i8", "c8", "u8"),
+    ]
+
+    for _dts in dts:
+        x = dpt.ones(10, dtype=_dts[1])
+        prepend = dpt.full(1, 2, dtype=_dts[0])
+        append = dpt.full(1, 3, dtype=_dts[2])
+
+        res = dpt.diff(x, prepend=prepend, append=append)
+        assert res.dtype == _to_device_supported_dtype(
+            dpt.result_type(prepend, x, append),
+            x.sycl_queue.sycl_device,
+        )
+
+        res = dpt.diff(x, prepend=prepend)
+        assert res.dtype == _to_device_supported_dtype(
+            dpt.result_type(prepend, x),
+            x.sycl_queue.sycl_device,
+        )
+
+        res = dpt.diff(x, append=append)
+        assert res.dtype == _to_device_supported_dtype(
+            dpt.result_type(x, append),
+            x.sycl_queue.sycl_device,
+        )
+
+
+def test_diff_0d():
+    get_queue_or_skip()
+
+    x = dpt.ones(())
+    with pytest.raises(ValueError):
+        dpt.diff(x)
