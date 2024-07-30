@@ -331,7 +331,13 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("default_device_int_type",
           dpctl::tensor::py_internal::default_device_int_type,
-          "Gives default integer type supported by device.", py::arg("dev"));
+          "Gives default signed integer type supported by device.",
+          py::arg("dev"));
+
+    m.def("default_device_uint_type",
+          dpctl::tensor::py_internal::default_device_uint_type,
+          "Gives default unsigned integer type supported by device.",
+          py::arg("dev"));
 
     m.def("default_device_bool_type",
           dpctl::tensor::py_internal::default_device_bool_type,
