@@ -287,10 +287,10 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not prepend_shape:
             prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_prepend = dpt.broadcast_to(a_prepend, arr_shape)
+            a_prepend = dpt.broadcast_to(a_prepend, prepend_shape)
         if not append_shape:
             append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_append = dpt.broadcast_to(a_append, arr_shape)
+            a_append = dpt.broadcast_to(a_append, append_shape)
         return dpt.concat((a_prepend, arr, a_append), axis=axis)
     elif prepend is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
@@ -347,7 +347,7 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not prepend_shape:
             prepend_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_prepend = dpt.broadcast_to(a_prepend, arr_shape)
+            a_prepend = dpt.broadcast_to(a_prepend, prepend_shape)
         return dpt.concat((a_prepend, arr), axis=axis)
     elif append is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
@@ -402,7 +402,7 @@ def _concat_diff_input(arr, axis, prepend, append):
             )
         if not append_shape:
             append_shape = arr_shape[:axis] + (1,) + arr_shape[axis + 1 :]
-            a_append = dpt.broadcast_to(a_append, arr_shape)
+            a_append = dpt.broadcast_to(a_append, append_shape)
         return dpt.concat((arr, a_append), axis=axis)
     else:
         arr1 = arr
