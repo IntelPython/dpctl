@@ -122,3 +122,22 @@ def test_diff_0d():
     x = dpt.ones(())
     with pytest.raises(ValueError):
         dpt.diff(x)
+
+
+def test_diff_empty_array():
+    get_queue_or_skip()
+
+    x = dpt.ones((3, 0, 5))
+    res = dpt.diff(x, axis=1)
+    assert res.shape == x.shape
+
+    res = dpt.diff(x, axis=0)
+    assert res.shape == (2, 0, 5)
+
+    append = dpt.ones((3, 2, 5))
+    res = dpt.diff(x, axis=1, append=append)
+    assert res.shape == (3, 1, 5)
+
+    prepend = dpt.ones((3, 2, 5))
+    res = dpt.diff(x, axis=1, prepend=prepend)
+    assert res.shape == (3, 1, 5)
