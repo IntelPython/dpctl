@@ -280,3 +280,17 @@ def test_greater_equal_mixed_integer_kinds():
     # Python scalar
     assert dpt.all(dpt.greater_equal(x2, -1))
     assert not dpt.any(dpt.greater_equal(-1, x2))
+
+
+def test_greater_equal_very_large_py_int():
+    get_queue_or_skip()
+
+    py_int = dpt.iinfo(dpt.int64).max + 10
+
+    x = dpt.asarray(3, dtype="u8")
+    assert py_int >= x
+    assert not dpt.greater_equal(x, py_int)
+
+    x = dpt.asarray(py_int, dtype="u8")
+    assert x >= -1
+    assert not dpt.greater_equal(-1, x)
