@@ -280,7 +280,7 @@ def _concat_diff_input(arr, axis, prepend, append):
             a_append = append
         else:
             a_append = dpt.asarray(
-                prepend,
+                append,
                 dtype=append_dtype,
                 usm_type=coerced_usm_type,
                 sycl_queue=exec_q,
