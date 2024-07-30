@@ -819,6 +819,7 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
+<span class="kn">import</span> <span class="nn">builtins</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
@@ -971,7 +972,7 @@
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sh1_ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sh1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">sh1_ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sh2</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">sh1_ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sh2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
             <span class="n">sh1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">sh2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sh1_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -1034,7 +1035,7 @@
         <span class="n">arr_shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">prepend_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
         <span class="n">append_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="n">prepend_shape</span><span class="p">,</span>
