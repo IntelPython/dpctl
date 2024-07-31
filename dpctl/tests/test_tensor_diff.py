@@ -14,11 +14,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from math import prod
+
 import pytest
+from numpy.testing import assert_raises_regex
 
 import dpctl.tensor as dpt
 from dpctl.tensor._type_utils import _to_device_supported_dtype
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+from dpctl.utils import ExecutionPlacementError
 
 _all_dtypes = [
     "?",
@@ -206,3 +210,152 @@ def test_diff_prepend_append_py_scalars(sh, axis):
     assert r.shape[axis] == arr.shape[axis] + 2 - n
     assert dpt.all(r[sl1] == 1)
     assert dpt.all(r[sl2] == -1)
+
+
+def test_tensor_diff_append_prepend_arrays():
+    get_queue_or_skip()
+
+    n = 1
+    axis = 0
+
+    sz = 5
+    arr = dpt.arange(sz, 2 * sz, dtype="i4")
+    prepend = dpt.arange(sz, dtype="i4")
+    append = dpt.arange(2 * sz, 3 * sz, dtype="i4")
+    const_diff = 1
+
+    r = dpt.diff(arr, axis=axis, prepend=prepend, append=append)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert (
+        r.shape[axis]
+        == arr.shape[axis] + prepend.shape[axis] + append.shape[axis] - n
+    )
+    assert dpt.all(r == const_diff)
+
+    r = dpt.diff(arr, axis=axis, prepend=prepend)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + prepend.shape[axis] - n
+    assert dpt.all(r == const_diff)
+
+    r = dpt.diff(arr, axis=axis, append=append)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + append.shape[axis] - n
+    assert dpt.all(r == const_diff)
+
+    sh = (3, 4, 5)
+    sz = prod(sh)
+    arr = dpt.reshape(dpt.arange(sz, 2 * sz, dtype="i4"), sh)
+    prepend = dpt.reshape(dpt.arange(sz, dtype="i4"), sh)
+    append = dpt.reshape(dpt.arange(2 * sz, 3 * sz, dtype="i4"), sh)
+    const_diff = prod(sh[axis + 1 :])
+
+    r = dpt.diff(arr, axis=axis, prepend=prepend, append=append)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert (
+        r.shape[axis]
+        == arr.shape[axis] + prepend.shape[axis] + append.shape[axis] - n
+    )
+    assert dpt.all(r == const_diff)
+
+    r = dpt.diff(arr, axis=axis, prepend=prepend)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + prepend.shape[axis] - n
+    assert dpt.all(r == const_diff)
+
+    r = dpt.diff(arr, axis=axis, append=append)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + append.shape[axis] - n
+    assert dpt.all(r == const_diff)
+
+
+def test_diff_wrong_append_prepend_shape():
+    get_queue_or_skip()
+
+    arr = dpt.ones((3, 4, 5), dtype="i4")
+    arr_bad_sh = dpt.ones(2, dtype="i4")
+
+    assert_raises_regex(
+        ValueError,
+        "`diff` argument `prepend` with shape.*is invalid"
+        " for first input with shape.*",
+        dpt.diff,
+        arr,
+        prepend=arr_bad_sh,
+        append=arr_bad_sh,
+    )
+
+    assert_raises_regex(
+        ValueError,
+        "`diff` argument `append` with shape.*is invalid"
+        " for first input with shape.*",
+        dpt.diff,
+        arr,
+        prepend=arr,
+        append=arr_bad_sh,
+    )
+
+    assert_raises_regex(
+        ValueError,
+        "`diff` argument `prepend` with shape.*is invalid"
+        " for first input with shape.*",
+        dpt.diff,
+        arr,
+        prepend=arr_bad_sh,
+    )
+
+    assert_raises_regex(
+        ValueError,
+        "`diff` argument `append` with shape.*is invalid"
+        " for first input with shape.*",
+        dpt.diff,
+        arr,
+        append=arr_bad_sh,
+    )
+
+
+def test_diff_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+    q3 = get_queue_or_skip()
+
+    ar1 = dpt.ones(1, dtype="i4", sycl_queue=q1)
+    ar2 = dpt.ones(1, dtype="i4", sycl_queue=q2)
+    ar3 = dpt.ones(1, dtype="i4", sycl_queue=q3)
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments",
+        dpt.diff,
+        ar1,
+        prepend=ar2,
+        append=ar3,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments",
+        dpt.diff,
+        ar1,
+        prepend=ar2,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments",
+        dpt.diff,
+        ar1,
+        append=ar2,
+    )
+
+
+def test_diff_input_validation():
+    bad_in = dict()
+    assert_raises_regex(
+        TypeError,
+        "Expecting dpctl.tensor.usm_ndarray type, got.*",
+        dpt.diff,
+        bad_in,
+    )
