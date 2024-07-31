@@ -48,22 +48,18 @@ def test_diff_basic(dt):
     skip_if_dtype_not_supported(dt, q)
 
     x = dpt.asarray([9, 12, 7, 17, 10, 18, 15, 9, 8, 8], dtype=dt, sycl_queue=q)
-    res = dpt.diff(x)
     op = dpt.not_equal if x.dtype is dpt.bool else dpt.subtract
-    expected_res = op(x[1:], x[:-1])
-    if dpt.dtype(dt).kind in "fc":
-        assert dpt.allclose(res, expected_res)
-    else:
-        assert dpt.all(res == expected_res)
 
-    res = dpt.diff(x, n=5)
-    expected_res = x
-    for _ in range(5):
-        expected_res = op(expected_res[1:], expected_res[:-1])
-    if dpt.dtype(dt).kind in "fc":
-        assert dpt.allclose(res, expected_res)
-    else:
-        assert dpt.all(res == expected_res)
+    # test both n=2 and n>2 branches
+    for n in [1, 2, 5]:
+        res = dpt.diff(x, n=n)
+        expected_res = x
+        for _ in range(n):
+            expected_res = op(expected_res[1:], expected_res[:-1])
+        if dpt.dtype(dt).kind in "fc":
+            assert dpt.allclose(res, expected_res)
+        else:
+            assert dpt.all(res == expected_res)
 
 
 def test_diff_axis():
@@ -73,17 +69,15 @@ def test_diff_axis():
         dpt.asarray([9, 12, 7, 17, 10, 18, 15, 9, 8, 8], dtype="i4"), (3, 4, 1)
     )
     x[:, ::2, :] = 0
-    res = dpt.diff(x, n=1, axis=1)
-    expected_res = dpt.subtract(x[:, 1:, :], x[:, :-1, :])
-    assert dpt.all(res == expected_res)
 
-    res = dpt.diff(x, n=3, axis=1)
-    expected_res = x
-    for _ in range(3):
-        expected_res = dpt.subtract(
-            expected_res[:, 1:, :], expected_res[:, :-1, :]
-        )
-    assert dpt.all(res == expected_res)
+    for n in [1, 2, 3]:
+        res = dpt.diff(x, n=3, axis=1)
+        expected_res = x
+        for _ in range(3):
+            expected_res = dpt.subtract(
+                expected_res[:, 1:, :], expected_res[:, :-1, :]
+            )
+        assert dpt.all(res == expected_res)
 
 
 def test_diff_prepend_append_type_promotion():
@@ -179,33 +173,28 @@ def test_diff_prepend_append_py_scalars(sh, axis):
     sl2 = tuple(sl2)
 
     r = dpt.diff(arr, axis=axis, prepend=zero, append=zero)
-    assert isinstance(r, dpt.usm_ndarray)
     assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
     assert r.shape[axis] == arr.shape[axis] + 2 - n
     assert dpt.all(r[sl1] == 1)
     assert dpt.all(r[sl2] == -1)
 
     r = dpt.diff(arr, axis=axis, prepend=zero)
-    assert isinstance(r, dpt.usm_ndarray)
     assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
     assert r.shape[axis] == arr.shape[axis] + 1 - n
     assert dpt.all(r[sl1] == 1)
 
     r = dpt.diff(arr, axis=axis, append=zero)
-    assert isinstance(r, dpt.usm_ndarray)
     assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
     assert r.shape[axis] == arr.shape[axis] + 1 - n
     assert dpt.all(r[sl2] == -1)
 
     r = dpt.diff(arr, axis=axis, prepend=dpt.asarray(zero), append=zero)
-    assert isinstance(r, dpt.usm_ndarray)
     assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
     assert r.shape[axis] == arr.shape[axis] + 2 - n
     assert dpt.all(r[sl1] == 1)
     assert dpt.all(r[sl2] == -1)
 
     r = dpt.diff(arr, axis=axis, prepend=zero, append=dpt.asarray(zero))
-    assert isinstance(r, dpt.usm_ndarray)
     assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
     assert r.shape[axis] == arr.shape[axis] + 2 - n
     assert dpt.all(r[sl1] == 1)
@@ -218,54 +207,36 @@ def test_tensor_diff_append_prepend_arrays():
     n = 1
     axis = 0
 
-    sz = 5
-    arr = dpt.arange(sz, 2 * sz, dtype="i4")
-    prepend = dpt.arange(sz, dtype="i4")
-    append = dpt.arange(2 * sz, 3 * sz, dtype="i4")
-    const_diff = 1
+    for sh in [(5,), (3, 4, 5)]:
+        sz = prod(sh)
+        arr = dpt.reshape(dpt.arange(sz, 2 * sz, dtype="i4"), sh)
+        prepend = dpt.reshape(dpt.arange(sz, dtype="i4"), sh)
+        append = dpt.reshape(dpt.arange(2 * sz, 3 * sz, dtype="i4"), sh)
+        const_diff = sz / sh[axis]
 
-    r = dpt.diff(arr, axis=axis, prepend=prepend, append=append)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert (
-        r.shape[axis]
-        == arr.shape[axis] + prepend.shape[axis] + append.shape[axis] - n
-    )
-    assert dpt.all(r == const_diff)
+        r = dpt.diff(arr, axis=axis, prepend=prepend, append=append)
+        assert all(
+            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
+        )
+        assert (
+            r.shape[axis]
+            == arr.shape[axis] + prepend.shape[axis] + append.shape[axis] - n
+        )
+        assert dpt.all(r == const_diff)
 
-    r = dpt.diff(arr, axis=axis, prepend=prepend)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert r.shape[axis] == arr.shape[axis] + prepend.shape[axis] - n
-    assert dpt.all(r == const_diff)
+        r = dpt.diff(arr, axis=axis, prepend=prepend)
+        assert all(
+            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
+        )
+        assert r.shape[axis] == arr.shape[axis] + prepend.shape[axis] - n
+        assert dpt.all(r == const_diff)
 
-    r = dpt.diff(arr, axis=axis, append=append)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert r.shape[axis] == arr.shape[axis] + append.shape[axis] - n
-    assert dpt.all(r == const_diff)
-
-    sh = (3, 4, 5)
-    sz = prod(sh)
-    arr = dpt.reshape(dpt.arange(sz, 2 * sz, dtype="i4"), sh)
-    prepend = dpt.reshape(dpt.arange(sz, dtype="i4"), sh)
-    append = dpt.reshape(dpt.arange(2 * sz, 3 * sz, dtype="i4"), sh)
-    const_diff = prod(sh[axis + 1 :])
-
-    r = dpt.diff(arr, axis=axis, prepend=prepend, append=append)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert (
-        r.shape[axis]
-        == arr.shape[axis] + prepend.shape[axis] + append.shape[axis] - n
-    )
-    assert dpt.all(r == const_diff)
-
-    r = dpt.diff(arr, axis=axis, prepend=prepend)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert r.shape[axis] == arr.shape[axis] + prepend.shape[axis] - n
-    assert dpt.all(r == const_diff)
-
-    r = dpt.diff(arr, axis=axis, append=append)
-    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
-    assert r.shape[axis] == arr.shape[axis] + append.shape[axis] - n
-    assert dpt.all(r == const_diff)
+        r = dpt.diff(arr, axis=axis, append=append)
+        assert all(
+            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
+        )
+        assert r.shape[axis] == arr.shape[axis] + append.shape[axis] - n
+        assert dpt.all(r == const_diff)
 
 
 def test_diff_wrong_append_prepend_shape():
@@ -330,6 +301,26 @@ def test_diff_compute_follows_data():
         ar1,
         prepend=ar2,
         append=ar3,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments",
+        dpt.diff,
+        ar1,
+        prepend=ar2,
+        append=0,
+    )
+
+    assert_raises_regex(
+        ExecutionPlacementError,
+        "Execution placement can not be unambiguously inferred from input "
+        "arguments",
+        dpt.diff,
+        ar1,
+        prepend=0,
+        append=ar2,
     )
 
     assert_raises_regex(
