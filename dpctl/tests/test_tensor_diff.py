@@ -159,39 +159,50 @@ def test_diff_no_op():
 def test_diff_prepend_append_py_scalars(sh, axis):
     get_queue_or_skip()
 
-    arrs = [
-        dpt.ones(sh, dtype="?"),
-        dpt.ones(sh, dtype="i4"),
-        dpt.ones(sh, dtype="f4"),
-        dpt.ones(sh, dtype="c8"),
-    ]
+    n = 1
 
-    py_zeros = [
-        False,
-        0,
-        0.0,
-        complex(0, 0),
-    ]
+    arr = dpt.ones(sh, dtype="i4")
+    zero = 0
 
-    py_ones = [
-        True,
-        1,
-        1.0,
-        complex(1, 0),
-    ]
+    # first and last elements along axis
+    # will be checked for correctness
+    sl1 = [slice(None)] * arr.ndim
+    sl1[axis] = slice(1)
+    sl1 = tuple(sl1)
 
-    for zero, one, arr in zip(py_zeros, py_ones, arrs):
-        n = 1
-        r = dpt.diff(arr, n=n, axis=axis, prepend=zero, append=one)
-        assert isinstance(r, dpt.usm_ndarray)
-        assert all(
-            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
-        )
-        assert r.shape[axis] == arr.shape[axis] + 2 - n
+    sl2 = [slice(None)] * arr.ndim
+    sl2[axis] = slice(-1, None, None)
+    sl2 = tuple(sl2)
 
-        r = dpt.diff(arr, n=n, axis=axis, prepend=zero)
-        assert isinstance(r, dpt.usm_ndarray)
-        assert all(
-            r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis
-        )
-        assert r.shape[axis] == arr.shape[axis] + 1 - n
+    r = dpt.diff(arr, axis=axis, prepend=zero, append=zero)
+    assert isinstance(r, dpt.usm_ndarray)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + 2 - n
+    assert dpt.all(r[sl1] == 1)
+    assert dpt.all(r[sl2] == -1)
+
+    r = dpt.diff(arr, axis=axis, prepend=zero)
+    assert isinstance(r, dpt.usm_ndarray)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + 1 - n
+    assert dpt.all(r[sl1] == 1)
+
+    r = dpt.diff(arr, axis=axis, append=zero)
+    assert isinstance(r, dpt.usm_ndarray)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + 1 - n
+    assert dpt.all(r[sl2] == -1)
+
+    r = dpt.diff(arr, axis=axis, prepend=dpt.asarray(zero), append=zero)
+    assert isinstance(r, dpt.usm_ndarray)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + 2 - n
+    assert dpt.all(r[sl1] == 1)
+    assert dpt.all(r[sl2] == -1)
+
+    r = dpt.diff(arr, axis=axis, prepend=zero, append=dpt.asarray(zero))
+    assert isinstance(r, dpt.usm_ndarray)
+    assert all(r.shape[i] == arr.shape[i] for i in range(arr.ndim) if i != axis)
+    assert r.shape[axis] == arr.shape[axis] + 2 - n
+    assert dpt.all(r[sl1] == 1)
+    assert dpt.all(r[sl2] == -1)
