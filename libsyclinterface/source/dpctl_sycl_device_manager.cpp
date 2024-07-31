@@ -32,6 +32,7 @@
 #include <Config/dpctl_config.h> /* Config */
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <unordered_map>
 #include <utility>
