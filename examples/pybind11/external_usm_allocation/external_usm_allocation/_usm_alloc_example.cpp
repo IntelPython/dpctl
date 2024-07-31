@@ -52,27 +52,12 @@ struct DMatrix
     DMatrix(const DMatrix &) = default;
     DMatrix(DMatrix &&) = default;
 
-    size_t get_n() const
-    {
-        return n_;
-    }
-    size_t get_m() const
-    {
-        return m_;
-    }
-    vec_t &get_vector()
-    {
-        return vec_;
-    }
-    sycl::queue get_queue() const
-    {
-        return q_;
-    }
+    size_t get_n() const { return n_; }
+    size_t get_m() const { return m_; }
+    vec_t &get_vector() { return vec_; }
+    sycl::queue get_queue() const { return q_; }
 
-    double get_element(size_t i, size_t j)
-    {
-        return vec_.at(i * m_ + j);
-    }
+    double get_element(size_t i, size_t j) { return vec_.at(i * m_ + j); }
 
 private:
     size_t n_;

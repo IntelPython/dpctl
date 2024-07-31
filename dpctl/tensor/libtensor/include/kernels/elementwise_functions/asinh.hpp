@@ -178,7 +178,8 @@ template <typename fnT, typename T> struct AsinhContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AsinhOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -225,7 +226,8 @@ template <typename fnT, typename T> struct AsinhStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AsinhOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

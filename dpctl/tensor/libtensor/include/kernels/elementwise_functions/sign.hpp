@@ -154,7 +154,8 @@ template <typename fnT, typename T> struct SignContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SignOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -206,7 +207,8 @@ template <typename fnT, typename T> struct SignStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SignOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

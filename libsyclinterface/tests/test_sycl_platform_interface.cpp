@@ -192,10 +192,7 @@ struct TestDPCTLSyclDefaultPlatform : public ::testing::Test
         EXPECT_NO_FATAL_FAILURE(PRef = DPCTLPlatform_Create());
     }
 
-    void SetUp()
-    {
-        ASSERT_TRUE(PRef);
-    }
+    void SetUp() { ASSERT_TRUE(PRef); }
 
     ~TestDPCTLSyclDefaultPlatform()
     {
@@ -283,10 +280,7 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkAreEqNullArg)
     ASSERT_TRUE(DPCTLPlatform_Hash(Null_PRef) == 0);
 }
 
-TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName)
-{
-    check_platform_name(PRef);
-}
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName) { check_platform_name(PRef); }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVendor)
 {

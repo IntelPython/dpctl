@@ -66,7 +66,8 @@ template <typename argT1, typename argT2, typename resT> struct CopysignFunctor
     {
         auto tmp = sycl::copysign(in1, in2);
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {

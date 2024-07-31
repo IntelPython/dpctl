@@ -94,7 +94,8 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
     {
         auto tmp = in1 + in2;
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {
@@ -223,7 +224,8 @@ template <typename fnT, typename T1, typename T2> struct AddContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -272,7 +274,8 @@ template <typename fnT, typename T1, typename T2> struct AddStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -398,10 +401,7 @@ template <typename argT, typename resT> struct AddInplaceFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
-    void operator()(resT &res, const argT &in)
-    {
-        res += in;
-    }
+    void operator()(resT &res, const argT &in) { res += in; }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
@@ -458,7 +458,8 @@ template <typename fnT, typename T1, typename T2> struct AddInplaceContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -497,7 +498,8 @@ struct AddInplaceStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

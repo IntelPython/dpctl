@@ -58,10 +58,7 @@ template <typename argT, typename resT> struct SignbitFunctor
     using supports_vec = std::true_type;
     using supports_sg_loadstore = std::true_type;
 
-    resT operator()(const argT &in) const
-    {
-        return std::signbit(in);
-    }
+    resT operator()(const argT &in) const { return std::signbit(in); }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
@@ -122,7 +119,8 @@ template <typename fnT, typename T> struct SignbitContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SignbitOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -170,7 +168,8 @@ template <typename fnT, typename T> struct SignbitStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SignbitOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

@@ -65,10 +65,7 @@ struct TestDPCTLSyclEventInterface : public ::testing::Test
         EXPECT_NO_FATAL_FAILURE(ERef = DPCTLEvent_Create());
     }
 
-    void SetUp()
-    {
-        ASSERT_TRUE(ERef);
-    }
+    void SetUp() { ASSERT_TRUE(ERef); }
 
     ~TestDPCTLSyclEventInterface()
     {

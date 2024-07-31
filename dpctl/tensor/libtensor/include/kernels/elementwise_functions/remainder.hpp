@@ -102,7 +102,8 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
                 else {
                     rem[i] = in1[i] % in2[i];
                     if constexpr (std::is_signed_v<argT1> ||
-                                  std::is_signed_v<argT2>) {
+                                  std::is_signed_v<argT2>)
+                    {
                         if (rem[i] != 0 && l_xor(in1[i] < 0, in2[i] < 0)) {
                             rem[i] += in2[i];
                         }
@@ -137,10 +138,7 @@ template <typename argT1, typename argT2, typename resT> struct RemainderFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT1,
@@ -368,7 +366,8 @@ template <typename argT, typename resT> struct RemainderInplaceFunctor
                 else {
                     auto rem = res[i] % in[i];
                     if constexpr (std::is_signed_v<argT> ||
-                                  std::is_signed_v<resT>) {
+                                  std::is_signed_v<resT>)
+                    {
                         if (rem != 0 && l_xor(res[i] < 0, in[i] < 0)) {
                             rem += in[i];
                         }
@@ -394,10 +393,7 @@ template <typename argT, typename resT> struct RemainderInplaceFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT,

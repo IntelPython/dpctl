@@ -383,7 +383,8 @@ public:
                 res_ref.fetch_min(red_val_over_wg);
             }
             else if constexpr (su_ns::IsSyclLogicalAnd<outT,
-                                                       ReductionOp>::value) {
+                                                       ReductionOp>::value)
+            {
                 res_ref.fetch_and(red_val_over_wg);
             }
             else if constexpr (su_ns::IsSyclLogicalOr<outT, ReductionOp>::value)
@@ -1290,7 +1291,8 @@ sycl::event reduction_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -1540,7 +1542,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -1783,7 +1786,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -2098,7 +2102,8 @@ public:
                         }
                     }
                     else if constexpr (su_ns::IsMaximum<argT,
-                                                        ReductionOp>::value) {
+                                                        ReductionOp>::value)
+                    {
                         if (val > local_red_val) {
                             local_red_val = val;
                             if constexpr (!First) {
@@ -2290,7 +2295,8 @@ public:
                         }
                     }
                     else if constexpr (su_ns::IsMaximum<argT,
-                                                        ReductionOp>::value) {
+                                                        ReductionOp>::value)
+                    {
                         using dpctl::tensor::type_utils::is_complex;
                         if constexpr (is_complex<argT>::value) {
                             using dpctl::tensor::math_utils::greater_complex;
@@ -2707,7 +2713,8 @@ sycl::event search_over_group_temps_strided_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -3000,7 +3007,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -3286,7 +3294,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);

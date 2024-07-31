@@ -128,7 +128,8 @@ template <typename fnT, typename T> struct TruncContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename TruncOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -175,7 +176,8 @@ template <typename fnT, typename T> struct TruncStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename TruncOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

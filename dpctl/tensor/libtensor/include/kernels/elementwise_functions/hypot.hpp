@@ -68,7 +68,8 @@ template <typename argT1, typename argT2, typename resT> struct HypotFunctor
     {
         auto res = sycl::hypot(in1, in2);
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(res)::element_type>) {
+                                     typename decltype(res)::element_type>)
+        {
             return res;
         }
         else {

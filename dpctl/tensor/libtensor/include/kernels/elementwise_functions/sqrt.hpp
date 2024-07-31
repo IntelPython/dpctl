@@ -128,7 +128,8 @@ template <typename fnT, typename T> struct SqrtContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SqrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -175,7 +176,8 @@ template <typename fnT, typename T> struct SqrtStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SqrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

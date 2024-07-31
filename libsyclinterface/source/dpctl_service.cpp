@@ -65,15 +65,12 @@ void DPCTLService_InitLogger(const char *app_name, const char *log_dir)
     }
 }
 
-void DPCTLService_ShutdownLogger(void)
-{
-    google::ShutdownGoogleLogging();
-}
+void DPCTLService_ShutdownLogger(void) { google::ShutdownGoogleLogging(); }
 
 #else
 void DPCTLService_InitLogger([[maybe_unused]] const char *app_name,
-                             [[maybe_unused]] const char *log_dir){};
+                             [[maybe_unused]] const char *log_dir) {};
 
-void DPCTLService_ShutdownLogger(void){};
+void DPCTLService_ShutdownLogger(void) {};
 
 #endif

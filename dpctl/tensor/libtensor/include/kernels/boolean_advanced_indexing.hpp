@@ -573,28 +573,27 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.parallel_for<class non_zero_indexes_krn<indT1, indT2>>(
-            sycl::range<1>(iter_size), [=](sycl::id<1> idx)
-        {
-            auto i = idx[0];
+            sycl::range<1>(iter_size), [=](sycl::id<1> idx) {
+                auto i = idx[0];
 
-            auto cs_curr_val = cumsum_data[i] - 1;
-            auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
-            bool cond = (cs_curr_val == cs_prev_val);
+                auto cs_curr_val = cumsum_data[i] - 1;
+                auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
+                bool cond = (cs_curr_val == cs_prev_val);
 
-            ssize_t i_ = static_cast<ssize_t>(i);
-            for (int dim = nd; --dim > 0;) {
-                auto sd = mask_shape[dim];
-                ssize_t q = i_ / sd;
-                ssize_t r = (i_ - q * sd);
-                if (cond) {
-                    indexes_data[cs_curr_val + dim * nz_elems] =
-                        static_cast<indT2>(r);
+                ssize_t i_ = static_cast<ssize_t>(i);
+                for (int dim = nd; --dim > 0;) {
+                    auto sd = mask_shape[dim];
+                    ssize_t q = i_ / sd;
+                    ssize_t r = (i_ - q * sd);
+                    if (cond) {
+                        indexes_data[cs_curr_val + dim * nz_elems] =
+                            static_cast<indT2>(r);
+                    }
+                    i_ = q;
                 }
-                i_ = q;
-            }
-            if (cond) {
-                indexes_data[cs_curr_val] = static_cast<indT2>(i_);
-            }
+                if (cond) {
+                    indexes_data[cs_curr_val] = static_cast<indT2>(i_);
+                }
             });
     });
 

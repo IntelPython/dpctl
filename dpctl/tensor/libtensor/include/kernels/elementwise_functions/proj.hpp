@@ -135,7 +135,8 @@ template <typename fnT, typename T> struct ProjContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ProjOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -188,7 +189,8 @@ template <typename fnT, typename T> struct ProjStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ProjOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

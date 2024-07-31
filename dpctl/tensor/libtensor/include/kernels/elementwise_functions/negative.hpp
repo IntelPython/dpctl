@@ -60,10 +60,7 @@ template <typename argT, typename resT> struct NegativeFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &x) const
-    {
-        return -x;
-    }
+    resT operator()(const argT &x) const { return -x; }
 };
 
 template <typename argT,
@@ -120,7 +117,8 @@ template <typename fnT, typename T> struct NegativeContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename NegativeOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -173,7 +171,8 @@ template <typename fnT, typename T> struct NegativeStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename NegativeOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

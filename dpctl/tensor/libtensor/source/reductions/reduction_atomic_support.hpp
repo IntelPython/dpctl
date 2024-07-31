@@ -110,10 +110,7 @@ template <typename fnT, typename T> struct ArithmeticAtomicSupportFactory
 
 template <typename fnT, typename T> struct MinMaxAtomicSupportFactory
 {
-    fnT get()
-    {
-        return check_atomic_support<T>;
-    }
+    fnT get() { return check_atomic_support<T>; }
 };
 
 template <typename fnT, typename T>

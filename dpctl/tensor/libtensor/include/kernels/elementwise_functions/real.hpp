@@ -134,7 +134,8 @@ template <typename fnT, typename T> struct RealContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename RealOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -181,7 +182,8 @@ template <typename fnT, typename T> struct RealStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename RealOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

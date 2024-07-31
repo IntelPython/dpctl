@@ -1074,7 +1074,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);
@@ -1326,7 +1327,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         sycl::event dependent_ev = first_reduction_ev;
 
         while (remaining_reduction_nelems >
-               preferred_reductions_per_wi * max_wg) {
+               preferred_reductions_per_wi * max_wg)
+        {
             size_t reduction_groups_ = (remaining_reduction_nelems +
                                         preferred_reductions_per_wi * wg - 1) /
                                        (preferred_reductions_per_wi * wg);

@@ -60,7 +60,8 @@ template <typename T> T clip(const T &x, const T &min, const T &max)
         return min_complex(max_complex(x, min), max);
     }
     else if constexpr (std::is_floating_point_v<T> ||
-                       std::is_same_v<T, sycl::half>) {
+                       std::is_same_v<T, sycl::half>)
+    {
         auto tmp = (std::isnan(x) || x > min) ? x : min;
         return (std::isnan(tmp) || tmp < max) ? tmp : max;
     }
@@ -121,7 +122,8 @@ public:
                            sg.get_group_id()[0] * max_sgSize);
 
             if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize) {
+                sgSize == max_sgSize)
+            {
                 sycl::vec<T, vec_sz> x_vec;
                 sycl::vec<T, vec_sz> min_vec;
                 sycl::vec<T, vec_sz> max_vec;
@@ -155,7 +157,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     dst_p[k] = clip(x_p[k], min_p[k], max_p[k]);
                 }
             }

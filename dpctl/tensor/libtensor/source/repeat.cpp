@@ -101,7 +101,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
-        (axis > 0 && src_nd == 0)) {
+        (axis > 0 && src_nd == 0))
+    {
         throw py::value_error("Specified axis is invalid.");
     }
 
@@ -517,7 +518,8 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
 {
     int src_nd = src.get_ndim();
     if (axis < 0 || (axis + 1 > src_nd && src_nd > 0) ||
-        (axis > 0 && src_nd == 0)) {
+        (axis > 0 && src_nd == 0))
+    {
         throw py::value_error("Specified axis is invalid.");
     }
 

@@ -193,7 +193,8 @@ template <typename T> struct Maximum
             return max_complex<T>(x, y);
         }
         else if constexpr (std::is_floating_point_v<T> ||
-                           std::is_same_v<T, sycl::half>) {
+                           std::is_same_v<T, sycl::half>)
+        {
             return (std::isnan(x) || x > y) ? x : y;
         }
         else if constexpr (std::is_same_v<T, bool>) {
@@ -216,7 +217,8 @@ template <typename T> struct Minimum
             return min_complex<T>(x, y);
         }
         else if constexpr (std::is_floating_point_v<T> ||
-                           std::is_same_v<T, sycl::half>) {
+                           std::is_same_v<T, sycl::half>)
+        {
             return (std::isnan(x) || x < y) ? x : y;
         }
         else if constexpr (std::is_same_v<T, bool>) {
@@ -351,10 +353,7 @@ struct GetIdentity<Op, T, std::enable_if_t<IsLogSumExp<T, Op>::value>>
 
 template <typename T> struct Hypot
 {
-    T operator()(const T &x, const T &y) const
-    {
-        return sycl::hypot(x, y);
-    }
+    T operator()(const T &x, const T &y) const { return sycl::hypot(x, y); }
 };
 
 template <typename T, class Op>

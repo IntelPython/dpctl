@@ -64,10 +64,7 @@ struct TestDPCTLSyclDeviceInterface
         }
     }
 
-    ~TestDPCTLSyclDeviceInterface()
-    {
-        DPCTLDevice_Delete(DRef);
-    }
+    ~TestDPCTLSyclDeviceInterface() { DPCTLDevice_Delete(DRef); }
 };
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesEqually)

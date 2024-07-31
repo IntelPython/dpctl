@@ -48,7 +48,8 @@ py_gemv(sycl::queue &q,
         const std::vector<sycl::event> &depends = {})
 {
     if (matrix.get_ndim() != 2 || vector.get_ndim() != 1 ||
-        result.get_ndim() != 1) {
+        result.get_ndim() != 1)
+    {
         throw std::runtime_error(
             "Inconsistent dimensions, expecting matrix and a vector");
     }

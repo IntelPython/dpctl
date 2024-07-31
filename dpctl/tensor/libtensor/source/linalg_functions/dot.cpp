@@ -239,7 +239,8 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
     }
     size_t x1_outer_nelems(1);
     for (int i = batch_dims; same_shapes && (i < (batch_dims + x1_outer_dims));
-         ++i) {
+         ++i)
+    {
         same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]);
         x1_outer_nelems *= x1_shape_ptr[i];
     }
@@ -419,7 +420,8 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             bool reduce_all_elems = false;
 
             if (simplified_inner_x1_strides[0] == 1 &&
-                simplified_inner_x2_strides[0] == 1) {
+                simplified_inner_x2_strides[0] == 1)
+            {
                 reduce_all_elems = (simplified_batch_shape[0] == 1);
                 dot_product_c_contig =
                     (simplified_batch_dst_strides[0] == 1) &&

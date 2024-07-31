@@ -976,7 +976,8 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                  reduction_nelems);
         }
         else if (static_cast<size_t>(compact_reduction_src_strides[0]) ==
-                 iter_nelems) {
+                 iter_nelems)
+        {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
                 (simplified_iteration_src_strides[0] == 1);
@@ -1257,7 +1258,8 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
                  red_nelems);
         }
         else if (static_cast<size_t>(simplified_red_src_strides[0]) ==
-                 iter_nelems) {
+                 iter_nelems)
+        {
             mat_reduce_over_axis0 = (simplified_iter_dst_strides[0] == 1) &&
                                     (simplified_iter_src_strides[0] == 1);
         }

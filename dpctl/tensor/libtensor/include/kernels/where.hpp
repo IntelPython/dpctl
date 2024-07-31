@@ -108,7 +108,8 @@ public:
                            sg.get_group_id()[0] * max_sgSize);
 
             if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize) {
+                sgSize == max_sgSize)
+            {
                 sycl::vec<T, vec_sz> dst_vec;
                 sycl::vec<T, vec_sz> x1_vec;
                 sycl::vec<T, vec_sz> x2_vec;
@@ -142,7 +143,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     dst_p[k] = cond_p[k] ? x1_p[k] : x2_p[k];
                 }
             }

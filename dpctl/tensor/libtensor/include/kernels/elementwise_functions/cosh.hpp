@@ -200,7 +200,8 @@ template <typename fnT, typename T> struct CoshContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CoshOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -247,7 +248,8 @@ template <typename fnT, typename T> struct CoshStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CoshOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

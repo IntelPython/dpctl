@@ -150,7 +150,8 @@ template <typename fnT, typename T> struct Log1pContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename Log1pOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -198,7 +199,8 @@ template <typename fnT, typename T> struct Log1pStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename Log1pOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
