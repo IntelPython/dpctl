@@ -59,8 +59,9 @@ class Info:
 
     def __init__(self):
         self._capabilities = {
-            "boolean_indexing": True,
-            "data_dependent_shapes": True,
+            "boolean indexing": True,
+            "data-dependent shapes": True,
+            "max dimensions": 64,
         }
         self._all_dtypes = {
             "bool": dpt.bool,
@@ -84,11 +85,20 @@ class Info:
 
         Returns a dictionary of ``dpctl``'s capabilities.
 
+        The dictionary contains the following keys:
+            ``"boolean indexing"``:
+                boolean indicating ``dpctl``'s support of boolean indexing.
+                Value: ``True``
+            ``"data-dependent shapes"``:
+                boolean indicating ``dpctl``'s support of data-dependent shapes.
+                Value: ``True``
+            ``max dimensions``:
+                integer indication the maximum array dimension supported by ``dpctl``.
+                Value: ``64``
+
         Returns:
             dict:
                 dictionary of ``dpctl``'s capabilities
-                - ``"boolean_indexing"``: bool
-                - ``data_dependent_shapes"``: bool
         """
         return self._capabilities.copy()
 
