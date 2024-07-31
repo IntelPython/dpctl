@@ -150,7 +150,8 @@ def test_diff_no_op():
     res = dpt.diff(x, n=0)
     assert dpt.all(x == res)
 
-    res = dpt.diff(dpt.reshape(x, (2, 5)), n=0, axis=0)
+    x = dpt.reshape(x, (2, 5))
+    res = dpt.diff(x, n=0, axis=0)
     assert dpt.all(x == res)
 
 
