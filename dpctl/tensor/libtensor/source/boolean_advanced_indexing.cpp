@@ -170,7 +170,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
     // masked_dst_nelems is number of set elements in the mask, or last element
     // in cumsum
     if (!same_ortho_dims ||
-        (masked_src_nelems != static_cast<size_t>(cumsum_sz))) {
+        (masked_src_nelems != static_cast<size_t>(cumsum_sz)))
+    {
         throw py::value_error("Inconsistent array dimensions");
     }
 
@@ -492,7 +493,8 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
     }
 
     if (!same_ortho_dims ||
-        (masked_dst_nelems != static_cast<size_t>(cumsum_sz))) {
+        (masked_dst_nelems != static_cast<size_t>(cumsum_sz)))
+    {
         throw py::value_error("Inconsistent array dimensions");
     }
 

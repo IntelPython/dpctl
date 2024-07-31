@@ -189,7 +189,8 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
         src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst_strides[0] == 1) {
+        simplified_dst_strides[0] == 1)
+    {
         auto fn = copy_for_roll_contig_dispatch_vector[type_id];
 
         if (fn != nullptr) {

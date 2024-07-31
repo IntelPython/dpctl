@@ -47,10 +47,7 @@ namespace accumulators
 
 using namespace dpctl::tensor::offset_utils;
 
-template <typename T> T ceiling_quotient(T n, T m)
-{
-    return (n + m - 1) / m;
-}
+template <typename T> T ceiling_quotient(T n, T m) { return (n + m - 1) / m; }
 
 template <typename inputT, typename outputT> struct NonZeroIndicator
 {
@@ -70,10 +67,7 @@ template <typename T> struct NoOpTransformer
 {
     constexpr NoOpTransformer() {}
 
-    T operator()(const T &val) const
-    {
-        return val;
-    }
+    T operator()(const T &val) const { return val; }
 };
 
 template <typename srcTy, typename dstTy> struct CastTransformer
@@ -108,20 +102,11 @@ public:
     }
     ~stack_t(){};
 
-    T *get_src_ptr() const
-    {
-        return src_;
-    }
+    T *get_src_ptr() const { return src_; }
 
-    size_t get_size() const
-    {
-        return size_;
-    }
+    size_t get_size() const { return size_; }
 
-    T *get_local_scans_ptr() const
-    {
-        return local_scans_;
-    }
+    T *get_local_scans_ptr() const { return local_scans_; }
 };
 
 template <typename T> class stack_strided_t
@@ -140,25 +125,13 @@ public:
     }
     ~stack_strided_t(){};
 
-    T *get_src_ptr() const
-    {
-        return src_;
-    }
+    T *get_src_ptr() const { return src_; }
 
-    size_t get_size() const
-    {
-        return size_;
-    }
+    size_t get_size() const { return size_; }
 
-    T *get_local_scans_ptr() const
-    {
-        return local_scans_;
-    }
+    T *get_local_scans_ptr() const { return local_scans_; }
 
-    size_t get_local_stride() const
-    {
-        return local_stride_;
-    }
+    size_t get_local_stride() const { return local_stride_; }
 };
 
 } // end of anonymous namespace
@@ -283,7 +256,8 @@ inclusive_scan_base_step(sycl::queue &exec_q,
 
             outputT wg_iscan_val;
             if constexpr (can_use_inclusive_scan_over_group<ScanOpT,
-                                                            outputT>::value) {
+                                                            outputT>::value)
+            {
                 wg_iscan_val = sycl::inclusive_scan_over_group(
                     it.get_group(), local_iscan.back(), scan_op, identity);
             }
@@ -305,7 +279,8 @@ inclusive_scan_base_step(sycl::queue &exec_q,
             }
 
             for (nwiT m_wi = 0; (m_wi < n_wi) && (i + m_wi < acc_nelems);
-                 ++m_wi) {
+                 ++m_wi)
+            {
                 output[out_iter_offset + out_indexer(i + m_wi)] =
                     local_iscan[m_wi];
             }

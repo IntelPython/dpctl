@@ -76,10 +76,7 @@ public:
         return *this;
     }
 
-    size_t get_num_submitted_events() const
-    {
-        return submitted_events.size();
-    }
+    size_t get_num_submitted_events() const { return submitted_events.size(); }
 
     const std::vector<sycl::event> &get_host_task_events()
     {
@@ -93,10 +90,7 @@ public:
         }
     */
 
-    size_t get_num_host_task_events() const
-    {
-        return host_task_events.size();
-    }
+    size_t get_num_host_task_events() const { return host_task_events.size(); }
 
     const std::vector<sycl::event> &get_submitted_events()
     {

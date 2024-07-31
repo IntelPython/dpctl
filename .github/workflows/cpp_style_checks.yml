@@ -20,10 +20,20 @@ jobs:
     - name: Run clang-format style check for C/C++ programs.
       uses: jidicula/clang-format-action@v4.13.0
       with:
-        clang-format-version: '11'
+        clang-format-version: '18'
         check-path: 'libsyclinterface'
     - name: Run clang-format style check for api headers.
       uses: jidicula/clang-format-action@v4.13.0
       with:
-        clang-format-version: '11'
+        clang-format-version: '18'
         check-path: 'dpctl/apis'
+    - name: Run clang-format style check for libtensor/source.
+      uses: jidicula/clang-format-action@v4.13.0
+      with:
+        clang-format-version: '18'
+        check-path: 'dpctl/tensor/libtensor/source'
+    - name: Run clang-format style check for libtensor/include.
+      uses: jidicula/clang-format-action@v4.13.0
+      with:
+        clang-format-version: '18'
+        check-path: 'dpctl/tensor/libtensor/include'

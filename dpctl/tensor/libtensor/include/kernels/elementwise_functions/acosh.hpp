@@ -202,7 +202,8 @@ template <typename fnT, typename T> struct AcoshContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AcoshOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -249,7 +250,8 @@ template <typename fnT, typename T> struct AcoshStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AcoshOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

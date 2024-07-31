@@ -57,54 +57,53 @@ void cpp_blackscholes(sycl::queue &q, size_t n_opts, T *params, T *callput)
         data_t half = one / two;
 
         cgh.parallel_for<class black_scholes_kernel<T>>(
-            sycl::range<1>(n_opts), [=](sycl::id<1> idx)
-        {
-            const size_t i = n_params * idx[0];
-            const data_t opt_price = params[i + PRICE];
-            const data_t opt_strike = params[i + STRIKE];
-            const data_t opt_maturity = params[i + MATURITY];
-            const data_t opt_rate = params[i + RATE];
-            const data_t opt_volatility = params[i + VOLATILITY];
-            data_t a, b, c, y, z, e, d1, d1c, d2, d2c, w1, w2;
-            data_t mr = -opt_rate,
-                   sig_sig_two = two * opt_volatility * opt_volatility;
+            sycl::range<1>(n_opts), [=](sycl::id<1> idx) {
+                const size_t i = n_params * idx[0];
+                const data_t opt_price = params[i + PRICE];
+                const data_t opt_strike = params[i + STRIKE];
+                const data_t opt_maturity = params[i + MATURITY];
+                const data_t opt_rate = params[i + RATE];
+                const data_t opt_volatility = params[i + VOLATILITY];
+                data_t a, b, c, y, z, e, d1, d1c, d2, d2c, w1, w2;
+                data_t mr = -opt_rate,
+                       sig_sig_two = two * opt_volatility * opt_volatility;
 
-            a = sycl::log(opt_price / opt_strike);
-            b = opt_maturity * mr;
-            z = opt_maturity * sig_sig_two;
+                a = sycl::log(opt_price / opt_strike);
+                b = opt_maturity * mr;
+                z = opt_maturity * sig_sig_two;
 
-            c = quarter * z;
-            e = sycl::exp(b);
-            y = sycl::rsqrt(z);
+                c = quarter * z;
+                e = sycl::exp(b);
+                y = sycl::rsqrt(z);
 
-            a = b - a;
-            w1 = (a - c) * y;
-            w2 = (a + c) * y;
+                a = b - a;
+                w1 = (a - c) * y;
+                w2 = (a + c) * y;
 
-            if (w1 < zero) {
-                d1 = sycl::erfc(w1) * half;
-                d1c = one - d1;
-            }
-            else {
-                d1c = sycl::erfc(-w1) * half;
-                d1 = one - d1c;
-            }
-            if (w2 < zero) {
-                d2 = sycl::erfc(w2) * half;
-                d2c = one - d2;
-            }
-            else {
-                d2c = sycl::erfc(-w2) * half;
-                d2 = one - d2c;
-            }
+                if (w1 < zero) {
+                    d1 = sycl::erfc(w1) * half;
+                    d1c = one - d1;
+                }
+                else {
+                    d1c = sycl::erfc(-w1) * half;
+                    d1 = one - d1c;
+                }
+                if (w2 < zero) {
+                    d2 = sycl::erfc(w2) * half;
+                    d2c = one - d2;
+                }
+                else {
+                    d2c = sycl::erfc(-w2) * half;
+                    d2 = one - d2c;
+                }
 
-            e *= opt_strike;
-            data_t call_price = opt_price * d1 - e * d2;
-            data_t put_price = e * d2c - opt_price * d1c;
+                e *= opt_strike;
+                data_t call_price = opt_price * d1 - e * d2;
+                data_t put_price = e * d2c - opt_price * d1c;
 
-            const size_t callput_i = n_prices * idx[0];
-            callput[callput_i + CALL] = call_price;
-            callput[callput_i + PUT] = put_price;
+                const size_t callput_i = n_prices * idx[0];
+                callput[callput_i + CALL] = call_price;
+                callput[callput_i + PUT] = put_price;
             });
     });
 

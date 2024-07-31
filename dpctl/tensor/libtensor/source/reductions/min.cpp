@@ -183,9 +183,11 @@ struct MinOverAxisTempsStridedFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
+                          !std::is_same_v<dstTy, bool>)
+            {
                 using ReductionOpT = sycl::minimum<dstTy>;
                 return dpctl::tensor::kernels::
                     reduction_over_group_temps_strided_impl<srcTy, dstTy,
@@ -264,9 +266,11 @@ struct MinOverAxis1TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
+                          !std::is_same_v<dstTy, bool>)
+            {
                 using ReductionOpT = sycl::minimum<dstTy>;
                 return dpctl::tensor::kernels::
                     reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
@@ -291,9 +295,11 @@ struct MinOverAxis0TempsContigFactory
     fnT get() const
     {
         if constexpr (TypePairSupportDataForMinReductionTemps<
-                          srcTy, dstTy>::is_defined) {
+                          srcTy, dstTy>::is_defined)
+        {
             if constexpr (std::is_integral_v<dstTy> &&
-                          !std::is_same_v<dstTy, bool>) {
+                          !std::is_same_v<dstTy, bool>)
+            {
                 using ReductionOpT = sycl::minimum<dstTy>;
                 return dpctl::tensor::kernels::
                     reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,

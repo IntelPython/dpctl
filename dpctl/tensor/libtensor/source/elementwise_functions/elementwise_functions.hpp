@@ -181,7 +181,8 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
         src_offset, dst_offset);
 
     if (nd == 1 && simplified_src_strides[0] == 1 &&
-        simplified_dst_strides[0] == 1) {
+        simplified_dst_strides[0] == 1)
+    {
         // Special case of contiguous data
         auto contig_fn = contig_dispatch_vector[src_typeid];
 

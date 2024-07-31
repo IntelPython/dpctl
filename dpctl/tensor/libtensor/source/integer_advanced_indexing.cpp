@@ -382,7 +382,8 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
             }
 
             if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
+                  array_types.typenum_to_lookup_id(ind_.get_typenum())))
+            {
                 throw py::type_error(
                     "Indices array data types are not all the same.");
             }
@@ -689,7 +690,8 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
             }
 
             if (!(ind_type_id ==
-                  array_types.typenum_to_lookup_id(ind_.get_typenum()))) {
+                  array_types.typenum_to_lookup_id(ind_.get_typenum())))
+            {
                 throw py::type_error(
                     "Indices array data types are not all the same.");
             }

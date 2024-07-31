@@ -126,7 +126,8 @@ struct ArgmaxOverAxisTempsStridedFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::maximum<srcTy>;
                 // op for indices
@@ -160,7 +161,8 @@ struct ArgmaxOverAxis1TempsContigFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::maximum<srcTy>;
                 // op for indices
@@ -194,7 +196,8 @@ struct ArgmaxOverAxis0TempsContigFactory
                                                              dstTy>::is_defined)
         {
             if constexpr (std::is_integral_v<srcTy> &&
-                          !std::is_same_v<srcTy, bool>) {
+                          !std::is_same_v<srcTy, bool>)
+            {
                 // op for values
                 using ReductionOpT = sycl::maximum<srcTy>;
                 // op for indices

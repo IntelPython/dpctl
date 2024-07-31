@@ -11,3 +11,6 @@
 
 # Linter changes
 084ba59ce87efb55e09fff6ae33665d0f14f22b5
+
+# Transition from clang-format 11 to clang-format 18
+b37657e6ad9af16eaec2982d8e2397acd2af2881

@@ -278,10 +278,7 @@ template <typename argT, typename resT> struct BitwiseLeftShiftInplaceFunctor
     using supports_sg_loadstore = typename std::true_type;
     using supports_vec = typename std::true_type;
 
-    void operator()(resT &res, const argT &in) const
-    {
-        impl(res, in);
-    }
+    void operator()(resT &res, const argT &in) const { impl(res, in); }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,

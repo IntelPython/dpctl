@@ -84,7 +84,8 @@ public:
                            sg.get_group_id()[0] * sgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize)) {
+                (sgSize == maxsgSize))
+            {
 
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
@@ -107,7 +108,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     op(lhs[k], rhs[k]);
                 }
             }
@@ -124,7 +126,8 @@ public:
                            sg.get_group_id()[0] * sgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize)) {
+                (sgSize == maxsgSize))
+            {
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
@@ -148,7 +151,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     op(lhs[k], rhs[k]);
                 }
             }
@@ -248,7 +252,8 @@ public:
         }
         else {
             for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize) {
+                 k += sgSize)
+            {
                 op(mat[k], padded_vec[k % n1]);
             }
         }

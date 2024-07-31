@@ -134,7 +134,8 @@ template <typename fnT, typename T> struct ImagContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ImagOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -181,7 +182,8 @@ template <typename fnT, typename T> struct ImagStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ImagOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

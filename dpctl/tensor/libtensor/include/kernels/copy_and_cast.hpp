@@ -248,7 +248,8 @@ public:
                            sg.get_group_id()[0] * max_sgSize);
 
             if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize) {
+                sgSize == max_sgSize)
+            {
                 sycl::vec<srcT, vec_sz> src_vec;
                 sycl::vec<dstT, vec_sz> dst_vec;
 
@@ -273,7 +274,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     dst_p[k] = fn(src_p[k]);
                 }
             }
@@ -803,10 +805,7 @@ template <typename IndexerT, typename TransformerT> struct CompositionIndexer
 {
     CompositionIndexer(IndexerT f, TransformerT t) : f_(f), t_(t) {}
 
-    auto operator()(size_t gid) const
-    {
-        return f_(t_(gid));
-    }
+    auto operator()(size_t gid) const { return f_(t_(gid)); }
 
 private:
     IndexerT f_;
@@ -827,10 +826,7 @@ struct RolledNDIndexer
     {
     }
 
-    ssize_t operator()(size_t gid) const
-    {
-        return compute_offset(gid);
-    }
+    ssize_t operator()(size_t gid) const { return compute_offset(gid); }
 
 private:
     int nd_ = -1;

@@ -61,10 +61,7 @@ template <typename argT, typename resT> struct PositiveFunctor
     using supports_sg_loadstore = typename std::negation<
         std::disjunction<is_complex<resT>, is_complex<argT>>>;
 
-    resT operator()(const argT &x) const
-    {
-        return x;
-    }
+    resT operator()(const argT &x) const { return x; }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &in) const
@@ -135,7 +132,8 @@ template <typename fnT, typename T> struct PositiveContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PositiveOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -188,7 +186,8 @@ template <typename fnT, typename T> struct PositiveStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PositiveOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

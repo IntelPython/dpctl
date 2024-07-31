@@ -118,7 +118,8 @@ template <typename fnT, typename T> struct AngleContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AngleOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -165,7 +166,8 @@ template <typename fnT, typename T> struct AngleStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename AngleOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

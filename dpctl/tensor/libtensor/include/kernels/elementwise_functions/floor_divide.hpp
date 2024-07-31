@@ -120,10 +120,7 @@ struct FloorDivideFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT1,
@@ -370,10 +367,7 @@ template <typename argT, typename resT> struct FloorDivideInplaceFunctor
     }
 
 private:
-    bool l_xor(bool b1, bool b2) const
-    {
-        return (b1 != b2);
-    }
+    bool l_xor(bool b1, bool b2) const { return (b1 != b2); }
 };
 
 template <typename argT,

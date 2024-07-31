@@ -131,7 +131,8 @@ template <typename fnT, typename T> struct CeilContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CeilOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -178,7 +179,8 @@ template <typename fnT, typename T> struct CeilStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CeilOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

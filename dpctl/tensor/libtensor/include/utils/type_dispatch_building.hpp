@@ -251,10 +251,7 @@ template <typename FunPtrT> struct NullPtrVector
 
     NullPtrVector() : val(nullptr) {}
 
-    const_reference operator[](int) const
-    {
-        return val;
-    }
+    const_reference operator[](int) const { return val; }
 
 private:
     value_type val;
@@ -268,10 +265,7 @@ template <typename FunPtrT> struct NullPtrTable
 
     NullPtrTable() : val() {}
 
-    const_reference operator[](int) const
-    {
-        return val;
-    }
+    const_reference operator[](int) const { return val; }
 
 private:
     value_type val;

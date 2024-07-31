@@ -131,7 +131,8 @@ template <typename fnT, typename T> struct FloorContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename FloorOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -178,7 +179,8 @@ template <typename fnT, typename T> struct FloorStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename FloorOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

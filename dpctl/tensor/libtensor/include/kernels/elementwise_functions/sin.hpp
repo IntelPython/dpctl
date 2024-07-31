@@ -233,7 +233,8 @@ template <typename fnT, typename T> struct SinContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SinOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -279,7 +280,8 @@ template <typename fnT, typename T> struct SinStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename SinOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

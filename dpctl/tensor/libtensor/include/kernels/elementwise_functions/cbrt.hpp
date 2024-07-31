@@ -60,10 +60,7 @@ template <typename argT, typename resT> struct CbrtFunctor
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    resT operator()(const argT &in) const
-    {
-        return sycl::cbrt(in);
-    }
+    resT operator()(const argT &in) const { return sycl::cbrt(in); }
 };
 
 template <typename argTy,
@@ -113,7 +110,8 @@ template <typename fnT, typename T> struct CbrtContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CbrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -160,7 +158,8 @@ template <typename fnT, typename T> struct CbrtStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename CbrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

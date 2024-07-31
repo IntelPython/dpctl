@@ -350,7 +350,8 @@ template <typename fnT, typename T, typename indT> struct TakeWrapFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             fnT fn = take_impl<WrapIndex, T, indT>;
             return fn;
         }
@@ -366,7 +367,8 @@ template <typename fnT, typename T, typename indT> struct TakeClipFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             fnT fn = take_impl<ClipIndex, T, indT>;
             return fn;
         }
@@ -382,7 +384,8 @@ template <typename fnT, typename T, typename indT> struct PutWrapFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             fnT fn = put_impl<WrapIndex, T, indT>;
             return fn;
         }
@@ -398,7 +401,8 @@ template <typename fnT, typename T, typename indT> struct PutClipFactory
     fnT get()
     {
         if constexpr (std::is_integral<indT>::value &&
-                      !std::is_same<indT, bool>::value) {
+                      !std::is_same<indT, bool>::value)
+        {
             fnT fn = put_impl<ClipIndex, T, indT>;
             return fn;
         }

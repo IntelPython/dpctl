@@ -169,7 +169,8 @@ template <typename fnT, typename T> struct ExpContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ExpOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -215,7 +216,8 @@ template <typename fnT, typename T> struct ExpStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename ExpOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

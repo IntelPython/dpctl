@@ -75,12 +75,14 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
                           std::is_signed_v<argT1> != std::is_signed_v<argT2>)
             {
                 if constexpr (std::is_signed_v<argT1> &&
-                              !std::is_signed_v<argT2>) {
+                              !std::is_signed_v<argT2>)
+                {
                     return (in1 < 0) ? true : (static_cast<argT2>(in1) < in2);
                 }
                 else {
                     if constexpr (!std::is_signed_v<argT1> &&
-                                  std::is_signed_v<argT2>) {
+                                  std::is_signed_v<argT2>)
+                    {
                         return (in2 < 0) ? false
                                          : (in1 < static_cast<argT1>(in2));
                     }
@@ -100,7 +102,8 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
         auto tmp = (in1 < in2);
 
         if constexpr (std::is_same_v<resT,
-                                     typename decltype(tmp)::element_type>) {
+                                     typename decltype(tmp)::element_type>)
+        {
             return tmp;
         }
         else {
@@ -213,7 +216,8 @@ template <typename fnT, typename T1, typename T2> struct LessContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename LessOutputType<T1, T2>::value_type, void>) {
+                          typename LessOutputType<T1, T2>::value_type, void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -264,7 +268,8 @@ template <typename fnT, typename T1, typename T2> struct LessStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<
-                          typename LessOutputType<T1, T2>::value_type, void>) {
+                          typename LessOutputType<T1, T2>::value_type, void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

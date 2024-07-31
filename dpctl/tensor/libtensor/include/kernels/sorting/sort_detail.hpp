@@ -38,10 +38,7 @@ namespace kernels
 namespace sort_detail
 {
 
-template <typename T> T quotient_ceil(T n, T m)
-{
-    return (n + m - 1) / m;
-}
+template <typename T> T quotient_ceil(T n, T m) { return (n + m - 1) / m; }
 
 template <typename Acc, typename Value, typename Compare>
 std::size_t lower_bound_impl(const Acc acc,

@@ -264,7 +264,8 @@ template <typename fnT, typename T1, typename T2> struct PowContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -314,7 +315,8 @@ template <typename fnT, typename T1, typename T2> struct PowStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -464,7 +466,8 @@ template <typename fnT, typename T1, typename T2> struct PowInplaceContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -503,7 +506,8 @@ struct PowInplaceStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

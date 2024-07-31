@@ -177,7 +177,8 @@ template <typename fnT, typename T> struct TanContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename TanOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -223,7 +224,8 @@ template <typename fnT, typename T> struct TanStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename TanOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

@@ -63,10 +63,7 @@ template <typename argT, typename resT> struct RsqrtFunctor
     // do both argTy and resTy support sugroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    resT operator()(const argT &in) const
-    {
-        return sycl::rsqrt(in);
-    }
+    resT operator()(const argT &in) const { return sycl::rsqrt(in); }
 };
 
 template <typename argTy,
@@ -116,7 +113,8 @@ template <typename fnT, typename T> struct RsqrtContigFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename RsqrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }
@@ -163,7 +161,8 @@ template <typename fnT, typename T> struct RsqrtStridedFactory
     fnT get()
     {
         if constexpr (std::is_same_v<typename RsqrtOutputType<T>::value_type,
-                                     void>) {
+                                     void>)
+        {
             fnT fn = nullptr;
             return fn;
         }

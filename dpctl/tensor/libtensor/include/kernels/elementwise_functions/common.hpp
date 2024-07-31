@@ -84,7 +84,8 @@ public:
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
             if (base + n_vecs * vec_sz * sgSize < nelems_ &&
-                max_sgSize == sgSize) {
+                max_sgSize == sgSize)
+            {
                 sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
@@ -99,7 +100,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     out[k] = const_val;
                 }
             }
@@ -115,7 +117,8 @@ public:
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * max_sgSize);
             if (base + n_vecs * vec_sz * sgSize < nelems_ &&
-                sgSize == max_sgSize) {
+                sgSize == max_sgSize)
+            {
                 sycl::vec<argT, vec_sz> x;
 
 #pragma unroll
@@ -136,7 +139,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     // scalar call
                     out[k] = op(in[k]);
                 }
@@ -156,7 +160,8 @@ public:
                            sg.get_group_id()[0] * maxsgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (maxsgSize == sgSize)) {
+                (maxsgSize == sgSize))
+            {
                 sycl::vec<argT, vec_sz> arg_vec;
 
 #pragma unroll
@@ -180,7 +185,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     out[k] = op(in[k]);
                 }
             }
@@ -198,7 +204,8 @@ public:
                            sg.get_group_id()[0] * maxsgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (maxsgSize == sgSize)) {
+                (maxsgSize == sgSize))
+            {
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
@@ -223,7 +230,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     out[k] = op(in[k]);
                 }
             }
@@ -410,7 +418,8 @@ public:
                            sg.get_group_id()[0] * sgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize)) {
+                (sgSize == maxsgSize))
+            {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
@@ -437,7 +446,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     out[k] = op(in1[k], in2[k]);
                 }
             }
@@ -454,7 +464,8 @@ public:
                            sg.get_group_id()[0] * sgSize);
 
             if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize)) {
+                (sgSize == maxsgSize))
+            {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
@@ -485,7 +496,8 @@ public:
             }
             else {
                 for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize) {
+                     k += sgSize)
+                {
                     out[k] = op(in1[k], in2[k]);
                 }
             }
@@ -599,7 +611,8 @@ public:
         }
         else {
             for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize) {
+                 k += sgSize)
+            {
                 res[k] = op(mat[k], padded_vec[k % n1]);
             }
         }
@@ -663,7 +676,8 @@ public:
         }
         else {
             for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize) {
+                 k += sgSize)
+            {
                 res[k] = op(padded_vec[k % n1], mat[k]);
             }
         }
