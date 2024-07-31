@@ -281,3 +281,17 @@ def test_greater_mixed_integer_kinds():
     # Python scalar
     assert dpt.all(dpt.greater(x2, -1))
     assert not dpt.any(dpt.greater(-1, x2))
+
+
+def test_greater_very_large_py_int():
+    get_queue_or_skip()
+
+    py_int = dpt.iinfo(dpt.int64).max + 10
+
+    x = dpt.asarray(3, dtype="u8")
+    assert py_int > x
+    assert not dpt.greater(x, py_int)
+
+    x = dpt.asarray(py_int, dtype="u8")
+    assert x > -1
+    assert not dpt.greater(-1, x)

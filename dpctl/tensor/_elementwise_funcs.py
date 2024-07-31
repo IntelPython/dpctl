@@ -22,7 +22,7 @@ from ._type_utils import (
     _acceptance_fn_negative,
     _acceptance_fn_reciprocal,
     _acceptance_fn_subtract,
-    _resolve_weak_types_comparisons,
+    _resolve_weak_types_all_py_ints,
 )
 
 # U01: ==== ABS    (x)
@@ -661,6 +661,7 @@ divide = BinaryElementwiseFunc(
     _divide_docstring_,
     binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=_acceptance_fn_divide,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _divide_docstring_
 
@@ -695,7 +696,7 @@ equal = BinaryElementwiseFunc(
     ti._equal_result_type,
     ti._equal,
     _equal_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _equal_docstring_
 
@@ -854,7 +855,7 @@ greater = BinaryElementwiseFunc(
     ti._greater_result_type,
     ti._greater,
     _greater_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _greater_docstring_
 
@@ -890,7 +891,7 @@ greater_equal = BinaryElementwiseFunc(
     ti._greater_equal_result_type,
     ti._greater_equal,
     _greater_equal_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _greater_equal_docstring_
 
@@ -1041,7 +1042,7 @@ less = BinaryElementwiseFunc(
     ti._less_result_type,
     ti._less,
     _less_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _less_docstring_
 
@@ -1077,7 +1078,7 @@ less_equal = BinaryElementwiseFunc(
     ti._less_equal_result_type,
     ti._less_equal,
     _less_equal_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _less_equal_docstring_
 
@@ -1552,7 +1553,7 @@ not_equal = BinaryElementwiseFunc(
     ti._not_equal_result_type,
     ti._not_equal,
     _not_equal_docstring_,
-    weak_type_resolver=_resolve_weak_types_comparisons,
+    weak_type_resolver=_resolve_weak_types_all_py_ints,
 )
 del _not_equal_docstring_
 

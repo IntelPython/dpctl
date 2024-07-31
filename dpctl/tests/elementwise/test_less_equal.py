@@ -280,3 +280,17 @@ def test_less_equal_mixed_integer_kinds():
     # Python scalar
     assert not dpt.any(dpt.less_equal(x2, -1))
     assert dpt.all(dpt.less_equal(-1, x2))
+
+
+def test_less_equal_very_large_py_int():
+    get_queue_or_skip()
+
+    py_int = dpt.iinfo(dpt.int64).max + 10
+
+    x = dpt.asarray(3, dtype="u8")
+    assert not py_int <= x
+    assert dpt.less_equal(x, py_int)
+
+    x = dpt.asarray(py_int, dtype="u8")
+    assert not x <= -1
+    assert dpt.less_equal(-1, x)
