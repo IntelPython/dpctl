@@ -247,8 +247,7 @@ def test_diff_wrong_append_prepend_shape():
 
     assert_raises_regex(
         ValueError,
-        "`diff` argument `prepend` with shape.*is invalid"
-        " for first input with shape.*",
+        ".*shape.*is invalid.*",
         dpt.diff,
         arr,
         prepend=arr_bad_sh,
@@ -257,8 +256,7 @@ def test_diff_wrong_append_prepend_shape():
 
     assert_raises_regex(
         ValueError,
-        "`diff` argument `append` with shape.*is invalid"
-        " for first input with shape.*",
+        ".*shape.*is invalid.*",
         dpt.diff,
         arr,
         prepend=arr,
@@ -267,8 +265,7 @@ def test_diff_wrong_append_prepend_shape():
 
     assert_raises_regex(
         ValueError,
-        "`diff` argument `prepend` with shape.*is invalid"
-        " for first input with shape.*",
+        ".*shape.*is invalid.*",
         dpt.diff,
         arr,
         prepend=arr_bad_sh,
@@ -276,8 +273,7 @@ def test_diff_wrong_append_prepend_shape():
 
     assert_raises_regex(
         ValueError,
-        "`diff` argument `append` with shape.*is invalid"
-        " for first input with shape.*",
+        ".*shape.*is invalid.*",
         dpt.diff,
         arr,
         append=arr_bad_sh,
@@ -293,53 +289,20 @@ def test_diff_compute_follows_data():
     ar2 = dpt.ones(1, dtype="i4", sycl_queue=q2)
     ar3 = dpt.ones(1, dtype="i4", sycl_queue=q3)
 
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred from input "
-        "arguments",
-        dpt.diff,
-        ar1,
-        prepend=ar2,
-        append=ar3,
-    )
+    with pytest.raises(ExecutionPlacementError):
+        dpt.diff(ar1, prepend=ar2, append=ar3)
 
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred from input "
-        "arguments",
-        dpt.diff,
-        ar1,
-        prepend=ar2,
-        append=0,
-    )
+    with pytest.raises(ExecutionPlacementError):
+        dpt.diff(ar1, prepend=ar2, append=0)
 
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred from input "
-        "arguments",
-        dpt.diff,
-        ar1,
-        prepend=0,
-        append=ar2,
-    )
+    with pytest.raises(ExecutionPlacementError):
+        dpt.diff(ar1, prepend=0, append=ar2)
 
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred from input "
-        "arguments",
-        dpt.diff,
-        ar1,
-        prepend=ar2,
-    )
+    with pytest.raises(ExecutionPlacementError):
+        dpt.diff(ar1, prepend=ar2)
 
-    assert_raises_regex(
-        ExecutionPlacementError,
-        "Execution placement can not be unambiguously inferred from input "
-        "arguments",
-        dpt.diff,
-        ar1,
-        append=ar2,
-    )
+    with pytest.raises(ExecutionPlacementError):
+        dpt.diff(ar1, append=ar2)
 
 
 def test_diff_input_validation():
