@@ -71,9 +71,9 @@ def test_diff_axis():
     x[:, ::2, :] = 0
 
     for n in [1, 2, 3]:
-        res = dpt.diff(x, n=3, axis=1)
+        res = dpt.diff(x, n=n, axis=1)
         expected_res = x
-        for _ in range(3):
+        for _ in range(n):
             expected_res = dpt.subtract(
                 expected_res[:, 1:, :], expected_res[:, :-1, :]
             )
@@ -90,10 +90,10 @@ def test_diff_prepend_append_type_promotion():
         ("i8", "c8", "u8"),
     ]
 
-    for _dts in dts:
-        x = dpt.ones(10, dtype=_dts[1])
-        prepend = dpt.full(1, 2, dtype=_dts[0])
-        append = dpt.full(1, 3, dtype=_dts[2])
+    for dt0, dt1, dt2 in dts:
+        x = dpt.ones(10, dtype=dt1)
+        prepend = dpt.full(1, 2, dtype=dt0)
+        append = dpt.full(1, 3, dtype=dt2)
 
         res = dpt.diff(x, prepend=prepend, append=append)
         assert res.dtype == _to_device_supported_dtype(
