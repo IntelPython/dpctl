@@ -1537,3 +1537,23 @@ def test_advanced_integer_indexing_cast_indices():
     x = dpt.ones((3, 4, 5, 6), dtype="i4")
     with pytest.raises(ValueError):
         x[inds0, inds1, inds2, ...]
+
+
+def test_take_along_axis():
+    get_queue_or_skip()
+
+    n0, n1, n2 = 3, 5, 7
+    x = dpt.reshape(dpt.arange(n0 * n1 * n2), (n0, n1, n2))
+    ind_dt = dpt.__array_namespace_info__().default_dtypes(
+        device=x.sycl_device
+    )["indexing"]
+    ind0 = dpt.ones((1, n1, n2), dtype=ind_dt)
+    ind1 = dpt.ones((n0, 1, n2), dtype=ind_dt)
+    ind2 = dpt.ones((n0, n1, 1), dtype=ind_dt)
+
+    y0 = dpt.take_along_axis(x, ind0, axis=0)
+    assert y0.shape == ind0.shape
+    y1 = dpt.take_along_axis(x, ind1, axis=1)
+    assert y1.shape == ind1.shape
+    y2 = dpt.take_along_axis(x, ind2, axis=2)
+    assert y2.shape == ind2.shape
