@@ -440,10 +440,8 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
     Returns:
         usm_ndarray:
             an array containing the `n`-th differences. The array will have the
-            same shape as `x`, except along `axis`, which will have shape
-
-            - prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n
-
+            same shape as `x`, except along `axis`, which will have shape:
+                prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n
             The data type of the returned array is determined by the Type
             Promotion Rules.
     """
