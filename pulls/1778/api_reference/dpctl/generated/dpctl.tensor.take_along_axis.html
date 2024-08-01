@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.take" href="dpctl.tensor.take.html" /><link rel="prev" title="dpctl.tensor.place" href="dpctl.tensor.place.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Inspection API" href="../tensor.inspection.html" /><link rel="prev" title="dpctl.tensor.take" href="dpctl.tensor.take.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.07.18 -->
-        <title>dpctl.tensor.put - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.take_along_axis - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -587,9 +587,9 @@
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.indexing_functions.html">Indexing functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Indexing functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put.html">dpctl.tensor.put</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.take_along_axis</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.inspection.html">Inspection API</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Inspection API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -790,7 +790,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.put.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.take_along_axis.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -810,23 +810,24 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-tensor-put">
-<h1>dpctl.tensor.put<a class="headerlink" href="#dpctl-tensor-put" title="Permalink to this heading">¶</a></h1>
+          <section id="dpctl-tensor-take-along-axis">
+<h1>dpctl.tensor.take_along_axis<a class="headerlink" href="#dpctl-tensor-take-along-axis" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.put">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_indexing_functions.html#put"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put" title="Permalink to this definition">¶</a></dt>
-<dd><p>Puts values into an array along a given axis at given indices.</p>
+<dt class="sig sig-object py" id="dpctl.tensor.take_along_axis">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">take_along_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_indexing_functions.html#take_along_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.take_along_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns elements from an array at the one-dimensional indices specified
+by <code class="docutils literal notranslate"><span class="pre">indices</span></code> along a provided <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – The array the values will be put into.</p></li>
-<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – One-dimensional array of indices.</p></li>
-<li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
-Must be broadcastable to the result shape
-<code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
-If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Must be compatible with <code class="docutils literal notranslate"><span class="pre">indices</span></code>, except for the
+axis (dimension) specified by <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – array indices. Must have the same rank (i.e., number of dimensions)
+as <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>axis</strong> – int
+axis along which to select values. If <code class="docutils literal notranslate"><span class="pre">axis</span></code> is negative, the
+function determines the axis along which to select values by
+counting from the last dimension. Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
 <li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
 are:</p>
 <ul>
@@ -838,51 +839,21 @@ negative indices.</p></li>
 </p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array having the same data type as <code class="docutils literal notranslate"><span class="pre">x</span></code>. The returned array has
+the same rank (i.e., number of dimensions) as <code class="docutils literal notranslate"><span class="pre">x</span></code> and a shape
+determined according to <span class="xref std std-ref">broadcasting</span>, except for the axis
+(dimension) specified by <code class="docutils literal notranslate"><span class="pre">axis</span></code> whose size must equal the size
+of the corresponding axis (dimension) in <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If input array <code class="docutils literal notranslate"><span class="pre">indices</span></code> contains duplicates, a race condition
-occurs, and the value written into corresponding positions in <code class="docutils literal notranslate"><span class="pre">x</span></code>
-may vary from run to run. Preserving sequential semantics in handing
-the duplicates to achieve deterministic behavior requires additional
-work, e.g.</p>
-<dl class="field-list">
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
-
-<span class="k">def</span> <span class="nf">put_vec_duplicates</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
-    <span class="s2">&quot;Put values into vec, handling possible duplicates in ind&quot;</span>
-    <span class="k">assert</span> <span class="n">vec</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
-
-    <span class="c1"># find positions of last occurences of each</span>
-    <span class="c1"># unique index</span>
-    <span class="n">ind_flipped</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-    <span class="n">ind_uniq</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_all</span><span class="p">(</span><span class="n">ind_flipped</span><span class="p">)</span><span class="o">.</span><span class="n">indices</span>
-    <span class="n">has_dups</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind_uniq</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">has_dups</span><span class="p">:</span>
-        <span class="n">ind_uniq</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
-        <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">ind_uniq</span><span class="p">)</span>
-
-    <span class="n">dpt</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
-
-<span class="n">n</span> <span class="o">=</span> <span class="mi">512</span>
-<span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=-</span><span class="mi">1</span><span class="p">)))</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>
-<span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-
-<span class="c1"># Values corresponding to last positions of</span>
-<span class="c1"># duplicate indices are written into the vector x</span>
-<span class="n">put_vec_duplicates</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
-
-<span class="n">parts</span> <span class="o">=</span> <span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
-<span class="n">expected</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">expected</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
+<p>Treatment of the out-of-bound indices in <code class="docutils literal notranslate"><span class="pre">indices</span></code> array is controlled
+by the value of <code class="docutils literal notranslate"><span class="pre">mode</span></code> keyword.</p>
 </div>
 </dd></dl>
 
@@ -893,23 +864,23 @@ work, e.g.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.tensor.take.html">
+          <a class="next-page" href="../tensor.inspection.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.take</div>
+                <div class="title">Inspection API</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.tensor.place.html">
+          <a class="prev-page" href="dpctl.tensor.take.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.tensor.place</div>
+                <div class="title">dpctl.tensor.take</div>
                 
               </div>
             </a>
@@ -943,8 +914,8 @@ work, e.g.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.tensor.put</a><ul>
-<li><a class="reference internal" href="#dpctl.tensor.put"><code class="docutils literal notranslate"><span class="pre">put()</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.tensor.take_along_axis</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.take_along_axis"><code class="docutils literal notranslate"><span class="pre">take_along_axis()</span></code></a></li>
 </ul>
 </li>
 </ul>

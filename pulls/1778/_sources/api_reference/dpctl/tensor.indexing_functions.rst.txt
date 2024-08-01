@@ -15,3 +15,4 @@ by either integral arrays of indices or boolean mask arrays.
     place
     put
     take
+    take_along_axis
