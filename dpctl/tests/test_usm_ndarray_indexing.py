@@ -1557,3 +1557,20 @@ def test_take_along_axis():
     assert y1.shape == ind1.shape
     y2 = dpt.take_along_axis(x, ind2, axis=2)
     assert y2.shape == ind2.shape
+
+
+def test_take_along_axis_validation():
+    with pytest.raises(TypeError):
+        dpt.take_along_axis(tuple(), list())
+    get_queue_or_skip()
+    x = dpt.ones(10)
+    with pytest.raises(TypeError):
+        dpt.take_along_axis(x, list())
+    ind_dt = dpt.__array_namespace_info__().default_dtypes(
+        device=x.sycl_device
+    )["indexing"]
+    ind = dpt.zeros(1, dtype=ind_dt)
+    with pytest.raises(ValueError):
+        dpt.take_along_axis(x, ind, axis=1)
+    with pytest.raises(ValueError):
+        dpt.take_along_axis(x, ind, axis=0, mode="invalid")
