@@ -564,6 +564,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.minimum.html">dpctl.tensor.minimum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.multiply.html">dpctl.tensor.multiply</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.negative.html">dpctl.tensor.negative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.nextafter.html">dpctl.tensor.nextafter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.not_equal.html">dpctl.tensor.not_equal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.positive.html">dpctl.tensor.positive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.pow.html">dpctl.tensor.pow</a></li>
@@ -632,6 +633,7 @@
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">Searching functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle navigation of Searching functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.argmax.html">dpctl.tensor.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.argmin.html">dpctl.tensor.argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.count_nonzero.html">dpctl.tensor.count_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.nonzero.html">dpctl.tensor.nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.searchsorted.html">dpctl.tensor.searchsorted</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.where.html">dpctl.tensor.where</a></li>
@@ -665,6 +667,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.any.html">dpctl.tensor.any</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
 </ul>
 </li>
 </ul>
@@ -821,13 +824,16 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.argmin.html#dpctl.tensor.argmin" title="dpctl.tensor.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>(x, /, *[, axis, keepdims, out])</p></td>
 <td><p>Returns the indices of the minimum values of the input array <code class="docutils literal notranslate"><span class="pre">x</span></code> along a specified axis.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.nonzero.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonzero</span></code></a>(arr)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.count_nonzero.html#dpctl.tensor.count_nonzero" title="dpctl.tensor.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_nonzero</span></code></a>(x, /, *[, axis, keepdims, out])</p></td>
+<td><p>Counts the number of elements in the input array <code class="docutils literal notranslate"><span class="pre">x</span></code> which are non-zero.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.nonzero.html#dpctl.tensor.nonzero" title="dpctl.tensor.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonzero</span></code></a>(arr)</p></td>
 <td><p>Return the indices of non-zero elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.searchsorted.html#dpctl.tensor.searchsorted" title="dpctl.tensor.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(x1, x2[, side, sorter])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.searchsorted.html#dpctl.tensor.searchsorted" title="dpctl.tensor.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">searchsorted</span></code></a>(x1, x2[, side, sorter])</p></td>
 <td><p>Finds the indices into <cite>x1</cite> such that, if the corresponding elements in <cite>x2</cite> were inserted before the indices, the order of <cite>x1</cite>, when sorted in ascending order, would be preserved.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.where.html#dpctl.tensor.where" title="dpctl.tensor.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(condition, x1, x2, /, *[, order, out])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.where.html#dpctl.tensor.where" title="dpctl.tensor.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">where</span></code></a>(condition, x1, x2, /, *[, order, out])</p></td>
 <td><p>Returns <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with elements chosen from <code class="docutils literal notranslate"><span class="pre">x1</span></code> or <code class="docutils literal notranslate"><span class="pre">x2</span></code> depending on <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p></td>
 </tr>
 </tbody>
