@@ -284,16 +284,19 @@ if(DPCTL_ENABLE_GLOG)
 endif()
 
 
-include(GetProjectVersion)
-# the get_version function is defined in the GetProjectVersion module and
-# defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
-# by parsing the output of git describe.
-get_version()
-set_target_properties(DPCTLSyclInterface
-    PROPERTIES
-        VERSION ${VERSION_MAJOR}.${VERSION_MINOR}
-        SOVERSION ${VERSION_MAJOR}
-)
+set(buld_so_version 0)
+if (build_so_version)
+    include(GetProjectVersion)
+    # the get_version function is defined in the GetProjectVersion module and
+    # defines: VERSION, SEMVER, MAJOR, MINOR, PATCH. These variables are populated
+    # by parsing the output of git describe.
+    get_version()
+    set_target_properties(DPCTLSyclInterface
+        PROPERTIES
+            VERSION ${VERSION_MAJOR}.${VERSION_MINOR}
+            SOVERSION ${VERSION_MAJOR}
+    )
+endif()
 
 if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
