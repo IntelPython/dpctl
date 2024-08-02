@@ -1535,8 +1535,12 @@ def test_advanced_integer_indexing_cast_indices():
     inds1 = dpt.astype(inds0, "u4")
     inds2 = dpt.astype(inds0, "u8")
     x = dpt.ones((3, 4, 5, 6), dtype="i4")
+    # test getitem
     with pytest.raises(ValueError):
         x[inds0, inds1, inds2, ...]
+    # test setitem
+    with pytest.raises(ValueError):
+        x[inds0, inds1, inds2, ...] = 1
 
 
 def test_take_along_axis():
