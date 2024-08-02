@@ -1592,3 +1592,94 @@ def test_take_along_axis_validation():
     ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
     with pytest.raises(ExecutionPlacementError):
         dpt.take_along_axis(x, ind2)
+
+
+def check__extract_impl_validation(fn):
+    x = dpt.ones(10)
+    ind = dpt.ones(10, dtype="?")
+    with pytest.raises(TypeError):
+        fn(list(), ind)
+    with pytest.raises(TypeError):
+        fn(x, list())
+    q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+    ind2 = dpt.ones(10, dtype="?", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        fn(x, ind2)
+    with pytest.raises(ValueError):
+        fn(x, ind, 1)
+
+
+def check__nonzero_impl_validation(fn):
+    with pytest.raises(TypeError):
+        fn(list())
+
+
+def check__take_multi_index(fn):
+    x = dpt.ones(10)
+    x_dev = x.sycl_device
+    info_ = dpt.__array_namespace_info__()
+    def_dtypes = info_.default_dtypes(device=x_dev)
+    ind_dt = def_dtypes["indexing"]
+    ind = dpt.arange(10, dtype=ind_dt)
+    with pytest.raises(TypeError):
+        fn(list(), tuple(), 1)
+    with pytest.raises(ValueError):
+        fn(x, (ind,), 0, mode=2)
+    with pytest.raises(ValueError):
+        fn(x, (None,), 1)
+    with pytest.raises(IndexError):
+        fn(x, (x,), 1)
+    q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+    ind2 = dpt.arange(10, dtype=ind_dt, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        fn(x, (ind2,), 0)
+    m = dpt.ones((10, 10))
+    ind_1 = dpt.arange(10, dtype="i8")
+    ind_2 = dpt.arange(10, dtype="u8")
+    with pytest.raises(ValueError):
+        fn(m, (ind_1, ind_2), 0)
+
+
+def check__place_impl_validation(fn):
+    with pytest.raises(TypeError):
+        fn(list(), list(), list())
+    x = dpt.ones(10)
+    with pytest.raises(TypeError):
+        fn(x, list(), list())
+    q2 = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+    mask2 = dpt.ones(10, dtype="?", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        fn(x, mask2, 1)
+    x2 = dpt.ones((5, 5))
+    mask2 = dpt.ones((5, 5), dtype="?")
+    with pytest.raises(ValueError):
+        fn(x2, mask2, x2, axis=1)
+
+
+def check__put_multi_index_validation(fn):
+    with pytest.raises(TypeError):
+        fn(list(), list(), 0, list())
+    x = dpt.ones(10)
+    inds = dpt.arange(10, dtype="i8")
+    vals = dpt.zeros(10)
+    # test inds which is not a tuple/list
+    fn(x, inds, 0, vals)
+    x2 = dpt.ones((5, 5))
+    ind1 = dpt.arange(5, dtype="i8")
+    ind2 = dpt.arange(5, dtype="u8")
+    with pytest.raises(ValueError):
+        fn(x2, (ind1, ind2), 0, x2)
+    with pytest.raises(TypeError):
+        fn(x2, (ind1, list()), 0, x2)
+
+
+def test__copy_utils():
+    import dpctl.tensor._copy_utils as cu
+
+    get_queue_or_skip()
+
+    check__extract_impl_validation(cu._extract_impl)
+    check__nonzero_impl_validation(cu._nonzero_impl)
+    check__take_multi_index(cu._take_multi_index)
+    check__place_impl_validation(cu._place_impl)
+    check__put_multi_index_validation(cu._put_multi_index)
