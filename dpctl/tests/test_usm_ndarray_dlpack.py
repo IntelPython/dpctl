@@ -301,20 +301,20 @@ def test_versioned_dlpack_capsule():
 
     max_supported_ver = _dlp.get_build_dlpack_version()
     cap = x.__dlpack__(max_version=max_supported_ver)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     del cap
     assert x._pointer == y._pointer
 
     x2 = dpt.asarray(dpt.reshape(x, (10, 10)), order="F")
     cap = x2.__dlpack__(max_version=max_supported_ver)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     del cap
     assert x2._pointer == y._pointer
     del x2
 
     x3 = x[::-2]
     cap = x3.__dlpack__(max_version=max_supported_ver)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert x3._pointer == y._pointer
     del x3, y, x
     del cap
@@ -323,13 +323,13 @@ def test_versioned_dlpack_capsule():
     x = dpt.arange(100, dtype="i4")
     x.flags["W"] = False
     cap = x.__dlpack__(max_version=max_supported_ver)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert x._pointer == y._pointer
     assert not y.flags.writable
 
     # read-only array, and copy
     cap = x.__dlpack__(max_version=max_supported_ver, copy=True)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert x._pointer != y._pointer
     assert not y.flags.writable
 
@@ -399,12 +399,12 @@ def test_used_dlpack_capsule():
 
     max_supported_ver = _dlp.get_build_dlpack_version()
     cap = x.__dlpack__(max_version=max_supported_ver)
-    _dlp.from_dlpack_versioned_capsule(cap)
+    _dlp.from_dlpack_capsule(cap)
     with pytest.raises(
         ValueError,
         match="A DLPack tensor object can not be consumed multiple times",
     ):
-        _dlp.from_dlpack_versioned_capsule(cap)
+        _dlp.from_dlpack_capsule(cap)
     del cap
 
 
@@ -421,7 +421,7 @@ def test_dlpack_size_0():
 
     max_supported_ver = _dlp.get_build_dlpack_version()
     cap = x.__dlpack__(max_version=max_supported_ver)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert y._pointer == x._pointer
 
 
@@ -459,14 +459,14 @@ def test_dlpack_kwargs():
     x1 = dpt.arange(100, dtype="i4", sycl_queue=q1)
     max_supported_ver = _dlp.get_build_dlpack_version()
     cap = x1.__dlpack__(stream=q2, max_version=max_supported_ver, copy=False)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert y._pointer == x1._pointer
     del x1, y
     del cap
 
     x2 = dpt.arange(100, dtype="i4", sycl_queue=q1)
     cap = x2.__dlpack__(stream=q2, max_version=max_supported_ver, copy=True)
-    y = _dlp.from_dlpack_versioned_capsule(cap)
+    y = _dlp.from_dlpack_capsule(cap)
     assert y._pointer != x2._pointer
     del x2, y
     del cap
