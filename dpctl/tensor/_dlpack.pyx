@@ -21,6 +21,7 @@
 cimport cpython
 from libc cimport stdlib
 from libc.stdint cimport int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+from numpy cimport ndarray
 
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
@@ -33,6 +34,8 @@ from .._backend cimport (
     DPCTLSyclUSMRef,
 )
 from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, USM_ARRAY_WRITABLE, usm_ndarray
+
+import ctypes
 
 import numpy as np
 
@@ -475,6 +478,108 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     return cpython.PyCapsule_New(dlmv_tensor, 'dltensor_versioned', _pycapsule_versioned_deleter)
 
 
+cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
+    """
+    to_dlpack_versioned_capsule(npy_ary, copied)
+
+    Constructs named Python capsule object referencing
+    instance of ``DLManagedTensorVersioned`` from
+    :class:`numpy.ndarray` instance.
+
+    Args:
+        npy_ary: An instance of :class:`numpy.ndarray`
+        copied: A bint representing whether the data was previously
+            copied in order to set the flags with the is-copied
+            bitmask.
+    Returns:
+        A new capsule with name ``"dltensor_versioned"`` that
+        contains a pointer to ``DLManagedTensorVersioned`` struct.
+    Raises:
+        DLPackCreationError: when array can be represented as
+            DLPack tensor.
+        MemoryError: when host allocation to needed for
+            ``DLManagedTensorVersioned`` did not succeed.
+        ValueError: when array elements data type could not be represented
+            in ``DLManagedTensorVersioned``.
+    """
+    cdef DLManagedTensorVersioned *dlmv_tensor = NULL
+    cdef DLTensor *dl_tensor = NULL
+    cdef uint32_t dlmv_flags = 0
+    cdef int nd = npy_ary.ndim
+    cdef Py_ssize_t *shape_ptr = NULL
+    cdef Py_ssize_t *strides_ptr = NULL
+    cdef int64_t *shape_strides_ptr = NULL
+    cdef int i = 0
+    cdef int device_id = -1
+    cdef Py_ssize_t byte_offset = 0
+
+    dlmv_tensor = <DLManagedTensorVersioned *> stdlib.malloc(
+        sizeof(DLManagedTensorVersioned))
+    if dlmv_tensor is NULL:
+        raise MemoryError(
+            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "for DLManagedTensorVersioned"
+        )
+    shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+    if shape_strides_ptr is NULL:
+        stdlib.free(dlmv_tensor)
+        raise MemoryError(
+            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "for shape/strides"
+        )
+    # this can be a separate function for handling shapes and strides
+    shape = npy_ary.ctypes.shape_as(ctypes.c_int64)
+    strides = npy_ary.ctypes.strides_as(ctypes.c_int64)
+    for i in range(nd):
+        shape_strides_ptr[i] = shape[i]
+        shape_strides_ptr[nd + i] = strides[i] // npy_ary.itemsize
+    writable_flag = npy_ary.flags["W"]
+
+    ary_dt = npy_ary.dtype
+    ary_dtk = ary_dt.kind
+
+    dl_tensor = &dlmv_tensor.dl_tensor
+    dl_tensor.data = <void *> npy_ary.data
+    dl_tensor.ndim = nd
+    dl_tensor.byte_offset = <uint64_t>byte_offset
+    dl_tensor.shape = &shape_strides_ptr[0]
+    dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.device.device_type = kDLCPU
+    dl_tensor.device.device_id = 0
+    dl_tensor.dtype.lanes = <uint16_t>1
+    dl_tensor.dtype.bits = <uint8_t>(ary_dt.itemsize * 8)
+    if (ary_dtk == "b"):
+        dl_tensor.dtype.code = <uint8_t>kDLBool
+    elif (ary_dtk == "u"):
+        dl_tensor.dtype.code = <uint8_t>kDLUInt
+    elif (ary_dtk == "i"):
+        dl_tensor.dtype.code = <uint8_t>kDLInt
+    elif (ary_dtk == "f" and ary_dt.itemsize <= 8):
+        dl_tensor.dtype.code = <uint8_t>kDLFloat
+    elif (ary_dtk == "c" and ary_dt.itemsize <= 16):
+        dl_tensor.dtype.code = <uint8_t>kDLComplex
+    else:
+        stdlib.free(shape_strides_ptr)
+        stdlib.free(dlmv_tensor)
+        raise ValueError("Unrecognized array data type")
+
+    # set flags down here
+    if copied:
+        dlmv_flags |= DLPACK_FLAG_BITMASK_IS_COPIED
+    if not writable_flag:
+        dlmv_flags |= DLPACK_FLAG_BITMASK_READ_ONLY
+    dlmv_tensor.flags = dlmv_flags
+
+    dlmv_tensor.version.major = DLPACK_MAJOR_VERSION
+    dlmv_tensor.version.minor = DLPACK_MINOR_VERSION
+
+    dlmv_tensor.manager_ctx = <void*>npy_ary
+    cpython.Py_INCREF(npy_ary)
+    dlmv_tensor.deleter = _managed_tensor_versioned_deleter
+
+    return cpython.PyCapsule_New(dlmv_tensor, 'dltensor_versioned', _pycapsule_versioned_deleter)
+
+
 cdef class _DLManagedTensorOwner:
     """
     Helper class managing the lifetime of the DLManagedTensor struct
@@ -519,9 +624,81 @@ cdef class _DLManagedTensorVersionedOwner:
         return res
 
 
-cpdef usm_ndarray from_dlpack_capsule(object py_caps):
+cdef dict _numpy_array_interface_from_dl_tensor(DLTensor dlt, bint ro_flag):
+    """Constructs a NumPy `__array_interface__` dictionary from a DLTensor."""
+    cdef int i = 0
+    cdef int itemsize = 0
+
+    if dlt.dtype.lanes != 1:
+        raise BufferError(
+            "Can not import DLPack tensor with lanes != 1"
+        )
+    itemsize = dlt.dtype.bits // 8
+    shape = list()
+    if (dlt.strides is NULL):
+        strides = None
+        for dim in range(dlt.ndim):
+            shape.append(dlt.shape[dim])
+    else:
+        strides = list()
+        for dim in range(dlt.ndim):
+            shape.append(dlt.shape[dim])
+            # convert to byte-strides
+            strides.append(dlt.strides[dim] * itemsize)
+        strides = tuple(strides)
+    shape = tuple(shape)
+    if (dlt.dtype.code == kDLUInt):
+        ary_dt = "u" + str(itemsize)
+    elif (dlt.dtype.code == kDLInt):
+        ary_dt = "i" + str(itemsize)
+    elif (dlt.dtype.code == kDLFloat):
+        ary_dt = "f" + str(itemsize)
+    elif (dlt.dtype.code == kDLComplex):
+        ary_dt = "c" + str(itemsize)
+    elif (dlt.dtype.code == kDLBool):
+        ary_dt = np.dtype("?")
+    else:
+        raise BufferError(
+            "Can not import DLPack tensor with type code {}.".format(
+                <object>dlt.dtype.code
+            )
+        )
+    typestr = "|" + ary_dt
+    return dict(
+        version=3,
+        shape=shape,
+        strides=strides,
+        data=(<size_t> dlt.data, True if ro_flag else False),
+        offset=dlt.byte_offset,
+        typestr=typestr,
+    )
+
+
+class _numpy_array_interface_wrapper:
     """
-    from_dlpack_capsule(caps)
+    Class that wraps a Python capsule and dictionary for consumption by NumPy.
+
+    Implementation taken from
+    https://github.com/dmlc/dlpack/blob/main/apps/numpy_dlpack/dlpack/to_numpy.py
+
+    Args:
+        array_interface:
+            A dictionary describing the underlying memory. Formatted
+            to match `numpy.ndarray.__array_interface__`.
+
+        pycapsule:
+            A Python capsule wrapping the dlpack tensor that will be
+            converted to numpy.
+    """
+
+    def __init__(self, array_interface, pycapsule) -> None:
+        self.__array_interface__ = array_interface
+        self._pycapsule = pycapsule
+
+
+cpdef object from_dlpack_capsule(object py_caps):
+    """
+    from_dlpack_capsule(py_caps)
 
     Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
     named Python capsule object referencing instance of ``DLManagedTensor``
@@ -693,15 +870,20 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps):
             offset=element_offset
         )
         return res_ary
+    elif dlm_tensor.dl_tensor.device.device_type == kDLCPU:
+        ary_iface = _numpy_array_interface_from_dl_tensor(dlm_tensor.dl_tensor, False)
+        dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
+        cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
+        return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, py_caps))
     else:
         raise BufferError(
             "The DLPack tensor resides on unsupported device."
         )
 
 
-cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
+cpdef object from_dlpack_versioned_capsule(object py_caps):
     """
-    from_dlpack_versioned_capsule(caps)
+    from_dlpack_versioned_capsule(py_caps)
 
     Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
     named Python capsule object referencing instance of
@@ -883,6 +1065,12 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
         if (dlmv_tensor.flags & DLPACK_FLAG_BITMASK_READ_ONLY):
             res_ary.flags_ = (res_ary.flags_ & ~USM_ARRAY_WRITABLE)
         return res_ary
+    elif dlmv_tensor.dl_tensor.device.device_type == kDLCPU:
+        ro_flag = dlmv_tensor.flags & DLPACK_FLAG_BITMASK_READ_ONLY
+        ary_iface = _numpy_array_interface_from_dl_tensor(dlmv_tensor.dl_tensor, ro_flag)
+        dlmv_holder = _DLManagedTensorVersionedOwner._create(dlmv_tensor)
+        cpython.PyCapsule_SetName(py_caps, 'used_dltensor_versioned')
+        return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, py_caps))
     else:
         raise BufferError(
             "The DLPack tensor resides on unsupported device."

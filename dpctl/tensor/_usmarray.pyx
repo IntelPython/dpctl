@@ -1142,13 +1142,27 @@ cdef class usm_ndarray:
             dpctl_dlpack_version = get_build_dlpack_version()
             if max_version[0] >= dpctl_dlpack_version[0]:
                 # DLManagedTensorVersioned path
-                # TODO: add logic for targeting a device
                 if dl_device is not None:
                     if dl_device != self.__dlpack_device__():
-                        raise NotImplementedError(
-                            "targeting a device with `__dlpack__` is not "
-                            "currently implemented"
-                        )
+                        if copy == False:
+                            raise BufferError(
+                                "array cannot be placed on the requested device without a copy"
+                            )
+                        if dl_device[0] == (DLDeviceType.kDLCPU):
+                            assert dl_device[1] == 0
+                            if stream is not None:
+                                raise ValueError(
+                                    "`stream` must be `None` when `dl_device` is of type `kDLCPU`"
+                                )
+                            from ._copy_utils import _copy_to_numpy
+                            _arr = _copy_to_numpy(self)
+                            _arr.flags["W"] = self.flags["W"]
+                            return c_dlpack.numpy_to_dlpack_versioned_capsule(_arr, True)
+                        else:
+                            raise NotImplementedError(
+                                f"targeting `dl_device` {dl_device} with `__dlpack__` is not "
+                                "yet implemented"
+                            )
                 if copy is None:
                     copy = False
                 # TODO: strategy for handling stream on different device from dl_device

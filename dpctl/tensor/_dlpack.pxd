@@ -18,6 +18,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+from numpy cimport ndarray
+
 from .._sycl_device cimport SyclDevice
 from ._usmarray cimport usm_ndarray
 
@@ -40,7 +42,9 @@ cdef extern from 'dlpack/dlpack.h' nogil:
 
 cpdef object to_dlpack_capsule(usm_ndarray array) except +
 cpdef object to_dlpack_versioned_capsule(usm_ndarray array, bint copied) except +
-cpdef usm_ndarray from_dlpack_capsule(object dltensor) except +
+cpdef object numpy_to_dlpack_versioned_capsule(ndarray array, bint copied) except +
+cpdef object from_dlpack_capsule(object dltensor) except +
+cpdef object from_dlpack_versioned_capsule(object dltensor) except +
 
 cdef int get_parent_device_ordinal_id(SyclDevice dev) except *
 
