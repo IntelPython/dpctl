@@ -563,6 +563,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.minimum.html">dpctl.tensor.minimum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.multiply.html">dpctl.tensor.multiply</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.negative.html">dpctl.tensor.negative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.nextafter.html">dpctl.tensor.nextafter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.not_equal.html">dpctl.tensor.not_equal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.positive.html">dpctl.tensor.positive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.pow.html">dpctl.tensor.pow</a></li>
@@ -630,6 +631,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.searching_functions.html">Searching functions</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle navigation of Searching functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmax.html">dpctl.tensor.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmin.html">dpctl.tensor.argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.count_nonzero.html">dpctl.tensor.count_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.nonzero.html">dpctl.tensor.nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.searchsorted.html">dpctl.tensor.searchsorted</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.where.html">dpctl.tensor.where</a></li>
@@ -663,6 +665,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.any.html">dpctl.tensor.any</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
 </ul>
 </li>
 </ul>
@@ -1578,6 +1581,49 @@
 <span class="sd">            default array index data type for the device of ``x``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_search_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_argmin_over_axis</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="count_nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.count_nonzero.html#dpctl.tensor.count_nonzero">[docs]</a><span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Counts the number of elements in the input array ``x`` which are non-zero.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (Optional[int, Tuple[int, ...]]):</span>
+<span class="sd">            axis or axes along which to count. If a tuple of unique integers,</span>
+<span class="sd">            the number of non-zero values are computed over multiple axes.</span>
+<span class="sd">            If ``None``, the number of non-zero values is computed over the</span>
+<span class="sd">            entire array.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        keepdims (Optional[bool]):</span>
+<span class="sd">            if ``True``, the reduced axes (dimensions) are included in the</span>
+<span class="sd">            result as singleton dimensions, so that the returned array remains</span>
+<span class="sd">            compatible with the input arrays according to Array Broadcasting</span>
+<span class="sd">            rules. Otherwise, if ``False``, the reduced axes are not included</span>
+<span class="sd">            in the returned array. Default: ``False``.</span>
+<span class="sd">        out (Optional[usm_ndarray]):</span>
+<span class="sd">            the array into which the result is written.</span>
+<span class="sd">            The data type of ``out`` must match the expected shape and data</span>
+<span class="sd">            type.</span>
+<span class="sd">            If ``None`` then a new array is returned. Default: ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing the count of non-zero values. If the sum was</span>
+<span class="sd">            computed over the entire array, a zero-dimensional array is</span>
+<span class="sd">            returned. The returned array will have the default array index data</span>
+<span class="sd">            type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">),</span>
+        <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

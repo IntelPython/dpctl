@@ -563,6 +563,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.minimum.html">dpctl.tensor.minimum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.multiply.html">dpctl.tensor.multiply</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.negative.html">dpctl.tensor.negative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.nextafter.html">dpctl.tensor.nextafter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.not_equal.html">dpctl.tensor.not_equal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.positive.html">dpctl.tensor.positive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.pow.html">dpctl.tensor.pow</a></li>
@@ -630,6 +631,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.searching_functions.html">Searching functions</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle navigation of Searching functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmax.html">dpctl.tensor.argmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmin.html">dpctl.tensor.argmin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.count_nonzero.html">dpctl.tensor.count_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.nonzero.html">dpctl.tensor.nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.searchsorted.html">dpctl.tensor.searchsorted</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.where.html">dpctl.tensor.where</a></li>
@@ -663,6 +665,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.all.html">dpctl.tensor.all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.any.html">dpctl.tensor.any</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
 </ul>
 </li>
 </ul>
@@ -819,12 +822,25 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
+<span class="kn">import</span> <span class="nn">builtins</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_reductions_impl</span> <span class="k">as</span> <span class="nn">tri</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_dtype</span><span class="p">,</span>
+    <span class="n">_get_queue_usm_type</span><span class="p">,</span>
+    <span class="n">_get_shape</span><span class="p">,</span>
+    <span class="n">_validate_dtype</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">,</span>
+    <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_boolean_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
@@ -949,6 +965,332 @@
 <span class="sd">            containing the results of the logical OR reduction.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_boolean_reduction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_any</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_validate_diff_shape</span><span class="p">(</span><span class="n">sh1</span><span class="p">,</span> <span class="n">sh2</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility for validating that two shapes `sh1` and `sh2`</span>
+<span class="sd">    are possible to concatenate along `axis`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sh2</span><span class="p">:</span>
+        <span class="c1"># scalars will always be accepted</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sh1_ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sh1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sh1_ndim</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sh2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="n">sh1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">sh2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sh1_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">_concat_diff_input</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="p">,</span> <span class="n">append</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Concatenates `arr`, `prepend` and, `append` along `axis`,</span>
+<span class="sd">    where `arr` is an array and `prepend` and `append` are</span>
+<span class="sd">    any mixture of arrays and scalars.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">q2</span><span class="p">,</span> <span class="n">prepend_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+        <span class="n">q3</span><span class="p">,</span> <span class="n">append_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
+        <span class="k">elif</span> <span class="n">q3</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">prepend_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q3</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">append_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">prepend_usm_type</span><span class="p">,</span>
+                    <span class="n">append_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">du</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">coerced_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">arr_shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">prepend_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+        <span class="n">append_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">prepend_shape</span><span class="p">,</span>
+                <span class="n">append_shape</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of arguments can not be inferred. &quot;</span>
+                <span class="s2">&quot;Arguments are expected to be &quot;</span>
+                <span class="s2">&quot;lists, tuples, or both&quot;</span>
+            <span class="p">)</span>
+        <span class="n">valid_prepend_shape</span> <span class="o">=</span> <span class="n">_validate_diff_shape</span><span class="p">(</span>
+            <span class="n">arr_shape</span><span class="p">,</span> <span class="n">prepend_shape</span><span class="p">,</span> <span class="n">axis</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_prepend_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`diff` argument `prepend` with shape </span><span class="si">{</span><span class="n">prepend_shape</span><span class="si">}</span><span class="s2"> is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;invalid for first input with shape </span><span class="si">{</span><span class="n">arr_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">valid_append_shape</span> <span class="o">=</span> <span class="n">_validate_diff_shape</span><span class="p">(</span><span class="n">arr_shape</span><span class="p">,</span> <span class="n">append_shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_append_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`diff` argument `append` with shape </span><span class="si">{</span><span class="n">append_shape</span><span class="si">}</span><span class="s2"> is invalid&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; for first input with shape </span><span class="si">{</span><span class="n">arr_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">arr_dtype</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">prepend_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">prepend</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="n">append_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">builtins</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="p">(</span><span class="n">prepend_dtype</span><span class="p">,</span> <span class="n">append_dtype</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operands have unsupported data types&quot;</span><span class="p">)</span>
+        <span class="n">prepend_dtype</span><span class="p">,</span> <span class="n">append_dtype</span> <span class="o">=</span> <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">(</span>
+            <span class="n">arr_dtype</span><span class="p">,</span> <span class="n">prepend_dtype</span><span class="p">,</span> <span class="n">append_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prepend</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">prepend</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">prepend</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">prepend_dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">append</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">append</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">append_dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prepend_shape</span><span class="p">:</span>
+            <span class="n">prepend_shape</span> <span class="o">=</span> <span class="n">arr_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_prepend</span><span class="p">,</span> <span class="n">prepend_shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">append_shape</span><span class="p">:</span>
+            <span class="n">append_shape</span> <span class="o">=</span> <span class="n">arr_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_append</span><span class="p">,</span> <span class="n">append_shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">a_prepend</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">a_append</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">q2</span><span class="p">,</span> <span class="n">prepend_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">prepend_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">du</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">coerced_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">arr_shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">prepend_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prepend_shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of argument can not be inferred. &quot;</span>
+                <span class="s2">&quot;Argument is expected to be a &quot;</span>
+                <span class="s2">&quot;list or tuple&quot;</span>
+            <span class="p">)</span>
+        <span class="n">valid_prepend_shape</span> <span class="o">=</span> <span class="n">_validate_diff_shape</span><span class="p">(</span>
+            <span class="n">arr_shape</span><span class="p">,</span> <span class="n">prepend_shape</span><span class="p">,</span> <span class="n">axis</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_prepend_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`diff` argument `prepend` with shape </span><span class="si">{</span><span class="n">prepend_shape</span><span class="si">}</span><span class="s2"> is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;invalid for first input with shape </span><span class="si">{</span><span class="n">arr_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">arr_dtype</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">prepend_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">prepend</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">prepend_dtype</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operand has unsupported data type&quot;</span><span class="p">)</span>
+        <span class="n">prepend_dtype</span> <span class="o">=</span> <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">(</span>
+            <span class="n">arr_dtype</span><span class="p">,</span> <span class="n">prepend_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prepend</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">prepend</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">prepend</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">prepend_dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prepend_shape</span><span class="p">:</span>
+            <span class="n">prepend_shape</span> <span class="o">=</span> <span class="n">arr_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">a_prepend</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_prepend</span><span class="p">,</span> <span class="n">prepend_shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">a_prepend</span><span class="p">,</span> <span class="n">arr</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">q2</span><span class="p">,</span> <span class="n">append_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                    <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+                    <span class="s2">&quot;from input arguments.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">x_usm_type</span><span class="p">,</span>
+                    <span class="n">append_usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">du</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">coerced_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">arr_shape</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">append_shape</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">append</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">append_shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Shape of argument can not be inferred. &quot;</span>
+                <span class="s2">&quot;Argument is expected to be a &quot;</span>
+                <span class="s2">&quot;list or tuple&quot;</span>
+            <span class="p">)</span>
+        <span class="n">valid_append_shape</span> <span class="o">=</span> <span class="n">_validate_diff_shape</span><span class="p">(</span><span class="n">arr_shape</span><span class="p">,</span> <span class="n">append_shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_append_shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`diff` argument `append` with shape </span><span class="si">{</span><span class="n">append_shape</span><span class="si">}</span><span class="s2"> is invalid&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; for first input with shape </span><span class="si">{</span><span class="n">arr_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">arr_dtype</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="n">append_dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">append_dtype</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operand has unsupported data type&quot;</span><span class="p">)</span>
+        <span class="n">append_dtype</span> <span class="o">=</span> <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">(</span>
+            <span class="n">arr_dtype</span><span class="p">,</span> <span class="n">append_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">append</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">append</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">append</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">append_dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">append_shape</span><span class="p">:</span>
+            <span class="n">append_shape</span> <span class="o">=</span> <span class="n">arr_shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">arr_shape</span><span class="p">[</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
+            <span class="n">a_append</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a_append</span><span class="p">,</span> <span class="n">append_shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">arr</span><span class="p">,</span> <span class="n">a_append</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr1</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="k">return</span> <span class="n">arr1</span>
+
+
+<div class="viewcode-block" id="diff"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.diff.html#dpctl.tensor.diff">[docs]</a><span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the `n`-th discrete forward difference of `x` along `axis`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        axis (int):</span>
+<span class="sd">            axis along which to compute the difference. A valid axis must be on</span>
+<span class="sd">            the interval `[-N, N)`, where `N` is the rank (number of</span>
+<span class="sd">            dimensions) of `x`.</span>
+<span class="sd">            Default: `-1`</span>
+<span class="sd">        n (int):</span>
+<span class="sd">            number of times to recursively compute the difference.</span>
+<span class="sd">            Default: `1`.</span>
+<span class="sd">        prepend (Union[usm_ndarray, bool, int, float, complex]):</span>
+<span class="sd">            value or values to prepend to the specified axis before taking the</span>
+<span class="sd">            difference.</span>
+<span class="sd">            Must have the same shape as `x` except along `axis`, which can have</span>
+<span class="sd">            any shape.</span>
+<span class="sd">            Default: `None`.</span>
+<span class="sd">        append (Union[usm_ndarray, bool, int, float, complex]):</span>
+<span class="sd">            value or values to append to the specified axis before taking the</span>
+<span class="sd">            difference.</span>
+<span class="sd">            Must have the same shape as `x` except along `axis`, which can have</span>
+<span class="sd">            any shape.</span>
+<span class="sd">            Default: `None`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array containing the `n`-th differences. The array will have the</span>
+<span class="sd">            same shape as `x`, except along `axis`, which will have shape:</span>
+<span class="sd">                prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n</span>
+<span class="sd">            The data type of the returned array is determined by the Type</span>
+<span class="sd">            Promotion Rules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Expecting dpctl.tensor.usm_ndarray type, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">x_nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x_nd</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">_concat_diff_input</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="p">,</span> <span class="n">append</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span>
+    <span class="c1"># form slices and recurse</span>
+    <span class="n">sl0</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_nd</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">sl1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_nd</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">diff_op</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">not_equal</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">subtract</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">arr_tmp0</span> <span class="o">=</span> <span class="n">diff_op</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">sl0</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">sl1</span><span class="p">])</span>
+        <span class="n">arr_tmp1</span> <span class="o">=</span> <span class="n">diff_op</span><span class="p">(</span><span class="n">arr_tmp0</span><span class="p">[</span><span class="n">sl0</span><span class="p">],</span> <span class="n">arr_tmp0</span><span class="p">[</span><span class="n">sl1</span><span class="p">])</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sl3</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span> <span class="k">else</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_nd</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="n">arr_tmp0_sliced</span> <span class="o">=</span> <span class="n">arr_tmp0</span><span class="p">[</span><span class="n">sl3</span><span class="p">]</span>
+                <span class="n">diff_op</span><span class="p">(</span><span class="n">arr_tmp1</span><span class="p">[</span><span class="n">sl0</span><span class="p">],</span> <span class="n">arr_tmp1</span><span class="p">[</span><span class="n">sl1</span><span class="p">],</span> <span class="n">out</span><span class="o">=</span><span class="n">arr_tmp0_sliced</span><span class="p">)</span>
+                <span class="n">arr_tmp0</span><span class="p">,</span> <span class="n">arr_tmp1</span> <span class="o">=</span> <span class="n">arr_tmp1</span><span class="p">,</span> <span class="n">arr_tmp0_sliced</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">arr_tmp1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">diff_op</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">sl0</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">sl1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">arr</span></div>
 </pre></div>
         </article>
       </div>

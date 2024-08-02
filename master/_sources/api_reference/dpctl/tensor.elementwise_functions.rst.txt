@@ -64,6 +64,7 @@ function values computed for every element of input array(s).
     minimum
     multiply
     negative
+    nextafter
     not_equal
     positive
     pow
