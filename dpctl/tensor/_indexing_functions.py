@@ -470,12 +470,17 @@ def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
         by the value of ``mode`` keyword.
     """
     if not isinstance(x, dpt.usm_ndarray):
-        raise TypeError
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
     if not isinstance(indices, dpt.usm_ndarray):
-        raise TypeError
+        raise TypeError(
+            f"Expected dpctl.tensor.usm_ndarray, got {type(indices)}"
+        )
     x_nd = x.ndim
     if x_nd != indices.ndim:
-        raise ValueError
+        raise ValueError(
+            "Number of dimensions in the first and the second "
+            "argument arrays must be equal"
+        )
     pp = normalize_axis_index(operator.index(axis), x_nd)
     out_usm_type = dpctl.utils.get_coerced_usm_type(
         (x.usm_type, indices.usm_type)
