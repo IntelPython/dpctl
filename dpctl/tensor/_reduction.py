@@ -773,3 +773,46 @@ def argmin(x, /, *, axis=None, keepdims=False, out=None):
             default array index data type for the device of ``x``.
     """
     return _search_over_axis(x, axis, keepdims, out, tri._argmin_over_axis)
+
+
+def count_nonzero(x, /, *, axis=None, keepdims=False, out=None):
+    """
+    Counts the number of elements in the input array ``x`` which are non-zero.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        axis (Optional[int, Tuple[int, ...]]):
+            axis or axes along which to count. If a tuple of unique integers,
+            the number of non-zero values are computed over multiple axes.
+            If ``None``, the number of non-zero values is computed over the
+            entire array.
+            Default: ``None``.
+        keepdims (Optional[bool]):
+            if ``True``, the reduced axes (dimensions) are included in the
+            result as singleton dimensions, so that the returned array remains
+            compatible with the input arrays according to Array Broadcasting
+            rules. Otherwise, if ``False``, the reduced axes are not included
+            in the returned array. Default: ``False``.
+        out (Optional[usm_ndarray]):
+            the array into which the result is written.
+            The data type of ``out`` must match the expected shape and data
+            type.
+            If ``None`` then a new array is returned. Default: ``None``.
+
+    Returns:
+        usm_ndarray:
+            an array containing the count of non-zero values. If the sum was
+            computed over the entire array, a zero-dimensional array is
+            returned. The returned array will have the default array index data
+            type.
+    """
+    if x.dtype != dpt.bool:
+        x = dpt.astype(x, dpt.bool, copy=False)
+    return sum(
+        x,
+        axis=axis,
+        dtype=ti.default_device_index_type(x.sycl_device),
+        keepdims=keepdims,
+        out=out,
+    )

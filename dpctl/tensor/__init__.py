@@ -94,7 +94,7 @@ from dpctl.tensor._reshape import reshape
 from dpctl.tensor._search_functions import where
 from dpctl.tensor._statistical_functions import mean, std, var
 from dpctl.tensor._usmarray import usm_ndarray
-from dpctl.tensor._utility_functions import all, any
+from dpctl.tensor._utility_functions import all, any, diff
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
 from ._array_api import __array_api_version__, __array_namespace_info__
@@ -176,6 +176,7 @@ from ._elementwise_funcs import (
 from ._reduction import (
     argmax,
     argmin,
+    count_nonzero,
     logsumexp,
     max,
     min,
@@ -373,4 +374,6 @@ __all__ = [
     "cumulative_prod",
     "cumulative_sum",
     "nextafter",
+    "diff",
+    "count_nonzero",
 ]

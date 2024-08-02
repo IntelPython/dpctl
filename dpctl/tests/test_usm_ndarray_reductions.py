@@ -21,6 +21,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 import dpctl.tensor as dpt
+from dpctl.tensor._tensor_impl import default_device_index_type
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 from dpctl.utils import ExecutionPlacementError
 
@@ -669,3 +670,21 @@ def test_reduction_out_kwarg_arg_validation():
             keepdims=True,
             out=dpt.empty_like(out_wrong_keepdims, dtype=ind_dt),
         )
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_count_nonzero(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    expected_dt = default_device_index_type(q.sycl_device)
+
+    x = dpt.ones(10, dtype=dt, sycl_queue=q)
+    res = dpt.count_nonzero(x)
+    assert res == 10
+    assert res.dtype == expected_dt
+
+    x[3:6] = 0
+    res = dpt.count_nonzero(x)
+    assert res == 7
+    assert res.dtype == expected_dt
