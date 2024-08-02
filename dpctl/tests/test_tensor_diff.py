@@ -313,3 +313,17 @@ def test_diff_input_validation():
         dpt.diff,
         bad_in,
     )
+
+
+def test_diff_positive_order():
+    get_queue_or_skip()
+
+    x = dpt.ones(1, dtype="i4")
+    n = -1
+    assert_raises_regex(
+        ValueError,
+        ".*must be positive.*",
+        dpt.diff,
+        x,
+        n=n,
+    )
