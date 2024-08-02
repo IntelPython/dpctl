@@ -1560,17 +1560,31 @@ def test_take_along_axis():
 
 
 def test_take_along_axis_validation():
+    # type check on the first argument
     with pytest.raises(TypeError):
         dpt.take_along_axis(tuple(), list())
     get_queue_or_skip()
-    x = dpt.ones(10)
+    n1, n2 = 2, 5
+    x = dpt.ones(n1 * n2)
+    # type check on the second argument
     with pytest.raises(TypeError):
         dpt.take_along_axis(x, list())
-    ind_dt = dpt.__array_namespace_info__().default_dtypes(
-        device=x.sycl_device
-    )["indexing"]
+    x_dev = x.sycl_device
+    info_ = dpt.__array_namespace_info__()
+    def_dtypes = info_.default_dtypes(device=x_dev)
+    ind_dt = def_dtypes["indexing"]
     ind = dpt.zeros(1, dtype=ind_dt)
+    # axis valudation
     with pytest.raises(ValueError):
         dpt.take_along_axis(x, ind, axis=1)
+    # mode validation
     with pytest.raises(ValueError):
         dpt.take_along_axis(x, ind, axis=0, mode="invalid")
+    # same array-ranks validation
+    with pytest.raises(ValueError):
+        dpt.take_along_axis(dpt.reshape(x, (n1, n2)), ind)
+    # check compute-follows-data
+    q2 = dpctl.SyclQueue(x_dev, property="enable_profiling")
+    ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.take_along_axis(x, ind2)
