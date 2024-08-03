@@ -177,10 +177,22 @@ def test_argsort_axis0():
     x = dpt.reshape(xf, (n, m))
     idx = dpt.argsort(x, axis=0)
 
-    conseq_idx = dpt.arange(m, dtype=idx.dtype)
-    s = x[idx, conseq_idx[dpt.newaxis, :]]
+    s = dpt.take_along_axis(x, idx, axis=0)
 
     assert dpt.all(s[:-1, :] <= s[1:, :])
+
+
+def test_argsort_axis1():
+    get_queue_or_skip()
+
+    n, m = 200, 30
+    xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
+    x = dpt.reshape(xf, (n, m))
+    idx = dpt.argsort(x, axis=1)
+
+    s = dpt.take_along_axis(x, idx, axis=1)
+
+    assert dpt.all(s[:, :-1] <= s[:, 1:])
 
 
 def test_sort_strided():
@@ -199,8 +211,9 @@ def test_argsort_strided():
     x_orig = dpt.arange(100, dtype="i4")
     x_flipped = dpt.flip(x_orig, axis=0)
     idx = dpt.argsort(x_flipped)
+    s = dpt.take_along_axis(x_flipped, idx, axis=0)
 
-    assert dpt.all(x_flipped[idx] == x_orig)
+    assert dpt.all(s == x_orig)
 
 
 def test_sort_0d_array():
