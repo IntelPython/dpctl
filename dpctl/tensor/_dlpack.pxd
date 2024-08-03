@@ -18,6 +18,8 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+cdef extern from "numpy/npy_no_deprecated_api.h":
+    pass
 from numpy cimport ndarray
 
 from .._sycl_device cimport SyclDevice

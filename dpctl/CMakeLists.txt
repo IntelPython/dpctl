@@ -125,8 +125,6 @@ function(build_dpctl_ext _trgt _src _dest)
             )
         endif()
     endif()
-    # needed to prevent warnings from Cython caused by cimporting from Numpy
-    target_compile_definitions(${_trgt} PRIVATE NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION)
     target_link_libraries(${_trgt} PRIVATE Python::NumPy)
     if (DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
