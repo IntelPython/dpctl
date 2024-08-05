@@ -659,7 +659,7 @@ cdef dict _numpy_array_interface_from_dl_tensor(DLTensor *dlt, bint ro_flag):
     elif (dlt.dtype.code == kDLComplex):
         ary_dt = "c" + str(itemsize)
     elif (dlt.dtype.code == kDLBool):
-        ary_dt = np.dtype("?")
+        ary_dt = "b" + str(itemsize)
     else:
         raise BufferError(
             "Can not import DLPack tensor with type code {}.".format(
