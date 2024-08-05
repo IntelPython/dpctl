@@ -50,3 +50,10 @@ print("")
 list_of_lists = matr.tolist()
 for row in list_of_lists:
     print(row)
+
+print("====" * 10)
+
+mbuf = eua.make_zeroed_device_memory(4 * 16, q)
+print(mbuf.get_usm_type())
+print(mbuf.nbytes)
+print(mbuf.copy_to_host())

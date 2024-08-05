@@ -1,8 +1,10 @@
 # Exposing USM Allocations Made by the Native Code to dpctl
 
-This extension demonstrates how a Python object backed by
+This extension demonstrates how a Python object representing
 a native class, which allocates USM memory, can expose it
-to the `dpctl.memory` entities using `__sycl_usm_array_interface__`.
+to the `dpctl.memory` entities using `__sycl_usm_array_interface__`,
+and how to create `dpctl.memory` object from allocation made
+in native extension.
 
 
 ## Building
@@ -29,4 +31,10 @@ shared
 [1.0, 1.0, 0.0, 2.0, 2.0]
 [0.0, 0.0, 0.0, 3.0, -1.0]
 [0.0, 0.0, 0.0, -1.0, 5.0]
+
+========================================
+device
+64
+[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]
 ```

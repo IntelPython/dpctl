@@ -31,11 +31,12 @@
 /// content of the object into list of lists of Python floats.
 ///
 //===----------------------------------------------------------------------===//
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
+#include <memory>
 
 namespace py = pybind11;
 
@@ -120,6 +121,26 @@ py::list tolist(DMatrix &m)
     return rows;
 }
 
+dpctl::memory::usm_memory make_zeroed_device_memory(size_t nbytes,
+                                                    sycl::queue &q)
+{
+    char *data = sycl::malloc_device<char>(nbytes, q);
+    q.memset(data, 0, nbytes).wait();
+
+    const sycl::context &ctx = q.get_context();
+    auto _deleter = [ctx](void *ptr) {
+        try {
+            ::sycl::free(ptr, ctx);
+        } catch (const std::exception &e) {
+            std::cout << "Call to sycl::free caught an exception: " << e.what()
+                      << std::endl;
+        }
+    };
+    auto shptr = std::shared_ptr<void>(data, _deleter);
+
+    return dpctl::memory::usm_memory(data, nbytes, q, shptr);
+}
+
 PYBIND11_MODULE(_external_usm_alloc, m)
 {
     py::class_<DMatrix> dm(m, "DMatrix");
@@ -128,4 +149,7 @@ PYBIND11_MODULE(_external_usm_alloc, m)
     dm.def_property("__sycl_usm_array_interface__", &construct_sua_iface,
                     nullptr);
     dm.def("tolist", &tolist, "Return matrix a Python list of lists");
+
+    m.def("make_zeroed_device_memory", &make_zeroed_device_memory,
+          "Returns zero-initialized USM-device allocation created C++");
 }
