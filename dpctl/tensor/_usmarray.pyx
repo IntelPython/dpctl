@@ -1167,6 +1167,12 @@ cdef class usm_ndarray:
             if max_version[0] >= dpctl_dlpack_version[0]:
                 # DLManagedTensorVersioned path
                 if dl_device is not None:
+                    if not isinstance(dl_device, tuple) or len(dl_device) != 2:
+                        raise TypeError(
+                            "`__dlpack__` expects `dl_device` to be a "
+                            "2-tuple of `(device_type, device_id)`, instead "
+                            f"got {type(dl_device)}"
+                        )
                     if dl_device != self.__dlpack_device__():
                         if copy == False:
                             raise BufferError(
