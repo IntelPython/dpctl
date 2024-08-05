@@ -515,27 +515,43 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     cdef int i = 0
     cdef int device_id = -1
     cdef Py_ssize_t byte_offset = 0
+    cdef int itemsize = npy_ary.itemsize
 
     dlmv_tensor = <DLManagedTensorVersioned *> stdlib.malloc(
         sizeof(DLManagedTensorVersioned))
     if dlmv_tensor is NULL:
         raise MemoryError(
-            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
             "for DLManagedTensorVersioned"
         )
-    shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+
+    is_c_contiguous = npy_ary.flags["C"]
+    shape = npy_ary.ctypes.shape_as(ctypes.c_int64)
+    strides = npy_ary.ctypes.strides_as(ctypes.c_int64)
+    if not is_c_contiguous:
+        if npy_ary.size != 1:
+            for i in range(nd):
+                if shape[i] != 1 and strides[i] % itemsize != 0:
+                    stdlib.free(dlmv_tensor)
+                    raise BufferError(
+                        "numpy_to_dlpack_versioned_capsule: DLPack cannot encode "
+                        "an array if strides are not a multiple of itemsize"
+                    )
+        shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+    else:
+        # no need to pass strides in this case
+        shape_strides_ptr = <int64_t *>stdlib.malloc(sizeof(int64_t) * nd)
     if shape_strides_ptr is NULL:
         stdlib.free(dlmv_tensor)
         raise MemoryError(
-            "to_dlpack_versioned_capsule: Could not allocate memory "
+            "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
             "for shape/strides"
         )
-    # this can be a separate function for handling shapes and strides
-    shape = npy_ary.ctypes.shape_as(ctypes.c_int64)
-    strides = npy_ary.ctypes.strides_as(ctypes.c_int64)
     for i in range(nd):
         shape_strides_ptr[i] = shape[i]
-        shape_strides_ptr[nd + i] = strides[i] // npy_ary.itemsize
+        if not is_c_contiguous:
+            shape_strides_ptr[nd + i] = strides[i] // itemsize
+
     writable_flag = npy_ary.flags["W"]
 
     ary_dt = npy_ary.dtype
@@ -546,7 +562,7 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     dl_tensor.ndim = nd
     dl_tensor.byte_offset = <uint64_t>byte_offset
     dl_tensor.shape = &shape_strides_ptr[0]
-    dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.strides = &shape_strides_ptr[nd] if not is_c_contiguous else NULL
     dl_tensor.device.device_type = kDLCPU
     dl_tensor.device.device_id = 0
     dl_tensor.dtype.lanes = <uint16_t>1
