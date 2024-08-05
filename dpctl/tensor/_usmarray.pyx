@@ -576,7 +576,11 @@ cdef class usm_ndarray:
 
         from ._reshape import reshaped_strides
 
-        new_nd = len(new_shape)
+        try:
+            new_nd = len(new_shape)
+        except TypeError:
+            new_nd = 1
+            new_shape = (new_shape,)
         try:
             new_shape = tuple(operator.index(dim) for dim in new_shape)
         except TypeError:
