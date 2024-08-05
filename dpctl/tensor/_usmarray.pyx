@@ -87,9 +87,33 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     view.shape = tuple()
     return view
 
+
 cdef int _copy_writable(int lhs_flags, int rhs_flags):
     "Copy the WRITABLE flag to lhs_flags from rhs_flags"
     return (lhs_flags & ~USM_ARRAY_WRITABLE) | (rhs_flags & USM_ARRAY_WRITABLE)
+
+
+cdef bint _is_host_cpu(object dl_device):
+    "Check if dl_device denotes (kDLCPU, 0)"
+    cdef object dl_type
+    cdef object dl_id
+    cdef Py_ssize_t n_elems = -1
+
+    try:
+        n_elems = len(dl_device)
+    except TypeError:
+        pass
+
+    if n_elems != 2:
+        return False
+
+    dl_type = dl_device[0]
+    dl_id = dl_device[1]
+    if isinstance(dl_type, str):
+        return (dl_type == "kDLCPU" and dl_id == 0)
+
+    return (dl_type == DLDeviceType.kDLCPU) and (dl_id == 0)
+
 
 cdef class usm_ndarray:
     """ usm_ndarray(shape, dtype=None, strides=None, buffer="device", \
@@ -1148,8 +1172,7 @@ cdef class usm_ndarray:
                             raise BufferError(
                                 "array cannot be placed on the requested device without a copy"
                             )
-                        if dl_device[0] == (DLDeviceType.kDLCPU):
-                            assert dl_device[1] == 0
+                        if _is_host_cpu(dl_device):
                             if stream is not None:
                                 raise ValueError(
                                     "`stream` must be `None` when `dl_device` is of type `kDLCPU`"
