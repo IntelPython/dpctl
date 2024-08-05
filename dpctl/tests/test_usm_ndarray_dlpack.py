@@ -23,6 +23,7 @@ from helper import skip_if_dtype_not_supported
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._dlpack as _dlp
+import dpctl.tensor._usmarray as dpt_arr
 
 device_oneAPI = 14  # DLDeviceType.kDLOneAPI
 
@@ -470,3 +471,37 @@ def test_dlpack_kwargs():
     assert y._pointer != x2._pointer
     del x2, y
     del cap
+
+
+def _is_capsule(o):
+    t = type(o)
+    return t.__module__ == "builtins" and t.__name__ == "PyCapsule"
+
+
+def test_dlpack_dl_device():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap1 = x.__dlpack__(
+        dl_device=x.__dlpack_device__(), max_version=max_supported_ver
+    )
+    assert _is_capsule(cap1)
+    cap2 = x.__dlpack__(dl_device=(1, 0), max_version=max_supported_ver)
+    assert _is_capsule(cap2)
+    cap3 = x.__dlpack__(
+        dl_device=(dpt_arr.DLDeviceType.kDLCPU, 0),
+        max_version=max_supported_ver,
+    )
+    assert _is_capsule(cap3)
+    cap4 = x.__dlpack__(dl_device=("kDLCPU", 0), max_version=max_supported_ver)
+    assert _is_capsule(cap4)
+    with pytest.raises(NotImplementedError):
+        # pass method instead of return of its __call__ invocation
+        x.__dlpack__(
+            dl_device=x.__dlpack_device__, max_version=max_supported_ver
+        )
+    with pytest.raises(NotImplementedError):
+        # exercise check for length
+        x.__dlpack__(dl_device=(3,), max_version=max_supported_ver)
