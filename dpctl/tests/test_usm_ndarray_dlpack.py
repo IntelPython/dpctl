@@ -17,15 +17,17 @@
 import collections
 import ctypes
 
+import numpy as np
 import pytest
-from helper import skip_if_dtype_not_supported
+from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._dlpack as _dlp
 import dpctl.tensor._usmarray as dpt_arr
 
-device_oneAPI = 14  # DLDeviceType.kDLOneAPI
+device_CPU = dpt_arr.DLDeviceType.kDLCPU
+device_oneAPI = dpt_arr.DLDeviceType.kDLOneAPI
 
 _usm_types_list = ["shared", "device", "host"]
 
@@ -491,17 +493,206 @@ def test_dlpack_dl_device():
     cap2 = x.__dlpack__(dl_device=(1, 0), max_version=max_supported_ver)
     assert _is_capsule(cap2)
     cap3 = x.__dlpack__(
-        dl_device=(dpt_arr.DLDeviceType.kDLCPU, 0),
+        dl_device=(device_CPU, 0),
         max_version=max_supported_ver,
     )
     assert _is_capsule(cap3)
     cap4 = x.__dlpack__(dl_device=("kDLCPU", 0), max_version=max_supported_ver)
     assert _is_capsule(cap4)
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(TypeError):
         # pass method instead of return of its __call__ invocation
         x.__dlpack__(
             dl_device=x.__dlpack_device__, max_version=max_supported_ver
         )
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(TypeError):
         # exercise check for length
         x.__dlpack__(dl_device=(3,), max_version=max_supported_ver)
+
+
+def test_from_dlpack_kdlcpu_interop_numpy():
+    """
+    Basic test that usm_ndarray can interoperate with NumPy ndarray
+    `__dlpack_device__`.
+    """
+    get_queue_or_skip()
+
+    sh = 5
+    dt = dpt.int32
+
+    X = dpt.empty(sh, dtype=dt)
+    dl_device_np = np.empty(()).__dlpack_device__()
+
+    Y = dpt.from_dlpack(X, device=dl_device_np)
+    assert isinstance(Y, np.ndarray)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+
+    V = dpt.from_dlpack(Y)
+    assert isinstance(V, np.ndarray)
+    assert Y.shape == V.shape
+    assert Y.dtype == V.dtype
+
+
+@pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
+def test_from_dlpack_to_kdlcpu(shape, typestr):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(typestr, q.sycl_device)
+
+    X = dpt.empty(shape, dtype=typestr, sycl_queue=q)
+    Y = dpt.from_dlpack(X, device=(device_CPU, 0))
+    assert isinstance(Y, np.ndarray)
+    assert X.shape == Y.shape
+    assert X.dtype == Y.dtype
+    # NumPy does not treat size 0 arrays consistently
+    # w.r.t. strides, so skip these cases
+    if X.ndim and X.size != 0:
+        V = Y[::-1]
+        W = dpt.from_dlpack(V)
+        assert V.strides == W.strides
+
+
+@pytest.mark.parametrize("mod", [2, 5])
+def test_from_dlpack_to_kdlcpu_strides(mod, typestr):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(typestr, q.sycl_device)
+
+    X0 = dpt.empty(3 * mod, dtype=typestr, sycl_queue=q)
+    for start in range(mod):
+        X = X0[slice(-start - 1, None, -mod)]
+        Y = dpt.from_dlpack(X, device=(device_CPU, 0))
+        assert X.shape == Y.shape
+        assert X.dtype == Y.dtype
+        if Y.ndim:
+            V = Y[::-1]
+            W = dpt.from_dlpack(V)
+            assert V.strides == W.strides
+
+
+def test_dlpack_from_subdevice_to_kdlcpu():
+    """
+    Check that array allocated on a sub-device can be
+    imported via DLPack to kDLCPU device (as a NumPy array).
+    """
+    n = 64
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    try:
+        sdevs = dev.create_sub_devices(partition="next_partitionable")
+    except dpctl.SyclSubDeviceCreationError:
+        sdevs = None
+    try:
+        if sdevs is None:
+            sdevs = dev.create_sub_devices(partition=[1, 1])
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip("Default device can not be partitioned")
+    assert isinstance(sdevs, list) and len(sdevs) > 0
+    try:
+        ctx = sdevs[0].sycl_platform.default_context
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Platform's default_context is not available")
+    try:
+        q = dpctl.SyclQueue(ctx, sdevs[0])
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    ar = dpt.arange(n, dtype=dpt.int32, sycl_queue=q)
+    ar2 = dpt.from_dlpack(ar, dl_device=(device_CPU, 0))
+    assert isinstance(ar2, np.ndarray)
+
+
+def test_legacy_dlpack_capsule_from_numpy():
+    """
+    Check that NumPy's exported legacy DLPack capsule
+    will interoperate with from_dlpack_capsule,
+    especially with zero-copy.
+    """
+    x = np.arange(100, dtype="i4")
+    cap = x.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x.ctypes.data == y.ctypes.data
+
+    x = np.arange(100, dtype="u4").reshape((10, 10)).T
+    cap = x.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x.ctypes.data == y.ctypes.data
+    del x
+
+    x = np.arange(100, dtype="f4").reshape((10, 10), order="F")
+    cap = x.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    del cap
+    assert x.ctypes.data == y.ctypes.data
+
+    x = np.arange(100, dtype="c8")
+    x1 = x[::-2]
+    cap = x1.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x1.ctypes.data == y.ctypes.data
+    del x1, y, x
+    del cap
+
+    x = np.ones(100, dtype="?")
+    x1 = x[::-2]
+    cap = x1.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    assert x1.ctypes.data == y.ctypes.data
+    del x1, y, x
+    del cap
+
+
+def test_dlpack_capsule_readonly_array_to_kdlcpu():
+    try:
+        x = dpt.arange(100, dtype="i4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    # read-only array
+    x.flags["W"] = False
+    cap = x.__dlpack__(max_version=max_supported_ver, dl_device=(device_CPU, 0))
+    y = _dlp.from_dlpack_capsule(cap)
+    assert dpt.all(x == dpt.asarray(y))
+    assert not y.flags["W"]
+
+    cap1 = _dlp.numpy_to_dlpack_versioned_capsule(y, not y.flags["W"])
+    y1 = _dlp.from_dlpack_capsule(cap1)
+    assert not y1.flags["W"]
+
+
+def test_used_dlpack_capsule_from_numpy():
+    get_queue_or_skip()
+
+    x_np = np.arange(100, dtype="i4")
+
+    cap = x_np.__dlpack__()
+    _dlp.from_dlpack_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_capsule(cap)
+    del cap
+
+    x = dpt.asarray(x_np)
+    max_supported_ver = _dlp.get_build_dlpack_version()
+    cap = x.__dlpack__(max_version=max_supported_ver, dl_device=(device_CPU, 0))
+    _dlp.from_dlpack_capsule(cap)
+    with pytest.raises(
+        ValueError,
+        match="A DLPack tensor object can not be consumed multiple times",
+    ):
+        _dlp.from_dlpack_capsule(cap)
+    del cap
+
+
+def test_dlpack_size_0_on_kdlcpu():
+    get_queue_or_skip()
+    x_np = np.ones(0, dtype="i4")
+
+    cap = x_np.__dlpack__()
+    y = _dlp.from_dlpack_capsule(cap)
+    assert y.ctypes.data == x_np.ctypes.data
