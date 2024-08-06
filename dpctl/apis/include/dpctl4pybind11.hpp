@@ -764,7 +764,7 @@ public:
             reinterpret_cast<DPCTLSyclQueueRef>(q_uptr.get());
 
         auto vacuous_destructor = []() {};
-        py::object mock_owner = py::capsule(vacuous_destructor);
+        py::capsule mock_owner(vacuous_destructor);
 
         // create memory object owned by mock_owner, it is a new reference
         PyObject *_memory =
@@ -773,14 +773,13 @@ public:
 
         using py_uptrT =
             std::unique_ptr<PyObject, decltype(ref_count_decrementer)>;
-        auto memory_uptr = py_uptrT(_memory, ref_count_decrementer);
 
         if (!_memory) {
             throw py::error_already_set();
         }
 
-        std::shared_ptr<void> *opaque_ptr = nullptr;
-        opaque_ptr = new std::shared_ptr<void>(shptr);
+        auto memory_uptr = py_uptrT(_memory, ref_count_decrementer);
+        std::shared_ptr<void> *opaque_ptr = new std::shared_ptr<void>(shptr);
 
         Py_MemoryObject *memobj = reinterpret_cast<Py_MemoryObject *>(_memory);
         // replace mock_owner capsule as the owner
