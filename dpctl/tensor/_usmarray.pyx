@@ -563,6 +563,22 @@ cdef class usm_ndarray:
 
     @shape.setter
     def shape(self, new_shape):
+        """
+        Modifies usm_ndarray instance in-place by changing its metadata
+        about the shape and the strides of the array, or raises
+        `AttributeError` exception if in-place change is not possible.
+
+        Args:
+            new_shape: (tuple, int)
+                New shape. Only non-negative values are supported.
+                The new shape may not lead to the change in the
+                number of elements in the array.
+
+        Whether the array can be reshape in-place depends on its
+        strides. Use :func:`dpctl.tensor.reshape` function which
+        always succeeds to reshape the array by performing a copy
+        if necessary.
+        """
         cdef int new_nd = -1
         cdef Py_ssize_t nelems = -1
         cdef int err = 0
