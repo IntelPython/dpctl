@@ -34,6 +34,7 @@
 #include "syclinterface/dpctl_sycl_types.h"
 #include <memory>
 #include <sycl/sycl.hpp>
+#include <utility>
 
 #include <exception>
 #include <iostream>
