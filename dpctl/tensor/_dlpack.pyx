@@ -713,9 +713,9 @@ class _numpy_array_interface_wrapper:
             converted to numpy.
     """
 
-    def __init__(self, array_interface, pycapsule) -> None:
+    def __init__(self, array_interface, memory_owner) -> None:
         self.__array_interface__ = array_interface
-        self._pycapsule = pycapsule
+        self._memory_owner = memory_owner
 
 
 cpdef object from_dlpack_capsule(object py_caps):
@@ -920,10 +920,11 @@ cpdef object from_dlpack_capsule(object py_caps):
         if not versioned:
             dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
             cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
+            return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, dlm_holder))
         else:
             dlmv_holder = _DLManagedTensorVersionedOwner._create(dlmv_tensor)
             cpython.PyCapsule_SetName(py_caps, 'used_dltensor_versioned')
-        return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, py_caps))
+            return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, dlmv_holder))
     else:
         raise BufferError(
             "The DLPack tensor resides on unsupported device."
