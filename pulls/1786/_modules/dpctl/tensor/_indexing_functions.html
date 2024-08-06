@@ -13,10 +13,10 @@
     </script>
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.07.18 -->
+    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._indexing_functions - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=613ab9ff" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -589,6 +589,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.put.html">dpctl.tensor.put</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.take.html">dpctl.tensor.take</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.inspection.html">Inspection API</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of Inspection API</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -829,7 +830,7 @@
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span>
 
-<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_extract_impl</span><span class="p">,</span> <span class="n">_nonzero_impl</span>
+<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_extract_impl</span><span class="p">,</span> <span class="n">_nonzero_impl</span><span class="p">,</span> <span class="n">_take_multi_index</span>
 <span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 
@@ -1231,6 +1232,85 @@
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array of positive rank is expected&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_nonzero_impl</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_range</span><span class="p">(</span><span class="n">sh_i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">usm_t</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sh_i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_t</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">ind</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sh_i</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ind</span>
+
+
+<div class="viewcode-block" id="take_along_axis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html#dpctl.tensor.take_along_axis">[docs]</a><span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns elements from an array at the one-dimensional indices specified</span>
+<span class="sd">    by ``indices`` along a provided ``axis``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array. Must be compatible with ``indices``, except for the</span>
+<span class="sd">            axis (dimension) specified by ``axis``.</span>
+<span class="sd">        indices (usm_ndarray):</span>
+<span class="sd">            array indices. Must have the same rank (i.e., number of dimensions)</span>
+<span class="sd">            as ``x``.</span>
+<span class="sd">        axis: int</span>
+<span class="sd">            axis along which to select values. If ``axis`` is negative, the</span>
+<span class="sd">            function determines the axis along which to select values by</span>
+<span class="sd">            counting from the last dimension. Default: ``-1``.</span>
+<span class="sd">        mode (str, optional):</span>
+<span class="sd">            How out-of-bounds indices will be handled. Possible values</span>
+<span class="sd">            are:</span>
+
+<span class="sd">            - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">              negative indices.</span>
+<span class="sd">            - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+
+<span class="sd">            Default: ``&quot;wrap&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray:</span>
+<span class="sd">            an array having the same data type as ``x``. The returned array has</span>
+<span class="sd">            the same rank (i.e., number of dimensions) as ``x`` and a shape</span>
+<span class="sd">            determined according to :ref:`broadcasting`, except for the axis</span>
+<span class="sd">            (dimension) specified by ``axis`` whose size must equal the size</span>
+<span class="sd">            of the corresponding axis (dimension) in ``indices``.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Treatment of the out-of-bound indices in ``indices`` array is controlled</span>
+<span class="sd">        by the value of ``mode`` keyword.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">x_nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">x_nd</span> <span class="o">!=</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Number of dimensions in the first and the second &quot;</span>
+            <span class="s2">&quot;argument arrays must be equal&quot;</span>
+        <span class="p">)</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="n">x_nd</span><span class="p">)</span>
+    <span class="n">out_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">indices</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">indices</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+            <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+            <span class="s2">&quot;from input arguments. &quot;</span>
+        <span class="p">)</span>
+    <span class="n">mode_i</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+    <span class="n">_ind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">indices</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">pp</span>
+            <span class="k">else</span> <span class="n">_range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">,</span> <span class="n">x_nd</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">out_usm_type</span><span class="p">,</span> <span class="n">indexes_dt</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_nd</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_take_multi_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode_i</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
