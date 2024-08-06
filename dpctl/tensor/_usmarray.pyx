@@ -1161,7 +1161,7 @@ cdef class usm_ndarray:
                 raise TypeError(
                     "`__dlpack__` expects `max_version` to be a "
                     "2-tuple of integers `(major, minor)`, instead "
-                    f"got {type(max_version)}"
+                    f"got {max_version}"
                 )
             dpctl_dlpack_version = get_build_dlpack_version()
             if max_version[0] >= dpctl_dlpack_version[0]:
@@ -1169,9 +1169,9 @@ cdef class usm_ndarray:
                 if dl_device is not None:
                     if not isinstance(dl_device, tuple) or len(dl_device) != 2:
                         raise TypeError(
-                            "`__dlpack__` expects `dl_device` to be a "
-                            "2-tuple of `(device_type, device_id)`, instead "
-                            f"got {type(dl_device)}"
+                            "`__dlpack__` expects `dl_device` to be a 2-tuple "
+                            "of `(device_type, device_id)`, instead "
+                            f"got {dl_device}"
                         )
                     if dl_device != self.__dlpack_device__():
                         if copy == False:
