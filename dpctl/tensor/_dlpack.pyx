@@ -562,7 +562,10 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     dl_tensor.ndim = nd
     dl_tensor.byte_offset = <uint64_t>byte_offset
     dl_tensor.shape = &shape_strides_ptr[0]
-    dl_tensor.strides = &shape_strides_ptr[nd] if not is_c_contiguous else NULL
+    if is_c_contiguous:
+        dl_tensor.strides = NULL
+    else:
+        dl_tensor.strides = &shape_strides_ptr[nd]
     dl_tensor.device.device_type = kDLCPU
     dl_tensor.device.device_id = 0
     dl_tensor.dtype.lanes = <uint16_t>1
