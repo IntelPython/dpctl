@@ -60,7 +60,14 @@ from dpctl.tensor._data_types import (
 )
 from dpctl.tensor._device import Device
 from dpctl.tensor._dlpack import from_dlpack
-from dpctl.tensor._indexing_functions import extract, nonzero, place, put, take
+from dpctl.tensor._indexing_functions import (
+    extract,
+    nonzero,
+    place,
+    put,
+    take,
+    take_along_axis,
+)
 from dpctl.tensor._linear_algebra_functions import (
     matmul,
     matrix_transpose,
@@ -376,4 +383,5 @@ __all__ = [
     "nextafter",
     "diff",
     "count_nonzero",
+    "take_along_axis",
 ]
