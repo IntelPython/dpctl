@@ -61,7 +61,7 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     endif()
     if (UNIX)
         find_library(PI_LEVEL_ZERO_LIB
-            NAMES pi_level_zero
+            NAMES pi_level_zero ur_adapter_level_zero
             HINTS ${IntelSyclCompiler_LIBRARY_DIR}
         )
         find_program(READELF_PROG readelf)
@@ -81,7 +81,7 @@ endif()
 
 if (UNIX)
   find_library(PI_OPENCL_LIB
-      NAMES pi_opencl
+      NAMES pi_opencl ur_adapter_opencl
       HINTS ${IntelSyclCompiler_LIBRARY_DIR}
   )
   find_program(READELF_PROG readelf)
