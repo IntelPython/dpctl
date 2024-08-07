@@ -696,3 +696,13 @@ def test_dlpack_size_0_on_kdlcpu():
     cap = x_np.__dlpack__()
     y = _dlp.from_dlpack_capsule(cap)
     assert y.ctypes.data == x_np.ctypes.data
+
+
+def test_copy_via_host():
+    get_queue_or_skip()
+    x = dpt.ones(1, dtype="i4")
+    x_np = np.ones(1, dtype="i4")
+    y = dpt.from_dlpack(x_np, device=x.__dlpack_device__())
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.sycl_device == x.sycl_device
+    assert y.usm_type == "device"
