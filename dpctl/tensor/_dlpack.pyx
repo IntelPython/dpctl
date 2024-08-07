@@ -168,7 +168,7 @@ cdef void _managed_tensor_versioned_deleter(DLManagedTensorVersioned *dlmv_tenso
         stdlib.free(dlmv_tensor)
 
 
-cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
+cdef object _get_default_context(c_dpctl.SyclDevice dev):
     try:
         default_context = dev.sycl_platform.default_context
     except RuntimeError:
@@ -178,7 +178,7 @@ cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
     return default_context
 
 
-cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
+cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except -1:
     cdef DPCTLSyclDeviceRef pDRef = NULL
     cdef DPCTLSyclDeviceRef tDRef = NULL
     cdef c_dpctl.SyclDevice p_dev
@@ -201,7 +201,7 @@ cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
 
 cdef int get_array_dlpack_device_id(
     usm_ndarray usm_ary
-) except *:
+) except -1:
     """Finds ordinal number of the parent of device where array
     was allocated.
     """
@@ -1006,10 +1006,11 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
     """
     dlpack_attr = getattr(x, "__dlpack__", None)
-    if not callable(dlpack_attr):
+    dlpack_dev_attr = getattr(x, "__dlpack_device__", None)
+    if not callable(dlpack_attr) or not callable(dlpack_dev_attr):
         raise TypeError(
             f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
+            "`__dlpack__` and `__dlpack_device__` methods."
         )
     try:
         # device is converted to a dlpack_device if necessary
@@ -1017,6 +1018,10 @@ def from_dlpack(x, /, *, device=None, copy=None):
         if device:
             if isinstance(device, tuple):
                 dl_device = device
+                if len(dl_device) != 2:
+                    raise ValueError(
+                        "Argument `device` specified as a tuple must have length 2"
+                    )
             else:
                 if not isinstance(device, dpctl.SyclDevice):
                     d = Device.create_device(device).sycl_device
@@ -1026,8 +1031,34 @@ def from_dlpack(x, /, *, device=None, copy=None):
         dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
         return from_dlpack_capsule(dlpack_capsule)
     except TypeError:
-        if (dl_device is None) or (dl_device == x.__dlpack_device__()):
+        x_dldev = dlpack_dev_attr()
+        if (dl_device is None) or (dl_device == x_dldev):
             dlpack_capsule = dlpack_attr()
             return from_dlpack_capsule(dlpack_capsule)
+        # must copy via host
+        if copy is False:
+            raise ValueError(
+                "Importing data via DLPack requires copying, but copy=False was provided"
+            )
+        if dl_device[0] != device_OneAPI:
+            raise ValueError(f"Can not import to requested device {dl_device}")
+        if x_dldev == (device_CPU, 0):
+            host_blob = x
         else:
-            raise ValueError
+            dlpack_capsule = dlpack_attr(max_version=(1, 0), dl_device=(device_CPU, 0), copy=copy)
+            host_blob = from_dlpack_capsule(dlpack_capsule)
+        device_id = dl_device[1]
+        root_device = dpctl.SyclDevice(str(<int>device_id))
+        q = Device.create_device(root_device).sycl_queue
+        np_ary = np.asarray(host_blob)
+        dt = np_ary.dtype
+        if dt.char in "dD" and q.sycl_device.has_aspect_fp64 is False:
+            Xusm_dtype = (
+                "float32" if dt.char == "d" else "complex64"
+            )
+        else:
+            Xusm_dtype = dt
+        usm_mem = dpmem.MemoryUSMDevice(np_ary.nbytes, queue=q)
+        usm_ary = usm_ndarray(np_ary.shape, dtype=Xusm_dtype, buffer=usm_mem)
+        usm_mem.copy_from_host(np.reshape(np_ary.view(dtype="u1"), -1))
+        return usm_ary
