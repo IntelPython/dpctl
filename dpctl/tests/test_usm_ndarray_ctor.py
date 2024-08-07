@@ -441,7 +441,7 @@ def test_slicing_basic():
     Xusm[:, -4]
     with pytest.raises(IndexError):
         Xusm[:, -128]
-    with pytest.raises(TypeError):
+    with pytest.raises(IndexError):
         Xusm[{1, 2, 3, 4, 5, 6, 7}]
     X = dpt.usm_ndarray(10, "u1")
     X.usm_data.copy_from_host(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09")
