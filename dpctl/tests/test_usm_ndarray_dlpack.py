@@ -702,7 +702,20 @@ def test_copy_via_host():
     get_queue_or_skip()
     x = dpt.ones(1, dtype="i4")
     x_np = np.ones(1, dtype="i4")
-    y = dpt.from_dlpack(x_np, device=x.__dlpack_device__())
+    x_dl_dev = x.__dlpack_device__()
+    y = dpt.from_dlpack(x_np, device=x_dl_dev)
     assert isinstance(y, dpt.usm_ndarray)
     assert y.sycl_device == x.sycl_device
     assert y.usm_type == "device"
+
+    with pytest.raises(ValueError):
+        dpt.from_dlpack(x_np, device=(1, 0, 0))
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x, device=(2, 0))
+
+    num_devs = dpctl.get_num_devices()
+    if num_devs > 1:
+        j = [i for i in range(num_devs) if i != x_dl_dev[1]][0]
+        z = dpt.from_dlpack(x, device=(x_dl_dev[0], j))
+        assert isinstance(z, dpt.usm_ndarray)
+        assert z.usm_type == "device"
