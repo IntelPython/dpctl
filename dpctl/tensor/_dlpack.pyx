@@ -168,7 +168,7 @@ cdef void _managed_tensor_versioned_deleter(DLManagedTensorVersioned *dlmv_tenso
         stdlib.free(dlmv_tensor)
 
 
-cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
+cdef object _get_default_context(c_dpctl.SyclDevice dev):
     try:
         default_context = dev.sycl_platform.default_context
     except RuntimeError:
@@ -178,7 +178,7 @@ cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
     return default_context
 
 
-cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
+cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except -1:
     cdef DPCTLSyclDeviceRef pDRef = NULL
     cdef DPCTLSyclDeviceRef tDRef = NULL
     cdef c_dpctl.SyclDevice p_dev
@@ -201,7 +201,7 @@ cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
 
 cdef int get_array_dlpack_device_id(
     usm_ndarray usm_ary
-) except *:
+) except -1:
     """Finds ordinal number of the parent of device where array
     was allocated.
     """
@@ -935,6 +935,32 @@ cpdef object from_dlpack_capsule(object py_caps):
             "The DLPack tensor resides on unsupported device."
         )
 
+cdef usm_ndarray _to_usm_ary_from_host_blob(object host_blob, dev : Device):
+    q = dev.sycl_queue
+    np_ary = np.asarray(host_blob)
+    dt = np_ary.dtype
+    if dt.char in "dD" and q.sycl_device.has_aspect_fp64 is False:
+        Xusm_dtype = (
+            "float32" if dt.char == "d" else "complex64"
+        )
+    else:
+        Xusm_dtype = dt
+    usm_mem = dpmem.MemoryUSMDevice(np_ary.nbytes, queue=q)
+    usm_ary = usm_ndarray(np_ary.shape, dtype=Xusm_dtype, buffer=usm_mem)
+    usm_mem.copy_from_host(np.reshape(np_ary.view(dtype="u1"), -1))
+    return usm_ary
+
+
+# only cdef to make it private
+cdef object _create_device(object device, object dl_device):
+    if isinstance(device, Device):
+        return device
+    elif isinstance(device, dpctl.SyclDevice):
+        return Device.create_device(device)
+    else:
+        root_device = dpctl.SyclDevice(str(<int>dl_device[1]))
+        return Device.create_device(root_device)
+
 
 def from_dlpack(x, /, *, device=None, copy=None):
     """ from_dlpack(x, /, *, device=None, copy=None)
@@ -943,7 +969,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
     object ``x`` that implements ``__dlpack__`` protocol.
 
     Args:
-        x (Python object):
+        x (object):
             A Python object representing an array that supports
             ``__dlpack__`` protocol.
         device (Optional[str,
@@ -959,7 +985,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
             returned by :attr:`dpctl.tensor.usm_ndarray.device`, or a
             2-tuple matching the format of the output of the ``__dlpack_device__``
             method, an integer enumerator representing the device type followed by
-            an integer representing the index of the device.
+            an integer representing the index of the device. The only supported
+            :enum:`dpctl.tensor.DLDeviceType` types are "kDLCPU" and "kDLOneAPI".
             Default: ``None``.
         copy (bool, optional)
             Boolean indicating whether or not to copy the input.
@@ -1008,33 +1035,130 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
             C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
             X = dpt.from_dlpack(C)
+            Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
 
     """
-    if not hasattr(x, "__dlpack__"):
+    dlpack_attr = getattr(x, "__dlpack__", None)
+    dlpack_dev_attr = getattr(x, "__dlpack_device__", None)
+    if not callable(dlpack_attr) or not callable(dlpack_dev_attr):
         raise TypeError(
             f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
+            "`__dlpack__` and `__dlpack_device__` methods."
         )
-    dlpack_attr = getattr(x, "__dlpack__")
-    if not callable(dlpack_attr):
-        raise TypeError(
-            f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
-        )
-    try:
-        # device is converted to a dlpack_device if necessary
-        dl_device = None
-        if device:
-            if isinstance(device, tuple):
-                dl_device = device
+    # device is converted to a dlpack_device if necessary
+    dl_device = None
+    if device:
+        if isinstance(device, tuple):
+            dl_device = device
+            if len(dl_device) != 2:
+                raise ValueError(
+                    "Argument `device` specified as a tuple must have length 2"
+                )
+        else:
+            if not isinstance(device, dpctl.SyclDevice):
+                device = Device.create_device(device)
+                d = device.sycl_device
             else:
-                if not isinstance(device, dpctl.SyclDevice):
-                    d = Device.create_device(device).sycl_device
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
-                else:
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>device))
-        dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
-        return from_dlpack_capsule(dlpack_capsule)
+                d = device
+            dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
+    if dl_device is not None:
+        if (dl_device[0] not in [device_OneAPI, device_CPU]):
+            raise ValueError(
+                f"Argument `device`={device} is not supported."
+            )
+    got_type_error = False
+    got_buffer_error = False
+    got_other_error = False
+    saved_exception = None
+    # First DLPack version supporting dl_device, and copy
+    requested_ver = (1, 0)
+    cpu_dev = (device_CPU, 0)
+    try:
+        # setting max_version to minimal version that supports dl_device/copy keywords
+        dlpack_capsule = dlpack_attr(
+            max_version=requested_ver,
+            dl_device=dl_device,
+            copy=copy
+        )
     except TypeError:
-        dlpack_capsule = dlpack_attr()
+        # exporter does not support max_version keyword
+        got_type_error = True
+    except (BufferError, NotImplementedError):
+        # Either dl_device, or copy can be satisfied
+        got_buffer_error = True
+    except Exception as e:
+        got_other_error = True
+        saved_exception = e
+    else:
+        # execution did not raise exceptions
         return from_dlpack_capsule(dlpack_capsule)
+    finally:
+        if got_type_error:
+            # max_version/dl_device, copy keywords are not supported by __dlpack__
+            x_dldev = dlpack_dev_attr()
+            if (dl_device is None) or (dl_device == x_dldev):
+                dlpack_capsule = dlpack_attr()
+                return from_dlpack_capsule(dlpack_capsule)
+            # must copy via host
+            if copy is False:
+                raise BufferError(
+                    "Importing data via DLPack requires copying, but copy=False was provided"
+                )
+            # when max_version/dl_device/copy are not supported
+            # we can only support importing to OneAPI devices
+            # from host, or from another oneAPI device
+            is_supported_x_dldev = (
+                x_dldev == cpu_dev or
+                (x_dldev[0] == device_OneAPI)
+            )
+            is_supported_dl_device = (
+                dl_device == cpu_dev or
+                dl_device[0] == device_OneAPI
+            )
+            if is_supported_x_dldev and is_supported_dl_device:
+                dlpack_capsule = dlpack_attr()
+                blob = from_dlpack_capsule(dlpack_capsule)
+            else:
+                raise BufferError(f"Can not import to requested device {dl_device}")
+            dev = _create_device(device, dl_device)
+            if x_dldev == cpu_dev and dl_device == cpu_dev:
+                # both source and destination are CPU
+                return blob
+            elif x_dldev == cpu_dev:
+                # source is CPU, destination is oneAPI
+                return _to_usm_ary_from_host_blob(blob, dev)
+            elif dl_device == cpu_dev:
+                # source is oneAPI, destination is CPU
+                cpu_caps = blob.__dlpack__(
+                    max_version=get_build_dlpack_version(),
+                    dl_device=cpu_dev
+                )
+                return from_dlpack_capsule(cpu_caps)
+            else:
+                import dpctl.tensor as dpt
+                return dpt.asarray(blob, device=dev)
+        elif got_buffer_error:
+            # we are here, because dlpack_attr could not deal with requested dl_device,
+            # or copying was required
+            if copy is False:
+                raise BufferError(
+                    "Importing data via DLPack requires copying, but copy=False was provided"
+                )
+            # must copy via host
+            if dl_device[0] != device_OneAPI:
+                raise BufferError(f"Can not import to requested device {dl_device}")
+            x_dldev = dlpack_dev_attr()
+            if x_dldev == cpu_dev:
+                dlpack_capsule = dlpack_attr()
+                host_blob = from_dlpack_capsule(dlpack_capsule)
+            else:
+                dlpack_capsule = dlpack_attr(
+                    max_version=requested_ver,
+                    dl_device=cpu_dev,
+                    copy=copy
+                )
+                host_blob = from_dlpack_capsule(dlpack_capsule)
+            dev = _create_device(device, dl_device)
+            return _to_usm_ary_from_host_blob(host_blob, dev)
+        elif got_other_error:
+            raise saved_exception

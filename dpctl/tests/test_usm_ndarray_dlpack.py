@@ -696,3 +696,132 @@ def test_dlpack_size_0_on_kdlcpu():
     cap = x_np.__dlpack__()
     y = _dlp.from_dlpack_capsule(cap)
     assert y.ctypes.data == x_np.ctypes.data
+
+
+def test_copy_via_host():
+    get_queue_or_skip()
+    x = dpt.ones(1, dtype="i4")
+    x_np = np.ones(1, dtype="i4")
+    x_dl_dev = x.__dlpack_device__()
+    y = dpt.from_dlpack(x_np, device=x_dl_dev)
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.sycl_device == x.sycl_device
+    assert y.usm_type == "device"
+
+    with pytest.raises(ValueError):
+        # uncorrect length of tuple
+        dpt.from_dlpack(x_np, device=(1, 0, 0))
+    with pytest.raises(ValueError):
+        # only kDLCPU and kDLOneAPI are supported
+        dpt.from_dlpack(x, device=(2, 0))
+
+    num_devs = dpctl.get_num_devices()
+    if num_devs > 1:
+        j = [i for i in range(num_devs) if i != x_dl_dev[1]][0]
+        z = dpt.from_dlpack(x, device=(x_dl_dev[0], j))
+        assert isinstance(z, dpt.usm_ndarray)
+        assert z.usm_type == "device"
+
+
+def test_copy_via_host_gh_1789():
+    "Test based on review example from gh-1789"
+    get_queue_or_skip()
+    x_np = np.ones((10, 10), dtype="i4")
+    # strides are no longer multiple of itemsize
+    x_np.strides = (x_np.strides[0] - 1, x_np.strides[1])
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np)
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np, device=(14, 0))
+
+
+class LegacyContainer:
+    "Helper class implementing legacy `__dlpack__` protocol"
+
+    def __init__(self, array):
+        self._array = array
+
+    def __dlpack__(self, stream=None):
+        return self._array.__dlpack__(stream=stream)
+
+    def __dlpack_device__(self):
+        return self._array.__dlpack_device__()
+
+
+class Container:
+    "Helper class implementing legacy `__dlpack__` protocol"
+
+    def __init__(self, array):
+        self._array = array
+
+    def __dlpack__(
+        self, max_version=None, dl_device=None, copy=None, stream=None
+    ):
+        return self._array.__dlpack__(
+            max_version=max_version,
+            dl_device=dl_device,
+            copy=copy,
+            stream=stream,
+        )
+
+    def __dlpack_device__(self):
+        return self._array.__dlpack_device__()
+
+
+def test_generic_container_legacy():
+    get_queue_or_skip()
+    C = LegacyContainer(dpt.linspace(0, 100, num=20, dtype="int16"))
+
+    X = dpt.from_dlpack(C)
+    assert isinstance(X, dpt.usm_ndarray)
+    assert X._pointer == C._array._pointer
+    assert X.sycl_device == C._array.sycl_device
+    assert X.dtype == C._array.dtype
+
+    Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
+    assert isinstance(Y, np.ndarray)
+    assert Y.dtype == X.dtype
+
+    Z = dpt.from_dlpack(C, device=X.device)
+    assert isinstance(Z, dpt.usm_ndarray)
+    assert Z._pointer == X._pointer
+    assert Z.device == X.device
+
+
+def test_generic_container_legacy_np():
+    get_queue_or_skip()
+    C = LegacyContainer(np.linspace(0, 100, num=20, dtype="int16"))
+
+    X = dpt.from_dlpack(C)
+    assert isinstance(X, np.ndarray)
+    assert X.ctypes.data == C._array.ctypes.data
+    assert X.dtype == C._array.dtype
+
+    Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
+    assert isinstance(Y, np.ndarray)
+    assert Y.dtype == X.dtype
+
+    dev = dpt.Device.create_device()
+    Z = dpt.from_dlpack(C, device=dev)
+    assert isinstance(Z, dpt.usm_ndarray)
+    assert Z.device == dev
+
+
+def test_generic_container():
+    get_queue_or_skip()
+    C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
+
+    X = dpt.from_dlpack(C)
+    assert isinstance(X, dpt.usm_ndarray)
+    assert X._pointer == C._array._pointer
+    assert X.sycl_device == C._array.sycl_device
+    assert X.dtype == C._array.dtype
+
+    Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
+    assert isinstance(Y, np.ndarray)
+    assert Y.dtype == X.dtype
+
+    Z = dpt.from_dlpack(C, device=X.device)
+    assert isinstance(Z, dpt.usm_ndarray)
+    assert Z._pointer == X._pointer
+    assert Z.device == X.device
