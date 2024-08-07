@@ -1005,12 +1005,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
             X = dpt.from_dlpack(C)
 
     """
-    if not hasattr(x, "__dlpack__"):
-        raise TypeError(
-            f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
-        )
-    dlpack_attr = getattr(x, "__dlpack__")
+    dlpack_attr = getattr(x, "__dlpack__", None)
     if not callable(dlpack_attr):
         raise TypeError(
             f"The argument of type {type(x)} does not implement "
