@@ -1020,11 +1020,14 @@ def from_dlpack(x, /, *, device=None, copy=None):
             else:
                 if not isinstance(device, dpctl.SyclDevice):
                     d = Device.create_device(device).sycl_device
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
                 else:
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>device))
+                    d = device
+                dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
         dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
         return from_dlpack_capsule(dlpack_capsule)
     except TypeError:
-        dlpack_capsule = dlpack_attr()
-        return from_dlpack_capsule(dlpack_capsule)
+        if (dl_device is None) or (dl_device == x.__dlpack_device__()):
+            dlpack_capsule = dlpack_attr()
+            return from_dlpack_capsule(dlpack_capsule)
+        else:
+            raise ValueError
