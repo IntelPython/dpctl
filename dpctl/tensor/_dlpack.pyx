@@ -930,6 +930,22 @@ cpdef object from_dlpack_capsule(object py_caps):
             "The DLPack tensor resides on unsupported device."
         )
 
+cdef usm_ndarray _to_usm_ary_from_host_blob(object host_blob, int device_id):
+    root_device = dpctl.SyclDevice(str(<int>device_id))
+    q = Device.create_device(root_device).sycl_queue
+    np_ary = np.asarray(host_blob)
+    dt = np_ary.dtype
+    if dt.char in "dD" and q.sycl_device.has_aspect_fp64 is False:
+        Xusm_dtype = (
+            "float32" if dt.char == "d" else "complex64"
+        )
+    else:
+        Xusm_dtype = dt
+    usm_mem = dpmem.MemoryUSMDevice(np_ary.nbytes, queue=q)
+    usm_ary = usm_ndarray(np_ary.shape, dtype=Xusm_dtype, buffer=usm_mem)
+    usm_mem.copy_from_host(np.reshape(np_ary.view(dtype="u1"), -1))
+    return usm_ary
+
 
 def from_dlpack(x, /, *, device=None, copy=None):
     """ from_dlpack(x, /, *, device=None, copy=None)
@@ -1031,34 +1047,36 @@ def from_dlpack(x, /, *, device=None, copy=None):
         dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
         return from_dlpack_capsule(dlpack_capsule)
     except TypeError:
+        # max_version/dl_device, copy keywords are not supported by __dlpack__
         x_dldev = dlpack_dev_attr()
         if (dl_device is None) or (dl_device == x_dldev):
             dlpack_capsule = dlpack_attr()
             return from_dlpack_capsule(dlpack_capsule)
         # must copy via host
         if copy is False:
-            raise ValueError(
+            raise BufferError(
                 "Importing data via DLPack requires copying, but copy=False was provided"
             )
+        if x_dldev == (device_CPU, 0) and dl_device[0] == device_OneAPI:
+            host_blob = x
+        else:
+            raise BufferError(f"Can not import to requested device {dl_device}")
+        return _to_usm_ary_from_host_blob(host_blob, dl_device[1])
+    except BufferError as e:
+        # we are here, because dlpack_attr could not deal with requested dl_device,
+        # or copying was required
+        if copy is False:
+            raise BufferError(
+                "Importing data via DLPack requires copying, but copy=False was provided"
+            ) from e
+        # must copy via host
         if dl_device[0] != device_OneAPI:
-            raise ValueError(f"Can not import to requested device {dl_device}")
+            raise BufferError(f"Can not import to requested device {dl_device}")
+        x_dldev = dlpack_dev_attr()
         if x_dldev == (device_CPU, 0):
             host_blob = x
         else:
+            # this would fail anyway
             dlpack_capsule = dlpack_attr(max_version=(1, 0), dl_device=(device_CPU, 0), copy=copy)
             host_blob = from_dlpack_capsule(dlpack_capsule)
-        device_id = dl_device[1]
-        root_device = dpctl.SyclDevice(str(<int>device_id))
-        q = Device.create_device(root_device).sycl_queue
-        np_ary = np.asarray(host_blob)
-        dt = np_ary.dtype
-        if dt.char in "dD" and q.sycl_device.has_aspect_fp64 is False:
-            Xusm_dtype = (
-                "float32" if dt.char == "d" else "complex64"
-            )
-        else:
-            Xusm_dtype = dt
-        usm_mem = dpmem.MemoryUSMDevice(np_ary.nbytes, queue=q)
-        usm_ary = usm_ndarray(np_ary.shape, dtype=Xusm_dtype, buffer=usm_mem)
-        usm_mem.copy_from_host(np.reshape(np_ary.view(dtype="u1"), -1))
-        return usm_ary
+        return _to_usm_ary_from_host_blob(host_blob, dl_device[1])
