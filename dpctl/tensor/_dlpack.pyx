@@ -1028,22 +1028,22 @@ def from_dlpack(x, /, *, device=None, copy=None):
             f"The argument of type {type(x)} does not implement "
             "`__dlpack__` and `__dlpack_device__` methods."
         )
-    try:
-        # device is converted to a dlpack_device if necessary
-        dl_device = None
-        if device:
-            if isinstance(device, tuple):
-                dl_device = device
-                if len(dl_device) != 2:
-                    raise ValueError(
-                        "Argument `device` specified as a tuple must have length 2"
-                    )
+    # device is converted to a dlpack_device if necessary
+    dl_device = None
+    if device:
+        if isinstance(device, tuple):
+            dl_device = device
+            if len(dl_device) != 2:
+                raise ValueError(
+                    "Argument `device` specified as a tuple must have length 2"
+                )
+        else:
+            if not isinstance(device, dpctl.SyclDevice):
+                d = Device.create_device(device).sycl_device
             else:
-                if not isinstance(device, dpctl.SyclDevice):
-                    d = Device.create_device(device).sycl_device
-                else:
-                    d = device
-                dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
+                d = device
+            dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
+    try:
         dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
         return from_dlpack_capsule(dlpack_capsule)
     except TypeError:
@@ -1058,7 +1058,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
                 "Importing data via DLPack requires copying, but copy=False was provided"
             )
         if x_dldev == (device_CPU, 0) and dl_device[0] == device_OneAPI:
-            host_blob = x
+            dlpack_capsule = dlpack_attr()
+            host_blob = from_dlpack_capsule(dlpack_capsule)
         else:
             raise BufferError(f"Can not import to requested device {dl_device}")
         return _to_usm_ary_from_host_blob(host_blob, dl_device[1])
@@ -1074,7 +1075,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
             raise BufferError(f"Can not import to requested device {dl_device}")
         x_dldev = dlpack_dev_attr()
         if x_dldev == (device_CPU, 0):
-            host_blob = x
+            dlpack_capsule = dlpack_attr()
+            host_blob = from_dlpack_capsule(dlpack_capsule)
         else:
             dlpack_capsule = dlpack_attr(max_version=(1, 0), dl_device=(device_CPU, 0), copy=copy)
             host_blob = from_dlpack_capsule(dlpack_capsule)
