@@ -1062,7 +1062,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
         else:
             raise BufferError(f"Can not import to requested device {dl_device}")
         return _to_usm_ary_from_host_blob(host_blob, dl_device[1])
-    except BufferError as e:
+    except (BufferError, NotImplementedError) as e:
         # we are here, because dlpack_attr could not deal with requested dl_device,
         # or copying was required
         if copy is False:
@@ -1076,7 +1076,6 @@ def from_dlpack(x, /, *, device=None, copy=None):
         if x_dldev == (device_CPU, 0):
             host_blob = x
         else:
-            # this would fail anyway
             dlpack_capsule = dlpack_attr(max_version=(1, 0), dl_device=(device_CPU, 0), copy=copy)
             host_blob = from_dlpack_capsule(dlpack_capsule)
         return _to_usm_ary_from_host_blob(host_blob, dl_device[1])
