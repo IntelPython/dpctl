@@ -34,8 +34,9 @@ cdef cpp_bool _check_bit(int flag, int mask):
 
 cdef class Flags:
     """
-    Helper class to represent memory layout flags of
-    :class:`dpctl.tensor.usm_ndarray`.
+    Helper class to query the flags of a :class:`dpctl.tensor.usm_ndarray`
+    instance, which describe how the instance interfaces with its underlying
+    memory.
     """
     cdef int flags_
     cdef usm_ndarray arr_

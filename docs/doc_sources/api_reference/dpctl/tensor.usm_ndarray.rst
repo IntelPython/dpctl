@@ -23,3 +23,8 @@ Implementation of :py:class:`usm_ndarray` conforms to
 .. _dpctl_tensor_usm_ndarray_to_device_example:
 
 .. include:: examples/usm_ndarray.rst
+
+.. toctree::
+    :hidden:
+
+    flags

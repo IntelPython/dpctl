@@ -681,7 +681,7 @@ cdef class usm_ndarray:
     @property
     def flags(self):
         """
-        Returns :class:`dpctl.tensor._flags` object.
+        Returns :class:`dpctl.tensor._flags.Flags` object.
         """
         return _flags.Flags(self, self.flags_)
 
