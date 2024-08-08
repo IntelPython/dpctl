@@ -33,4 +33,3 @@ The following constants are defined in :py:mod:`dpctl.tensor`:
 
    ``float``:
         IEEE 754 floating-point representation of the mathematical constant π.
-
