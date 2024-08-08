@@ -719,3 +719,15 @@ def test_copy_via_host():
         z = dpt.from_dlpack(x, device=(x_dl_dev[0], j))
         assert isinstance(z, dpt.usm_ndarray)
         assert z.usm_type == "device"
+
+
+def test_copy_via_host_gh_1789():
+    "Test based on review example from gh-1789"
+    get_queue_or_skip()
+    x_np = np.ones((10, 10), dtype="i4")
+    # strides are no longer multiple of itemsize
+    x_np.strides = (x_np.strides[0] - 1, x_np.strides[1])
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np)
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np, device=(14, 0))
