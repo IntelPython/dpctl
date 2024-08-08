@@ -3,7 +3,8 @@
 ``Flags`` class
 ===================
 
-Helper class for querying information about the memory layout of an array.
+.. autoclass:: dpctl.tensor._flags.Flags
+    :members:
 
     Note that dictionary-like access to some members is permitted:
 
@@ -19,6 +20,3 @@ Helper class for querying information about the memory layout of an array.
             Equivalent to `fnc`
         "FORC", "CONTIGUOUS":
             Equivalent to `forc` and `contiguous`
-
-.. autoclass:: dpctl.tensor._flags.Flags
-    :members:
