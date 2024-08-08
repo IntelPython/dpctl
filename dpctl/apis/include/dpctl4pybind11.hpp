@@ -27,6 +27,7 @@
 
 #include "dpctl_capi.h"
 #include <complex>
+#include <exception>
 #include <memory>
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
@@ -746,6 +747,53 @@ public:
     {
         if (!m_ptr)
             throw py::error_already_set();
+    }
+
+    /*! @brief Create usm_memory object from shared pointer that manages
+     *  lifetime of the USM allocation.
+     */
+    usm_memory(void *usm_ptr,
+               size_t nbytes,
+               const sycl::queue &q,
+               std::shared_ptr<void> shptr)
+    {
+        auto const &api = ::dpctl::detail::dpctl_capi::get();
+        DPCTLSyclUSMRef usm_ref = reinterpret_cast<DPCTLSyclUSMRef>(usm_ptr);
+        auto q_uptr = std::make_unique<sycl::queue>(q);
+        DPCTLSyclQueueRef QRef =
+            reinterpret_cast<DPCTLSyclQueueRef>(q_uptr.get());
+
+        auto vacuous_destructor = []() {};
+        py::capsule mock_owner(vacuous_destructor);
+
+        // create memory object owned by mock_owner, it is a new reference
+        PyObject *_memory =
+            api.Memory_Make_(usm_ref, nbytes, QRef, mock_owner.ptr());
+        auto ref_count_decrementer = [](PyObject *o) noexcept { Py_DECREF(o); };
+
+        using py_uptrT =
+            std::unique_ptr<PyObject, decltype(ref_count_decrementer)>;
+
+        if (!_memory) {
+            throw py::error_already_set();
+        }
+
+        auto memory_uptr = py_uptrT(_memory, ref_count_decrementer);
+        std::shared_ptr<void> *opaque_ptr = new std::shared_ptr<void>(shptr);
+
+        Py_MemoryObject *memobj = reinterpret_cast<Py_MemoryObject *>(_memory);
+        // replace mock_owner capsule as the owner
+        memobj->refobj = Py_None;
+        // set opaque ptr field, usm_memory now knowns that USM is managed
+        // by smart pointer
+        memobj->_opaque_ptr = reinterpret_cast<void *>(opaque_ptr);
+
+        // _memory will delete created copies of sycl::queue, and
+        // std::shared_ptr and the deleter of the shared_ptr<void> is
+        // supposed to free the USM allocation
+        m_ptr = _memory;
+        q_uptr.release();
+        memory_uptr.release();
     }
 
     sycl::queue get_queue() const

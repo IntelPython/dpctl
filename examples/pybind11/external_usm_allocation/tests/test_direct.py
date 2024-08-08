@@ -16,12 +16,22 @@
 
 # coding: utf-8
 
-from ._external_usm_alloc import DMatrix, make_zeroed_device_memory
+import external_usm_allocation as eua
 
-__all__ = ["DMatrix", "make_zeroed_device_memory"]
+import dpctl
+import dpctl.memory as dpm
+import dpctl.tensor as dpt
 
-__doc__ = """
-   Example of implementing C++ class with its own USM memory allocation logic
-and interfacing that allocation with `dpctl` by implementing
-`__sycl_usm_array_interface__`.
-"""
+
+def test_direct():
+    q = dpctl.SyclQueue()
+
+    nb = 2 * 30
+    mbuf = eua.make_zeroed_device_memory(nb, q)
+
+    assert isinstance(mbuf, dpm.MemoryUSMDevice)
+    assert mbuf.nbytes == 2 * 30
+    assert mbuf.sycl_queue == q
+
+    x = dpt.usm_ndarray(30, dtype="i2", buffer=mbuf)
+    assert dpt.all(x == dpt.zeros(30, dtype="i2", sycl_queue=q))
