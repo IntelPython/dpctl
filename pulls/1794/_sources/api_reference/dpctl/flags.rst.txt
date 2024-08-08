@@ -9,14 +9,14 @@
     Note that dictionary-like access to some members is permitted:
 
         "C", "C_CONTIGUOUS":
-            Equivalent to `c_contiguous`
+            Equivalent to ``c_contiguous``
         "F", "F_CONTIGUOUS":
-            Equivalent to `f_contiguous`
+            Equivalent to ``f_contiguous``
         "W", "WRITABLE":
-            Equivalent to `writable`
+            Equivalent to ``writable``
         "FC":
-            Equivalent to `fc`
+            Equivalent to ``fc``
         "FNC":
-            Equivalent to `fnc`
+            Equivalent to ``fnc``
         "FORC", "CONTIGUOUS":
-            Equivalent to `forc` and `contiguous`
+            Equivalent to ``forc`` and ``contiguous``

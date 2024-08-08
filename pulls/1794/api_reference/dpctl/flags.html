@@ -819,22 +819,23 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dpctl.tensor._flags.Flags">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor._flags.</span></span><span class="sig-name descname"><span class="pre">Flags</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags" title="Permalink to this definition">¶</a></dt>
-<dd><p>Helper class to represent memory layout flags of
-<a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+<dd><p>Helper class to query the flags of a <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance, which describe how the instance interfaces with its underlying
+memory.</p>
 <p>Note that dictionary-like access to some members is permitted:</p>
 <blockquote>
 <div><dl class="simple">
-<dt>“C”, “C_CONTIGUOUS”:</dt><dd><p>Equivalent to <cite>c_contiguous</cite></p>
+<dt>“C”, “C_CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">c_contiguous</span></code></p>
 </dd>
-<dt>“F”, “F_CONTIGUOUS”:</dt><dd><p>Equivalent to <cite>f_contiguous</cite></p>
+<dt>“F”, “F_CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">f_contiguous</span></code></p>
 </dd>
-<dt>“W”, “WRITABLE”:</dt><dd><p>Equivalent to <cite>writable</cite></p>
+<dt>“W”, “WRITABLE”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">writable</span></code></p>
 </dd>
-<dt>“FC”:</dt><dd><p>Equivalent to <cite>fc</cite></p>
+<dt>“FC”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">fc</span></code></p>
 </dd>
-<dt>“FNC”:</dt><dd><p>Equivalent to <cite>fnc</cite></p>
+<dt>“FNC”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">fnc</span></code></p>
 </dd>
-<dt>“FORC”, “CONTIGUOUS”:</dt><dd><p>Equivalent to <cite>forc</cite> and <cite>contiguous</cite></p>
+<dt>“FORC”, “CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">forc</span></code> and <code class="docutils literal notranslate"><span class="pre">contiguous</span></code></p>
 </dd>
 </dl>
 </div></blockquote>
