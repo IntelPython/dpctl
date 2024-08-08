@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.tensor.abs" href="generated/dpctl.tensor.abs.html" /><link rel="prev" title="Data types" href="tensor.data_types.html" />
+    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="C Library SyclInterface" href="../libsyclinterface/index.html" /><link rel="prev" title="dpctl.tensor.diff" href="generated/dpctl.tensor.diff.html" />
 
     <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>Element-wise functions - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>Constants - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -190,7 +190,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -511,7 +511,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="tensor.data_types.html">Data types</a></li>
-<li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">Element-wise functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="tensor.elementwise_functions.html">Element-wise functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.abs.html">dpctl.tensor.abs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.acos.html">dpctl.tensor.acos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.acosh.html">dpctl.tensor.acosh</a></li>
@@ -670,7 +670,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="tensor.constants.html">Constants</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Constants</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../libsyclinterface/index.html">C Library SyclInterface</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle navigation of C Library SyclInterface</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -794,7 +794,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api_reference/dpctl/tensor.elementwise_functions.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api_reference/dpctl/tensor.constants.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -808,235 +808,101 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="element-wise-functions">
-<span id="dpctl-api-elementwise-functions"></span><h1>Element-wise functions<a class="headerlink" href="#element-wise-functions" title="Permalink to this heading">¶</a></h1>
-<p>Element-wise functions applied to input array(s) produce an output array of respective
-function values computed for every element of input array(s).</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.abs.html#dpctl.tensor.abs" title="dpctl.tensor.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abs</span></code></a></p></td>
-<td><p>abs(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.acos.html#dpctl.tensor.acos" title="dpctl.tensor.acos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">acos</span></code></a></p></td>
-<td><p>acos(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.acosh.html#dpctl.tensor.acosh" title="dpctl.tensor.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">acosh</span></code></a></p></td>
-<td><p>acosh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.add.html#dpctl.tensor.add" title="dpctl.tensor.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a></p></td>
-<td><p>add(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.angle.html#dpctl.tensor.angle" title="dpctl.tensor.angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle</span></code></a></p></td>
-<td><p>angle(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.asin.html#dpctl.tensor.asin" title="dpctl.tensor.asin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asin</span></code></a></p></td>
-<td><p>asin(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.asinh.html#dpctl.tensor.asinh" title="dpctl.tensor.asinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asinh</span></code></a></p></td>
-<td><p>asinh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.atan.html#dpctl.tensor.atan" title="dpctl.tensor.atan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan</span></code></a></p></td>
-<td><p>atan(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.atan2.html#dpctl.tensor.atan2" title="dpctl.tensor.atan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2</span></code></a></p></td>
-<td><p>atan2(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.atanh.html#dpctl.tensor.atanh" title="dpctl.tensor.atanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atanh</span></code></a></p></td>
-<td><p>atanh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_and.html#dpctl.tensor.bitwise_and" title="dpctl.tensor.bitwise_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_and</span></code></a></p></td>
-<td><p>bitwise_and(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_left_shift.html#dpctl.tensor.bitwise_left_shift" title="dpctl.tensor.bitwise_left_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_left_shift</span></code></a></p></td>
-<td><p>bitwise_left_shift(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_invert.html#dpctl.tensor.bitwise_invert" title="dpctl.tensor.bitwise_invert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_invert</span></code></a></p></td>
-<td><p>bitwise_invert(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_or.html#dpctl.tensor.bitwise_or" title="dpctl.tensor.bitwise_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_or</span></code></a></p></td>
-<td><p>bitwise_or(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_right_shift.html#dpctl.tensor.bitwise_right_shift" title="dpctl.tensor.bitwise_right_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_right_shift</span></code></a></p></td>
-<td><p>bitwise_right_shift(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.bitwise_xor.html#dpctl.tensor.bitwise_xor" title="dpctl.tensor.bitwise_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bitwise_xor</span></code></a></p></td>
-<td><p>bitwise_xor(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.cbrt.html#dpctl.tensor.cbrt" title="dpctl.tensor.cbrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cbrt</span></code></a></p></td>
-<td><p>cbrt(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.ceil.html#dpctl.tensor.ceil" title="dpctl.tensor.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ceil</span></code></a></p></td>
-<td><p>ceil(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.clip.html#dpctl.tensor.clip" title="dpctl.tensor.clip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip</span></code></a>(x[, min, max, out, order])</p></td>
-<td><p>Clips to the range [<cite>min_i</cite>, <cite>max_i</cite>] for each element <cite>x_i</cite> in <cite>x</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.conj.html#dpctl.tensor.conj" title="dpctl.tensor.conj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">conj</span></code></a></p></td>
-<td><p>conj(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.copysign.html#dpctl.tensor.copysign" title="dpctl.tensor.copysign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copysign</span></code></a></p></td>
-<td><p>copysign(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.cos.html#dpctl.tensor.cos" title="dpctl.tensor.cos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cos</span></code></a></p></td>
-<td><p>cos(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.cosh.html#dpctl.tensor.cosh" title="dpctl.tensor.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosh</span></code></a></p></td>
-<td><p>cosh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.divide.html#dpctl.tensor.divide" title="dpctl.tensor.divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">divide</span></code></a></p></td>
-<td><p>divide(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.equal.html#dpctl.tensor.equal" title="dpctl.tensor.equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">equal</span></code></a></p></td>
-<td><p>equal(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.exp.html#dpctl.tensor.exp" title="dpctl.tensor.exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp</span></code></a></p></td>
-<td><p>exp(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.exp2.html#dpctl.tensor.exp2" title="dpctl.tensor.exp2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exp2</span></code></a></p></td>
-<td><p>exp2(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.expm1.html#dpctl.tensor.expm1" title="dpctl.tensor.expm1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expm1</span></code></a></p></td>
-<td><p>expm1(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.floor.html#dpctl.tensor.floor" title="dpctl.tensor.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor</span></code></a></p></td>
-<td><p>floor(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.floor_divide.html#dpctl.tensor.floor_divide" title="dpctl.tensor.floor_divide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floor_divide</span></code></a></p></td>
-<td><p>floor_divide(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.greater.html#dpctl.tensor.greater" title="dpctl.tensor.greater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">greater</span></code></a></p></td>
-<td><p>greater(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.greater_equal.html#dpctl.tensor.greater_equal" title="dpctl.tensor.greater_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">greater_equal</span></code></a></p></td>
-<td><p>greater_equal(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.hypot.html#dpctl.tensor.hypot" title="dpctl.tensor.hypot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hypot</span></code></a></p></td>
-<td><p>hypot(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.imag.html#dpctl.tensor.imag" title="dpctl.tensor.imag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></a></p></td>
-<td><p>imag(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.isfinite.html#dpctl.tensor.isfinite" title="dpctl.tensor.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isfinite</span></code></a></p></td>
-<td><p>isfinite(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.isinf.html#dpctl.tensor.isinf" title="dpctl.tensor.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isinf</span></code></a></p></td>
-<td><p>isinf(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.isnan.html#dpctl.tensor.isnan" title="dpctl.tensor.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a></p></td>
-<td><p>isnan(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.less.html#dpctl.tensor.less" title="dpctl.tensor.less"><code class="xref py py-obj docutils literal notranslate"><span class="pre">less</span></code></a></p></td>
-<td><p>less(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.less_equal.html#dpctl.tensor.less_equal" title="dpctl.tensor.less_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">less_equal</span></code></a></p></td>
-<td><p>less_equal(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.log.html#dpctl.tensor.log" title="dpctl.tensor.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a></p></td>
-<td><p>log(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.log1p.html#dpctl.tensor.log1p" title="dpctl.tensor.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log1p</span></code></a></p></td>
-<td><p>log1p(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.log2.html#dpctl.tensor.log2" title="dpctl.tensor.log2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log2</span></code></a></p></td>
-<td><p>log2(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.log10.html#dpctl.tensor.log10" title="dpctl.tensor.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log10</span></code></a></p></td>
-<td><p>log10(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.logaddexp.html#dpctl.tensor.logaddexp" title="dpctl.tensor.logaddexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logaddexp</span></code></a></p></td>
-<td><p>logaddexp(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.logical_and.html#dpctl.tensor.logical_and" title="dpctl.tensor.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_and</span></code></a></p></td>
-<td><p>logical_and(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.logical_not.html#dpctl.tensor.logical_not" title="dpctl.tensor.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_not</span></code></a></p></td>
-<td><p>logical_not(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.logical_or.html#dpctl.tensor.logical_or" title="dpctl.tensor.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_or</span></code></a></p></td>
-<td><p>logical_or(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.logical_xor.html#dpctl.tensor.logical_xor" title="dpctl.tensor.logical_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logical_xor</span></code></a></p></td>
-<td><p>logical_xor(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.maximum.html#dpctl.tensor.maximum" title="dpctl.tensor.maximum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maximum</span></code></a></p></td>
-<td><p>maximum(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.minimum.html#dpctl.tensor.minimum" title="dpctl.tensor.minimum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">minimum</span></code></a></p></td>
-<td><p>minimum(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.multiply.html#dpctl.tensor.multiply" title="dpctl.tensor.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiply</span></code></a></p></td>
-<td><p>multiply(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.negative.html#dpctl.tensor.negative" title="dpctl.tensor.negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">negative</span></code></a></p></td>
-<td><p>negative(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.nextafter.html#dpctl.tensor.nextafter" title="dpctl.tensor.nextafter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nextafter</span></code></a></p></td>
-<td><p>nextafter(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.not_equal.html#dpctl.tensor.not_equal" title="dpctl.tensor.not_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_equal</span></code></a></p></td>
-<td><p>not_equal(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.positive.html#dpctl.tensor.positive" title="dpctl.tensor.positive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">positive</span></code></a></p></td>
-<td><p>positive(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.pow.html#dpctl.tensor.pow" title="dpctl.tensor.pow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pow</span></code></a></p></td>
-<td><p>pow(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.real.html#dpctl.tensor.real" title="dpctl.tensor.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></a></p></td>
-<td><p>real(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.remainder.html#dpctl.tensor.remainder" title="dpctl.tensor.remainder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remainder</span></code></a></p></td>
-<td><p>remainder(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.reciprocal.html#dpctl.tensor.reciprocal" title="dpctl.tensor.reciprocal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reciprocal</span></code></a></p></td>
-<td><p>reciprocal(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.round.html#dpctl.tensor.round" title="dpctl.tensor.round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">round</span></code></a></p></td>
-<td><p>round(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.rsqrt.html#dpctl.tensor.rsqrt" title="dpctl.tensor.rsqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsqrt</span></code></a></p></td>
-<td><p>rsqrt(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.sign.html#dpctl.tensor.sign" title="dpctl.tensor.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sign</span></code></a></p></td>
-<td><p>sign(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.signbit.html#dpctl.tensor.signbit" title="dpctl.tensor.signbit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signbit</span></code></a></p></td>
-<td><p>signbit(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.sin.html#dpctl.tensor.sin" title="dpctl.tensor.sin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sin</span></code></a></p></td>
-<td><p>sin(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.sinh.html#dpctl.tensor.sinh" title="dpctl.tensor.sinh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sinh</span></code></a></p></td>
-<td><p>sinh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.square.html#dpctl.tensor.square" title="dpctl.tensor.square"><code class="xref py py-obj docutils literal notranslate"><span class="pre">square</span></code></a></p></td>
-<td><p>square(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.sqrt.html#dpctl.tensor.sqrt" title="dpctl.tensor.sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sqrt</span></code></a></p></td>
-<td><p>sqrt(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.subtract.html#dpctl.tensor.subtract" title="dpctl.tensor.subtract"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subtract</span></code></a></p></td>
-<td><p>subtract(x1, x2, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.tan.html#dpctl.tensor.tan" title="dpctl.tensor.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tan</span></code></a></p></td>
-<td><p>tan(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.tanh.html#dpctl.tensor.tanh" title="dpctl.tensor.tanh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tanh</span></code></a></p></td>
-<td><p>tanh(x, /, *, out=None, order='K')</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.trunc.html#dpctl.tensor.trunc" title="dpctl.tensor.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trunc</span></code></a></p></td>
-<td><p>trunc(x, /, *, out=None, order='K')</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+          <section id="constants">
+<span id="dpctl-tensor-constants"></span><h1>Constants<a class="headerlink" href="#constants" title="Permalink to this heading">¶</a></h1>
+<p>The following constants are defined in <a class="reference internal" href="tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>:</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.DLDeviceType">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">DLDeviceType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'DLDeviceType'&gt;</span></em><a class="headerlink" href="#dpctl.tensor.DLDeviceType" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <code class="docutils literal notranslate"><span class="pre">IntEnum</span></code> for the types of DLDevices supported by the DLPack
+protocol.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCPU</span></code>:</dt><dd><p>CPU (host) device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDA</span></code>:</dt><dd><p>CUDA GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAHost</span></code>:</dt><dd><p>Pinned CUDA CPU memory by cudaMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOpenCL</span></code>:</dt><dd><p>OpenCL device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVulkan</span></code>:</dt><dd><p>Vulkan buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMetal</span></code>:</dt><dd><p>Metal for Apple GPU</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVPI</span></code>:</dt><dd><p>Verilog simulator buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCM</span></code>:</dt><dd><p>ROCm GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCMHost</span></code>:</dt><dd><p>Pinned ROCm CPU memory allocated by hipMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLExtDev</span></code>:</dt><dd><p>Reserved extension device type used to test new devices</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAManaged</span></code>:</dt><dd><p>CUDA managed/unified memory allocated by cudaMallocManaged</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code>:</dt><dd><p>Unified shared memory allocated on a oneAPI non-partitioned device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLWebGPU</span></code>:</dt><dd><p>Device support for WebGPU standard</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLHexagon</span></code>:</dt><dd><p>Qualcomm Hexagon DSP</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMAIA</span></code>:</dt><dd><p>Microsoft MAIA device</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.e">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">e</span></span><a class="headerlink" href="#dpctl.tensor.e" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of Euler’s constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.inf">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">inf</span></span><a class="headerlink" href="#dpctl.tensor.inf" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of (positive) infinity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.nan">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nan</span></span><a class="headerlink" href="#dpctl.tensor.nan" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of Not a Number (NaN).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.newaxis">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">newaxis</span></span><a class="headerlink" href="#dpctl.tensor.newaxis" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">NoneType</span></code>:</dt><dd><p>Alias for <code class="docutils literal notranslate"><span class="pre">None</span></code> which is useful for indexing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.pi">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">pi</span></span><a class="headerlink" href="#dpctl.tensor.pi" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of the mathematical constant π.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -1044,23 +910,23 @@ function values computed for every element of input array(s).</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/dpctl.tensor.abs.html">
+          <a class="next-page" href="../libsyclinterface/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.abs</div>
+                <div class="title">C Library SyclInterface</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="tensor.data_types.html">
+          <a class="prev-page" href="generated/dpctl.tensor.diff.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Data types</div>
+                <div class="title">dpctl.tensor.diff</div>
                 
               </div>
             </a>
@@ -1082,8 +948,32 @@ function values computed for every element of input array(s).</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Constants</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.DLDeviceType"><code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.inf"><code class="docutils literal notranslate"><span class="pre">inf</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.nan"><code class="docutils literal notranslate"><span class="pre">nan</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.newaxis"><code class="docutils literal notranslate"><span class="pre">newaxis</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.pi"><code class="docutils literal notranslate"><span class="pre">pi</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
