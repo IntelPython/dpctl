@@ -283,7 +283,6 @@ class TestPrintFns(TestPrint):
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
         x.sycl_queue.wait()
         r = repr(x)
-        print(r)
         assert r == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
 
         dpt.set_print_options(linewidth=1)
