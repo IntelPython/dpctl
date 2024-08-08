@@ -1278,6 +1278,8 @@ cdef class usm_ndarray:
         The tuple describes the non-partitioned device where the array has been allocated,
         or the non-partitioned parent device of the allocation device.
 
+        See ``DLDeviceType`` for a list of devices supported by the DLPack protocol.
+
         Raises:
             DLPackCreationError:
                 when the ``device_id`` could not be determined.
