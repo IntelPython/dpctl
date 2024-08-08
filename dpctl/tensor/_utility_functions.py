@@ -453,7 +453,8 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
     x_nd = x.ndim
     axis = normalize_axis_index(operator.index(axis), x_nd)
     n = operator.index(n)
-
+    if n < 0:
+        raise ValueError(f"`n` must be positive, got {n}")
     arr = _concat_diff_input(x, axis, prepend, append)
     if n == 0:
         return arr

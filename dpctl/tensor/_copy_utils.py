@@ -795,13 +795,18 @@ def _nonzero_impl(ary):
     return res
 
 
-def _take_multi_index(ary, inds, p):
+def _take_multi_index(ary, inds, p, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
+    mode = operator.index(mode)
+    if mode not in [0, 1]:
+        raise ValueError(
+            "Invalid value for mode keyword, only 0 or 1 is supported"
+        )
     queues_ = [
         ary.sycl_queue,
     ]
@@ -860,7 +865,7 @@ def _take_multi_index(ary, inds, p):
         ind=inds,
         dst=res,
         axis_start=p,
-        mode=0,
+        mode=mode,
         sycl_queue=exec_q,
         depends=dep_ev,
     )

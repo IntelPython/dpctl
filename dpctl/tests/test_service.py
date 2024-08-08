@@ -163,9 +163,11 @@ def test_syclinterface(should_skip_syclinterface):
         if should_skip_syclinterface:
             pass
         else:
-            assert len(paths) > 1 and any(
-                [os.path.islink(fn) for fn in paths]
-            ), "All library instances are hard links"
+            len_p = len(paths)
+            n_symlinks = sum([int(os.path.islink(fn)) for fn in paths])
+            assert len_p == 1 + n_symlinks, (
+                "Multiple library instances are hard links",
+            )
     elif sys.platform in ["win32", "cygwin"]:
         exts = []
         for fn in paths:
