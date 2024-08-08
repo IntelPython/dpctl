@@ -54,6 +54,40 @@ include "_slicing.pxi"
 
 
 class DLDeviceType(IntEnum):
+    """
+    An ``IntEnum`` for the types of DLDevices supported by the DLPack
+    protocol.
+        ``kDLCPU``:
+            CPU (host) device
+        ``kDLCUDA``:
+            CUDA GPU device
+        ``kDLCUDAHost``:
+            Pinned CUDA CPU memory by cudaMallocHost
+        ``kDLOpenCL``:
+            OpenCL device
+        ``kDLVulkan``:
+            Vulkan buffer
+        ``kDLMetal``:
+            Metal for Apple GPU
+        ``kDLVPI``:
+            Verilog simulator buffer
+        ``kDLROCM``:
+            ROCm GPU device
+        ``kDLROCMHost``:
+            Pinned ROCm CPU memory allocated by hipMallocHost
+        ``kDLExtDev``:
+            Reserved extension device type used to test new devices
+        ``kDLCUDAManaged``:
+            CUDA managed/unified memory allocated by cudaMallocManaged
+        ``kDLOneAPI``:
+            Unified shared memory allocated on a oneAPI non-partitioned device
+        ``kDLWebGPU``:
+            Device support for WebGPU standard
+        ``kDLHexagon``:
+            Qualcomm Hexagon DSP
+        ``kDLMAIA``:
+            Microsoft MAIA device
+    """
     kDLCPU = c_dlpack.device_CPU
     kDLCUDA = c_dlpack.device_CUDA
     kDLCUDAHost = c_dlpack.device_CUDAHost
@@ -1243,6 +1277,8 @@ cdef class usm_ndarray:
 
         The tuple describes the non-partitioned device where the array has been allocated,
         or the non-partitioned parent device of the allocation device.
+
+        See ``DLDeviceType`` for a list of devices supported by the DLPack protocol.
 
         Raises:
             DLPackCreationError:
