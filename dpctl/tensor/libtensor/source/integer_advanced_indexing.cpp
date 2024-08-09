@@ -35,6 +35,7 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/integer_advanced_indexing.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -91,7 +92,7 @@ _populate_kernel_params(sycl::queue &exec_q,
 {
 
     using usm_host_allocator_T =
-        sycl::usm_allocator<char *, sycl::usm::alloc::host>;
+        dpctl::tensor::offset_utils::usm_host_allocator<char *>;
     using ptrT = std::vector<char *, usm_host_allocator_T>;
 
     usm_host_allocator_T ptr_allocator(exec_q);
@@ -99,7 +100,7 @@ _populate_kernel_params(sycl::queue &exec_q,
         std::make_shared<ptrT>(k, ptr_allocator);
 
     using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+        dpctl::tensor::offset_utils::usm_host_allocator<py::ssize_t>;
     using shT = std::vector<py::ssize_t, usm_host_allocatorT>;
 
     usm_host_allocatorT sz_allocator(exec_q);

@@ -32,6 +32,7 @@
 #include "kernels/constructors.hpp"
 #include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
@@ -150,7 +151,7 @@ usm_ndarray_triul(sycl::queue &exec_q,
     nd += 2;
 
     using usm_host_allocatorT =
-        sycl::usm_allocator<py::ssize_t, sycl::usm::alloc::host>;
+        dpctl::tensor::offset_utils::usm_host_allocator<py::ssize_t>;
     using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
 
     usm_host_allocatorT allocator(exec_q);

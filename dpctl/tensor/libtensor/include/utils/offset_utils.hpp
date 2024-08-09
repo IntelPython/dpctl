@@ -27,6 +27,7 @@
 #pragma once
 
 #include <algorithm>
+#include <exception>
 #include <sycl/sycl.hpp>
 #include <tuple>
 #include <vector>
@@ -81,6 +82,30 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 
 } // namespace detail
 
+template <typename T>
+class usm_host_allocator : public sycl::usm_allocator<T, sycl::usm::alloc::host>
+{
+public:
+    using baseT = sycl::usm_allocator<T, sycl::usm::alloc::host>;
+    using baseT::baseT;
+
+    template <typename U> struct rebind
+    {
+        typedef usm_host_allocator<U> other;
+    };
+
+    void deallocate(T *ptr, size_t n)
+    {
+        try {
+            baseT::deallocate(ptr, n);
+        } catch (const std::exception &e) {
+            std::cerr
+                << "Exception caught in `usm_host_allocator::deallocate`: "
+                << e.what() << std::endl;
+        }
+    }
+};
+
 template <typename indT, typename... Vs>
 std::tuple<indT *, size_t, sycl::event>
 device_allocate_and_pack(sycl::queue &q,
@@ -90,8 +115,7 @@ device_allocate_and_pack(sycl::queue &q,
 
     // memory transfer optimization, use USM-host for temporary speeds up
     // transfer to device, especially on dGPUs
-    using usm_host_allocatorT =
-        sycl::usm_allocator<indT, sycl::usm::alloc::host>;
+    using usm_host_allocatorT = usm_host_allocator<indT>;
     using shT = std::vector<indT, usm_host_allocatorT>;
 
     usm_host_allocatorT usm_host_allocator(q);
