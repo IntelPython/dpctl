@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Array creation functions" href="tensor.creation_functions.html" /><link rel="prev" title="dpctl.utils" href="utils.html" />
+    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Data type functions" href="tensor.data_type_functions.html" /><link rel="prev" title="dpctl.tensor.usm_ndarray._byte_bounds" href="generated/generated/dpctl.tensor.usm_ndarray._byte_bounds.html" />
 
     <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>Flags class - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -190,7 +190,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -448,7 +448,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of dpctl.tensor</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="tensor.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of dpctl.tensor</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="tensor.creation_functions.html">Array creation functions</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Array creation functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.arange.html">dpctl.tensor.arange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.asarray.html">dpctl.tensor.asarray</a></li>
@@ -470,7 +470,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.copy.html">dpctl.tensor.copy</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="tensor.usm_ndarray.html">USM array object</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of USM array object</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="tensor.usm_ndarray.html">USM array object</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of USM array object</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html">dpctl.tensor.usm_ndarray</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of dpctl.tensor.usm_ndarray</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="generated/generated/dpctl.tensor.usm_ndarray.to_device.html">dpctl.tensor.usm_ndarray.to_device</a></li>
 <li class="toctree-l5"><a class="reference internal" href="generated/generated/dpctl.tensor.usm_ndarray.T.html">dpctl.tensor.usm_ndarray.T</a></li>
@@ -499,7 +499,7 @@
 <li class="toctree-l5"><a class="reference internal" href="generated/generated/dpctl.tensor.usm_ndarray._byte_bounds.html">dpctl.tensor.usm_ndarray._byte_bounds</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="flags.html"><code class="docutils literal notranslate"><span class="pre">Flags</span></code> class</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Flags</span></code> class</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="tensor.data_type_functions.html">Data type functions</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of Data type functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -794,7 +794,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api_reference/dpctl/tensor.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api_reference/dpctl/flags.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -808,37 +808,95 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-dpctl.tensor">
-<span id="dpctl-tensor"></span><span id="dpctl-tensor-pyapi"></span><h1><a class="reference internal" href="#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><a class="headerlink" href="#module-dpctl.tensor" title="Permalink to this heading">¶</a></h1>
-<p><a class="reference internal" href="#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> provides a reference implementation of the
-<a class="reference external" href="https://data-apis.org/array-api/latest/">Python Array API</a> specification. The implementation
-uses <a class="reference internal" href="../../beginners_guides/misc.html#parallelism-definitions"><span class="std std-ref">data-parallel</span></a> algorithms suitable for execution on accelerators,
-such as GPUs.</p>
-<p><a class="reference internal" href="#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a> is written using C++ and <a class="reference external" href="https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html">SYCL</a>
-and oneAPI extensions implemented in <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html">Intel(R) oneAPI DPC++ compiler</a>.</p>
-<p>This module contains:</p>
-<ul class="simple">
-<li><p>Array object <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">usm_ndarray</span></code></a></p></li>
-<li><p><a class="reference internal" href="tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">array creation functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.manipulation_functions.html#dpctl-tensor-manipulation-functions"><span class="std std-ref">array manipulation functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.elementwise_functions.html#dpctl-api-elementwise-functions"><span class="std std-ref">elementwise functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.indexing_functions.html#dpctl-tensor-indexing-functions"><span class="std std-ref">indexing functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.inspection.html#dpctl-tensor-inspection"><span class="std std-ref">introspection functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.linear_algebra.html#dpctl-tensor-linear-algebra"><span class="std std-ref">linear algebra functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.searching_functions.html#dpctl-tensor-searching-functions"><span class="std std-ref">searching functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.set_functions.html#dpctl-tensor-set-functions"><span class="std std-ref">set functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.sorting_functions.html#dpctl-tensor-sorting-functions"><span class="std std-ref">sorting functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.statistical_functions.html#dpctl-tensor-statistical-functions"><span class="std std-ref">statistical functions</span></a></p></li>
-<li><p><a class="reference internal" href="tensor.utility_functions.html#dpctl-tensor-utility-functions"><span class="std std-ref">utility functions</span></a></p></li>
-</ul>
-<div class="toctree-wrapper compound">
-</div>
+          <section id="flags-class">
+<span id="id1"></span><h1><code class="docutils literal notranslate"><span class="pre">Flags</span></code> class<a class="headerlink" href="#flags-class" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.tensor._flags.</span></span><span class="sig-name descname"><span class="pre">Flags</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper class to query the flags of a <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance, which describe how the instance interfaces with its underlying
+memory.</p>
+<p>Note that dictionary-like access to some members is permitted:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“C”, “C_CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">c_contiguous</span></code></p>
+</dd>
+<dt>“F”, “F_CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">f_contiguous</span></code></p>
+</dd>
+<dt>“W”, “WRITABLE”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">writable</span></code></p>
+</dd>
+<dt>“FC”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">fc</span></code></p>
+</dd>
+<dt>“FNC”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">fnc</span></code></p>
+</dd>
+<dt>“FORC”, “CONTIGUOUS”:</dt><dd><p>Equivalent to <code class="docutils literal notranslate"><span class="pre">forc</span></code> and <code class="docutils literal notranslate"><span class="pre">contiguous</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.c_contiguous">
+<span class="sig-name descname"><span class="pre">c_contiguous</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.c_contiguous" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the
+<a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance is C-contiguous.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.contiguous">
+<span class="sig-name descname"><span class="pre">contiguous</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.contiguous" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance is C-contiguous and F-contiguous.
+Equivalent to <cite>forc.</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.f_contiguous">
+<span class="sig-name descname"><span class="pre">f_contiguous</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.f_contiguous" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the
+<a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance is F-contiguous.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.fc">
+<span class="sig-name descname"><span class="pre">fc</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.fc" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance is C-contiguous and F-contiguous.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.flags">
+<span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer representation of the memory layout flags of
+<a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.fnc">
+<span class="sig-name descname"><span class="pre">fnc</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.fnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance is F-contiguous and not C-contiguous.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.forc">
+<span class="sig-name descname"><span class="pre">forc</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.forc" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the memory layout of the <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>
+instance is C-contiguous or F-contiguous.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpctl.tensor._flags.Flags.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><a class="headerlink" href="#dpctl.tensor._flags.Flags.writable" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> instance is writable.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -846,23 +904,23 @@ and oneAPI extensions implemented in <a class="reference external" href="https:/
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tensor.creation_functions.html">
+          <a class="next-page" href="tensor.data_type_functions.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Array creation functions</div>
+                <div class="title">Data type functions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="utils.html">
+          <a class="prev-page" href="generated/generated/dpctl.tensor.usm_ndarray._byte_bounds.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></div>
+                <div class="title">dpctl.tensor.usm_ndarray._byte_bounds</div>
                 
               </div>
             </a>
@@ -884,8 +942,37 @@ and oneAPI extensions implemented in <a class="reference external" href="https:/
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">Flags</span></code> class</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags"><code class="docutils literal notranslate"><span class="pre">Flags</span></code></a><ul>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.c_contiguous"><code class="docutils literal notranslate"><span class="pre">Flags.c_contiguous</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.contiguous"><code class="docutils literal notranslate"><span class="pre">Flags.contiguous</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.f_contiguous"><code class="docutils literal notranslate"><span class="pre">Flags.f_contiguous</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.fc"><code class="docutils literal notranslate"><span class="pre">Flags.fc</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.flags"><code class="docutils literal notranslate"><span class="pre">Flags.flags</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.fnc"><code class="docutils literal notranslate"><span class="pre">Flags.fnc</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.forc"><code class="docutils literal notranslate"><span class="pre">Flags.forc</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor._flags.Flags.writable"><code class="docutils literal notranslate"><span class="pre">Flags.writable</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
