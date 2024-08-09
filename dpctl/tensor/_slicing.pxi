@@ -81,7 +81,7 @@ cdef bint _is_boolean(object x) except *:
         return True
     if isinstance(x, bool):
         return True
-    if isinstance(x, int):
+    if isinstance(x, (int, float, complex)):
         return False
     if _is_buffer(x):
         mbuf = memoryview(x)
@@ -204,7 +204,11 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                     )
                 array_count += 1
             else:
-                raise TypeError
+                raise IndexError(
+                    "Only integers, slices (`:`), ellipsis (`...`), "
+                    "dpctl.tensor.newaxis (`None`) and integer and "
+                    "boolean arrays are valid indices."
+                )
         if ellipses_count > 1:
             raise IndexError(
                 "an index can only have a single ellipsis ('...')")
@@ -283,6 +287,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 new_shape.extend(shape[k:k_new])
                 new_strides.extend(strides[k:k_new])
                 k = k_new
+            else:
+                raise IndexError
         new_shape.extend(shape[k:])
         new_strides.extend(strides[k:])
         new_shape_len += len(shape) - k
@@ -291,4 +297,8 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
 #        assert len(new_advanced_ind) == array_count
         return (tuple(new_shape), tuple(new_strides), new_offset, tuple(new_advanced_ind), new_advanced_start_pos)
     else:
-        raise TypeError
+        raise IndexError(
+            "Only integers, slices (`:`), ellipsis (`...`), "
+            "dpctl.tensor.newaxis (`None`) and integer and "
+            "boolean arrays are valid indices."
+        )

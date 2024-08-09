@@ -983,7 +983,7 @@ def test_take_arg_validation():
         dpt.take(dict(), ind0, axis=0)
     with pytest.raises(TypeError):
         dpt.take(x, dict(), axis=0)
-    with pytest.raises(TypeError):
+    with pytest.raises(IndexError):
         x[[]]
     with pytest.raises(IndexError):
         dpt.take(x, ind1, axis=0)
@@ -1016,7 +1016,7 @@ def test_put_arg_validation():
         dpt.put(dict(), ind0, val, axis=0)
     with pytest.raises(TypeError):
         dpt.put(x, dict(), val, axis=0)
-    with pytest.raises(TypeError):
+    with pytest.raises(IndexError):
         x[[]] = val
     with pytest.raises(IndexError):
         dpt.put(x, ind1, val, axis=0)

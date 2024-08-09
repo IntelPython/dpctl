@@ -441,7 +441,7 @@ def test_slicing_basic():
     Xusm[:, -4]
     with pytest.raises(IndexError):
         Xusm[:, -128]
-    with pytest.raises(TypeError):
+    with pytest.raises(IndexError):
         Xusm[{1, 2, 3, 4, 5, 6, 7}]
     X = dpt.usm_ndarray(10, "u1")
     X.usm_data.copy_from_host(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09")
@@ -2416,3 +2416,25 @@ def test_asarray_writable_flag(ro_flag):
 
     assert b.flags["W"] == (not ro_flag)
     assert b._pointer == a._pointer
+
+
+def test_getitem_validation():
+    """Test based on gh-1785"""
+    try:
+        a = dpt.empty((2, 2, 2))
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    with pytest.raises(IndexError):
+        a[0.0]
+    with pytest.raises(IndexError):
+        a[1, 0.0, ...]
+    with pytest.raises(IndexError):
+        a[1, 0.0, dpt.newaxis, 1]
+    with pytest.raises(IndexError):
+        a[dpt.newaxis, ..., 0.0]
+    with pytest.raises(IndexError):
+        a[dpt.newaxis, ..., 0.0, dpt.newaxis]
+    with pytest.raises(IndexError):
+        a[..., 0.0, dpt.newaxis]
+    with pytest.raises(IndexError):
+        a[:, 0.0, dpt.newaxis]
