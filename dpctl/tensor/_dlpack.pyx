@@ -720,7 +720,7 @@ class _numpy_array_interface_wrapper:
 
 cdef bint _is_kdlcpu_device(DLDevice *dev):
     "Check if DLTensor.DLDevice denotes (kDLCPU, 0)"
-    return (dev.device_type == kDLCPU) and (dev.device_id == 0)
+    return (dev[0].device_type == kDLCPU) and (dev[0].device_id == 0)
 
 
 cpdef object from_dlpack_capsule(object py_caps):
