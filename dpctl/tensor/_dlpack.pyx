@@ -718,6 +718,11 @@ class _numpy_array_interface_wrapper:
         self._memory_owner = memory_owner
 
 
+cdef bint _is_kdlcpu_device(DLDevice *dev):
+    "Check if DLTensor.DLDevice denotes (kDLCPU, 0)"
+    return (dev.device_type == kDLCPU) and (dev.device_id == 0)
+
+
 cpdef object from_dlpack_capsule(object py_caps):
     """
     from_dlpack_capsule(py_caps)
@@ -915,7 +920,7 @@ cpdef object from_dlpack_capsule(object py_caps):
         if readonly:
             res_ary.flags_ = (res_ary.flags_ & ~USM_ARRAY_WRITABLE)
         return res_ary
-    elif dl_tensor.device.device_type == kDLCPU:
+    elif _is_kdlcpu_device(&dl_tensor.device):
         ary_iface = _numpy_array_interface_from_dl_tensor(dl_tensor, readonly)
         if not versioned:
             dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
