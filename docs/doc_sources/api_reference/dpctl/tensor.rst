@@ -29,6 +29,7 @@ This module contains:
 * :ref:`sorting functions <dpctl_tensor_sorting_functions>`
 * :ref:`statistical functions <dpctl_tensor_statistical_functions>`
 * :ref:`utility functions <dpctl_tensor_utility_functions>`
+* :ref:`constants <dpctl_tensor_constants>`
 
 
 .. toctree::
@@ -48,3 +49,4 @@ This module contains:
     tensor.sorting_functions
     tensor.statistical_functions
     tensor.utility_functions
+    tensor.constants
