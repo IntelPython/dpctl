@@ -1242,7 +1242,7 @@ cdef class usm_ndarray:
                             _arr.flags["W"] = self.flags["W"]
                             return c_dlpack.numpy_to_dlpack_versioned_capsule(_arr, True)
                         else:
-                            raise NotImplementedError(
+                            raise BufferError(
                                 f"targeting `dl_device` {dl_device} with `__dlpack__` is not "
                                 "yet implemented"
                             )

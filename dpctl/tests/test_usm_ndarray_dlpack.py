@@ -696,3 +696,38 @@ def test_dlpack_size_0_on_kdlcpu():
     cap = x_np.__dlpack__()
     y = _dlp.from_dlpack_capsule(cap)
     assert y.ctypes.data == x_np.ctypes.data
+
+
+def test_copy_via_host():
+    get_queue_or_skip()
+    x = dpt.ones(1, dtype="i4")
+    x_np = np.ones(1, dtype="i4")
+    x_dl_dev = x.__dlpack_device__()
+    y = dpt.from_dlpack(x_np, device=x_dl_dev)
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.sycl_device == x.sycl_device
+    assert y.usm_type == "device"
+
+    with pytest.raises(ValueError):
+        dpt.from_dlpack(x_np, device=(1, 0, 0))
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x, device=(2, 0))
+
+    num_devs = dpctl.get_num_devices()
+    if num_devs > 1:
+        j = [i for i in range(num_devs) if i != x_dl_dev[1]][0]
+        z = dpt.from_dlpack(x, device=(x_dl_dev[0], j))
+        assert isinstance(z, dpt.usm_ndarray)
+        assert z.usm_type == "device"
+
+
+def test_copy_via_host_gh_1789():
+    "Test based on review example from gh-1789"
+    get_queue_or_skip()
+    x_np = np.ones((10, 10), dtype="i4")
+    # strides are no longer multiple of itemsize
+    x_np.strides = (x_np.strides[0] - 1, x_np.strides[1])
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np)
+    with pytest.raises(BufferError):
+        dpt.from_dlpack(x_np, device=(14, 0))
