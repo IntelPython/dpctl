@@ -539,8 +539,6 @@ def put_along_axis(x, indices, vals, /, *, axis=-1, mode="wrap"):
         may vary from run to run. Preserving sequential semantics in handing
         the duplicates to achieve deterministic behavior requires additional
         work.
-
-        See :func:`dpctl.tensor.put` for an example.
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
