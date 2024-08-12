@@ -37,6 +37,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "where.hpp"
 
@@ -228,8 +229,9 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
     sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(where_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([packed_shape_strides, ctx]() {
-            sycl::free(packed_shape_strides, ctx);
+            sycl_free_noexcept(packed_shape_strides, ctx);
         });
     });
 

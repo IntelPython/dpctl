@@ -35,6 +35,7 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -1153,8 +1154,9 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 cgh.depends_on(final_reduction_ev);
                 const sycl::context &ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl::free(partially_reduced_tmp, ctx);
+                    sycl_free_noexcept(partially_reduced_tmp, ctx);
                 });
             });
 
@@ -1403,8 +1405,9 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 cgh.depends_on(final_reduction_ev);
                 const sycl::context &ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl::free(partially_reduced_tmp, ctx);
+                    sycl_free_noexcept(partially_reduced_tmp, ctx);
                 });
             });
 

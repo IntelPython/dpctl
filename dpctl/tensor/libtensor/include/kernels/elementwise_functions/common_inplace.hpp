@@ -30,6 +30,8 @@
 
 #include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
+#include "utils/offset_utils.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
 {
@@ -458,7 +460,9 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
         const sycl::context &ctx = exec_q.get_context();
-        cgh.host_task([ctx, padded_vec]() { sycl::free(padded_vec, ctx); });
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        cgh.host_task(
+            [ctx, padded_vec]() { sycl_free_noexcept(padded_vec, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);
 

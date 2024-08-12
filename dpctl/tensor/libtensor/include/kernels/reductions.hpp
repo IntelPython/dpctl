@@ -34,6 +34,7 @@
 #include "dpctl_tensor_types.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -1374,8 +1375,9 @@ sycl::event reduction_over_group_temps_strided_impl(
                 cgh.depends_on(final_reduction_ev);
                 const sycl::context &ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl::free(partially_reduced_tmp, ctx);
+                    sycl_free_noexcept(partially_reduced_tmp, ctx);
                 });
             });
 
@@ -1617,8 +1619,9 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                 cgh.depends_on(final_reduction_ev);
                 const sycl::context &ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl::free(partially_reduced_tmp, ctx);
+                    sycl_free_noexcept(partially_reduced_tmp, ctx);
                 });
             });
 
@@ -1861,8 +1864,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 cgh.depends_on(final_reduction_ev);
                 const sycl::context &ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl::free(partially_reduced_tmp, ctx);
+                    sycl_free_noexcept(partially_reduced_tmp, ctx);
                 });
             });
 
@@ -2796,10 +2800,11 @@ sycl::event search_over_group_temps_strided_impl(
                 cgh.depends_on(final_reduction_ev);
                 sycl::context ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task(
                     [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
-                        sycl::free(partially_reduced_vals_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
                     });
             });
 
@@ -3087,10 +3092,11 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 cgh.depends_on(final_reduction_ev);
                 sycl::context ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task(
                     [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
-                        sycl::free(partially_reduced_vals_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
                     });
             });
 
@@ -3374,10 +3380,11 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 cgh.depends_on(final_reduction_ev);
                 sycl::context ctx = exec_q.get_context();
 
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task(
                     [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
-                        sycl::free(partially_reduced_vals_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
                     });
             });
 

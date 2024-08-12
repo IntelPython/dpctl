@@ -22,6 +22,8 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
+#pragma once
+
 #include "dpctl4pybind11.hpp"
 #include <cstdint>
 #include <limits>
@@ -37,6 +39,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -220,8 +223,9 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(acc_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl::free(packed_shapes_and_strides, ctx);
+            sycl_free_noexcept(packed_shapes_and_strides, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
@@ -403,8 +407,9 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(acc_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl::free(packed_shapes_and_strides, ctx);
+            sycl_free_noexcept(packed_shapes_and_strides, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
