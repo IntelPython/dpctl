@@ -233,7 +233,6 @@ def put(x, indices, vals, /, *, axis=None, mode="wrap"):
                 indices.dtype
             )
         )
-    usm_types_.append(indices.usm_type)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError
