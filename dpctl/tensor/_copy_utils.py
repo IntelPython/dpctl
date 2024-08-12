@@ -938,13 +938,18 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     return
 
 
-def _put_multi_index(ary, inds, p, vals):
+def _put_multi_index(ary, inds, p, vals, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
     ary_nd = ary.ndim
     p = normalize_axis_index(operator.index(p), ary_nd)
+    mode = operator.index(mode)
+    if mode not in [0, 1]:
+        raise ValueError(
+            "Invalid value for mode keyword, only 0 or 1 is supported"
+        )
     if isinstance(vals, dpt.usm_ndarray):
         queues_ = [ary.sycl_queue, vals.sycl_queue]
         usm_types_ = [ary.usm_type, vals.usm_type]
@@ -1018,7 +1023,7 @@ def _put_multi_index(ary, inds, p, vals):
         ind=inds,
         val=rhs,
         axis_start=p,
-        mode=0,
+        mode=mode,
         sycl_queue=exec_q,
         depends=dep_ev,
     )
