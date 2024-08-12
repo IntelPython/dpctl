@@ -1301,12 +1301,8 @@
             <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
             <span class="s2">&quot;from input arguments. &quot;</span>
         <span class="p">)</span>
-    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="k">if</span> <span class="n">indexes_dt</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-            <span class="s2">&quot;`indices` expected integer data type, got `</span><span class="si">{}</span><span class="s2">`&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">indexes_dt</span><span class="p">)</span>
-        <span class="p">)</span>
     <span class="n">mode_i</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">_ind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">indices</span>
@@ -1320,8 +1316,8 @@
 
 <span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns elements from an array at the one-dimensional indices specified</span>
-<span class="sd">    by ``indices`` along a provided ``axis``.</span>
+<span class="sd">    Puts elements into an array at the one-dimensional indices specified by</span>
+<span class="sd">    ``indices`` along a provided ``axis``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (usm_ndarray):</span>
@@ -1330,6 +1326,9 @@
 <span class="sd">        indices (usm_ndarray):</span>
 <span class="sd">            array indices. Must have the same rank (i.e., number of dimensions)</span>
 <span class="sd">            as ``x``.</span>
+<span class="sd">        vals (usm_ndarray):</span>
+<span class="sd">            Array of values to be put into ``x``.</span>
+<span class="sd">            Must be broadcastable to the shape of ``indices``.</span>
 <span class="sd">        axis: int</span>
 <span class="sd">            axis along which to select values. If ``axis`` is negative, the</span>
 <span class="sd">            function determines the axis along which to select values by</span>
@@ -1344,17 +1343,15 @@
 
 <span class="sd">            Default: ``&quot;wrap&quot;``.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        usm_ndarray:</span>
-<span class="sd">            an array having the same data type as ``x``. The returned array has</span>
-<span class="sd">            the same rank (i.e., number of dimensions) as ``x`` and a shape</span>
-<span class="sd">            determined according to :ref:`broadcasting`, except for the axis</span>
-<span class="sd">            (dimension) specified by ``axis`` whose size must equal the size</span>
-<span class="sd">            of the corresponding axis (dimension) in ``indices``.</span>
+<span class="sd">    .. note::</span>
 
-<span class="sd">    Note:</span>
-<span class="sd">        Treatment of the out-of-bound indices in ``indices`` array is controlled</span>
-<span class="sd">        by the value of ``mode`` keyword.</span>
+<span class="sd">        If input array ``indices`` contains duplicates, a race condition</span>
+<span class="sd">        occurs, and the value written into corresponding positions in ``x``</span>
+<span class="sd">        may vary from run to run. Preserving sequential semantics in handing</span>
+<span class="sd">        the duplicates to achieve deterministic behavior requires additional</span>
+<span class="sd">        work.</span>
+
+<span class="sd">        See :func:`dpctl.tensor.put` for an example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
