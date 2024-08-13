@@ -1,6 +1,0 @@
-dpctl.SyclDevice.create\_sub\_devices
-=====================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclDevice.create_sub_devices
