@@ -840,7 +840,8 @@ a non-partitioned SYCL device, an instance of
 returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>, or a
 2-tuple matching the format of the output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code>
 method, an integer enumerator representing the device type followed by
-an integer representing the index of the device.
+an integer representing the index of the device. The only supported
+<a href="#id1"><span class="problematic" id="id2">:enum:`dpctl.tensor.DLDeviceType`</span></a> types are “kDLCPU” and “kDLOneAPI”.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
@@ -860,7 +861,8 @@ a non-partitioned SYCL device, an instance of
 returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>, or a
 2-tuple matching the format of the output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code>
 method, an integer enumerator representing the device type followed by
-an integer representing the index of the device.
+an integer representing the index of the device. The only supported
+<a href="#id3"><span class="problematic" id="id4">:enum:`dpctl.tensor.DLDeviceType`</span></a> types are “kDLCPU” and “kDLOneAPI”.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
@@ -922,6 +924,7 @@ memory.</p>
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">Container</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int16&quot;</span><span class="p">))</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">DLDeviceType</span><span class="o">.</span><span class="n">kDLCPU</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd>
