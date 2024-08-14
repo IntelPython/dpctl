@@ -197,7 +197,7 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
                 auto contig_fn =
                     copy_and_cast_contig_dispatch_table[dst_type_id]
                                                        [src_type_id];
-                sycl::event copy_and_cast_1d_event =
+                copy_and_cast_1d_event =
                     contig_fn(exec_q, src_nelems, src_data, dst_data, depends);
             }
             else {
