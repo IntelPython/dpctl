@@ -39,6 +39,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
@@ -236,8 +237,9 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
     auto ctx = q.get_context();
     sycl::event tmp_cleanup_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(strided_fn_ev);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
+            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
     });
     host_tasks.push_back(tmp_cleanup_ev);
 
@@ -562,8 +564,9 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(strided_fn_ev);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
+            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
     });
 
     host_tasks.push_back(tmp_cleanup_ev);
@@ -815,8 +818,9 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
 
     sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(strided_fn_ev);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
+            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
     });
 
     host_tasks.push_back(tmp_cleanup_ev);

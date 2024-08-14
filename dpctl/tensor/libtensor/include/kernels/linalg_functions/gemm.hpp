@@ -35,6 +35,7 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -2364,7 +2365,8 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -2427,8 +2429,9 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -2661,7 +2664,8 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -2728,8 +2732,9 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -3038,7 +3043,8 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -3097,8 +3103,9 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -3238,7 +3245,8 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -3299,8 +3307,9 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -3603,7 +3612,8 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -3646,8 +3656,9 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -3769,7 +3780,8 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -3812,8 +3824,9 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -4016,7 +4029,8 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -4058,8 +4072,9 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 
@@ -4170,7 +4185,8 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
-                    cgh.host_task([ctx, tmp] { sycl::free(tmp, ctx); });
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
                 });
             return cleanup_host_task_event;
         }
@@ -4211,8 +4227,9 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     cgh.depends_on(red_ev);
                     const sycl::context &ctx = exec_q.get_context();
 
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl::free(partially_reduced_tmp, ctx);
+                        sycl_free_noexcept(partially_reduced_tmp, ctx);
                     });
                 });
 

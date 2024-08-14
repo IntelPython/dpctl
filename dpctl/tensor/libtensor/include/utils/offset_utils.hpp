@@ -34,6 +34,7 @@
 
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/strided_iters.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
 {
@@ -82,30 +83,6 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 
 } // namespace detail
 
-template <typename T>
-class usm_host_allocator : public sycl::usm_allocator<T, sycl::usm::alloc::host>
-{
-public:
-    using baseT = sycl::usm_allocator<T, sycl::usm::alloc::host>;
-    using baseT::baseT;
-
-    template <typename U> struct rebind
-    {
-        typedef usm_host_allocator<U> other;
-    };
-
-    void deallocate(T *ptr, size_t n)
-    {
-        try {
-            baseT::deallocate(ptr, n);
-        } catch (const std::exception &e) {
-            std::cerr
-                << "Exception caught in `usm_host_allocator::deallocate`: "
-                << e.what() << std::endl;
-        }
-    }
-};
-
 template <typename indT, typename... Vs>
 std::tuple<indT *, size_t, sycl::event>
 device_allocate_and_pack(sycl::queue &q,
@@ -113,13 +90,15 @@ device_allocate_and_pack(sycl::queue &q,
                          Vs &&...vs)
 {
 
+    using dpctl::tensor::alloc_utils::usm_host_allocator;
+
     // memory transfer optimization, use USM-host for temporary speeds up
     // transfer to device, especially on dGPUs
     using usm_host_allocatorT = usm_host_allocator<indT>;
     using shT = std::vector<indT, usm_host_allocatorT>;
 
-    usm_host_allocatorT usm_host_allocator(q);
-    shT empty{0, usm_host_allocator};
+    usm_host_allocatorT usm_host_alloc(q);
+    shT empty{0, usm_host_alloc};
     shT packed_shape_strides = detail::concat(std::move(empty), vs...);
 
     auto packed_shape_strides_owner =

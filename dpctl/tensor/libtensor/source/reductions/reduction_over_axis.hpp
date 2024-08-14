@@ -42,6 +42,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -488,8 +489,9 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(reduction_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl::free(temp_allocation_ptr, ctx);
+            sycl_free_noexcept(temp_allocation_ptr, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
@@ -778,8 +780,9 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(reduction_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl::free(temp_allocation_ptr, ctx);
+            sycl_free_noexcept(temp_allocation_ptr, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
@@ -1058,8 +1061,9 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl::free(temp_allocation_ptr, ctx);
+            sycl_free_noexcept(temp_allocation_ptr, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);
@@ -1323,8 +1327,9 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
     sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(red_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl::free(packed_shapes_and_strides, ctx);
+            sycl_free_noexcept(packed_shapes_and_strides, ctx);
         });
     });
     host_task_events.push_back(temp_cleanup_ev);

@@ -36,6 +36,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -207,7 +208,9 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
 
             copy_shape_ev.wait();
             sycl::event::wait(host_task_events);
-            sycl::free(shape_strides, exec_q);
+
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+            sycl_free_noexcept(shape_strides, exec_q);
         }
         throw std::runtime_error("Unexpected error");
     }
@@ -227,7 +230,8 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                                cumsum_data, host_task_events, dependent_events);
 
         sycl::event::wait(host_task_events);
-        sycl::free(shape_strides, exec_q);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        sycl_free_noexcept(shape_strides, exec_q);
     }
 
     return total_set;
@@ -365,7 +369,8 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
             copy_shape_ev.wait();
             sycl::event::wait(host_task_events);
         }
-        sycl::free(shape_strides, exec_q);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        sycl_free_noexcept(shape_strides, exec_q);
         throw std::runtime_error("Unexpected error");
     }
 
@@ -381,8 +386,10 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     {
         py::gil_scoped_release release;
         sycl::event::wait(host_task_events);
+
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        sycl_free_noexcept(shape_strides, exec_q);
     }
-    sycl::free(shape_strides, exec_q);
 
     return total;
 }

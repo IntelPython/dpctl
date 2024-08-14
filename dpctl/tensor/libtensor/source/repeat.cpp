@@ -36,6 +36,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpctl
@@ -262,8 +263,9 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
                 const auto &ctx = exec_q.get_context();
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, packed_src_shape_strides] {
-                    sycl::free(packed_src_shape_strides, ctx);
+                    sycl_free_noexcept(packed_src_shape_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -346,8 +348,9 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
                 const auto &ctx = exec_q.get_context();
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, packed_shapes_strides] {
-                    sycl::free(packed_shapes_strides, ctx);
+                    sycl_free_noexcept(packed_shapes_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -495,8 +498,9 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(repeat_ev);
             const auto &ctx = exec_q.get_context();
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
             cgh.host_task([ctx, packed_src_shapes_strides] {
-                sycl::free(packed_src_shapes_strides, ctx);
+                sycl_free_noexcept(packed_src_shapes_strides, ctx);
             });
         });
     host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -638,8 +642,9 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
                 const auto &ctx = exec_q.get_context();
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, packed_src_shape_strides] {
-                    sycl::free(packed_src_shape_strides, ctx);
+                    sycl_free_noexcept(packed_src_shape_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -721,8 +726,9 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
             exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(repeat_ev);
                 const auto &ctx = exec_q.get_context();
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task([ctx, packed_shapes_strides] {
-                    sycl::free(packed_shapes_strides, ctx);
+                    sycl_free_noexcept(packed_shapes_strides, ctx);
                 });
             });
         host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -833,8 +839,9 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(repeat_ev);
             const auto &ctx = exec_q.get_context();
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
             cgh.host_task([ctx, packed_src_shape_strides] {
-                sycl::free(packed_src_shape_strides, ctx);
+                sycl_free_noexcept(packed_src_shape_strides, ctx);
             });
         });
 

@@ -37,7 +37,9 @@
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
@@ -253,8 +255,9 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
     const auto &ctx = exec_q.get_context();
     const auto &temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_and_cast_generic_ev);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [ctx, shape_strides]() { sycl::free(shape_strides, ctx); });
+            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
     });
 
     host_task_events.push_back(temporaries_cleanup_ev);
