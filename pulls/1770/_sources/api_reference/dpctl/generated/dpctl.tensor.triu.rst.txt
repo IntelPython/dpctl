@@ -1,6 +1,0 @@
-﻿dpctl.tensor.triu
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: triu
