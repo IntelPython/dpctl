@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.tensor.broadcast_arrays" href="generated/dpctl.tensor.broadcast_arrays.html" /><link rel="prev" title="dpctl.tensor.vecdot" href="generated/dpctl.tensor.vecdot.html" />
+    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="C Library SyclInterface" href="../libsyclinterface/index.html" /><link rel="prev" title="dpctl.tensor.diff" href="generated/dpctl.tensor.diff.html" />
 
     <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>Array manipulation functions - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>Constants - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -190,7 +190,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -614,7 +614,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.vecdot.html">dpctl.tensor.vecdot</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">Array manipulation functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of Array manipulation functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="tensor.manipulation_functions.html">Array manipulation functions</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of Array manipulation functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.broadcast_arrays.html">dpctl.tensor.broadcast_arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.broadcast_to.html">dpctl.tensor.broadcast_to</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.concat.html">dpctl.tensor.concat</a></li>
@@ -671,7 +671,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="tensor.constants.html">Constants</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Constants</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../libsyclinterface/index.html">C Library SyclInterface</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle navigation of C Library SyclInterface</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -795,7 +795,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api_reference/dpctl/tensor.manipulation_functions.rst.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api_reference/dpctl/tensor.constants.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -809,63 +809,101 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="array-manipulation-functions">
-<span id="dpctl-tensor-manipulation-functions"></span><h1>Array manipulation functions<a class="headerlink" href="#array-manipulation-functions" title="Permalink to this heading">¶</a></h1>
-<p>The following functions conform to <a class="reference external" href="array_api_spec_manipulation_functions">Python Array API standard</a>:</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.broadcast_arrays.html#dpctl.tensor.broadcast_arrays" title="dpctl.tensor.broadcast_arrays"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_arrays</span></code></a>(*arrays)</p></td>
-<td><p>Broadcasts one or more <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarrays</span></code> against one another.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.broadcast_to.html#dpctl.tensor.broadcast_to" title="dpctl.tensor.broadcast_to"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broadcast_to</span></code></a>(x, shape)</p></td>
-<td><p>Broadcast an array to a new <cite>shape</cite>; returns the broadcasted <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> as a view.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.concat.html#dpctl.tensor.concat" title="dpctl.tensor.concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">concat</span></code></a>(arrays, axis)</p></td>
-<td><p>Joins a sequence of arrays along an existing axis.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.expand_dims.html#dpctl.tensor.expand_dims" title="dpctl.tensor.expand_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_dims</span></code></a>(x, axis)</p></td>
-<td><p>Expands the shape of an array by inserting a new axis (dimension) of size one at the position specified by axis.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.flip.html#dpctl.tensor.flip" title="dpctl.tensor.flip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code></a>(x, axis)</p></td>
-<td><p>Reverses the order of elements in an array <cite>x</cite> along the given <cite>axis</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.moveaxis.html#dpctl.tensor.moveaxis" title="dpctl.tensor.moveaxis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moveaxis</span></code></a>(x, source, destination)</p></td>
-<td><p>Moves axes of an array to new positions.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.permute_dims.html#dpctl.tensor.permute_dims" title="dpctl.tensor.permute_dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">permute_dims</span></code></a>(x, axes)</p></td>
-<td><p>Permute the axes (dimensions) of an array; returns the permuted array as a view.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.repeat.html#dpctl.tensor.repeat" title="dpctl.tensor.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></a>(x, repeats[, axis])</p></td>
-<td><p>Repeat elements of an array on a per-element basis.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.reshape.html#dpctl.tensor.reshape" title="dpctl.tensor.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code></a>(x, shape[, order])</p></td>
-<td><p>Reshapes array <code class="docutils literal notranslate"><span class="pre">x</span></code> into new shape.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.roll.html#dpctl.tensor.roll" title="dpctl.tensor.roll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">roll</span></code></a>(x, shift, axis)</p></td>
-<td><p>Rolls array elements along a specified axis.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.squeeze.html#dpctl.tensor.squeeze" title="dpctl.tensor.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">squeeze</span></code></a>(x, axis)</p></td>
-<td><p>Removes singleton dimensions (axes) from array <cite>x</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.stack.html#dpctl.tensor.stack" title="dpctl.tensor.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code></a>(arrays, axis)</p></td>
-<td><p>Joins a sequence of arrays along a new axis.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.tile.html#dpctl.tensor.tile" title="dpctl.tensor.tile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tile</span></code></a>(x, repetitions)</p></td>
-<td><p>Repeat an input array <cite>x</cite> along each axis a number of times given by <cite>repetitions</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.unstack.html#dpctl.tensor.unstack" title="dpctl.tensor.unstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unstack</span></code></a>(x[, axis])</p></td>
-<td><p>Splits an array in a sequence of arrays along the given axis.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+          <section id="constants">
+<span id="dpctl-tensor-constants"></span><h1>Constants<a class="headerlink" href="#constants" title="Permalink to this heading">¶</a></h1>
+<p>The following constants are defined in <a class="reference internal" href="tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>:</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.DLDeviceType">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">DLDeviceType</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'DLDeviceType'&gt;</span></em><a class="headerlink" href="#dpctl.tensor.DLDeviceType" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <code class="docutils literal notranslate"><span class="pre">IntEnum</span></code> for the types of DLDevices supported by the DLPack
+protocol.</p>
+<blockquote>
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCPU</span></code>:</dt><dd><p>CPU (host) device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDA</span></code>:</dt><dd><p>CUDA GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAHost</span></code>:</dt><dd><p>Pinned CUDA CPU memory by cudaMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOpenCL</span></code>:</dt><dd><p>OpenCL device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVulkan</span></code>:</dt><dd><p>Vulkan buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMetal</span></code>:</dt><dd><p>Metal for Apple GPU</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLVPI</span></code>:</dt><dd><p>Verilog simulator buffer</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCM</span></code>:</dt><dd><p>ROCm GPU device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLROCMHost</span></code>:</dt><dd><p>Pinned ROCm CPU memory allocated by hipMallocHost</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLExtDev</span></code>:</dt><dd><p>Reserved extension device type used to test new devices</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLCUDAManaged</span></code>:</dt><dd><p>CUDA managed/unified memory allocated by cudaMallocManaged</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLOneAPI</span></code>:</dt><dd><p>Unified shared memory allocated on a oneAPI non-partitioned device</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLWebGPU</span></code>:</dt><dd><p>Device support for WebGPU standard</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLHexagon</span></code>:</dt><dd><p>Qualcomm Hexagon DSP</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">kDLMAIA</span></code>:</dt><dd><p>Microsoft MAIA device</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.e">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">e</span></span><a class="headerlink" href="#dpctl.tensor.e" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of Euler’s constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.inf">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">inf</span></span><a class="headerlink" href="#dpctl.tensor.inf" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of (positive) infinity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.nan">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">nan</span></span><a class="headerlink" href="#dpctl.tensor.nan" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of Not a Number (NaN).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.newaxis">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">newaxis</span></span><a class="headerlink" href="#dpctl.tensor.newaxis" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">NoneType</span></code>:</dt><dd><p>Alias for <code class="docutils literal notranslate"><span class="pre">None</span></code> which is useful for indexing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.tensor.pi">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">pi</span></span><a class="headerlink" href="#dpctl.tensor.pi" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">float</span></code>:</dt><dd><p>IEEE 754 floating-point representation of the mathematical constant π.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -873,23 +911,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/dpctl.tensor.broadcast_arrays.html">
+          <a class="next-page" href="../libsyclinterface/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.broadcast_arrays</div>
+                <div class="title">C Library SyclInterface</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="generated/dpctl.tensor.vecdot.html">
+          <a class="prev-page" href="generated/dpctl.tensor.diff.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.tensor.vecdot</div>
+                <div class="title">dpctl.tensor.diff</div>
                 
               </div>
             </a>
@@ -911,8 +949,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Constants</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.DLDeviceType"><code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.e"><code class="docutils literal notranslate"><span class="pre">e</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.inf"><code class="docutils literal notranslate"><span class="pre">inf</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.nan"><code class="docutils literal notranslate"><span class="pre">nan</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.newaxis"><code class="docutils literal notranslate"><span class="pre">newaxis</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.tensor.pi"><code class="docutils literal notranslate"><span class="pre">pi</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
