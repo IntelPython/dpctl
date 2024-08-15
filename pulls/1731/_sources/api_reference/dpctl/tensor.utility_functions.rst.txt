@@ -11,6 +11,7 @@ Utility functions
     all
     any
     allclose
+    diff
 
 Device object
 -------------
