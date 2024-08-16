@@ -65,6 +65,7 @@ from dpctl.tensor._indexing_functions import (
     nonzero,
     place,
     put,
+    put_along_axis,
     take,
     take_along_axis,
 )
@@ -385,4 +386,5 @@ __all__ = [
     "count_nonzero",
     "DLDeviceType",
     "take_along_axis",
+    "put_along_axis",
 ]

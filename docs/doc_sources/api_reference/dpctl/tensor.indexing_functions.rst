@@ -14,5 +14,6 @@ by either integral arrays of indices or boolean mask arrays.
     extract
     place
     put
+    put_along_axis
     take
     take_along_axis
