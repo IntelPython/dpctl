@@ -29,7 +29,9 @@
 #include "copy_for_reshape.hpp"
 #include "dpctl4pybind11.hpp"
 #include "kernels/copy_and_cast.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
@@ -152,8 +154,9 @@ copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
     auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_for_reshape_event);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [shape_strides, ctx]() { sycl::free(shape_strides, ctx); });
+            [shape_strides, ctx]() { sycl_free_noexcept(shape_strides, ctx); });
     });
 
     host_task_events.push_back(temporaries_cleanup_ev);

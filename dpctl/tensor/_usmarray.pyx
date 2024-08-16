@@ -54,6 +54,40 @@ include "_slicing.pxi"
 
 
 class DLDeviceType(IntEnum):
+    """
+    An ``IntEnum`` for the types of DLDevices supported by the DLPack
+    protocol.
+        ``kDLCPU``:
+            CPU (host) device
+        ``kDLCUDA``:
+            CUDA GPU device
+        ``kDLCUDAHost``:
+            Pinned CUDA CPU memory by cudaMallocHost
+        ``kDLOpenCL``:
+            OpenCL device
+        ``kDLVulkan``:
+            Vulkan buffer
+        ``kDLMetal``:
+            Metal for Apple GPU
+        ``kDLVPI``:
+            Verilog simulator buffer
+        ``kDLROCM``:
+            ROCm GPU device
+        ``kDLROCMHost``:
+            Pinned ROCm CPU memory allocated by hipMallocHost
+        ``kDLExtDev``:
+            Reserved extension device type used to test new devices
+        ``kDLCUDAManaged``:
+            CUDA managed/unified memory allocated by cudaMallocManaged
+        ``kDLOneAPI``:
+            Unified shared memory allocated on a oneAPI non-partitioned device
+        ``kDLWebGPU``:
+            Device support for WebGPU standard
+        ``kDLHexagon``:
+            Qualcomm Hexagon DSP
+        ``kDLMAIA``:
+            Microsoft MAIA device
+    """
     kDLCPU = c_dlpack.device_CPU
     kDLCUDA = c_dlpack.device_CUDA
     kDLCUDAHost = c_dlpack.device_CUDAHost
@@ -87,9 +121,33 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     view.shape = tuple()
     return view
 
+
 cdef int _copy_writable(int lhs_flags, int rhs_flags):
     "Copy the WRITABLE flag to lhs_flags from rhs_flags"
     return (lhs_flags & ~USM_ARRAY_WRITABLE) | (rhs_flags & USM_ARRAY_WRITABLE)
+
+
+cdef bint _is_host_cpu(object dl_device):
+    "Check if dl_device denotes (kDLCPU, 0)"
+    cdef object dl_type
+    cdef object dl_id
+    cdef Py_ssize_t n_elems = -1
+
+    try:
+        n_elems = len(dl_device)
+    except TypeError:
+        pass
+
+    if n_elems != 2:
+        return False
+
+    dl_type = dl_device[0]
+    dl_id = dl_device[1]
+    if isinstance(dl_type, str):
+        return (dl_type == "kDLCPU" and dl_id == 0)
+
+    return (dl_type == DLDeviceType.kDLCPU) and (dl_id == 0)
+
 
 cdef class usm_ndarray:
     """ usm_ndarray(shape, dtype=None, strides=None, buffer="device", \
@@ -1157,18 +1215,37 @@ cdef class usm_ndarray:
                 raise TypeError(
                     "`__dlpack__` expects `max_version` to be a "
                     "2-tuple of integers `(major, minor)`, instead "
-                    f"got {type(max_version)}"
+                    f"got {max_version}"
                 )
             dpctl_dlpack_version = get_build_dlpack_version()
             if max_version[0] >= dpctl_dlpack_version[0]:
                 # DLManagedTensorVersioned path
-                # TODO: add logic for targeting a device
                 if dl_device is not None:
-                    if dl_device != self.__dlpack_device__():
-                        raise NotImplementedError(
-                            "targeting a device with `__dlpack__` is not "
-                            "currently implemented"
+                    if not isinstance(dl_device, tuple) or len(dl_device) != 2:
+                        raise TypeError(
+                            "`__dlpack__` expects `dl_device` to be a 2-tuple "
+                            "of `(device_type, device_id)`, instead "
+                            f"got {dl_device}"
                         )
+                    if dl_device != self.__dlpack_device__():
+                        if copy == False:
+                            raise BufferError(
+                                "array cannot be placed on the requested device without a copy"
+                            )
+                        if _is_host_cpu(dl_device):
+                            if stream is not None:
+                                raise ValueError(
+                                    "`stream` must be `None` when `dl_device` is of type `kDLCPU`"
+                                )
+                            from ._copy_utils import _copy_to_numpy
+                            _arr = _copy_to_numpy(self)
+                            _arr.flags["W"] = self.flags["W"]
+                            return c_dlpack.numpy_to_dlpack_versioned_capsule(_arr, True)
+                        else:
+                            raise BufferError(
+                                f"targeting `dl_device` {dl_device} with `__dlpack__` is not "
+                                "yet implemented"
+                            )
                 if copy is None:
                     copy = False
                 # TODO: strategy for handling stream on different device from dl_device
@@ -1220,6 +1297,8 @@ cdef class usm_ndarray:
 
         The tuple describes the non-partitioned device where the array has been allocated,
         or the non-partitioned parent device of the allocation device.
+
+        See ``DLDeviceType`` for a list of devices supported by the DLPack protocol.
 
         Raises:
             DLPackCreationError:

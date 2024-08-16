@@ -32,6 +32,7 @@
 
 #include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -436,7 +437,8 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(dependent_event);
             const auto &ctx = exec_q.get_context();
-            cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+            cgh.host_task([ctx, temp]() { sycl_free_noexcept(temp, ctx); });
         });
         host_tasks.push_back(free_ev);
     }
@@ -765,7 +767,8 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(dependent_event);
             const auto &ctx = exec_q.get_context();
-            cgh.host_task([ctx, temp]() { sycl::free(temp, ctx); });
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+            cgh.host_task([ctx, temp]() { sycl_free_noexcept(temp, ctx); });
         });
         host_tasks.push_back(free_ev);
     }
@@ -917,7 +920,9 @@ size_t cumsum_val_contig_impl(sycl::queue &q,
     });
     copy_e.wait();
     size_t return_val = static_cast<size_t>(*last_elem_host_usm);
-    sycl::free(last_elem_host_usm, q);
+
+    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+    sycl_free_noexcept(last_elem_host_usm, q);
 
     return return_val;
 }
@@ -1026,7 +1031,9 @@ size_t cumsum_val_strided_impl(sycl::queue &q,
     });
     copy_e.wait();
     size_t return_val = static_cast<size_t>(*last_elem_host_usm);
-    sycl::free(last_elem_host_usm, q);
+
+    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+    sycl_free_noexcept(last_elem_host_usm, q);
 
     return return_val;
 }

@@ -18,9 +18,13 @@
 # cython: language_level=3
 # cython: linetrace=True
 
+cdef extern from "numpy/npy_no_deprecated_api.h":
+    pass
+
 cimport cpython
 from libc cimport stdlib
 from libc.stdint cimport int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+from numpy cimport ndarray
 
 cimport dpctl as c_dpctl
 cimport dpctl.memory as c_dpmem
@@ -33,6 +37,8 @@ from .._backend cimport (
     DPCTLSyclUSMRef,
 )
 from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, USM_ARRAY_WRITABLE, usm_ndarray
+
+import ctypes
 
 import numpy as np
 
@@ -162,7 +168,7 @@ cdef void _managed_tensor_versioned_deleter(DLManagedTensorVersioned *dlmv_tenso
         stdlib.free(dlmv_tensor)
 
 
-cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
+cdef object _get_default_context(c_dpctl.SyclDevice dev):
     try:
         default_context = dev.sycl_platform.default_context
     except RuntimeError:
@@ -172,7 +178,7 @@ cdef object _get_default_context(c_dpctl.SyclDevice dev) except *:
     return default_context
 
 
-cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
+cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except -1:
     cdef DPCTLSyclDeviceRef pDRef = NULL
     cdef DPCTLSyclDeviceRef tDRef = NULL
     cdef c_dpctl.SyclDevice p_dev
@@ -195,7 +201,7 @@ cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except *:
 
 cdef int get_array_dlpack_device_id(
     usm_ndarray usm_ary
-) except *:
+) except -1:
     """Finds ordinal number of the parent of device where array
     was allocated.
     """
@@ -475,6 +481,127 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     return cpython.PyCapsule_New(dlmv_tensor, 'dltensor_versioned', _pycapsule_versioned_deleter)
 
 
+cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
+    """
+    to_dlpack_versioned_capsule(npy_ary, copied)
+
+    Constructs named Python capsule object referencing
+    instance of ``DLManagedTensorVersioned`` from
+    :class:`numpy.ndarray` instance.
+
+    Args:
+        npy_ary: An instance of :class:`numpy.ndarray`
+        copied: A bint representing whether the data was previously
+            copied in order to set the flags with the is-copied
+            bitmask.
+    Returns:
+        A new capsule with name ``"dltensor_versioned"`` that
+        contains a pointer to ``DLManagedTensorVersioned`` struct.
+    Raises:
+        DLPackCreationError: when array can be represented as
+            DLPack tensor.
+        MemoryError: when host allocation to needed for
+            ``DLManagedTensorVersioned`` did not succeed.
+        ValueError: when array elements data type could not be represented
+            in ``DLManagedTensorVersioned``.
+    """
+    cdef DLManagedTensorVersioned *dlmv_tensor = NULL
+    cdef DLTensor *dl_tensor = NULL
+    cdef uint32_t dlmv_flags = 0
+    cdef int nd = npy_ary.ndim
+    cdef Py_ssize_t *shape_ptr = NULL
+    cdef Py_ssize_t *strides_ptr = NULL
+    cdef int64_t *shape_strides_ptr = NULL
+    cdef int i = 0
+    cdef int device_id = -1
+    cdef Py_ssize_t byte_offset = 0
+    cdef int itemsize = npy_ary.itemsize
+
+    dlmv_tensor = <DLManagedTensorVersioned *> stdlib.malloc(
+        sizeof(DLManagedTensorVersioned))
+    if dlmv_tensor is NULL:
+        raise MemoryError(
+            "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
+            "for DLManagedTensorVersioned"
+        )
+
+    is_c_contiguous = npy_ary.flags["C"]
+    shape = npy_ary.ctypes.shape_as(ctypes.c_int64)
+    strides = npy_ary.ctypes.strides_as(ctypes.c_int64)
+    if not is_c_contiguous:
+        if npy_ary.size != 1:
+            for i in range(nd):
+                if shape[i] != 1 and strides[i] % itemsize != 0:
+                    stdlib.free(dlmv_tensor)
+                    raise BufferError(
+                        "numpy_to_dlpack_versioned_capsule: DLPack cannot encode "
+                        "an array if strides are not a multiple of itemsize"
+                    )
+        shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+    else:
+        # no need to pass strides in this case
+        shape_strides_ptr = <int64_t *>stdlib.malloc(sizeof(int64_t) * nd)
+    if shape_strides_ptr is NULL:
+        stdlib.free(dlmv_tensor)
+        raise MemoryError(
+            "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
+            "for shape/strides"
+        )
+    for i in range(nd):
+        shape_strides_ptr[i] = shape[i]
+        if not is_c_contiguous:
+            shape_strides_ptr[nd + i] = strides[i] // itemsize
+
+    writable_flag = npy_ary.flags["W"]
+
+    ary_dt = npy_ary.dtype
+    ary_dtk = ary_dt.kind
+
+    dl_tensor = &dlmv_tensor.dl_tensor
+    dl_tensor.data = <void *> npy_ary.data
+    dl_tensor.ndim = nd
+    dl_tensor.byte_offset = <uint64_t>byte_offset
+    dl_tensor.shape = &shape_strides_ptr[0]
+    if is_c_contiguous:
+        dl_tensor.strides = NULL
+    else:
+        dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.device.device_type = kDLCPU
+    dl_tensor.device.device_id = 0
+    dl_tensor.dtype.lanes = <uint16_t>1
+    dl_tensor.dtype.bits = <uint8_t>(ary_dt.itemsize * 8)
+    if (ary_dtk == "b"):
+        dl_tensor.dtype.code = <uint8_t>kDLBool
+    elif (ary_dtk == "u"):
+        dl_tensor.dtype.code = <uint8_t>kDLUInt
+    elif (ary_dtk == "i"):
+        dl_tensor.dtype.code = <uint8_t>kDLInt
+    elif (ary_dtk == "f" and ary_dt.itemsize <= 8):
+        dl_tensor.dtype.code = <uint8_t>kDLFloat
+    elif (ary_dtk == "c" and ary_dt.itemsize <= 16):
+        dl_tensor.dtype.code = <uint8_t>kDLComplex
+    else:
+        stdlib.free(shape_strides_ptr)
+        stdlib.free(dlmv_tensor)
+        raise ValueError("Unrecognized array data type")
+
+    # set flags down here
+    if copied:
+        dlmv_flags |= DLPACK_FLAG_BITMASK_IS_COPIED
+    if not writable_flag:
+        dlmv_flags |= DLPACK_FLAG_BITMASK_READ_ONLY
+    dlmv_tensor.flags = dlmv_flags
+
+    dlmv_tensor.version.major = DLPACK_MAJOR_VERSION
+    dlmv_tensor.version.minor = DLPACK_MINOR_VERSION
+
+    dlmv_tensor.manager_ctx = <void*>npy_ary
+    cpython.Py_INCREF(npy_ary)
+    dlmv_tensor.deleter = _managed_tensor_versioned_deleter
+
+    return cpython.PyCapsule_New(dlmv_tensor, 'dltensor_versioned', _pycapsule_versioned_deleter)
+
+
 cdef class _DLManagedTensorOwner:
     """
     Helper class managing the lifetime of the DLManagedTensor struct
@@ -519,9 +646,86 @@ cdef class _DLManagedTensorVersionedOwner:
         return res
 
 
-cpdef usm_ndarray from_dlpack_capsule(object py_caps):
+cdef dict _numpy_array_interface_from_dl_tensor(DLTensor *dlt, bint ro_flag):
+    """Constructs a NumPy `__array_interface__` dictionary from a DLTensor."""
+    cdef int i = 0
+    cdef int itemsize = 0
+
+    if dlt.dtype.lanes != 1:
+        raise BufferError(
+            "Can not import DLPack tensor with lanes != 1"
+        )
+    itemsize = dlt.dtype.bits // 8
+    shape = list()
+    if (dlt.strides is NULL):
+        strides = None
+        for dim in range(dlt.ndim):
+            shape.append(dlt.shape[dim])
+    else:
+        strides = list()
+        for dim in range(dlt.ndim):
+            shape.append(dlt.shape[dim])
+            # convert to byte-strides
+            strides.append(dlt.strides[dim] * itemsize)
+        strides = tuple(strides)
+    shape = tuple(shape)
+    if (dlt.dtype.code == kDLUInt):
+        ary_dt = "u" + str(itemsize)
+    elif (dlt.dtype.code == kDLInt):
+        ary_dt = "i" + str(itemsize)
+    elif (dlt.dtype.code == kDLFloat):
+        ary_dt = "f" + str(itemsize)
+    elif (dlt.dtype.code == kDLComplex):
+        ary_dt = "c" + str(itemsize)
+    elif (dlt.dtype.code == kDLBool):
+        ary_dt = "b" + str(itemsize)
+    else:
+        raise BufferError(
+            "Can not import DLPack tensor with type code {}.".format(
+                <object>dlt.dtype.code
+            )
+        )
+    typestr = "|" + ary_dt
+    return dict(
+        version=3,
+        shape=shape,
+        strides=strides,
+        data=(<size_t> dlt.data, True if ro_flag else False),
+        offset=dlt.byte_offset,
+        typestr=typestr,
+    )
+
+
+class _numpy_array_interface_wrapper:
     """
-    from_dlpack_capsule(caps)
+    Class that wraps a Python capsule and dictionary for consumption by NumPy.
+
+    Implementation taken from
+    https://github.com/dmlc/dlpack/blob/main/apps/numpy_dlpack/dlpack/to_numpy.py
+
+    Args:
+        array_interface:
+            A dictionary describing the underlying memory. Formatted
+            to match `numpy.ndarray.__array_interface__`.
+
+        pycapsule:
+            A Python capsule wrapping the dlpack tensor that will be
+            converted to numpy.
+    """
+
+    def __init__(self, array_interface, memory_owner) -> None:
+        self.__array_interface__ = array_interface
+        self._memory_owner = memory_owner
+
+
+cdef bint _is_kdlcpu_device(DLDevice *dev):
+    "Check if DLTensor.DLDevice denotes (kDLCPU, 0)"
+    return (dev[0].device_type == kDLCPU) and (dev[0].device_id == 0)
+
+
+cpdef object from_dlpack_capsule(object py_caps):
+    """
+    from_dlpack_capsule(py_caps)
 
     Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
     named Python capsule object referencing instance of ``DLManagedTensor``
@@ -545,189 +749,11 @@ cpdef usm_ndarray from_dlpack_capsule(object py_caps):
             sycl context, or the DLPack's device_type is not supported
             by :mod:`dpctl`.
     """
-    cdef DLManagedTensor *dlm_tensor = NULL
-    cdef bytes usm_type
-    cdef size_t sz = 1
-    cdef size_t alloc_sz = 1
-    cdef int i
-    cdef int device_id = -1
-    cdef int element_bytesize = 0
-    cdef Py_ssize_t offset_min = 0
-    cdef Py_ssize_t offset_max = 0
-    cdef char *mem_ptr = NULL
-    cdef Py_ssize_t mem_ptr_delta = 0
-    cdef Py_ssize_t element_offset = 0
-    cdef int64_t stride_i = -1
-    cdef int64_t shape_i = -1
-
-    if not cpython.PyCapsule_IsValid(py_caps, 'dltensor'):
-        if cpython.PyCapsule_IsValid(py_caps, 'used_dltensor'):
-            raise ValueError(
-                "A DLPack tensor object can not be consumed multiple times"
-            )
-        else:
-            raise TypeError(
-                "`from_dlpack_capsule` expects a Python 'dltensor' capsule"
-            )
-    dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
-            py_caps, "dltensor")
-    # Verify that we can work with this device
-    if dlm_tensor.dl_tensor.device.device_type == kDLOneAPI:
-        device_id = dlm_tensor.dl_tensor.device.device_id
-        root_device = dpctl.SyclDevice(str(<int>device_id))
-        try:
-            default_context = root_device.sycl_platform.default_context
-        except RuntimeError:
-            default_context = get_device_cached_queue(root_device).sycl_context
-        if dlm_tensor.dl_tensor.data is NULL:
-            usm_type = b"device"
-            q = get_device_cached_queue((default_context, root_device,))
-        else:
-            usm_type = c_dpmem._Memory.get_pointer_type(
-                <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
-                <c_dpctl.SyclContext>default_context)
-            if usm_type == b"unknown":
-                raise BufferError(
-                    "Data pointer in DLPack is not bound to default sycl "
-                    f"context of device '{device_id}', translated to "
-                    f"{root_device.filter_string}"
-                )
-            alloc_device = c_dpmem._Memory.get_pointer_device(
-                <DPCTLSyclUSMRef> dlm_tensor.dl_tensor.data,
-                <c_dpctl.SyclContext>default_context
-            )
-            q = get_device_cached_queue((default_context, alloc_device,))
-        if dlm_tensor.dl_tensor.dtype.bits % 8:
-            raise BufferError(
-                "Can not import DLPack tensor whose element's "
-                "bitsize is not a multiple of 8"
-            )
-        if dlm_tensor.dl_tensor.dtype.lanes != 1:
-            raise BufferError(
-                "Can not import DLPack tensor with lanes != 1"
-            )
-        offset_min = 0
-        if dlm_tensor.dl_tensor.strides is NULL:
-            for i in range(dlm_tensor.dl_tensor.ndim):
-                sz = sz * dlm_tensor.dl_tensor.shape[i]
-            offset_max = sz - 1
-        else:
-            offset_max = 0
-            for i in range(dlm_tensor.dl_tensor.ndim):
-                stride_i = dlm_tensor.dl_tensor.strides[i]
-                shape_i = dlm_tensor.dl_tensor.shape[i]
-                if shape_i > 1:
-                    shape_i -= 1
-                    if stride_i > 0:
-                        offset_max = offset_max + stride_i * shape_i
-                    else:
-                        offset_min = offset_min + stride_i * shape_i
-            sz = offset_max - offset_min + 1
-        if sz == 0:
-            sz = 1
-
-        element_bytesize = (dlm_tensor.dl_tensor.dtype.bits // 8)
-        sz = sz * element_bytesize
-        element_offset = dlm_tensor.dl_tensor.byte_offset // element_bytesize
-
-        # transfer dlm_tensor ownership
-        dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
-        cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
-
-        if dlm_tensor.dl_tensor.data is NULL:
-            usm_mem = dpmem.MemoryUSMDevice(sz, q)
-        else:
-            mem_ptr_delta = dlm_tensor.dl_tensor.byte_offset - (
-                element_offset * element_bytesize
-            )
-            mem_ptr = <char *>dlm_tensor.dl_tensor.data
-            alloc_sz = dlm_tensor.dl_tensor.byte_offset + <uint64_t>(
-                (offset_max + 1) * element_bytesize)
-            tmp = c_dpmem._Memory.create_from_usm_pointer_size_qref(
-                <DPCTLSyclUSMRef> mem_ptr,
-                max(alloc_sz, <uint64_t>element_bytesize),
-                (<c_dpctl.SyclQueue>q).get_queue_ref(),
-                memory_owner=dlm_holder
-            )
-            if mem_ptr_delta == 0:
-                usm_mem = tmp
-            else:
-                alloc_sz = dlm_tensor.dl_tensor.byte_offset + <uint64_t>(
-                    (offset_max * element_bytesize + mem_ptr_delta))
-                usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
-                    <DPCTLSyclUSMRef> (mem_ptr + (element_bytesize - mem_ptr_delta)),
-                    max(alloc_sz, <uint64_t>element_bytesize),
-                    (<c_dpctl.SyclQueue>q).get_queue_ref(),
-                    memory_owner=tmp
-                )
-        py_shape = list()
-        for i in range(dlm_tensor.dl_tensor.ndim):
-            py_shape.append(dlm_tensor.dl_tensor.shape[i])
-        if (dlm_tensor.dl_tensor.strides is NULL):
-            py_strides = None
-        else:
-            py_strides = list()
-            for i in range(dlm_tensor.dl_tensor.ndim):
-                py_strides.append(dlm_tensor.dl_tensor.strides[i])
-        if (dlm_tensor.dl_tensor.dtype.code == kDLUInt):
-            ary_dt = np.dtype("u" + str(element_bytesize))
-        elif (dlm_tensor.dl_tensor.dtype.code == kDLInt):
-            ary_dt = np.dtype("i" + str(element_bytesize))
-        elif (dlm_tensor.dl_tensor.dtype.code == kDLFloat):
-            ary_dt = np.dtype("f" + str(element_bytesize))
-        elif (dlm_tensor.dl_tensor.dtype.code == kDLComplex):
-            ary_dt = np.dtype("c" + str(element_bytesize))
-        elif (dlm_tensor.dl_tensor.dtype.code == kDLBool):
-            ary_dt = np.dtype("?")
-        else:
-            raise BufferError(
-                "Can not import DLPack tensor with type code {}.".format(
-                    <object>dlm_tensor.dl_tensor.dtype.code
-                )
-            )
-        res_ary = usm_ndarray(
-            py_shape,
-            dtype=ary_dt,
-            buffer=usm_mem,
-            strides=py_strides,
-            offset=element_offset
-        )
-        return res_ary
-    else:
-        raise BufferError(
-            "The DLPack tensor resides on unsupported device."
-        )
-
-
-cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
-    """
-    from_dlpack_versioned_capsule(caps)
-
-    Reconstructs instance of :class:`dpctl.tensor.usm_ndarray` from
-    named Python capsule object referencing instance of
-    ``DLManagedTensorVersioned`` without copy. The instance forms a
-    view in the memory of the tensor.
-
-    Args:
-        caps:
-            Python capsule with name ``"dltensor_versioned"`` expected
-            to reference an instance of ``DLManagedTensorVersioned``
-            struct.
-    Returns:
-        Instance of :class:`dpctl.tensor.usm_ndarray` with a view into
-        memory of the tensor. Capsule is renamed to
-        ``"used_dltensor_versioned"`` upon success.
-    Raises:
-        TypeError:
-            if argument is not a ``"dltensor_versioned"`` capsule.
-        ValueError:
-            if argument is ``"used_dltensor_versioned"`` capsule
-        BufferError:
-            if the USM pointer is not bound to the reconstructed
-            sycl context, or the DLPack's device_type is not supported
-            by :mod:`dpctl`.
-    """
     cdef DLManagedTensorVersioned *dlmv_tensor = NULL
+    cdef DLManagedTensor *dlm_tensor = NULL
+    cdef DLTensor *dl_tensor = NULL
+    cdef int versioned = 0
+    cdef int readonly = 0
     cdef bytes usm_type
     cdef size_t sz = 1
     cdef size_t alloc_sz = 1
@@ -742,68 +768,75 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
     cdef int64_t stride_i = -1
     cdef int64_t shape_i = -1
 
-    if not cpython.PyCapsule_IsValid(py_caps, 'dltensor_versioned'):
-        if cpython.PyCapsule_IsValid(py_caps, 'used_dltensor_versioned'):
-            raise ValueError(
-                "A DLPack tensor object can not be consumed multiple times"
-            )
-        else:
-            raise TypeError(
-                "`from_dlpack_versioned_capsule` expects a Python "
-                "'dltensor_versioned' capsule"
-            )
-    dlmv_tensor = <DLManagedTensorVersioned*>cpython.PyCapsule_GetPointer(
-            py_caps, "dltensor_versioned")
-    # Verify that we can work with this device
-    if dlmv_tensor.dl_tensor.device.device_type == kDLOneAPI:
-        device_id = dlmv_tensor.dl_tensor.device.device_id
-        root_device = dpctl.SyclDevice(str(<int>device_id))
-        try:
-            default_context = root_device.sycl_platform.default_context
-        except RuntimeError:
-            default_context = get_device_cached_queue(root_device).sycl_context
-        if dlmv_tensor.dl_tensor.data is NULL:
-            usm_type = b"device"
-            q = get_device_cached_queue((default_context, root_device,))
-        else:
-            usm_type = c_dpmem._Memory.get_pointer_type(
-                <DPCTLSyclUSMRef> dlmv_tensor.dl_tensor.data,
-                <c_dpctl.SyclContext>default_context)
-            if usm_type == b"unknown":
-                raise BufferError(
-                    "Data pointer in DLPack is not bound to default sycl "
-                    f"context of device '{device_id}', translated to "
-                    f"{root_device.filter_string}"
-                )
-            alloc_device = c_dpmem._Memory.get_pointer_device(
-                <DPCTLSyclUSMRef> dlmv_tensor.dl_tensor.data,
-                <c_dpctl.SyclContext>default_context
-            )
-            q = get_device_cached_queue((default_context, alloc_device,))
-        if dlmv_tensor.dl_tensor.dtype.bits % 8:
-            raise BufferError(
-                "Can not import DLPack tensor whose element's "
-                "bitsize is not a multiple of 8"
-            )
-        if dlmv_tensor.dl_tensor.dtype.lanes != 1:
-            raise BufferError(
-                "Can not import DLPack tensor with lanes != 1"
-            )
+    if cpython.PyCapsule_IsValid(py_caps, 'dltensor'):
+        dlm_tensor = <DLManagedTensor*>cpython.PyCapsule_GetPointer(
+                py_caps, "dltensor")
+        dl_tensor = &dlm_tensor.dl_tensor
+    elif cpython.PyCapsule_IsValid(py_caps, 'dltensor_versioned'):
+        dlmv_tensor = <DLManagedTensorVersioned*>cpython.PyCapsule_GetPointer(
+                py_caps, "dltensor_versioned")
         if dlmv_tensor.version.major > DLPACK_MAJOR_VERSION:
             raise BufferError(
                 "Can not import DLPack tensor with major version "
                 f"greater than {DLPACK_MAJOR_VERSION}"
             )
+        versioned = 1
+        readonly = (dlmv_tensor.flags & DLPACK_FLAG_BITMASK_READ_ONLY) != 0
+        dl_tensor = &dlmv_tensor.dl_tensor
+    elif cpython.PyCapsule_IsValid(py_caps, 'used_dltensor') or cpython.PyCapsule_IsValid(py_caps, 'used_dltensor_versioned'):
+        raise ValueError(
+            "A DLPack tensor object can not be consumed multiple times"
+        )
+    else:
+        raise TypeError(
+            "`from_dlpack_capsule` expects a Python 'dltensor' capsule"
+        )
+
+    # Verify that we can work with this device
+    if dl_tensor.device.device_type == kDLOneAPI:
+        device_id = dl_tensor.device.device_id
+        root_device = dpctl.SyclDevice(str(<int>device_id))
+        try:
+            default_context = root_device.sycl_platform.default_context
+        except RuntimeError:
+            default_context = get_device_cached_queue(root_device).sycl_context
+        if dl_tensor.data is NULL:
+            usm_type = b"device"
+            q = get_device_cached_queue((default_context, root_device,))
+        else:
+            usm_type = c_dpmem._Memory.get_pointer_type(
+                <DPCTLSyclUSMRef> dl_tensor.data,
+                <c_dpctl.SyclContext>default_context)
+            if usm_type == b"unknown":
+                raise BufferError(
+                    "Data pointer in DLPack is not bound to default sycl "
+                    f"context of device '{device_id}', translated to "
+                    f"{root_device.filter_string}"
+                )
+            alloc_device = c_dpmem._Memory.get_pointer_device(
+                <DPCTLSyclUSMRef> dl_tensor.data,
+                <c_dpctl.SyclContext>default_context
+            )
+            q = get_device_cached_queue((default_context, alloc_device,))
+        if dl_tensor.dtype.bits % 8:
+            raise BufferError(
+                "Can not import DLPack tensor whose element's "
+                "bitsize is not a multiple of 8"
+            )
+        if dl_tensor.dtype.lanes != 1:
+            raise BufferError(
+                "Can not import DLPack tensor with lanes != 1"
+            )
         offset_min = 0
-        if dlmv_tensor.dl_tensor.strides is NULL:
-            for i in range(dlmv_tensor.dl_tensor.ndim):
-                sz = sz * dlmv_tensor.dl_tensor.shape[i]
+        if dl_tensor.strides is NULL:
+            for i in range(dl_tensor.ndim):
+                sz = sz * dl_tensor.shape[i]
             offset_max = sz - 1
         else:
             offset_max = 0
-            for i in range(dlmv_tensor.dl_tensor.ndim):
-                stride_i = dlmv_tensor.dl_tensor.strides[i]
-                shape_i = dlmv_tensor.dl_tensor.shape[i]
+            for i in range(dl_tensor.ndim):
+                stride_i = dl_tensor.strides[i]
+                shape_i = dl_tensor.shape[i]
                 if shape_i > 1:
                     shape_i -= 1
                     if stride_i > 0:
@@ -814,33 +847,37 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
         if sz == 0:
             sz = 1
 
-        element_bytesize = (dlmv_tensor.dl_tensor.dtype.bits // 8)
+        element_bytesize = (dl_tensor.dtype.bits // 8)
         sz = sz * element_bytesize
-        element_offset = dlmv_tensor.dl_tensor.byte_offset // element_bytesize
+        element_offset = dl_tensor.byte_offset // element_bytesize
 
-        # transfer dlmv_tensor ownership
-        dlmv_holder = _DLManagedTensorVersionedOwner._create(dlmv_tensor)
-        cpython.PyCapsule_SetName(py_caps, 'used_dltensor_versioned')
+        # transfer ownership
+        if not versioned:
+            dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
+            cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
+        else:
+            dlmv_holder = _DLManagedTensorVersionedOwner._create(dlmv_tensor)
+            cpython.PyCapsule_SetName(py_caps, 'used_dltensor_versioned')
 
-        if dlmv_tensor.dl_tensor.data is NULL:
+        if dl_tensor.data is NULL:
             usm_mem = dpmem.MemoryUSMDevice(sz, q)
         else:
-            mem_ptr_delta = dlmv_tensor.dl_tensor.byte_offset - (
+            mem_ptr_delta = dl_tensor.byte_offset - (
                 element_offset * element_bytesize
             )
-            mem_ptr = <char *>dlmv_tensor.dl_tensor.data
-            alloc_sz = dlmv_tensor.dl_tensor.byte_offset + <uint64_t>(
+            mem_ptr = <char *>dl_tensor.data
+            alloc_sz = dl_tensor.byte_offset + <uint64_t>(
                 (offset_max + 1) * element_bytesize)
             tmp = c_dpmem._Memory.create_from_usm_pointer_size_qref(
                 <DPCTLSyclUSMRef> mem_ptr,
                 max(alloc_sz, <uint64_t>element_bytesize),
                 (<c_dpctl.SyclQueue>q).get_queue_ref(),
-                memory_owner=dlmv_holder
+                memory_owner=dlmv_holder if versioned else dlm_holder
             )
             if mem_ptr_delta == 0:
                 usm_mem = tmp
             else:
-                alloc_sz = dlmv_tensor.dl_tensor.byte_offset + <uint64_t>(
+                alloc_sz = dl_tensor.byte_offset + <uint64_t>(
                     (offset_max * element_bytesize + mem_ptr_delta))
                 usm_mem = c_dpmem._Memory.create_from_usm_pointer_size_qref(
                     <DPCTLSyclUSMRef> (mem_ptr + (element_bytesize - mem_ptr_delta)),
@@ -849,28 +886,28 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
                     memory_owner=tmp
                 )
         py_shape = list()
-        for i in range(dlmv_tensor.dl_tensor.ndim):
-            py_shape.append(dlmv_tensor.dl_tensor.shape[i])
-        if (dlmv_tensor.dl_tensor.strides is NULL):
+        for i in range(dl_tensor.ndim):
+            py_shape.append(dl_tensor.shape[i])
+        if (dl_tensor.strides is NULL):
             py_strides = None
         else:
             py_strides = list()
-            for i in range(dlmv_tensor.dl_tensor.ndim):
-                py_strides.append(dlmv_tensor.dl_tensor.strides[i])
-        if (dlmv_tensor.dl_tensor.dtype.code == kDLUInt):
+            for i in range(dl_tensor.ndim):
+                py_strides.append(dl_tensor.strides[i])
+        if (dl_tensor.dtype.code == kDLUInt):
             ary_dt = np.dtype("u" + str(element_bytesize))
-        elif (dlmv_tensor.dl_tensor.dtype.code == kDLInt):
+        elif (dl_tensor.dtype.code == kDLInt):
             ary_dt = np.dtype("i" + str(element_bytesize))
-        elif (dlmv_tensor.dl_tensor.dtype.code == kDLFloat):
+        elif (dl_tensor.dtype.code == kDLFloat):
             ary_dt = np.dtype("f" + str(element_bytesize))
-        elif (dlmv_tensor.dl_tensor.dtype.code == kDLComplex):
+        elif (dl_tensor.dtype.code == kDLComplex):
             ary_dt = np.dtype("c" + str(element_bytesize))
-        elif (dlmv_tensor.dl_tensor.dtype.code == kDLBool):
+        elif (dl_tensor.dtype.code == kDLBool):
             ary_dt = np.dtype("?")
         else:
             raise BufferError(
                 "Can not import DLPack tensor with type code {}.".format(
-                    <object>dlmv_tensor.dl_tensor.dtype.code
+                    <object>dl_tensor.dtype.code
                 )
             )
         res_ary = usm_ndarray(
@@ -880,13 +917,49 @@ cpdef usm_ndarray from_dlpack_versioned_capsule(object py_caps):
             strides=py_strides,
             offset=element_offset
         )
-        if (dlmv_tensor.flags & DLPACK_FLAG_BITMASK_READ_ONLY):
+        if readonly:
             res_ary.flags_ = (res_ary.flags_ & ~USM_ARRAY_WRITABLE)
         return res_ary
+    elif _is_kdlcpu_device(&dl_tensor.device):
+        ary_iface = _numpy_array_interface_from_dl_tensor(dl_tensor, readonly)
+        if not versioned:
+            dlm_holder = _DLManagedTensorOwner._create(dlm_tensor)
+            cpython.PyCapsule_SetName(py_caps, 'used_dltensor')
+            return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, dlm_holder))
+        else:
+            dlmv_holder = _DLManagedTensorVersionedOwner._create(dlmv_tensor)
+            cpython.PyCapsule_SetName(py_caps, 'used_dltensor_versioned')
+            return np.ctypeslib.as_array(_numpy_array_interface_wrapper(ary_iface, dlmv_holder))
     else:
         raise BufferError(
             "The DLPack tensor resides on unsupported device."
         )
+
+cdef usm_ndarray _to_usm_ary_from_host_blob(object host_blob, dev : Device):
+    q = dev.sycl_queue
+    np_ary = np.asarray(host_blob)
+    dt = np_ary.dtype
+    if dt.char in "dD" and q.sycl_device.has_aspect_fp64 is False:
+        Xusm_dtype = (
+            "float32" if dt.char == "d" else "complex64"
+        )
+    else:
+        Xusm_dtype = dt
+    usm_mem = dpmem.MemoryUSMDevice(np_ary.nbytes, queue=q)
+    usm_ary = usm_ndarray(np_ary.shape, dtype=Xusm_dtype, buffer=usm_mem)
+    usm_mem.copy_from_host(np.reshape(np_ary.view(dtype="u1"), -1))
+    return usm_ary
+
+
+# only cdef to make it private
+cdef object _create_device(object device, object dl_device):
+    if isinstance(device, Device):
+        return device
+    elif isinstance(device, dpctl.SyclDevice):
+        return Device.create_device(device)
+    else:
+        root_device = dpctl.SyclDevice(str(<int>dl_device[1]))
+        return Device.create_device(root_device)
 
 
 def from_dlpack(x, /, *, device=None, copy=None):
@@ -896,7 +969,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
     object ``x`` that implements ``__dlpack__`` protocol.
 
     Args:
-        x (Python object):
+        x (object):
             A Python object representing an array that supports
             ``__dlpack__`` protocol.
         device (Optional[str,
@@ -912,7 +985,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
             returned by :attr:`dpctl.tensor.usm_ndarray.device`, or a
             2-tuple matching the format of the output of the ``__dlpack_device__``
             method, an integer enumerator representing the device type followed by
-            an integer representing the index of the device.
+            an integer representing the index of the device. The only supported
+            :enum:`dpctl.tensor.DLDeviceType` types are "kDLCPU" and "kDLOneAPI".
             Default: ``None``.
         copy (bool, optional)
             Boolean indicating whether or not to copy the input.
@@ -961,33 +1035,130 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
             C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
             X = dpt.from_dlpack(C)
+            Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
 
     """
-    if not hasattr(x, "__dlpack__"):
+    dlpack_attr = getattr(x, "__dlpack__", None)
+    dlpack_dev_attr = getattr(x, "__dlpack_device__", None)
+    if not callable(dlpack_attr) or not callable(dlpack_dev_attr):
         raise TypeError(
             f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
+            "`__dlpack__` and `__dlpack_device__` methods."
         )
-    dlpack_attr = getattr(x, "__dlpack__")
-    if not callable(dlpack_attr):
-        raise TypeError(
-            f"The argument of type {type(x)} does not implement "
-            "`__dlpack__` method."
-        )
-    try:
-        # device is converted to a dlpack_device if necessary
-        dl_device = None
-        if device:
-            if isinstance(device, tuple):
-                dl_device = device
+    # device is converted to a dlpack_device if necessary
+    dl_device = None
+    if device:
+        if isinstance(device, tuple):
+            dl_device = device
+            if len(dl_device) != 2:
+                raise ValueError(
+                    "Argument `device` specified as a tuple must have length 2"
+                )
+        else:
+            if not isinstance(device, dpctl.SyclDevice):
+                device = Device.create_device(device)
+                d = device.sycl_device
             else:
-                if not isinstance(device, dpctl.SyclDevice):
-                    d = Device.create_device(device).sycl_device
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
-                else:
-                    dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>device))
-        dlpack_capsule = dlpack_attr(max_version=get_build_dlpack_version(), dl_device=dl_device, copy=copy)
-        return from_dlpack_versioned_capsule(dlpack_capsule)
+                d = device
+            dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
+    if dl_device is not None:
+        if (dl_device[0] not in [device_OneAPI, device_CPU]):
+            raise ValueError(
+                f"Argument `device`={device} is not supported."
+            )
+    got_type_error = False
+    got_buffer_error = False
+    got_other_error = False
+    saved_exception = None
+    # First DLPack version supporting dl_device, and copy
+    requested_ver = (1, 0)
+    cpu_dev = (device_CPU, 0)
+    try:
+        # setting max_version to minimal version that supports dl_device/copy keywords
+        dlpack_capsule = dlpack_attr(
+            max_version=requested_ver,
+            dl_device=dl_device,
+            copy=copy
+        )
     except TypeError:
-        dlpack_capsule = dlpack_attr()
+        # exporter does not support max_version keyword
+        got_type_error = True
+    except (BufferError, NotImplementedError):
+        # Either dl_device, or copy can be satisfied
+        got_buffer_error = True
+    except Exception as e:
+        got_other_error = True
+        saved_exception = e
+    else:
+        # execution did not raise exceptions
         return from_dlpack_capsule(dlpack_capsule)
+    finally:
+        if got_type_error:
+            # max_version/dl_device, copy keywords are not supported by __dlpack__
+            x_dldev = dlpack_dev_attr()
+            if (dl_device is None) or (dl_device == x_dldev):
+                dlpack_capsule = dlpack_attr()
+                return from_dlpack_capsule(dlpack_capsule)
+            # must copy via host
+            if copy is False:
+                raise BufferError(
+                    "Importing data via DLPack requires copying, but copy=False was provided"
+                )
+            # when max_version/dl_device/copy are not supported
+            # we can only support importing to OneAPI devices
+            # from host, or from another oneAPI device
+            is_supported_x_dldev = (
+                x_dldev == cpu_dev or
+                (x_dldev[0] == device_OneAPI)
+            )
+            is_supported_dl_device = (
+                dl_device == cpu_dev or
+                dl_device[0] == device_OneAPI
+            )
+            if is_supported_x_dldev and is_supported_dl_device:
+                dlpack_capsule = dlpack_attr()
+                blob = from_dlpack_capsule(dlpack_capsule)
+            else:
+                raise BufferError(f"Can not import to requested device {dl_device}")
+            dev = _create_device(device, dl_device)
+            if x_dldev == cpu_dev and dl_device == cpu_dev:
+                # both source and destination are CPU
+                return blob
+            elif x_dldev == cpu_dev:
+                # source is CPU, destination is oneAPI
+                return _to_usm_ary_from_host_blob(blob, dev)
+            elif dl_device == cpu_dev:
+                # source is oneAPI, destination is CPU
+                cpu_caps = blob.__dlpack__(
+                    max_version=get_build_dlpack_version(),
+                    dl_device=cpu_dev
+                )
+                return from_dlpack_capsule(cpu_caps)
+            else:
+                import dpctl.tensor as dpt
+                return dpt.asarray(blob, device=dev)
+        elif got_buffer_error:
+            # we are here, because dlpack_attr could not deal with requested dl_device,
+            # or copying was required
+            if copy is False:
+                raise BufferError(
+                    "Importing data via DLPack requires copying, but copy=False was provided"
+                )
+            # must copy via host
+            if dl_device[0] != device_OneAPI:
+                raise BufferError(f"Can not import to requested device {dl_device}")
+            x_dldev = dlpack_dev_attr()
+            if x_dldev == cpu_dev:
+                dlpack_capsule = dlpack_attr()
+                host_blob = from_dlpack_capsule(dlpack_capsule)
+            else:
+                dlpack_capsule = dlpack_attr(
+                    max_version=requested_ver,
+                    dl_device=cpu_dev,
+                    copy=copy
+                )
+                host_blob = from_dlpack_capsule(dlpack_capsule)
+            dev = _create_device(device, dl_device)
+            return _to_usm_ary_from_host_blob(host_blob, dev)
+        elif got_other_error:
+            raise saved_exception

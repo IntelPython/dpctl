@@ -34,6 +34,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace py = pybind11;
@@ -151,7 +152,7 @@ usm_ndarray_triul(sycl::queue &exec_q,
     nd += 2;
 
     using usm_host_allocatorT =
-        dpctl::tensor::offset_utils::usm_host_allocator<py::ssize_t>;
+        dpctl::tensor::alloc_utils::usm_host_allocator<py::ssize_t>;
     using usmshT = std::vector<py::ssize_t, usm_host_allocatorT>;
 
     usm_host_allocatorT allocator(exec_q);
@@ -201,11 +202,12 @@ usm_ndarray_triul(sycl::queue &exec_q,
     const auto &temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(tri_ev);
         const auto &ctx = exec_q.get_context();
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
             [shp_host_shape_and_strides, dev_shape_and_strides, ctx]() {
                 // capture of shp_host_shape_and_strides ensure the underlying
                 // vector exists for the entire execution of copying kernel
-                sycl::free(dev_shape_and_strides, ctx);
+                sycl_free_noexcept(dev_shape_and_strides, ctx);
             });
     });
 

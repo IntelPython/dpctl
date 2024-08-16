@@ -31,7 +31,9 @@
 #include <pybind11/pybind11.h>
 
 #include "kernels/copy_and_cast.hpp"
+#include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -276,7 +278,8 @@ void copy_numpy_ndarray_into_usm_ndarray(
             npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
             dst_offset, depends, {copy_shape_ev});
 
-        sycl::free(shape_strides, exec_q);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        sycl_free_noexcept(shape_strides, exec_q);
     }
 
     return;

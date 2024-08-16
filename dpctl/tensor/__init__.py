@@ -101,7 +101,7 @@ from dpctl.tensor._print import (
 from dpctl.tensor._reshape import reshape
 from dpctl.tensor._search_functions import where
 from dpctl.tensor._statistical_functions import mean, std, var
-from dpctl.tensor._usmarray import usm_ndarray
+from dpctl.tensor._usmarray import DLDeviceType, usm_ndarray
 from dpctl.tensor._utility_functions import all, any, diff
 
 from ._accumulation import cumulative_logsumexp, cumulative_prod, cumulative_sum
@@ -384,6 +384,7 @@ __all__ = [
     "nextafter",
     "diff",
     "count_nonzero",
+    "DLDeviceType",
     "take_along_axis",
     "put_along_axis",
 ]

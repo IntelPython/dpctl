@@ -42,6 +42,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
 {
@@ -509,8 +510,9 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
         sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(dot_ev);
             const auto &ctx = exec_q.get_context();
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
             cgh.host_task([ctx, temp_allocation_ptr] {
-                sycl::free(temp_allocation_ptr, ctx);
+                sycl_free_noexcept(temp_allocation_ptr, ctx);
             });
         });
         host_task_events.push_back(temp_cleanup_ev);
@@ -585,8 +587,9 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 exec_q.submit([&](sycl::handler &cgh) {
                     cgh.depends_on(dot_ev);
                     const auto &ctx = exec_q.get_context();
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, packed_shapes_strides] {
-                        sycl::free(packed_shapes_strides, ctx);
+                        sycl_free_noexcept(packed_shapes_strides, ctx);
                     });
                 });
             host_task_events.push_back(cleanup_tmp_allocations_ev);
@@ -793,8 +796,9 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 exec_q.submit([&](sycl::handler &cgh) {
                     cgh.depends_on(dot_ev);
                     const auto &ctx = exec_q.get_context();
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                     cgh.host_task([ctx, packed_shapes_strides] {
-                        sycl::free(packed_shapes_strides, ctx);
+                        sycl_free_noexcept(packed_shapes_strides, ctx);
                     });
                 });
             host_task_events.push_back(cleanup_tmp_allocations_ev);
