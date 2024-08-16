@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -831,10 +832,13 @@ by either integral arrays of indices or boolean mask arrays.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.put.html#dpctl.tensor.put" title="dpctl.tensor.put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">put</span></code></a>(x, indices, vals[, axis, mode])</p></td>
 <td><p>Puts values into an array along a given axis at given indices.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.take.html#dpctl.tensor.take" title="dpctl.tensor.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(x, indices[, axis, mode])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.put_along_axis.html#dpctl.tensor.put_along_axis" title="dpctl.tensor.put_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">put_along_axis</span></code></a>(x, indices, vals, /, *[, ...])</p></td>
+<td><p>Puts elements into an array at the one-dimensional indices specified by <code class="docutils literal notranslate"><span class="pre">indices</span></code> along a provided <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.take.html#dpctl.tensor.take" title="dpctl.tensor.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take</span></code></a>(x, indices[, axis, mode])</p></td>
 <td><p>Takes elements from an array along a given axis at given indices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.take_along_axis.html#dpctl.tensor.take_along_axis" title="dpctl.tensor.take_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_along_axis</span></code></a>(x, indices, /, *[, axis, mode])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.take_along_axis.html#dpctl.tensor.take_along_axis" title="dpctl.tensor.take_along_axis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">take_along_axis</span></code></a>(x, indices, /, *[, axis, mode])</p></td>
 <td><p>Returns elements from an array at the one-dimensional indices specified by <code class="docutils literal notranslate"><span class="pre">indices</span></code> along a provided <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p></td>
 </tr>
 </tbody>
