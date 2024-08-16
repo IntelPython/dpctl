@@ -1659,6 +1659,51 @@ def test_put_along_axis_validation():
         dpt.put_along_axis(x, ind2, vals)
 
 
+def test_put_along_axis_application():
+    get_queue_or_skip()
+    info_ = dpt.__array_namespace_info__()
+    def_dtypes = info_.default_dtypes(device=None)
+    ind_dt = def_dtypes["indexing"]
+    all_perms = dpt.asarray(
+        [
+            [0, 1, 2, 3],
+            [0, 2, 1, 3],
+            [2, 0, 1, 3],
+            [2, 1, 0, 3],
+            [1, 0, 2, 3],
+            [1, 2, 0, 3],
+            [0, 1, 3, 2],
+            [0, 2, 3, 1],
+            [2, 0, 3, 1],
+            [2, 1, 3, 0],
+            [1, 0, 3, 2],
+            [1, 2, 3, 0],
+            [0, 3, 1, 2],
+            [0, 3, 2, 1],
+            [2, 3, 0, 1],
+            [2, 3, 1, 0],
+            [1, 3, 0, 2],
+            [1, 3, 2, 0],
+            [3, 0, 1, 2],
+            [3, 0, 2, 1],
+            [3, 2, 0, 1],
+            [3, 2, 1, 0],
+            [3, 1, 0, 2],
+            [3, 1, 2, 0],
+        ],
+        dtype=ind_dt,
+    )
+    p_mats = dpt.zeros((24, 4, 4), dtype=dpt.int64)
+    vals = dpt.ones((24, 4, 1), dtype=p_mats.dtype)
+    # form 24 permutation matrices
+    dpt.put_along_axis(p_mats, all_perms[..., dpt.newaxis], vals, axis=2)
+    p2 = p_mats @ p_mats
+    p4 = p2 @ p2
+    p8 = p4 @ p4
+    expected = dpt.eye(4, dtype=p_mats.dtype)[dpt.newaxis, ...]
+    assert dpt.all(p8 @ p4 == expected)
+
+
 def check__extract_impl_validation(fn):
     x = dpt.ones(10)
     ind = dpt.ones(10, dtype="?")
