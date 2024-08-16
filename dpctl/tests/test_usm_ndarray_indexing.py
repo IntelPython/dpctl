@@ -1578,7 +1578,7 @@ def test_take_along_axis_validation():
     def_dtypes = info_.default_dtypes(device=x_dev)
     ind_dt = def_dtypes["indexing"]
     ind = dpt.zeros(1, dtype=ind_dt)
-    # axis valudation
+    # axis validation
     with pytest.raises(ValueError):
         dpt.take_along_axis(x, ind, axis=1)
     # mode validation
@@ -1592,6 +1592,71 @@ def test_take_along_axis_validation():
     ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
     with pytest.raises(ExecutionPlacementError):
         dpt.take_along_axis(x, ind2)
+
+
+def test_put_along_axis():
+    get_queue_or_skip()
+
+    n0, n1, n2 = 3, 5, 7
+    x = dpt.reshape(dpt.arange(n0 * n1 * n2), (n0, n1, n2))
+    ind_dt = dpt.__array_namespace_info__().default_dtypes(
+        device=x.sycl_device
+    )["indexing"]
+    ind0 = dpt.ones((1, n1, n2), dtype=ind_dt)
+    ind1 = dpt.ones((n0, 1, n2), dtype=ind_dt)
+    ind2 = dpt.ones((n0, n1, 1), dtype=ind_dt)
+
+    xc = dpt.copy(x)
+    vals = dpt.ones(ind0.shape, dtype=x.dtype)
+    dpt.put_along_axis(xc, ind0, vals, axis=0)
+    assert dpt.all(dpt.take_along_axis(xc, ind0, axis=0) == vals)
+
+    xc = dpt.copy(x)
+    vals = dpt.ones(ind1.shape, dtype=x.dtype)
+    dpt.put_along_axis(xc, ind1, vals, axis=1)
+    assert dpt.all(dpt.take_along_axis(xc, ind1, axis=1) == vals)
+
+    xc = dpt.copy(x)
+    vals = dpt.ones(ind2.shape, dtype=x.dtype)
+    dpt.put_along_axis(xc, ind2, vals, axis=2)
+    assert dpt.all(dpt.take_along_axis(xc, ind2, axis=2) == vals)
+
+    xc = dpt.copy(x)
+    vals = dpt.ones(ind2.shape, dtype=x.dtype)
+    dpt.put_along_axis(xc, ind2, dpt.asnumpy(vals), axis=2)
+    assert dpt.all(dpt.take_along_axis(xc, ind2, axis=2) == vals)
+
+
+def test_put_along_axis_validation():
+    # type check on the first argument
+    with pytest.raises(TypeError):
+        dpt.put_along_axis(tuple(), list(), list())
+    get_queue_or_skip()
+    n1, n2 = 2, 5
+    x = dpt.ones(n1 * n2)
+    # type check on the second argument
+    with pytest.raises(TypeError):
+        dpt.put_along_axis(x, list(), list())
+    x_dev = x.sycl_device
+    info_ = dpt.__array_namespace_info__()
+    def_dtypes = info_.default_dtypes(device=x_dev)
+    ind_dt = def_dtypes["indexing"]
+    ind = dpt.zeros(1, dtype=ind_dt)
+    vals = dpt.zeros(1, dtype=x.dtype)
+    # axis validation
+    with pytest.raises(ValueError):
+        dpt.put_along_axis(x, ind, vals, axis=1)
+    # mode validation
+    with pytest.raises(ValueError):
+        dpt.put_along_axis(x, ind, vals, axis=0, mode="invalid")
+    # same array-ranks validation
+    with pytest.raises(ValueError):
+        dpt.put_along_axis(dpt.reshape(x, (n1, n2)), ind, vals)
+    # check compute-follows-data
+    q2 = dpctl.SyclQueue(x_dev, property="enable_profiling")
+    ind2 = dpt.zeros(1, dtype=ind_dt, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.put_along_axis(x, ind2, vals)
 
 
 def check__extract_impl_validation(fn):
@@ -1670,7 +1735,11 @@ def check__put_multi_index_validation(fn):
     with pytest.raises(ValueError):
         fn(x2, (ind1, ind2), 0, x2)
     with pytest.raises(TypeError):
+        # invalid index type
         fn(x2, (ind1, list()), 0, x2)
+    with pytest.raises(ValueError):
+        # invalid mode keyword value
+        fn(x, inds, 0, vals, mode=100)
 
 
 def test__copy_utils():
