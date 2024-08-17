@@ -126,10 +126,10 @@ template <typename T> T logaddexp(T x, T y)
         // compiler segfault in CUDA build is fixed
         const T tmp = x - y;
         if (tmp > 0) {
-            return x + std::log1p(sycl::exp(-tmp));
+            return x + sycl::log1p(sycl::exp(-tmp));
         }
         else if (tmp <= 0) {
-            return y + std::log1p(sycl::exp(tmp));
+            return y + sycl::log1p(sycl::exp(tmp));
         }
         else {
             return std::numeric_limits<T>::quiet_NaN();
