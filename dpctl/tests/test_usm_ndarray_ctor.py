@@ -1791,29 +1791,14 @@ def test_full_strides():
     assert np.array_equal(dpt.asnumpy(X), Xnp)
 
 
-def _reduce_to_idtype_range(o, dtype):
-    assert isinstance(dtype, np.dtype)
-    assert dtype.kind in "ui"
-    _iinfo = np.iinfo(dtype)
-    _max = _iinfo.max
-    _min = _iinfo.min
-    return ((o - _min) % (1 + _max - _min)) + _min
-
-
-def test_full_gh_1230():
+@pytest.mark.parametrize("dt", ["i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8"])
+def test_full_gh_1230(dt):
     q = get_queue_or_skip()
     dtype = "i4"
     dt_maxint = dpt.iinfo(dtype).max
-    X = dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
-    X_np = dpt.asnumpy(X)
-    assert X.dtype == dpt.dtype(dtype)
-    expected = np.full_like(
-        X_np, _reduce_to_idtype_range(dt_maxint + 1, X.dtype)
-    )
-    assert np.array_equal(X_np, expected)
 
     with pytest.raises(OverflowError):
-        dpt.full(1, dpt.iinfo(dpt.uint64).max + 1, sycl_queue=q)
+        dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
 
 
 @pytest.mark.parametrize(
