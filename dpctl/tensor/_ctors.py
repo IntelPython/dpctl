@@ -765,8 +765,11 @@ def _get_arange_length(start, stop, step):
 
 
 def _to_scalar(obj, sc_ty):
-    "A way to convert object to NumPy scalar type"
-    zd_arr = np.asarray(obj).astype(sc_ty, casting="unsafe")
+    """A way to convert object to NumPy scalar type.
+    Raises OverflowError if obj can not be represented
+    using the requested scalar type.
+    """
+    zd_arr = np.asarray(obj, dtype=sc_ty)
     return zd_arr[tuple()]
 
 
