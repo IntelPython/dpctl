@@ -39,15 +39,15 @@
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
-namespace td_ns = dpctl::tensor::type_dispatch;
-namespace su_ns = dpctl::tensor::sycl_utils;
-
 namespace dpctl
 {
 namespace tensor
 {
 namespace kernels
 {
+
+namespace td_ns = dpctl::tensor::type_dispatch;
+namespace su_ns = dpctl::tensor::sycl_utils;
 
 namespace reduction_detail
 {

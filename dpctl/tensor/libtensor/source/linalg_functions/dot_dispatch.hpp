@@ -30,6 +30,7 @@
 
 #include "kernels/linalg_functions/dot_product.hpp"
 #include "kernels/linalg_functions/gemm.hpp"
+#include "utils/type_dispatch_building.hpp"
 
 namespace dpctl
 {
@@ -37,6 +38,8 @@ namespace tensor
 {
 namespace py_internal
 {
+
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 template <typename T1, typename T2> struct DotAtomicOutputType
 {
