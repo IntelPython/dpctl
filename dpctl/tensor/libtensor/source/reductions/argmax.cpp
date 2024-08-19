@@ -32,6 +32,7 @@
 
 #include "kernels/reductions.hpp"
 #include "reduction_over_axis.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
 namespace py = pybind11;
@@ -44,6 +45,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace su_ns = dpctl::tensor::sycl_utils;
 
 namespace impl
 {

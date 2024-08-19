@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "kernels/reductions.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
 #include "reduction_atomic_support.hpp"
@@ -46,6 +47,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace su_ns = dpctl::tensor::sycl_utils;
 
 namespace impl
 {

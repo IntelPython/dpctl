@@ -52,6 +52,8 @@ namespace tensor
 namespace py_internal
 {
 
+namespace td_ns = dpctl::tensor::type_dispatch;
+
 /* ====================== dtype supported ======================== */
 
 /*! @brief Template implementing Python API for querying type support by

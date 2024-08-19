@@ -32,6 +32,7 @@
 
 #include "kernels/reductions.hpp"
 #include "reduction_over_axis.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
 namespace py = pybind11;
@@ -44,6 +45,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace su_ns = dpctl::tensor::sycl_utils;
 
 namespace impl
 {
@@ -68,6 +70,7 @@ struct TypePairSupportDataForLogSumExpReductionTemps
     static constexpr bool is_defined = std::disjunction< // disjunction is C++17
                                                          // feature, supported
                                                          // by DPC++ input bool
+#if 1
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, sycl::half>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,
@@ -105,7 +108,6 @@ struct TypePairSupportDataForLogSumExpReductionTemps
         // input uint64_t
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, std::uint64_t, outTy, double>,
-
         // input half
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
@@ -117,6 +119,7 @@ struct TypePairSupportDataForLogSumExpReductionTemps
 
         // input double
         td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
+#endif
 
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;

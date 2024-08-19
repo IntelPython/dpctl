@@ -122,17 +122,32 @@ template <typename T> T logaddexp(T x, T y)
         return x + log2;
     }
     else {
-        // FIXME: switch to `sycl::log1p` when
-        // compiler segfault in CUDA build is fixed
         const T tmp = x - y;
-        if (tmp > 0) {
-            return x + std::log1p(sycl::exp(-tmp));
-        }
-        else if (tmp <= 0) {
-            return y + std::log1p(sycl::exp(tmp));
+        constexpr T zero(0);
+
+        if constexpr (std::is_same_v<T, sycl::half>) {
+            return (tmp > zero)
+                       ? (x + sycl::log1p(sycl::exp(-tmp)))
+                       : ((tmp <= zero) ? y + sycl::log1p(sycl::exp(tmp))
+                                        : std::numeric_limits<T>::quiet_NaN());
         }
         else {
-            return std::numeric_limits<T>::quiet_NaN();
+            if constexpr (std::is_same_v<T, double>) {
+                // FIXME: switch to `sycl::log1p` when
+                // compiler segfault in CUDA build is fixed
+                return (tmp > zero)
+                           ? (x + std::log1p(sycl::exp(-tmp)))
+                           : ((tmp <= zero)
+                                  ? y + std::log1p(sycl::exp(tmp))
+                                  : std::numeric_limits<T>::quiet_NaN());
+            }
+            else {
+                return (tmp > zero)
+                           ? (x + sycl::log1p(sycl::exp(-tmp)))
+                           : ((tmp <= zero)
+                                  ? y + sycl::log1p(sycl::exp(tmp))
+                                  : std::numeric_limits<T>::quiet_NaN());
+            }
         }
     }
 }
