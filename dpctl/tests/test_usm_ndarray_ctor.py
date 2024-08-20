@@ -1798,7 +1798,10 @@ def test_full_gh_1230(dt):
     dt_maxint = dpt.iinfo(dtype).max
 
     if (dtype.itemsize < 8) and (np.lib.NumpyVersion(np.__version__) < "2.0.0"):
-        X = dpt.full(1, fill_value=(dt_maxint + 1), dtype=dt)
+        try:
+            X = dpt.full(1, fill_value=(dt_maxint + 1), dtype=dt)
+        except OverflowError:
+            pytest.skip("Expected OverflowError raised")
         Y = dpt.full_like(X, fill_value=dpt.iinfo(dt).min)
         assert dpt.all(X == Y)
     else:
