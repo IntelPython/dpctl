@@ -218,8 +218,8 @@ sycl::event searchsorted_strided_impl(
         using HayIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
         const HayIndexerT hay_indexer(
             /* offset */ hay_offset,
-            /* size   */ static_cast<ssize_t>(hay_nelems),
-            /* step   */ static_cast<ssize_t>(hay_stride));
+            /* size   */ hay_nelems,
+            /* step   */ hay_stride);
 
         using NeedlesIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
         const ssize_t *needles_shape_strides = packed_shape_strides;

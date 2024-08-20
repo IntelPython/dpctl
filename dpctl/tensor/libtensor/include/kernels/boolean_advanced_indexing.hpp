@@ -233,7 +233,8 @@ sycl::event masked_extract_all_slices_strided_impl(
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
     const StridedIndexer masked_src_indexer(nd, 0, packed_src_shape_strides);
-    const Strided1DIndexer masked_dst_indexer(0, dst_size, dst_stride);
+    const Strided1DIndexer masked_dst_indexer(/* size */ dst_size,
+                                              /* step */ dst_stride);
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -309,8 +310,8 @@ sycl::event masked_extract_some_slices_strided_impl(
 
     const StridedIndexer masked_src_indexer{masked_nd, 0,
                                             packed_masked_src_shape_strides};
-    const Strided1DIndexer masked_dst_indexer{0, masked_dst_size,
-                                              masked_dst_stride};
+    const Strided1DIndexer masked_dst_indexer{/* size */ masked_dst_size,
+                                              /* step */ masked_dst_stride};
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
