@@ -161,12 +161,13 @@ repeat_by_sequence_impl(sycl::queue &q,
             orthog_nd, src_offset, dst_offset,
             orthog_src_dst_shape_and_strides};
         // indexers along repeated axis
-        const Strided1DIndexer src_axis_indexer{0, src_axis_shape,
-                                                src_axis_stride};
-        const Strided1DIndexer dst_axis_indexer{0, dst_axis_shape,
-                                                dst_axis_stride};
+        const Strided1DIndexer src_axis_indexer{/* size */ src_axis_shape,
+                                                /* step */ src_axis_stride};
+        const Strided1DIndexer dst_axis_indexer{/* size */ dst_axis_shape,
+                                                /* step */ dst_axis_stride};
         // indexer along reps array
-        const Strided1DIndexer reps_indexer{0, reps_shape, reps_stride};
+        const Strided1DIndexer reps_indexer{/* size */ reps_shape,
+                                            /* step */ reps_stride};
 
         const size_t gws = orthog_nelems * src_axis_nelems;
 
@@ -235,9 +236,11 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
         constexpr TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
         const StridedIndexer src_indexer{src_nd, 0, src_shape_strides};
-        const Strided1DIndexer dst_indexer{0, dst_shape, dst_stride};
+        const Strided1DIndexer dst_indexer{/* size */ dst_shape,
+                                           /* step */ dst_stride};
         // indexer along reps array
-        const Strided1DIndexer reps_indexer{0, reps_shape, reps_stride};
+        const Strided1DIndexer reps_indexer{/* size */ reps_shape,
+                                            /* step */ reps_stride};
 
         const size_t gws = src_nelems;
 
@@ -358,10 +361,10 @@ sycl::event repeat_by_scalar_impl(sycl::queue &q,
         const TwoOffsets_StridedIndexer orthog_indexer{
             orthog_nd, src_offset, dst_offset, orthog_shape_and_strides};
         // indexers along repeated axis
-        const Strided1DIndexer src_axis_indexer{0, src_axis_shape,
-                                                src_axis_stride};
-        const Strided1DIndexer dst_axis_indexer{0, dst_axis_shape,
-                                                dst_axis_stride};
+        const Strided1DIndexer src_axis_indexer{/* size */ src_axis_shape,
+                                                /* step */ src_axis_stride};
+        const Strided1DIndexer dst_axis_indexer{/* size */ dst_axis_shape,
+                                                /* step */ dst_axis_stride};
 
         const size_t gws = orthog_nelems * dst_axis_nelems;
 
@@ -420,7 +423,8 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
         constexpr TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
         const StridedIndexer src_indexer(src_nd, 0, src_shape_strides);
-        const Strided1DIndexer dst_indexer{0, dst_shape, dst_stride};
+        const Strided1DIndexer dst_indexer{/* size */ dst_shape,
+                                           /* step */ dst_stride};
 
         const size_t gws = dst_nelems;
 

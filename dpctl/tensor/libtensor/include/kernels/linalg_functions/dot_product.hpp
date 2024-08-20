@@ -576,9 +576,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(reduction_nelems)};
+        const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
+                                                   /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -612,9 +611,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(reduction_nelems)};
+        const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
+                                                   /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1089,9 +1087,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{
-                0, static_cast<ssize_t>(batches),
-                static_cast<ssize_t>(reduction_groups_)};
+            const InputIndexerT inp_indexer{/* size */ batches,
+                                            /* step */ reduction_groups_};
             constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1120,9 +1117,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        const InputIndexerT inp_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(remaining_reduction_nelems)};
+        const InputIndexerT inp_indexer{/* size */ batches,
+                                        /* step */ remaining_reduction_nelems};
         const ResIndexerT res_iter_indexer{
             batch_nd, batch_res_offset,
             /* shape */ batch_shape_and_strides,
@@ -1200,9 +1196,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(reduction_nelems)};
+        const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
+                                                   /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1238,9 +1233,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
                 NoOpIndexerT, NoOpIndexerT>;
 
-        const InputBatchIndexerT inp_batch_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(reduction_nelems)};
+        const InputBatchIndexerT inp_batch_indexer{/* size */ batches,
+                                                   /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1307,8 +1301,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     NoOpIndexerT, NoOpIndexerT>;
 
             const InputBatchIndexerT inp_batch_indexer{
-                0, static_cast<ssize_t>(batches),
-                static_cast<ssize_t>(reduction_nelems)};
+                /* size */ batches,
+                /* step */ reduction_nelems};
             const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
             constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
@@ -1343,9 +1337,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                     InputIndexerT, ResIndexerT>;
             using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-            const InputIndexerT inp_indexer{
-                0, static_cast<ssize_t>(batches),
-                static_cast<ssize_t>(reduction_groups_)};
+            const InputIndexerT inp_indexer{/* size */ batches,
+                                            /* step */ reduction_groups_};
             constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -1374,9 +1367,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        const InputIndexerT inp_indexer{
-            0, static_cast<ssize_t>(batches),
-            static_cast<ssize_t>(remaining_reduction_nelems)};
+        const InputIndexerT inp_indexer{/* size */ batches,
+                                        /* step */ remaining_reduction_nelems};
         constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,

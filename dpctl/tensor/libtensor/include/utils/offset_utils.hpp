@@ -213,6 +213,31 @@ private:
 
 struct Strided1DIndexer
 {
+    Strided1DIndexer(size_t _size) : offset{}, size(_size), step(1) {}
+    Strided1DIndexer(ssize_t _size)
+        : offset{}, size(static_cast<size_t>(_size)), step(1)
+    {
+    }
+    Strided1DIndexer(size_t _size, ssize_t _step)
+        : offset{}, size(_size), step(_step)
+    {
+    }
+    Strided1DIndexer(size_t _size, size_t _step)
+        : offset{}, size(_size), step(static_cast<ssize_t>(_step))
+    {
+    }
+    Strided1DIndexer(ssize_t _size, ssize_t _step)
+        : offset{}, size(static_cast<size_t>(_size)), step(_step)
+    {
+    }
+    Strided1DIndexer(ssize_t _offset, size_t _size, ssize_t _step)
+        : offset(_offset), size(_size), step(_step)
+    {
+    }
+    Strided1DIndexer(ssize_t _offset, size_t _size, size_t _step)
+        : offset(_offset), size(_size), step(static_cast<ssize_t>(_step))
+    {
+    }
     Strided1DIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
         : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
     {

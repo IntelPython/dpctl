@@ -592,9 +592,8 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             size_t src_size = acc_groups - 1;
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
-            const LocalScanIndexerT scan_iter_indexer{
-                0, static_cast<ssize_t>(iter_nelems),
-                static_cast<ssize_t>(src_size)};
+            const LocalScanIndexerT scan_iter_indexer{/* size */ iter_nelems,
+                                                      /* step */ src_size};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
@@ -623,11 +622,10 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             using LocalScanIndexerT =
                 dpctl::tensor::offset_utils::Strided1DIndexer;
             const LocalScanIndexerT scan1_iter_indexer{
-                0, static_cast<ssize_t>(iter_nelems),
-                static_cast<ssize_t>(size_to_update)};
-            const LocalScanIndexerT scan2_iter_indexer{
-                0, static_cast<ssize_t>(iter_nelems),
-                static_cast<ssize_t>(src_size)};
+                /* size */ iter_nelems,
+                /* step */ size_to_update};
+            const LocalScanIndexerT scan2_iter_indexer{/* size */ iter_nelems,
+                                                       /* step */ src_size};
 
             using IterIndexerT =
                 dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
