@@ -1793,12 +1793,17 @@ def test_full_strides():
 
 @pytest.mark.parametrize("dt", ["i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8"])
 def test_full_gh_1230(dt):
-    q = get_queue_or_skip()
-    dtype = "i4"
+    get_queue_or_skip()
+    dtype = dpt.dtype(dt)
     dt_maxint = dpt.iinfo(dtype).max
 
-    with pytest.raises(OverflowError):
-        dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
+    if (dtype.itemsize < 8) and (np.lib.NumpyVersion(np.__version__) < "2.0.0"):
+        X = dpt.full(1, fill_value=(dt_maxint + 1), dtype=dt)
+        Y = dpt.full_like(X, fill_value=dpt.iinfo(dt).min)
+        assert dpt.all(X == Y)
+    else:
+        with pytest.raises(OverflowError):
+            dpt.full(1, dt_maxint + 1, dtype=dt)
 
 
 @pytest.mark.parametrize(
