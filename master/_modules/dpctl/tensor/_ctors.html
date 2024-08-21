@@ -1577,8 +1577,11 @@
 
 
 <span class="k">def</span> <span class="nf">_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">):</span>
-    <span class="s2">&quot;A way to convert object to NumPy scalar type&quot;</span>
-    <span class="n">zd_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">sc_ty</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A way to convert object to NumPy scalar type.</span>
+<span class="sd">    Raises OverflowError if obj can not be represented</span>
+<span class="sd">    using the requested scalar type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zd_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sc_ty</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">zd_arr</span><span class="p">[</span><span class="nb">tuple</span><span class="p">()]</span>
 
 
