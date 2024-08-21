@@ -1083,9 +1083,10 @@ def from_dlpack(x, /, *, device=None, copy=None):
     except TypeError:
         # exporter does not support max_version keyword
         got_type_error = True
-    except (BufferError, NotImplementedError):
-        # Either dl_device, or copy can be satisfied
+    except (BufferError, NotImplementedError, ValueError) as e:
+        # Either dl_device, or copy cannot be satisfied
         got_buffer_error = True
+        saved_exception = e
     except Exception as e:
         got_other_error = True
         saved_exception = e
@@ -1144,6 +1145,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
                 raise BufferError(
                     "Importing data via DLPack requires copying, but copy=False was provided"
                 )
+            if dl_device is None:
+                raise saved_exception
             # must copy via host
             if dl_device[0] != device_OneAPI:
                 raise BufferError(f"Can not import to requested device {dl_device}")

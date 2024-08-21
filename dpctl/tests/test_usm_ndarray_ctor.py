@@ -1791,17 +1791,22 @@ def test_full_strides():
     assert np.array_equal(dpt.asnumpy(X), Xnp)
 
 
-def test_full_gh_1230():
-    q = get_queue_or_skip()
-    dtype = "i4"
+@pytest.mark.parametrize("dt", ["i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8"])
+def test_full_gh_1230(dt):
+    get_queue_or_skip()
+    dtype = dpt.dtype(dt)
     dt_maxint = dpt.iinfo(dtype).max
-    X = dpt.full(1, dt_maxint + 1, dtype=dtype, sycl_queue=q)
-    X_np = dpt.asnumpy(X)
-    assert X.dtype == dpt.dtype(dtype)
-    assert np.array_equal(X_np, np.full_like(X_np, dt_maxint + 1))
 
-    with pytest.raises(OverflowError):
-        dpt.full(1, dpt.iinfo(dpt.uint64).max + 1, sycl_queue=q)
+    if (dtype.itemsize < 8) and (np.lib.NumpyVersion(np.__version__) < "2.0.0"):
+        try:
+            X = dpt.full(1, fill_value=(dt_maxint + 1), dtype=dt)
+        except OverflowError:
+            pytest.skip("Expected OverflowError raised")
+        Y = dpt.full_like(X, fill_value=dpt.iinfo(dt).min)
+        assert dpt.all(X == Y)
+    else:
+        with pytest.raises(OverflowError):
+            dpt.full(1, dt_maxint + 1, dtype=dt)
 
 
 @pytest.mark.parametrize(

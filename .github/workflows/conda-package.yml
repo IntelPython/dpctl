@@ -490,8 +490,8 @@ jobs:
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} $CHANNELS
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake">=3.22" $CHANNELS || exit 1
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} setuptools"<72.2.0" $CHANNELS
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake $CHANNELS || exit 1
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ninja $CHANNELS || exit 1
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1

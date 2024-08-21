@@ -15,7 +15,7 @@ jobs:
 
     env:
       ONEAPI_ROOT: /opt/intel/oneapi
-      GTEST_ROOT: /home/runner/work/googletest-1.13.0/install
+      GTEST_ROOT: /home/runner/work/googletest-1.15.2/install
       # Use oneAPI compiler 2023 to work around an issue
       USE_2023: 0
 
@@ -52,7 +52,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
           architecture: x64
 
       - name: Cache Gtest
@@ -60,8 +60,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /home/runner/work/googletest-1.13.0/install
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/googletest-1.13.0/install/include/gtest/*') }}
+            /home/runner/work/googletest-1.15.2/install
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/googletest-1.15.2/install/include/gtest/*') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -72,12 +72,12 @@ jobs:
         shell: bash -l {0}
         run: |
           cd /home/runner/work
-          wget https://github.com/google/googletest/archive/refs/tags/v1.13.0.tar.gz
-          tar xf v1.13.0.tar.gz
-          cd googletest-1.13.0
+          wget https://github.com/google/googletest/archive/refs/tags/v1.15.2.tar.gz
+          tar xf v1.15.2.tar.gz
+          cd googletest-1.15.2
           mkdir build
           cd build
-          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/googletest-1.13.0/install
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/googletest-1.15.2/install
           make && make install
 
       - name: Checkout repo
@@ -92,7 +92,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          pip install numpy"<1.26.0" cython setuptools pytest pytest-cov scikit-build cmake coverage[toml] versioneer[toml]==0.29
+          pip install numpy cython setuptools pytest pytest-cov scikit-build cmake coverage[toml] versioneer[toml]==0.29
 
       - name: Build dpctl with coverage
         shell: bash -l {0}
