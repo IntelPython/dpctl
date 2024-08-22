@@ -102,8 +102,6 @@ usm_ndarray_zeros(const dpctl::tensor::usm_ndarray &dst,
                   sycl::queue &exec_q,
                   const std::vector<sycl::event> &depends)
 {
-    // start, end should be coercible into data type of dst
-
     py::ssize_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
