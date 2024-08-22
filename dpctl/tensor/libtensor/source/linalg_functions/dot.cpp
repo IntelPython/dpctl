@@ -802,7 +802,6 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                     });
                 });
             host_task_events.push_back(cleanup_tmp_allocations_ev);
-            host_task_events.push_back(dot_ev);
         }
     }
     return std::make_pair(
