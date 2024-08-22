@@ -1757,8 +1757,11 @@
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
         <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="c1"># FIXME: replace with asynchronous call to ti</span>
-    <span class="n">res</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">memset</span><span class="p">()</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
+    <span class="c1"># populating new allocation, no dependent events</span>
+    <span class="n">hev</span><span class="p">,</span> <span class="n">zeros_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_zeros_usm_ndarray</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">zeros_ev</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">res</span></div>
 
 
