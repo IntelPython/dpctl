@@ -1682,6 +1682,27 @@ def test_full(dtype):
     assert np.array_equal(dpt.asnumpy(X), np.full(10, 4, dtype=dtype))
 
 
+def test_full_cmplx128():
+    q = get_queue_or_skip()
+    dtype = "c16"
+    skip_if_dtype_not_supported(dtype, q)
+    fill_v = 1 + 1j
+    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    assert np.array_equal(
+        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+    )
+    fill_v = 0 + 1j
+    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    assert np.array_equal(
+        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+    )
+    fill_v = 0 + 0j
+    X = dpt.full(tuple(), fill_value=fill_v, dtype=dtype, sycl_queue=q)
+    assert np.array_equal(
+        dpt.asnumpy(X), np.full(tuple(), fill_value=fill_v, dtype=dtype)
+    )
+
+
 def test_full_dtype_inference():
     try:
         X = dpt.full(10, 4)
