@@ -945,8 +945,11 @@ def zeros(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    # FIXME: replace with asynchronous call to ti
-    res.usm_data.memset()
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating new allocation, no dependent events
+    hev, zeros_ev = ti._zeros_usm_ndarray(res, sycl_queue)
+    _manager.add_event_pair(hev, zeros_ev)
+
     return res
 
 

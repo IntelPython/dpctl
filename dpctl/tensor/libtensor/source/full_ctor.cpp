@@ -80,10 +80,65 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
 {
     dstTy fill_v = py::cast<dstTy>(py_value);
 
-    using dpctl::tensor::kernels::constructors::full_contig_impl;
+    sycl::event fill_ev;
 
-    sycl::event fill_ev =
-        full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
+    if constexpr (sizeof(dstTy) == sizeof(char)) {
+        const auto memset_val = sycl::bit_cast<unsigned char>(fill_v);
+        fill_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            cgh.memset(reinterpret_cast<void *>(dst_p), memset_val,
+                       nelems * sizeof(dstTy));
+        });
+    }
+    else {
+        bool is_zero = false;
+        if constexpr (sizeof(dstTy) == 1) {
+            is_zero = (std::uint8_t{0} == sycl::bit_cast<std::uint8_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 2) {
+            is_zero =
+                (std::uint16_t{0} == sycl::bit_cast<std::uint16_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 4) {
+            is_zero =
+                (std::uint32_t{0} == sycl::bit_cast<std::uint32_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 8) {
+            is_zero =
+                (std::uint64_t{0} == sycl::bit_cast<std::uint64_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 16) {
+            struct UInt128
+            {
+
+                constexpr UInt128() : v1{}, v2{} {}
+                UInt128(const UInt128 &) = default;
+
+                operator bool() const { return bool(!v1) && bool(!v2); }
+
+                std::uint64_t v1;
+                std::uint64_t v2;
+            };
+            is_zero = static_cast<bool>(sycl::bit_cast<UInt128>(fill_v));
+        }
+
+        if (is_zero) {
+            constexpr int memset_val = 0;
+            fill_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                cgh.memset(reinterpret_cast<void *>(dst_p), memset_val,
+                           nelems * sizeof(dstTy));
+            });
+        }
+        else {
+            using dpctl::tensor::kernels::constructors::full_contig_impl;
+
+            fill_ev =
+                full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
+        }
+    }
 
     return fill_ev;
 }
@@ -126,7 +181,6 @@ usm_ndarray_full(const py::object &py_value,
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     char *dst_data = dst.get_data();
-    sycl::event full_event;
 
     if (dst_nelems == 1 || dst.is_c_contiguous() || dst.is_f_contiguous()) {
         auto fn = full_contig_dispatch_vector[dst_typeid];
