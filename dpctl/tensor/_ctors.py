@@ -1480,7 +1480,20 @@ def full_like(
             _manager.add_event_pair(hev, copy_ev)
             return res
         else:
+            fill_value_type = type(fill_value)
+            dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
             res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+            if fill_value_type in [float, complex] and np.issubdtype(
+                dtype, np.integer
+            ):
+                fill_value = int(fill_value.real)
+            elif fill_value_type is complex and np.issubdtype(
+                dtype, np.floating
+            ):
+                fill_value = fill_value.real
+            elif fill_value_type is int and np.issubdtype(dtype, np.integer):
+                fill_value = _to_scalar(fill_value, dtype)
+
             _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
             # populating new allocation, no dependent events
             hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
