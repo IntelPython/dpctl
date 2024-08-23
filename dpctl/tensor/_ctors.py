@@ -1021,6 +1021,22 @@ def ones(
     return res
 
 
+def _cast_fill_val(fill_val, dt):
+    """
+    Casts the Python scalar `fill_val` to another Python type coercible to the
+    requested data type `dt`, if necessary.
+    """
+    val_type = type(fill_val)
+    if val_type in [float, complex] and np.issubdtype(dt, np.integer):
+        return int(fill_val.real)
+    elif val_type is complex and np.issubdtype(dt, np.floating):
+        return fill_val.real
+    elif val_type is int and np.issubdtype(dt, np.integer):
+        return _to_scalar(fill_val, dt)
+    else:
+        return fill_val
+
+
 def full(
     shape,
     fill_value,
@@ -1097,8 +1113,7 @@ def full(
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
-    fill_value_type = type(fill_value)
-    dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
+    dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
     res = dpt.usm_ndarray(
         shape,
         dtype=dtype,
@@ -1106,12 +1121,7 @@ def full(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    if fill_value_type in [float, complex] and np.issubdtype(dtype, np.integer):
-        fill_value = int(fill_value.real)
-    elif fill_value_type is complex and np.issubdtype(dtype, np.floating):
-        fill_value = fill_value.real
-    elif fill_value_type is int and np.issubdtype(dtype, np.integer):
-        fill_value = _to_scalar(fill_value, dtype)
+    fill_value = _cast_fill_val(fill_value, dtype)
 
     _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
@@ -1479,26 +1489,15 @@ def full_like(
             )
             _manager.add_event_pair(hev, copy_ev)
             return res
-        else:
-            fill_value_type = type(fill_value)
-            dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
-            res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
-            if fill_value_type in [float, complex] and np.issubdtype(
-                dtype, np.integer
-            ):
-                fill_value = int(fill_value.real)
-            elif fill_value_type is complex and np.issubdtype(
-                dtype, np.floating
-            ):
-                fill_value = fill_value.real
-            elif fill_value_type is int and np.issubdtype(dtype, np.integer):
-                fill_value = _to_scalar(fill_value, dtype)
 
-            _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
-            # populating new allocation, no dependent events
-            hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
-            _manager.add_event_pair(hev, full_ev)
-            return res
+        dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
+        res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+        fill_value = _cast_fill_val(fill_value, dtype)
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        # populating new allocation, no dependent events
+        hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
+        _manager.add_event_pair(hev, full_ev)
+        return res
     else:
         return full(
             sh,
