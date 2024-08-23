@@ -1161,8 +1161,15 @@ def empty_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if order not in ("K", "C", "F", "A"):
-        order = "K"
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -1196,7 +1203,7 @@ def empty_like(
 
 
 def zeros_like(
-    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
 ):
     """
     Creates :class:`dpctl.tensor.usm_ndarray` from USM allocation
@@ -1239,8 +1246,15 @@ def zeros_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if order not in ("K", "C", "F", "A"):
-        order = "K"
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -1320,8 +1334,15 @@ def ones_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if order not in ("K", "C", "F", "A"):
-        order = "K"
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
@@ -1364,7 +1385,7 @@ def full_like(
     fill_value,
     *,
     dtype=None,
-    order="C",
+    order="K",
     device=None,
     usm_type=None,
     sycl_queue=None,
@@ -1412,8 +1433,15 @@ def full_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if order not in ("K", "C", "F", "A"):
-        order = "K"
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
+        raise ValueError(
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
+        )
+    order = order[0].upper()
     if dtype is None:
         dtype = x.dtype
     if usm_type is None:
