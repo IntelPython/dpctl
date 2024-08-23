@@ -1472,9 +1472,10 @@ def full_like(
             X = dpt.broadcast_to(X, sh)
             res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
             _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
-            # populating new allocation, no dependent events
+            # order copy after tasks populating X
+            dep_evs = _manager.submitted_events
             hev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-                src=X, dst=res, sycl_queue=sycl_queue
+                src=X, dst=res, sycl_queue=sycl_queue, depends=dep_evs
             )
             _manager.add_event_pair(hev, copy_ev)
             return res

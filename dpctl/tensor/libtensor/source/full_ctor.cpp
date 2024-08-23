@@ -215,7 +215,7 @@ usm_ndarray_full(const py::object &py_value,
                  sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
-    // start, end should be coercible into data type of dst
+    // py_value should be coercible into data type of dst
 
     py::ssize_t dst_nelems = dst.get_size();
 
