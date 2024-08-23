@@ -2284,9 +2284,10 @@
             <span class="n">X</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">sh</span><span class="p">)</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
             <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">sycl_queue</span><span class="p">]</span>
-            <span class="c1"># populating new allocation, no dependent events</span>
+            <span class="c1"># order copy after tasks populating X</span>
+            <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
             <span class="n">hev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
             <span class="p">)</span>
             <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span>
