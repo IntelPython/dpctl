@@ -46,6 +46,7 @@ namespace constructors
 
 template <typename Ty> class linear_sequence_step_kernel;
 template <typename Ty, typename wTy> class linear_sequence_affine_kernel;
+template <typename Ty> class full_strided_kernel;
 template <typename Ty> class eye_kernel;
 
 using namespace dpctl::tensor::offset_utils;
@@ -247,6 +248,71 @@ sycl::event full_contig_impl(sycl::queue &q,
         cgh.depends_on(depends);
         dstTy *p = reinterpret_cast<dstTy *>(dst_p);
         cgh.fill<dstTy>(p, fill_v, nelems);
+    });
+
+    return fill_ev;
+}
+
+template <typename Ty, typename IndexerT> class FullStridedFunctor
+{
+private:
+    Ty *p = nullptr;
+    const Ty fill_v;
+    const IndexerT indexer;
+
+public:
+    FullStridedFunctor(Ty *p_, const Ty &fill_v_, const IndexerT &indexer_)
+        : p(p_), fill_v(fill_v_), indexer(indexer_)
+    {
+    }
+
+    void operator()(sycl::id<1> id) const
+    {
+        auto offset = indexer(id.get(0));
+        p[offset] = fill_v;
+    }
+};
+
+/*!
+ * @brief Function to submit kernel to fill given contiguous memory allocation
+ * with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nd  Array dimensionality
+ * @param nelems  Length of the sequence
+ * @param shape_strides  Kernel accessible USM pointer to packed shape and
+ * strides of array.
+ * @param fill_v  Value to fill the array with
+ * @param dst_p  Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename dstTy>
+sycl::event full_strided_impl(sycl::queue &q,
+                              int nd,
+                              size_t nelems,
+                              const ssize_t *shape_strides,
+                              dstTy fill_v,
+                              char *dst_p,
+                              const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+
+    dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p);
+
+    using dpctl::tensor::offset_utils::StridedIndexer;
+    const StridedIndexer strided_indexer(nd, 0, shape_strides);
+
+    sycl::event fill_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.parallel_for<full_strided_kernel<dstTy>>(
+            sycl::range<1>{nelems},
+            FullStridedFunctor<dstTy, decltype(strided_indexer)>(
+                dst_tp, fill_v, strided_indexer));
     });
 
     return fill_ev;

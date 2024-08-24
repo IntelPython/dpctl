@@ -2464,3 +2464,122 @@ def test_getitem_validation():
         a[..., 0.0, dpt.newaxis]
     with pytest.raises(IndexError):
         a[:, 0.0, dpt.newaxis]
+
+
+def test_array_like_ctors_order_K():
+    get_queue_or_skip()
+
+    sh = (10, 10)
+    x1 = dpt.zeros(sh, dtype="i4", order="C")
+    r1 = dpt.full_like(x1, 2, order="K")
+    assert dpt.all(r1 == 2)
+    assert r1.flags.c_contiguous
+    r2 = dpt.empty_like(x1, order="K")
+    assert r2.flags.c_contiguous
+    r3 = dpt.ones_like(x1, order="K")
+    assert dpt.all(r3 == 1)
+    assert r3.flags.c_contiguous
+    r4 = dpt.zeros_like(x1, order="K")
+    assert dpt.all(r4 == 0)
+    assert r4.flags.c_contiguous
+
+    x2 = dpt.zeros(sh, dtype="i4", order="F")
+    r5 = dpt.full_like(x2, 2, order="K")
+    assert dpt.all(r5 == 2)
+    assert r5.flags.f_contiguous
+    r6 = dpt.empty_like(x2, order="K")
+    assert r6.flags.f_contiguous
+    r7 = dpt.ones_like(x2, order="K")
+    assert dpt.all(r7 == 1)
+    assert r7.flags.f_contiguous
+    r8 = dpt.zeros_like(x2, order="K")
+    assert dpt.all(r8 == 0)
+    assert r8.flags.f_contiguous
+
+    x3 = dpt.zeros(sh, dtype="i4", order="C")[::-2, :5]
+    st_expected = (-5, 1)
+    r9 = dpt.full_like(x3, 2, order="K")
+    assert dpt.all(r1 == 2)
+    assert r9.strides == st_expected
+    assert not r9.flags.forc
+    r10 = dpt.empty_like(x3, order="K")
+    assert not r10.flags.forc
+    assert r10.strides == st_expected
+    r11 = dpt.ones_like(x3, order="K")
+    assert dpt.all(r11 == 1)
+    assert not r11.flags.forc
+    assert r11.strides == st_expected
+    r12 = dpt.zeros_like(x3, order="K")
+    assert dpt.all(r12 == 0)
+    assert not r12.flags.forc
+    assert r12.strides == st_expected
+
+
+def test_array_like_ctors_order_A():
+    get_queue_or_skip()
+
+    sh = (10, 10)
+    x1 = dpt.zeros(sh, dtype="i4", order="C")
+    r1 = dpt.full_like(x1, 2, order="A")
+    assert dpt.all(r1 == 2)
+    assert r1.flags.c_contiguous
+    r2 = dpt.empty_like(x1, order="A")
+    assert r2.flags.c_contiguous
+    r3 = dpt.ones_like(x1, order="A")
+    assert dpt.all(r3 == 1)
+    assert r3.flags.c_contiguous
+    r4 = dpt.zeros_like(x1, order="A")
+    assert dpt.all(r4 == 0)
+    assert r4.flags.c_contiguous
+
+    x2 = dpt.zeros(sh, dtype="i4", order="F")
+    r5 = dpt.full_like(x2, 2, order="A")
+    assert dpt.all(r5 == 2)
+    assert r5.flags.f_contiguous
+    r6 = dpt.empty_like(x2, order="A")
+    assert r6.flags.f_contiguous
+    r7 = dpt.ones_like(x2, order="A")
+    assert dpt.all(r7 == 1)
+    assert r7.flags.f_contiguous
+    r8 = dpt.zeros_like(x2, order="A")
+    assert dpt.all(r8 == 0)
+    assert r8.flags.f_contiguous
+
+    x3 = dpt.zeros(sh, dtype="i4", order="C")[::-2, :5]
+    r9 = dpt.full_like(x3, 2, order="A")
+    assert dpt.all(r1 == 2)
+    assert r9.flags.c_contiguous
+    r10 = dpt.empty_like(x3, order="A")
+    assert r10.flags.c_contiguous
+    r11 = dpt.ones_like(x3, order="A")
+    assert dpt.all(r11 == 1)
+    assert r11.flags.c_contiguous
+    r12 = dpt.zeros_like(x3, order="A")
+    assert dpt.all(r12 == 0)
+    assert r12.flags.c_contiguous
+
+
+def test_full_like_order_K_array_fill_v():
+    get_queue_or_skip()
+
+    x = dpt.zeros((10, 10), dtype="i4")
+    fill_v = dpt.asarray(2, dtype="i4")
+
+    r1 = dpt.full_like(x, fill_v, order="K")
+    assert dpt.all(r1 == 2)
+
+    # broadcast behavior
+    fill_v = dpt.arange(10, dtype="i4")[:, dpt.newaxis]
+    r1 = dpt.full_like(x, fill_v, order="K")
+    assert dpt.all(r1 == dpt.tile(fill_v, (1, 10)))
+
+
+def test_full_like_order_K_same_input_output_queues():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.zeros((10, 10), dtype="i4", sycl_queue=q1)
+    fill_v = dpt.asarray(2, dtype="i4", sycl_queue=q2)
+
+    r = dpt.full_like(x, fill_v, order="K")
+    assert r.sycl_queue == x.sycl_queue
