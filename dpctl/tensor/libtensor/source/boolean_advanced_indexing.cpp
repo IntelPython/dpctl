@@ -689,8 +689,6 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    host_task_events.push_back(place_ev);
-
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {dst, cumsum, rhs}, host_task_events);
 
