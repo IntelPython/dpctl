@@ -370,8 +370,6 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    host_task_events.push_back(extract_ev);
-
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {src, cumsum, dst}, host_task_events);
 

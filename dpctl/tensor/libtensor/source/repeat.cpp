@@ -356,8 +356,6 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         host_task_events.push_back(cleanup_tmp_allocations_ev);
     }
 
-    host_task_events.push_back(repeat_ev);
-
     sycl::event py_obj_management_host_task_ev = dpctl::utils::keep_args_alive(
         exec_q, {src, reps, cumsum, dst}, host_task_events);
 
