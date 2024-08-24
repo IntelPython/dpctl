@@ -1130,6 +1130,21 @@ def full(
     return res
 
 
+def _normalize_order(order, arr):
+    """
+    Utility function for processing the `order` keyword of array-like
+    constructors, which support `"K"` and `"A"` orders.
+    """
+    arr_flags = arr.flags
+    f_contig = arr_flags["F"]
+    c_contig = arr_flags["C"]
+    if order == "A":
+        order = "F" if f_contig and not c_contig else "C"
+    if order == "K" and (f_contig or c_contig):
+        order = "C" if c_contig else "F"
+    return order
+
+
 def empty_like(
     x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
 ):
@@ -1189,13 +1204,7 @@ def empty_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = dpt.dtype(dtype)
-    x_flags = x.flags
-    f_contig = x_flags["F"]
-    c_contig = x_flags["C"]
-    if order == "A":
-        order = "F" if f_contig and not c_contig else "C"
-    if order == "K" and (f_contig or c_contig):
-        order = "C" if c_contig else "F"
+    order = _normalize_order(order, x)
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         return _empty_like_orderK(x, dtype, usm_type, sycl_queue)
@@ -1274,13 +1283,7 @@ def zeros_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = dpt.dtype(dtype)
-    x_flags = x.flags
-    f_contig = x_flags["F"]
-    c_contig = x_flags["C"]
-    if order == "A":
-        order = "F" if f_contig and not c_contig else "C"
-    if order == "K" and (f_contig or c_contig):
-        order = "C" if c_contig else "F"
+    order = _normalize_order(order, x)
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
@@ -1362,13 +1365,7 @@ def ones_like(
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     dtype = dpt.dtype(dtype)
-    x_flags = x.flags
-    f_contig = x_flags["F"]
-    c_contig = x_flags["C"]
-    if order == "A":
-        order = "F" if f_contig and not c_contig else "C"
-    if order == "K" and (f_contig or c_contig):
-        order = "C" if c_contig else "F"
+    order = _normalize_order(order, x)
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
@@ -1462,13 +1459,7 @@ def full_like(
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
     dtype = dpt.dtype(dtype)
-    x_flags = x.flags
-    f_contig = x_flags["F"]
-    c_contig = x_flags["C"]
-    if order == "A":
-        order = "F" if f_contig and not c_contig else "C"
-    if order == "K" and (f_contig or c_contig):
-        order = "C" if c_contig else "F"
+    order = _normalize_order(order, x)
     if order == "K":
         _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
         if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
