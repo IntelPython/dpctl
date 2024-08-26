@@ -66,7 +66,10 @@ namespace bitwise_and_fn_ns = dpctl::tensor::kernels::bitwise_and;
 
 static binary_contig_impl_fn_ptr_t
     bitwise_and_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 static int bitwise_and_output_id_table[td_ns::num_types][td_ns::num_types];
+static int bitwise_and_inplace_output_id_table[td_ns::num_types]
+                                              [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     bitwise_and_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -115,6 +118,11 @@ void populate_bitwise_and_dispatch_tables(void)
                          BitwiseAndInplaceContigFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(bitwise_and_inplace_contig_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::BitwiseAndInplaceTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseAndInplaceTypeMapFactory, num_types> dtb6;
+    dtb6.populate_dispatch_table(bitwise_and_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -160,25 +168,27 @@ void init_bitwise_and(py::module_ m)
         m.def("_bitwise_and_result_type", bitwise_and_result_type_pyapi, "");
 
         using impl::bitwise_and_inplace_contig_dispatch_table;
+        using impl::bitwise_and_inplace_output_id_table;
         using impl::bitwise_and_inplace_strided_dispatch_table;
 
-        auto bitwise_and_inplace_pyapi =
-            [&](const arrayT &src, const arrayT &dst, sycl::queue &exec_q,
-                const event_vecT &depends = {}) {
-                return py_binary_inplace_ufunc(
-                    src, dst, exec_q, depends, bitwise_and_output_id_table,
-                    // function pointers to handle inplace operation on
-                    // contiguous arrays (pointers may be nullptr)
-                    bitwise_and_inplace_contig_dispatch_table,
-                    // function pointers to handle inplace operation on strided
-                    // arrays (most general case)
-                    bitwise_and_inplace_strided_dispatch_table,
-                    // function pointers to handle inplace operation on
-                    // c-contig matrix with c-contig row with broadcasting
-                    // (may be nullptr)
-                    td_ns::NullPtrTable<
-                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
-            };
+        auto bitwise_and_inplace_pyapi = [&](const arrayT &src,
+                                             const arrayT &dst,
+                                             sycl::queue &exec_q,
+                                             const event_vecT &depends = {}) {
+            return py_binary_inplace_ufunc(
+                src, dst, exec_q, depends, bitwise_and_inplace_output_id_table,
+                // function pointers to handle inplace operation on
+                // contiguous arrays (pointers may be nullptr)
+                bitwise_and_inplace_contig_dispatch_table,
+                // function pointers to handle inplace operation on strided
+                // arrays (most general case)
+                bitwise_and_inplace_strided_dispatch_table,
+                // function pointers to handle inplace operation on
+                // c-contig matrix with c-contig row with broadcasting
+                // (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+        };
         m.def("_bitwise_and_inplace", bitwise_and_inplace_pyapi, "",
               py::arg("lhs"), py::arg("rhs"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());

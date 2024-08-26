@@ -318,6 +318,42 @@ template <typename argT,
           unsigned int n_vecs>
 class bitwise_or_inplace_contig_kernel;
 
+/* @brief Types supported by in-place bitwise OR */
+template <typename argTy, typename resTy> struct BitwiseOrInplaceTypePairSupport
+{
+    /* value if true a kernel for <argTy, resTy> must be instantiated  */
+    static constexpr bool is_defined = std::disjunction< // disjunction is
+                                                         // C++17 feature,
+                                                         // supported by
+                                                         // DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, bool, resTy, bool>,
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, resTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, resTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, resTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, resTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, resTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, resTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, resTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, resTy, std::uint64_t>,
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename fnT, typename argT, typename resT>
+struct BitwiseOrInplaceTypeMapFactory
+{
+    /*! @brief get typeid for output type of x |= y */
+    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
+    {
+        if constexpr (BitwiseOrInplaceTypePairSupport<argT, resT>::is_defined) {
+            return td_ns::GetTypeid<resT>{}.get();
+        }
+        else {
+            return td_ns::GetTypeid<void>{}.get();
+        }
+    }
+};
+
 template <typename argTy, typename resTy>
 sycl::event
 bitwise_or_inplace_contig_impl(sycl::queue &exec_q,
@@ -339,10 +375,7 @@ struct BitwiseOrInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename BitwiseOrOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!BitwiseOrInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -381,10 +414,7 @@ struct BitwiseOrInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename BitwiseOrOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!BitwiseOrInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

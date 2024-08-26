@@ -67,7 +67,9 @@ namespace pow_fn_ns = dpctl::tensor::kernels::pow;
 
 static binary_contig_impl_fn_ptr_t pow_contig_dispatch_table[td_ns::num_types]
                                                             [td_ns::num_types];
+
 static int pow_output_id_table[td_ns::num_types][td_ns::num_types];
+static int pow_inplace_output_id_table[td_ns::num_types][td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     pow_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -114,6 +116,11 @@ void populate_pow_dispatch_tables(void)
                          PowInplaceContigFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(pow_inplace_contig_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::PowInplaceTypeMapFactory;
+    DispatchTableBuilder<int, PowInplaceTypeMapFactory, num_types> dtb6;
+    dtb6.populate_dispatch_table(pow_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -159,13 +166,14 @@ void init_pow(py::module_ m)
         m.def("_pow_result_type", pow_result_type_pyapi, "");
 
         using impl::pow_inplace_contig_dispatch_table;
+        using impl::pow_inplace_output_id_table;
         using impl::pow_inplace_strided_dispatch_table;
 
         auto pow_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,
                                      sycl::queue &exec_q,
                                      const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, pow_output_id_table,
+                src, dst, exec_q, depends, pow_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 pow_inplace_contig_dispatch_table,

@@ -137,7 +137,7 @@ void populate_true_divide_dispatch_tables(void)
     dtb5.populate_dispatch_table(
         true_divide_contig_row_contig_matrix_broadcast_dispatch_table);
 
-    // which input types are supported, and what is the type of the result
+    // which types are supported by the in-place kernels
     using fn_ns::TrueDivideInplaceTypeMapFactory;
     DispatchTableBuilder<int, TrueDivideInplaceTypeMapFactory, num_types> dtb6;
     dtb6.populate_dispatch_table(true_divide_inplace_output_id_table);

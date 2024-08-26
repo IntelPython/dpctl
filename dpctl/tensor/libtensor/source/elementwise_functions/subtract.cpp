@@ -66,7 +66,9 @@ namespace subtract_fn_ns = dpctl::tensor::kernels::subtract;
 
 static binary_contig_impl_fn_ptr_t
     subtract_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 static int subtract_output_id_table[td_ns::num_types][td_ns::num_types];
+static int subtract_inplace_output_id_table[td_ns::num_types][td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     subtract_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -154,6 +156,11 @@ void populate_subtract_dispatch_tables(void)
                          SubtractInplaceRowMatrixBroadcastFactory, num_types>
         dtb8;
     dtb8.populate_dispatch_table(subtract_inplace_row_matrix_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::SubtractInplaceTypeMapFactory;
+    DispatchTableBuilder<int, SubtractInplaceTypeMapFactory, num_types> dtb9;
+    dtb9.populate_dispatch_table(subtract_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -199,6 +206,7 @@ void init_subtract(py::module_ m)
         m.def("_subtract_result_type", subtract_result_type_pyapi, "");
 
         using impl::subtract_inplace_contig_dispatch_table;
+        using impl::subtract_inplace_output_id_table;
         using impl::subtract_inplace_row_matrix_dispatch_table;
         using impl::subtract_inplace_strided_dispatch_table;
 
@@ -206,7 +214,7 @@ void init_subtract(py::module_ m)
                                           sycl::queue &exec_q,
                                           const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, subtract_output_id_table,
+                src, dst, exec_q, depends, subtract_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 subtract_inplace_contig_dispatch_table,

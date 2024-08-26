@@ -67,7 +67,10 @@ namespace remainder_fn_ns = dpctl::tensor::kernels::remainder;
 
 static binary_contig_impl_fn_ptr_t
     remainder_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 static int remainder_output_id_table[td_ns::num_types][td_ns::num_types];
+static int remainder_inplace_output_id_table[td_ns::num_types]
+                                            [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     remainder_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -115,6 +118,11 @@ void populate_remainder_dispatch_tables(void)
                          RemainderInplaceContigFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(remainder_inplace_contig_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::RemainderInplaceTypeMapFactory;
+    DispatchTableBuilder<int, RemainderInplaceTypeMapFactory, num_types> dtb6;
+    dtb6.populate_dispatch_table(remainder_inplace_output_id_table);
 }
 
 } // namespace impl
@@ -160,13 +168,14 @@ void init_remainder(py::module_ m)
         m.def("_remainder_result_type", remainder_result_type_pyapi, "");
 
         using impl::remainder_inplace_contig_dispatch_table;
+        using impl::remainder_inplace_output_id_table;
         using impl::remainder_inplace_strided_dispatch_table;
 
         auto remainder_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,
                                            sycl::queue &exec_q,
                                            const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, remainder_output_id_table,
+                src, dst, exec_q, depends, remainder_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 remainder_inplace_contig_dispatch_table,

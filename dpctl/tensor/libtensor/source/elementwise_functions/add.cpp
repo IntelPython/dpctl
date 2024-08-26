@@ -67,7 +67,9 @@ namespace add_fn_ns = dpctl::tensor::kernels::add;
 
 static binary_contig_impl_fn_ptr_t add_contig_dispatch_table[td_ns::num_types]
                                                             [td_ns::num_types];
+
 static int add_output_id_table[td_ns::num_types][td_ns::num_types];
+static int add_inplace_output_id_table[td_ns::num_types][td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     add_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -154,6 +156,11 @@ void populate_add_dispatch_tables(void)
                          AddInplaceRowMatrixBroadcastFactory, num_types>
         dtb8;
     dtb8.populate_dispatch_table(add_inplace_row_matrix_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::AddInplaceTypeMapFactory;
+    DispatchTableBuilder<int, AddInplaceTypeMapFactory, num_types> dtb9;
+    dtb9.populate_dispatch_table(add_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -199,6 +206,7 @@ void init_add(py::module_ m)
         m.def("_add_result_type", add_result_type_pyapi, "");
 
         using impl::add_inplace_contig_dispatch_table;
+        using impl::add_inplace_output_id_table;
         using impl::add_inplace_row_matrix_dispatch_table;
         using impl::add_inplace_strided_dispatch_table;
 
@@ -206,7 +214,7 @@ void init_add(py::module_ m)
                                      sycl::queue &exec_q,
                                      const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, add_output_id_table,
+                src, dst, exec_q, depends, add_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 add_inplace_contig_dispatch_table,
