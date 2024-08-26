@@ -66,7 +66,10 @@ namespace floor_divide_fn_ns = dpctl::tensor::kernels::floor_divide;
 
 static binary_contig_impl_fn_ptr_t
     floor_divide_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 static int floor_divide_output_id_table[td_ns::num_types][td_ns::num_types];
+static int floor_divide_inplace_output_id_table[td_ns::num_types]
+                                               [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     floor_divide_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -115,6 +118,11 @@ void populate_floor_divide_dispatch_tables(void)
                          FloorDivideInplaceContigFactory, num_types>
         dtb5;
     dtb5.populate_dispatch_table(floor_divide_inplace_contig_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::FloorDivideInplaceTypeMapFactory;
+    DispatchTableBuilder<int, FloorDivideInplaceTypeMapFactory, num_types> dtb6;
+    dtb6.populate_dispatch_table(floor_divide_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -160,25 +168,27 @@ void init_floor_divide(py::module_ m)
         m.def("_floor_divide_result_type", floor_divide_result_type_pyapi, "");
 
         using impl::floor_divide_inplace_contig_dispatch_table;
+        using impl::floor_divide_inplace_output_id_table;
         using impl::floor_divide_inplace_strided_dispatch_table;
 
-        auto floor_divide_inplace_pyapi =
-            [&](const arrayT &src, const arrayT &dst, sycl::queue &exec_q,
-                const event_vecT &depends = {}) {
-                return py_binary_inplace_ufunc(
-                    src, dst, exec_q, depends, floor_divide_output_id_table,
-                    // function pointers to handle inplace operation on
-                    // contiguous arrays (pointers may be nullptr)
-                    floor_divide_inplace_contig_dispatch_table,
-                    // function pointers to handle inplace operation on strided
-                    // arrays (most general case)
-                    floor_divide_inplace_strided_dispatch_table,
-                    // function pointers to handle inplace operation on
-                    // c-contig matrix with c-contig row with broadcasting
-                    // (may be nullptr)
-                    td_ns::NullPtrTable<
-                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
-            };
+        auto floor_divide_inplace_pyapi = [&](const arrayT &src,
+                                              const arrayT &dst,
+                                              sycl::queue &exec_q,
+                                              const event_vecT &depends = {}) {
+            return py_binary_inplace_ufunc(
+                src, dst, exec_q, depends, floor_divide_inplace_output_id_table,
+                // function pointers to handle inplace operation on
+                // contiguous arrays (pointers may be nullptr)
+                floor_divide_inplace_contig_dispatch_table,
+                // function pointers to handle inplace operation on strided
+                // arrays (most general case)
+                floor_divide_inplace_strided_dispatch_table,
+                // function pointers to handle inplace operation on
+                // c-contig matrix with c-contig row with broadcasting
+                // (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+        };
         m.def("_floor_divide_inplace", floor_divide_inplace_pyapi, "",
               py::arg("lhs"), py::arg("rhs"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());

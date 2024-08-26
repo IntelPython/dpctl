@@ -68,8 +68,7 @@ namespace pow_fn_ns = dpctl::tensor::kernels::pow;
 static binary_contig_impl_fn_ptr_t pow_contig_dispatch_table[td_ns::num_types]
                                                             [td_ns::num_types];
 static int pow_output_id_table[td_ns::num_types][td_ns::num_types];
-static int pow_inplace_output_id_table[td_ns::num_types]
-                                      [td_ns::num_types];
+static int pow_inplace_output_id_table[td_ns::num_types][td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     pow_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -103,7 +102,7 @@ void populate_pow_dispatch_tables(void)
         dtb3;
     dtb3.populate_dispatch_table(pow_contig_dispatch_table);
 
-    // which input types are supported, and what is the type of the result
+    // which types are supported by the in-place kernels
     using fn_ns::PowInplaceTypeMapFactory;
     DispatchTableBuilder<int, PowInplaceTypeMapFactory, num_types> dtb4;
     dtb4.populate_dispatch_table(pow_inplace_output_id_table);
@@ -166,8 +165,8 @@ void init_pow(py::module_ m)
         m.def("_pow_result_type", pow_result_type_pyapi, "");
 
         using impl::pow_inplace_contig_dispatch_table;
-        using impl::pow_inplace_strided_dispatch_table;
         using impl::pow_inplace_output_id_table;
+        using impl::pow_inplace_strided_dispatch_table;
 
         auto pow_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,
                                      sycl::queue &exec_q,

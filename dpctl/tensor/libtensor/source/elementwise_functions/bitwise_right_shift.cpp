@@ -68,8 +68,11 @@ namespace bitwise_right_shift_fn_ns =
 static binary_contig_impl_fn_ptr_t
     bitwise_right_shift_contig_dispatch_table[td_ns::num_types]
                                              [td_ns::num_types];
+
 static int bitwise_right_shift_output_id_table[td_ns::num_types]
                                               [td_ns::num_types];
+static int bitwise_right_shift_inplace_output_id_table[td_ns::num_types]
+                                                      [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     bitwise_right_shift_strided_dispatch_table[td_ns::num_types]
@@ -121,6 +124,12 @@ void populate_bitwise_right_shift_dispatch_tables(void)
         dtb5;
     dtb5.populate_dispatch_table(
         bitwise_right_shift_inplace_contig_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::BitwiseRightShiftInplaceTypeMapFactory;
+    DispatchTableBuilder<int, BitwiseRightShiftInplaceTypeMapFactory, num_types>
+        dtb6;
+    dtb6.populate_dispatch_table(bitwise_right_shift_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -170,6 +179,7 @@ void init_bitwise_right_shift(py::module_ m)
               bitwise_right_shift_result_type_pyapi, "");
 
         using impl::bitwise_right_shift_inplace_contig_dispatch_table;
+        using impl::bitwise_right_shift_inplace_output_id_table;
         using impl::bitwise_right_shift_inplace_strided_dispatch_table;
 
         auto bitwise_right_shift_inplace_pyapi =
@@ -177,7 +187,7 @@ void init_bitwise_right_shift(py::module_ m)
                 const event_vecT &depends = {}) {
                 return py_binary_inplace_ufunc(
                     src, dst, exec_q, depends,
-                    bitwise_right_shift_output_id_table,
+                    bitwise_right_shift_inplace_output_id_table,
                     // function pointers to handle inplace operation on
                     // contiguous arrays (pointers may be nullptr)
                     bitwise_right_shift_inplace_contig_dispatch_table,

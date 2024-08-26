@@ -67,7 +67,9 @@ namespace multiply_fn_ns = dpctl::tensor::kernels::multiply;
 
 static binary_contig_impl_fn_ptr_t
     multiply_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+
 static int multiply_output_id_table[td_ns::num_types][td_ns::num_types];
+static int multiply_inplace_output_id_table[td_ns::num_types][td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     multiply_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -155,6 +157,11 @@ void populate_multiply_dispatch_tables(void)
                          MultiplyInplaceRowMatrixBroadcastFactory, num_types>
         dtb8;
     dtb8.populate_dispatch_table(multiply_inplace_row_matrix_dispatch_table);
+
+    // which types are supported by the in-place kernels
+    using fn_ns::MultiplyInplaceTypeMapFactory;
+    DispatchTableBuilder<int, MultiplyInplaceTypeMapFactory, num_types> dtb9;
+    dtb9.populate_dispatch_table(multiply_inplace_output_id_table);
 };
 
 } // namespace impl
@@ -200,6 +207,7 @@ void init_multiply(py::module_ m)
         m.def("_multiply_result_type", multiply_result_type_pyapi, "");
 
         using impl::multiply_inplace_contig_dispatch_table;
+        using impl::multiply_inplace_output_id_table;
         using impl::multiply_inplace_row_matrix_dispatch_table;
         using impl::multiply_inplace_strided_dispatch_table;
 
@@ -207,7 +215,7 @@ void init_multiply(py::module_ m)
                                           sycl::queue &exec_q,
                                           const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, multiply_output_id_table,
+                src, dst, exec_q, depends, multiply_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 multiply_inplace_contig_dispatch_table,
