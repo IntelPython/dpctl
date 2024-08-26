@@ -53,15 +53,16 @@ namespace tu_ns = dpctl::tensor::type_utils;
 
 template <typename argT1, typename argT2, typename resT> struct PowFunctor
 {
-
     using supports_sg_loadstore = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
 
+    using pown_exp_t = std::int32_t;
+
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+        if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2>) {
             auto tmp1 = in1;
             auto tmp2 = in2;
             if constexpr (std::is_signed_v<argT2>) {
@@ -92,6 +93,17 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
             return exprm_ns::pow(exprm_ns::complex<realT1>(in1),
                                  exprm_ns::complex<realT2>(in2));
         }
+        else if constexpr ((std::is_floating_point_v<argT1> ||
+                            std::is_same_v<argT1, sycl::half>) &&
+                           std::is_integral_v<argT2>)
+        {
+            if constexpr (std::is_same_v<argT2, pown_exp_t>) {
+                return sycl::pown(in1, in2);
+            }
+            else {
+                return sycl::pown(in1, static_cast<pown_exp_t>(in2));
+            }
+        }
         else {
             return sycl::pow(in1, in2);
         }
@@ -102,7 +114,7 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
     operator()(const sycl::vec<argT1, vec_sz> &in1,
                const sycl::vec<argT2, vec_sz> &in2) const
     {
-        if constexpr (std::is_integral_v<argT1> || std::is_integral_v<argT2>) {
+        if constexpr (std::is_integral_v<argT1> && std::is_integral_v<argT2>) {
             sycl::vec<resT, vec_sz> res;
 #pragma unroll
             for (int i = 0; i < vec_sz; ++i) {
@@ -130,6 +142,40 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
                 res[i] = res_tmp;
             }
             return res;
+        }
+        else if constexpr ((std::is_floating_point_v<argT1> ||
+                            std::is_same_v<argT1, sycl::half>) &&
+                           std::is_integral_v<argT2>)
+        {
+            if constexpr (std::is_same_v<argT2, pown_exp_t>) {
+                auto res = sycl::pown(in1, in2);
+                if constexpr (std::is_same_v<
+                                  resT, typename decltype(res)::element_type>)
+                {
+                    return res;
+                }
+                else {
+                    using dpctl::tensor::type_utils::vec_cast;
+
+                    return vec_cast<resT, typename decltype(res)::element_type,
+                                    vec_sz>(res);
+                }
+            }
+            else {
+                using dpctl::tensor::type_utils::vec_cast;
+
+                auto tmp = vec_cast<pown_exp_t, argT2, vec_sz>(in2);
+                auto res = sycl::pown(in1, tmp);
+                if constexpr (std::is_same_v<
+                                  resT, typename decltype(res)::element_type>)
+                {
+                    return res;
+                }
+                else {
+                    return vec_cast<resT, typename decltype(res)::element_type,
+                                    vec_sz>(res);
+                }
+            }
         }
         else {
             auto res = sycl::pow(in1, in2);
@@ -173,8 +219,10 @@ using PowStridedFunctor =
 
 template <typename T1, typename T2> struct PowOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction< // disjunction is
+                                                  // C++17 feature,
+                                                  // supported by
+                                                  // DPC++
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
                                         T2,
@@ -218,9 +266,16 @@ template <typename T1, typename T2> struct PowOutputType
         td_ns::BinaryTypeMapResultEntry<T1,
                                         sycl::half,
                                         T2,
+                                        std::int16_t,
+                                        sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        sycl::half,
+                                        T2,
                                         sycl::half,
                                         sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, std::int32_t, float>,
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, std::int32_t, double>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::complex<float>,
@@ -329,15 +384,16 @@ template <typename fnT, typename T1, typename T2> struct PowStridedFactory
 
 template <typename argT, typename resT> struct PowInplaceFunctor
 {
-
     using supports_sg_loadstore = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
+    using pown_exp_t = std::int32_t;
+
     void operator()(resT &res, const argT &in)
     {
-        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+        if constexpr (std::is_integral_v<argT> && std::is_integral_v<resT>) {
             auto tmp1 = res;
             auto tmp2 = in;
             if constexpr (std::is_signed_v<argT>) {
@@ -373,17 +429,27 @@ template <typename argT, typename resT> struct PowInplaceFunctor
             res = exprm_ns::pow(exprm_ns::complex<r_resT>(res),
                                 exprm_ns::complex<r_argT>(in));
         }
+        else if constexpr ((std::is_floating_point_v<resT> ||
+                            std::is_same_v<resT, sycl::half>) &&
+                           std::is_integral_v<argT>)
+        {
+            if constexpr (std::is_same_v<argT, pown_exp_t>) {
+                res = sycl::pown(res, in);
+            }
+            else {
+                res = sycl::pown(res, static_cast<pown_exp_t>(in));
+            }
+        }
         else {
             res = sycl::pow(res, in);
         }
-        return;
     }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
                     const sycl::vec<argT, vec_sz> &in)
     {
-        if constexpr (std::is_integral_v<argT> || std::is_integral_v<resT>) {
+        if constexpr (std::is_integral_v<argT> && std::is_integral_v<resT>) {
 #pragma unroll
             for (int i = 0; i < vec_sz; ++i) {
                 auto tmp1 = res[i];
@@ -413,8 +479,71 @@ template <typename argT, typename resT> struct PowInplaceFunctor
                 res[i] = res_tmp;
             }
         }
+        else if constexpr ((std::is_floating_point_v<resT> ||
+                            std::is_same_v<resT, sycl::half>) &&
+                           std::is_integral_v<argT>)
+        {
+            if constexpr (std::is_same_v<argT, pown_exp_t>) {
+                res = sycl::pown(res, in);
+            }
+            else {
+                using dpctl::tensor::type_utils::vec_cast;
+
+                auto tmp = vec_cast<pown_exp_t, argT, vec_sz>(in);
+                res = sycl::pown(res, tmp);
+            }
+        }
         else {
             res = sycl::pow(res, in);
+        }
+    }
+};
+
+/* @brief Types supported by in-place pow */
+template <typename argTy, typename resTy> struct PowInplaceTypePairSupport
+{
+    /* value if true a kernel for <argTy, resTy> must be instantiated  */
+    static constexpr bool is_defined = std::disjunction< // disjunction is
+                                                         // C++17 feature,
+                                                         // supported by
+                                                         // DPC++ input bool
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, resTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, resTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, resTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, resTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, resTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, resTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, resTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, resTy, std::uint64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, resTy, sycl::half>,
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, resTy, sycl::half>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, resTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, float, resTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, resTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, double, resTy, double>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    resTy,
+                                    std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<double>,
+                                    resTy,
+                                    std::complex<double>>,
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename fnT, typename argT, typename resT>
+struct PowInplaceTypeMapFactory
+{
+    /*! @brief get typeid for output type of divide(T1 x, T2 y) */
+    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
+    {
+        if constexpr (PowInplaceTypePairSupport<argT, resT>::is_defined) {
+            return td_ns::GetTypeid<resT>{}.get();
+        }
+        else {
+            return td_ns::GetTypeid<void>{}.get();
         }
     }
 };
@@ -465,9 +594,7 @@ template <typename fnT, typename T1, typename T2> struct PowInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!PowInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -478,7 +605,7 @@ template <typename fnT, typename T1, typename T2> struct PowInplaceContigFactory
     }
 };
 
-template <typename resT, typename argT, typename IndexerT>
+template <typename argT, typename resT, typename IndexerT>
 class pow_inplace_strided_kernel;
 
 template <typename argTy, typename resTy>
@@ -505,9 +632,7 @@ struct PowInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename PowOutputType<T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!PowInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

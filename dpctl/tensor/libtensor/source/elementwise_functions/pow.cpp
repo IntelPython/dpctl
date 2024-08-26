@@ -68,6 +68,8 @@ namespace pow_fn_ns = dpctl::tensor::kernels::pow;
 static binary_contig_impl_fn_ptr_t pow_contig_dispatch_table[td_ns::num_types]
                                                             [td_ns::num_types];
 static int pow_output_id_table[td_ns::num_types][td_ns::num_types];
+static int pow_inplace_output_id_table[td_ns::num_types]
+                                      [td_ns::num_types];
 
 static binary_strided_impl_fn_ptr_t
     pow_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
@@ -101,19 +103,24 @@ void populate_pow_dispatch_tables(void)
         dtb3;
     dtb3.populate_dispatch_table(pow_contig_dispatch_table);
 
+    // which input types are supported, and what is the type of the result
+    using fn_ns::PowInplaceTypeMapFactory;
+    DispatchTableBuilder<int, PowInplaceTypeMapFactory, num_types> dtb4;
+    dtb4.populate_dispatch_table(pow_inplace_output_id_table);
+
     // function pointers for inplace operation on general strided arrays
     using fn_ns::PowInplaceStridedFactory;
     DispatchTableBuilder<binary_inplace_strided_impl_fn_ptr_t,
                          PowInplaceStridedFactory, num_types>
-        dtb4;
-    dtb4.populate_dispatch_table(pow_inplace_strided_dispatch_table);
+        dtb5;
+    dtb5.populate_dispatch_table(pow_inplace_strided_dispatch_table);
 
     // function pointers for inplace operation on contiguous inputs and output
     using fn_ns::PowInplaceContigFactory;
     DispatchTableBuilder<binary_inplace_contig_impl_fn_ptr_t,
                          PowInplaceContigFactory, num_types>
-        dtb5;
-    dtb5.populate_dispatch_table(pow_inplace_contig_dispatch_table);
+        dtb6;
+    dtb6.populate_dispatch_table(pow_inplace_contig_dispatch_table);
 };
 
 } // namespace impl
@@ -160,12 +167,13 @@ void init_pow(py::module_ m)
 
         using impl::pow_inplace_contig_dispatch_table;
         using impl::pow_inplace_strided_dispatch_table;
+        using impl::pow_inplace_output_id_table;
 
         auto pow_inplace_pyapi = [&](const arrayT &src, const arrayT &dst,
                                      sycl::queue &exec_q,
                                      const event_vecT &depends = {}) {
             return py_binary_inplace_ufunc(
-                src, dst, exec_q, depends, pow_output_id_table,
+                src, dst, exec_q, depends, pow_inplace_output_id_table,
                 // function pointers to handle inplace operation on
                 // contiguous arrays (pointers may be nullptr)
                 pow_inplace_contig_dispatch_table,
