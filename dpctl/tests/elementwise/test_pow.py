@@ -21,10 +21,29 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
-from dpctl.tensor._type_utils import _can_cast
+from dpctl.tensor._type_utils import _can_cast, _find_buf_dtype2
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 from .utils import _all_dtypes, _compare_dtypes, _usm_types
+
+
+def _using_pown(lhs_dt, rhs_dt, dev):
+    # find if type combination is legal with use of `sycl::pown`
+    dt1, dt2, res_dt = _find_buf_dtype2(
+        lhs_dt,
+        rhs_dt,
+        dpt.pow.get_type_result_resolver_function(),
+        dev,
+        dpt.pow.get_type_promotion_path_acceptance_function(),
+    )
+    if res_dt:
+        if dt1 is None:
+            dt1 = lhs_dt
+        if dt2 is None:
+            dt2 = rhs_dt
+        if dt1.kind == "f" and dt2.kind == "i":
+            return True
+    return False
 
 
 @pytest.mark.parametrize("op1_dtype", _all_dtypes[1:])
@@ -40,10 +59,18 @@ def test_power_dtype_matrix(op1_dtype, op2_dtype):
 
     r = dpt.pow(ar1, ar2)
     assert isinstance(r, dpt.usm_ndarray)
-    expected = np.power(
-        np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
-    )
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    dev = q.sycl_device
+    if _using_pown(ar1.dtype, ar2.dtype, dev):
+        expected = np.power(
+            np.ones(1, dtype=op1_dtype),
+            np.ones(1, dtype=op2_dtype),
+            dtype=r.dtype,
+        )
+    else:
+        expected = np.power(
+            np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
+        )
+        assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar1.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
     assert r.sycl_queue == ar1.sycl_queue
@@ -53,10 +80,17 @@ def test_power_dtype_matrix(op1_dtype, op2_dtype):
 
     r = dpt.pow(ar3[::-1], ar4[::2])
     assert isinstance(r, dpt.usm_ndarray)
-    expected = np.power(
-        np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
-    )
-    assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
+    if _using_pown(ar3.dtype, ar4.dtype, dev):
+        expected = np.power(
+            np.ones(1, dtype=op1_dtype),
+            np.ones(1, dtype=op2_dtype),
+            dtype=r.dtype,
+        )
+    else:
+        expected = np.power(
+            np.ones(1, dtype=op1_dtype), np.ones(1, dtype=op2_dtype)
+        )
+        assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
 
@@ -169,6 +203,25 @@ def test_pow_inplace_python_scalar(dtype):
         X **= complex(1)
 
 
+def _using_pown_inplace(lhs_dt, rhs_dt, dev):
+    # find if type combination is legal with use of `sycl::pown`
+    dt1, dt2, res_dt = _find_buf_dtype2(
+        lhs_dt,
+        rhs_dt,
+        dpt.pow.get_type_result_resolver_function(),
+        dev,
+        dpt.pow.get_type_promotion_path_acceptance_function(),
+    )
+    if res_dt:
+        if dt1 is None:
+            dt1 = lhs_dt
+        if dt2 is None:
+            dt2 = rhs_dt
+        if dt1.kind == "f" and dt2.kind == "i" and dt1 == lhs_dt:
+            return True
+    return False
+
+
 @pytest.mark.parametrize("op1_dtype", _all_dtypes[1:])
 @pytest.mark.parametrize("op2_dtype", _all_dtypes[1:])
 def test_pow_inplace_dtype_matrix(op1_dtype, op2_dtype):
@@ -183,7 +236,12 @@ def test_pow_inplace_dtype_matrix(op1_dtype, op2_dtype):
     dev = q.sycl_device
     _fp16 = dev.has_aspect_fp16
     _fp64 = dev.has_aspect_fp64
-    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+    ar1_dt = ar1.dtype
+    ar2_dt = ar2.dtype
+    # need to check for `pown` overload
+    if _can_cast(ar2_dt, ar1_dt, _fp16, _fp64) or _using_pown_inplace(
+        ar1_dt, ar2_dt, dev
+    ):
         ar1 **= ar2
         assert (
             dpt.asnumpy(ar1) == np.full(ar1.shape, 1, dtype=ar1.dtype)
@@ -192,7 +250,7 @@ def test_pow_inplace_dtype_matrix(op1_dtype, op2_dtype):
         ar3 = dpt.ones(sz, dtype=op1_dtype)
         ar4 = dpt.ones(2 * sz, dtype=op2_dtype)
 
-        ar3[::-1] *= ar4[::2]
+        ar3[::-1] **= ar4[::2]
         assert (
             dpt.asnumpy(ar3) == np.full(ar3.shape, 1, dtype=ar3.dtype)
         ).all()
