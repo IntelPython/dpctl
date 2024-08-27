@@ -50,13 +50,16 @@ namespace py_internal
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+using ew_cmn_ns::binary_contig_array_scalar_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_scalar_contig_array_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
 using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_scalar_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 
 // B19: ===== MULTIPLY (x1, x2)
@@ -194,7 +197,15 @@ void init_multiply(py::module_ m)
                 multiply_contig_matrix_contig_row_broadcast_dispatch_table,
                 // function pointers to handle operation of c-contig matrix
                 // and c-contig row with broadcasting (may be nullptr)
-                multiply_contig_row_contig_matrix_broadcast_dispatch_table);
+                multiply_contig_row_contig_matrix_broadcast_dispatch_table,
+                // function pointers to handle operation of contiguous array
+                // and scalar with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_array_scalar_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of scalar and
+                // contiguous array with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_scalar_contig_array_broadcast_impl_fn_ptr_t>{});
         };
         auto multiply_result_type_pyapi = [&](const py::dtype &dtype1,
                                               const py::dtype &dtype2) {
@@ -225,7 +236,12 @@ void init_multiply(py::module_ m)
                 // function pointers to handle inplace operation on
                 // c-contig matrix with c-contig row with broadcasting
                 // (may be nullptr)
-                multiply_inplace_row_matrix_dispatch_table);
+                multiply_inplace_row_matrix_dispatch_table,
+                // function pointers to handle in-place operation on
+                // contiguous array with scalar with broadcasting
+                // (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_inplace_scalar_contig_impl_fn_ptr_t>{});
         };
         m.def("_multiply_inplace", multiply_inplace_pyapi, "", py::arg("lhs"),
               py::arg("rhs"), py::arg("sycl_queue"),

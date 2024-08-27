@@ -50,13 +50,16 @@ namespace py_internal
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+using ew_cmn_ns::binary_contig_array_scalar_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_scalar_contig_array_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
 using ew_cmn_ns::binary_inplace_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_row_matrix_broadcast_impl_fn_ptr_t;
+using ew_cmn_ns::binary_inplace_scalar_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_inplace_strided_impl_fn_ptr_t;
 
 // B06: ===== BITWISE_RIGHT_SHIFT (x1, x2)
@@ -165,7 +168,15 @@ void init_bitwise_right_shift(py::module_ m)
                 // function pointers to handle operation of c-contig matrix and
                 // c-contig row with broadcasting (may be nullptr)
                 td_ns::NullPtrTable<
-                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
+                    binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of contiguous array
+                // and scalar with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_contig_array_scalar_broadcast_impl_fn_ptr_t>{},
+                // function pointers to handle operation of scalar and
+                // contiguous array with broadcasting (may be nullptr)
+                td_ns::NullPtrTable<
+                    binary_scalar_contig_array_broadcast_impl_fn_ptr_t>{});
         };
         auto bitwise_right_shift_result_type_pyapi =
             [&](const py::dtype &dtype1, const py::dtype &dtype2) {
@@ -198,7 +209,12 @@ void init_bitwise_right_shift(py::module_ m)
                     // c-contig matrix with c-contig row with broadcasting
                     // (may be nullptr)
                     td_ns::NullPtrTable<
-                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{});
+                        binary_inplace_row_matrix_broadcast_impl_fn_ptr_t>{},
+                    // function pointers to handle in-place operation on
+                    // contiguous array with scalar with broadcasting
+                    // (may be nullptr)
+                    td_ns::NullPtrTable<
+                        binary_inplace_scalar_contig_impl_fn_ptr_t>{});
             };
         m.def("_bitwise_right_shift_inplace", bitwise_right_shift_inplace_pyapi,
               "", py::arg("lhs"), py::arg("rhs"), py::arg("sycl_queue"),

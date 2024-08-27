@@ -291,6 +291,12 @@ bool isEqual(Container const &c, std::initializer_list<T> const &l)
 {
     return std::equal(std::begin(c), std::end(c), std::begin(l), std::end(l));
 }
+
+template <class Container, typename T>
+bool isEqual(Container const &c, const T &v)
+{
+    return std::all_of(std::begin(c), std::end(c), [&](T i) { return i == v; });
+}
 } // namespace
 
 /*! @brief Template implementing Python API for binary elementwise
@@ -299,7 +305,9 @@ template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
           typename contig_matrix_row_dispatchT,
-          typename contig_row_matrix_dispatchT>
+          typename contig_row_matrix_dispatchT,
+          typename contig_array_scalar_dispatchT,
+          typename contig_scalar_array_dispatchT>
 std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const dpctl::tensor::usm_ndarray &src1,
     const dpctl::tensor::usm_ndarray &src2,
@@ -313,7 +321,11 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const contig_matrix_row_dispatchT
         &contig_matrix_row_broadcast_dispatch_table,
     const contig_row_matrix_dispatchT
-        &contig_row_matrix_broadcast_dispatch_table)
+        &contig_row_matrix_broadcast_dispatch_table,
+    const contig_array_scalar_dispatchT
+        &contig_array_scalar_broadcast_dispatch_table,
+    const contig_scalar_array_dispatchT
+        &contig_scalar_array_broadcast_dispatch_table)
 {
     // check type_nums
     int src1_typenum = src1.get_typenum();
@@ -412,11 +424,48 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
         }
     }
 
-    // simplify strides
     auto const &src1_strides = src1.get_strides_vector();
     auto const &src2_strides = src2.get_strides_vector();
     auto const &dst_strides = dst.get_strides_vector();
 
+    py::ssize_t zero_stride(0);
+
+    if (((is_src1_c_contig && is_dst_c_contig) ||
+         (is_src1_f_contig && is_dst_f_contig)) &&
+        isEqual(src2_strides, zero_stride))
+    {
+        auto scalar_fn =
+            contig_array_scalar_broadcast_dispatch_table[src1_typeid]
+                                                        [src2_typeid];
+
+        if (scalar_fn != nullptr) {
+            auto comp_ev = scalar_fn(exec_q, src_nelems, src1_data, 0,
+                                     src2_data, 0, dst_data, 0, depends);
+            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                exec_q, {src1, src2, dst}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+    else if (((is_src2_c_contig && is_dst_c_contig) ||
+              (is_src2_f_contig && is_dst_f_contig)) &&
+             isEqual(src1_strides, zero_stride))
+    {
+        auto scalar_fn =
+            contig_scalar_array_broadcast_dispatch_table[src1_typeid]
+                                                        [src2_typeid];
+
+        if (scalar_fn != nullptr) {
+            auto comp_ev = scalar_fn(exec_q, src_nelems, src1_data, 0,
+                                     src2_data, 0, dst_data, 0, depends);
+            sycl::event ht_ev = dpctl::utils::keep_args_alive(
+                exec_q, {src1, src2, dst}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+
+    // simplify strides
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
     shT simplified_src1_strides;
@@ -622,7 +671,8 @@ py::object py_binary_ufunc_result_type(const py::dtype &input1_dtype,
 template <typename output_typesT,
           typename contig_dispatchT,
           typename strided_dispatchT,
-          typename contig_row_matrix_dispatchT>
+          typename contig_row_matrix_dispatchT,
+          typename contig_array_scalar_dispatchT>
 std::pair<sycl::event, sycl::event>
 py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                         const dpctl::tensor::usm_ndarray &rhs,
@@ -633,7 +683,9 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                         const contig_dispatchT &contig_dispatch_table,
                         const strided_dispatchT &strided_dispatch_table,
                         const contig_row_matrix_dispatchT
-                            &contig_row_matrix_broadcast_dispatch_table)
+                            &contig_row_matrix_broadcast_dispatch_table,
+                        const contig_array_scalar_dispatchT
+                            &contig_array_scalar_broadcast_dispatch_table)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(lhs);
 
@@ -721,10 +773,29 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         }
     }
 
-    // simplify strides
     auto const &rhs_strides = rhs.get_strides_vector();
     auto const &lhs_strides = lhs.get_strides_vector();
 
+    py::ssize_t zero_stride(0);
+
+    if ((is_lhs_c_contig || is_lhs_f_contig) &&
+        isEqual(rhs_strides, zero_stride))
+    {
+        auto scalar_fn =
+            contig_array_scalar_broadcast_dispatch_table[rhs_typeid]
+                                                        [lhs_typeid];
+
+        if (scalar_fn != nullptr) {
+            auto comp_ev = scalar_fn(exec_q, rhs_nelems, rhs_data, 0, lhs_data,
+                                     0, depends);
+            sycl::event ht_ev =
+                dpctl::utils::keep_args_alive(exec_q, {rhs, lhs}, {comp_ev});
+
+            return std::make_pair(ht_ev, comp_ev);
+        }
+    }
+
+    // simplify strides
     using shT = std::vector<py::ssize_t>;
     shT simplified_shape;
     shT simplified_rhs_strides;

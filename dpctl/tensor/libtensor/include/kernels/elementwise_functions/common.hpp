@@ -685,6 +685,266 @@ public:
     }
 };
 
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          typename BinaryOperatorT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+struct BinaryScalarContigArrayFunctor
+{
+private:
+    const argT1 *in1 = nullptr;
+    const argT2 *in2 = nullptr;
+    resT *out = nullptr;
+    const size_t nelems_;
+
+public:
+    BinaryScalarContigArrayFunctor(const argT1 *inp1,
+                                   const argT2 *inp2,
+                                   resT *res,
+                                   const size_t n_elems)
+        : in1(inp1), in2(inp2), out(res), nelems_(n_elems)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        BinaryOperatorT op{};
+        /* Each work-item processes vec_sz elements, contiguous in memory */
+        const argT1 arg1_scl = in1[0];
+        if constexpr (enable_sg_loadstore &&
+                      BinaryOperatorT::supports_sg_loadstore::value &&
+                      BinaryOperatorT::supports_vec::value)
+        {
+            auto sg = ndit.get_sub_group();
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+
+            size_t base = n_vecs * vec_sz *
+                          (ndit.get_group(0) * ndit.get_local_range(0) +
+                           sg.get_group_id()[0] * sgSize);
+
+            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
+                (sgSize == maxsgSize))
+            {
+                sycl::vec<argT2, vec_sz> arg2_vec;
+                sycl::vec<resT, vec_sz> res_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
+                    auto in2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in2[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out[offset]);
+
+                    arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
+                    res_vec = op(arg1_scl, arg2_vec);
+                    sg.store<vec_sz>(out_multi_ptr, res_vec);
+                }
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
+                     k += sgSize)
+                {
+                    out[k] = op(arg1_scl, in2[k]);
+                }
+            }
+        }
+        else if constexpr (enable_sg_loadstore &&
+                           BinaryOperatorT::supports_sg_loadstore::value)
+        {
+            auto sg = ndit.get_sub_group();
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+
+            size_t base = n_vecs * vec_sz *
+                          (ndit.get_group(0) * ndit.get_local_range(0) +
+                           sg.get_group_id()[0] * sgSize);
+
+            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
+                (sgSize == maxsgSize))
+            {
+                sycl::vec<argT2, vec_sz> arg2_vec;
+                sycl::vec<resT, vec_sz> res_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
+                    auto in2_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in2[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out[offset]);
+
+                    arg2_vec = sg.load<vec_sz>(in2_multi_ptr);
+#pragma unroll
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                        res_vec[vec_id] = op(arg1_scl, arg2_vec[vec_id]);
+                    }
+                    sg.store<vec_sz>(out_multi_ptr, res_vec);
+                }
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
+                     k += sgSize)
+                {
+                    out[k] = op(arg1_scl, in2[k]);
+                }
+            }
+        }
+        else {
+            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            size_t base = ndit.get_global_linear_id();
+
+            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            for (size_t offset = base;
+                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
+                 offset += sgSize)
+            {
+                out[offset] = op(arg1_scl, in2[offset]);
+            }
+        }
+    }
+};
+
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          typename BinaryOperatorT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+struct BinaryContigArrayScalarFunctor
+{
+private:
+    const argT1 *in1 = nullptr;
+    const argT2 *in2 = nullptr;
+    resT *out = nullptr;
+    const size_t nelems_;
+
+public:
+    BinaryContigArrayScalarFunctor(const argT1 *inp1,
+                                   const argT2 *inp2,
+                                   resT *res,
+                                   const size_t n_elems)
+        : in1(inp1), in2(inp2), out(res), nelems_(n_elems)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        BinaryOperatorT op{};
+        /* Each work-item processes vec_sz elements, contiguous in memory */
+        const argT2 arg2_scl = in2[0];
+        if constexpr (enable_sg_loadstore &&
+                      BinaryOperatorT::supports_sg_loadstore::value &&
+                      BinaryOperatorT::supports_vec::value)
+        {
+            auto sg = ndit.get_sub_group();
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+
+            size_t base = n_vecs * vec_sz *
+                          (ndit.get_group(0) * ndit.get_local_range(0) +
+                           sg.get_group_id()[0] * sgSize);
+
+            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
+                (sgSize == maxsgSize))
+            {
+                sycl::vec<argT1, vec_sz> arg1_vec;
+                sycl::vec<resT, vec_sz> res_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
+                    auto in1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in1[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out[offset]);
+
+                    arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
+                    res_vec = op(arg1_vec, arg2_scl);
+                    sg.store<vec_sz>(out_multi_ptr, res_vec);
+                }
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
+                     k += sgSize)
+                {
+                    out[k] = op(in1[k], arg2_scl);
+                }
+            }
+        }
+        else if constexpr (enable_sg_loadstore &&
+                           BinaryOperatorT::supports_sg_loadstore::value)
+        {
+            auto sg = ndit.get_sub_group();
+            std::uint8_t sgSize = sg.get_local_range()[0];
+            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+
+            size_t base = n_vecs * vec_sz *
+                          (ndit.get_group(0) * ndit.get_local_range(0) +
+                           sg.get_group_id()[0] * sgSize);
+
+            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
+                (sgSize == maxsgSize))
+            {
+                sycl::vec<argT1, vec_sz> arg1_vec;
+                sycl::vec<resT, vec_sz> res_vec;
+
+#pragma unroll
+                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    size_t offset = base + static_cast<size_t>(it) *
+                                               static_cast<size_t>(sgSize);
+                    auto in1_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in1[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out[offset]);
+
+                    arg1_vec = sg.load<vec_sz>(in1_multi_ptr);
+#pragma unroll
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                        res_vec[vec_id] = op(arg1_vec[vec_id], arg2_scl);
+                    }
+                    sg.store<vec_sz>(out_multi_ptr, res_vec);
+                }
+            }
+            else {
+                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
+                     k += sgSize)
+                {
+                    out[k] = op(in1[k], arg2_scl);
+                }
+            }
+        }
+        else {
+            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            size_t base = ndit.get_global_linear_id();
+
+            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            for (size_t offset = base;
+                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
+                 offset += sgSize)
+            {
+                out[offset] = op(in1[offset], arg2_scl);
+            }
+        }
+    }
+};
+
 // Typedefs for function pointers
 
 typedef sycl::event (*unary_contig_impl_fn_ptr_t)(
@@ -748,6 +1008,28 @@ typedef sycl::event (*binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t)(
     sycl::queue &,
     std::vector<sycl::event> &,
     size_t,
+    size_t,
+    const char *,
+    ssize_t,
+    const char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_contig_array_scalar_broadcast_impl_fn_ptr_t)(
+    sycl::queue &,
+    size_t,
+    const char *,
+    ssize_t,
+    const char *,
+    ssize_t,
+    char *,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+typedef sycl::event (*binary_scalar_contig_array_broadcast_impl_fn_ptr_t)(
+    sycl::queue &,
     size_t,
     const char *,
     ssize_t,
@@ -1037,6 +1319,160 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
 
     return comp_ev;
 };
+
+template <typename argTy1,
+          typename argTy2,
+          template <typename T1, typename T2>
+          class BinaryOutputType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    unsigned int vs,
+                    unsigned int nv,
+                    bool enable_sg_loadstore>
+          class BinaryContigFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    unsigned int vs,
+                    unsigned int nv>
+          class kernel_name,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+sycl::event
+binary_scalar_contig_array_impl(sycl::queue &exec_q,
+                                size_t nelems,
+                                const char *arg1_p,
+                                ssize_t arg1_offset,
+                                const char *arg2_p,
+                                ssize_t arg2_offset,
+                                char *res_p,
+                                ssize_t res_offset,
+                                const std::vector<sycl::event> &depends = {})
+{
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        const size_t lws = 128;
+        const size_t n_groups =
+            ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+        const auto gws_range = sycl::range<1>(n_groups * lws);
+        const auto lws_range = sycl::range<1>(lws);
+
+        using resTy = typename BinaryOutputType<argTy1, argTy2>::value_type;
+
+        const argTy1 *arg1_tp =
+            reinterpret_cast<const argTy1 *>(arg1_p) + arg1_offset;
+        const argTy2 *arg2_tp =
+            reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
+        resTy *res_tp = reinterpret_cast<resTy *>(res_p) + res_offset;
+
+        // scalar arg1, so arg1 is not required to be aligned
+        // as no vec of arg1 is ever loaded
+        if (is_aligned<required_alignment>(arg2_tp) &&
+            is_aligned<required_alignment>(res_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     enable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                          res_tp, nelems));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     disable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                           res_tp, nelems));
+        }
+    });
+    return comp_ev;
+}
+
+template <typename argTy1,
+          typename argTy2,
+          template <typename T1, typename T2>
+          class BinaryOutputType,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    unsigned int vs,
+                    unsigned int nv,
+                    bool enable_sg_loadstore>
+          class BinaryContigFunctorT,
+          template <typename T1,
+                    typename T2,
+                    typename T3,
+                    unsigned int vs,
+                    unsigned int nv>
+          class kernel_name,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2>
+sycl::event
+binary_contig_array_scalar_impl(sycl::queue &exec_q,
+                                size_t nelems,
+                                const char *arg1_p,
+                                ssize_t arg1_offset,
+                                const char *arg2_p,
+                                ssize_t arg2_offset,
+                                char *res_p,
+                                ssize_t res_offset,
+                                const std::vector<sycl::event> &depends = {})
+{
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        const size_t lws = 128;
+        const size_t n_groups =
+            ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+        const auto gws_range = sycl::range<1>(n_groups * lws);
+        const auto lws_range = sycl::range<1>(lws);
+
+        using resTy = typename BinaryOutputType<argTy1, argTy2>::value_type;
+
+        const argTy1 *arg1_tp =
+            reinterpret_cast<const argTy1 *>(arg1_p) + arg1_offset;
+        const argTy2 *arg2_tp =
+            reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
+        resTy *res_tp = reinterpret_cast<resTy *>(res_p) + res_offset;
+
+        // scalar arg2, so arg2 is not required to be aligned
+        // as no vec of arg2 is ever loaded
+        if (is_aligned<required_alignment>(arg1_tp) &&
+            is_aligned<required_alignment>(res_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using KernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     enable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                          res_tp, nelems));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using InnerKernelName =
+                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            using KernelName =
+                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+            cgh.parallel_for<KernelName>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
+                                     disable_sg_loadstore>(arg1_tp, arg2_tp,
+                                                           res_tp, nelems));
+        }
+    });
+    return comp_ev;
+}
 
 } // namespace elementwise_common
 } // namespace kernels

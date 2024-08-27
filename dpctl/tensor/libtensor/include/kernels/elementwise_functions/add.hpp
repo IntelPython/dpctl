@@ -105,6 +105,42 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
                 tmp);
         }
     }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT1, vec_sz> &in1,
+                                       const argT2 &in2) const
+    {
+        auto tmp = in1 + in2;
+        if constexpr (std::is_same_v<resT,
+                                     typename decltype(tmp)::element_type>)
+        {
+            return tmp;
+        }
+        else {
+            using dpctl::tensor::type_utils::vec_cast;
+
+            return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
+                tmp);
+        }
+    }
+
+    template <int vec_sz>
+    sycl::vec<resT, vec_sz>
+    operator()(const argT1 &in1, const sycl::vec<argT2, vec_sz> &in2) const
+    {
+        auto tmp = in1 + in2;
+        if constexpr (std::is_same_v<resT,
+                                     typename decltype(tmp)::element_type>)
+        {
+            return tmp;
+        }
+        else {
+            using dpctl::tensor::type_utils::vec_cast;
+
+            return vec_cast<resT, typename decltype(tmp)::element_type, vec_sz>(
+                tmp);
+        }
+    }
 };
 
 template <typename argT1,
@@ -393,6 +429,126 @@ struct AddContigRowContigMatrixBroadcastFactory
     }
 };
 
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using AddScalarContigArrayFunctor =
+    elementwise_common::BinaryScalarContigArrayFunctor<
+        argT1,
+        argT2,
+        resT,
+        AddFunctor<argT1, argT2, resT>,
+        vec_sz,
+        n_vecs,
+        enable_sg_loadstore>;
+
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using AddContigArrayScalarFunctor =
+    elementwise_common::BinaryContigArrayScalarFunctor<
+        argT1,
+        argT2,
+        resT,
+        AddFunctor<argT1, argT2, resT>,
+        vec_sz,
+        n_vecs,
+        enable_sg_loadstore>;
+
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class add_scalar_contig_array_kernel;
+
+template <typename argTy1, typename argTy2>
+sycl::event
+add_scalar_contig_array_impl(sycl::queue &exec_q,
+                             size_t nelems,
+                             const char *arg1_p,
+                             ssize_t arg1_offset,
+                             const char *arg2_p,
+                             ssize_t arg2_offset,
+                             char *res_p,
+                             ssize_t res_offset,
+                             const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_scalar_contig_array_impl<
+        argTy1, argTy2, AddOutputType, AddScalarContigArrayFunctor,
+        add_scalar_contig_array_kernel>(exec_q, nelems, arg1_p, arg1_offset,
+                                        arg2_p, arg2_offset, res_p, res_offset,
+                                        depends);
+}
+
+template <typename argT1,
+          typename argT2,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class add_contig_array_scalar_kernel;
+
+template <typename argTy1, typename argTy2>
+sycl::event
+add_contig_array_scalar_impl(sycl::queue &exec_q,
+                             size_t nelems,
+                             const char *arg1_p,
+                             ssize_t arg1_offset,
+                             const char *arg2_p,
+                             ssize_t arg2_offset,
+                             char *res_p,
+                             ssize_t res_offset,
+                             const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_contig_array_scalar_impl<
+        argTy1, argTy2, AddOutputType, AddContigArrayScalarFunctor,
+        add_contig_array_scalar_kernel>(exec_q, nelems, arg1_p, arg1_offset,
+                                        arg2_p, arg2_offset, res_p, res_offset,
+                                        depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct AddScalarContigArrayFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
+                                     void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = add_scalar_contig_array_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
+template <typename fnT, typename T1, typename T2>
+struct AddContigArrayScalarFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
+                                     void>)
+        {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = add_contig_array_scalar_impl<T1, T2>;
+            return fn;
+        }
+    }
+};
+
 template <typename argT, typename resT> struct AddInplaceFunctor
 {
 
@@ -406,6 +562,12 @@ template <typename argT, typename resT> struct AddInplaceFunctor
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,
                     const sycl::vec<argT, vec_sz> &in)
+    {
+        res += in;
+    }
+
+    template <int vec_sz>
+    void operator()(sycl::vec<resT, vec_sz> &res, const argT &in)
     {
         res += in;
     }
@@ -602,6 +764,58 @@ struct AddInplaceRowMatrixBroadcastFactory
                 fnT fn = add_inplace_row_matrix_broadcast_impl<T1, T2>;
                 return fn;
             }
+        }
+    }
+};
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz = 4,
+          unsigned int n_vecs = 2,
+          bool enable_sg_loadstore = true>
+using AddInplaceScalarContigFunctor =
+    elementwise_common::BinaryInplaceScalarContigFunctor<
+        argT,
+        resT,
+        AddInplaceFunctor<argT, resT>,
+        vec_sz,
+        n_vecs,
+        enable_sg_loadstore>;
+
+template <typename argT,
+          typename resT,
+          unsigned int vec_sz,
+          unsigned int n_vecs>
+class add_inplace_scalar_contig_kernel;
+
+template <typename argTy, typename resTy>
+sycl::event
+add_inplace_scalar_contig_impl(sycl::queue &exec_q,
+                               size_t nelems,
+                               const char *arg_p,
+                               ssize_t arg_offset,
+                               char *res_p,
+                               ssize_t res_offset,
+                               const std::vector<sycl::event> &depends = {})
+{
+    return elementwise_common::binary_inplace_scalar_contig_impl<
+        argTy, resTy, AddInplaceScalarContigFunctor,
+        add_inplace_scalar_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
+                                          res_p, res_offset, depends);
+}
+
+template <typename fnT, typename T1, typename T2>
+struct AddInplaceScalarContigFactory
+{
+    fnT get()
+    {
+        if constexpr (!AddInplaceTypePairSupport<T1, T2>::is_defined) {
+            fnT fn = nullptr;
+            return fn;
+        }
+        else {
+            fnT fn = add_inplace_scalar_contig_impl<T1, T2>;
+            return fn;
         }
     }
 };
