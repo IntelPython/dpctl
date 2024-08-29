@@ -132,8 +132,7 @@ using AddStridedFunctor =
 
 template <typename T1, typename T2> struct AddOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
@@ -442,10 +441,7 @@ class add_inplace_contig_kernel;
 template <typename argTy, typename resTy> struct AddInplaceTypePairSupport
 {
     /* value if true a kernel for <argTy, resTy> must be instantiated  */
-    static constexpr bool is_defined = std::disjunction< // disjunction is
-                                                         // C++17 feature,
-                                                         // supported by
-                                                         // DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, resTy, bool>,
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, resTy, std::int8_t>,
         td_ns::TypePairDefinedEntry<argTy, std::uint8_t, resTy, std::uint8_t>,

@@ -116,8 +116,7 @@ using SignContigFunctor =
 
 template <typename T> struct SignOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::TypeMapResultEntry<T, std::uint8_t>,
         td_ns::TypeMapResultEntry<T, std::uint16_t>,
         td_ns::TypeMapResultEntry<T, std::uint32_t>,

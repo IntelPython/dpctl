@@ -172,8 +172,7 @@ using SinhStridedFunctor = elementwise_common::
 
 template <typename T> struct SinhOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,

@@ -91,8 +91,7 @@ using SignbitStridedFunctor = elementwise_common::
 
 template <typename argTy> struct SignbitOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::TypeMapResultEntry<argTy, sycl::half, bool>,
         td_ns::TypeMapResultEntry<argTy, float, bool>,
         td_ns::TypeMapResultEntry<argTy, double, bool>,

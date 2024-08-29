@@ -43,8 +43,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 template <typename T1, typename T2> struct DotAtomicOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint32_t,
                                         T2,
@@ -85,8 +84,7 @@ template <typename T1, typename T2> struct DotAtomicOutputType
 // gemm, gevm, and dot product share output type struct
 template <typename T1, typename T2> struct DotNoAtomicOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,

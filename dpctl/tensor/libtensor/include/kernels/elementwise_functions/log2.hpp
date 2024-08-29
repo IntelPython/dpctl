@@ -115,8 +115,7 @@ using Log2StridedFunctor = elementwise_common::
 
 template <typename T> struct Log2OutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::TypeMapResultEntry<T, sycl::half, sycl::half>,
         td_ns::TypeMapResultEntry<T, float, float>,
         td_ns::TypeMapResultEntry<T, double, double>,

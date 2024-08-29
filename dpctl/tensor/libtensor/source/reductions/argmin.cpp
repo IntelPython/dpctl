@@ -69,9 +69,7 @@ template <typename argTy, typename outTy>
 struct TypePairSupportForArgminReductionTemps
 {
 
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
         // input int8_t
         td_ns::TypePairDefinedEntry<argTy, std::int8_t, outTy, std::int64_t>,

@@ -79,9 +79,7 @@ struct TypePairSupportDataForSumReductionAtomic
 
     /* value if true a kernel for <argTy, outTy> must be instantiated, false
      * otherwise */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,
@@ -121,9 +119,7 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForSumReductionTemps
 {
 
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int8_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::uint8_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int16_t>,

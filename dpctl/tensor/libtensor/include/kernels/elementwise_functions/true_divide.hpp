@@ -134,8 +134,7 @@ using TrueDivideStridedFunctor = elementwise_common::BinaryStridedFunctor<
 
 template <typename T1, typename T2> struct TrueDivideOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1,
                                         sycl::half,
                                         T2,
@@ -445,9 +444,7 @@ struct TrueDivideInplaceTypePairSupport
 {
 
     /* value if true a kernel for <argTy, resTy> must be instantiated  */
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, sycl::half, resTy, sycl::half>,
         td_ns::TypePairDefinedEntry<argTy, float, resTy, float>,
         td_ns::TypePairDefinedEntry<argTy, double, resTy, double>,
