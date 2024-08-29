@@ -192,6 +192,8 @@ template <typename T1, typename T2> struct AddOutputType
                                         std::complex<double>,
                                         std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -222,9 +224,7 @@ template <typename fnT, typename T1, typename T2> struct AddContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!AddOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -272,9 +272,7 @@ template <typename fnT, typename T1, typename T2> struct AddStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AddOutputType<T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!AddOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -323,12 +321,12 @@ struct AddContigMatrixContigRowBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename AddOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (!AddOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
+            using resT = typename AddOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
                           dpctl::tensor::type_utils::is_complex<resT>::value)
@@ -370,12 +368,12 @@ struct AddContigRowContigMatrixBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename AddOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (!AddOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
+            using resT = typename AddOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
                           dpctl::tensor::type_utils::is_complex<resT>::value)

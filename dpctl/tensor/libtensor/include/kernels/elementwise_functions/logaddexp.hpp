@@ -130,6 +130,8 @@ template <typename T1, typename T2> struct LogAddExpOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -160,10 +162,7 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename LogAddExpOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!LogAddExpOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -180,7 +179,6 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename LogAddExpOutputType<T1, T2>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
@@ -214,10 +212,7 @@ template <typename fnT, typename T1, typename T2> struct LogAddExpStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename LogAddExpOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!LogAddExpOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

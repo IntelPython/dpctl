@@ -96,6 +96,8 @@ template <typename argTy> struct SignbitOutputType
         td_ns::TypeMapResultEntry<argTy, float, bool>,
         td_ns::TypeMapResultEntry<argTy, double, bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
@@ -117,9 +119,7 @@ template <typename fnT, typename T> struct SignbitContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename SignbitOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!SignbitOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -166,9 +166,7 @@ template <typename fnT, typename T> struct SignbitStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename SignbitOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!SignbitOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

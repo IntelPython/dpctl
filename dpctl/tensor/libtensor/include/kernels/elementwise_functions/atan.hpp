@@ -162,6 +162,8 @@ template <typename T> struct AtanOutputType
         td_ns::TypeMapResultEntry<T, std::complex<float>>,
         td_ns::TypeMapResultEntry<T, std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
@@ -183,9 +185,7 @@ template <typename fnT, typename T> struct AtanContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AtanOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!AtanOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -231,9 +231,7 @@ template <typename fnT, typename T> struct AtanStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename AtanOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!AtanOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

@@ -197,6 +197,8 @@ template <typename T1, typename T2> struct FloorDivideOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -229,10 +231,7 @@ struct FloorDivideContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename FloorDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!FloorDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -284,10 +283,7 @@ struct FloorDivideStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename FloorDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!FloorDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

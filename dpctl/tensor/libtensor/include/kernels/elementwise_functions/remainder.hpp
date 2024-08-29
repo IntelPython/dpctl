@@ -215,6 +215,8 @@ template <typename T1, typename T2> struct RemainderOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -245,10 +247,7 @@ template <typename fnT, typename T1, typename T2> struct RemainderContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename RemainderOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!RemainderOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -298,10 +297,7 @@ template <typename fnT, typename T1, typename T2> struct RemainderStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename RemainderOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!RemainderOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

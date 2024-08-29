@@ -173,6 +173,8 @@ template <typename T1, typename T2> struct TrueDivideOutputType
                                         double,
                                         std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -204,10 +206,7 @@ template <typename fnT, typename T1, typename T2> struct TrueDivideContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -259,10 +258,7 @@ struct TrueDivideStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -322,10 +318,7 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -375,12 +368,12 @@ struct TrueDivideContigRowContigMatrixBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename TrueDivideOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
+            using resT = typename TrueDivideOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
                           dpctl::tensor::type_utils::is_complex<resT>::value)
