@@ -61,9 +61,9 @@ typedef sycl::event (*full_contig_fn_ptr_t)(sycl::queue &,
  *
  * @param exec_q  Sycl queue to which kernel is submitted for execution.
  * @param nelems  Length of the sequence
- * @param py_value Python object representing the value to fill the array with.
+ * @param py_value  Python object representing the value to fill the array with.
  * Must be convertible to `dstTy`.
- * @param dst_p Kernel accessible USM pointer to the start of array to be
+ * @param dst_p  Kernel accessible USM pointer to the start of array to be
  * populated.
  * @param depends  List of events to wait for before starting computations, if
  * any.
@@ -80,10 +80,65 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
 {
     dstTy fill_v = py::cast<dstTy>(py_value);
 
-    using dpctl::tensor::kernels::constructors::full_contig_impl;
+    sycl::event fill_ev;
 
-    sycl::event fill_ev =
-        full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
+    if constexpr (sizeof(dstTy) == sizeof(char)) {
+        const auto memset_val = sycl::bit_cast<unsigned char>(fill_v);
+        fill_ev = exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+
+            cgh.memset(reinterpret_cast<void *>(dst_p), memset_val,
+                       nelems * sizeof(dstTy));
+        });
+    }
+    else {
+        bool is_zero = false;
+        if constexpr (sizeof(dstTy) == 1) {
+            is_zero = (std::uint8_t{0} == sycl::bit_cast<std::uint8_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 2) {
+            is_zero =
+                (std::uint16_t{0} == sycl::bit_cast<std::uint16_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 4) {
+            is_zero =
+                (std::uint32_t{0} == sycl::bit_cast<std::uint32_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 8) {
+            is_zero =
+                (std::uint64_t{0} == sycl::bit_cast<std::uint64_t>(fill_v));
+        }
+        else if constexpr (sizeof(dstTy) == 16) {
+            struct UInt128
+            {
+
+                constexpr UInt128() : v1{}, v2{} {}
+                UInt128(const UInt128 &) = default;
+
+                operator bool() const { return bool(!v1) && bool(!v2); }
+
+                std::uint64_t v1;
+                std::uint64_t v2;
+            };
+            is_zero = static_cast<bool>(sycl::bit_cast<UInt128>(fill_v));
+        }
+
+        if (is_zero) {
+            constexpr int memset_val = 0;
+            fill_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
+
+                cgh.memset(reinterpret_cast<void *>(dst_p), memset_val,
+                           nelems * sizeof(dstTy));
+            });
+        }
+        else {
+            using dpctl::tensor::kernels::constructors::full_contig_impl;
+
+            fill_ev =
+                full_contig_impl<dstTy>(exec_q, nelems, fill_v, dst_p, depends);
+        }
+    }
 
     return fill_ev;
 }
@@ -97,7 +152,62 @@ template <typename fnT, typename Ty> struct FullContigFactory
     }
 };
 
+typedef sycl::event (*full_strided_fn_ptr_t)(sycl::queue &,
+                                             int,
+                                             size_t,
+                                             py::ssize_t *,
+                                             const py::object &,
+                                             char *,
+                                             const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to submit kernel to fill given strided memory allocation
+ * with specified value.
+ *
+ * @param exec_q  Sycl queue to which kernel is submitted for execution.
+ * @param nd  Array dimensionality
+ * @param nelems  Length of the sequence
+ * @param shape_strides  Kernel accessible USM pointer to packed shape and
+ * strides of array.
+ * @param py_value  Python object representing the value to fill the array with.
+ * Must be convertible to `dstTy`.
+ * @param dst_p  Kernel accessible USM pointer to the start of array to be
+ * populated.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @return Event to wait on to ensure that computation completes.
+ * @defgroup CtorKernels
+ */
+template <typename dstTy>
+sycl::event full_strided_impl(sycl::queue &exec_q,
+                              int nd,
+                              size_t nelems,
+                              py::ssize_t *shape_strides,
+                              const py::object &py_value,
+                              char *dst_p,
+                              const std::vector<sycl::event> &depends)
+{
+    dstTy fill_v = py::cast<dstTy>(py_value);
+
+    using dpctl::tensor::kernels::constructors::full_strided_impl;
+    sycl::event fill_ev = full_strided_impl<dstTy>(
+        exec_q, nd, nelems, shape_strides, fill_v, dst_p, depends);
+
+    return fill_ev;
+}
+
+template <typename fnT, typename Ty> struct FullStridedFactory
+{
+    fnT get()
+    {
+        fnT f = full_strided_impl<Ty>;
+        return f;
+    }
+};
+
 static full_contig_fn_ptr_t full_contig_dispatch_vector[td_ns::num_types];
+static full_strided_fn_ptr_t full_strided_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
 usm_ndarray_full(const py::object &py_value,
@@ -105,7 +215,7 @@ usm_ndarray_full(const py::object &py_value,
                  sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
-    // start, end should be coercible into data type of dst
+    // py_value should be coercible into data type of dst
 
     py::ssize_t dst_nelems = dst.get_size();
 
@@ -126,7 +236,6 @@ usm_ndarray_full(const py::object &py_value,
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
     char *dst_data = dst.get_data();
-    sycl::event full_event;
 
     if (dst_nelems == 1 || dst.is_c_contiguous() || dst.is_f_contiguous()) {
         auto fn = full_contig_dispatch_vector[dst_typeid];
@@ -140,8 +249,42 @@ usm_ndarray_full(const py::object &py_value,
             full_contig_event);
     }
     else {
-        throw std::runtime_error(
-            "Only population of contiguous usm_ndarray objects is supported.");
+        int nd = dst.get_ndim();
+        auto const &dst_shape = dst.get_shape_vector();
+        auto const &dst_strides = dst.get_strides_vector();
+
+        auto fn = full_strided_dispatch_vector[dst_typeid];
+
+        std::vector<sycl::event> host_task_events;
+        host_task_events.reserve(2);
+        using dpctl::tensor::offset_utils::device_allocate_and_pack;
+        const auto &ptr_size_event_tuple =
+            device_allocate_and_pack<py::ssize_t>(exec_q, host_task_events,
+                                                  dst_shape, dst_strides);
+        py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
+        if (shape_strides == nullptr) {
+            throw std::runtime_error("Unable to allocate device memory");
+        }
+        const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+
+        const sycl::event &full_strided_ev =
+            fn(exec_q, nd, dst_nelems, shape_strides, py_value, dst_data,
+               {copy_shape_ev});
+
+        // free shape_strides
+        const auto &ctx = exec_q.get_context();
+        const auto &temporaries_cleanup_ev =
+            exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(full_strided_ev);
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                cgh.host_task([ctx, shape_strides]() {
+                    sycl_free_noexcept(shape_strides, ctx);
+                });
+            });
+        host_task_events.push_back(temporaries_cleanup_ev);
+
+        return std::make_pair(keep_args_alive(exec_q, {dst}, host_task_events),
+                              full_strided_ev);
     }
 }
 
@@ -150,10 +293,12 @@ void init_full_ctor_dispatch_vectors(void)
     using namespace td_ns;
 
     DispatchVectorBuilder<full_contig_fn_ptr_t, FullContigFactory, num_types>
-        dvb;
-    dvb.populate_dispatch_vector(full_contig_dispatch_vector);
+        dvb1;
+    dvb1.populate_dispatch_vector(full_contig_dispatch_vector);
 
-    return;
+    DispatchVectorBuilder<full_strided_fn_ptr_t, FullStridedFactory, num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(full_strided_dispatch_vector);
 }
 
 } // namespace py_internal

@@ -765,8 +765,11 @@ def _get_arange_length(start, stop, step):
 
 
 def _to_scalar(obj, sc_ty):
-    "A way to convert object to NumPy scalar type"
-    zd_arr = np.asarray(obj).astype(sc_ty, casting="unsafe")
+    """A way to convert object to NumPy scalar type.
+    Raises OverflowError if obj can not be represented
+    using the requested scalar type.
+    """
+    zd_arr = np.asarray(obj, dtype=sc_ty)
     return zd_arr[tuple()]
 
 
@@ -901,7 +904,7 @@ def zeros(
             data type of the array. Can be typestring,
             a :class:`numpy.dtype` object, :mod:`numpy` char string,
             or a NumPy scalar type. Default: ``None``
-        order ("C", or F"):
+        order ("C", or "F"):
             memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
             is created. ``device`` can be ``None``, a oneAPI filter selector
@@ -942,8 +945,11 @@ def zeros(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    # FIXME: replace with asynchronous call to ti
-    res.usm_data.memset()
+    _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+    # populating new allocation, no dependent events
+    hev, zeros_ev = ti._zeros_usm_ndarray(res, sycl_queue)
+    _manager.add_event_pair(hev, zeros_ev)
+
     return res
 
 
@@ -969,7 +975,7 @@ def ones(
             data type of the array. Can be typestring,
             a :class:`numpy.dtype` object, :mod:`numpy` char string,
             or a NumPy scalar type. Default: ``None``
-        order ("C", or F"): memory layout for the array. Default: ``"C"``
+        order ("C", or "F"): memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
             is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
@@ -1015,6 +1021,22 @@ def ones(
     return res
 
 
+def _cast_fill_val(fill_val, dt):
+    """
+    Casts the Python scalar `fill_val` to another Python type coercible to the
+    requested data type `dt`, if necessary.
+    """
+    val_type = type(fill_val)
+    if val_type in [float, complex] and np.issubdtype(dt, np.integer):
+        return int(fill_val.real)
+    elif val_type is complex and np.issubdtype(dt, np.floating):
+        return fill_val.real
+    elif val_type is int and np.issubdtype(dt, np.integer):
+        return _to_scalar(fill_val, dt)
+    else:
+        return fill_val
+
+
 def full(
     shape,
     fill_value,
@@ -1037,7 +1059,7 @@ def full(
         dtype (optional): data type of the array. Can be typestring,
             a :class:`numpy.dtype` object, :mod:`numpy` char string,
             or a NumPy scalar type. Default: ``None``
-        order ("C", or F"):
+        order ("C", or "F"):
             memory layout for the array. Default: ``"C"``
         device (optional): array API concept of device where the output array
             is created. ``device`` can be ``None``, a oneAPI filter selector
@@ -1091,8 +1113,7 @@ def full(
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
-    fill_value_type = type(fill_value)
-    dtype = _get_dtype(dtype, sycl_queue, ref_type=fill_value_type)
+    dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
     res = dpt.usm_ndarray(
         shape,
         dtype=dtype,
@@ -1100,12 +1121,7 @@ def full(
         order=order,
         buffer_ctor_kwargs={"queue": sycl_queue},
     )
-    if fill_value_type in [float, complex] and np.issubdtype(dtype, np.integer):
-        fill_value = int(fill_value.real)
-    elif fill_value_type is complex and np.issubdtype(dtype, np.floating):
-        fill_value = fill_value.real
-    elif fill_value_type is int and np.issubdtype(dtype, np.integer):
-        fill_value = _to_scalar(fill_value, dtype)
+    fill_value = _cast_fill_val(fill_value, dtype)
 
     _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
     # populating new allocation, no dependent events
@@ -1114,8 +1130,23 @@ def full(
     return res
 
 
+def _normalize_order(order, arr):
+    """
+    Utility function for processing the `order` keyword of array-like
+    constructors, which support `"K"` and `"A"` orders.
+    """
+    arr_flags = arr.flags
+    f_contig = arr_flags["F"]
+    c_contig = arr_flags["C"]
+    if order == "A":
+        order = "F" if f_contig and not c_contig else "C"
+    if order == "K" and (f_contig or c_contig):
+        order = "C" if c_contig else "F"
+    return order
+
+
 def empty_like(
-    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
 ):
     """
     Returns an uninitialized :class:`dpctl.tensor.usm_ndarray` with the
@@ -1128,8 +1159,8 @@ def empty_like(
             data type of the array. Can be a typestring,
             a :class:`numpy.dtype` object, NumPy char string,
             or a NumPy scalar type. Default: ``None``
-        order ("C", or F"):
-            memory layout for the array. Default: ``"C"``
+        order ("C", "F", "A", or "K"):
+            memory layout for the array. Default: ``"K"``
         device (optional): array API concept of device where the output array
             is created. ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
@@ -1155,9 +1186,13 @@ def empty_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
         raise ValueError(
-            "Unrecognized order keyword value, expecting 'F' or 'C'."
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
         )
     order = order[0].upper()
     if dtype is None:
@@ -1168,21 +1203,26 @@ def empty_like(
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    shape = x.shape
     dtype = dpt.dtype(dtype)
-    _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
-    res = dpt.usm_ndarray(
-        shape,
-        dtype=dtype,
-        buffer=usm_type,
-        order=order,
-        buffer_ctor_kwargs={"queue": sycl_queue},
-    )
-    return res
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        return _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+    else:
+        shape = x.shape
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        res = dpt.usm_ndarray(
+            shape,
+            dtype=dtype,
+            buffer=usm_type,
+            order=order,
+            buffer_ctor_kwargs={"queue": sycl_queue},
+        )
+        return res
 
 
 def zeros_like(
-    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
 ):
     """
     Creates :class:`dpctl.tensor.usm_ndarray` from USM allocation
@@ -1197,7 +1237,7 @@ def zeros_like(
             a :class:`numpy.dtype` object, :mod:`numpy` char string, or a
             NumPy scalar type. If `None`, output array has the same data
             type as the input array. Default: ``None``
-        order ("C", or F"):
+        order ("C", or "F"):
             memory layout for the array. Default: ``"C"``
         device (optional):
             array API concept of device where the output array
@@ -1225,9 +1265,13 @@ def zeros_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
         raise ValueError(
-            "Unrecognized order keyword value, expecting 'F' or 'C'."
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
         )
     order = order[0].upper()
     if dtype is None:
@@ -1238,20 +1282,31 @@ def zeros_like(
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    sh = x.shape
     dtype = dpt.dtype(dtype)
-    return zeros(
-        sh,
-        dtype=dtype,
-        order=order,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        # populating new allocation, no dependent events
+        hev, full_ev = ti._full_usm_ndarray(0, res, sycl_queue)
+        _manager.add_event_pair(hev, full_ev)
+        return res
+    else:
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        sh = x.shape
+        return zeros(
+            sh,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
 
 def ones_like(
-    x, /, *, dtype=None, order="C", device=None, usm_type=None, sycl_queue=None
+    x, /, *, dtype=None, order="K", device=None, usm_type=None, sycl_queue=None
 ):
     """
     Returns a new :class:`dpctl.tensor.usm_ndarray` filled with ones and
@@ -1264,7 +1319,7 @@ def ones_like(
             data type of the array. Can be typestring,
             a :class:`numpy.dtype` object, :mod:`numpy` char string,
             or a NumPy scalar type. Default: `None`
-        order ("C", or F"):
+        order ("C", "F", "A", or "K"):
             memory layout for the array. Default: ``"C"``
         device (optional):
             array API concept of device where the output array
@@ -1292,9 +1347,13 @@ def ones_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
         raise ValueError(
-            "Unrecognized order keyword value, expecting 'F' or 'C'."
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
         )
     order = order[0].upper()
     if dtype is None:
@@ -1305,16 +1364,26 @@ def ones_like(
     if device is None and sycl_queue is None:
         device = x.device
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
-    sh = x.shape
     dtype = dpt.dtype(dtype)
-    return ones(
-        sh,
-        dtype=dtype,
-        order=order,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        # populating new allocation, no dependent events
+        hev, full_ev = ti._full_usm_ndarray(1, res, sycl_queue)
+        _manager.add_event_pair(hev, full_ev)
+        return res
+    else:
+        sh = x.shape
+        return ones(
+            sh,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
 
 def full_like(
@@ -1323,12 +1392,12 @@ def full_like(
     fill_value,
     *,
     dtype=None,
-    order="C",
+    order="K",
     device=None,
     usm_type=None,
     sycl_queue=None,
 ):
-    """ full_like(x, fill_value, dtype=None, order="C", \
+    """ full_like(x, fill_value, dtype=None, order="K", \
                   device=None, usm_type=None, sycl_queue=None)
 
     Returns a new :class:`dpctl.tensor.usm_ndarray` filled with `fill_value`
@@ -1343,8 +1412,8 @@ def full_like(
             a :class:`numpy.dtype` object, :mod:`numpy` char string, or a
             NumPy scalar type. If ``dtype`` is ``None``, the output array data
             type is inferred from ``x``. Default: ``None``
-        order ("C", or F"):
-            memory layout for the array. Default: ``"C"``
+        order ("C", "F", "A", or "K"):
+            memory layout for the array. Default: ``"K"``
         device (optional):
             array API concept of device where the output array
             is created. ``device`` can be ``None``, a oneAPI filter selector
@@ -1371,9 +1440,13 @@ def full_like(
     """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected instance of dpt.usm_ndarray, got {type(x)}.")
-    if not isinstance(order, str) or len(order) == 0 or order[0] not in "CcFf":
+    if (
+        not isinstance(order, str)
+        or len(order) == 0
+        or order[0] not in "CcFfAaKk"
+    ):
         raise ValueError(
-            "Unrecognized order keyword value, expecting 'F' or 'C'."
+            "Unrecognized order keyword value, expecting 'C', 'F', 'A', or 'K'."
         )
     order = order[0].upper()
     if dtype is None:
@@ -1386,15 +1459,46 @@ def full_like(
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     sh = x.shape
     dtype = dpt.dtype(dtype)
-    return full(
-        sh,
-        fill_value,
-        dtype=dtype,
-        order=order,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    order = _normalize_order(order, x)
+    if order == "K":
+        _ensure_native_dtype_device_support(dtype, sycl_queue.sycl_device)
+        if isinstance(fill_value, (dpt.usm_ndarray, np.ndarray, tuple, list)):
+            X = dpt.asarray(
+                fill_value,
+                dtype=dtype,
+                order=order,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+            )
+            X = dpt.broadcast_to(X, sh)
+            res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+            _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+            # order copy after tasks populating X
+            dep_evs = _manager.submitted_events
+            hev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+                src=X, dst=res, sycl_queue=sycl_queue, depends=dep_evs
+            )
+            _manager.add_event_pair(hev, copy_ev)
+            return res
+
+        dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
+        res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
+        fill_value = _cast_fill_val(fill_value, dtype)
+        _manager = dpctl.utils.SequentialOrderManager[sycl_queue]
+        # populating new allocation, no dependent events
+        hev, full_ev = ti._full_usm_ndarray(fill_value, res, sycl_queue)
+        _manager.add_event_pair(hev, full_ev)
+        return res
+    else:
+        return full(
+            sh,
+            fill_value,
+            dtype=dtype,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
 
 def linspace(
@@ -1530,7 +1634,7 @@ def eye(
             data type of the array. Can be typestring,
             a :class:`numpy.dtype` object, :mod:`numpy` char string, or
             a NumPy scalar type. Default: ``None``
-        order ("C" or F"):
+        order ("C" or "F"):
             memory layout for the array. Default: ``"C"``
         device (optional):
             array API concept of device where the output array

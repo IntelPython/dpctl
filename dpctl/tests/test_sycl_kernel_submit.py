@@ -66,6 +66,9 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     n_elems = 1024 * 512
     lws = 128
+    if dtype.kind in "ui":
+        n_elems = min(n_elems, dpt.iinfo(dtype).max)
+        n_elems = (n_elems // lws) * lws
     a = dpt.arange(n_elems, dtype=dtype, sycl_queue=q)
     b = dpt.arange(n_elems, stop=0, step=-1, dtype=dtype, sycl_queue=q)
     c = dpt.zeros(n_elems, dtype=dtype, sycl_queue=q)

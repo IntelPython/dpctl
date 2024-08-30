@@ -132,9 +132,8 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
         const ResIndexerT res_iter_indexer{res_nd, 0, res_shapes_strides};
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           res_iter_indexer};
-        const ReductionIndexerT reduction_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(iter_nelems)};
+        const ReductionIndexerT reduction_indexer{/* size   */ reduction_nelems,
+                                                  /* step   */ iter_nelems};
 
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -162,9 +161,8 @@ sycl::event single_reduction_for_gemm(sycl::queue &exec_q,
         const ResIndexerT res_iter_indexer{res_nd, 0, res_shapes_strides};
         const InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           res_iter_indexer};
-        const ReductionIndexerT reduction_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(iter_nelems)};
+        const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
+                                                  /* step */ iter_nelems};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -213,9 +211,10 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
 
         constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                               NoOpIndexerT{}};
-        const ReductionIndexerT reduction_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(iter_nelems)};
+        // tmp allocation is a C-contiguous matrix (reduction_nelems,
+        // iter_nelems) and we are reducing by axis 0
+        const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
+                                                  /* step */ iter_nelems};
 
         red_ev = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
@@ -241,9 +240,10 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
 
         constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                               NoOpIndexerT{}};
-        const ReductionIndexerT reduction_indexer{
-            0, static_cast<ssize_t>(reduction_nelems),
-            static_cast<ssize_t>(iter_nelems)};
+        // tmp allocation is a C-contiguous matrix
+        // (reduction_nelems, iter_nelems). Reducing along axis 0
+        const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
+                                                  /* step */ iter_nelems};
 
         if (iter_nelems == 1) {
             // increase GPU occupancy
@@ -295,9 +295,10 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
 
         constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                               NoOpIndexerT{}};
-        const ReductionIndexerT reduction_indexer{
-            0, /* size */ static_cast<ssize_t>(reduction_nelems),
-            /* step */ static_cast<ssize_t>(iter_nelems)};
+        // partially_reduced_tmp is C-contig matrix with shape
+        // (reduction_nelems, iter_nelems). Reducing along axis 0.
+        const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
+                                                  /* step */ iter_nelems};
 
         first_reduction_ev = dpctl::tensor::kernels::submit_no_atomic_reduction<
             T, T, ReductionOpT, InputOutputIterIndexerT, ReductionIndexerT,
@@ -327,9 +328,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                 InputIndexerT, ResIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        const InputIndexerT inp_indexer{
-            0, static_cast<ssize_t>(iter_nelems),
-            static_cast<ssize_t>(reduction_groups_)};
+        const InputIndexerT inp_indexer{/* size */ iter_nelems,
+                                        /* step */ reduction_groups_};
         constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -359,11 +359,12 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                                                                 ResIndexerT>;
     using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-    const InputIndexerT inp_indexer{
-        0, static_cast<ssize_t>(iter_nelems),
-        static_cast<ssize_t>(remaining_reduction_nelems)};
-    const ResIndexerT res_iter_indexer{res_nd, static_cast<ssize_t>(res_offset),
-                                       res_shape_strides};
+    const InputIndexerT inp_indexer{/* size */ iter_nelems,
+                                    /* step */ remaining_reduction_nelems};
+    const ResIndexerT res_iter_indexer{
+        /* ndim                */ res_nd,
+        /* offset              */ static_cast<ssize_t>(res_offset),
+        /* packed shape_strides*/ res_shape_strides};
 
     const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                       res_iter_indexer};
@@ -416,9 +417,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
 
     constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
                                                           NoOpIndexerT{}};
-    const ReductionIndexerT reduction_indexer{
-        0, /* size */ static_cast<ssize_t>(reduction_nelems),
-        /* step */ static_cast<ssize_t>(iter_nelems)};
+    const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
+                                              /* step */ iter_nelems};
 
     const sycl::event &first_reduction_ev =
         dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -451,9 +451,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         // n * m = iter_nelems because essentially, this process
         // creates a stack of reduction_nelems 2D matrices and we reduce
         // along the stack axis
-        const InputIndexerT inp_indexer{
-            0, static_cast<ssize_t>(iter_nelems),
-            static_cast<ssize_t>(reduction_groups_)};
+        const InputIndexerT inp_indexer{/* size */ iter_nelems,
+                                        /* step */ reduction_groups_};
         constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -485,8 +484,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         using ReductionIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
         const InputIndexerT inp_indexer{
-            0, static_cast<ssize_t>(iter_nelems),
-            static_cast<ssize_t>(remaining_reduction_nelems)};
+            /* size   */ iter_nelems,
+            /* step   */ remaining_reduction_nelems};
         constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
@@ -971,6 +970,7 @@ public:
         size_t i = block_i * wg_delta_n * wi_delta_n;
         size_t j = block_j * wg_delta_m * wi_total_delta_m;
 
+        using slmA_t = typename LocAccT1::value_type;
         using slmB_t = typename LocAccT2::value_type;
 
         const size_t a_st0 = k;
@@ -1058,16 +1058,29 @@ public:
             const std::uint32_t lo_lhs_st_k = (wg_delta_n * wi_delta_n);
             const std::uint32_t lo_rhs_rk_k = (wg_delta_m * wi_delta_m_vecs);
             for (std::uint32_t pr_k = 0; pr_k < wi_delta_k; ++pr_k) {
+                std::array<slmA_t, wi_delta_n> pr_lhs{};
+#pragma unroll
+                for (std::uint32_t pr_i = 0; pr_i < wi_delta_n; ++pr_i) {
+                    pr_lhs[pr_i] =
+                        local_lhs_block[pr_k * lo_lhs_st_k +
+                                        (local_i + pr_i * wg_delta_n)];
+                }
+
+                std::array<slmB_t, wi_delta_m_vecs> pr_rhs{};
+#pragma unroll
+                for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j) {
+                    pr_rhs[pr_j] =
+                        local_rhs_block[pr_k * lo_rhs_rk_k +
+                                        (local_j + pr_j * wg_delta_m)];
+                }
+
 #pragma unroll
                 for (std::uint32_t pr_i = 0; pr_i < wi_delta_n; ++pr_i) {
 #pragma unroll
                     for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j)
                     {
                         private_C[pr_i * wi_delta_m_vecs + pr_j] +=
-                            local_lhs_block[pr_k * lo_lhs_st_k +
-                                            (local_i + pr_i * wg_delta_n)] *
-                            local_rhs_block[pr_k * lo_rhs_rk_k +
-                                            (local_j + pr_j * wg_delta_m)];
+                            pr_lhs[pr_i] * pr_rhs[pr_j];
                     }
                 }
             }
@@ -1705,12 +1718,12 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
                                      Strided1DIndexer>;
 
     const BatchDimsIndexerT batch_indexer(
-        Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                         static_cast<ssize_t>(n * k)},
-        Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                         static_cast<ssize_t>(k * m)},
-        Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                         static_cast<ssize_t>(n * m)});
+        Strided1DIndexer{/* size */ batch_nelems,
+                         /* step */ n * k},
+        Strided1DIndexer{/* size */ batch_nelems,
+                         /* step */ k * m},
+        Strided1DIndexer{/* size */ batch_nelems,
+                         /* step */ n * m});
 
     const size_t min_nm = std::min(n, m);
     const size_t max_nm = std::max(n, m);
@@ -2342,7 +2355,8 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                 batch_nd, rhs_batch_offset, batch_shape_strides,
                 batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
-                0, static_cast<ssize_t>(batch_nelems), n * m);
+                /* size   */ batch_nelems,
+                /* step   */ n * m);
             const BatchDimsIndexerT batch_indexer(
                 lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -2406,7 +2420,8 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             const StridedIndexer rhs_batch_indexer(
                 batch_nd, rhs_batch_offset, batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
-                0, static_cast<ssize_t>(batch_nelems), n * m);
+                /* size   */ batch_nelems,
+                /* step   */ n * m);
             const BatchDimsIndexerT batch_indexer(
                 lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -2641,7 +2656,8 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 batch_nd, rhs_batch_offset, batch_shape_strides,
                 batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
-                0, static_cast<ssize_t>(batch_nelems), n * m);
+                /* size   */ batch_nelems,
+                /* step   */ n * m);
             const BatchDimsIndexerT batch_indexer(
                 lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -2709,7 +2725,8 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 batch_nd, rhs_batch_offset, batch_shape_strides,
                 batch_shape_strides + 2 * batch_nd);
             const Strided1DIndexer tmp_batch_indexer(
-                0, static_cast<ssize_t>(batch_nelems), n * m);
+                /* size   */ batch_nelems,
+                /* step   */ n * m);
             const BatchDimsIndexerT batch_indexer(
                 lhs_batch_indexer, rhs_batch_indexer, tmp_batch_indexer);
 
@@ -2957,12 +2974,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 
         using dpctl::tensor::offset_utils::Strided1DIndexer;
         const BatchDimsIndexerT batch_indexer(
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(n * k)},
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(k * m)},
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(n * m)});
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * k},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ k * m},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * m});
 
         return gemm_detail::_gemm_tree_k_step<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3018,12 +3035,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                                              Strided1DIndexer>;
 
             const BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * m)});
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * k},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ k * m},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * m});
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3077,12 +3094,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                                              Strided1DIndexer>;
 
             const BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * m)});
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * k},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ k * m},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * m});
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3159,12 +3176,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                                          Strided1DIndexer>;
 
         const BatchDimsIndexerT batch_indexer(
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(n * k)},
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(k * m)},
-            Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                             static_cast<ssize_t>(n * m)});
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * k},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ k * m},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * m});
 
         return gemm_detail::_gemm_tree_nm_step<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3220,12 +3237,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                                              Strided1DIndexer>;
 
             const BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * m)});
+                Strided1DIndexer{/* size */ batch_nelems,
+                                 /* step */ n * k},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ k * m},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * m});
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3280,12 +3297,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                                              Strided1DIndexer>;
 
             const BatchDimsIndexerT batch_indexer(
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * k)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(k * m)},
-                Strided1DIndexer{0, static_cast<ssize_t>(batch_nelems),
-                                 static_cast<ssize_t>(n * m)});
+                Strided1DIndexer{/* size */ batch_nelems,
+                                 /* step */ n * k},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ k * m},
+                Strided1DIndexer{/* size   */ batch_nelems,
+                                 /* step   */ n * m});
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3398,11 +3415,13 @@ gemm_batch_nm_contig_impl(sycl::queue &exec_q,
 
         using dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        const ssize_t ss_batch_nelems = static_cast<ssize_t>(batch_nelems);
         const BatchDimsIndexerT batch_indexer(
-            Strided1DIndexer{0, ss_batch_nelems, static_cast<ssize_t>(n * k)},
-            Strided1DIndexer{0, ss_batch_nelems, static_cast<ssize_t>(k * m)},
-            Strided1DIndexer{0, ss_batch_nelems, static_cast<ssize_t>(n * m)});
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * k},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ k * m},
+            Strided1DIndexer{/* size   */ batch_nelems,
+                             /* step   */ n * m});
 
         sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,

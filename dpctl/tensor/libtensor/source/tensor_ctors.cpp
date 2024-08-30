@@ -54,6 +54,7 @@
 #include "utils/memory_overlap.hpp"
 #include "utils/strided_iters.hpp"
 #include "where.hpp"
+#include "zeros_ctor.hpp"
 
 namespace py = pybind11;
 
@@ -91,6 +92,10 @@ using dpctl::tensor::py_internal::usm_ndarray_linear_sequence_step;
 /* ================ Full ================== */
 
 using dpctl::tensor::py_internal::usm_ndarray_full;
+
+/* ================ Zeros ================== */
+
+using dpctl::tensor::py_internal::usm_ndarray_zeros;
 
 /* ============== Advanced Indexing ============= */
 using dpctl::tensor::py_internal::usm_ndarray_put;
@@ -142,6 +147,7 @@ void init_dispatch_vectors(void)
     init_copy_for_roll_dispatch_vectors();
     init_linear_sequences_dispatch_vectors();
     init_full_ctor_dispatch_vectors();
+    init_zeros_ctor_dispatch_vectors();
     init_eye_ctor_dispatch_vectors();
     init_triul_ctor_dispatch_vectors();
 
@@ -290,6 +296,10 @@ PYBIND11_MODULE(_tensor_impl, m)
           "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
+
+    m.def("_zeros_usm_ndarray", &usm_ndarray_zeros,
+          "Populate usm_ndarray `dst` with zeros.", py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 
     m.def("_full_usm_ndarray", &usm_ndarray_full,
           "Populate usm_ndarray `dst` with given fill_value.",

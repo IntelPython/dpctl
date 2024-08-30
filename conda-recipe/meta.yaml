@@ -51,7 +51,7 @@ requirements:
         - python
         - {{ pin_compatible('dpcpp-cpp-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
-        - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
+        - numpy
 
 test:
     requires:
