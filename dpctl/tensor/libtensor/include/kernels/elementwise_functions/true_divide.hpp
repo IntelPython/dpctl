@@ -84,6 +84,11 @@ struct TrueDivideFunctor
 
             return in1 / exprm_ns::complex<realT2>(in2);
         }
+        else if constexpr (std::is_floating_point_v<argT1> &&
+                           std::is_integral_v<argT2>)
+        {
+            return in1 / static_cast<argT1>(in2);
+        }
         else {
             return in1 / in2;
         }
