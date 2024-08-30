@@ -952,11 +952,9 @@
 
 
 <span class="k">def</span> <span class="nf">_acceptance_fn_reciprocal</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
-    <span class="c1"># if the kind of result is different from</span>
-    <span class="c1"># the kind of input, use the default data</span>
-    <span class="c1"># we use default dtype for the resulting kind.</span>
-    <span class="c1"># This guarantees alignment of reciprocal and</span>
-    <span class="c1"># divide output types.</span>
+    <span class="c1"># if the kind of result is different from the kind of input, we use the</span>
+    <span class="c1"># default floating-point dtype for the resulting kind. This guarantees</span>
+    <span class="c1"># alignment of reciprocal and divide output types.</span>
     <span class="k">if</span> <span class="n">buf_dt</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">arg_dtype</span><span class="o">.</span><span class="n">kind</span><span class="p">:</span>
         <span class="n">default_dt</span> <span class="o">=</span> <span class="n">_get_device_default_dtype</span><span class="p">(</span><span class="n">res_dt</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">res_dt</span> <span class="o">==</span> <span class="n">default_dt</span><span class="p">:</span>
