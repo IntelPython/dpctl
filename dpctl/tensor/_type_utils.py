@@ -140,11 +140,9 @@ def _acceptance_fn_default_unary(arg_dtype, ret_buf_dt, res_dt, sycl_dev):
 
 
 def _acceptance_fn_reciprocal(arg_dtype, buf_dt, res_dt, sycl_dev):
-    # if the kind of result is different from
-    # the kind of input, use the default data
-    # we use default dtype for the resulting kind.
-    # This guarantees alignment of reciprocal and
-    # divide output types.
+    # if the kind of result is different from the kind of input, we use the
+    # default floating-point dtype for the resulting kind. This guarantees
+    # alignment of reciprocal and divide output types.
     if buf_dt.kind != arg_dtype.kind:
         default_dt = _get_device_default_dtype(res_dt.kind, sycl_dev)
         if res_dt == default_dt:

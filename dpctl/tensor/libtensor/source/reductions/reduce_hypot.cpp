@@ -67,9 +67,7 @@ template <typename argTy, typename outTy>
 struct TypePairSupportDataForHypotReductionTemps
 {
 
-    static constexpr bool is_defined = std::disjunction< // disjunction is C++17
-                                                         // feature, supported
-                                                         // by DPC++ input bool
+    static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, sycl::half>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, double>,

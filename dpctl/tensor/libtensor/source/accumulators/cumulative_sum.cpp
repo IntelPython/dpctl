@@ -69,8 +69,6 @@ static accumulate_strided_impl_fn_ptr_t
 template <typename argTy, typename outTy>
 struct TypePairSupportDataForSumAccumulation
 {
-
-    // disjunction is C++17 feature, supported by DPC++ input bool
     static constexpr bool is_defined = std::disjunction<
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int32_t>,
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, std::int64_t>,

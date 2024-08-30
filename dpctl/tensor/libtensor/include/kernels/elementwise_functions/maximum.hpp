@@ -118,8 +118,7 @@ using MaximumStridedFunctor = elementwise_common::BinaryStridedFunctor<
 
 template <typename T1, typename T2> struct MaximumOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
@@ -179,6 +178,8 @@ template <typename T1, typename T2> struct MaximumOutputType
                                         std::complex<double>,
                                         std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -209,9 +210,7 @@ template <typename fnT, typename T1, typename T2> struct MaximumContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename MaximumOutputType<T1, T2>::value_type, void>)
-        {
+        if constexpr (!MaximumOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -228,7 +227,6 @@ template <typename fnT, typename T1, typename T2> struct MaximumTypeMapFactory
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename MaximumOutputType<T1, T2>::value_type;
-        ;
         return td_ns::GetTypeid<rT>{}.get();
     }
 };
@@ -262,9 +260,7 @@ template <typename fnT, typename T1, typename T2> struct MaximumStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename MaximumOutputType<T1, T2>::value_type, void>)
-        {
+        if constexpr (!MaximumOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

@@ -140,8 +140,7 @@ using LessStridedFunctor =
 
 template <typename T1, typename T2> struct LessOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::
             BinaryTypeMapResultEntry<T1, std::uint8_t, T2, std::uint8_t, bool>,
@@ -185,6 +184,8 @@ template <typename T1, typename T2> struct LessOutputType
                                         std::complex<double>,
                                         bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -215,9 +216,7 @@ template <typename fnT, typename T1, typename T2> struct LessContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename LessOutputType<T1, T2>::value_type, void>)
-        {
+        if constexpr (!LessOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -267,9 +266,7 @@ template <typename fnT, typename T1, typename T2> struct LessStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename LessOutputType<T1, T2>::value_type, void>)
-        {
+        if constexpr (!LessOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

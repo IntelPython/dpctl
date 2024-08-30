@@ -134,8 +134,7 @@ using TrueDivideStridedFunctor = elementwise_common::BinaryStridedFunctor<
 
 template <typename T1, typename T2> struct TrueDivideOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1,
                                         sycl::half,
                                         T2,
@@ -174,6 +173,8 @@ template <typename T1, typename T2> struct TrueDivideOutputType
                                         double,
                                         std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -205,10 +206,7 @@ template <typename fnT, typename T1, typename T2> struct TrueDivideContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -260,10 +258,7 @@ struct TrueDivideStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -323,10 +318,7 @@ struct TrueDivideContigMatrixContigRowBroadcastFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<
-                          typename TrueDivideOutputType<T1, T2>::value_type,
-                          void>)
-        {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -376,12 +368,12 @@ struct TrueDivideContigRowContigMatrixBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename TrueDivideOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<resT, void>) {
+        if constexpr (!TrueDivideOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
+            using resT = typename TrueDivideOutputType<T1, T2>::value_type;
             if constexpr (dpctl::tensor::type_utils::is_complex<T1>::value ||
                           dpctl::tensor::type_utils::is_complex<T2>::value ||
                           dpctl::tensor::type_utils::is_complex<resT>::value)
@@ -439,52 +431,43 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
     }
 };
 
-// cannot use the out of place table, as it permits real lhs and complex rhs
-// T1 corresponds to the type of the rhs, while T2 corresponds to the lhs
-// the type of the result must be the same as T2
-template <typename T1, typename T2> struct TrueDivideInplaceOutputType
+/* @brief Types supported by in-place divide */
+template <typename argTy, typename resTy>
+struct TrueDivideInplaceTypePairSupport
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        sycl::half,
-                                        T2,
-                                        sycl::half,
-                                        sycl::half>,
-        td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
-        td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
-                                        T2,
-                                        std::complex<float>,
-                                        std::complex<float>>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        float,
-                                        T2,
-                                        std::complex<float>,
-                                        std::complex<float>>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
-                                        T2,
-                                        std::complex<double>,
-                                        std::complex<double>>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        double,
-                                        T2,
-                                        std::complex<double>,
-                                        std::complex<double>>,
-        td_ns::DefaultResultEntry<void>>::result_type;
+
+    /* value if true a kernel for <argTy, resTy> must be instantiated  */
+    static constexpr bool is_defined = std::disjunction<
+        td_ns::TypePairDefinedEntry<argTy, sycl::half, resTy, sycl::half>,
+        td_ns::TypePairDefinedEntry<argTy, float, resTy, float>,
+        td_ns::TypePairDefinedEntry<argTy, double, resTy, double>,
+        td_ns::TypePairDefinedEntry<argTy, float, resTy, std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<float>,
+                                    resTy,
+                                    std::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy, double, resTy, std::complex<double>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    std::complex<double>,
+                                    resTy,
+                                    std::complex<double>>,
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
 };
 
-template <typename fnT, typename T1, typename T2>
+template <typename fnT, typename argT, typename resT>
 struct TrueDivideInplaceTypeMapFactory
 {
     /*! @brief get typeid for output type of divide(T1 x, T2 y) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
-        using rT = typename TrueDivideInplaceOutputType<T1, T2>::value_type;
-        static_assert(std::is_same_v<rT, T2> || std::is_same_v<rT, void>);
-        return td_ns::GetTypeid<rT>{}.get();
+        if constexpr (TrueDivideInplaceTypePairSupport<argT, resT>::is_defined)
+        {
+            return td_ns::GetTypeid<resT>{}.get();
+        }
+        else {
+            return td_ns::GetTypeid<void>{}.get();
+        }
     }
 };
 
@@ -537,10 +520,7 @@ struct TrueDivideInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename TrueDivideInplaceOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!TrueDivideInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -579,10 +559,7 @@ struct TrueDivideInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename TrueDivideInplaceOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!TrueDivideInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -627,8 +604,7 @@ struct TrueDivideInplaceRowMatrixBroadcastFactory
 {
     fnT get()
     {
-        using resT = typename TrueDivideInplaceOutputType<T1, T2>::value_type;
-        if constexpr (!std::is_same_v<resT, T2>) {
+        if constexpr (!TrueDivideInplaceTypePairSupport<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

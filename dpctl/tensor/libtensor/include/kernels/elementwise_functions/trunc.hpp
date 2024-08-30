@@ -92,20 +92,21 @@ using TruncStridedFunctor = elementwise_common::
 
 template <typename T> struct TruncOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
-        td_ns::TypeMapResultEntry<T, std::uint8_t>,
-        td_ns::TypeMapResultEntry<T, std::uint16_t>,
-        td_ns::TypeMapResultEntry<T, std::uint32_t>,
-        td_ns::TypeMapResultEntry<T, std::uint64_t>,
-        td_ns::TypeMapResultEntry<T, std::int8_t>,
-        td_ns::TypeMapResultEntry<T, std::int16_t>,
-        td_ns::TypeMapResultEntry<T, std::int32_t>,
-        td_ns::TypeMapResultEntry<T, std::int64_t>,
-        td_ns::TypeMapResultEntry<T, sycl::half>,
-        td_ns::TypeMapResultEntry<T, float>,
-        td_ns::TypeMapResultEntry<T, double>,
-        td_ns::DefaultResultEntry<void>>::result_type;
+    using value_type =
+        typename std::disjunction<td_ns::TypeMapResultEntry<T, std::uint8_t>,
+                                  td_ns::TypeMapResultEntry<T, std::uint16_t>,
+                                  td_ns::TypeMapResultEntry<T, std::uint32_t>,
+                                  td_ns::TypeMapResultEntry<T, std::uint64_t>,
+                                  td_ns::TypeMapResultEntry<T, std::int8_t>,
+                                  td_ns::TypeMapResultEntry<T, std::int16_t>,
+                                  td_ns::TypeMapResultEntry<T, std::int32_t>,
+                                  td_ns::TypeMapResultEntry<T, std::int64_t>,
+                                  td_ns::TypeMapResultEntry<T, sycl::half>,
+                                  td_ns::TypeMapResultEntry<T, float>,
+                                  td_ns::TypeMapResultEntry<T, double>,
+                                  td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
@@ -127,9 +128,7 @@ template <typename fnT, typename T> struct TruncContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename TruncOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!TruncOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -175,9 +174,7 @@ template <typename fnT, typename T> struct TruncStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename TruncOutputType<T>::value_type,
-                                     void>)
-        {
+        if constexpr (!TruncOutputType<T>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }

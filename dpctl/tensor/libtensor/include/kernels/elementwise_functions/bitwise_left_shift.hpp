@@ -123,9 +123,7 @@ using BitwiseLeftShiftStridedFunctor = elementwise_common::BinaryStridedFunctor<
 template <typename T1, typename T2> struct BitwiseLeftShiftOutputType
 {
     using ResT = T1;
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by
-                                                  // DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::int8_t,
                                         T2,
@@ -167,6 +165,8 @@ template <typename T1, typename T2> struct BitwiseLeftShiftOutputType
                                         std::uint64_t,
                                         std::uint64_t>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename argT1,
@@ -200,10 +200,7 @@ struct BitwiseLeftShiftContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename BitwiseLeftShiftOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!BitwiseLeftShiftOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -256,10 +253,7 @@ struct BitwiseLeftShiftStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename BitwiseLeftShiftOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
-        {
+        if constexpr (!BitwiseLeftShiftOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
@@ -336,6 +330,41 @@ template <typename argT,
           unsigned int n_vecs>
 class bitwise_left_shift_inplace_contig_kernel;
 
+/* @brief Types supported by in-place bitwise left shift */
+template <typename argTy, typename resTy>
+struct BitwiseLeftShiftInplaceTypePairSupport
+{
+    /* value if true a kernel for <argTy, resTy> must be instantiated  */
+    static constexpr bool is_defined = std::disjunction<
+        td_ns::TypePairDefinedEntry<argTy, std::int8_t, resTy, std::int8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint8_t, resTy, std::uint8_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int16_t, resTy, std::int16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint16_t, resTy, std::uint16_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int32_t, resTy, std::int32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint32_t, resTy, std::uint32_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::int64_t, resTy, std::int64_t>,
+        td_ns::TypePairDefinedEntry<argTy, std::uint64_t, resTy, std::uint64_t>,
+        // fall-through
+        td_ns::NotDefinedEntry>::is_defined;
+};
+
+template <typename fnT, typename argT, typename resT>
+struct BitwiseLeftShiftInplaceTypeMapFactory
+{
+    /*! @brief get typeid for output type of x <<= y */
+    std::enable_if_t<std::is_same<fnT, int>::value, int> get()
+    {
+        if constexpr (BitwiseLeftShiftInplaceTypePairSupport<argT,
+                                                             resT>::is_defined)
+        {
+            return td_ns::GetTypeid<resT>{}.get();
+        }
+        else {
+            return td_ns::GetTypeid<void>{}.get();
+        }
+    }
+};
+
 template <typename argTy, typename resTy>
 sycl::event bitwise_left_shift_inplace_contig_impl(
     sycl::queue &exec_q,
@@ -357,9 +386,8 @@ struct BitwiseLeftShiftInplaceContigFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename BitwiseLeftShiftOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
+        if constexpr (!BitwiseLeftShiftInplaceTypePairSupport<T1,
+                                                              T2>::is_defined)
         {
             fnT fn = nullptr;
             return fn;
@@ -399,9 +427,8 @@ struct BitwiseLeftShiftInplaceStridedFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same_v<typename BitwiseLeftShiftOutputType<
-                                         T1, T2>::value_type,
-                                     void>)
+        if constexpr (!BitwiseLeftShiftInplaceTypePairSupport<T1,
+                                                              T2>::is_defined)
         {
             fnT fn = nullptr;
             return fn;

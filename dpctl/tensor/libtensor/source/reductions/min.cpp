@@ -78,10 +78,8 @@ static reduction_contig_impl_fn_ptr
 template <typename argTy, typename outTy>
 struct TypePairSupportDataForMinReductionAtomic
 {
-
     /* value is true if a kernel for <argTy, outTy> must be instantiated, false
      * otherwise */
-    // disjunction is C++17 feature, supported by DPC++
     static constexpr bool is_defined = std::disjunction<
         // input int32
         td_ns::TypePairDefinedEntry<argTy, std::int32_t, outTy, std::int32_t>,
@@ -102,8 +100,6 @@ struct TypePairSupportDataForMinReductionAtomic
 template <typename argTy, typename outTy>
 struct TypePairSupportDataForMinReductionTemps
 {
-
-    // disjunction is C++17 feature, supported by DPC++
     static constexpr bool is_defined = std::disjunction<
         // input bool
         td_ns::TypePairDefinedEntry<argTy, bool, outTy, bool>,

@@ -43,8 +43,7 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 
 template <typename T1, typename T2> struct DotAtomicOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint32_t,
                                         T2,
@@ -79,14 +78,15 @@ template <typename T1, typename T2> struct DotAtomicOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, double>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 // add separate type support lists for atomic vs. temps
 // gemm, gevm, and dot product share output type struct
 template <typename T1, typename T2> struct DotNoAtomicOutputType
 {
-    using value_type = typename std::disjunction< // disjunction is C++17
-                                                  // feature, supported by DPC++
+    using value_type = typename std::disjunction<
         td_ns::BinaryTypeMapResultEntry<T1, bool, T2, bool, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
                                         std::uint8_t,
@@ -161,6 +161,8 @@ template <typename T1, typename T2> struct DotNoAtomicOutputType
                                         std::complex<double>,
                                         std::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
+
+    static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
 template <typename fnT, typename T1, typename T2> struct DotTypeMapFactory
@@ -179,13 +181,13 @@ template <typename fnT, typename T1, typename T2> struct GemmBatchAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_batch_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_impl<T1, T2, T3>;
             return fn;
         }
@@ -197,13 +199,13 @@ struct GemmBatchContigAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_batch_contig_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_contig_impl<T1, T2, T3>;
             return fn;
         }
@@ -214,13 +216,13 @@ template <typename fnT, typename T1, typename T2> struct GemmAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_impl<T1, T2, T3>;
             return fn;
         }
@@ -231,13 +233,13 @@ template <typename fnT, typename T1, typename T2> struct GemmContigAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_contig_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_contig_impl<T1, T2, T3>;
             return fn;
         }
@@ -248,13 +250,13 @@ template <typename fnT, typename T1, typename T2> struct GemmTempsFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_tree_impl<T1, T2, T3>;
             return fn;
         }
@@ -265,13 +267,13 @@ template <typename fnT, typename T1, typename T2> struct GemmContigTempsFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_contig_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_contig_tree_impl<T1, T2, T3>;
             return fn;
         }
@@ -282,13 +284,13 @@ template <typename fnT, typename T1, typename T2> struct GemmBatchTempsFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_batch_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_tree_impl<T1, T2, T3>;
             return fn;
         }
@@ -300,13 +302,13 @@ struct GemmBatchContigTempsFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::gemm_batch_contig_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = gemm_batch_contig_tree_impl<T1, T2, T3>;
             return fn;
         }
@@ -317,13 +319,13 @@ template <typename fnT, typename T1, typename T2> struct DotProductAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::dot_product_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_impl<T1, T2, T3>;
             return fn;
         }
@@ -335,13 +337,13 @@ struct DotProductNoAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::dot_product_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_tree_impl<T1, T2, T3>;
             return fn;
         }
@@ -353,13 +355,13 @@ struct DotProductContigAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::dot_product_contig_impl;
+            using T3 = typename DotAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_contig_impl<T1, T2, T3>;
             return fn;
         }
@@ -371,13 +373,13 @@ struct DotProductContigNoAtomicFactory
 {
     fnT get()
     {
-        using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
-        if constexpr (std::is_same_v<T3, void>) {
+        if constexpr (!DotNoAtomicOutputType<T1, T2>::is_defined) {
             fnT fn = nullptr;
             return fn;
         }
         else {
             using dpctl::tensor::kernels::dot_product_contig_tree_impl;
+            using T3 = typename DotNoAtomicOutputType<T1, T2>::value_type;
             fnT fn = dot_product_contig_tree_impl<T1, T2, T3>;
             return fn;
         }
