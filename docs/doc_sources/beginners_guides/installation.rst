@@ -54,14 +54,6 @@ Binary wheels are published with Python Package Index (https://pypi.org/project/
 
     python -m pip install dpctl
 
-Binary wheels of ``dpctl`` and its dependencies are also published on
-http://anaconda.org/intel. To install from this non-default package index,
-use
-
-.. code-block:: bash
-
-    python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
-
 .. note::
     As of April 2024, installation using ``pip`` on Linux* requires
     that host operating system had ``libstdc++.so`` library version 6.0.29

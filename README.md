@@ -72,11 +72,11 @@ conda install dpctl -c https://software.repos.intel.com/python/conda/ -c conda-f
 
 ## Pip
 
-The `dpctl` can be installed using `pip` obtaining wheel packages either from PyPi or from Intel(R) channel on Anaconda.
-To install `dpctl` wheel package from Intel(R) channel on Anaconda, run the following command:
+The `dpctl` can be installed using `pip` obtaining wheel packages from PyPi.
+To install `dpctl` wheel package, run the following command:
 
 ```bash
-python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpctl
+python -m pip install dpctl
 ```
 
 Installing the bleeding edge
