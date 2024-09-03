@@ -24,11 +24,13 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl4pybind11.hpp"
+#include <complex>
 #include <cstdint>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
+#include <utility>
 #include <vector>
 
 #include "elementwise_functions.hpp"
@@ -179,28 +181,31 @@ typedef sycl::event (*divide_by_scalar_fn_ptr_t)(
     const ssize_t *,
     const char *,
     py::ssize_t,
-    std::int64_t,
+    const char *,
     char *,
     py::ssize_t,
     const std::vector<sycl::event> &);
 
-template <typename T>
+template <typename T, typename scalarT>
 sycl::event divide_by_scalar(sycl::queue &exec_q,
                              size_t nelems,
                              int nd,
                              const ssize_t *shape_and_strides,
                              const char *arg_p,
                              py::ssize_t arg_offset,
-                             std::int64_t scalar,
+                             const char *scalar_ptr,
                              char *res_p,
                              py::ssize_t res_offset,
                              const std::vector<sycl::event> &depends = {})
 {
+    const scalarT sc_v = *reinterpret_cast<const scalarT *>(scalar_ptr);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using BinOpT = dpctl::tensor::kernels::true_divide::TrueDivideFunctor<
-            T, std::int64_t, T>;
+        using BinOpT =
+            dpctl::tensor::kernels::true_divide::TrueDivideFunctor<T, scalarT,
+                                                                   T>;
 
         auto op = BinOpT();
 
@@ -220,7 +225,7 @@ sycl::event divide_by_scalar(sycl::queue &exec_q,
 
                 const auto &arg_i = two_offsets_.get_first_offset();
                 const auto &res_i = two_offsets_.get_second_offset();
-                res_tp[res_i] = op(arg_tp[arg_i], scalar);
+                res_tp[res_i] = op(arg_tp[arg_i], sc_v);
             });
     });
     return comp_ev;
@@ -228,7 +233,7 @@ sycl::event divide_by_scalar(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
 py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
-                    const std::int64_t scalar,
+                    double scalar,
                     const dpctl::tensor::usm_ndarray &dst,
                     sycl::queue &exec_q,
                     const std::vector<sycl::event> &depends = {})
@@ -293,18 +298,41 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     constexpr int float16_typeid = static_cast<int>(td_ns::typenum_t::HALF);
     constexpr int float32_typeid = static_cast<int>(td_ns::typenum_t::FLOAT);
     constexpr int float64_typeid = static_cast<int>(td_ns::typenum_t::DOUBLE);
+    constexpr int complex64_typeid = static_cast<int>(td_ns::typenum_t::CFLOAT);
+    constexpr int complex128_typeid =
+        static_cast<int>(td_ns::typenum_t::CDOUBLE);
+
+    // statically pre-allocated memory for scalar
+    alignas(double) char scalar_alloc[sizeof(double)] = {0};
 
     divide_by_scalar_fn_ptr_t fn;
     switch (src_typeid) {
     case float16_typeid:
-        fn = divide_by_scalar<sycl::half>;
-        break;
+    {
+        fn = divide_by_scalar<sycl::half, sycl::half>;
+        std::ignore =
+            new (scalar_alloc) sycl::half(static_cast<sycl::half>(scalar));
+    } break;
     case float32_typeid:
-        fn = divide_by_scalar<float>;
-        break;
+    {
+        fn = divide_by_scalar<float, float>;
+        std::ignore = new (scalar_alloc) float(scalar);
+    } break;
     case float64_typeid:
-        fn = divide_by_scalar<double>;
-        break;
+    {
+        fn = divide_by_scalar<double, double>;
+        std::ignore = new (scalar_alloc) double(scalar);
+    } break;
+    case complex64_typeid:
+    {
+        fn = divide_by_scalar<std::complex<float>, float>;
+        std::ignore = new (scalar_alloc) float(scalar);
+    } break;
+    case complex128_typeid:
+    {
+        fn = divide_by_scalar<std::complex<double>, double>;
+        std::ignore = new (scalar_alloc) double(scalar);
+    } break;
     default:
         throw std::runtime_error("Implementation is missing for typeid=" +
                                  std::to_string(src_typeid));
@@ -331,6 +359,16 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
         simplified_shape, simplified_src_strides, simplified_dst_strides,
         src_offset, dst_offset);
 
+    if (nd == 0) {
+        // handle 0d array as 1d array with 1 element
+        constexpr py::ssize_t one{1};
+        simplified_shape.push_back(one);
+        simplified_src_strides.push_back(one);
+        simplified_dst_strides.push_back(one);
+        src_offset = 0;
+        dst_offset = 0;
+    }
+
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
     const auto &ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src_strides,
@@ -349,8 +387,9 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
         throw std::runtime_error("Unable to allocate device memory");
     }
 
-    sycl::event div_ev = fn(exec_q, src_nelems, nd, shape_strides, src_data,
-                            src_offset, scalar, dst_data, dst_offset, all_deps);
+    sycl::event div_ev =
+        fn(exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
+           scalar_alloc, dst_data, dst_offset, all_deps);
 
     // async free of shape_strides temporary
     auto ctx = exec_q.get_context();
