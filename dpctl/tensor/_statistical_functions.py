@@ -93,16 +93,13 @@ def _var_impl(x, axis, correction, keepdims):
         )
     # divide in-place to get mean
     mean_ary_shape = mean_ary.shape
-    nelems_ary = dpt.asarray(
-        nelems, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
-    )
-    if nelems_ary.shape != mean_ary_shape:
-        nelems_ary = dpt.broadcast_to(nelems_ary, mean_ary_shape)
+
     dep_evs = _manager.submitted_events
-    ht_e2, d_e1 = tei._divide_inplace(
-        lhs=mean_ary, rhs=nelems_ary, sycl_queue=q, depends=dep_evs
+    ht_e2, d_e1 = tei._divide_by_scalar(
+        src=mean_ary, scalar=nelems, dst=mean_ary, sycl_queue=q, depends=dep_evs
     )
     _manager.add_event_pair(ht_e2, d_e1)
+
     # subtract mean from original array to get deviations
     dev_ary = dpt.empty_like(buf)
     if mean_ary_shape != buf.shape:
@@ -144,17 +141,18 @@ def _var_impl(x, axis, correction, keepdims):
     res_shape = res.shape
     # when nelems - correction <= 0, yield nans
     div = max(nelems - correction, 0)
-    if not div:
-        div = dpt.nan
-    div_ary = dpt.asarray(
-        div, dtype=res_dt, usm_type=res_usm_type, sycl_queue=q
-    )
-    # divide in-place again
-    if div_ary.shape != res_shape:
-        div_ary = dpt.broadcast_to(div_ary, res.shape)
+    if div:
+        dep_evs = _manager.submitted_events
+        ht_e7, d_e2 = tei._divide_by_scalar(
+            src=res, scalar=div, dst=res, sycl_queue=q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_e7, d_e2)
+        return res, [d_e2]
+
+    div = dpt.nan
     dep_evs = _manager.submitted_events
-    ht_e7, d_e2 = tei._divide_inplace(
-        lhs=res, rhs=div_ary, sycl_queue=q, depends=dep_evs
+    ht_e7, d_e2 = tei._divide_by_scalar(
+        src=res, scalar=div, dst=res, sycl_queue=q, depends=dep_evs
     )
     _manager.add_event_pair(ht_e7, d_e2)
     return res, [d_e2]
@@ -259,17 +257,9 @@ def mean(x, axis=None, keepdims=False):
         inv_perm = sorted(range(nd), key=lambda d: perm[d])
         res = dpt.permute_dims(dpt.reshape(res, res_shape), inv_perm)
 
-    res_shape = res.shape
-    # in-place divide
-    den_dt = dpt.finfo(res_dt).dtype if res_dt.kind == "c" else res_dt
-    nelems_arr = dpt.asarray(
-        nelems, dtype=den_dt, usm_type=res_usm_type, sycl_queue=q
-    )
-    if nelems_arr.shape != res_shape:
-        nelems_arr = dpt.broadcast_to(nelems_arr, res_shape)
     dep_evs = _manager.submitted_events
-    ht_e2, div_e = tei._divide_inplace(
-        lhs=res, rhs=nelems_arr, sycl_queue=q, depends=dep_evs
+    ht_e2, div_e = tei._divide_by_scalar(
+        src=res, scalar=nelems, dst=res, sycl_queue=q, depends=dep_evs
     )
     _manager.add_event_pair(ht_e2, div_e)
     return res
