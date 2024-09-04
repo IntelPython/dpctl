@@ -21,8 +21,10 @@ import pytest
 
 import dpctl
 import dpctl.tensor as dpt
+from dpctl.tensor._tensor_elementwise_impl import _divide_by_scalar
 from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
+from dpctl.utils import SequentialOrderManager
 
 from .utils import (
     _all_dtypes,
@@ -271,3 +273,26 @@ def test_divide_gh_1711():
     assert isinstance(res, dpt.usm_ndarray)
     assert res.dtype.kind == "f"
     assert dpt.allclose(res, dpt.asarray(3, dtype="i4") / -2)
+
+
+# don't test for overflowing double as Python won't cast
+# an Python integer of that size to a Python float
+@pytest.mark.parametrize("fp_dt", [dpt.float16, dpt.float32])
+def test_divide_by_scalar_overflow(fp_dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(fp_dt, q)
+
+    x = dpt.ones(10, dtype=fp_dt, sycl_queue=q)
+    out = dpt.empty_like(x)
+
+    max_exp = np.finfo(fp_dt).maxexp
+    sca = 2**max_exp
+
+    _manager = SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+    _, ev = _divide_by_scalar(
+        src=x, scalar=sca, dst=out, sycl_queue=q, depends=dep_evs
+    )
+    ev.wait()
+
+    assert dpt.all(out == 0)
