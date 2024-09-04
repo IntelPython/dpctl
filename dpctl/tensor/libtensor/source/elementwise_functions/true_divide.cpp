@@ -306,6 +306,7 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     alignas(double) char scalar_alloc[sizeof(double)] = {0};
 
     divide_by_scalar_fn_ptr_t fn;
+    // placement new into stack memory means no call to delete is necessary
     switch (src_typeid) {
     case float16_typeid:
     {
