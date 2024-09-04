@@ -206,7 +206,6 @@ def _clip_none(x, val, out, order, _binary_fn):
             )
             _manager.add_event_pair(ht_copy_out_ev, copy_ev)
             out = orig_out
-        ht_binary_ev.wait()
         return out
     else:
         if order == "K":
