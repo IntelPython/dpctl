@@ -141,15 +141,8 @@ def _var_impl(x, axis, correction, keepdims):
     res_shape = res.shape
     # when nelems - correction <= 0, yield nans
     div = max(nelems - correction, 0)
-    if div:
-        dep_evs = _manager.submitted_events
-        ht_e7, d_e2 = tei._divide_by_scalar(
-            src=res, scalar=div, dst=res, sycl_queue=q, depends=dep_evs
-        )
-        _manager.add_event_pair(ht_e7, d_e2)
-        return res, [d_e2]
-
-    div = dpt.nan
+    if not div:
+        div = dpt.nan
     dep_evs = _manager.submitted_events
     ht_e7, d_e2 = tei._divide_by_scalar(
         src=res, scalar=div, dst=res, sycl_queue=q, depends=dep_evs

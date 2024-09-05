@@ -313,27 +313,32 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
         fn = divide_by_scalar<sycl::half, sycl::half>;
         std::ignore =
             new (scalar_alloc) sycl::half(static_cast<sycl::half>(scalar));
-    } break;
+        break;
+    }
     case float32_typeid:
     {
         fn = divide_by_scalar<float, float>;
         std::ignore = new (scalar_alloc) float(scalar);
-    } break;
+        break;
+    }
     case float64_typeid:
     {
         fn = divide_by_scalar<double, double>;
         std::ignore = new (scalar_alloc) double(scalar);
-    } break;
+        break;
+    }
     case complex64_typeid:
     {
         fn = divide_by_scalar<std::complex<float>, float>;
         std::ignore = new (scalar_alloc) float(scalar);
-    } break;
+        break;
+    }
     case complex128_typeid:
     {
         fn = divide_by_scalar<std::complex<double>, double>;
         std::ignore = new (scalar_alloc) double(scalar);
-    } break;
+        break;
+    }
     default:
         throw std::runtime_error("Implementation is missing for typeid=" +
                                  std::to_string(src_typeid));
