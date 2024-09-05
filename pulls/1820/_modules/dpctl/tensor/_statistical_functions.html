@@ -953,15 +953,8 @@
     <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span>
     <span class="c1"># when nelems - correction &lt;= 0, yield nans</span>
     <span class="n">div</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nelems</span> <span class="o">-</span> <span class="n">correction</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">div</span><span class="p">:</span>
-        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-        <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">div</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
-        <span class="p">)</span>
-        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">[</span><span class="n">d_e2</span><span class="p">]</span>
-
-    <span class="n">div</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">div</span><span class="p">:</span>
+        <span class="n">div</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nan</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
         <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">div</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
