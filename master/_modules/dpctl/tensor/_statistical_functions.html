@@ -905,16 +905,13 @@
         <span class="p">)</span>
     <span class="c1"># divide in-place to get mean</span>
     <span class="n">mean_ary_shape</span> <span class="o">=</span> <span class="n">mean_ary</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">nelems_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">nelems_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mean_ary_shape</span><span class="p">:</span>
-        <span class="n">nelems_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">mean_ary_shape</span><span class="p">)</span>
+
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">nelems</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">mean_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">,</span> <span class="n">d_e1</span><span class="p">)</span>
+
     <span class="c1"># subtract mean from original array to get deviations</span>
     <span class="n">dev_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mean_ary_shape</span> <span class="o">!=</span> <span class="n">buf</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
@@ -958,15 +955,9 @@
     <span class="n">div</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nelems</span> <span class="o">-</span> <span class="n">correction</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">div</span><span class="p">:</span>
         <span class="n">div</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">nan</span>
-    <span class="n">div_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">div</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-    <span class="p">)</span>
-    <span class="c1"># divide in-place again</span>
-    <span class="k">if</span> <span class="n">div_ary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="n">div_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">div_ary</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+    <span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">div</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e7</span><span class="p">,</span> <span class="n">d_e2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="p">[</span><span class="n">d_e2</span><span class="p">]</span>
@@ -1071,17 +1062,9 @@
         <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">),</span> <span class="n">inv_perm</span><span class="p">)</span>
 
-    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">shape</span>
-    <span class="c1"># in-place divide</span>
-    <span class="n">den_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">res_dt</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">res_dt</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span> <span class="k">else</span> <span class="n">res_dt</span>
-    <span class="n">nelems_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="n">nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">den_dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">nelems_arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
-        <span class="n">nelems_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">res_shape</span><span class="p">)</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">div_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">(</span>
-        <span class="n">lhs</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">rhs</span><span class="o">=</span><span class="n">nelems_arr</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+    <span class="n">ht_e2</span><span class="p">,</span> <span class="n">div_e</span> <span class="o">=</span> <span class="n">tei</span><span class="o">.</span><span class="n">_divide_by_scalar</span><span class="p">(</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">scalar</span><span class="o">=</span><span class="n">nelems</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e2</span><span class="p">,</span> <span class="n">div_e</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
