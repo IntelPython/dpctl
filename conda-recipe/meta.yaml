@@ -1,4 +1,4 @@
-{% set required_compiler_version = "2024.2.0" %}
+{% set required_compiler_version = "2025.0.0" %}
 
 {% set pyproject = load_file_data('pyproject.toml') %}
 {% set py_build_deps = pyproject.get('build-system', {}).get('requires', []) %}
