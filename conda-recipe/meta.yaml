@@ -35,10 +35,7 @@ requirements:
         {% if dep.startswith('ninja') %}
         - {{ dep.split(';')[0] }} # [not win]
         {% elif dep.startswith('cmake') %}
-        # We need to pin cmake version on Windows, because we are patching
-        # cmake files distributed with it.
-        - cmake=3.26 # [win]
-        - {{ dep }} # [not win]
+        - {{ dep }}
         {% elif dep.startswith('build>=') %}
         - {{ 'python-' ~ dep }}
         {% else %}
