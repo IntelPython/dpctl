@@ -61,6 +61,9 @@ class copy_cast_contig_kernel;
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_from_host_kernel;
 
+template <typename srcT, typename dstT, typename IndexerT>
+class copy_cast_from_host_contig_kernel;
+
 template <typename srcTy, typename dstTy> class Caster
 {
 public:
@@ -390,9 +393,9 @@ template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     sycl::queue &,
     size_t,
-    const std::array<ssize_t, 1>,
-    const std::array<ssize_t, 1>,
-    const std::array<ssize_t, 1>,
+    const std::array<ssize_t, 1> &,
+    const std::array<ssize_t, 1> &,
+    const std::array<ssize_t, 1> &,
     const char *,
     ssize_t,
     char *,
@@ -406,9 +409,9 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
 typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     sycl::queue &,
     size_t,
-    const std::array<ssize_t, 2>,
-    const std::array<ssize_t, 2>,
-    const std::array<ssize_t, 2>,
+    const std::array<ssize_t, 2> &,
+    const std::array<ssize_t, 2> &,
+    const std::array<ssize_t, 2> &,
     const char *,
     ssize_t,
     char *,
@@ -448,9 +451,9 @@ template <typename dstTy, typename srcTy, int nd>
 sycl::event
 copy_and_cast_nd_specialized_impl(sycl::queue &q,
                                   size_t nelems,
-                                  const std::array<ssize_t, nd> shape,
-                                  const std::array<ssize_t, nd> src_strides,
-                                  const std::array<ssize_t, nd> dst_strides,
+                                  const std::array<ssize_t, nd> &shape,
+                                  const std::array<ssize_t, nd> &src_strides,
+                                  const std::array<ssize_t, nd> &dst_strides,
                                   const char *src_p,
                                   ssize_t src_offset,
                                   char *dst_p,
@@ -653,6 +656,100 @@ struct CopyAndCastFromHostFactory
     fnT get()
     {
         fnT f = copy_and_cast_from_host_impl<D, S>;
+        return f;
+    }
+};
+
+typedef void (*copy_and_cast_from_host_contig_blocking_fn_ptr_t)(
+    sycl::queue &,
+    size_t,       /* nelems */
+    const char *, /* src_pointer */
+    ssize_t,      /* src_offset */
+    char *,       /* dst_pointer */
+    ssize_t,      /* dst_offset */
+    const std::vector<sycl::event> &);
+
+/*!
+ * @brief Function to copy from NumPy's ndarray with elements of type `srcTy`
+ * into usm_ndarray with elements of type `srcTy` for contiguous arrays.
+ *
+ * Function to cast and copy elements from numpy.ndarray specified by typeless
+ * `host_src_p` and the `src_offset` given in the number of array elements.
+ * Kernel dependencies are given by two vectors of
+ * events: `depends` and `additional_depends`. The function execution is
+ * complete at the return.
+ *
+ * @param q  The queue where the routine should be executed.
+ * @param nelems Number of elements to cast and copy.
+ * @param src_stride The stride of source array in elements
+ * @param dst_stride The stride of destimation array in elements
+ * @param host_src_p  Host (not USM allocated) pointer associated with the
+ * source array.
+ * @param src_offset  Offset to the beginning of iteration in number of elements
+ * of the source array from `host_src_p`.
+ * @param dst_p  USM pointer associated with the destination array.
+ * @param dst_offset  Offset to the beginning of iteration in number of elements
+ * of the destination array from `dst_p`.
+ * @param depends  List of events to wait for before starting computations, if
+ * any.
+ *
+ * @ingroup CopyAndCastKernels
+ */
+template <typename dstTy, typename srcTy>
+void copy_and_cast_from_host_contig_impl(
+    sycl::queue &q,
+    size_t nelems,
+    const char *host_src_p,
+    ssize_t src_offset,
+    char *dst_p,
+    ssize_t dst_offset,
+    const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<dstTy>(q);
+    dpctl::tensor::type_utils::validate_type_for_device<srcTy>(q);
+
+    sycl::buffer<srcTy, 1> npy_buf(
+        reinterpret_cast<const srcTy *>(host_src_p) + src_offset,
+        sycl::range<1>(nelems), {sycl::property::buffer::use_host_ptr{}});
+
+    sycl::event copy_and_cast_from_host_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        sycl::accessor npy_acc(npy_buf, cgh, sycl::read_only);
+
+        using IndexerT = TwoOffsets_CombinedIndexer<NoOpIndexer, NoOpIndexer>;
+        constexpr NoOpIndexer src_indexer{};
+        constexpr NoOpIndexer dst_indexer{};
+        constexpr TwoOffsets_CombinedIndexer indexer{src_indexer, dst_indexer};
+
+        dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p) + dst_offset;
+
+        cgh.parallel_for<
+            copy_cast_from_host_contig_kernel<srcTy, dstTy, IndexerT>>(
+            sycl::range<1>(nelems),
+            GenericCopyFromHostFunctor<decltype(npy_acc), dstTy,
+                                       Caster<srcTy, dstTy>, IndexerT>(
+                npy_acc, dst_tp, indexer));
+    });
+
+    // perform explicit synchronization. Implicit synchronization would be
+    // performed by sycl::buffer destructor.
+    copy_and_cast_from_host_ev.wait();
+
+    return;
+}
+
+/*!
+ * @brief Factory to get function pointer of type `fnT` for given NumPy array
+ * source data type `S` and destination data type `D`.
+ * @defgroup CopyAndCastKernels
+ */
+template <typename fnT, typename D, typename S>
+struct CopyAndCastFromHostContigFactory
+{
+    fnT get()
+    {
+        fnT f = copy_and_cast_from_host_contig_impl<D, S>;
         return f;
     }
 };

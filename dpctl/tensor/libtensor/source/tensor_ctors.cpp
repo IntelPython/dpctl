@@ -83,6 +83,7 @@ using dpctl::tensor::py_internal::copy_usm_ndarray_for_roll_nd;
 /* ============= Copy from numpy.ndarray to usm_ndarray ==================== */
 
 using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray;
+using dpctl::tensor::py_internal::copy_numpy_ndarray_into_usm_ndarray_legacy;
 
 /* ============= linear-sequence ==================== */
 
@@ -293,6 +294,12 @@ PYBIND11_MODULE(_tensor_impl, m)
 
     m.def("_copy_numpy_ndarray_into_usm_ndarray",
           &copy_numpy_ndarray_into_usm_ndarray,
+          "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_copy_numpy_ndarray_into_usm_ndarray_legacy",
+          &copy_numpy_ndarray_into_usm_ndarray_legacy,
           "Copy from numpy array `src` into usm_ndarray `dst` synchronously.",
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
