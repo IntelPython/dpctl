@@ -4,13 +4,118 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.0] - XXX. XX, 2024
+## [0.18.0] - Sept. XX, 2024
+
+This release reaches an important milestone by making offloading fully asynchronous.
+Calls to `dpctl.tensor` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish.
+The sequential semantics a user comes to expect from execution of Python script is preserved though.
+
+The full list of changes that went into this release are:
 
 ### Added
 
+* Implement `tensor.take_along_axis` per Python Array API specification [gh-1778](https://github.com/IntelPython/dpctl/pull/1778)
+* Implement `tensor.put_along_axis` to complement `tensor.take_along_axis` [gh-1798](https://github.com/IntelPython/dpctl/pull/1798)
+* Support for 'device=tensor.kDLCPU' in `tensor.from_dlpack` function and `tensor.usm_ndarray.__dlpack__` method [gh-1781](https://github.com/IntelPython/dpctl/pull/1781)
+* Support DLPack on Windows [gh-1746](https://github.com/IntelPython/dpctl/pull/1746)
+* Implement `tensor.nextafter` function per Python Array API specification [gh-1730](https://github.com/IntelPython/dpctl/pull/1730)
+* Implement `tensor.count_nonzero` and `tensor.diff` functions from Python array API specification [gh-1732](https://github.com/IntelPython/dpctl/pull/1732), [gh-1780](https://github.com/IntelPython/dpctl/pull/1780)
+* Add support for `order="K"` to `*_like` array creation functions, and change default `order` keyword value from `'C'` to `'K'` [gh-1808](https://github.com/IntelPython/dpctl/pull/1808)
+* Support for 'max dimensions' in Array API capabilities info data [gh-1774](https://github.com/IntelPython/dpctl/pull/1774)
+* Add support for device aspect 'emulated' [gh-1691](https://github.com/IntelPython/dpctl/pull/1691)
+* `dpctl::tensor::usm_memory` class defined in `dpctl4pybind11.hpp` adds constructor to create Python USM memory objects viewing into existing USM allocations, which can be made by an external library [gh-1782](https://github.com/IntelPython/dpctl/pull/1782)
+* Add support for COVERAGE build type in project's CMake script [gh-1692](https://github.com/IntelPython/dpctl/pull/1692)
+
 ### Change
 
+* Change ownership of USM allocation by `dpctl.memory` objects, make executions of `dpctl.tensor` operations asynchronous [gh-1705](https://github.com/IntelPython/dpctl/pull/1705)
+* Add support for Python scalars by `tensor.where` function [gh-1719](https://github.com/IntelPython/dpctl/pull/1719)
+* Optimize division by Python scalar in statistical functions `tensor.mean`, `tensor.std`, `tensor.var` [gh-1820](https://github.com/IntelPython/dpctl/pull/1820)
+* Use transcendental functions from `sycl` namespace instead of `std` namespace [gh-1707](https://github.com/IntelPython/dpctl/pull/1707)
+* Changes for compatibility with recent NumPy in runtime environment [gh-1735](https://github.com/IntelPython/dpctl/pull/1735), [gh-1772](https://github.com/IntelPython/dpctl/pull/1772), [gh-1804](https://github.com/IntelPython/dpctl/pull/1804)
+* Array creation function `tensor.zeros` to use asynchronous `memset` operation [gh-1806](https://github.com/IntelPython/dpctl/pull/1806)
+* The setter of `tensor.usm_ndarray.shape` property now supports Python scalar value [gh-1786](https://github.com/IntelPython/dpctl/pull/1786)
+* Use 'pyproject.toml' instead of 'setup.py' aligning with current packaging best practices [gh-1660](https://github.com/IntelPython/dpctl/pull/1660)
+* No longer set SOVERSION property in DPCTLSyclInterface library on Linux [gh-1773](https://github.com/IntelPython/dpctl/pull/1773)
+* Update version of 'pybind11' used [gh-1758](https://github.com/IntelPython/dpctl/pull/1758), [gh-1812](https://github.com/IntelPython/dpctl/pull/1812)
+* Handle possible exceptions by `usm_host_allocator` used with `std::vector` [gh-1791](https://github.com/IntelPython/dpctl/pull/1791)
+* Use `dpctl::tensor::offset_utils::sycl_free_noexcept` instead of `sycl::free` in `host_task` tasks associated with life-time management of temporary USM allocations [gh-1797](https://github.com/IntelPython/dpctl/pull/1797)
+
 ### Fixed
+
+* Fix setting of release variable Sphinx config file [gh-1685](https://github.com/IntelPython/dpctl/pull/1685)
+* Handle possible NULL return value from device aspect queries `DPCTLDevice_GetMaxWorkGroupSize1d` and `DPCTLDevice_GetMaxWorkGroupSize2d` [gh-1690](https://github.com/IntelPython/dpctl/pull/1690)
+* Add license header to conda script files [gh-1695](https://github.com/IntelPython/dpctl/pull/1695)
+* Fix `tensor.round` behavior on CUDA devices [gh-1700](https://github.com/IntelPython/dpctl/pull/1700)
+* Add missing `#include <sstream>` [gh-1701](https://github.com/IntelPython/dpctl/pull/1701)
+* Fix for issue 1724 [gh-1728](https://github.com/IntelPython/dpctl/pull/1728)
+* Correct USM type for return array of `tensor.extract` function [gh-1727](https://github.com/IntelPython/dpctl/pull/1727)
+* Fix for `tensor.unique_all` and `tensor.unique_inverse` to always return index arrays with default indexing data type [gh-1741](https://github.com/IntelPython/dpctl/pull/1741)
+* Propagate read-only flag from `__sycl_usm_array_interface__` in `tensor.asarray` function [gh-1756](https://github.com/IntelPython/dpctl/pull/1756)
+* `tensor.clip` to handle Python scalars which are out of bound for the data type of integral array [gh-1759](https://github.com/IntelPython/dpctl/pull/1759)
+* Avoid dead-locking by releasing GIL around blocking operations in libtensor [gh-1753](https://github.com/IntelPython/dpctl/pull/1753)
+* Element-wise `tensor.divide` and comparison operations allow greater range of Python integer and integer array combinations [gh-1771](https://github.com/IntelPython/dpctl/pull/1771)
+* Fix for unexpected behavior when using floating point types for array indexing [gh-1792](https://github.com/IntelPython/dpctl/pull/1792)
+
+### Maintenance
+
+* Improve performance of `test_sort_complex_fp_nan` [gh-1704](https://github.com/IntelPython/dpctl/pull/1704)
+* Improve exception wording raised by `tensor.broadcast_arrays()` [gh-1720](https://github.com/IntelPython/dpctl/pull/1720)
+* Remove `template` keyword in method call of `sycl::kernel_bundle` [gh-1726](https://github.com/IntelPython/dpctl/pull/1726)
+* Backport changelog edits from maintenance/0.17.x [gh-1736](https://github.com/IntelPython/dpctl/pull/1736)
+* Replace uses of 'intel' channels in docs and readme file [gh-1737](https://github.com/IntelPython/dpctl/pull/1737)
+* Update references to deprecated environment variable `SYCL_DEVICE_FILTER` [gh-1740](https://github.com/IntelPython/dpctl/pull/1740)
+* Correction for installation instruction steps [gh-1754](https://github.com/IntelPython/dpctl/pull/1754)
+* Fix for crash during testing with open source SYCL bundle by updating CPU RT library used [gh-1762](https://github.com/IntelPython/dpctl/pull/1762)
+* Add missing include to fix build break with newer LLVM [gh-1776](https://github.com/IntelPython/dpctl/pull/1776)
+* Add `#include <utility>` for definition of `std::move` used [gh-1787](https://github.com/IntelPython/dpctl/pull/1787)
+* Change to CMake script to accomodate DPC++ transition from PI to UR architecture [gh-1788](https://github.com/IntelPython/dpctl/pull/1788)
+* Document `tensor._flags.Flags` class [gh-1794](https://github.com/IntelPython/dpctl/pull/1794)
+* Fix for unreferenced unreleased bug in copy-and-cast code logic [gh-1799](https://github.com/IntelPython/dpctl/pull/1799)
+* Explicitly include headers used in C++ translation units implementing reduction operations [gh-1802](https://github.com/IntelPython/dpctl/pull/1802)
+* Clean-up uses of `Strided1DIndexer` class [gh-1805](https://github.com/IntelPython/dpctl/pull/1805)
+* Tweak to readability of C++ code implementing matrix-matrix multiplication [gh-1810](https://github.com/IntelPython/dpctl/pull/1810)
+* Do not add `sycl::event` associated with compute task to vector of events representing execution of `host_task` [gh-1807](https://github.com/IntelPython/dpctl/pull/1807)
+* Remove 'level-zero' conda package from run-time dependencies of 'dpctl' since Intel GPU driver stack now explicitly depends on `libze1` package which provides Level-Zero loader library [gh-1801](https://github.com/IntelPython/dpctl/pull/1801)
+* Use dedicated type-support matrices for in-place element-wise binary operations [gh-1816](https://github.com/IntelPython/dpctl/pull/1816)
+* Remove recommendation to install wheels from Anaconda PyPI index [gh-1819](https://github.com/IntelPython/dpctl/pull/1819)
+* Removed use of post-link and pre-unlink conda scripts in `dpctl` [gh-1821](https://github.com/IntelPython/dpctl/pull/1821)
+* Pin compiler used to build 0.18.0 version to 2025.0.0 [gh-1822](https://github.com/IntelPython/dpctl/pull/1822)
+* A varienty of changes to continuous integration/delivery (CI/CD) supporting scripts to keep CI running smoothly:
+ [gh-1686](https://github.com/IntelPython/dpctl/pull/1686),
+ [gh-1688](https://github.com/IntelPython/dpctl/pull/1688),
+ [gh-1697](https://github.com/IntelPython/dpctl/pull/1697),
+ [gh-1698](https://github.com/IntelPython/dpctl/pull/1698),
+ [gh-1703](https://github.com/IntelPython/dpctl/pull/1703),
+ [gh-1702](https://github.com/IntelPython/dpctl/pull/1702),
+ [gh-1709](https://github.com/IntelPython/dpctl/pull/1709),
+ [gh-1712](https://github.com/IntelPython/dpctl/pull/1712),
+ [gh-1713](https://github.com/IntelPython/dpctl/pull/1713),
+ [gh-1722](https://github.com/IntelPython/dpctl/pull/1722),
+ [gh-1725](https://github.com/IntelPython/dpctl/pull/1725),
+ [gh-1729](https://github.com/IntelPython/dpctl/pull/1729),
+ [gh-1733](https://github.com/IntelPython/dpctl/pull/1733),
+ [gh-1721](https://github.com/IntelPython/dpctl/pull/1721),
+ [gh-1743](https://github.com/IntelPython/dpctl/pull/1743),
+ [gh-1739](https://github.com/IntelPython/dpctl/pull/1739),
+ [gh-1747](https://github.com/IntelPython/dpctl/pull/1747),
+ [gh-1748](https://github.com/IntelPython/dpctl/pull/1748),
+ [gh-1750](https://github.com/IntelPython/dpctl/pull/1750),
+ [gh-1752](https://github.com/IntelPython/dpctl/pull/1752),
+ [gh-1767](https://github.com/IntelPython/dpctl/pull/1767),
+ [gh-1768](https://github.com/IntelPython/dpctl/pull/1768),
+ [gh-1775](https://github.com/IntelPython/dpctl/pull/1775),
+ [gh-1783](https://github.com/IntelPython/dpctl/pull/1783),
+ [gh-1790](https://github.com/IntelPython/dpctl/pull/1790),
+ [gh-1795](https://github.com/IntelPython/dpctl/pull/1795),
+ [gh-1796](https://github.com/IntelPython/dpctl/pull/1796),
+ [gh-1800](https://github.com/IntelPython/dpctl/pull/1800),
+ [gh-1760](https://github.com/IntelPython/dpctl/pull/1760),
+ [gh-1803](https://github.com/IntelPython/dpctl/pull/1803),
+ [gh-1777](https://github.com/IntelPython/dpctl/pull/1777),
+ [gh-1813](https://github.com/IntelPython/dpctl/pull/1813),
+ [gh-1817](https://github.com/IntelPython/dpctl/pull/1817),
+ [gh-1818](https://github.com/IntelPython/dpctl/pull/1818)
 
 ## [0.17.0] - May. 23, 2024
 
