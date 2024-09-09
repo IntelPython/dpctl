@@ -22,7 +22,7 @@ The full list of changes that went into this release are:
 * Implement `tensor.count_nonzero` and `tensor.diff` functions from Python array API specification [gh-1732](https://github.com/IntelPython/dpctl/pull/1732), [gh-1780](https://github.com/IntelPython/dpctl/pull/1780)
 * Add support for `order="K"` to `*_like` array creation functions, and change default `order` keyword value from `'C'` to `'K'` [gh-1808](https://github.com/IntelPython/dpctl/pull/1808)
 * Support for 'max dimensions' in Array API capabilities info data [gh-1774](https://github.com/IntelPython/dpctl/pull/1774)
-* Add support for device aspect 'simulated' [gh-1691](https://github.com/IntelPython/dpctl/pull/1691)
+* Add support for device aspect 'emulated' [gh-1691](https://github.com/IntelPython/dpctl/pull/1691)
 * `dpctl::tensor::usm_memory` class defined in `dpctl4pybind11.hpp` adds constructor to create Python USM memory objects viewing into existing USM allocations, which can be made by an external library [gh-1782](https://github.com/IntelPython/dpctl/pull/1782)
 * Add support for COVERAGE build type in project's CMake script [gh-1692](https://github.com/IntelPython/dpctl/pull/1692)
 
@@ -45,7 +45,6 @@ The full list of changes that went into this release are:
 
 * Fix setting of release variable Sphinx config file [gh-1685](https://github.com/IntelPython/dpctl/pull/1685)
 * Handle possible NULL return value from device aspect queries `DPCTLDevice_GetMaxWorkGroupSize1d` and `DPCTLDevice_GetMaxWorkGroupSize2d` [gh-1690](https://github.com/IntelPython/dpctl/pull/1690)
-* Fix `tensor.searchsorted` when input is a strided array and a 0d array [gh-1693](https://github.com/IntelPython/dpctl/pull/1693)
 * Add license header to conda script files [gh-1695](https://github.com/IntelPython/dpctl/pull/1695)
 * Fix `tensor.round` behavior on CUDA devices [gh-1700](https://github.com/IntelPython/dpctl/pull/1700)
 * Add missing `#include <sstream>` [gh-1701](https://github.com/IntelPython/dpctl/pull/1701)
