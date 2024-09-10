@@ -976,8 +976,14 @@ class BinaryElementwiseFunc:
                     "operands could not be broadcast together with shapes "
                     f"{o1_shape} and {o2_shape}"
                 )
+
             if res_shape != o1_shape:
-                raise ValueError("")
+                raise ValueError(
+                    "The shape of the non-broadcastable left-hand "
+                    f"side {o1_shape} is inconsistent with the "
+                    f"broadcast shape {res_shape}."
+                )
+
             sycl_dev = exec_q.sycl_device
             o1_dtype = o1.dtype
             o2_dtype = _get_dtype(o2, sycl_dev)
