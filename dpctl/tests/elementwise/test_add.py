@@ -373,9 +373,25 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
     else:
         with pytest.raises(ValueError):
             ar1 += ar2
+
+    ar1 = dpt.ones(sz, dtype=op1_dtype)
+    ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+        dpt.add(ar1, ar2, out=ar1)
+        assert (
+            dpt.asnumpy(ar1) == np.full(ar1.shape, 2, dtype=ar1.dtype)
+        ).all()
+
+        ar3 = dpt.ones(sz, dtype=op1_dtype)[::-1]
+        ar4 = dpt.ones(2 * sz, dtype=op2_dtype)[::2]
+        dpt.add(ar3, ar4, out=ar3)
+        assert (
+            dpt.asnumpy(ar3) == np.full(ar3.shape, 2, dtype=ar3.dtype)
+        ).all()
+    else:
+        with pytest.raises(ValueError):
             dpt.add(ar1, ar2, out=ar1)
 
-    # out is second arg
     ar1 = dpt.ones(sz, dtype=op1_dtype)
     ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
     if _can_cast(ar1.dtype, ar2.dtype, _fp16, _fp64):
@@ -401,7 +417,7 @@ def test_add_inplace_broadcasting():
     m = dpt.ones((100, 5), dtype="i4")
     v = dpt.arange(5, dtype="i4")
 
-    m += v
+    dpt.add(m, v, out=m)
     assert (dpt.asnumpy(m) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
 
     # check case where second arg is out
@@ -409,6 +425,26 @@ def test_add_inplace_broadcasting():
     assert (
         dpt.asnumpy(m) == np.arange(10, dtype="i4")[np.newaxis, 1:10:2]
     ).all()
+
+
+def test_add_inplace_operator_broadcasting():
+    get_queue_or_skip()
+
+    m = dpt.ones((100, 5), dtype="i4")
+    v = dpt.arange(5, dtype="i4")
+
+    m += v
+    assert (dpt.asnumpy(m) == np.arange(1, 6, dtype="i4")[np.newaxis, :]).all()
+
+
+def test_add_inplace_operator_mutual_broadcast():
+    get_queue_or_skip()
+
+    x1 = dpt.ones((1, 10), dtype="i4")
+    x2 = dpt.ones((10, 1), dtype="i4")
+
+    with pytest.raises(ValueError):
+        dpt.add._inplace_op(x1, x2)
 
 
 def test_add_inplace_errors():
@@ -425,27 +461,45 @@ def test_add_inplace_errors():
     ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
     ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
     with pytest.raises(ExecutionPlacementError):
-        ar1 += ar2
+        dpt.add(ar1, ar2, out=ar1)
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones(3, dtype="float32")
     with pytest.raises(ValueError):
-        ar1 += ar2
+        dpt.add(ar1, ar2, out=ar1)
 
     ar1 = np.ones(2, dtype="float32")
     ar2 = dpt.ones(2, dtype="float32")
     with pytest.raises(TypeError):
-        ar1 += ar2
+        dpt.add(ar1, ar2, out=ar1)
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dict()
     with pytest.raises(ValueError):
-        ar1 += ar2
+        dpt.add(ar1, ar2, out=ar1)
 
     ar1 = dpt.ones((2, 1), dtype="float32")
     ar2 = dpt.ones((1, 2), dtype="float32")
     with pytest.raises(ValueError):
-        ar1 += ar2
+        dpt.add(ar1, ar2, out=ar1)
+
+
+def test_add_inplace_operator_errors():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.ones(10, dtype="i4", sycl_queue=q1)
+    with pytest.raises(TypeError):
+        dpt.add._inplace_op(dict(), x)
+
+    x.flags["W"] = False
+    with pytest.raises(ValueError):
+        dpt.add._inplace_op(x, 2)
+
+    x_q1 = dpt.ones(10, dtype="i4", sycl_queue=q1)
+    x_q2 = dpt.ones(10, dtype="i4", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.add._inplace_op(x_q1, x_q2)
 
 
 def test_add_inplace_same_tensors():

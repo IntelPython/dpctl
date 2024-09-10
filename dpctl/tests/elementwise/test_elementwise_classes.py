@@ -118,7 +118,7 @@ def test_binary_class_nout():
     assert nout == 1
 
 
-def test_biary_read_only_out():
+def test_binary_read_only_out():
     get_queue_or_skip()
     x1 = dpt.ones(32, dtype=dpt.float32)
     x2 = dpt.ones_like(x1)
@@ -126,3 +126,12 @@ def test_biary_read_only_out():
     r.flags["W"] = False
     with pytest.raises(ValueError):
         binary_fn(x1, x2, out=r)
+
+
+def test_binary_no_inplace_op():
+    get_queue_or_skip()
+    x1 = dpt.ones(10, dtype="i4")
+    x2 = dpt.ones_like(x1)
+
+    with pytest.raises(ValueError):
+        dpt.logaddexp._inplace_op(x1, x2)
