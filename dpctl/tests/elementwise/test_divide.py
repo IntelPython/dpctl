@@ -226,7 +226,7 @@ def test_divide_inplace_dtype_matrix(op1_dtype, op2_dtype):
     _fp64 = dev.has_aspect_fp64
     # out array only valid if it is inexact
     if (
-        _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64)
+        _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64, casting="same_kind")
         and dpt.dtype(op1_dtype).kind in "fc"
     ):
         ar1 /= ar2
@@ -276,7 +276,7 @@ def test_divide_gh_1711():
 
 
 # don't test for overflowing double as Python won't cast
-# an Python integer of that size to a Python float
+# a Python integer of that size to a Python float
 @pytest.mark.parametrize("fp_dt", [dpt.float16, dpt.float32])
 def test_divide_by_scalar_overflow(fp_dt):
     q = get_queue_or_skip()

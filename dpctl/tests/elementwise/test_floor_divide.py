@@ -290,7 +290,7 @@ def test_floor_divide_inplace_dtype_matrix(op1_dtype, op2_dtype):
     _fp16 = dev.has_aspect_fp16
     _fp64 = dev.has_aspect_fp64
     # out array only valid if it is inexact
-    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64, casting="same_kind"):
         ar1 //= ar2
         assert dpt.all(ar1 == 1)
 
