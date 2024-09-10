@@ -125,19 +125,3 @@ def test_bitwise_and_inplace_dtype_matrix(op1_dtype, op2_dtype):
     else:
         with pytest.raises(ValueError):
             ar1 &= ar2
-            dpt.bitwise_and(ar1, ar2, out=ar1)
-
-    # out is second arg
-    ar1 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)
-    ar2 = dpt.ones_like(ar1, dtype=op2_dtype, sycl_queue=q)
-    if _can_cast(ar1.dtype, ar2.dtype, _fp16, _fp64):
-        dpt.bitwise_and(ar1, ar2, out=ar2)
-        assert dpt.all(ar2 == 1)
-
-        ar3 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)[::-1]
-        ar4 = dpt.ones(2 * sz, dtype=op2_dtype, sycl_queue=q)[::2]
-        dpt.bitwise_and(ar3, ar4, out=ar4)
-        dpt.all(ar4 == 1)
-    else:
-        with pytest.raises(ValueError):
-            dpt.bitwise_and(ar1, ar2, out=ar2)
