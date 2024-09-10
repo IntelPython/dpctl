@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Maintenance
+
+* Update black version used in Python code style workflow [gh-1828](https://github.com/IntelPython/dpctl/pull/1828)
+
 ## [0.18.0] - Sept. XX, 2024
 
 This release reaches an important milestone by making offloading fully asynchronous.
