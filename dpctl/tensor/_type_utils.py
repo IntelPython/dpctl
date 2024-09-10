@@ -277,6 +277,21 @@ def _find_buf_dtype2(arg1_dtype, arg2_dtype, query_fn, sycl_dev, acceptance_fn):
     return None, None, None
 
 
+def _find_buf_dtype_in_place_op(arg1_dtype, arg2_dtype, query_fn, sycl_dev):
+    res_dt = query_fn(arg1_dtype, arg2_dtype)
+    if res_dt:
+        return None, res_dt
+
+    _fp16 = sycl_dev.has_aspect_fp16
+    _fp64 = sycl_dev.has_aspect_fp64
+    if _can_cast(arg2_dtype, arg1_dtype, _fp16, _fp64, casting="same_kind"):
+        res_dt = query_fn(arg1_dtype, arg1_dtype)
+        if res_dt:
+            return arg1_dtype, res_dt
+
+    return None, None
+
+
 class WeakBooleanType:
     "Python type representing type of Python boolean objects"
 
@@ -959,4 +974,5 @@ __all__ = [
     "WeakComplexType",
     "_default_accumulation_dtype",
     "_default_accumulation_dtype_fp_types",
+    "_find_buf_dtype_in_place_op",
 ]
