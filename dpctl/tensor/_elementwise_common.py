@@ -215,7 +215,7 @@ class UnaryElementwiseFunc:
             if res_dt != out.dtype:
                 raise ValueError(
                     f"Output array of type {res_dt} is needed, "
-                    f" got {out.dtype}"
+                    f"got {out.dtype}"
                 )
 
             if (
