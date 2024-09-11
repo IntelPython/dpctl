@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `"same_kind"`-style casting for `tensor.usm_ndarray` in-place mathematical operators[gh-1827](https://github.com/IntelPython/dpctl/pull/1827)
+
 ### Change
 
 ### Fixed
