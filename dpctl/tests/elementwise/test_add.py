@@ -358,6 +358,8 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
     dev = q.sycl_device
     _fp16 = dev.has_aspect_fp16
     _fp64 = dev.has_aspect_fp64
+    # operators use a different Python implementation which permits
+    # same kind style casting
     if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64, casting="same_kind"):
         ar1 += ar2
         assert (
@@ -374,6 +376,9 @@ def test_add_inplace_dtype_matrix(op1_dtype, op2_dtype):
         with pytest.raises(ValueError):
             ar1 += ar2
 
+    # here, test the special case where out is the first argument
+    # so an in-place kernel is used for efficiency
+    # this covers a specific branch in the BinaryElementwiseFunc logic
     ar1 = dpt.ones(sz, dtype=op1_dtype)
     ar2 = dpt.ones_like(ar1, dtype=op2_dtype)
     if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
