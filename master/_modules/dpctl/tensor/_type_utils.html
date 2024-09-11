@@ -1089,6 +1089,21 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
+<span class="k">def</span> <span class="nf">_find_buf_dtype_in_place_op</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+    <span class="n">res_dt</span> <span class="o">=</span> <span class="n">query_fn</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res_dt</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_dt</span>
+
+    <span class="n">_fp16</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
+    <span class="n">_fp64</span> <span class="o">=</span> <span class="n">sycl_dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+    <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+        <span class="n">res_dt</span> <span class="o">=</span> <span class="n">query_fn</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg1_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res_dt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">res_dt</span>
+
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+
 <span class="k">class</span> <span class="nc">WeakBooleanType</span><span class="p">:</span>
     <span class="s2">&quot;Python type representing type of Python boolean objects&quot;</span>
 
@@ -1771,6 +1786,7 @@
     <span class="s2">&quot;WeakComplexType&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_default_accumulation_dtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_default_accumulation_dtype_fp_types&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_find_buf_dtype_in_place_op&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
         </article>
