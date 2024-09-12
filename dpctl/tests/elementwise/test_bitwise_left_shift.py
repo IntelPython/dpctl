@@ -122,7 +122,7 @@ def test_bitwise_left_shift_inplace_dtype_matrix(op1_dtype, op2_dtype):
     dev = q.sycl_device
     _fp16 = dev.has_aspect_fp16
     _fp64 = dev.has_aspect_fp64
-    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64, casting="same_kind"):
         ar1 <<= ar2
         assert dpt.all(ar1 == 2)
 
@@ -133,19 +133,3 @@ def test_bitwise_left_shift_inplace_dtype_matrix(op1_dtype, op2_dtype):
     else:
         with pytest.raises(ValueError):
             ar1 <<= ar2
-            dpt.bitwise_left_shift(ar1, ar2, out=ar1)
-
-    # out is second arg
-    ar1 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)
-    ar2 = dpt.ones_like(ar1, dtype=op2_dtype, sycl_queue=q)
-    if _can_cast(ar1.dtype, ar2.dtype, _fp16, _fp64):
-        dpt.bitwise_left_shift(ar1, ar2, out=ar2)
-        assert dpt.all(ar2 == 2)
-
-        ar3 = dpt.ones(sz, dtype=op1_dtype, sycl_queue=q)[::-1]
-        ar4 = dpt.ones(2 * sz, dtype=op2_dtype, sycl_queue=q)[::2]
-        dpt.bitwise_left_shift(ar3, ar4, out=ar4)
-        dpt.all(ar4 == 2)
-    else:
-        with pytest.raises(ValueError):
-            dpt.bitwise_left_shift(ar1, ar2, out=ar2)

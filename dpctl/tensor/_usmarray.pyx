@@ -1508,43 +1508,43 @@ cdef class usm_ndarray:
         return dpctl.tensor.bitwise_xor(other, self)
 
     def __iadd__(self, other):
-        return dpctl.tensor.add(self, other, out=self)
+        return dpctl.tensor.add._inplace_op(self, other)
 
     def __iand__(self, other):
-        return dpctl.tensor.bitwise_and(self, other, out=self)
+        return dpctl.tensor.bitwise_and._inplace_op(self, other)
 
     def __ifloordiv__(self, other):
-        return dpctl.tensor.floor_divide(self, other, out=self)
+        return dpctl.tensor.floor_divide._inplace_op(self, other)
 
     def __ilshift__(self, other):
-        return dpctl.tensor.bitwise_left_shift(self, other, out=self)
+        return dpctl.tensor.bitwise_left_shift._inplace_op(self, other)
 
     def __imatmul__(self, other):
-        return dpctl.tensor.matmul(self, other, out=self)
+        return dpctl.tensor.matmul(self, other, out=self, dtype=self.dtype)
 
     def __imod__(self, other):
-        return dpctl.tensor.remainder(self, other, out=self)
+        return dpctl.tensor.remainder._inplace_op(self, other)
 
     def __imul__(self, other):
-        return dpctl.tensor.multiply(self, other, out=self)
+        return dpctl.tensor.multiply._inplace_op(self, other)
 
     def __ior__(self, other):
-        return dpctl.tensor.bitwise_or(self, other, out=self)
+        return dpctl.tensor.bitwise_or._inplace_op(self, other)
 
     def __ipow__(self, other):
-        return dpctl.tensor.pow(self, other, out=self)
+        return dpctl.tensor.pow._inplace_op(self, other)
 
     def __irshift__(self, other):
-        return dpctl.tensor.bitwise_right_shift(self, other, out=self)
+        return dpctl.tensor.bitwise_right_shift._inplace_op(self, other)
 
     def __isub__(self, other):
-        return dpctl.tensor.subtract(self, other, out=self)
+        return dpctl.tensor.subtract._inplace_op(self, other)
 
     def __itruediv__(self, other):
-        return dpctl.tensor.divide(self, other, out=self)
+        return dpctl.tensor.divide._inplace_op(self, other)
 
     def __ixor__(self, other):
-        return dpctl.tensor.bitwise_xor(self, other, out=self)
+        return dpctl.tensor.bitwise_xor._inplace_op(self, other)
 
     def __str__(self):
         return usm_ndarray_str(self)

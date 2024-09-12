@@ -208,7 +208,7 @@ def test_subtract_inplace_dtype_matrix(op1_dtype, op2_dtype):
     dev = q.sycl_device
     _fp16 = dev.has_aspect_fp16
     _fp64 = dev.has_aspect_fp64
-    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64):
+    if _can_cast(ar2.dtype, ar1.dtype, _fp16, _fp64, casting="same_kind"):
         ar1 -= ar2
         assert (dpt.asnumpy(ar1) == np.zeros(ar1.shape, dtype=ar1.dtype)).all()
 
