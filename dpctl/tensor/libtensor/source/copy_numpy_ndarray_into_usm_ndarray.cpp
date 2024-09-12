@@ -23,6 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <vector>
 
@@ -55,6 +56,13 @@ using dpctl::tensor::kernels::copy_and_cast::
 static copy_and_cast_from_host_blocking_fn_ptr_t
     copy_and_cast_from_host_blocking_dispatch_table[td_ns::num_types]
                                                    [td_ns::num_types];
+
+using dpctl::tensor::kernels::copy_and_cast::
+    copy_and_cast_from_host_contig_blocking_fn_ptr_t;
+
+static copy_and_cast_from_host_contig_blocking_fn_ptr_t
+    copy_and_cast_from_host_contig_blocking_dispatch_table[td_ns::num_types]
+                                                          [td_ns::num_types];
 
 void copy_numpy_ndarray_into_usm_ndarray(
     const py::array &npy_src,
@@ -144,6 +152,21 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
             return;
         }
+        else {
+            py::gil_scoped_release lock{};
+
+            auto copy_and_cast_from_host_contig_blocking_fn =
+                copy_and_cast_from_host_contig_blocking_dispatch_table
+                    [dst_type_id][src_type_id];
+
+            constexpr py::ssize_t zero_offset(0);
+
+            copy_and_cast_from_host_contig_blocking_fn(
+                exec_q, src_nelems, src_data, zero_offset, dst_data,
+                zero_offset, depends);
+
+            return;
+        }
     }
 
     auto const &dst_strides =
@@ -172,7 +195,14 @@ void copy_numpy_ndarray_into_usm_ndarray(
         // copy and convert strides from bytes to elements
         std::transform(
             src_strides_p, src_strides_p + nd, std::begin(src_strides_in_elems),
-            [src_itemsize](py::ssize_t el) { return el / src_itemsize; });
+            [src_itemsize](py::ssize_t el) {
+                py::ssize_t q = el / src_itemsize;
+                if (q * src_itemsize != el) {
+                    throw std::runtime_error(
+                        "NumPy array strides are not multiple of itemsize");
+                }
+                return q;
+            });
     }
     else {
         if (is_src_c_contig) {
@@ -212,10 +242,12 @@ void copy_numpy_ndarray_into_usm_ndarray(
         simplified_dst_strides.push_back(1);
     }
 
-    const bool can_use_memcpy =
-        (same_data_types && (nd == 1) && (src_offset == 0) &&
-         (dst_offset == 0) && (simplified_src_strides[0] == 1) &&
-         (simplified_dst_strides[0] == 1));
+    const bool is_contig_vector =
+        ((nd == 1) && (simplified_src_strides.front() == 1) &&
+         (simplified_dst_strides.front() == 1));
+
+    const bool can_use_memcpy = (same_data_types && is_contig_vector &&
+                                 (src_offset == 0) && (dst_offset == 0));
 
     if (can_use_memcpy) {
         int src_elem_size = npy_src.itemsize();
@@ -248,6 +280,21 @@ void copy_numpy_ndarray_into_usm_ndarray(
             npy_src_max_nelem_offset +=
                 simplified_src_strides[i] * (simplified_shape[i] - 1);
         }
+    }
+
+    if (is_contig_vector) {
+        // release GIL for the blocking call
+        py::gil_scoped_release lock{};
+
+        auto copy_and_cast_from_host_contig_blocking_fn =
+            copy_and_cast_from_host_contig_blocking_dispatch_table[dst_type_id]
+                                                                  [src_type_id];
+
+        copy_and_cast_from_host_contig_blocking_fn(exec_q, src_nelems, src_data,
+                                                   src_offset, dst_data,
+                                                   dst_offset, depends);
+
+        return;
     }
 
     std::vector<sycl::event> host_task_events;
@@ -296,6 +343,16 @@ void init_copy_numpy_ndarray_into_usm_ndarray_dispatch_tables(void)
 
     dtb_copy_from_numpy.populate_dispatch_table(
         copy_and_cast_from_host_blocking_dispatch_table);
+
+    using dpctl::tensor::kernels::copy_and_cast::
+        CopyAndCastFromHostContigFactory;
+
+    DispatchTableBuilder<copy_and_cast_from_host_contig_blocking_fn_ptr_t,
+                         CopyAndCastFromHostContigFactory, num_types>
+        dtb_copy_from_numpy_contig;
+
+    dtb_copy_from_numpy_contig.populate_dispatch_table(
+        copy_and_cast_from_host_contig_blocking_dispatch_table);
 }
 
 } // namespace py_internal
