@@ -2583,3 +2583,40 @@ def test_full_like_order_K_same_input_output_queues():
 
     r = dpt.full_like(x, fill_v, order="K")
     assert r.sycl_queue == x.sycl_queue
+
+
+def test_asarray_from_numpy_contig():
+    get_queue_or_skip()
+
+    i_dt = np.int64
+    Xnp = np.arange(32, dtype=i_dt)
+
+    fp_dt = dpt.float32
+    # Use contig copy kernel
+    Xdpt = dpt.asarray(Xnp, dtype=fp_dt)
+
+    assert dpt.all(Xdpt == dpt.arange(32, dtype=fp_dt))
+
+
+def test_setitem_from_numpy_contig():
+    get_queue_or_skip()
+
+    i_dt = np.int64
+    fp_dt = dpt.float32
+
+    Xnp = np.flip(np.arange(32, dtype=i_dt))
+    Xdpt = dpt.flip(dpt.empty(Xnp.shape, dtype=fp_dt))
+    # Use contig copy kernel, after stride simplification
+    Xdpt[:] = Xnp
+
+    expected = dpt.arange(31, stop=-1, step=-1, dtype=fp_dt)
+    assert dpt.all(Xdpt == expected)
+
+    Xnp = np.fliplr(np.reshape(np.arange(-10, 10, dtype=i_dt), (4, 5)))
+    Xdpt = dpt.flip(dpt.empty(Xnp.shape, dtype=fp_dt), axis=-1)
+
+    # after stride simplification, contig kernel is used
+    Xdpt[:] = Xnp
+
+    expected = dpt.reshape(dpt.arange(-10, 10, dtype=fp_dt), (4, 5))
+    assert dpt.all(dpt.flip(Xdpt, axis=-1) == expected)
