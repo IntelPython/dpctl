@@ -23,7 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
-#include <exception>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <vector>
 
