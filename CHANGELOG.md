@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `"same_kind"`-style casting for `tensor.usm_ndarray` in-place mathematical operators [gh-1827](https://github.com/IntelPython/dpctl/pull/1827)
-
 ### Change
 
 * Improved efficiency of copy-and-cast operations from `numpy.ndarray` to `tensor.usm_ndarray` for contiguous inputs [gh-1829](https://github.com/IntelPython/dpctl/pull/1829)
@@ -56,6 +54,7 @@ The full list of changes that went into this release are:
 * Update version of 'pybind11' used [gh-1758](https://github.com/IntelPython/dpctl/pull/1758), [gh-1812](https://github.com/IntelPython/dpctl/pull/1812)
 * Handle possible exceptions by `usm_host_allocator` used with `std::vector` [gh-1791](https://github.com/IntelPython/dpctl/pull/1791)
 * Use `dpctl::tensor::offset_utils::sycl_free_noexcept` instead of `sycl::free` in `host_task` tasks associated with life-time management of temporary USM allocations [gh-1797](https://github.com/IntelPython/dpctl/pull/1797)
+* Add `"same_kind"`-style casting for in-place mathematical operators of `tensor.usm_ndarray` [gh-1827](https://github.com/IntelPython/dpctl/pull/1827), [gh-1830](https://github.com/IntelPython/dpctl/pull/1830)
 
 ### Fixed
 
