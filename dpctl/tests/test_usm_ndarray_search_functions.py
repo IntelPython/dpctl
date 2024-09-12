@@ -19,13 +19,14 @@ import itertools
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 from numpy.testing import assert_array_equal
 
 import dpctl.tensor as dpt
 from dpctl.tensor._search_functions import _where_result_type
 from dpctl.tensor._type_utils import _all_data_types
 from dpctl.utils import ExecutionPlacementError
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
     "?",

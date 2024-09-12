@@ -21,9 +21,10 @@ import ctypes
 import sys
 
 import pytest
-from helper import create_invalid_capsule
 
 import dpctl
+
+from .helper import create_invalid_capsule
 
 
 def test_standard_selectors(device_selector, check):

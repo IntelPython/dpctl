@@ -20,12 +20,13 @@ from math import prod
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.memory as dpm
 import dpctl.tensor as dpt
 from dpctl.tensor import Device
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 
 @pytest.mark.parametrize(

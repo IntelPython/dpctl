@@ -18,9 +18,10 @@
 """
 
 import pytest
-from helper import create_invalid_capsule
 
 import dpctl
+
+from .helper import create_invalid_capsule
 
 list_of_valid_filter_selectors = [
     "opencl",
