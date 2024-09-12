@@ -16,7 +16,6 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 from numpy.testing import assert_raises_regex
 
 import dpctl
@@ -28,6 +27,8 @@ from dpctl.tensor._type_utils import (
     _weak_type_num_kind,
 )
 from dpctl.utils import ExecutionPlacementError
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
     "?",

@@ -17,13 +17,14 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 from numpy.testing import assert_array_equal
 
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 from dpctl.utils import ExecutionPlacementError
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 _all_dtypes = [
     "u1",

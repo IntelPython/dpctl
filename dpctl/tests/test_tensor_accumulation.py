@@ -17,10 +17,11 @@
 from random import randrange
 
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl.tensor as dpt
 from dpctl.utils import ExecutionPlacementError
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 sint_types = [
     dpt.int8,

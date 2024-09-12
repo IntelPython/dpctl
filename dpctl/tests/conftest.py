@@ -21,13 +21,14 @@ import os
 import sys
 
 import pytest
-from _device_attributes_checks import (
+
+from ._device_attributes_checks import (
     check,
     device_selector,
     invalid_filter,
     valid_filter,
 )
-from _numpy_warnings import suppress_invalid_numpy_warnings
+from ._numpy_warnings import suppress_invalid_numpy_warnings
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "helper"))
 

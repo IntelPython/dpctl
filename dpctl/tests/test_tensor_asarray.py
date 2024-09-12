@@ -16,10 +16,11 @@
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip
 
 import dpctl
 import dpctl.tensor as dpt
+
+from .helper import get_queue_or_skip
 
 
 @pytest.mark.parametrize(
