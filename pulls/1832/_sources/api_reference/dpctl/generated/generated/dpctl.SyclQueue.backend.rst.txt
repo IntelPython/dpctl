@@ -1,0 +1,6 @@
+dpctl.SyclQueue.backend
+=======================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclQueue.backend
