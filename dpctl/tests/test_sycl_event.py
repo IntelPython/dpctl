@@ -18,13 +18,14 @@
 """
 
 import pytest
-from helper import create_invalid_capsule
 
 import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
 import dpctl.tensor as dpt
 from dpctl import event_status_type as esty
+
+from .helper import create_invalid_capsule
 
 
 def produce_event(profiling=False):

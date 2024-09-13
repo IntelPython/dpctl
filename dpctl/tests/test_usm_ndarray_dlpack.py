@@ -19,12 +19,13 @@ import ctypes
 
 import numpy as np
 import pytest
-from helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._dlpack as _dlp
 import dpctl.tensor._usmarray as dpt_arr
+
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 device_CPU = dpt_arr.DLDeviceType.kDLCPU
 device_oneAPI = dpt_arr.DLDeviceType.kDLOneAPI
