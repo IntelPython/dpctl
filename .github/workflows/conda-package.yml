@@ -78,18 +78,24 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
-    env:
-      conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
       - uses: actions/checkout@v4.1.7
         with:
           fetch-depth: 0
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-activate-base: true
-          conda-build-version: "*"
-          activate-environment: true
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          activate-environment: build
+          channels: conda-forge
           python-version: ${{ matrix.python }}
+
+      - name: Install conda build
+        run: |
+          conda activate
+          conda install -y conda-build
+          conda list -n base
 
       - name: Cache conda packages
         uses: actions/cache@v4
@@ -102,19 +108,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
+          echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c conda-forge --override-channels conda-recipe
+        run: |
+          conda activate
+          conda build --no-test --python ${{ matrix.python }} --numpy 2 -c conda-forge --override-channels conda-recipe
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4.4.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
       - name: Upload wheels artifact
         uses: actions/upload-artifact@v4.4.0
         with:
