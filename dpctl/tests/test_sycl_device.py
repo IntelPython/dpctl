@@ -18,10 +18,11 @@
 """
 
 import pytest
-from helper import get_queue_or_skip
 
 import dpctl
 from dpctl import SyclDeviceCreationError
+
+from .helper import get_queue_or_skip
 
 
 def test_standard_selectors(device_selector, check):
