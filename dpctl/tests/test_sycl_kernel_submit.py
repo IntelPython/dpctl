@@ -18,7 +18,6 @@
 """
 
 import ctypes
-import sys
 
 import numpy as np
 import pytest
@@ -80,14 +79,6 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
 
     b_np = dpt.asnumpy(b)
     a_np = dpt.asnumpy(a)
-
-    if "mkl_umath" in sys.modules:
-        mod = sys.modules["mkl_umath"]
-        if hasattr(mod, "restore"):
-            # undo numpy umath patching to work around
-            # incorrect reference result on
-            # AMD EPYC 7763 64-Core Processor as observed in GH CI
-            mod.restore()
 
     for r in (
         [
