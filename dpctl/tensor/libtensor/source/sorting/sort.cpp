@@ -144,7 +144,8 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(keep_args_alive_ev, comp_ev);
     }
 
-    return std::make_pair(sycl::event(), sycl::event());
+    throw py::value_error(
+        "Both source and destination arrays must be C-contiguous");
 }
 
 using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
