@@ -125,7 +125,6 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
             "Output index array must have data type int32 or int64");
     }
 
-    // handle special case when both reduction and iteration are 1D contiguous
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
@@ -150,7 +149,8 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(keep_args_alive_ev, comp_ev);
     }
 
-    return std::make_pair(sycl::event(), sycl::event());
+    throw py::value_error(
+        "Both source and destination arrays must be C-contiguous");
 }
 
 using dpctl::tensor::kernels::sort_contig_fn_ptr_t;

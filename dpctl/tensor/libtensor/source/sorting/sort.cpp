@@ -123,7 +123,6 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
                               "the same value data type");
     }
 
-    // handle special case when both reduction and iteration are 1D contiguous
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
