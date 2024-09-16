@@ -15,6 +15,7 @@ jobs:
   formatting-check:
     name: clang-format
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
     - uses: actions/checkout@v4.1.7
     - name: Run clang-format style check for C/C++ programs.

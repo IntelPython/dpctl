@@ -19,6 +19,7 @@ env:
 jobs:
   build_linux:
     runs-on: ubuntu-22.04
+    timeout-minutes: 90
 
     strategy:
       matrix:
@@ -74,6 +75,7 @@ jobs:
 
   build_windows:
     runs-on: windows-2019
+    timeout-minutes: 150
 
     strategy:
       matrix:
@@ -137,6 +139,7 @@ jobs:
   test_linux:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 30
 
     strategy:
       matrix:
@@ -228,6 +231,7 @@ jobs:
   test_windows:
     needs: build_windows
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 60
     defaults:
       run:
         shell: cmd /C CALL {0}
@@ -361,6 +365,7 @@ jobs:
     needs: test_linux
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: ubuntu-22.04
+    timeout-minutes: 20
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
@@ -397,6 +402,7 @@ jobs:
     needs: test_windows
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: windows-2019
+    timeout-minutes: 20
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
@@ -443,6 +449,7 @@ jobs:
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
+    timeout-minutes: 60
     env:
       EXAMPLES_ENV_NAME: examples
       BUILD_ENV_NAME: build_env
@@ -590,6 +597,7 @@ jobs:
   array-api-conformity:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 90
     permissions:
       pull-requests: write
 
@@ -735,6 +743,7 @@ jobs:
     name: Clean up anaconda packages
     needs: [upload_linux, upload_windows]
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash -el {0}
