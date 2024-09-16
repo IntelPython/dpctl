@@ -12,6 +12,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Documentation
     runs-on: ubuntu-latest
+    timeout-minutes: 240
     permissions:
       contents: write
       pull-requests: write

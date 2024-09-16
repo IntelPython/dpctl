@@ -10,6 +10,7 @@ jobs:
   generate-coverage:
     name: Generate coverage and push to Coveralls.io
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     permissions:
       pull-requests: write
 
@@ -145,6 +146,7 @@ jobs:
     name: Indicate completion to coveralls.io
     needs: generate-coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     container: python:3-slim
     steps:
     - name: Finished
