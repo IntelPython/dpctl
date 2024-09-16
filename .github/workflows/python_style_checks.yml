@@ -16,6 +16,7 @@ jobs:
   # The isort job sorts all imports in .py, .pyx, .pxd files
   isort:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4.1.7
       - uses: actions/setup-python@v5
@@ -28,6 +29,7 @@ jobs:
   black:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -47,6 +49,7 @@ jobs:
 
   flake8:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - uses: actions/checkout@v4.1.7
