@@ -78,7 +78,7 @@ The full list of changes that went into this release are:
 * Clean-up uses of `Strided1DIndexer` class [gh-1805](https://github.com/IntelPython/dpctl/pull/1805)
 * Tweak to readability of C++ code implementing matrix-matrix multiplication [gh-1810](https://github.com/IntelPython/dpctl/pull/1810)
 * Do not add `sycl::event` associated with compute task to vector of events representing execution of `host_task` [gh-1807](https://github.com/IntelPython/dpctl/pull/1807)
-* Remove 'level-zero' conda package from run-time dependencies of 'dpctl' since Intel GPU driver stack now explicitly depends on `libze1` package which provides Level-Zero loader library [gh-1801](https://github.com/IntelPython/dpctl/pull/1801)
+* Remove 'level-zero' conda package from run-time dependencies of 'dpctl' since Intel GPU driver stack now explicitly depends on `libze1` package which provides Level-Zero loader library [gh-1801](https://github.com/IntelPython/dpctl/pull/1801), [gh-1840](https://github.com/IntelPython/dpctl/pull/1840)
 * Use dedicated type-support matrices for in-place element-wise binary operations [gh-1816](https://github.com/IntelPython/dpctl/pull/1816)
 * Remove recommendation to install wheels from Anaconda PyPI index [gh-1819](https://github.com/IntelPython/dpctl/pull/1819)
 * Removed use of post-link and pre-unlink conda scripts in `dpctl` [gh-1821](https://github.com/IntelPython/dpctl/pull/1821)
