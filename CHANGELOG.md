@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Update black version used in Python code style workflow [gh-1828](https://github.com/IntelPython/dpctl/pull/1828)
 * Fixed CI/CD workflow for building conda packages on Windows [gh-1831](https://github.com/IntelPython/dpctl/pull/1831)
+* Use pybind11=2.13.6 [gh-1845](https://github.com/IntelPython/dpctl/pull/1845)
 
 ## [0.18.0] - Sept. XX, 2024
 
