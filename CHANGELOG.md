@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed CI/CD workflow for building conda packages on Windows [gh-1831](https://github.com/IntelPython/dpctl/pull/1831)
 * Do not use Mambaforge variant of miniforge as deprecated [gh-1844](https://github.com/IntelPython/dpctl/pull/1844)
 * Use pybind11=2.13.6 [gh-1845](https://github.com/IntelPython/dpctl/pull/1845)
-
+* Remove unnecessary include in C++ header file [gh-1846](https://github.com/IntelPython/dpctl/pull/1846)
 
 ## [0.18.0] - Sept. XX, 2024
 
