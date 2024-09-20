@@ -27,7 +27,6 @@
 #pragma once
 
 #include <algorithm>
-#include <exception>
 #include <sycl/sycl.hpp>
 #include <tuple>
 #include <vector>
