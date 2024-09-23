@@ -116,9 +116,11 @@ set(_sorting_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/argsort.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/sorting/searchsorted.cpp
 )
+set(_static_lib_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
+)
 set(_tensor_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_ctors.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_and_cast_usm_to_usm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/copy_numpy_ndarray_into_usm_ndarray.cpp
@@ -138,17 +140,14 @@ set(_tensor_impl_sources
 )
 set(_tensor_elementwise_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_elementwise.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_elementwise_sources}
 )
 set(_tensor_reductions_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_reductions.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_reduction_sources}
 )
 set(_tensor_sorting_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_sorting.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_sorting_sources}
 )
 set(_linalg_sources
@@ -157,7 +156,6 @@ set(_linalg_sources
 )
 set(_tensor_linalg_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_linalg.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_linalg_sources}
 )
 set(_accumulator_sources
@@ -168,40 +166,54 @@ ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators/cumulative_sum.cpp
 )
 set(_tensor_accumulation_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/simplify_iteration_space.cpp
     ${_accumulator_sources}
 )
+
+set(_static_lib_trgt simplify_iteration_space)
+
+add_library(${_static_lib_trgt} STATIC ${_static_lib_sources})
+target_include_directories(${_static_lib_trgt} PRIVATE
+  ${Python_INCLUDE_DIRS} ${DPCTL_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
+)
+target_link_libraries(${_static_lib_trgt} PRIVATE pybind11::headers ${Python_LIBRARIES})
+set_target_properties(${_static_lib_trgt} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set(_py_trgts)
 
 set(python_module_name _tensor_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(python_module_name _tensor_elementwise_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_elementwise_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_elementwise_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(python_module_name _tensor_reductions_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_reductions_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_reductions_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(python_module_name _tensor_sorting_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_sorting_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_sorting_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(python_module_name _tensor_linalg_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_linalg_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_linalg_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(python_module_name _tensor_accumulation_impl)
 pybind11_add_module(${python_module_name} MODULE ${_tensor_accumulation_impl_sources})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_tensor_accumulation_impl_sources})
+target_link_libraries(${python_module_name} PRIVATE ${_static_lib_trgt})
 list(APPEND _py_trgts ${python_module_name})
 
 set(_clang_prefix "")
