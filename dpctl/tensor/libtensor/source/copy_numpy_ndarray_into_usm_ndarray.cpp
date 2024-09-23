@@ -84,7 +84,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
     size_t src_nelems(1);
-    for (int i = 0; i < src_ndim; ++i) {
+    for (int i = 0; shapes_equal && (i < src_ndim); ++i) {
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
         src_nelems *= static_cast<size_t>(src_shape[i]);
     }
@@ -114,7 +114,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
         py::detail::array_descriptor_proxy(npy_src.dtype().ptr())->type_num;
     int dst_typenum = dst.get_typenum();
 
-    auto array_types = td_ns::usm_ndarray_types();
+    const auto &array_types = td_ns::usm_ndarray_types();
     int src_type_id = array_types.typenum_to_lookup_id(src_typenum);
     int dst_type_id = array_types.typenum_to_lookup_id(dst_typenum);
 
