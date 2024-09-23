@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "dpctl4pybind11.hpp"
+
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
@@ -43,6 +44,7 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
+#include "copy_as_contig.hpp"
 #include "simplify_iteration_space.hpp"
 
 namespace dpctl
@@ -90,7 +92,7 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
     bool shapes_equal(true);
     size_t src_nelems(1);
 
-    for (int i = 0; i < src_nd; ++i) {
+    for (int i = 0; shapes_equal && (i < src_nd); ++i) {
         src_nelems *= static_cast<size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
     }
@@ -160,6 +162,15 @@ copy_usm_ndarray_into_usm_ndarray(const dpctl::tensor::usm_ndarray &src,
         // make sure src and dst are not GC-ed before copy_ev is complete
         return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
                               copy_ev);
+    }
+
+    if ((src_type_id == dst_type_id) && (src_nd > 1)) {
+        if (is_dst_c_contig) {
+            return py_as_c_contig(src, dst, exec_q, depends);
+        }
+        else if (is_dst_f_contig) {
+            return py_as_f_contig(src, dst, exec_q, depends);
+        }
     }
 
     auto const &src_strides = src.get_strides_vector();
