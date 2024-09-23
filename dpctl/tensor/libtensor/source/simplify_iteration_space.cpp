@@ -23,7 +23,6 @@
 //===--------------------------------------------------------------------===//
 
 #include "simplify_iteration_space.hpp"
-#include "dpctl4pybind11.hpp"
 #include "utils/strided_iters.hpp"
 #include <pybind11/pybind11.h>
 #include <vector>
@@ -36,9 +35,6 @@ namespace py_internal
 {
 
 namespace py = pybind11;
-
-using dpctl::tensor::c_contiguous_strides;
-using dpctl::tensor::f_contiguous_strides;
 
 void simplify_iteration_space_1(int &nd,
                                 const py::ssize_t *const &shape,
