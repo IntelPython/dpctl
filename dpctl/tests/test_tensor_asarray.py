@@ -20,7 +20,7 @@ import pytest
 import dpctl
 import dpctl.tensor as dpt
 
-from .helper import get_queue_or_skip
+from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 
 @pytest.mark.parametrize(
@@ -411,3 +411,148 @@ def test_orderK_gh_1350():
     assert c.strides == b.strides
     assert c._element_offset == 0
     assert not c._pointer == b._pointer
+
+
+def _typesafe_arange(n: int, dtype_: dpt.dtype, device: object):
+    n_half = n // 2
+    if dtype_.kind in "ui":
+        ii = dpt.iinfo(dtype_)
+        m0 = max(ii.min, -n_half)
+        m1 = min(m0 + n, ii.max)
+        n_tiles = (n + m1 - m0 - 1) // (m1 - m0)
+        res = dpt.arange(m0, m1, dtype=dtype_, device=device)
+    elif dtype_.kind == "b":
+        n_tiles = (n + 1) // 2
+        res = dpt.asarray([False, True], dtype=dtype_, device=device)
+    else:
+        m0 = -n_half
+        m1 = m0 + n
+        n_tiles = 1
+        res = dpt.linspace(m0, m1, num=n, dtype=dtype_, device=device)
+    if n_tiles > 1:
+        res = dpt.tile(res, n_tiles)[:n]
+    return res
+
+
+_all_dtypes = [
+    "b1",
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+    "c8",
+    "c16",
+]
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_as_c_contig_rect(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    dtype_ = dpt.dtype(dt)
+    n0, n1, n2 = 6, 35, 37
+
+    arr_flat = _typesafe_arange(n0 * n1 * n2, dtype_, q)
+    x = dpt.reshape(arr_flat, (n0, n1, n2)).mT
+
+    y = dpt.asarray(x, order="C")
+    assert dpt.all(x == y)
+
+    x2 = x[0]
+    y2 = dpt.asarray(x2, order="C")
+    assert dpt.all(x2 == y2)
+
+    x3 = dpt.flip(x, axis=1)
+    y3 = dpt.asarray(x3, order="C")
+    assert dpt.all(x3 == y3)
+
+    x4 = dpt.reshape(arr_flat, (2, 3, n1, n2)).mT
+    x5 = x4[:, :2]
+    y5 = dpt.asarray(x5, order="C")
+    assert dpt.all(x5 == y5)
+
+    x6 = dpt.reshape(arr_flat, (n0, n1, n2), order="F")
+    y6 = dpt.asarray(x6, order="C")
+    assert dpt.all(x6 == y6)
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_as_f_contig_rect(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    dtype_ = dpt.dtype(dt)
+    n0, n1, n2 = 6, 35, 37
+
+    arr_flat = _typesafe_arange(n0 * n1 * n2, dtype_, q)
+    x = dpt.reshape(arr_flat, (n0, n1, n2))
+
+    y = dpt.asarray(x, order="F")
+    assert dpt.all(x == y)
+
+    x2 = x[0]
+    y2 = dpt.asarray(x2, order="F")
+    assert dpt.all(x2 == y2)
+
+    x3 = dpt.flip(x, axis=1)
+    y3 = dpt.asarray(x3, order="F")
+    assert dpt.all(x3 == y3)
+
+    x4 = dpt.reshape(arr_flat, (2, 3, n1, n2))
+    x5 = dpt.moveaxis(x4[:, :2], (2, 3), (0, 1))
+    y5 = dpt.asarray(x5, order="F")
+    assert dpt.all(x5 == y5)
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_as_c_contig_square(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    dtype_ = dpt.dtype(dt)
+    n0, n1 = 4, 53
+
+    arr_flat = _typesafe_arange(n0 * n1 * n1, dtype_, q)
+    x = dpt.reshape(arr_flat, (n0, n1, n1)).mT
+
+    y = dpt.asarray(x, order="C")
+    assert dpt.all(x == y)
+
+    x2 = x[0]
+    y2 = dpt.asarray(x2, order="C")
+    assert dpt.all(x2 == y2)
+
+    x3 = dpt.flip(x, axis=1)
+    y3 = dpt.asarray(x3, order="C")
+    assert dpt.all(x3 == y3)
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_as_f_contig_square(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    dtype_ = dpt.dtype(dt)
+    n0, n1 = 6, 53
+
+    arr_flat = _typesafe_arange(n0 * n1 * n1, dtype_, q)
+    x = dpt.moveaxis(dpt.reshape(arr_flat, (n0, n1, n1)), (1, 2), (0, 1))
+
+    y = dpt.asarray(x, order="F")
+    assert dpt.all(x == y)
+
+    x2 = x[..., 0]
+    y2 = dpt.asarray(x2, order="F")
+    assert dpt.all(x2 == y2)
+
+    x3 = dpt.flip(x, axis=1)
+    y3 = dpt.asarray(x3, order="F")
+    assert dpt.all(x3 == y3)
