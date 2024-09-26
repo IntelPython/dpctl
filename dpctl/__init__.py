@@ -26,6 +26,13 @@ __author__ = "Intel Corp."
 import os
 import os.path
 
+if hasattr(os, "add_dll_directory"):
+    if "CMPLR_ROOT" in os.environ:
+        _bin = os.path.join(os.environ['CMPLR_ROOT'], "bin")
+        if os.path.exists(_bin):
+            os.add_dll_directory(_bin)
+        del _bin
+
 from ._device_selection import select_device_with_aspects
 from ._sycl_context import SyclContext, SyclContextCreationError
 from ._sycl_device import (
