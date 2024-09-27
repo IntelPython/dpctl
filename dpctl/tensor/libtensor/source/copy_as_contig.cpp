@@ -165,7 +165,7 @@ py_as_c_contig(const dpctl::tensor::usm_ndarray &src,
             "Source and destination arrays must have the same data type");
     }
 
-    // ensures also that destinaton is plenty ample to accomodate all
+    // ensures also that destination is plenty ample to accommodate all
     // elements of src array
     if (!dst.is_c_contiguous()) {
         throw py::value_error("Destination array must be C-contiguous");
@@ -298,7 +298,7 @@ py_as_f_contig(const dpctl::tensor::usm_ndarray &src,
             "Source and destination arrays must have the same data type");
     }
 
-    // ensures also that destinaton is plenty ample to accomodate all
+    // ensures also that destination is plenty ample to accommodate all
     // elements of src array
     if (!dst.is_f_contiguous()) {
         throw py::value_error("Destination array must be F-contiguous");
@@ -451,7 +451,7 @@ py_as_c_contig_f2c(const dpctl::tensor::usm_ndarray &src,
             "Source and destination arrays must have the same data type");
     }
 
-    // ensures also that destinaton is plenty ample to accomodate all
+    // ensures also that destination is plenty ample to accommodate all
     // elements of src array
     if (!dst.is_c_contiguous()) {
         throw py::value_error("Destination array must be C-contiguous");
@@ -604,7 +604,7 @@ py_as_f_contig_c2f(const dpctl::tensor::usm_ndarray &src,
         throw py::value_error("Arrays must have 2 or more axes");
     }
 
-    // ensures also that destinaton is plenty ample to accomodate all
+    // ensures also that destination is plenty ample to accommodate all
     // elements of src array
     if (!dst.is_f_contiguous()) {
         throw py::value_error("Destination array must be C-contiguous");
