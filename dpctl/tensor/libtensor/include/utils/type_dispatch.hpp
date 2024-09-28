@@ -23,6 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <stdexcept>
 
 #include "dpctl4pybind11.hpp"
 #include "type_dispatch_building.hpp"
