@@ -24,7 +24,7 @@
 
 #pragma once
 #include <complex>
-#include <exception>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 
