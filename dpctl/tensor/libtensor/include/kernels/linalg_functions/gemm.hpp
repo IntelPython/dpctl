@@ -27,6 +27,7 @@
 #include <complex>
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
