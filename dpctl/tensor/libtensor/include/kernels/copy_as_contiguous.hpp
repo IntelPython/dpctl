@@ -173,6 +173,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
 
     sycl::event copy_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
+        cgh.use_kernel_bundle(kb);
 
         const sycl::range<1> gRange{n_groups * lws};
         const sycl::range<1> lRange{lws};
