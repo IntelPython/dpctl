@@ -23,14 +23,16 @@
 /// dpctl.tensor.clip
 //===----------------------------------------------------------------------===//
 
-#include "dpctl4pybind11.hpp"
 #include <complex>
 #include <cstdint>
+#include <stdexcept>
+#include <sycl/sycl.hpp>
+#include <utility>
+
+#include "dpctl4pybind11.hpp"
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <sycl/sycl.hpp>
-#include <utility>
 
 #include "clip.hpp"
 #include "kernels/clip.hpp"
