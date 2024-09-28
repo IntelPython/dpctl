@@ -1350,6 +1350,8 @@ sycl::event _gemm_batch_nm_impl(sycl::queue &exec_q,
     sycl::event gemm_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
+        cgh.use_kernel_bundle(kb);
+
         using LocAccT1 = sycl::local_accessor<resTy, 1>;
         LocAccT1 local_A_block(wg_delta_n * wi_delta_n * wi_delta_k, cgh);
 
