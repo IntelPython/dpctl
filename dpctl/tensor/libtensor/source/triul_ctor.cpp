@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
