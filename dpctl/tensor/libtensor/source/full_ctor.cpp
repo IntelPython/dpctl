@@ -22,13 +22,15 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
-#include "dpctl4pybind11.hpp"
 #include <complex>
-#include <pybind11/complex.h>
-#include <pybind11/pybind11.h>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/complex.h>
+#include <pybind11/pybind11.h>
 
 #include "kernels/constructors.hpp"
 #include "utils/output_validation.hpp"
