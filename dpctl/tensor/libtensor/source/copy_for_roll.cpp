@@ -22,18 +22,20 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
-#include "copy_for_roll.hpp"
 #include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+
+#include "copy_for_roll.hpp"
 #include "kernels/copy_and_cast.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
-#include <pybind11/pybind11.h>
 
 #include "simplify_iteration_space.hpp"
 
