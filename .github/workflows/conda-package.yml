@@ -25,7 +25,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
 
@@ -81,7 +81,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
 
@@ -465,7 +465,7 @@ jobs:
         # Needed to be able to run conda index
         run: conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
       - name: Download artifact
@@ -615,7 +615,7 @@ jobs:
         run: |
           echo ${{ env.CHANNELS }}
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
         with:
           fetch-depth: 0
       - name: Cache array API tests
@@ -759,7 +759,7 @@ jobs:
         run: conda install anaconda-client -c conda-forge --override-channels
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.0
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0
