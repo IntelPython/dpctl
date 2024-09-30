@@ -39,6 +39,7 @@
 #include "boolean_advanced_indexing.hpp"
 #include "clip.hpp"
 #include "copy_and_cast_usm_to_usm.hpp"
+#include "copy_as_contig.hpp"
 #include "copy_for_reshape.hpp"
 #include "copy_for_roll.hpp"
 #include "copy_numpy_ndarray_into_usm_ndarray.hpp"
@@ -70,6 +71,8 @@ using dpctl::tensor::overlap::MemoryOverlap;
 using dpctl::tensor::overlap::SameLogicalTensors;
 
 using dpctl::tensor::py_internal::copy_usm_ndarray_into_usm_ndarray;
+using dpctl::tensor::py_internal::py_as_c_contig;
+using dpctl::tensor::py_internal::py_as_f_contig;
 
 /* =========================== Copy for reshape ============================= */
 
@@ -143,6 +146,7 @@ void init_dispatch_vectors(void)
 {
     using namespace dpctl::tensor::py_internal;
 
+    init_copy_as_contig_dispatch_vectors();
     init_copy_for_reshape_dispatch_vectors();
     init_copy_for_roll_dispatch_vectors();
     init_linear_sequences_dispatch_vectors();
@@ -183,6 +187,20 @@ PYBIND11_MODULE(_tensor_impl, m)
           &copy_usm_ndarray_into_usm_ndarray,
           "Copies from usm_ndarray `src` into usm_ndarray `dst` of the same "
           "shape. "
+          "Returns a tuple of events: (host_task_event, compute_task_event)",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_as_c_contig", &py_as_c_contig,
+          "Copies from usm_ndarray `src` into C-contiguous usm_ndarray "
+          "`dst` of the same shape and the same data type. "
+          "Returns a tuple of events: (host_task_event, compute_task_event)",
+          py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_as_f_contig", &py_as_f_contig,
+          "Copies from usm_ndarray `src` into F-contiguous usm_ndarray "
+          "`dst` of the same shape and the same data type. "
           "Returns a tuple of events: (host_task_event, compute_task_event)",
           py::arg("src"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
