@@ -22,10 +22,12 @@
 /// extension.
 //===--------------------------------------------------------------------===//
 
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
 
+#include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -35,7 +37,6 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
-#include <dpctl4pybind11.hpp>
 
 #include "rich_comparisons.hpp"
 #include "simplify_iteration_space.hpp"

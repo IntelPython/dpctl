@@ -26,6 +26,7 @@
 #include <array>
 #include <cstdint>
 #include <limits>
+#include <new>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>

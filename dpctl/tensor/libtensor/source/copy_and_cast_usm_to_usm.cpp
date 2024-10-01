@@ -25,16 +25,17 @@
 #include <algorithm>
 #include <complex>
 #include <cstdint>
-#include <pybind11/complex.h>
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <thread>
 #include <type_traits>
 #include <utility>
 
 #include "dpctl4pybind11.hpp"
+#include <pybind11/complex.h>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "kernels/copy_and_cast.hpp"
 #include "utils/memory_overlap.hpp"

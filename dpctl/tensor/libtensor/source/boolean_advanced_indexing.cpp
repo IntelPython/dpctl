@@ -23,14 +23,16 @@
 /// dpctl.tensor.extract, dpctl.tensor.nonzero
 //===----------------------------------------------------------------------===//
 
-#include "dpctl4pybind11.hpp"
 #include <cstdint>
 #include <limits>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "boolean_advanced_indexing.hpp"
 #include "kernels/boolean_advanced_indexing.hpp"

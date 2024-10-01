@@ -27,9 +27,9 @@
 
 #include "dpctl_capi.h"
 #include <complex>
-#include <exception>
 #include <memory>
 #include <pybind11/pybind11.h>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>

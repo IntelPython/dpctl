@@ -25,6 +25,8 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <stdexcept>
+
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 

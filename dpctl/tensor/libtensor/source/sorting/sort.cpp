@@ -22,10 +22,11 @@
 /// extension.
 //===--------------------------------------------------------------------===//
 
+#include <sycl/sycl.hpp>
+
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <sycl/sycl.hpp>
 
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
@@ -127,9 +128,7 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if (is_src_c_contig && is_dst_c_contig) {
-        using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
-
-        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
         auto fn = stable_sort_contig_fns[src_typeid];
 

@@ -23,15 +23,17 @@
 /// specifically functions for elementwise operations.
 //===----------------------------------------------------------------------===//
 
-#include "dpctl4pybind11.hpp"
 #include <complex>
 #include <cstdint>
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include "elementwise_functions.hpp"
 #include "simplify_iteration_space.hpp"
