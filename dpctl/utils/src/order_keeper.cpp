@@ -26,4 +26,17 @@ PYBIND11_MODULE(_seq_order_keeper, m)
              &SequentialOrder::add_to_submitted_events)
         .def("wait", &SequentialOrder::wait,
              py::call_guard<py::gil_scoped_release>());
+
+    auto submit_empty_task_fn =
+        [](sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends) -> sycl::event {
+        return exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+            cgh.single_task([]() {
+                // empty body
+            });
+        });
+    };
+    m.def("_submit_empty_task", submit_empty_task_fn, py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
 }
