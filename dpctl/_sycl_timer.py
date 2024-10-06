@@ -285,6 +285,7 @@ class SyclTimerV2:
         self._event_start = self._single_task_submit_fn(
             sycl_queue=self.queue, depends=self._manager.submitted_events
         )
+        self._manager.add_event_pair(self._event_start, self._event_start)
         self._host_start = self.timer()
         return self
 
@@ -292,6 +293,7 @@ class SyclTimerV2:
         _event_finish = self._single_task_submit_fn(
             sycl_queue=self.queue, depends=self._manager.submitted_events
         )
+        self._manager.add_event_pair(_event_finish, _event_finish)
         self.host_times.append((self._host_start, self.timer()))
         self.bracketing_events.append((self._event_start, _event_finish))
         del self._event_start
