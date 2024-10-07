@@ -1,0 +1,10 @@
+﻿dpctl.tensor.ceil
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: ceil
+    :no-value:
+
+
