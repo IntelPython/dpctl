@@ -249,38 +249,63 @@ jobs:
         shell: pwsh
         run: |
           echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
+
       - name: Display channels line
         run: |
           echo ${{ env.CHANNELS }}
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
-          conda-build-version: '*'
-          miniconda-version: 'latest'
+          miniforge-version: latest
+          channels: conda-forge,nodefaults
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
+
+      - name: Remove defaults channel
+        run: conda config --remove channels defaults
+
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index
+
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
         run: |
+          @echo on
           echo ${{ env.workdir }}
+          mkdir ${{ env.workdir }}\channel
           mkdir ${{ env.workdir }}\channel\win-64
           move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.workdir }}\channel\win-64
-          dir ${{ env.workdir }}\channel\win-64
+          dir ${{ env.workdir }}\channel\win-64\
+
       - name: Index the channel
         shell: cmd /C CALL {0}
-        run: conda index ${{ env.workdir }}\channel
+        run: |
+          @echo on
+          conda index ${{ env.workdir }}\channel
+
+      - name: List content of the channels
+        shell: cmd /C CALL {0}
+        run: |
+          dir ${{ env.workdir }}\channel
+          dir ${{ env.workdir }}\channel\win-64
 
       - name: Dump dpctl version info from created channel into ver.json
         shell: cmd /C CALL {0}
         run: |
+          @echo on
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
+          dir ${{ env.workdir }}
+
       - name: Output content of produced ver.json
         shell: pwsh
         run: Get-Content -Path ${{ env.workdir }}\ver.json
+
       - name: Collect dependencies
         shell: cmd /C CALL {0}
         run: |
@@ -292,9 +317,11 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+
       - name: Display lockfile content
         shell: pwsh
         run: Get-Content -Path .\lockfile
+
       - name: Cache conda packages
         uses: actions/cache@v4
         env:
@@ -306,9 +333,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
         run: conda install -n ${{ env.TEST_ENV_NAME }} opencl_rt -c ${{ env.INTEL_CHANNEL }} --override-channels
+
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -322,12 +351,14 @@ jobs:
           )
           SET TEST_DEPENDENCIES=pytest"<8" pytest-cov cython setuptools
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
           echo "Value of CONDA enviroment variable was: " %CONDA%
           echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
           conda info && conda list -n ${{ env.TEST_ENV_NAME }}
+
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
@@ -336,23 +367,28 @@ jobs:
           # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
           $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
+
       - name: Smoke test, step 1
         shell: cmd /C CALL {0}
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -c "import sys; print(sys.executable)"
+
       - name: Smoke test, step 2
         shell: cmd /C CALL {0}
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
+
       - name: Create empty temporary directory to run tests from
         shell: cmd /C CALL {0}
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
         run: >-
           mkdir "${{ env.workdir }}\test_tmp"
+
       - name: List content of workdir folder
         shell: cmd /C CALL {0}
         run: dir "${{ env.workdir }}"
+
       - name: Run tests
         shell: cmd /C CALL {0}
         env:
