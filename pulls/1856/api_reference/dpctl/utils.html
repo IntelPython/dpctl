@@ -845,7 +845,7 @@ arrays of given USM types using compute-follows-data execution
 model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>usm_types</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – a list or a tuple of strings of <code class="docutils literal notranslate"><span class="pre">.usm_types</span></code> attributes
+<dd class="field-odd"><p><strong>usm_types</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – a list or a tuple of strings of <code class="docutils literal notranslate"><span class="pre">.usm_types</span></code> attributes
 for input arrays</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -876,14 +876,14 @@ are:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">allow_none</span></code> keyword argument is set, a value of
 <code class="docutils literal notranslate"><span class="pre">None</span></code> is also permitted.</p>
 </p></li>
-<li><p><strong>allow_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> value of <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered valid.
+<li><p><strong>allow_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> value of <code class="docutils literal notranslate"><span class="pre">None</span></code> is considered valid.
 Default: <cite>True</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is not a recognized string.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is not a string, and <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is not a recognized string.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is not a string, and <code class="docutils literal notranslate"><span class="pre">usm_type</span></code> is
     not <code class="docutils literal notranslate"><span class="pre">None</span></code> provided <code class="docutils literal notranslate"><span class="pre">allow_none</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
 </dd>

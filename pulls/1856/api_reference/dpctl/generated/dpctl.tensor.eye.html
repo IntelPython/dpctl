@@ -826,13 +826,13 @@ diagonal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_rows</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – number of rows in the output array.</p></li>
-<li><p><strong>n_cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – number of columns in the output array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<li><p><strong>n_rows</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rows in the output array.</p></li>
+<li><p><strong>n_cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – number of columns in the output array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 <code class="docutils literal notranslate"><span class="pre">n_cols</span> <span class="pre">=</span> <span class="pre">n_rows</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – index of the diagonal, with <code class="docutils literal notranslate"><span class="pre">0</span></code> as the main diagonal.
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the diagonal, with <code class="docutils literal notranslate"><span class="pre">0</span></code> as the main diagonal.
 A positive value of <code class="docutils literal notranslate"><span class="pre">k</span></code> is a superdiagonal, a negative value
 is a subdiagonal.
-Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <code class="docutils literal notranslate"><span class="pre">k</span></code> is not an integer.
+Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <code class="docutils literal notranslate"><span class="pre">k</span></code> is not an integer.
 Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
 <li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
 a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> char string, or
@@ -850,7 +850,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">&quot;devi
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
 for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
 <code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
-If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
+If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
 imply the same underlying SYCL queue to be used. If both are
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
 used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
