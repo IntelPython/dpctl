@@ -916,7 +916,8 @@
 
 
 <div class="viewcode-block" id="all"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.all.html#dpctl.tensor.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;all(x, axis=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    all(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Tests whether all input array elements evaluate to True along a given axis.</span>
 
@@ -944,7 +945,8 @@
 
 
 <div class="viewcode-block" id="any"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.any.html#dpctl.tensor.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;any(x, axis=None, keepdims=False)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    any(x, axis=None, keepdims=False)</span>
 
 <span class="sd">    Tests whether any input array elements evaluate to True along a given axis.</span>
 
@@ -988,9 +990,11 @@
 
 
 <span class="k">def</span> <span class="nf">_concat_diff_input</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">prepend</span><span class="p">,</span> <span class="n">append</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Concatenates `arr`, `prepend` and, `append` along `axis`,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concatenates `arr`, `prepend` and, `append` along `axis`,</span>
 <span class="sd">    where `arr` is an array and `prepend` and `append` are</span>
-<span class="sd">    any mixture of arrays and scalars.&quot;&quot;&quot;</span>
+<span class="sd">    any mixture of arrays and scalars.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">prepend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">append</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="n">q2</span><span class="p">,</span> <span class="n">prepend_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">prepend</span><span class="p">)</span>
@@ -1253,7 +1257,8 @@
 <span class="sd">        usm_ndarray:</span>
 <span class="sd">            an array containing the `n`-th differences. The array will have the</span>
 <span class="sd">            same shape as `x`, except along `axis`, which will have shape:</span>
-<span class="sd">                prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n</span>
+<span class="sd">            ``prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n``</span>
+
 <span class="sd">            The data type of the returned array is determined by the Type</span>
 <span class="sd">            Promotion Rules.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
