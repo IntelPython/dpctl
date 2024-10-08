@@ -104,7 +104,8 @@ def _boolean_reduction(x, axis, keepdims, func):
 
 
 def all(x, /, *, axis=None, keepdims=False):
-    """all(x, axis=None, keepdims=False)
+    """
+    all(x, axis=None, keepdims=False)
 
     Tests whether all input array elements evaluate to True along a given axis.
 
@@ -132,7 +133,8 @@ def all(x, /, *, axis=None, keepdims=False):
 
 
 def any(x, /, *, axis=None, keepdims=False):
-    """any(x, axis=None, keepdims=False)
+    """
+    any(x, axis=None, keepdims=False)
 
     Tests whether any input array elements evaluate to True along a given axis.
 
@@ -176,9 +178,11 @@ def _validate_diff_shape(sh1, sh2, axis):
 
 
 def _concat_diff_input(arr, axis, prepend, append):
-    """Concatenates `arr`, `prepend` and, `append` along `axis`,
+    """
+    Concatenates `arr`, `prepend` and, `append` along `axis`,
     where `arr` is an array and `prepend` and `append` are
-    any mixture of arrays and scalars."""
+    any mixture of arrays and scalars.
+    """
     if prepend is not None and append is not None:
         q1, x_usm_type = arr.sycl_queue, arr.usm_type
         q2, prepend_usm_type = _get_queue_usm_type(prepend)
@@ -441,7 +445,8 @@ def diff(x, /, *, axis=-1, n=1, prepend=None, append=None):
         usm_ndarray:
             an array containing the `n`-th differences. The array will have the
             same shape as `x`, except along `axis`, which will have shape:
-                prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n
+            ``prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n``
+
             The data type of the returned array is determined by the Type
             Promotion Rules.
     """
