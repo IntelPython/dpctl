@@ -830,10 +830,10 @@
 <li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 Must be broadcastable to the result shape
 <code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
 If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
 are:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps

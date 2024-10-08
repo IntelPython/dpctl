@@ -826,7 +826,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array</p></li>
-<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – <p>The number of repetitions for each element.</p>
+<li><p><strong>repeats</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>Sequence</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em>) – <p>The number of repetitions for each element.</p>
 <p><cite>repeats</cite> must be broadcast-compatible with <cite>N</cite> where <cite>N</cite> is
 <cite>prod(x.shape)</cite> if <cite>axis</cite> is <cite>None</cite> and <cite>x.shape[axis]</cite>
 otherwise.</p>
@@ -834,7 +834,7 @@ otherwise.</p>
 Otherwise, <cite>repeats</cite> must be a Python integer or sequence of
 Python integers (i.e., a tuple, list, or range).</p>
 </p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em>) – The axis along which to repeat values. If <cite>axis</cite> is <cite>None</cite>, the
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – The axis along which to repeat values. If <cite>axis</cite> is <cite>None</cite>, the
 function repeats elements of the flattened array. Default: <cite>None</cite>.</p></li>
 </ul>
 </dd>
