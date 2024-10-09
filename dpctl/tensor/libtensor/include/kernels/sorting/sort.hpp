@@ -817,29 +817,26 @@ sycl::event stable_argsort_axis1_contig_impl(
     size_t sorted_block_size =
         (sort_nelems >= 512) ? 512 : determine_automatically;
 
-    sycl::buffer<IndexTy, 1> index_data(
-        sycl::range<1>(iter_nelems * sort_nelems));
+    const size_t total_nelems = iter_nelems * sort_nelems;
 
     sycl::event populate_indexed_data_ev =
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
-            sycl::accessor acc(index_data, cgh, sycl::write_only,
-                               sycl::no_init);
 
-            auto const &range = index_data.get_range();
+            const sycl::range<1> range{total_nelems};
 
             using KernelName =
                 populate_index_data_krn<argTy, IndexTy, ValueComp>;
 
             cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
                 size_t i = id[0];
-                acc[i] = static_cast<IndexTy>(i);
+                res_tp[i] = static_cast<IndexTy>(i);
             });
         });
 
     // Sort segments of the array
     sycl::event base_sort_ev = sort_detail::sort_over_work_group_contig_impl(
-        exec_q, iter_nelems, sort_nelems, index_data, res_tp, index_comp,
+        exec_q, iter_nelems, sort_nelems, res_tp, res_tp, index_comp,
         sorted_block_size, // modified in place with size of sorted block size
         {populate_indexed_data_ev});
 
@@ -856,9 +853,11 @@ sycl::event stable_argsort_axis1_contig_impl(
 
         using KernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
 
-        cgh.parallel_for<KernelName>(
-            index_data.get_range(),
-            [=](sycl::id<1> id) { res_tp[id] = (temp_acc[id] % sort_nelems); });
+        const sycl::range<1> range{total_nelems};
+
+        cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
+            res_tp[id] = (temp_acc[id] % sort_nelems);
+        });
     });
 
     return write_out_ev;
