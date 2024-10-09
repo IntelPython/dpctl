@@ -768,18 +768,25 @@ sycl::event stable_sort_axis1_contig_impl(
     }
 }
 
-template <typename T1, typename T2, typename T3>
-class populate_indexed_data_krn;
+template <typename T1, typename T2, typename T3> class populate_index_data_krn;
 
-template <typename T1, typename T2, typename T3> class index_write_out_krn;
+template <typename T1, typename T2, typename T3> class index_map_to_rows_krn;
 
-template <typename pairT, typename ValueComp> struct TupleComp
+template <typename IndexT, typename ValueT, typename ValueComp> struct IndexComp
 {
-    bool operator()(const pairT &p1, const pairT &p2) const
+    IndexComp(const ValueT *data, const ValueComp &comp_op)
+        : ptr(data), value_comp(comp_op)
     {
-        const ValueComp value_comp{};
-        return value_comp(std::get<0>(p1), std::get<0>(p2));
     }
+
+    bool operator()(const IndexT &i1, const IndexT &i2) const
+    {
+        return value_comp(ptr[i1], ptr[i2]);
+    }
+
+private:
+    const ValueT *ptr;
+    ValueComp value_comp;
 };
 
 template <typename argTy,
@@ -804,58 +811,52 @@ sycl::event stable_argsort_axis1_contig_impl(
     IndexTy *res_tp =
         reinterpret_cast<IndexTy *>(res_cp) + iter_res_offset + sort_res_offset;
 
-    using ValueIndexT = std::pair<argTy, IndexTy>;
-    const TupleComp<ValueIndexT, ValueComp> tuple_comp{};
+    const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
 
     static constexpr size_t determine_automatically = 0;
     size_t sorted_block_size =
         (sort_nelems >= 512) ? 512 : determine_automatically;
 
-    sycl::buffer<ValueIndexT, 1> indexed_data(
-        sycl::range<1>(iter_nelems * sort_nelems));
-    sycl::buffer<ValueIndexT, 1> temp_buf(
-        sycl::range<1>(iter_nelems * sort_nelems));
+    const size_t total_nelems = iter_nelems * sort_nelems;
 
     sycl::event populate_indexed_data_ev =
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
-            sycl::accessor acc(indexed_data, cgh, sycl::write_only,
-                               sycl::no_init);
 
-            auto const &range = indexed_data.get_range();
+            const sycl::range<1> range{total_nelems};
 
             using KernelName =
-                populate_indexed_data_krn<argTy, IndexTy, ValueComp>;
+                populate_index_data_krn<argTy, IndexTy, ValueComp>;
 
             cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
                 size_t i = id[0];
-                size_t sort_id = i % sort_nelems;
-                acc[i] =
-                    std::make_pair(arg_tp[i], static_cast<IndexTy>(sort_id));
+                res_tp[i] = static_cast<IndexTy>(i);
             });
         });
 
     // Sort segments of the array
     sycl::event base_sort_ev = sort_detail::sort_over_work_group_contig_impl(
-        exec_q, iter_nelems, sort_nelems, indexed_data, temp_buf, tuple_comp,
+        exec_q, iter_nelems, sort_nelems, res_tp, res_tp, index_comp,
         sorted_block_size, // modified in place with size of sorted block size
         {populate_indexed_data_ev});
 
     // Merge segments in parallel until all elements are sorted
     sycl::event merges_ev = sort_detail::merge_sorted_block_contig_impl(
-        exec_q, iter_nelems, sort_nelems, temp_buf, tuple_comp,
-        sorted_block_size, {base_sort_ev});
+        exec_q, iter_nelems, sort_nelems, res_tp, index_comp, sorted_block_size,
+        {base_sort_ev});
 
     sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(merges_ev);
 
         auto temp_acc =
-            sort_detail::GetReadOnlyAccess<decltype(temp_buf)>{}(temp_buf, cgh);
+            sort_detail::GetReadOnlyAccess<decltype(res_tp)>{}(res_tp, cgh);
 
-        using KernelName = index_write_out_krn<argTy, IndexTy, ValueComp>;
+        using KernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
 
-        cgh.parallel_for<KernelName>(temp_buf.get_range(), [=](sycl::id<1> id) {
-            res_tp[id] = std::get<1>(temp_acc[id]);
+        const sycl::range<1> range{total_nelems};
+
+        cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
+            res_tp[id] = (temp_acc[id] % sort_nelems);
         });
     });
 
