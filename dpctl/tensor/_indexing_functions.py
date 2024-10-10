@@ -460,7 +460,7 @@ def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
         usm_ndarray:
             an array having the same data type as ``x``. The returned array has
             the same rank (i.e., number of dimensions) as ``x`` and a shape
-            determined according to :ref:`broadcasting`, except for the axis
+            determined according to broadcasting rules, except for the axis
             (dimension) specified by ``axis`` whose size must equal the size
             of the corresponding axis (dimension) in ``indices``.
 
