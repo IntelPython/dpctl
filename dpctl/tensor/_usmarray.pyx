@@ -55,8 +55,8 @@ include "_slicing.pxi"
 
 class DLDeviceType(IntEnum):
     """
-    An ``IntEnum`` for the types of DLDevices supported by the DLPack
-    protocol.
+    An :class:`enum.IntEnum` for the types of DLDevices supported by the DLPack protocol.
+
         ``kDLCPU``:
             CPU (host) device
         ``kDLCUDA``:

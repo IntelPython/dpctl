@@ -963,7 +963,7 @@ cdef object _create_device(object device, object dl_device):
 
 
 def from_dlpack(x, /, *, device=None, copy=None):
-    """ from_dlpack(x, /, *, device=None, copy=None)
+    """from_dlpack(x, /, *, device=None, copy=None)
 
     Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
     object ``x`` that implements ``__dlpack__`` protocol.
@@ -972,11 +972,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
         x (object):
             A Python object representing an array that supports
             ``__dlpack__`` protocol.
-        device (Optional[str,
-                         :class:`dpctl.SyclDevice`,
-                         :class:`dpctl.SyclQueue`,
-                         :class:`dpctl.tensor.Device`,
-                         tuple([enum.Enum, int])])):
+        device (Optional[str, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, tuple([:class:`enum.IntEnum`, int])])):
             Array API concept of a device where the output array is to be placed.
             ``device`` can be ``None``, a oneAPI filter selector
             string, an instance of :class:`dpctl.SyclDevice` corresponding to
@@ -986,7 +982,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
             2-tuple matching the format of the output of the ``__dlpack_device__``
             method, an integer enumerator representing the device type followed by
             an integer representing the index of the device. The only supported
-            :enum:`dpctl.tensor.DLDeviceType` types are "kDLCPU" and "kDLOneAPI".
+            :class:`dpctl.tensor.DLDeviceType` types are "kDLCPU" and
+            "kDLOneAPI".
             Default: ``None``.
         copy (bool, optional)
             Boolean indicating whether or not to copy the input.
