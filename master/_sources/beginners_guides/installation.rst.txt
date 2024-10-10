@@ -59,6 +59,7 @@ Binary wheels of ``dpctl`` and its dependencies are also published on Intel(R) c
 use
 
 .. code-block:: bash
+
     python -m pip install --index-url https://software.repos.intel.com/python/pypi dpctl
 
 .. note::
