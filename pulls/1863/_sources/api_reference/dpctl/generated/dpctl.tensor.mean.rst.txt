@@ -1,0 +1,6 @@
+﻿dpctl.tensor.mean
+=================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: mean
