@@ -734,7 +734,7 @@ sycl::event stable_sort_axis1_contig_impl(
 
     auto comp = Comp{};
 
-    constexpr size_t sequential_sorting_threshold = 64;
+    constexpr size_t sequential_sorting_threshold = 16;
 
     if (sort_nelems < sequential_sorting_threshold) {
         // equal work-item sorts entire row
