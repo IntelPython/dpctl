@@ -734,6 +734,8 @@ sycl::event stable_sort_axis1_contig_impl(
 
     auto comp = Comp{};
 
+    // constant chosen experimentally to ensure monotonicity of
+    // sorting performance, as measured on GPU Max, and Iris Xe
     constexpr size_t sequential_sorting_threshold = 16;
 
     if (sort_nelems < sequential_sorting_threshold) {
