@@ -32,7 +32,7 @@
 #include <vector>
 
 #include "kernels/dpctl_tensor_types.hpp"
-#include "kernels/sorting/sort_detail.hpp"
+#include "kernels/sorting/search_sorted_detail.hpp"
 
 namespace dpctl
 {
@@ -41,8 +41,10 @@ namespace tensor
 namespace kernels
 {
 
-namespace sort_detail
+namespace merge_sort_detail
 {
+
+using namespace dpctl::tensor::kernels::search_sorted_detail;
 
 /*! @brief Merge two contiguous sorted segments */
 template <typename InAcc, typename OutAcc, typename Compare>
@@ -699,7 +701,7 @@ merge_sorted_block_contig_impl(sycl::queue &q,
     return dep_ev;
 }
 
-} // end of namespace sort_detail
+} // end of namespace merge_sort_detail
 
 typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
                                             size_t,
@@ -741,8 +743,8 @@ sycl::event stable_sort_axis1_contig_impl(
     if (sort_nelems < sequential_sorting_threshold) {
         // equal work-item sorts entire row
         sycl::event sequential_sorting_ev =
-            sort_detail::sort_base_step_contig_impl<const argTy *, argTy *,
-                                                    Comp>(
+            merge_sort_detail::sort_base_step_contig_impl<const argTy *,
+                                                          argTy *, Comp>(
                 exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
                 sort_nelems, depends);
 
@@ -753,8 +755,8 @@ sycl::event stable_sort_axis1_contig_impl(
 
         // Sort segments of the array
         sycl::event base_sort_ev =
-            sort_detail::sort_over_work_group_contig_impl<const argTy *,
-                                                          argTy *, Comp>(
+            merge_sort_detail::sort_over_work_group_contig_impl<const argTy *,
+                                                                argTy *, Comp>(
                 exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, comp,
                 sorted_block_size, // modified in place with size of sorted
                                    // block size
@@ -762,7 +764,7 @@ sycl::event stable_sort_axis1_contig_impl(
 
         // Merge segments in parallel until all elements are sorted
         sycl::event merges_ev =
-            sort_detail::merge_sorted_block_contig_impl<argTy *, Comp>(
+            merge_sort_detail::merge_sorted_block_contig_impl<argTy *, Comp>(
                 exec_q, iter_nelems, sort_nelems, res_tp, comp,
                 sorted_block_size, {base_sort_ev});
 
@@ -837,13 +839,15 @@ sycl::event stable_argsort_axis1_contig_impl(
         });
 
     // Sort segments of the array
-    sycl::event base_sort_ev = sort_detail::sort_over_work_group_contig_impl(
-        exec_q, iter_nelems, sort_nelems, res_tp, res_tp, index_comp,
-        sorted_block_size, // modified in place with size of sorted block size
-        {populate_indexed_data_ev});
+    sycl::event base_sort_ev =
+        merge_sort_detail::sort_over_work_group_contig_impl(
+            exec_q, iter_nelems, sort_nelems, res_tp, res_tp, index_comp,
+            sorted_block_size, // modified in place with size of sorted block
+                               // size
+            {populate_indexed_data_ev});
 
     // Merge segments in parallel until all elements are sorted
-    sycl::event merges_ev = sort_detail::merge_sorted_block_contig_impl(
+    sycl::event merges_ev = merge_sort_detail::merge_sorted_block_contig_impl(
         exec_q, iter_nelems, sort_nelems, res_tp, index_comp, sorted_block_size,
         {base_sort_ev});
 
@@ -851,7 +855,8 @@ sycl::event stable_argsort_axis1_contig_impl(
         cgh.depends_on(merges_ev);
 
         auto temp_acc =
-            sort_detail::GetReadOnlyAccess<decltype(res_tp)>{}(res_tp, cgh);
+            merge_sort_detail::GetReadOnlyAccess<decltype(res_tp)>{}(res_tp,
+                                                                     cgh);
 
         using KernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
 

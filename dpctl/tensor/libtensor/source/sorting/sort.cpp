@@ -33,7 +33,7 @@
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
-#include "kernels/sorting/sort.hpp"
+#include "kernels/sorting/merge_sort.hpp"
 #include "rich_comparisons.hpp"
 #include "sort.hpp"
 

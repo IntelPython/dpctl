@@ -33,7 +33,7 @@
 #include "utils/type_dispatch.hpp"
 
 #include "argsort.hpp"
-#include "kernels/sorting/sort.hpp"
+#include "kernels/sorting/merge_sort.hpp"
 #include "rich_comparisons.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
