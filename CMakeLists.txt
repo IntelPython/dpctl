@@ -29,10 +29,10 @@ option(DPCTL_TARGET_CUDA
     "Build DPCTL to target CUDA devices"
     OFF
 )
-set(DPCTL_TARGET_AMD
+set(DPCTL_TARGET_HIP
     ""
     CACHE STRING
-    "Build DPCTL to target an AMD device architecture"
+    "Build DPCTL to target a HIP device architecture"
 )
 option(DPCTL_WITH_REDIST "Build DPCTL assuming DPC++ redistributable is installed into Python prefix" OFF)
 
@@ -51,16 +51,16 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
           set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
       endif()
    endif()
-   if (NOT "x${DPCTL_TARGET_AMD}" STREQUAL "x")
-      set(_dpctl_amd_targets ${DPCTL_TARGET_AMD})
+   if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
+      set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
       if(_dpctl_sycl_targets)
          set(_dpctl_sycl_targets "amdgcn-amd-amdhsa,${_dpctl_sycl_targets}")
       else()
          set(_dpctl_sycl_targets "amdgcn-amd-amdhsa,spir64-unknown-unknown")
       endif()
    else()
-      if (DEFINED ENV{DPCTL_TARGET_AMD})
-         set(_dpctl_amd_targets $ENV{DPCTL_TARGET_AMD})
+      if (DEFINED ENV{DPCTL_TARGET_HIP})
+         set(_dpctl_amd_targets $ENV{DPCTL_TARGET_HIP})
          if(_dpctl_sycl_targets)
             set(_dpctl_sycl_targets "amdgcn-amd-amdhsa,${_dpctl_sycl_targets}")
          else()
@@ -70,11 +70,11 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    endif()
 else()
    set(_dpctl_sycl_targets ${DPCTL_SYCL_TARGETS})
-   if (NOT "x${DPCTL_TARGET_AMD}" STREQUAL "x")
-      set(_dpctl_amd_targets ${DPCTL_TARGET_AMD})
+   if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
+      set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
    else()
-      if (DEFINED ENV{DPCTL_TARGET_AMD})
-         set(_dpctl_amd_targets $ENV{DPCTL_TARGET_AMD})
+      if (DEFINED ENV{DPCTL_TARGET_HIP})
+         set(_dpctl_amd_targets $ENV{DPCTL_TARGET_HIP})
       endif()
    endif()
 endif()
