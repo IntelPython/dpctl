@@ -23,6 +23,7 @@
 //===--------------------------------------------------------------------===//
 
 #include <cstdint>
+#include <exception>
 #include <utility>
 #include <vector>
 
@@ -105,6 +106,19 @@ void init_radix_sort_dispatch_vectors(void)
     dtv2.populate_dispatch_vector(descending_radix_sort_contig_dispatch_vector);
 }
 
+bool py_radix_sort_defined(int typenum)
+{
+    const auto &array_types = td_ns::usm_ndarray_types();
+
+    try {
+        int type_id = array_types.typenum_to_lookup_id(typenum);
+        return (nullptr !=
+                ascending_radix_sort_contig_dispatch_vector[type_id]);
+    } catch (const std::exception &e) {
+        return false;
+    }
+}
+
 void init_radix_sort_functions(py::module_ m)
 {
     dpctl::tensor::py_internal::init_radix_sort_dispatch_vectors();
@@ -138,6 +152,8 @@ void init_radix_sort_functions(py::module_ m)
     m.def("_radix_sort_descending", py_radix_sort_descending, py::arg("src"),
           py::arg("trailing_dims_to_sort"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    m.def("_radix_sort_dtype_supported", py_radix_sort_defined);
 
     return;
 }
