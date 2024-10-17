@@ -48,7 +48,7 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
            const dpctl::tensor::usm_ndarray &dst,
            sycl::queue &exec_q,
            const std::vector<sycl::event> &depends,
-           const sorting_contig_impl_fnT &stable_sort_contig_fns)
+           const sorting_contig_impl_fnT &sort_contig_fns)
 {
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
@@ -127,7 +127,7 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
     if (is_src_c_contig && is_dst_c_contig) {
         static constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
-        auto fn = stable_sort_contig_fns[src_typeid][dst_typeid];
+        auto fn = sort_contig_fns[src_typeid][dst_typeid];
 
         if (fn == nullptr) {
             throw py::value_error("Not implemented for given index type");
