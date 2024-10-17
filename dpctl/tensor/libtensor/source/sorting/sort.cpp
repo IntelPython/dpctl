@@ -34,10 +34,11 @@
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/sorting/merge_sort.hpp"
-#include "rich_comparisons.hpp"
-#include "sort.hpp"
+#include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 
 #include "py_sort_common.hpp"
+#include "rich_comparisons.hpp"
+#include "sort.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 

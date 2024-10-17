@@ -1,3 +1,30 @@
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2024 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===--------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// extension.
+//===--------------------------------------------------------------------===//
+
+// Implementation in this file were adapted from oneDPL's radix sort
+// implementation, license Apache-2.0 WITH LLVM-exception
+
 #pragma once
 
 #include <cstdint>
@@ -217,7 +244,7 @@ radix_sort_count_submit(sycl::queue &exec_q,
 
     // iteration space info
     const std::size_t n = n_values;
-    // Each segment is processed by a work-group
+    // each segment is processed by a work-group
     const std::size_t elems_per_segment = (n + n_segments - 1) / n_segments;
     const std::size_t no_op_flag_id = n_counts - 1;
 
@@ -372,8 +399,7 @@ sycl::event radix_sort_scan_submit(sycl::queue &exec_q,
             const auto lid = ndit.get_local_linear_id();
 
             // NB: No race condition here, because the condition may ever be
-            // true
-            //     for only on one WG, one WI.
+            // true for only on one WG, one WI.
             if ((lid == wg_size - 1) && (begin_ptr[scan_size - 1] == n_values))
             {
                 // set flag, since all the values got into one
@@ -613,7 +639,6 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                           const ProjT &proj_op,
                           const std::vector<sycl::event> dependency_events)
 {
-    // typedefs
     using ValueT = InputT;
     using PeerHelper = peer_prefix_helper<OffsetT, PeerAlgo>;
 
@@ -649,7 +674,6 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
 
         sycl::nd_range<1> ndRange{gRange, lRange};
 
-        // Each work-group processes one segment ?
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
             const std::size_t group_id = ndit.get_group(0);
             const std::size_t iter_id = group_id / n_segments;
@@ -670,9 +694,9 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                 return;
             }
 
-            // 1. create a private array for storing offset values
-            //    and add total offset and offset for compute unit for a certain
-            //    radix state
+            // create a private array for storing offset values
+            // and add total offset and offset for compute unit
+            // for a certain radix state
             std::array<OffsetT, radix_states> offset_arr{};
             const std::size_t scan_size = n_segments + 1;
 
@@ -688,7 +712,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                 const std::uint32_t local_offset_id =
                     segment_id + scan_size * radix_state_id;
 
-                // scan bins (serial)
+                // scan bins serially
                 const std::size_t last_segment_bucket_id =
                     radix_state_id * scan_size - 1;
                 scanned_bin += b_offset_ptr[last_segment_bucket_id];
@@ -739,7 +763,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
             if (tail_size > 0) {
                 ValueT in_val;
 
-                // greater than any actual radix state
+                // default: is greater than any actual radix state
                 std::uint32_t bucket_id = radix_states;
                 if (lid < tail_size) {
                     in_val = std::move(b_input_ptr[seg_end + lid]);
@@ -749,6 +773,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                     bucket_id =
                         get_bucket_id<radix_mask>(mapped_val, radix_offset);
                 }
+
                 OffsetT new_offset_id = 0;
                 for (std::uint32_t radix_state_id = 0;
                      radix_state_id < radix_states; ++radix_state_id)
@@ -761,6 +786,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
 
                     offset_arr[radix_state_id] += sg_total_offset;
                 }
+
                 if (lid < tail_size) {
                     b_output_ptr[new_offset_id] = std::move(in_val);
                 }
@@ -1588,19 +1614,6 @@ private:
 };
 
 } // end of namespace radix_sort_details
-
-// same signature as sort_contig_fn_ptr_t
-typedef sycl::event (*radix_sort_contig_fn_ptr_t)(
-    sycl::queue &,
-    size_t,
-    size_t,
-    const char *,
-    char *,
-    ssize_t,
-    ssize_t,
-    ssize_t,
-    ssize_t,
-    const std::vector<sycl::event> &);
 
 template <typename argTy, bool sort_ascending>
 sycl::event

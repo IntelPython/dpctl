@@ -703,17 +703,6 @@ merge_sorted_block_contig_impl(sycl::queue &q,
 
 } // end of namespace merge_sort_detail
 
-typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
-                                            size_t,
-                                            size_t,
-                                            const char *,
-                                            char *,
-                                            ssize_t,
-                                            ssize_t,
-                                            ssize_t,
-                                            ssize_t,
-                                            const std::vector<sycl::event> &);
-
 template <typename argTy, typename Comp = std::less<argTy>>
 sycl::event stable_sort_axis1_contig_impl(
     sycl::queue &exec_q,

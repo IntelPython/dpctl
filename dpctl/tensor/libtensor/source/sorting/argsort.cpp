@@ -33,6 +33,7 @@
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/sorting/merge_sort.hpp"
+#include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 #include "rich_comparisons.hpp"
 
 #include "argsort.hpp"
