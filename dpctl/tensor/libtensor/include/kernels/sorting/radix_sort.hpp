@@ -1589,6 +1589,7 @@ private:
 
 } // end of namespace radix_sort_details
 
+// same signature as sort_contig_fn_ptr_t
 typedef sycl::event (*radix_sort_contig_fn_ptr_t)(
     sycl::queue &,
     size_t,
