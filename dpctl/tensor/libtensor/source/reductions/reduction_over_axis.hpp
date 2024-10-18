@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <exception>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <type_traits>

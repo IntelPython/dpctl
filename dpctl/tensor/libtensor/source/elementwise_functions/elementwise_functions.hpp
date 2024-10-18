@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 #pragma once
 
+#include <exception>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
