@@ -372,8 +372,7 @@ def roll(X, /, shift, *, axis=None):
     shape = X.shape
     for sh, ax in broadcasted:
         n_i = shape[ax]
-        if n_i > 0:
-            shifts[ax] = int(shifts[ax] + sh) % int(n_i)
+        shifts[ax] = int(shifts[ax] + sh) % int(n_i) if n_i > 0 else 0
     res = dpt.empty(
         X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
     )
