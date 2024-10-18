@@ -25,6 +25,7 @@
 #pragma once
 
 #include <cstdint>
+#include <exception>
 #include <limits>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
