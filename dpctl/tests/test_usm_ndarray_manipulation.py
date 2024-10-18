@@ -657,6 +657,16 @@ def test_roll_2d(data):
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
+def test_roll_out_bounds_shifts():
+    "See gh-1857"
+    get_queue_or_skip()
+
+    x = dpt.arange(4)
+    y = dpt.roll(x, np.uint64(2**63 + 2))
+    expected = dpt.roll(x, 2)
+    assert dpt.all(y == expected)
+
+
 def test_roll_validation():
     get_queue_or_skip()
 
