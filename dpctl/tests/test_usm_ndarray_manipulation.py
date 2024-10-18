@@ -666,6 +666,20 @@ def test_roll_out_bounds_shifts():
     expected = dpt.roll(x, 2)
     assert dpt.all(y == expected)
 
+    x_empty = x[1:1]
+    y = dpt.roll(x_empty, 11)
+    assert y.size == 0
+
+    x_2d = dpt.reshape(x, (2, 2))
+    y = dpt.roll(x_2d, np.uint64(2**63 + 1), axis=1)
+    expected = dpt.roll(x_2d, 1, axis=1)
+    assert dpt.all(y == expected)
+
+    x_2d_empty = x_2d[:, 1:1]
+    y = dpt.roll(x_2d_empty, 3, axis=1)
+    expected = dpt.empty_like(x_2d_empty)
+    assert dpt.all(y == expected)
+
 
 def test_roll_validation():
     get_queue_or_skip()
