@@ -353,6 +353,8 @@ def roll(X, /, shift, *, axis=None):
         res = dpt.empty(
             X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
         )
+        sz = X.size
+        shift = (shift % sz) if sz > 0 else 0
         hev, roll_ev = ti._copy_usm_ndarray_for_roll_1d(
             src=X,
             dst=res,
@@ -369,9 +371,10 @@ def roll(X, /, shift, *, axis=None):
     shifts = [
         0,
     ] * X.ndim
+    shape = X.shape
     for sh, ax in broadcasted:
-        shifts[ax] += sh
-
+        n_i = shape[ax]
+        shifts[ax] = int(shifts[ax] + sh) % int(n_i) if n_i > 0 else 0
     res = dpt.empty(
         X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
     )
