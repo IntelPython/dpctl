@@ -1165,10 +1165,12 @@
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
             <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift</span> <span class="o">%</span> <span class="n">sz</span><span class="p">)</span> <span class="k">if</span> <span class="n">sz</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">hev</span><span class="p">,</span> <span class="n">roll_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_roll_1d</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
             <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
-            <span class="n">shift</span><span class="o">=</span><span class="p">(</span><span class="n">shift</span> <span class="o">%</span> <span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+            <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
             <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
         <span class="p">)</span>
