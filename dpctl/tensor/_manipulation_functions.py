@@ -311,7 +311,7 @@ def flip(X, /, *, axis=None):
     return X[indexer]
 
 
-def roll(X, /, shift, *, axis=None):
+def roll(x, /, shift, *, axis=None):
     """
     roll(x, shift, axis)
 
@@ -343,20 +343,20 @@ def roll(X, /, shift, *, axis=None):
             `device` attributes as `x` and whose elements are shifted relative
             to `x`.
     """
-    if not isinstance(X, dpt.usm_ndarray):
-        raise TypeError(f"Expected usm_ndarray type, got {type(X)}.")
-    exec_q = X.sycl_queue
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray type, got {type(x)}.")
+    exec_q = x.sycl_queue
     _manager = dputils.SequentialOrderManager[exec_q]
     if axis is None:
         shift = operator.index(shift)
-        dep_evs = _manager.submitted_events
         res = dpt.empty(
-            X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
+            x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
         )
-        sz = X.size
+        sz = x.size
         shift = (shift % sz) if sz > 0 else 0
+        dep_evs = _manager.submitted_events
         hev, roll_ev = ti._copy_usm_ndarray_for_roll_1d(
-            src=X,
+            src=x,
             dst=res,
             shift=shift,
             sycl_queue=exec_q,
@@ -364,23 +364,23 @@ def roll(X, /, shift, *, axis=None):
         )
         _manager.add_event_pair(hev, roll_ev)
         return res
-    axis = normalize_axis_tuple(axis, X.ndim, allow_duplicate=True)
+    axis = normalize_axis_tuple(axis, x.ndim, allow_duplicate=True)
     broadcasted = np.broadcast(shift, axis)
     if broadcasted.ndim > 1:
         raise ValueError("'shift' and 'axis' should be scalars or 1D sequences")
     shifts = [
         0,
-    ] * X.ndim
-    shape = X.shape
+    ] * x.ndim
+    shape = x.shape
     for sh, ax in broadcasted:
         n_i = shape[ax]
-        shifts[ax] = int(shifts[ax] + sh) % int(n_i) if n_i > 0 else 0
+        shifts[ax] = (int(shifts[ax] + sh) % int(n_i)) if n_i > 0 else 0
     res = dpt.empty(
-        X.shape, dtype=X.dtype, usm_type=X.usm_type, sycl_queue=exec_q
+        x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
     )
     dep_evs = _manager.submitted_events
     ht_e, roll_ev = ti._copy_usm_ndarray_for_roll_nd(
-        src=X, dst=res, shifts=shifts, sycl_queue=exec_q, depends=dep_evs
+        src=x, dst=res, shifts=shifts, sycl_queue=exec_q, depends=dep_evs
     )
     _manager.add_event_pair(ht_e, roll_ev)
     return res
