@@ -226,7 +226,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -v --pyargs $MODULE_NAME
+          python -m pytest -s -v --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
