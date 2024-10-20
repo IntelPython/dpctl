@@ -219,6 +219,14 @@ jobs:
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
         run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
+      - name: Run test_roll
+        working-directory: ${{ github.workspace }}/test_tmp
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate ${{ env.TEST_ENV_NAME }}
+          python -m pytest -s -v --pyargs $MODULE_NAME.tests.test_usm_ndarray_manipulation::test_roll_out_bounds_shifts
       - name: Run tests
         working-directory: ${{ github.workspace }}/test_tmp
         env:
