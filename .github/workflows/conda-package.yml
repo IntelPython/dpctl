@@ -226,7 +226,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -s -v --pyargs $MODULE_NAME.tests.test_usm_ndarray_manipulation::test_roll_out_bounds_shifts
+          python -m pytest -s -v --pyargs $MODULE_NAME.tests.test_usm_ndarray_manipulation::test_roll_out_of_bound_shifts
       - name: Run tests
         working-directory: ${{ github.workspace }}/test_tmp
         env:
