@@ -378,6 +378,7 @@ def roll(x, /, shift, *, axis=None):
     res = dpt.empty(
         x.shape, dtype=x.dtype, usm_type=x.usm_type, sycl_queue=exec_q
     )
+    print(shifts)
     dep_evs = _manager.submitted_events
     ht_e, roll_ev = ti._copy_usm_ndarray_for_roll_nd(
         src=x, dst=res, shifts=shifts, sycl_queue=exec_q, depends=dep_evs
