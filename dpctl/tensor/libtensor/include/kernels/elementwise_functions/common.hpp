@@ -72,7 +72,7 @@ public:
     {
         UnaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
-        /* NOTE: vec_sz must divide sg.max_local_range()[0] */
+        /* NOTE: work-group size must be divisible by sub-group size */
 
         if constexpr (enable_sg_loadstore && UnaryOperatorT::is_constant::value)
         {
@@ -80,14 +80,11 @@ public:
             constexpr resT const_val = UnaryOperatorT::constant_value;
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t max_sgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
-            if (base + n_vecs * vec_sz * sgSize < nelems_ &&
-                max_sgSize == sgSize)
-            {
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
@@ -113,14 +110,11 @@ public:
                            UnaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint16_t sgSize = sg.get_local_range()[0];
-            std::uint16_t max_sgSize = sg.get_max_local_range()[0];
+            std::uint16_t sgSize = sg.get_max_local_range()[0];
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * max_sgSize);
-            if (base + n_vecs * vec_sz * sgSize < nelems_ &&
-                sgSize == max_sgSize)
-            {
+                           sg.get_group_id()[0] * sgSize);
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<argT, vec_sz> x;
 
 #pragma unroll
@@ -155,15 +149,12 @@ public:
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * maxsgSize);
+                           sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (maxsgSize == sgSize))
-            {
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<argT, vec_sz> arg_vec;
 
 #pragma unroll
@@ -199,15 +190,12 @@ public:
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * maxsgSize);
+                           sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (maxsgSize == sgSize))
-            {
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
@@ -406,22 +394,20 @@ public:
     {
         BinaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
+        /* NOTE: work-group size must be divisible by sub-group size */
 
         if constexpr (enable_sg_loadstore &&
                       BinaryOperatorT::supports_sg_loadstore::value &&
                       BinaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
 
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize))
-            {
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
@@ -458,16 +444,13 @@ public:
                            BinaryOperatorT::supports_sg_loadstore::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
 
             size_t base = n_vecs * vec_sz *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize))
-            {
+            if (base + n_vecs * vec_sz * sgSize < nelems_) {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
@@ -582,13 +565,15 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        /* NOTE: work-group size must be divisible by sub-group size */
+
         BinaryOperatorT op{};
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
         auto sg = ndit.get_sub_group();
         size_t gid = ndit.get_global_linear_id();
 
-        std::uint8_t sgSize = sg.get_local_range()[0];
+        std::uint8_t sgSize = sg.get_max_local_range()[0];
         size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
@@ -647,13 +632,14 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        /* NOTE: work-group size must be divisible by sub-group size */
         BinaryOperatorT op{};
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
         auto sg = ndit.get_sub_group();
         size_t gid = ndit.get_global_linear_id();
 
-        std::uint8_t sgSize = sg.get_local_range()[0];
+        std::uint8_t sgSize = sg.get_max_local_range()[0];
         size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
