@@ -326,7 +326,7 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
         // normalize shift parameter to be 0 <= offset < dim
         py::ssize_t dim = src_shape_ptr[i];
         size_t offset =
-            (shifts[i] > 0) ? (shifts[i] % dim) : dim + (shifts[i] % dim);
+            (shifts[i] >= 0) ? (shifts[i] % dim) : dim + (shifts[i] % dim);
 
         normalized_shifts.push_back(offset);
     }
