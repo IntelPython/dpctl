@@ -26,6 +26,8 @@
 #pragma once
 
 #include <complex>
+#include <type_traits>
+
 #include <sycl/sycl.hpp>
 
 namespace dpctl
@@ -161,7 +163,7 @@ public:
 
 /*! @brief struct to define result_type typename for Ty == ArgTy */
 template <typename Ty, typename ArgTy, typename ResTy = ArgTy>
-struct TypeMapResultEntry : std::bool_constant<std::is_same_v<Ty, ArgTy>>
+struct TypeMapResultEntry : std::is_same<Ty, ArgTy>
 {
     using result_type = ResTy;
 };
@@ -174,8 +176,7 @@ template <typename Ty1,
           typename ArgTy2,
           typename ResTy>
 struct BinaryTypeMapResultEntry
-    : std::bool_constant<std::conjunction_v<std::is_same<Ty1, ArgTy1>,
-                                            std::is_same<Ty2, ArgTy2>>>
+    : std::conjunction<std::is_same<Ty1, ArgTy1>, std::is_same<Ty2, ArgTy2>>
 {
     using result_type = ResTy;
 };
@@ -272,8 +273,8 @@ private:
 };
 
 template <typename Ty1, typename ArgTy, typename Ty2, typename outTy>
-struct TypePairDefinedEntry : std::bool_constant<std::is_same_v<Ty1, ArgTy> &&
-                                                 std::is_same_v<Ty2, outTy>>
+struct TypePairDefinedEntry
+    : std::conjunction<std::is_same<Ty1, ArgTy>, std::is_same<Ty2, outTy>>
 {
     static constexpr bool is_defined = true;
 };

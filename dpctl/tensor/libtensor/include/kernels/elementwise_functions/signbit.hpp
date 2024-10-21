@@ -30,7 +30,10 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "vec_size_util.hpp"
+
 #include "kernels/dpctl_tensor_types.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -74,8 +77,8 @@ template <typename argT, typename resT> struct SignbitFunctor
 
 template <typename argT,
           typename resT = bool,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SignbitContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
@@ -100,6 +103,25 @@ template <typename argTy> struct SignbitOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::ContigHyperparameterSetDefault;
+using vsu_ns::UnaryContigHyperparameterSetEntry;
+
+template <typename argTy> struct SignbitContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class signbit_contig_kernel;
 
@@ -110,9 +132,14 @@ sycl::event signbit_contig_impl(sycl::queue &exec_q,
                                 char *res_p,
                                 const std::vector<sycl::event> &depends = {})
 {
+    constexpr unsigned int vec_sz =
+        SignbitContigHyperparameterSet<argTy>::vec_sz;
+    constexpr unsigned int n_vecs =
+        SignbitContigHyperparameterSet<argTy>::n_vecs;
+
     return elementwise_common::unary_contig_impl<
-        argTy, SignbitOutputType, SignbitContigFunctor, signbit_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, SignbitOutputType, SignbitContigFunctor, signbit_contig_kernel,
+        vec_sz, n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct SignbitContigFactory

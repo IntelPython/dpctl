@@ -30,6 +30,8 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "vec_size_util.hpp"
+
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
@@ -121,8 +123,8 @@ struct GreaterEqualFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using GreaterEqualContigFunctor = elementwise_common::BinaryContigFunctor<
     argT1,
@@ -191,6 +193,26 @@ template <typename T1, typename T2> struct GreaterEqualOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::BinaryContigHyperparameterSetEntry;
+using vsu_ns::ContigHyperparameterSetDefault;
+
+template <typename argTy1, typename argTy2>
+struct GreaterEqualContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename argT1,
           typename argT2,
           typename resT,
@@ -210,11 +232,16 @@ greater_equal_contig_impl(sycl::queue &exec_q,
                           ssize_t res_offset,
                           const std::vector<sycl::event> &depends = {})
 {
+    constexpr unsigned int vec_sz =
+        GreaterEqualContigHyperparameterSet<argTy1, argTy2>::vec_sz;
+    constexpr unsigned int n_vecs =
+        GreaterEqualContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, GreaterEqualOutputType, GreaterEqualContigFunctor,
-        greater_equal_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset,
-                                     arg2_p, arg2_offset, res_p, res_offset,
-                                     depends);
+        greater_equal_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
+        res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>

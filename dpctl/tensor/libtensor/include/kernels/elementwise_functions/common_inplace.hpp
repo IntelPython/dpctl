@@ -51,8 +51,8 @@ using dpctl::tensor::kernels::alignment_utils::required_alignment;
 template <typename argT,
           typename resT,
           typename BinaryInplaceOperatorT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 struct BinaryInplaceContigFunctor
 {
@@ -72,29 +72,29 @@ public:
     void operator()(sycl::nd_item<1> ndit) const
     {
         BinaryInplaceOperatorT op{};
+        constexpr std::uint32_t elems_per_wi = vec_sz * n_vecs;
         /* Each work-item processes vec_sz elements, contiguous in memory */
+        /* NB: Workgroup size must be divisible by sub-group size */
 
         if constexpr (enable_sg_loadstore &&
                       BinaryInplaceOperatorT::supports_sg_loadstore::value &&
-                      BinaryInplaceOperatorT::supports_vec::value)
+                      BinaryInplaceOperatorT::supports_vec::value &&
+                      (vec_sz > 1))
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint8_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = n_vecs * vec_sz *
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize))
-            {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
 
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
@@ -110,9 +110,8 @@ public:
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     op(lhs[k], rhs[k]);
                 }
             }
@@ -121,21 +120,18 @@ public:
                            BinaryInplaceOperatorT::supports_sg_loadstore::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t maxsgSize = sg.get_max_local_range()[0];
+            std::uint32_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = n_vecs * vec_sz *
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if ((base + n_vecs * vec_sz * sgSize < nelems_) &&
-                (sgSize == maxsgSize))
-            {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
@@ -146,27 +142,27 @@ public:
                     arg_vec = sg.load<vec_sz>(rhs_multi_ptr);
                     res_vec = sg.load<vec_sz>(lhs_multi_ptr);
 #pragma unroll
-                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                    for (std::uint32_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
                         op(res_vec[vec_id], arg_vec[vec_id]);
                     }
                     sg.store<vec_sz>(lhs_multi_ptr, res_vec);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     op(lhs[k], rhs[k]);
                 }
             }
         }
         else {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            const size_t sgSize = ndit.get_sub_group().get_local_range()[0];
             size_t base = ndit.get_global_linear_id();
+            const size_t elems_per_sg = elems_per_wi * sgSize;
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            base = (base / sgSize) * elems_per_sg + (base % sgSize);
             for (size_t offset = base;
-                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
+                 offset < std::min(nelems_, base + elems_per_sg);
                  offset += sgSize)
             {
                 op(lhs[offset], rhs[offset]);
@@ -228,13 +224,14 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        /* Workgroup size is expected to be a multiple of sub-group size */
         BinaryOperatorT op{};
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
         auto sg = ndit.get_sub_group();
         size_t gid = ndit.get_global_linear_id();
 
-        std::uint8_t sgSize = sg.get_local_range()[0];
+        std::uint8_t sgSize = sg.get_max_local_range()[0];
         size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
@@ -307,8 +304,8 @@ template <typename argTy,
           class BinaryInplaceContigFunctorT,
           template <typename T1, typename T2, unsigned int vs, unsigned int nv>
           class kernel_name,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u>
 sycl::event
 binary_inplace_contig_impl(sycl::queue &exec_q,
                            size_t nelems,

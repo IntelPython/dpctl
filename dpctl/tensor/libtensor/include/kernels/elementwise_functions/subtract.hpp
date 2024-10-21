@@ -29,11 +29,13 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "vec_size_util.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
 
@@ -85,8 +87,8 @@ template <typename argT1, typename argT2, typename resT> struct SubtractFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SubtractContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -170,6 +172,26 @@ template <typename T1, typename T2> struct SubtractOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::BinaryContigHyperparameterSetEntry;
+using vsu_ns::ContigHyperparameterSetDefault;
+
+template <typename argTy1, typename argTy2>
+struct SubtractContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename argT1,
           typename argT2,
           typename resT,
@@ -188,10 +210,16 @@ sycl::event subtract_contig_impl(sycl::queue &exec_q,
                                  ssize_t res_offset,
                                  const std::vector<sycl::event> &depends = {})
 {
+    constexpr unsigned int vec_sz =
+        SubtractContigHyperparameterSet<argTy1, argTy2>::vec_sz;
+    constexpr unsigned int n_vecs =
+        SubtractContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, SubtractOutputType, SubtractContigFunctor,
-        subtract_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                                arg2_offset, res_p, res_offset, depends);
+        subtract_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
+        res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct SubtractContigFactory
@@ -401,8 +429,8 @@ template <typename argT, typename resT> struct SubtractInplaceFunctor
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SubtractInplaceContigFunctor =
     elementwise_common::BinaryInplaceContigFunctor<
@@ -480,10 +508,15 @@ subtract_inplace_contig_impl(sycl::queue &exec_q,
                              ssize_t res_offset,
                              const std::vector<sycl::event> &depends = {})
 {
+    constexpr unsigned int vec_sz =
+        SubtractContigHyperparameterSet<resTy, argTy>::vec_sz;
+    constexpr unsigned int n_vecs =
+        SubtractContigHyperparameterSet<resTy, argTy>::n_vecs;
+
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, SubtractInplaceContigFunctor,
-        subtract_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
-                                        res_p, res_offset, depends);
+        subtract_inplace_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>

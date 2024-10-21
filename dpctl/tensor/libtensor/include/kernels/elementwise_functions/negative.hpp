@@ -30,9 +30,11 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/elementwise_functions/common.hpp"
+#include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/elementwise_functions/common.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -65,8 +67,8 @@ template <typename argT, typename resT> struct NegativeFunctor
 
 template <typename argT,
           typename resT = argT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 4u,
+          unsigned int n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using NegativeContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
@@ -97,6 +99,25 @@ template <typename T> struct NegativeOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::ContigHyperparameterSetDefault;
+using vsu_ns::UnaryContigHyperparameterSetEntry;
+
+template <typename argTy> struct NegativeContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
 class negative_contig_kernel;
 
@@ -107,10 +128,15 @@ sycl::event negative_contig_impl(sycl::queue &exec_q,
                                  char *res_p,
                                  const std::vector<sycl::event> &depends = {})
 {
-    return elementwise_common::unary_contig_impl<argTy, NegativeOutputType,
-                                                 NegativeContigFunctor,
-                                                 negative_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+    constexpr unsigned int vec_sz =
+        NegativeContigHyperparameterSet<argTy>::vec_sz;
+    constexpr unsigned int n_vecs =
+        NegativeContigHyperparameterSet<argTy>::n_vecs;
+
+    return elementwise_common::unary_contig_impl<
+        argTy, NegativeOutputType, NegativeContigFunctor,
+        negative_contig_kernel, vec_sz, n_vecs>(exec_q, nelems, arg_p, res_p,
+                                                depends);
 }
 
 template <typename fnT, typename T> struct NegativeContigFactory
