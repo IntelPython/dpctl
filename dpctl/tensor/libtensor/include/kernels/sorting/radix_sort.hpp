@@ -34,8 +34,10 @@
 #include <utility>
 #include <vector>
 
-#include "kernels/dpctl_tensor_types.hpp"
 #include <sycl/sycl.hpp>
+
+#include "kernels/dpctl_tensor_types.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
 {
@@ -1519,8 +1521,10 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             sort_ev = exec_q.submit([=](sycl::handler &cgh) {
                 cgh.depends_on(sort_ev);
                 const sycl::context &ctx = exec_q.get_context();
+
+                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
                 cgh.host_task(
-                    [ctx, count_ptr]() { sycl::free(count_ptr, ctx); });
+                    [ctx, count_ptr]() { sycl_free_noexcept(count_ptr, ctx); });
             });
 
             return sort_ev;
@@ -1572,9 +1576,11 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             cgh.depends_on(sort_ev);
 
             const sycl::context &ctx = exec_q.get_context();
+
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
             cgh.host_task([ctx, count_ptr, tmp_arr]() {
-                sycl::free(tmp_arr, ctx);
-                sycl::free(count_ptr, ctx);
+                sycl_free_noexcept(tmp_arr, ctx);
+                sycl_free_noexcept(count_ptr, ctx);
             });
         });
     }
