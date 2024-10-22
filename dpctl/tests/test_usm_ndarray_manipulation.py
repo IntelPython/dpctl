@@ -1013,6 +1013,12 @@ def test_result_type():
 
     assert dpt.result_type(*X).kind == np.result_type(*X_np).kind
 
+    dtype = np.dtype(np.float64)
+    X = [dtype.type(3), dtype.type(3)]
+    X_np = X
+
+    assert dpt.result_type(*X) == np.result_type(*X_np)
+
 
 def test_swapaxes_1d():
     get_queue_or_skip()

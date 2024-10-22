@@ -773,14 +773,14 @@ def result_type(*arrays_and_dtypes):
                 raise ValueError(
                     f"Argument {dt} is not supported by the device"
                 )
-        res_dt = np.result_type(*dtypes)
+        res_dt = np.result_type(*dtypes) if dtypes else None
         res_dt = _to_device_supported_dtype_impl(res_dt, has_fp16, has_fp64)
         for wdt in weak_dtypes:
             pair = _resolve_weak_types(wdt, res_dt, target_dev)
             res_dt = np.result_type(*pair)
             res_dt = _to_device_supported_dtype_impl(res_dt, has_fp16, has_fp64)
     else:
-        res_dt = np.result_type(*dtypes)
+        res_dt = np.result_type(*dtypes) if dtypes else None
         if weak_dtypes:
             weak_dt_obj = [wdt.get() for wdt in weak_dtypes]
             res_dt = np.result_type(res_dt, *weak_dt_obj)
