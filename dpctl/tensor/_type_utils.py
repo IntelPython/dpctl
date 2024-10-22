@@ -760,7 +760,7 @@ def _result_type_fn_impl(arrays_and_dtypes_tuple, sycl_device=None):
                 inspected = True
     else:
         raise ValueError(
-            "At least only argument must have type `dpctl.tensor.usm_ndarray`"
+            "At least one argument must have type `dpctl.tensor.usm_ndarray`"
         )
 
     if not (has_fp16 and has_fp64):
