@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Change to `tensor.result_type` to raise `ValueError` unless at least one argument is a `tensor.usm_ndarray` instance [gh-1876](https://github.com/IntelPython/dpctl/pull/1876)
+
 ### Maintenance
 
 * Update black version used in Python code style workflow [gh-1828](https://github.com/IntelPython/dpctl/pull/1828)
