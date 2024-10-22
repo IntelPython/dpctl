@@ -21,6 +21,13 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 
 
+def _supported_dtype(dtypes):
+    for dtype in dtypes:
+        if dtype.char not in "?bBhHiIlLqQefdFD":
+            raise ValueError(f"Dpctl doesn't support dtype {dtype}.")
+    return True
+
+
 def _all_data_types(_fp16, _fp64):
     _non_fp_types = [
         dpt.bool,
@@ -708,26 +715,11 @@ def can_cast(from_, to, /, *, casting="safe") -> bool:
         return _can_cast(dtype_from, dtype_to, True, True, casting=casting)
 
 
-def result_type(*arrays_and_dtypes):
-    """
-    result_type(*arrays_and_dtypes)
-
-    Returns the dtype that results from applying the Type Promotion Rules to \
-        the arguments.
-
-    Args:
-        arrays_and_dtypes (Union[usm_ndarray, dtype]):
-            An arbitrary length sequence of usm_ndarray objects or dtypes.
-
-    Returns:
-        dtype:
-            The dtype resulting from an operation involving the
-            input arrays and dtypes.
-    """
+def _result_type_fn_impl(arrays_and_dtypes_tuple, sycl_device=None):
     dtypes = []
-    devices = []
+    devices = [] if sycl_device is None else [sycl_device]
     weak_dtypes = []
-    for arg_i in arrays_and_dtypes:
+    for arg_i in arrays_and_dtypes_tuple:
         if isinstance(arg_i, dpt.usm_ndarray):
             devices.append(arg_i.sycl_device)
             dtypes.append(arg_i.dtype)
@@ -766,6 +758,10 @@ def result_type(*arrays_and_dtypes):
                 has_fp64 = d.has_aspect_fp64
                 target_dev = d
                 inspected = True
+    else:
+        raise ValueError(
+            "At least only argument must have type `dpctl.tensor.usm_ndarray`"
+        )
 
     if not (has_fp16 and has_fp64):
         for dt in dtypes:
@@ -786,6 +782,25 @@ def result_type(*arrays_and_dtypes):
             res_dt = np.result_type(res_dt, *weak_dt_obj)
 
     return res_dt
+
+
+def result_type(*arrays_and_dtypes):
+    """
+    result_type(*arrays_and_dtypes)
+
+    Returns the dtype that results from applying the Type Promotion Rules to \
+        the arguments.
+
+    Args:
+        arrays_and_dtypes (Union[usm_ndarray, dtype]):
+            An arbitrary length sequence of usm_ndarray objects or dtypes.
+
+    Returns:
+        dtype:
+            The dtype resulting from an operation involving the
+            input arrays and dtypes.
+    """
+    return _result_type_fn_impl(arrays_and_dtypes)
 
 
 def iinfo(dtype, /):
@@ -853,13 +868,6 @@ def finfo(dtype, /):
         dtype = dtype.dtype
     _supported_dtype([dpt.dtype(dtype)])
     return finfo_object(dtype)
-
-
-def _supported_dtype(dtypes):
-    for dtype in dtypes:
-        if dtype.char not in "?bBhHiIlLqQefdFD":
-            raise ValueError(f"Dpctl doesn't support dtype {dtype}.")
-    return True
 
 
 def isdtype(dtype, kind):

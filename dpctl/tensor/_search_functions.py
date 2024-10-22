@@ -35,6 +35,7 @@ from ._type_utils import (
     _all_data_types,
     _can_cast,
     _is_weak_dtype,
+    _result_type_fn_impl,
     _strong_dtype_num_kind,
     _to_device_supported_dtype,
     _weak_type_num_kind,
@@ -95,7 +96,13 @@ def _resolve_two_weak_types(o1_dtype, o2_dtype, dev):
 
 
 def _where_result_type(dt1, dt2, dev):
-    res_dtype = dpt.result_type(dt1, dt2)
+    res_dtype = _result_type_fn_impl(
+        (
+            dt1,
+            dt2,
+        ),
+        sycl_device=dev,
+    )
     fp16 = dev.has_aspect_fp16
     fp64 = dev.has_aspect_fp64
 

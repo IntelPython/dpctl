@@ -998,11 +998,6 @@ def test_result_type():
 
     assert dpt.result_type(*X) == np.result_type(*X_np)
 
-    X = [dpt.int32, "int64", 2]
-    X_np = [np.int32, "int64", 2]
-
-    assert dpt.result_type(*X) == np.result_type(*X_np)
-
     X = [usm_ar, dpt.int32, "int64", 2.0]
     X_np = [np_ar, np.int32, "int64", 2.0]
 
@@ -1012,6 +1007,10 @@ def test_result_type():
     X_np = [np_ar, np.int32, "int64", 2.0 + 1j]
 
     assert dpt.result_type(*X).kind == np.result_type(*X_np).kind
+
+    X = [dpt.int32, "int64", 2]
+    with pytest.raises(ValueError):
+        dpt.result_type(*X)
 
 
 def test_swapaxes_1d():

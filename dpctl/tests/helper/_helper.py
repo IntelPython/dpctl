@@ -55,11 +55,14 @@ def skip_if_dtype_not_supported(dt, q_or_dev):
     import dpctl.tensor as dpt
 
     dt = dpt.dtype(dt)
-    if type(q_or_dev) is dpctl.SyclQueue:
+    if isinstance(q_or_dev, dpctl.SyclQueue):
         dev = q_or_dev.sycl_device
-    elif type(q_or_dev) is dpctl.SyclDevice:
-        dev = q_or_dev
     else:
+        dev = q_or_dev
+
+    if not hasattr(dev, "has_aspect_fp16") or not hasattr(
+        dev, "has_aspect_fp64"
+    ):
         raise TypeError(
             "Expected dpctl.SyclQueue or dpctl.SyclDevice, "
             f"got {type(q_or_dev)}"

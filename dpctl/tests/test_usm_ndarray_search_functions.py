@@ -48,6 +48,7 @@ _all_dtypes = [
 
 class mock_device:
     def __init__(self, fp16, fp64):
+        self.name = "Mock device"
         self.has_aspect_fp16 = fp16
         self.has_aspect_fp64 = fp64
 
@@ -101,14 +102,17 @@ def test_where_result_types(dt1, dt2, fp16, fp64):
     dev = mock_device(fp16, fp64)
 
     dt1 = dpt.dtype(dt1)
+    skip_if_dtype_not_supported(dt1, dev)
     dt2 = dpt.dtype(dt2)
+    skip_if_dtype_not_supported(dt2, dev)
+
     res_t = _where_result_type(dt1, dt2, dev)
 
     if fp16 and fp64:
-        assert res_t == dpt.result_type(dt1, dt2)
+        assert res_t == np.result_type(dt1, dt2)
     else:
         if res_t:
-            assert res_t.kind == dpt.result_type(dt1, dt2).kind
+            assert res_t.kind == np.result_type(dt1, dt2).kind
         else:
             # some illegal cases are covered above, but
             # this guarantees that _where_result_type
