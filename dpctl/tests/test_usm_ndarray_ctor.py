@@ -2623,8 +2623,12 @@ def test_setitem_from_numpy_contig():
     assert dpt.all(dpt.flip(Xdpt, axis=-1) == expected)
 
 
-def test_full_raises_type_error():
+def test_full_functions_raise_type_error():
     get_queue_or_skip()
 
     with pytest.raises(TypeError):
         dpt.full(1, "0")
+
+    x = dpt.ones(1, dtype="i4")
+    with pytest.raises(TypeError):
+        dpt.full_like(x, "0")
