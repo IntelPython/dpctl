@@ -1923,7 +1923,12 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+    <span class="c1"># TODO: verify if `np.True_` and `np.False_` should be instances of</span>
+    <span class="c1"># Number in NumPy, like other NumPy scalars and like Python bools</span>
+    <span class="c1"># check for `np.bool_` separately as NumPy&lt;2 has no `np.bool`</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">fill_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
+    <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;`full` array cannot be constructed with value of type &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2298,7 +2303,12 @@
             <span class="p">)</span>
             <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
+        <span class="c1"># TODO: verify if `np.True_` and `np.False_` should be instances of</span>
+        <span class="c1"># Number in NumPy, like other NumPy scalars and like Python bools</span>
+        <span class="c1"># check for `np.bool_` separately as NumPy&lt;2 has no `np.bool`</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">fill_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;`full` array cannot be constructed with value of type &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
