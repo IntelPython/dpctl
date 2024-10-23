@@ -1850,6 +1850,19 @@
         <span class="k">return</span> <span class="n">fill_val</span>
 
 
+<span class="k">def</span> <span class="nf">_validate_fill_value</span><span class="p">(</span><span class="n">fill_val</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates that `fill_val` is a numeric or boolean scalar.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: verify if `np.True_` and `np.False_` should be instances of</span>
+    <span class="c1"># Number in NumPy, like other NumPy scalars and like Python bools</span>
+    <span class="c1"># check for `np.bool_` separately as NumPy&lt;2 has no `np.bool`</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_val</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_val</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;array cannot be filled with scalar of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_val</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+
 <div class="viewcode-block" id="full"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full">[docs]</a><span class="k">def</span> <span class="nf">full</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="n">fill_value</span><span class="p">,</span>
@@ -1923,16 +1936,8 @@
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-    <span class="c1"># TODO: verify if `np.True_` and `np.False_` should be instances of</span>
-    <span class="c1"># Number in NumPy, like other NumPy scalars and like Python bools</span>
-    <span class="c1"># check for `np.bool_` separately as NumPy&lt;2 has no `np.bool`</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">fill_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;`full` array cannot be constructed with value of type &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_validate_fill_value</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
 
     <span class="n">sycl_queue</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
     <span class="n">usm_type</span> <span class="o">=</span> <span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;device&quot;</span>
@@ -2303,16 +2308,8 @@
             <span class="p">)</span>
             <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span>
-        <span class="c1"># TODO: verify if `np.True_` and `np.False_` should be instances of</span>
-        <span class="c1"># Number in NumPy, like other NumPy scalars and like Python bools</span>
-        <span class="c1"># check for `np.bool_` separately as NumPy&lt;2 has no `np.bool`</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">fill_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;`full` array cannot be constructed with value of type &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_validate_fill_value</span><span class="p">(</span><span class="n">fill_value</span><span class="p">)</span>
 
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ref_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">fill_value</span><span class="p">))</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">)</span>
