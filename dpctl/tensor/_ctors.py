@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import operator
+from numbers import Number
 
 import numpy as np
 
@@ -1113,6 +1114,11 @@ def full(
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
+    if not isinstance(fill_value, Number):
+        raise TypeError(
+            "`full` array cannot be constructed with value of type "
+            f"{type(fill_value)}"
+        )
     dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
     res = dpt.usm_ndarray(
         shape,
