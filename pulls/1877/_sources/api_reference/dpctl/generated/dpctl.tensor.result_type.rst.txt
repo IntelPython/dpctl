@@ -1,0 +1,6 @@
+﻿dpctl.tensor.result\_type
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: result_type
