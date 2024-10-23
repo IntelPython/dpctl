@@ -28,7 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix warning in documentation generation caused by `diff` docstring [gh-1855](https://github.com/IntelPython/dpctl/pull/1855)
 * Fix additional warnings when generating docs [gh-1861](https://github.com/IntelPython/dpctl/pull/1861)
 
-## [0.18.0] - Sept. XX, 2024
+## [0.18.1] - Oct. 11, 2024
+
+### Changed
+
+* Updated installation instructions [gh-1862](https://github.com/IntelPython/dpctl/pull/1862)
+
+## [0.18.0] - Sept. 26, 2024
 
 This release reaches an important milestone by making offloading fully asynchronous.
 Calls to `dpctl.tensor` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish.
@@ -50,7 +56,7 @@ The full list of changes that went into this release are:
 * `dpctl::tensor::usm_memory` class defined in `dpctl4pybind11.hpp` adds constructor to create Python USM memory objects viewing into existing USM allocations, which can be made by an external library [gh-1782](https://github.com/IntelPython/dpctl/pull/1782)
 * Add support for COVERAGE build type in project's CMake script [gh-1692](https://github.com/IntelPython/dpctl/pull/1692)
 
-### Change
+### Changed
 
 * Change ownership of USM allocation by `dpctl.memory` objects, make executions of `dpctl.tensor` operations asynchronous [gh-1705](https://github.com/IntelPython/dpctl/pull/1705)
 * Add support for Python scalars by `tensor.where` function [gh-1719](https://github.com/IntelPython/dpctl/pull/1719)
