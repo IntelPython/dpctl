@@ -1536,8 +1536,12 @@ def test_repeat_0_size():
 
 
 def test_result_type_bug_1874():
-    dts_bool = [True, np.bool_(True)]
-    dts_ints = [int(1), np.int64(1)]
+    py_sc = True
+    np_sc = np.asarray([py_sc])[0]
+    dts_bool = [py_sc, np_sc]
+    py_sc = int(1)
+    np_sc = np.asarray([py_sc])[0]
+    dts_ints = [py_sc, np_sc]
     dts_floats = [float(1), np.float64(1)]
     dts_complexes = [complex(1), np.complex128(1)]
 
