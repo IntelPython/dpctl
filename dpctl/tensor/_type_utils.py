@@ -767,6 +767,9 @@ def result_type(*arrays_and_dtypes):
                 target_dev = d
                 inspected = True
 
+    if not dtypes and weak_dtypes:
+        dtypes.append(weak_dtypes[0].get())
+
     if not (has_fp16 and has_fp64):
         for dt in dtypes:
             if not _dtype_supported_by_device_impl(dt, has_fp16, has_fp64):
