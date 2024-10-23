@@ -1111,7 +1111,12 @@ def full(
             sycl_queue=sycl_queue,
         )
         return dpt.copy(dpt.broadcast_to(X, shape), order=order)
-    elif not isinstance(fill_value, Number):
+    # TODO: verify if `np.True_` and `np.False_` should be instances of
+    # Number in NumPy, like other NumPy scalars and like Python bools
+    # check for `np.bool_` separately as NumPy<2 has no `np.bool`
+    elif not isinstance(fill_value, Number) and not isinstance(
+        fill_value, np.bool_
+    ):
         raise TypeError(
             "`full` array cannot be constructed with value of type "
             f"{type(fill_value)}"
@@ -1486,7 +1491,12 @@ def full_like(
             )
             _manager.add_event_pair(hev, copy_ev)
             return res
-        elif not isinstance(fill_value, Number):
+        # TODO: verify if `np.True_` and `np.False_` should be instances of
+        # Number in NumPy, like other NumPy scalars and like Python bools
+        # check for `np.bool_` separately as NumPy<2 has no `np.bool`
+        elif not isinstance(fill_value, Number) and not isinstance(
+            fill_value, np.bool_
+        ):
             raise TypeError(
                 "`full` array cannot be constructed with value of type "
                 f"{type(fill_value)}"
