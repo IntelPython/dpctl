@@ -15,6 +15,8 @@
 # limitations under the License.
 
 
+import itertools
+
 import numpy as np
 import pytest
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
@@ -1555,3 +1557,22 @@ def test_repeat_0_size():
     res = dpt.repeat(x, repetitions, axis=1)
     axis_sz = 2 * x.shape[1]
     assert res.shape == (0, axis_sz, 0)
+
+
+def test_result_type_bug_1874():
+    dts_bool = [True, np.bool_(True)]
+    dts_ints = [int(1), np.int64(1)]
+    dts_floats = [float(1), np.float64(1)]
+    dts_complexes = [complex(1), np.complex128(1)]
+
+    # iterate over two categories
+    for dts1, dts2 in itertools.product(
+        [dts_bool, dts_ints, dts_floats, dts_complexes], repeat=2
+    ):
+        res_dts = []
+        # iterate over Python scalar/NumPy scalar choices within categories
+        for dt1, dt2 in itertools.product(dts1, dts2):
+            res_dt = dpt.result_type(dt1, dt2)
+            res_dts.append(res_dt)
+        # check that all results are the same
+        assert res_dts and all(res_dts[0] == el for el in res_dts[1:])
