@@ -172,6 +172,8 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     if BTy == _backend_type._CUDA:
         return "cuda"
+    elif BTy == _backend_type._HIP:
+        return "hip"
     elif BTy == _backend_type._LEVEL_ZERO:
         return "level_zero"
     elif BTy == _backend_type._OPENCL:
@@ -425,6 +427,8 @@ cdef class SyclDevice(_SyclDevice):
         )
         if BTy == _backend_type._CUDA:
             return backend_type.cuda
+        elif BTy == _backend_type._HIP:
+            return backend_type.hip
         elif BTy == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:

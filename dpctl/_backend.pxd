@@ -43,6 +43,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
     ctypedef enum _backend_type 'DPCTLSyclBackendType':
         _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
         _CUDA            'DPCTL_CUDA'
+        _HIP             'DPCTL_HIP'
         _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
         _OPENCL          'DPCTL_OPENCL'
         _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'

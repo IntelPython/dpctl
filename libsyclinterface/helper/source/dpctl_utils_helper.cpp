@@ -94,6 +94,8 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
         return backend::opencl;
     case DPCTLSyclBackendType::DPCTL_ALL_BACKENDS:
         return backend::all;
+    case DPCTLSyclBackendType::DPCTL_HIP:
+        return backend::ext_oneapi_hip;
     default:
         throw std::runtime_error("Unsupported backend type");
     }
@@ -108,6 +110,8 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
         return DPCTLSyclBackendType::DPCTL_LEVEL_ZERO;
     case backend::opencl:
         return DPCTLSyclBackendType::DPCTL_OPENCL;
+    case backend::ext_oneapi_hip:
+        return DPCTLSyclBackendType::DPCTL_HIP;
     default:
         return DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     }
@@ -466,6 +470,9 @@ std::string DPCTL_GetDeviceFilterString(const device &Device)
         break;
     case backend::opencl:
         ss << "opencl";
+        break;
+    case backend::ext_oneapi_hip:
+        ss << "hip";
         break;
     default:
         ss << "unknown";
