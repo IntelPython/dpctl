@@ -70,6 +70,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        constexpr std::uint32_t elems_per_wi = n_vecs * vec_sz;
         UnaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
@@ -80,14 +81,15 @@ public:
             constexpr resT const_val = UnaryOperatorT::constant_value;
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
+            std::uint32_t sgSize = sg.get_max_local_range()[0];
+
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto out_multi_ptr = sycl::address_space_cast<
@@ -98,9 +100,8 @@ public:
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     out[k] = const_val;
                 }
             }
@@ -110,15 +111,16 @@ public:
                            UnaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint16_t sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
+            std::uint32_t sgSize = sg.get_max_local_range()[0];
+
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT, vec_sz> x;
 
 #pragma unroll
-                for (std::uint16_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
@@ -134,9 +136,8 @@ public:
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     // scalar call
                     out[k] = op(in[k]);
                 }
@@ -149,16 +150,16 @@ public:
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
+            std::uint32_t sgSize = sg.get_max_local_range()[0];
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT, vec_sz> arg_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
@@ -170,16 +171,15 @@ public:
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
-                    for (std::uint8_t k = 0; k < vec_sz; ++k) {
+                    for (std::uint32_t k = 0; k < vec_sz; ++k) {
                         arg_vec[k] = op(arg_vec[k]);
                     }
                     sg.store<vec_sz>(out_multi_ptr, arg_vec);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     out[k] = op(in[k]);
                 }
             }
@@ -190,17 +190,17 @@ public:
             // default: use scalar-value function
 
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
+            std::uint32_t sgSize = sg.get_max_local_range()[0];
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT, vec_sz> arg_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto in_multi_ptr = sycl::address_space_cast<
@@ -212,27 +212,27 @@ public:
 
                     arg_vec = sg.load<vec_sz>(in_multi_ptr);
 #pragma unroll
-                    for (std::uint8_t k = 0; k < vec_sz; ++k) {
+                    for (std::uint32_t k = 0; k < vec_sz; ++k) {
                         res_vec[k] = op(arg_vec[k]);
                     }
                     sg.store<vec_sz>(out_multi_ptr, res_vec);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     out[k] = op(in[k]);
                 }
             }
         }
         else {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            size_t sgSize = ndit.get_sub_group().get_local_range()[0];
             size_t base = ndit.get_global_linear_id();
+            const size_t elems_per_sg = sgSize * elems_per_wi;
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            base = (base / sgSize) * elems_per_sg + (base % sgSize);
             for (size_t offset = base;
-                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
+                 offset < std::min(nelems_, base + elems_per_sg);
                  offset += sgSize)
             {
                 out[offset] = op(in[offset]);
@@ -392,6 +392,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        constexpr std::uint32_t elems_per_wi = n_vecs * vec_sz;
         BinaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
@@ -401,19 +402,19 @@ public:
                       BinaryOperatorT::supports_vec::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_max_local_range()[0];
+            std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = n_vecs * vec_sz *
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
@@ -433,9 +434,8 @@ public:
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     out[k] = op(in1[k], in2[k]);
                 }
             }
@@ -446,17 +446,17 @@ public:
             auto sg = ndit.get_sub_group();
             std::uint8_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = n_vecs * vec_sz *
+            size_t base = static_cast<size_t>(elems_per_wi) *
                           (ndit.get_group(0) * ndit.get_local_range(0) +
                            sg.get_group_id()[0] * sgSize);
 
-            if (base + n_vecs * vec_sz * sgSize < nelems_) {
+            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
                 sycl::vec<argT1, vec_sz> arg1_vec;
                 sycl::vec<argT2, vec_sz> arg2_vec;
                 sycl::vec<resT, vec_sz> res_vec;
 
 #pragma unroll
-                for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
                     size_t offset = base + static_cast<size_t>(it) *
                                                static_cast<size_t>(sgSize);
                     auto in1_multi_ptr = sycl::address_space_cast<
@@ -480,20 +480,20 @@ public:
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems_;
-                     k += sgSize)
-                {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     out[k] = op(in1[k], in2[k]);
                 }
             }
         }
         else {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            const size_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            const size_t gid = ndit.get_global_linear_id();
+            const size_t elems_per_sg = sgSize * elems_per_wi;
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
+            const size_t base = (gid / sgSize) * elems_per_sg + (gid % sgSize);
             for (size_t offset = base;
-                 offset < std::min(nelems_, base + sgSize * (n_vecs * vec_sz));
+                 offset < std::min(nelems_, base + elems_per_sg);
                  offset += sgSize)
             {
                 out[offset] = op(in1[offset], in2[offset]);
