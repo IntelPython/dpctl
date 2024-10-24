@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.tile" href="dpctl.tensor.tile.html" /><link rel="prev" title="dpctl.tensor.squeeze" href="dpctl.tensor.squeeze.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.stack - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.stack - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -825,7 +826,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>]</em><em>, </em><em>Tuple</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>,</em><em>...</em><em>]</em><em>]</em>) – input arrays to join. Each array must have the same shape.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – axis along which the arrays will be joined. Providing
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – axis along which the arrays will be joined. Providing
 an <cite>axis</cite> specified the index of the new axis in the dimensions
 of the output array. A valid axis must be on the interval
 <cite>[-N, N)</cite>, where <cite>N</cite> is the rank (number of dimensions) of <cite>x</cite>.
@@ -842,8 +843,8 @@ different data types, array API Type Promotion Rules apply.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if not all input arrays have the same shape</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.12)"><strong>IndexError</strong></a> – if provided an <cite>axis</cite> outside of the required interval.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – if not all input arrays have the same shape</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.13)"><strong>IndexError</strong></a> – if provided an <cite>axis</cite> outside of the required interval.</p></li>
 </ul>
 </dd>
 </dl>
@@ -919,7 +920,7 @@ different data types, array API Type Promotion Rules apply.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

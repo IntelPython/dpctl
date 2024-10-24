@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__" href="dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__.html" /><link rel="prev" title="dpctl.tensor.usm_ndarray.__dlpack_device__" href="dpctl.tensor.usm_ndarray.__dlpack_device__.html" />
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.usm_ndarray.__dlpack__ - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.usm_ndarray.__dlpack__ - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -827,20 +828,20 @@
 <li><p><strong>stream</strong> (<a class="reference internal" href="../dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – Execution queue to synchronize with.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, synchronization is not performed.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>max_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The maximum DLPack version the consumer (caller of
+<li><p><strong>max_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The maximum DLPack version the consumer (caller of
 <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code>) supports. As <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> may not
 always return a DLPack capsule with version
 <cite>max_version</cite>, the consumer must verify the version
 even if this argument is passed.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>dl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><em>enum.Enum</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The device the returned DLPack capsule will be
+<li><p><strong>dl_device</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><em>enum.Enum</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – The device the returned DLPack capsule will be
 placed on.
 The device must be a 2-tuple matching the format of
 <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method, an integer enumerator
 representing the device type followed by an integer
 representing the index of the device.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
 <ul>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">copy</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be
 copied.</p></li>
@@ -856,10 +857,10 @@ be reused.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.12)"><strong>MemoryError</strong></a> – when host memory can not be allocated.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#MemoryError" title="(in Python v3.13)"><strong>MemoryError</strong></a> – when host memory can not be allocated.</p></li>
 <li><p><strong>DLPackCreationError</strong> – when array is allocated on a partitioned
     SYCL device, or with a non-default context.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BufferError" title="(in Python v3.12)"><strong>BufferError</strong></a> – when a copy is deemed necessary but <code class="docutils literal notranslate"><span class="pre">copy</span></code>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BufferError" title="(in Python v3.13)"><strong>BufferError</strong></a> – when a copy is deemed necessary but <code class="docutils literal notranslate"><span class="pre">copy</span></code>
     is <code class="docutils literal notranslate"><span class="pre">False</span></code> or when the provided <code class="docutils literal notranslate"><span class="pre">dl_device</span></code>
     cannot be handled.</p></li>
 </ul>
@@ -937,7 +938,7 @@ be reused.</p></li>
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=5fa4622c"></script>

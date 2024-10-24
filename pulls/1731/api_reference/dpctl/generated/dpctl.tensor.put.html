@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.take" href="dpctl.tensor.take.html" /><link rel="prev" title="dpctl.tensor.place" href="dpctl.tensor.place.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.put_along_axis" href="dpctl.tensor.put_along_axis.html" /><link rel="prev" title="dpctl.tensor.place" href="dpctl.tensor.place.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.put - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.put - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -829,10 +830,10 @@
 <li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 Must be broadcastable to the result shape
 <code class="docutils literal notranslate"><span class="pre">x.shape[:axis]</span> <span class="pre">+</span> <span class="pre">indices.shape</span> <span class="pre">+</span> <span class="pre">x.shape[axis+1:]</span></code>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – The axis along which the values will be placed.
 If <code class="docutils literal notranslate"><span class="pre">x</span></code> is one-dimensional, this argument is optional.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
 are:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps
@@ -898,12 +899,12 @@ work, e.g.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.tensor.take.html">
+          <a class="next-page" href="dpctl.tensor.put_along_axis.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.take</div>
+                <div class="title">dpctl.tensor.put_along_axis</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -961,7 +962,7 @@ work, e.g.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

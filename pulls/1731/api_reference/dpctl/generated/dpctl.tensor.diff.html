@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Constants" href="../tensor.constants.html" /><link rel="prev" title="dpctl.tensor.allclose" href="dpctl.tensor.allclose.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.diff - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.diff - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -825,18 +826,18 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – axis along which to compute the difference. A valid axis must be on
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – axis along which to compute the difference. A valid axis must be on
 the interval <cite>[-N, N)</cite>, where <cite>N</cite> is the rank (number of
 dimensions) of <cite>x</cite>.
 Default: <cite>-1</cite></p></li>
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – number of times to recursively compute the difference.
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of times to recursively compute the difference.
 Default: <cite>1</cite>.</p></li>
-<li><p><strong>prepend</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.12)"><em>complex</em></a><em>]</em>) – value or values to prepend to the specified axis before taking the
+<li><p><strong>prepend</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><em>complex</em></a><em>]</em>) – value or values to prepend to the specified axis before taking the
 difference.
 Must have the same shape as <cite>x</cite> except along <cite>axis</cite>, which can have
 any shape.
 Default: <cite>None</cite>.</p></li>
-<li><p><strong>append</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.12)"><em>complex</em></a><em>]</em>) – value or values to append to the specified axis before taking the
+<li><p><strong>append</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><em>complex</em></a><em>]</em>) – value or values to append to the specified axis before taking the
 difference.
 Must have the same shape as <cite>x</cite> except along <cite>axis</cite>, which can have
 any shape.
@@ -845,10 +846,8 @@ Default: <cite>None</cite>.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>an array containing the <cite>n</cite>-th differences. The array will have the
-same shape as <cite>x</cite>, except along <cite>axis</cite>, which will have shape:</p>
-<blockquote>
-<div><p>prepend.shape[axis] + x.shape[axis] + append.shape[axis] - n</p>
-</div></blockquote>
+same shape as <cite>x</cite>, except along <cite>axis</cite>, which will have shape:
+<code class="docutils literal notranslate"><span class="pre">prepend.shape[axis]</span> <span class="pre">+</span> <span class="pre">x.shape[axis]</span> <span class="pre">+</span> <span class="pre">append.shape[axis]</span> <span class="pre">-</span> <span class="pre">n</span></code></p>
 <p>The data type of the returned array is determined by the Type
 Promotion Rules.</p>
 </p>
@@ -929,7 +928,7 @@ Promotion Rules.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

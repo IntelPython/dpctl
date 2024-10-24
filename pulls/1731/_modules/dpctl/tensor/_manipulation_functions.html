@@ -14,7 +14,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor._manipulation_functions - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor._manipulation_functions - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -177,7 +177,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -204,7 +204,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -589,6 +589,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -1122,7 +1123,7 @@
     <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="n">indexer</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.roll.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.roll.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    roll(x, shift, axis)</span>
 
@@ -1154,18 +1155,20 @@
 <span class="sd">            `device` attributes as `x` and whose elements are shifted relative</span>
 <span class="sd">            to `x`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected usm_ndarray type, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dputils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">shift</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">shift</span><span class="p">)</span>
-        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="p">(</span><span class="n">shift</span> <span class="o">%</span> <span class="n">sz</span><span class="p">)</span> <span class="k">if</span> <span class="n">sz</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
         <span class="n">hev</span><span class="p">,</span> <span class="n">roll_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_roll_1d</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
             <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span>
             <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
@@ -1173,22 +1176,24 @@
         <span class="p">)</span>
         <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">roll_ev</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
-    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">allow_duplicate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">allow_duplicate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">broadcasted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">broadcasted</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;shift&#39; and &#39;axis&#39; should be scalars or 1D sequences&quot;</span><span class="p">)</span>
     <span class="n">shifts</span> <span class="o">=</span> <span class="p">[</span>
         <span class="mi">0</span><span class="p">,</span>
-    <span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">for</span> <span class="n">sh</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">broadcasted</span><span class="p">:</span>
-        <span class="n">shifts</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sh</span>
-
+        <span class="n">n_i</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">ax</span><span class="p">])</span>
+        <span class="n">shifted</span> <span class="o">=</span> <span class="n">shifts</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">+</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+        <span class="n">shifts</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">shifted</span> <span class="o">%</span> <span class="n">n_i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
     <span class="p">)</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">ht_e</span><span class="p">,</span> <span class="n">roll_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_for_roll_nd</span><span class="p">(</span>
-        <span class="n">src</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="n">shifts</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">res</span><span class="p">,</span> <span class="n">shifts</span><span class="o">=</span><span class="n">shifts</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
     <span class="p">)</span>
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_e</span><span class="p">,</span> <span class="n">roll_ev</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
@@ -1902,7 +1907,7 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

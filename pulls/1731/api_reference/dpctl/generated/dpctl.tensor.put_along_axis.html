@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.from_dlpack" href="dpctl.tensor.from_dlpack.html" /><link rel="prev" title="dpctl.tensor.empty_like" href="dpctl.tensor.empty_like.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.take" href="dpctl.tensor.take.html" /><link rel="prev" title="dpctl.tensor.put" href="dpctl.tensor.put.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.eye - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
+        <title>dpctl.tensor.put_along_axis - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -449,12 +449,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../tensor.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of dpctl.tensor</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.creation_functions.html">Array creation functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Array creation functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.creation_functions.html">Array creation functions</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of Array creation functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.arange.html">dpctl.tensor.arange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.asarray.html">dpctl.tensor.asarray</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.empty.html">dpctl.tensor.empty</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.empty_like.html">dpctl.tensor.empty_like</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.eye</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.eye.html">dpctl.tensor.eye</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.from_dlpack.html">dpctl.tensor.from_dlpack</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.full.html">dpctl.tensor.full</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.full_like.html">dpctl.tensor.full_like</a></li>
@@ -586,11 +586,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.trunc.html">dpctl.tensor.trunc</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.indexing_functions.html">Indexing functions</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Indexing functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.indexing_functions.html">Indexing functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of Indexing functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put.html">dpctl.tensor.put</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -796,7 +796,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.eye.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.put_along_axis.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -816,53 +816,46 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-tensor-eye">
-<h1>dpctl.tensor.eye<a class="headerlink" href="#dpctl-tensor-eye" title="Permalink to this heading">¶</a></h1>
+          <section id="dpctl-tensor-put-along-axis">
+<h1>dpctl.tensor.put_along_axis<a class="headerlink" href="#dpctl-tensor-put-along-axis" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpctl.tensor.eye">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">eye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'device'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_ctors.html#eye"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.eye" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> with ones on the <cite>k</cite>-th
-diagonal.</p>
+<dt class="sig sig-object py" id="dpctl.tensor.put_along_axis">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">put_along_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_indexing_functions.html#put_along_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.put_along_axis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts elements into an array at the one-dimensional indices specified by
+<code class="docutils literal notranslate"><span class="pre">indices</span></code> along a provided <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n_rows</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of rows in the output array.</p></li>
-<li><p><strong>n_cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – number of columns in the output array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-<code class="docutils literal notranslate"><span class="pre">n_cols</span> <span class="pre">=</span> <span class="pre">n_rows</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – index of the diagonal, with <code class="docutils literal notranslate"><span class="pre">0</span></code> as the main diagonal.
-A positive value of <code class="docutils literal notranslate"><span class="pre">k</span></code> is a superdiagonal, a negative value
-is a subdiagonal.
-Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> if <code class="docutils literal notranslate"><span class="pre">k</span></code> is not an integer.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
-<li><p><strong>dtype</strong> (<em>optional</em>) – data type of the array. Can be typestring,
-a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> object, <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> char string, or
-a NumPy scalar type. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em> or </em><em>&quot;F&quot;</em>) – memory layout for the array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code></p></li>
-<li><p><strong>device</strong> (<em>optional</em>) – array API concept of device where the output array
-is created. <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
-string, an instance of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
-a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
-returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>usm_type</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code>, optional) – The type of SYCL USM allocation for the output array.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;device&quot;</span></code></p></li>
-<li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
-for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
-<code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
-If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
-imply the same underlying SYCL queue to be used. If both are
-<code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
-used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array. Must be compatible with <code class="docutils literal notranslate"><span class="pre">indices</span></code>, except for the
+axis (dimension) specified by <code class="docutils literal notranslate"><span class="pre">axis</span></code>.</p></li>
+<li><p><strong>indices</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – array indices. Must have the same rank (i.e., number of dimensions)
+as <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>vals</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Array of values to be put into <code class="docutils literal notranslate"><span class="pre">x</span></code>.
+Must be broadcastable to the shape of <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p></li>
+<li><p><strong>axis</strong> – int
+axis along which to select values. If <code class="docutils literal notranslate"><span class="pre">axis</span></code> is negative, the
+function determines the axis along which to select values by
+counting from the last dimension. Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>How out-of-bounds indices will be handled. Possible values
+are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps
+negative indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code>: clips indices to (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>).</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A diagonal matrix.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
-</dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If input array <code class="docutils literal notranslate"><span class="pre">indices</span></code> contains duplicates, a race condition
+occurs, and the value written into corresponding positions in <code class="docutils literal notranslate"><span class="pre">x</span></code>
+may vary from run to run. Preserving sequential semantics in handing
+the duplicates to achieve deterministic behavior requires additional
+work.</p>
+</div>
 </dd></dl>
 
 </section>
@@ -872,23 +865,23 @@ used for allocation and population. Default: <code class="docutils literal notra
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.tensor.from_dlpack.html">
+          <a class="next-page" href="dpctl.tensor.take.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.from_dlpack</div>
+                <div class="title">dpctl.tensor.take</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.tensor.empty_like.html">
+          <a class="prev-page" href="dpctl.tensor.put.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.tensor.empty_like</div>
+                <div class="title">dpctl.tensor.put</div>
                 
               </div>
             </a>
@@ -922,8 +915,8 @@ used for allocation and population. Default: <code class="docutils literal notra
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.tensor.eye</a><ul>
-<li><a class="reference internal" href="#dpctl.tensor.eye"><code class="docutils literal notranslate"><span class="pre">eye()</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.tensor.put_along_axis</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.put_along_axis"><code class="docutils literal notranslate"><span class="pre">put_along_axis()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="History of dpctl name" href="misc.html" /><link rel="prev" title="Managing devices" href="managing_devices.html" />
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>Intro to dpctl.tensor - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>Intro to dpctl.tensor - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -962,7 +963,7 @@ the current device to the host, and then from the host to the target device:</p>
 </div>
 </div>
 <p>An advantage of using the function <code class="docutils literal notranslate"><span class="pre">asarray</span></code> is that migration from <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> instances allocated on different
-devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
+devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
@@ -1047,7 +1048,7 @@ following this convention:</p>
 </section>
 <section id="sharing-data-between-devices-and-python">
 <h2>Sharing data between devices and Python<a class="headerlink" href="#sharing-data-between-devices-and-python" title="Permalink to this heading">¶</a></h2>
-<p>Python objects, such as sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a> objects,
+<p>Python objects, such as sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a> objects,
 or NumPy arrays can be converted to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a>
 function.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
@@ -1174,7 +1175,7 @@ a NumPy array using <code class="xref py py-func docutils literal notranslate"><
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

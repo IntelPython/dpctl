@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.full" href="dpctl.tensor.full.html" /><link rel="prev" title="dpctl.tensor.eye" href="dpctl.tensor.eye.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.from_dlpack - Data Parallel Control (dpctl) 0.18.0dev0 documentation</title>
+        <title>dpctl.tensor.from_dlpack - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -178,7 +178,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.18.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.19.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -205,7 +205,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.18.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.19.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -590,6 +590,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.place.html">dpctl.tensor.place</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put.html">dpctl.tensor.put</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take.html">dpctl.tensor.take</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
 </ul>
@@ -825,15 +826,9 @@ object <code class="docutils literal notranslate"><span class="pre">x</span></co
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – A Python object representing an array that supports
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – A Python object representing an array that supports
 <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> protocol.</p></li>
-<li><p><strong>(</strong><strong>Optional</strong><strong>[</strong><strong>str</strong> (<em>device</em>) – <dl class="simple">
-<dt><a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>,</dt><dd><p><a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>,
-<a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>,
-tuple([enum.Enum, int])])):</p>
-</dd>
-</dl>
-<p>Array API concept of a device where the output array is to be placed.
+<li><p><strong>device</strong> (Optional[str, <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>, tuple([<a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a>, int])])) – Array API concept of a device where the output array is to be placed.
 <code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
 string, an instance of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
 a non-partitioned SYCL device, an instance of
@@ -842,35 +837,11 @@ returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarr
 2-tuple matching the format of the output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code>
 method, an integer enumerator representing the device type followed by
 an integer representing the index of the device. The only supported
-<a href="#id1"><span class="problematic" id="id2">:enum:`dpctl.tensor.DLDeviceType`</span></a> types are “kDLCPU” and “kDLOneAPI”.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p></li>
-</ul>
-</dd>
-</dl>
-<dl>
-<dt>:param<span class="classifier"><a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>,</span></dt><dd><blockquote>
-<div><p><a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>,
-<a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>,
-tuple([enum.Enum, int])])):</p>
-</div></blockquote>
-<p>Array API concept of a device where the output array is to be placed.
-<code class="docutils literal notranslate"><span class="pre">device</span></code> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector
-string, an instance of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
-a non-partitioned SYCL device, an instance of
-<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, a <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object
-returned by <a class="reference internal" href="generated/dpctl.tensor.usm_ndarray.device.html#dpctl.tensor.usm_ndarray.device" title="dpctl.tensor.usm_ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code></a>, or a
-2-tuple matching the format of the output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code>
-method, an integer enumerator representing the device type followed by
-an integer representing the index of the device. The only supported
-<a href="#id3"><span class="problematic" id="id4">:enum:`dpctl.tensor.DLDeviceType`</span></a> types are “kDLCPU” and “kDLOneAPI”.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
-<ul class="simple">
+<a class="reference internal" href="../tensor.constants.html#dpctl.tensor.DLDeviceType" title="dpctl.tensor.DLDeviceType"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.DLDeviceType</span></code></a> types are “kDLCPU” and
+“kDLOneAPI”.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
+<ul>
 <li><dl class="simple">
 <dt>If <code class="docutils literal notranslate"><span class="pre">copy</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the input will always be</dt><dd><p>copied.</p>
 </dd>
@@ -889,7 +860,8 @@ be reused.</p>
 </li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</p>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An array containing the data in <code class="docutils literal notranslate"><span class="pre">x</span></code>. When <code class="docutils literal notranslate"><span class="pre">copy</span></code> is
@@ -901,8 +873,8 @@ memory.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">x</span></code> does not implement <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> method</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – if the input array resides on an unsupported device</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">x</span></code> does not implement <code class="docutils literal notranslate"><span class="pre">__dlpack__</span></code> method</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – if the input array resides on an unsupported device</p></li>
 </ul>
 </dd>
 </dl>
@@ -1002,7 +974,7 @@ memory.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=18bde430"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=08f8dcfe"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

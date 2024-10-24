@@ -18,5 +18,6 @@ Redefinition of DPC++-specific Sycl backend types.
 	    :target:`DPCTL_OPENCL<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933afd3f682f4dee5939317fe0f55145dd66>`          = 1<<18,
 	    :target:`DPCTL_UNKNOWN_BACKEND<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a12a821ba9b114d4f5f808ada54e4a7af>` = 0,
 	    :target:`DPCTL_ALL_BACKENDS<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933a91fcd924cbde7c895056a69a8a5b3e22>`    =((1<<5)-1)<<16,
+	    :target:`DPCTL_HIP<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933ae4a6db2d4436c1dfcfd5a43d9de473d1>`             = 1<<19,
 	};
 
