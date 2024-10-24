@@ -244,13 +244,13 @@ if(_dpctl_sycl_targets)
     target_compile_options(
         DPCTLSyclInterface
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
+        ${_dpctl_sycl_target_compile_options}
     )
     target_link_options(
         DPCTLSyclInterface
         PRIVATE
-        -fsycl-targets=${_dpctl_sycl_targets}
-   )
+        ${_dpctl_sycl_target_link_options}
+    )
 endif()
 
 if(DPCTL_GENERATE_COVERAGE)

@@ -207,6 +207,7 @@ INSTANTIATE_TEST_SUITE_P(
     GetDevices,
     TestGetNumDevicesForBTy,
     ::testing::Values(DPCTLSyclBackendType::DPCTL_CUDA,
+                      DPCTLSyclBackendType::DPCTL_HIP,
                       DPCTLSyclBackendType::DPCTL_ALL_BACKENDS,
                       DPCTLSyclBackendType::DPCTL_LEVEL_ZERO,
                       DPCTLSyclBackendType::DPCTL_OPENCL));

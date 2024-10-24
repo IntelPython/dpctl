@@ -60,6 +60,8 @@ def string_to_device_type(dty_str):
 def string_to_backend_type(bty_str):
     if bty_str == "cuda":
         return bty.cuda
+    elif bty_str == "hip":
+        return bty.hip
     elif bty_str == "host":
         return bty.host
     elif bty_str == "level_zero":

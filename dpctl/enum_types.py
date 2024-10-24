@@ -69,6 +69,7 @@ class backend_type(Enum):
 
     all = auto()
     cuda = auto()
+    hip = auto()
     level_zero = auto()
     opencl = auto()
 

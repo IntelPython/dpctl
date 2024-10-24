@@ -886,6 +886,8 @@ cdef class SyclQueue(_SyclQueue):
             return backend_type.level_zero
         elif BE == _backend_type._CUDA:
             return backend_type.cuda
+        elif BE == _backend_type._HIP:
+            return backend_type.hip
         else:
             raise ValueError("Unknown backend type.")
 

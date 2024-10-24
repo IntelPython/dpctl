@@ -384,6 +384,9 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckGetBackend)
     case DPCTL_CUDA:
         EXPECT_TRUE(Backend == backend::ext_oneapi_cuda);
         break;
+    case DPCTL_HIP:
+        EXPECT_TRUE(Backend == backend::ext_oneapi_hip);
+        break;
     case DPCTL_LEVEL_ZERO:
         EXPECT_TRUE(Backend == backend::ext_oneapi_level_zero);
         break;
