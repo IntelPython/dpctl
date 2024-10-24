@@ -294,6 +294,8 @@ cdef class SyclPlatform(_SyclPlatform):
         )
         if BTy == _backend_type._CUDA:
             return backend_type.cuda
+        elif BTy == _backend_type._HIP:
+            return backend_type.hip
         elif BTy == _backend_type._LEVEL_ZERO:
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:

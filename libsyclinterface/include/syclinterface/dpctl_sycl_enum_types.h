@@ -54,7 +54,8 @@ typedef enum
     DPCTL_LEVEL_ZERO      = 1 << 17,
     DPCTL_OPENCL          = 1 << 18,
     DPCTL_UNKNOWN_BACKEND = 0,
-    DPCTL_ALL_BACKENDS    = ((1<<5)-1) << 16
+    DPCTL_ALL_BACKENDS    = ((1<<5)-1) << 16,
+    DPCTL_HIP             = 1 << 19,
     // clang-format on
 } DPCTLSyclBackendType;
 
