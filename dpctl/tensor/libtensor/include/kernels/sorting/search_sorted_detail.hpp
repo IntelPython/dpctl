@@ -35,7 +35,7 @@ namespace tensor
 namespace kernels
 {
 
-namespace sort_detail
+namespace search_sorted_detail
 {
 
 template <typename T> T quotient_ceil(T n, T m) { return (n + m - 1) / m; }
@@ -111,7 +111,7 @@ std::size_t upper_bound_indexed_impl(const Acc acc,
                                     acc_indexer);
 }
 
-} // namespace sort_detail
+} // namespace search_sorted_detail
 
 } // namespace kernels
 } // namespace tensor

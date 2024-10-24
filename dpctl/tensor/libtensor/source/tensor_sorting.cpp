@@ -29,11 +29,16 @@
 #include "sorting/searchsorted.hpp"
 #include "sorting/sort.hpp"
 
+#include "sorting/radix_argsort.hpp"
+#include "sorting/radix_sort.hpp"
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(_tensor_sorting_impl, m)
 {
     dpctl::tensor::py_internal::init_sort_functions(m);
+    dpctl::tensor::py_internal::init_radix_sort_functions(m);
     dpctl::tensor::py_internal::init_argsort_functions(m);
+    dpctl::tensor::py_internal::init_radix_argsort_functions(m);
     dpctl::tensor::py_internal::init_searchsorted_functions(m);
 }

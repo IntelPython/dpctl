@@ -153,81 +153,117 @@ def test_sort_validation():
         dpt.sort(dict())
 
 
+def test_sort_validation_kind():
+    get_queue_or_skip()
+
+    x = dpt.ones(128, dtype="u1")
+
+    with pytest.raises(ValueError):
+        dpt.sort(x, kind=Ellipsis)
+
+    with pytest.raises(ValueError):
+        dpt.sort(x, kind="invalid")
+
+
 def test_argsort_validation():
     with pytest.raises(TypeError):
         dpt.argsort(dict())
 
 
-def test_sort_axis0():
+def test_argsort_validation_kind():
+    get_queue_or_skip()
+
+    x = dpt.arange(127, stop=0, step=-1, dtype="i1")
+
+    with pytest.raises(ValueError):
+        dpt.argsort(x, kind=Ellipsis)
+
+    with pytest.raises(ValueError):
+        dpt.argsort(x, kind="invalid")
+
+
+_all_kinds = ["stable", "mergesort", "radixsort"]
+
+
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_sort_axis0(kind):
     get_queue_or_skip()
 
     n, m = 200, 30
     xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
     x = dpt.reshape(xf, (n, m))
-    s = dpt.sort(x, axis=0)
+    s = dpt.sort(x, axis=0, kind=kind)
 
     assert dpt.all(s[:-1, :] <= s[1:, :])
 
 
-def test_argsort_axis0():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_argsort_axis0(kind):
     get_queue_or_skip()
 
     n, m = 200, 30
     xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
     x = dpt.reshape(xf, (n, m))
-    idx = dpt.argsort(x, axis=0)
+    idx = dpt.argsort(x, axis=0, kind=kind)
 
     s = dpt.take_along_axis(x, idx, axis=0)
 
     assert dpt.all(s[:-1, :] <= s[1:, :])
 
 
-def test_argsort_axis1():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_argsort_axis1(kind):
     get_queue_or_skip()
 
     n, m = 200, 30
     xf = dpt.arange(n * m, 0, step=-1, dtype="i4")
     x = dpt.reshape(xf, (n, m))
-    idx = dpt.argsort(x, axis=1)
+    idx = dpt.argsort(x, axis=1, kind=kind)
 
     s = dpt.take_along_axis(x, idx, axis=1)
 
     assert dpt.all(s[:, :-1] <= s[:, 1:])
 
 
-def test_sort_strided():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_sort_strided(kind):
     get_queue_or_skip()
 
     x_orig = dpt.arange(100, dtype="i4")
     x_flipped = dpt.flip(x_orig, axis=0)
-    s = dpt.sort(x_flipped)
+    s = dpt.sort(x_flipped, kind=kind)
 
     assert dpt.all(s == x_orig)
 
 
-def test_argsort_strided():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_argsort_strided(kind):
     get_queue_or_skip()
 
     x_orig = dpt.arange(100, dtype="i4")
     x_flipped = dpt.flip(x_orig, axis=0)
-    idx = dpt.argsort(x_flipped)
+    idx = dpt.argsort(x_flipped, kind=kind)
     s = dpt.take_along_axis(x_flipped, idx, axis=0)
 
     assert dpt.all(s == x_orig)
 
 
-def test_sort_0d_array():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_sort_0d_array(kind):
     get_queue_or_skip()
 
     x = dpt.asarray(1, dtype="i4")
-    assert dpt.sort(x) == 1
+    expected = dpt.asarray(1, dtype="i4")
+    assert dpt.sort(x, kind=kind) == expected
 
 
-def test_argsort_0d_array():
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_argsort_0d_array(kind):
     get_queue_or_skip()
 
     x = dpt.asarray(1, dtype="i4")
-    assert dpt.argsort(x) == 0
+    expected = dpt.asarray(0, dtype="i4")
+    assert dpt.argsort(x, kind=kind) == expected
 
 
 @pytest.mark.parametrize(
@@ -238,14 +274,15 @@ def test_argsort_0d_array():
         "f8",
     ],
 )
-def test_sort_real_fp_nan(dtype):
+@pytest.mark.parametrize("kind", _all_kinds)
+def test_sort_real_fp_nan(dtype, kind):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     x = dpt.asarray(
         [-0.0, 0.1, dpt.nan, 0.0, -0.1, dpt.nan, 0.2, -0.3], dtype=dtype
     )
-    s = dpt.sort(x)
+    s = dpt.sort(x, kind=kind)
 
     expected = dpt.asarray(
         [-0.3, -0.1, -0.0, 0.0, 0.1, 0.2, dpt.nan, dpt.nan], dtype=dtype
@@ -253,7 +290,7 @@ def test_sort_real_fp_nan(dtype):
 
     assert dpt.allclose(s, expected, equal_nan=True)
 
-    s = dpt.sort(x, descending=True)
+    s = dpt.sort(x, descending=True, kind=kind)
 
     expected = dpt.asarray(
         [dpt.nan, dpt.nan, 0.2, 0.1, -0.0, 0.0, -0.1, -0.3], dtype=dtype
