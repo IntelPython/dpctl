@@ -30,11 +30,13 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "vec_size_util.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 namespace dpctl
@@ -48,6 +50,8 @@ namespace logical_and
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
 
 template <typename argT1, typename argT2, typename resT>
 struct LogicalAndFunctor
@@ -93,8 +97,8 @@ struct LogicalAndFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = VecSize_v<argT1, argT2, resT>,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using LogicalAndContigFunctor = elementwise_common::BinaryContigFunctor<
     argT1,

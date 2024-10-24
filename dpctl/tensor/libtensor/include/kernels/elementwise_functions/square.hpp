@@ -30,10 +30,12 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/elementwise_functions/common.hpp"
 #include "sycl_complex.hpp"
+#include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/elementwise_functions/common.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -97,8 +99,8 @@ template <typename argT, typename resT> struct SquareFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 1,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using SquareContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,

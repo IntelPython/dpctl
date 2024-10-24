@@ -30,6 +30,8 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "vec_size_util.hpp"
+
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -48,6 +50,8 @@ namespace cbrt
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
+
 template <typename argT, typename resT> struct CbrtFunctor
 {
 
@@ -65,8 +69,8 @@ template <typename argT, typename resT> struct CbrtFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = VecSize_v<argTy, resTy>,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using CbrtContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,

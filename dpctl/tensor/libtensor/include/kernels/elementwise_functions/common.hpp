@@ -52,8 +52,8 @@ using dpctl::tensor::kernels::alignment_utils::required_alignment;
 template <typename argT,
           typename resT,
           typename UnaryOperatorT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 1,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 struct UnaryContigFunctor
 {
@@ -108,7 +108,7 @@ public:
         }
         else if constexpr (enable_sg_loadstore &&
                            UnaryOperatorT::supports_sg_loadstore::value &&
-                           UnaryOperatorT::supports_vec::value)
+                           UnaryOperatorT::supports_vec::value && (vec_sz > 1))
         {
             auto sg = ndit.get_sub_group();
             std::uint32_t sgSize = sg.get_max_local_range()[0];
@@ -280,8 +280,8 @@ template <typename argTy,
           class ContigFunctorT,
           template <typename A, typename R, unsigned int vs, unsigned int nv>
           class kernel_name,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int vec_sz = 1,
+          unsigned int n_vecs = 1>
 sycl::event unary_contig_impl(sycl::queue &exec_q,
                               size_t nelems,
                               const char *arg_p,
@@ -291,7 +291,9 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        const size_t lws = 128;
+        // Choose work-group size to occupy all threads of since vector core
+        // busy (8 threads, simd32)
+        const size_t lws = 256;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -370,8 +372,8 @@ template <typename argT1,
           typename argT2,
           typename resT,
           typename BinaryOperatorT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = 1,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 struct BinaryContigFunctor
 {
@@ -399,7 +401,7 @@ public:
 
         if constexpr (enable_sg_loadstore &&
                       BinaryOperatorT::supports_sg_loadstore::value &&
-                      BinaryOperatorT::supports_vec::value)
+                      BinaryOperatorT::supports_vec::value && (vec_sz > 1))
         {
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
@@ -570,11 +572,11 @@ public:
         BinaryOperatorT op{};
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
-        auto sg = ndit.get_sub_group();
-        size_t gid = ndit.get_global_linear_id();
+        const auto &sg = ndit.get_sub_group();
+        const size_t gid = ndit.get_global_linear_id();
 
-        std::uint8_t sgSize = sg.get_max_local_range()[0];
-        size_t base = gid - sg.get_local_id()[0];
+        const size_t sgSize = sg.get_max_local_range()[0];
+        const size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
             auto in1_multi_ptr = sycl::address_space_cast<
@@ -597,9 +599,8 @@ public:
             sg.store(out_multi_ptr, res_el);
         }
         else {
-            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize)
-            {
+            const size_t lane_id = sg.get_local_id()[0];
+            for (size_t k = base + lane_id; k < n_elems; k += sgSize) {
                 res[k] = op(mat[k], padded_vec[k % n1]);
             }
         }
@@ -636,11 +637,11 @@ public:
         BinaryOperatorT op{};
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
-        auto sg = ndit.get_sub_group();
+        const auto &sg = ndit.get_sub_group();
         size_t gid = ndit.get_global_linear_id();
 
-        std::uint8_t sgSize = sg.get_max_local_range()[0];
-        size_t base = gid - sg.get_local_id()[0];
+        const size_t sgSize = sg.get_max_local_range()[0];
+        const size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
             auto in1_multi_ptr = sycl::address_space_cast<
@@ -663,9 +664,8 @@ public:
             sg.store(out_multi_ptr, res_el);
         }
         else {
-            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize)
-            {
+            const size_t lane_id = sg.get_local_id()[0];
+            for (size_t k = base + lane_id; k < n_elems; k += sgSize) {
                 res[k] = op(padded_vec[k % n1], mat[k]);
             }
         }
@@ -761,8 +761,8 @@ template <typename argTy1,
                     unsigned int vs,
                     unsigned int nv>
           class kernel_name,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2>
+          unsigned int vec_sz = 1,
+          unsigned int n_vecs = 1>
 sycl::event binary_contig_impl(sycl::queue &exec_q,
                                size_t nelems,
                                const char *arg1_p,
@@ -776,7 +776,9 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        const size_t lws = 128;
+        // Choose work-group size to occupy all threads of since vector core
+        // busy (8 threads, simd32)
+        const size_t lws = 256;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -916,7 +918,7 @@ sycl::event binary_contig_matrix_contig_row_broadcast_impl(
     // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
     // ensure that reads are accessible
 
-    const size_t lws = 128;
+    const size_t lws = 256;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(make_padded_vec_ev);
@@ -997,7 +999,7 @@ sycl::event binary_contig_row_contig_matrix_broadcast_impl(
     // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
     // ensure that reads are accessible
 
-    const size_t lws = 128;
+    const size_t lws = 256;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(make_padded_vec_ev);

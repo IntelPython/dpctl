@@ -30,7 +30,10 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "vec_size_util.hpp"
+
 #include "kernels/dpctl_tensor_types.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -46,6 +49,8 @@ namespace logical_not
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
 
 template <typename argT, typename resT> struct LogicalNotFunctor
 {
@@ -66,8 +71,8 @@ template <typename argT, typename resT> struct LogicalNotFunctor
 
 template <typename argT,
           typename resT = bool,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = VecSize_v<argT, resT>,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using LogicalNotContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,

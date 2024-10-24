@@ -29,7 +29,10 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "vec_size_util.hpp"
+
 #include "kernels/dpctl_tensor_types.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -45,6 +48,7 @@ namespace isnan
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
 
@@ -94,8 +98,8 @@ template <typename argT, typename resT> struct IsNanFunctor
 
 template <typename argT,
           typename resT = bool,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = VecSize_v<argT, resT>,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using IsNanContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,

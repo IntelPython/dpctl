@@ -32,12 +32,14 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/dpctl_tensor_types.hpp"
 #include "sycl_complex.hpp"
+#include "vec_size_util.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 namespace dpctl
@@ -51,6 +53,7 @@ namespace reciprocal
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
 using dpctl::tensor::type_utils::is_complex;
 
 template <typename argT, typename resT> struct ReciprocalFunctor
@@ -81,8 +84,8 @@ template <typename argT, typename resT> struct ReciprocalFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          unsigned int vec_sz = VecSize_v<argTy, resTy>,
+          unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using ReciprocalContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
