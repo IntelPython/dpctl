@@ -45,6 +45,8 @@ template <typename T, typename... Rest> struct VecSize
 
 template <typename T> struct VecSize<T>
 {
+    static_assert(sizeof(T) > 0, "Vacuous types are not supported");
+
     static constexpr unsigned int value =
         1 + ((sizeof(std::uint32_t) - 1) / (sizeof(T)));
 };
