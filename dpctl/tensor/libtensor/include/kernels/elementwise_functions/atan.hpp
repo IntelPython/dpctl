@@ -179,9 +179,13 @@ sycl::event atan_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename AtanOutputType<argTy>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vec = 1u;
+
     return elementwise_common::unary_contig_impl<
-        argTy, AtanOutputType, AtanContigFunctor, atan_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, AtanOutputType, AtanContigFunctor, atan_contig_kernel, vec_sz,
+        n_vec>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct AtanContigFactory

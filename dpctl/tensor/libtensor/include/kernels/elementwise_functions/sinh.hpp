@@ -196,9 +196,13 @@ sycl::event sinh_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename SinhOutputType<argTy>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::unary_contig_impl<
-        argTy, SinhOutputType, SinhContigFunctor, sinh_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, SinhOutputType, SinhContigFunctor, sinh_contig_kernel, vec_sz,
+        n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct SinhContigFactory

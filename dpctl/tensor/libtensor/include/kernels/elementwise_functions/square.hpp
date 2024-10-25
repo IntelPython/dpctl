@@ -51,6 +51,7 @@ namespace square
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::kernels::vec_size_utils::VecSize_v;
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
 
@@ -99,7 +100,7 @@ template <typename argT, typename resT> struct SquareFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 1,
+          unsigned int vec_sz = VecSize_v<argTy, resTy>,
           unsigned int n_vecs = 1,
           bool enable_sg_loadstore = true>
 using SquareContigFunctor =
@@ -146,9 +147,13 @@ sycl::event square_contig_impl(sycl::queue &exec_q,
                                char *res_p,
                                const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename SquareOutputType<argTy>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::unary_contig_impl<
-        argTy, SquareOutputType, SquareContigFunctor, square_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, SquareOutputType, SquareContigFunctor, square_contig_kernel,
+        vec_sz, n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct SquareContigFactory

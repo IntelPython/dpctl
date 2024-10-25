@@ -241,10 +241,15 @@ sycl::event remainder_contig_impl(sycl::queue &exec_q,
                                   ssize_t res_offset,
                                   const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename RemainderOutputType<argTy1, argTy2>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy1, argTy2, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, RemainderOutputType, RemainderContigFunctor,
-        remainder_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                                 arg2_offset, res_p, res_offset, depends);
+        remainder_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
+        res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct RemainderContigFactory
@@ -468,10 +473,13 @@ remainder_inplace_contig_impl(sycl::queue &exec_q,
                               ssize_t res_offset,
                               const std::vector<sycl::event> &depends = {})
 {
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, RemainderInplaceContigFunctor,
-        remainder_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
-                                         res_p, res_offset, depends);
+        remainder_inplace_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>

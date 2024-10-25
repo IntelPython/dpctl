@@ -224,10 +224,15 @@ floor_divide_contig_impl(sycl::queue &exec_q,
                          ssize_t res_offset,
                          const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename FloorDivideOutputType<argTy1, argTy2>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy1, argTy2, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, FloorDivideOutputType, FloorDivideContigFunctor,
-        floor_divide_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                                    arg2_offset, res_p, res_offset, depends);
+        floor_divide_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
+        res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>
@@ -444,10 +449,12 @@ floor_divide_inplace_contig_impl(sycl::queue &exec_q,
                                  ssize_t res_offset,
                                  const std::vector<sycl::event> &depends = {})
 {
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vecs = 1;
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, FloorDivideInplaceContigFunctor,
-        floor_divide_inplace_contig_kernel>(exec_q, nelems, arg_p, arg_offset,
-                                            res_p, res_offset, depends);
+        floor_divide_inplace_contig_kernel, vec_sz, n_vecs>(
+        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2>

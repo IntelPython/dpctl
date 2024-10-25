@@ -140,9 +140,13 @@ sycl::event log2_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
+    using resTy = typename Log2OutputType<argTy>::value_type;
+    constexpr auto vec_sz = VecSize_v<argTy, resTy>;
+    constexpr unsigned int n_vecs = 1u;
+
     return elementwise_common::unary_contig_impl<
-        argTy, Log2OutputType, Log2ContigFunctor, log2_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, Log2OutputType, Log2ContigFunctor, log2_contig_kernel, vec_sz,
+        n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct Log2ContigFactory
