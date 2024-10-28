@@ -82,7 +82,7 @@ jobs:
           make && make install
 
       - name: Checkout repo
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
