@@ -269,6 +269,23 @@ public:
     }
 };
 
+template <typename SizeT>
+SizeT select_lws(const sycl::device &, SizeT n_work_items_needed)
+{
+    // TODO: make the decision based on device descriptors
+
+    constexpr SizeT few_threshold = (SizeT(1) << 17);
+    constexpr SizeT med_threshold = (SizeT(1) << 21);
+
+    const SizeT lws =
+        ((n_work_items_needed <= few_threshold)
+             ? SizeT(64)
+             : (n_work_items_needed <= med_threshold ? SizeT(128)
+                                                     : SizeT(256)));
+
+    return lws;
+}
+
 template <typename argTy,
           template <typename T>
           class UnaryOutputType,
@@ -288,26 +305,28 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
 {
+    const size_t n_work_items_needed = nelems / (n_vecs * vec_sz);
+    const size_t lws = select_lws(exec_q.get_device(), n_work_items_needed);
+
+    const size_t n_groups =
+        ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+    const auto gws_range = sycl::range<1>(n_groups * lws);
+    const auto lws_range = sycl::range<1>(lws);
+
+    using resTy = typename UnaryOutputType<argTy>::value_type;
+    using BaseKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
+    resTy *res_tp = reinterpret_cast<resTy *>(res_p);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-
-        // Choose work-group size to occupy all threads of since vector core
-        // busy (8 threads, simd32)
-        const size_t lws = 256;
-        const size_t n_groups =
-            ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
-        const auto gws_range = sycl::range<1>(n_groups * lws);
-        const auto lws_range = sycl::range<1>(lws);
-
-        using resTy = typename UnaryOutputType<argTy>::value_type;
-        const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_p);
-        resTy *res_tp = reinterpret_cast<resTy *>(res_p);
 
         if (is_aligned<required_alignment>(arg_p) &&
             is_aligned<required_alignment>(res_p))
         {
             constexpr bool enable_sg_loadstore = true;
-            using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+            using KernelName = BaseKernelName;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
@@ -316,9 +335,8 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
         }
         else {
             constexpr bool disable_sg_loadstore = false;
-            using InnerKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
             using KernelName =
-                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+                disabled_sg_loadstore_wrapper_krn<BaseKernelName>;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
@@ -326,6 +344,7 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
                                disable_sg_loadstore>(arg_tp, res_tp, nelems));
         }
     });
+
     return comp_ev;
 }
 
@@ -773,32 +792,33 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
                                ssize_t res_offset,
                                const std::vector<sycl::event> &depends = {})
 {
+    const size_t n_work_items_needed = nelems / (n_vecs * vec_sz);
+    const size_t lws = select_lws(exec_q.get_device(), n_work_items_needed);
+
+    const size_t n_groups =
+        ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
+    const auto gws_range = sycl::range<1>(n_groups * lws);
+    const auto lws_range = sycl::range<1>(lws);
+
+    using resTy = typename BinaryOutputType<argTy1, argTy2>::value_type;
+    using BaseKernelName = kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+
+    const argTy1 *arg1_tp =
+        reinterpret_cast<const argTy1 *>(arg1_p) + arg1_offset;
+    const argTy2 *arg2_tp =
+        reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
+    resTy *res_tp = reinterpret_cast<resTy *>(res_p) + res_offset;
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-
-        // Choose work-group size to occupy all threads of since vector core
-        // busy (8 threads, simd32)
-        const size_t lws = 256;
-        const size_t n_groups =
-            ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
-        const auto gws_range = sycl::range<1>(n_groups * lws);
-        const auto lws_range = sycl::range<1>(lws);
-
-        using resTy = typename BinaryOutputType<argTy1, argTy2>::value_type;
-
-        const argTy1 *arg1_tp =
-            reinterpret_cast<const argTy1 *>(arg1_p) + arg1_offset;
-        const argTy2 *arg2_tp =
-            reinterpret_cast<const argTy2 *>(arg2_p) + arg2_offset;
-        resTy *res_tp = reinterpret_cast<resTy *>(res_p) + res_offset;
 
         if (is_aligned<required_alignment>(arg1_tp) &&
             is_aligned<required_alignment>(arg2_tp) &&
             is_aligned<required_alignment>(res_tp))
         {
             constexpr bool enable_sg_loadstore = true;
-            using KernelName =
-                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
+            using KernelName = BaseKernelName;
+
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
                 BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
@@ -807,10 +827,8 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
         }
         else {
             constexpr bool disable_sg_loadstore = false;
-            using InnerKernelName =
-                kernel_name<argTy1, argTy2, resTy, vec_sz, n_vecs>;
             using KernelName =
-                disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+                disabled_sg_loadstore_wrapper_krn<BaseKernelName>;
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
                 BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz, n_vecs,
