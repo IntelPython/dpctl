@@ -72,9 +72,13 @@ template <typename argT1, typename argT2, typename resT> struct MinimumFunctor
         }
         else if constexpr (std::is_floating_point_v<argT1> ||
                            std::is_same_v<argT1, sycl::half>)
-            return (std::isnan(in1) || in1 < in2) ? in1 : in2;
-        else
+        {
+            const bool choose_first = sycl::isnan(in1) || (in1 < in2);
+            return (choose_first) ? in1 : in2;
+        }
+        else {
             return (in1 < in2) ? in1 : in2;
+        }
     }
 
     template <int vec_sz>
@@ -85,11 +89,17 @@ template <typename argT1, typename argT2, typename resT> struct MinimumFunctor
         sycl::vec<resT, vec_sz> res;
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            if constexpr (std::is_floating_point_v<argT1>)
-                res[i] =
-                    (sycl::isnan(in1[i]) || in1[i] < in2[i]) ? in1[i] : in2[i];
-            else
-                res[i] = (in1[i] < in2[i]) ? in1[i] : in2[i];
+            const auto &v1 = in1[i];
+            const auto &v2 = in2[i];
+            if constexpr (std::is_floating_point_v<argT1> ||
+                          std::is_same_v<argT1, sycl::half>)
+            {
+                const bool choose_first = sycl::isnan(v1) || (v1 < v2);
+                res[i] = (choose_first) ? v1 : v2;
+            }
+            else {
+                res[i] = (v1 < v2) ? v1 : v2;
+            }
         }
         return res;
     }
