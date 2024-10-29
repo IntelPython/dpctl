@@ -38,6 +38,7 @@
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/sorting/radix_sort.hpp"
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 
@@ -64,6 +65,31 @@ static sort_contig_fn_ptr_t
     descending_radix_argsort_contig_dispatch_table[td_ns::num_types]
                                                   [td_ns::num_types];
 
+namespace
+{
+
+template <bool is_ascending, typename T, typename I>
+sycl::event argsort_axis1_contig_caller(sycl::queue &q,
+                                        size_t iter_nelems,
+                                        size_t sort_nelems,
+                                        const char *arg_cp,
+                                        char *res_cp,
+                                        ssize_t iter_arg_offset,
+                                        ssize_t iter_res_offset,
+                                        ssize_t sort_arg_offset,
+                                        ssize_t sort_res_offset,
+                                        const std::vector<sycl::event> &depends)
+{
+    using dpctl::tensor::kernels::radix_argsort_axis1_contig_alt_impl;
+
+    return radix_argsort_axis1_contig_alt_impl<T, I>(
+        q, is_ascending, iter_nelems, sort_nelems, arg_cp, res_cp,
+        iter_arg_offset, iter_res_offset, sort_arg_offset, sort_res_offset,
+        depends);
+}
+
+} // end of anonymous namespace
+
 template <typename fnT, typename argTy, typename IndexTy>
 struct AscendingRadixArgSortContigFactory
 {
@@ -73,9 +99,8 @@ struct AscendingRadixArgSortContigFactory
                       (std::is_same_v<IndexTy, std::int64_t> ||
                        std::is_same_v<IndexTy, std::int32_t>))
         {
-            using dpctl::tensor::kernels::radix_argsort_axis1_contig_alt_impl;
-            return radix_argsort_axis1_contig_alt_impl<argTy, IndexTy,
-                                                       /* ascending= */ true>;
+            return argsort_axis1_contig_caller<
+                /*ascending*/ true, argTy, IndexTy>;
         }
         else {
             return nullptr;
@@ -92,9 +117,8 @@ struct DescendingRadixArgSortContigFactory
                       (std::is_same_v<IndexTy, std::int64_t> ||
                        std::is_same_v<IndexTy, std::int32_t>))
         {
-            using dpctl::tensor::kernels::radix_argsort_axis1_contig_alt_impl;
-            return radix_argsort_axis1_contig_alt_impl<argTy, IndexTy,
-                                                       /* ascending= */ false>;
+            return argsort_axis1_contig_caller<
+                /*ascending*/ false, argTy, IndexTy>;
         }
         else {
             return nullptr;

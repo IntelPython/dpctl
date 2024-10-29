@@ -807,8 +807,7 @@ sycl::event stable_argsort_axis1_contig_impl(
     const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
 
     static constexpr size_t determine_automatically = 0;
-    size_t sorted_block_size =
-        (sort_nelems >= 512) ? 512 : determine_automatically;
+    size_t sorted_block_size = determine_automatically;
 
     const size_t total_nelems = iter_nelems * sort_nelems;
 

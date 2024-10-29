@@ -38,6 +38,7 @@
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/sorting/radix_sort.hpp"
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 
@@ -61,13 +62,37 @@ static sort_contig_fn_ptr_t
 static sort_contig_fn_ptr_t
     descending_radix_sort_contig_dispatch_vector[td_ns::num_types];
 
+namespace
+{
+
+template <bool is_ascending, typename T>
+sycl::event sort_axis1_contig_caller(sycl::queue &q,
+                                     size_t iter_nelems,
+                                     size_t sort_nelems,
+                                     const char *arg_cp,
+                                     char *res_cp,
+                                     ssize_t iter_arg_offset,
+                                     ssize_t iter_res_offset,
+                                     ssize_t sort_arg_offset,
+                                     ssize_t sort_res_offset,
+                                     const std::vector<sycl::event> &depends)
+{
+    using dpctl::tensor::kernels::radix_sort_axis1_contig_impl;
+
+    return radix_sort_axis1_contig_impl<T>(
+        q, is_ascending, iter_nelems, sort_nelems, arg_cp, res_cp,
+        iter_arg_offset, iter_res_offset, sort_arg_offset, sort_res_offset,
+        depends);
+}
+
+} // end of anonymous namespace
+
 template <typename fnT, typename argTy> struct AscendingRadixSortContigFactory
 {
     fnT get()
     {
         if constexpr (RadixSortSupportVector<argTy>::is_defined) {
-            using dpctl::tensor::kernels::radix_sort_axis1_contig_impl;
-            return radix_sort_axis1_contig_impl<argTy, /*ascending*/ true>;
+            return sort_axis1_contig_caller</*ascending*/ true, argTy>;
         }
         else {
             return nullptr;
@@ -80,8 +105,7 @@ template <typename fnT, typename argTy> struct DescendingRadixSortContigFactory
     fnT get()
     {
         if constexpr (RadixSortSupportVector<argTy>::is_defined) {
-            using dpctl::tensor::kernels::radix_sort_axis1_contig_impl;
-            return radix_sort_axis1_contig_impl<argTy, /*ascending*/ false>;
+            return sort_axis1_contig_caller</*ascending*/ false, argTy>;
         }
         else {
             return nullptr;
