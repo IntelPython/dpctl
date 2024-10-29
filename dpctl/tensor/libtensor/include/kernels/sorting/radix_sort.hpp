@@ -49,16 +49,16 @@ namespace kernels
 namespace radix_sort_details
 {
 
-template <std::uint32_t, bool, bool, typename... TrailingNames>
+template <std::uint32_t, bool, typename... TrailingNames>
 class radix_sort_count_kernel;
 
 template <std::uint32_t, typename... TrailingNames>
 class radix_sort_scan_kernel;
 
-template <std::uint32_t, bool, bool, typename... TrailingNames>
+template <std::uint32_t, bool, typename... TrailingNames>
 class radix_sort_reorder_peer_kernel;
 
-template <std::uint32_t, bool, bool, typename... TrailingNames>
+template <std::uint32_t, bool, typename... TrailingNames>
 class radix_sort_reorder_kernel;
 
 //----------------------------------------------------------
@@ -223,7 +223,6 @@ std::uint32_t get_bucket_id(T val, std::uint32_t radix_offset)
 
 template <typename KernelName,
           std::uint32_t radix_bits,
-          bool is_ascending,
           typename ValueT,
           typename CountT,
           typename Proj>
@@ -238,6 +237,7 @@ radix_sort_count_submit(sycl::queue &exec_q,
                         std::size_t n_counts,
                         CountT *counts_ptr,
                         const Proj &proj_op,
+                        const bool is_ascending,
                         const std::vector<sycl::event> &dependency_events)
 {
     // bin_count = radix_states used for an array storing bucket state counters
@@ -280,18 +280,37 @@ radix_sort_count_submit(sycl::queue &exec_q,
             // count array
             const std::size_t seg_end =
                 sycl::min(seg_start + elems_per_segment, n);
-            for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                 val_id += wg_size)
-            {
-                // get the bucket for the bit-ordered input value,
-                // applying the offset and mask for radix bits
-                const auto val = order_preserving_cast<is_ascending>(
-                    proj_op(vals_ptr[val_iter_offset + val_id]));
-                const std::uint32_t bucket_id =
-                    get_bucket_id<radix_mask>(val, radix_offset);
+            if (is_ascending) {
+                for (std::size_t val_id = seg_start + lid; val_id < seg_end;
+                     val_id += wg_size)
+                {
+                    // get the bucket for the bit-ordered input value,
+                    // applying the offset and mask for radix bits
+                    const auto val =
+                        order_preserving_cast</*is_ascending*/ true>(
+                            proj_op(vals_ptr[val_iter_offset + val_id]));
+                    const std::uint32_t bucket_id =
+                        get_bucket_id<radix_mask>(val, radix_offset);
 
-                // increment counter for this bit bucket
-                ++counts_arr[bucket_id];
+                    // increment counter for this bit bucket
+                    ++counts_arr[bucket_id];
+                }
+            }
+            else {
+                for (std::size_t val_id = seg_start + lid; val_id < seg_end;
+                     val_id += wg_size)
+                {
+                    // get the bucket for the bit-ordered input value,
+                    // applying the offset and mask for radix bits
+                    const auto val =
+                        order_preserving_cast</*is_ascending*/ false>(
+                            proj_op(vals_ptr[val_iter_offset + val_id]));
+                    const std::uint32_t bucket_id =
+                        get_bucket_id<radix_mask>(val, radix_offset);
+
+                    // increment counter for this bit bucket
+                    ++counts_arr[bucket_id];
+                }
             }
 
             // count per work-item: write private count array to local count
@@ -622,7 +641,6 @@ void copy_func_for_radix_sort(const std::size_t n_segments,
 //-----------------------------------------------------------------------
 template <typename KernelName,
           std::uint32_t radix_bits,
-          bool is_ascending,
           peer_prefix_algo PeerAlgo,
           typename InputT,
           typename OutputT,
@@ -639,6 +657,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                           std::size_t n_offsets,
                           OffsetT *offset_ptr,
                           const ProjT &proj_op,
+                          const bool is_ascending,
                           const std::vector<sycl::event> dependency_events)
 {
     using ValueT = InputT;
@@ -735,32 +754,65 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
 
             // find offsets for the same values within a segment and fill the
             // resulting buffer
-            for (std::size_t val_id = seg_start + lid; val_id < seg_end;
-                 val_id += sg_size)
-            {
-                ValueT in_val = std::move(b_input_ptr[val_id]);
-
-                // get the bucket for the bit-ordered input value, applying the
-                // offset and mask for radix bits
-                const auto mapped_val =
-                    order_preserving_cast<is_ascending>(proj_op(in_val));
-                std::uint32_t bucket_id =
-                    get_bucket_id<radix_mask>(mapped_val, radix_offset);
-
-                OffsetT new_offset_id = 0;
-                for (std::uint32_t radix_state_id = 0;
-                     radix_state_id < radix_states; ++radix_state_id)
+            if (is_ascending) {
+                for (std::size_t val_id = seg_start + lid; val_id < seg_end;
+                     val_id += sg_size)
                 {
-                    bool is_current_bucket = (bucket_id == radix_state_id);
-                    std::uint32_t sg_total_offset =
-                        peer_prefix_hlp.peer_contribution(
-                            /* modified by reference */ new_offset_id,
-                            offset_arr[radix_state_id],
-                            /* bit contribution from this work-item */
-                            is_current_bucket);
-                    offset_arr[radix_state_id] += sg_total_offset;
+                    ValueT in_val = std::move(b_input_ptr[val_id]);
+
+                    // get the bucket for the bit-ordered input value, applying
+                    // the offset and mask for radix bits
+                    const auto mapped_val =
+                        order_preserving_cast</*is_ascending*/ true>(
+                            proj_op(in_val));
+                    std::uint32_t bucket_id =
+                        get_bucket_id<radix_mask>(mapped_val, radix_offset);
+
+                    OffsetT new_offset_id = 0;
+                    for (std::uint32_t radix_state_id = 0;
+                         radix_state_id < radix_states; ++radix_state_id)
+                    {
+                        bool is_current_bucket = (bucket_id == radix_state_id);
+                        std::uint32_t sg_total_offset =
+                            peer_prefix_hlp.peer_contribution(
+                                /* modified by reference */ new_offset_id,
+                                offset_arr[radix_state_id],
+                                /* bit contribution from this work-item */
+                                is_current_bucket);
+                        offset_arr[radix_state_id] += sg_total_offset;
+                    }
+                    b_output_ptr[new_offset_id] = std::move(in_val);
                 }
-                b_output_ptr[new_offset_id] = std::move(in_val);
+            }
+            else {
+                for (std::size_t val_id = seg_start + lid; val_id < seg_end;
+                     val_id += sg_size)
+                {
+                    ValueT in_val = std::move(b_input_ptr[val_id]);
+
+                    // get the bucket for the bit-ordered input value, applying
+                    // the offset and mask for radix bits
+                    const auto mapped_val =
+                        order_preserving_cast</*is_ascending*/ false>(
+                            proj_op(in_val));
+                    std::uint32_t bucket_id =
+                        get_bucket_id<radix_mask>(mapped_val, radix_offset);
+
+                    OffsetT new_offset_id = 0;
+                    for (std::uint32_t radix_state_id = 0;
+                         radix_state_id < radix_states; ++radix_state_id)
+                    {
+                        bool is_current_bucket = (bucket_id == radix_state_id);
+                        std::uint32_t sg_total_offset =
+                            peer_prefix_hlp.peer_contribution(
+                                /* modified by reference */ new_offset_id,
+                                offset_arr[radix_state_id],
+                                /* bit contribution from this work-item */
+                                is_current_bucket);
+                        offset_arr[radix_state_id] += sg_total_offset;
+                    }
+                    b_output_ptr[new_offset_id] = std::move(in_val);
+                }
             }
             if (tail_size > 0) {
                 ValueT in_val;
@@ -770,8 +822,13 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
                 if (lid < tail_size) {
                     in_val = std::move(b_input_ptr[seg_end + lid]);
 
+                    const auto proj_val = proj_op(in_val);
                     const auto mapped_val =
-                        order_preserving_cast<is_ascending>(proj_op(in_val));
+                        (is_ascending)
+                            ? order_preserving_cast</*is_ascending*/ true>(
+                                  proj_val)
+                            : order_preserving_cast</*is_ascending*/ false>(
+                                  proj_val);
                     bucket_id =
                         get_bucket_id<radix_mask>(mapped_val, radix_offset);
                 }
@@ -820,20 +877,18 @@ sizeT _slm_adjusted_work_group_size(sycl::queue &exec_q,
 // radix sort: one iteration
 //-----------------------------------------------------------------------
 
-template <std::uint32_t radix_bits, bool is_ascending, bool even>
+template <std::uint32_t radix_bits, bool even>
 struct parallel_radix_sort_iteration_step
 {
     template <typename... Name>
-    using count_phase =
-        radix_sort_count_kernel<radix_bits, is_ascending, even, Name...>;
+    using count_phase = radix_sort_count_kernel<radix_bits, even, Name...>;
     template <typename... Name>
     using local_scan_phase = radix_sort_scan_kernel<radix_bits, Name...>;
     template <typename... Name>
     using reorder_peer_phase =
-        radix_sort_reorder_peer_kernel<radix_bits, is_ascending, even, Name...>;
+        radix_sort_reorder_peer_kernel<radix_bits, even, Name...>;
     template <typename... Name>
-    using reorder_phase =
-        radix_sort_reorder_kernel<radix_bits, is_ascending, even, Name...>;
+    using reorder_phase = radix_sort_reorder_kernel<radix_bits, even, Name...>;
 
     template <typename InputT,
               typename OutputT,
@@ -849,6 +904,7 @@ struct parallel_radix_sort_iteration_step
                               std::size_t n_counts,
                               CountT *counts_ptr,
                               const ProjT &proj_op,
+                              const bool is_ascending,
                               const std::vector<sycl::event> &dependency_events)
     {
         using _RadixCountKernel = count_phase<InputT, OutputT, CountT, ProjT>;
@@ -898,10 +954,9 @@ struct parallel_radix_sort_iteration_step
 
         // 1. Count Phase
         sycl::event count_ev =
-            radix_sort_count_submit<_RadixCountKernel, radix_bits,
-                                    is_ascending>(
+            radix_sort_count_submit<_RadixCountKernel, radix_bits>(
                 exec_q, n_iters, n_segments, count_wg_size, radix_offset,
-                n_values, in_ptr, n_counts, counts_ptr, proj_op,
+                n_values, in_ptr, n_counts, counts_ptr, proj_op, is_ascending,
                 dependency_events);
 
         // 2. Scan Phase
@@ -917,21 +972,21 @@ struct parallel_radix_sort_iteration_step
         {
             constexpr auto peer_algorithm = peer_prefix_algo::subgroup_ballot;
 
-            reorder_ev =
-                radix_sort_reorder_submit<_RadixReorderPeerKernel, radix_bits,
-                                          is_ascending, peer_algorithm>(
-                    exec_q, n_iters, n_segments, radix_offset, n_values, in_ptr,
-                    out_ptr, n_counts, counts_ptr, proj_op, {scan_ev});
+            reorder_ev = radix_sort_reorder_submit<_RadixReorderPeerKernel,
+                                                   radix_bits, peer_algorithm>(
+                exec_q, n_iters, n_segments, radix_offset, n_values, in_ptr,
+                out_ptr, n_counts, counts_ptr, proj_op, is_ascending,
+                {scan_ev});
         }
         else {
             constexpr auto peer_algorithm =
                 peer_prefix_algo::scan_then_broadcast;
 
-            reorder_ev =
-                radix_sort_reorder_submit<_RadixReorderKernel, radix_bits,
-                                          is_ascending, peer_algorithm>(
-                    exec_q, n_iters, n_segments, radix_offset, n_values, in_ptr,
-                    out_ptr, n_counts, counts_ptr, proj_op, {scan_ev});
+            reorder_ev = radix_sort_reorder_submit<_RadixReorderKernel,
+                                                   radix_bits, peer_algorithm>(
+                exec_q, n_iters, n_segments, radix_offset, n_values, in_ptr,
+                out_ptr, n_counts, counts_ptr, proj_op, is_ascending,
+                {scan_ev});
         }
 
         return reorder_ev;
@@ -945,7 +1000,6 @@ template <typename KernelNameBase,
           uint16_t wg_size = 256,
           uint16_t block_size = 16,
           std::uint32_t radix = 4,
-          bool is_ascending = true,
           uint16_t req_sub_group_size = (block_size < 4 ? 32 : 16)>
 struct subgroup_radix_sort
 {
@@ -965,6 +1019,7 @@ public:
                            ValueT *input_ptr,
                            OutputT *output_ptr,
                            ProjT proj_op,
+                           const bool is_ascending,
                            const std::vector<sycl::event> &depends)
     {
         static_assert(std::is_same_v<std::remove_cv_t<ValueT>, OutputT>);
@@ -995,7 +1050,8 @@ public:
 
             return one_group_submitter<_SortKernelLoc>()(
                 exec_q, n_iters, n_iters, n_values, input_ptr, output_ptr,
-                proj_op, storage_for_values, storage_for_counters, depends);
+                proj_op, is_ascending, storage_for_values, storage_for_counters,
+                depends);
         }
         case temp_allocations::counters_in_slm:
         {
@@ -1004,7 +1060,8 @@ public:
 
             return one_group_submitter<_SortKernelPartGlob>()(
                 exec_q, n_iters, n_batch_size, n_values, input_ptr, output_ptr,
-                proj_op, storage_for_values, storage_for_counters, depends);
+                proj_op, is_ascending, storage_for_values, storage_for_counters,
+                depends);
         }
         default:
         {
@@ -1013,7 +1070,8 @@ public:
 
             return one_group_submitter<_SortKernelGlob>()(
                 exec_q, n_iters, n_batch_size, n_values, input_ptr, output_ptr,
-                proj_op, storage_for_values, storage_for_counters, depends);
+                proj_op, is_ascending, storage_for_values, storage_for_counters,
+                depends);
         }
         }
     }
@@ -1111,6 +1169,7 @@ private:
                                InputT *input_arr,
                                OutputT *output_arr,
                                const ProjT &proj_op,
+                               const bool is_ascending,
                                SLM_value_tag,
                                SLM_counter_tag,
                                const std::vector<sycl::event> &depends)
@@ -1216,28 +1275,63 @@ private:
 
                                 sycl::group_barrier(ndit.get_group());
 
+                                if (is_ascending) {
 #pragma unroll
-                                for (uint16_t i = 0; i < block_size; ++i) {
-                                    const uint16_t id = wi * block_size + i;
-                                    constexpr uint16_t bin_mask = bin_count - 1;
+                                    for (uint16_t i = 0; i < block_size; ++i) {
+                                        const uint16_t id = wi * block_size + i;
+                                        constexpr uint16_t bin_mask =
+                                            bin_count - 1;
 
-                                    // points to the padded element, i.e. id is
-                                    // in-range
-                                    constexpr std::uint16_t
-                                        default_out_of_range_bin_id = bin_mask;
+                                        // points to the padded element, i.e. id
+                                        // is in-range
+                                        constexpr std::uint16_t
+                                            default_out_of_range_bin_id =
+                                                bin_mask;
 
-                                    const uint16_t bin =
-                                        (id < n) ? get_bucket_id<bin_mask>(
-                                                       order_preserving_cast<
-                                                           is_ascending>(
-                                                           proj_op(values[i])),
-                                                       begin_bit)
-                                                 : default_out_of_range_bin_id;
+                                        const uint16_t bin =
+                                            (id < n)
+                                                ? get_bucket_id<bin_mask>(
+                                                      order_preserving_cast<
+                                                          /* is_ascending */
+                                                          true>(
+                                                          proj_op(values[i])),
+                                                      begin_bit)
+                                                : default_out_of_range_bin_id;
 
-                                    // counting and local offset calculation
-                                    counters[i] = &pcounter[bin * wg_size];
-                                    indices[i] = *counters[i];
-                                    *counters[i] = indices[i] + 1;
+                                        // counting and local offset calculation
+                                        counters[i] = &pcounter[bin * wg_size];
+                                        indices[i] = *counters[i];
+                                        *counters[i] = indices[i] + 1;
+                                    }
+                                }
+                                else {
+#pragma unroll
+                                    for (uint16_t i = 0; i < block_size; ++i) {
+                                        const uint16_t id = wi * block_size + i;
+                                        constexpr uint16_t bin_mask =
+                                            bin_count - 1;
+
+                                        // points to the padded element, i.e. id
+                                        // is in-range
+                                        constexpr std::uint16_t
+                                            default_out_of_range_bin_id =
+                                                bin_mask;
+
+                                        const uint16_t bin =
+                                            (id < n)
+                                                ? get_bucket_id<bin_mask>(
+                                                      order_preserving_cast<
+                                                          /* is_ascending */
+                                                          false>(
+                                                          proj_op(values[i])),
+                                                      begin_bit)
+                                                : default_out_of_range_bin_id;
+
+                                        // counting and local offset calculation
+                                        counters[i] = &pcounter[bin * wg_size];
+                                        indices[i] = *counters[i];
+                                        *counters[i] = indices[i] + 1;
+                                    }
                                 }
 
                                 sycl::group_barrier(ndit.get_group());
@@ -1351,19 +1445,19 @@ private:
     };
 };
 
-template <bool is_ascending, typename ValueT, typename ProjT>
-struct OneWorkGroupRadixSortKernel;
+template <typename ValueT, typename ProjT> struct OneWorkGroupRadixSortKernel;
 
 //-----------------------------------------------------------------------
 // radix sort: main function
 //-----------------------------------------------------------------------
-template <bool is_ascending, typename ValueT, typename ProjT>
+template <typename ValueT, typename ProjT>
 sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
                                      std::size_t n_iters,
                                      std::size_t n_to_sort,
                                      const ValueT *input_arr,
                                      ValueT *output_arr,
                                      const ProjT &proj_op,
+                                     const bool is_ascending,
                                      const std::vector<sycl::event> &depends)
 {
     assert(n_to_sort > 1);
@@ -1377,14 +1471,13 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
 
     sycl::event sort_ev{};
 
+    const auto &dev = exec_q.get_device();
     const auto max_wg_size =
-        exec_q.get_device()
-            .template get_info<sycl::info::device::max_work_group_size>();
+        dev.template get_info<sycl::info::device::max_work_group_size>();
 
     constexpr std::uint16_t ref_wg_size = 64;
     if (n_to_sort <= 16384 && ref_wg_size * 8 <= max_wg_size) {
-        using _RadixSortKernel =
-            OneWorkGroupRadixSortKernel<is_ascending, ValueT, ProjT>;
+        using _RadixSortKernel = OneWorkGroupRadixSortKernel<ValueT, ProjT>;
 
         if (n_to_sort <= 64 && ref_wg_size <= max_wg_size) {
             // wg_size * block_size == 64 * 1 * 1 == 64
@@ -1392,9 +1485,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 1;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 128 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 1 == 128
@@ -1402,9 +1495,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 1;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 256 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 2 == 256
@@ -1412,9 +1505,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 2;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 512 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 4 == 512
@@ -1422,9 +1515,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 4;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 1024 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 8 == 1024
@@ -1432,9 +1525,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 8;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 2048 && ref_wg_size * 4 <= max_wg_size) {
             // wg_size * block_size == 64 * 4 * 8 == 2048
@@ -1442,9 +1535,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 8;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 4096 && ref_wg_size * 4 <= max_wg_size) {
             // wg_size * block_size == 64 * 4 * 16 == 4096
@@ -1452,9 +1545,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 16;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else if (n_to_sort <= 8192 && ref_wg_size * 8 <= max_wg_size) {
             // wg_size * block_size == 64 * 8 * 16 == 8192
@@ -1462,9 +1555,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 16;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
         else {
             // wg_size * block_size == 64 * 8 * 32 == 16384
@@ -1472,9 +1565,9 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             constexpr std::uint16_t block_size = 32;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
-                                          radix_bits, is_ascending>{}(
+                                          radix_bits>{}(
                 exec_q, n_iters, n_to_sort, input_arr, output_arr, proj_op,
-                depends);
+                is_ascending, depends);
         }
     }
     else {
@@ -1512,11 +1605,11 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         if constexpr (std::is_same_v<KeyT, bool>) {
 
             sort_ev = parallel_radix_sort_iteration_step<
-                radix_bits, is_ascending,
-                /*even=*/true>::submit(exec_q, n_iters, n_segments,
-                                       zero_radix_iter, n_to_sort, input_arr,
-                                       output_arr, n_counts, count_ptr, proj_op,
-                                       depends);
+                radix_bits, /*even=*/true>::submit(exec_q, n_iters, n_segments,
+                                                   zero_radix_iter, n_to_sort,
+                                                   input_arr, output_arr,
+                                                   n_counts, count_ptr, proj_op,
+                                                   is_ascending, depends);
 
             sort_ev = exec_q.submit([=](sycl::handler &cgh) {
                 cgh.depends_on(sort_ev);
@@ -1542,33 +1635,30 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         assert(radix_iters > 0);
 
         sort_ev = parallel_radix_sort_iteration_step<
-            radix_bits, is_ascending, /*even=*/true>::submit(exec_q, n_iters,
-                                                             n_segments,
-                                                             zero_radix_iter,
-                                                             n_to_sort,
-                                                             input_arr, tmp_arr,
-                                                             n_counts,
-                                                             count_ptr, proj_op,
-                                                             depends);
+            radix_bits, /*even=*/true>::submit(exec_q, n_iters, n_segments,
+                                               zero_radix_iter, n_to_sort,
+                                               input_arr, tmp_arr, n_counts,
+                                               count_ptr, proj_op, is_ascending,
+                                               depends);
 
         for (std::uint32_t radix_iter = 1; radix_iter < radix_iters;
              ++radix_iter)
         {
             if (radix_iter % 2 == 0) {
                 sort_ev = parallel_radix_sort_iteration_step<
-                    radix_bits, is_ascending,
+                    radix_bits,
                     /*even=*/true>::submit(exec_q, n_iters, n_segments,
                                            radix_iter, n_to_sort, output_arr,
                                            tmp_arr, n_counts, count_ptr,
-                                           proj_op, {sort_ev});
+                                           proj_op, is_ascending, {sort_ev});
             }
             else {
                 sort_ev = parallel_radix_sort_iteration_step<
-                    radix_bits, is_ascending,
+                    radix_bits,
                     /*even=*/false>::submit(exec_q, n_iters, n_segments,
                                             radix_iter, n_to_sort, tmp_arr,
                                             output_arr, n_counts, count_ptr,
-                                            proj_op, {sort_ev});
+                                            proj_op, is_ascending, {sort_ev});
             }
         }
 
@@ -1621,9 +1711,10 @@ private:
 
 } // end of namespace radix_sort_details
 
-template <typename argTy, bool sort_ascending>
+template <typename argTy>
 sycl::event
 radix_sort_axis1_contig_impl(sycl::queue &exec_q,
+                             const bool sort_ascending,
                              // number of sub-arrays to sort (num. of rows in a
                              // matrix when sorting over rows)
                              size_t iter_nelems,
@@ -1647,22 +1738,23 @@ radix_sort_axis1_contig_impl(sycl::queue &exec_q,
     constexpr Proj proj_op{};
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<sort_ascending, argTy,
-                                                     Proj>(
-            exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, proj_op, depends);
+        radix_sort_details::parallel_radix_sort_impl<argTy, Proj>(
+            exec_q, iter_nelems, sort_nelems, arg_tp, res_tp, proj_op,
+            sort_ascending, depends);
 
     return radix_sort_ev;
 }
 
-template <typename ValueT, typename IndexT, bool sort_ascending>
+template <typename ValueT, typename IndexT>
 class populate_indexed_data_for_radix_sort_krn;
 
-template <typename ValueT, typename IndexT, bool sort_ascending>
+template <typename ValueT, typename IndexT>
 class index_write_out_for_radix_sort_krn;
 
-template <typename argTy, typename IndexTy, bool sort_ascending>
+template <typename argTy, typename IndexTy>
 sycl::event
 radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
+                                const bool sort_ascending,
                                 // number of sub-arrays to sort (num. of rows in
                                 // a matrix when sorting over rows)
                                 size_t iter_nelems,
@@ -1704,8 +1796,7 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
             cgh.depends_on(depends);
 
             using KernelName =
-                populate_indexed_data_for_radix_sort_krn<argTy, IndexTy,
-                                                         sort_ascending>;
+                populate_indexed_data_for_radix_sort_krn<argTy, IndexTy>;
 
             cgh.parallel_for<KernelName>(
                 sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
@@ -1716,16 +1807,14 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
         });
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<sort_ascending,
-                                                     ValueIndexT, Proj>(
+        radix_sort_details::parallel_radix_sort_impl<ValueIndexT, Proj>(
             exec_q, iter_nelems, sort_nelems, indexed_data_tp, temp_tp, proj_op,
-            {populate_indexed_data_ev});
+            sort_ascending, {populate_indexed_data_ev});
 
     sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(radix_sort_ev);
 
-        using KernelName =
-            index_write_out_for_radix_sort_krn<argTy, IndexTy, sort_ascending>;
+        using KernelName = index_write_out_for_radix_sort_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems),
@@ -1743,12 +1832,12 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
     return cleanup_ev;
 }
 
-template <typename ValueT, typename IndexT, bool sort_ascending>
-class iota_for_radix_sort_krn;
+template <typename ValueT, typename IndexT> class iota_for_radix_sort_krn;
 
-template <typename argTy, typename IndexTy, bool sort_ascending>
+template <typename argTy, typename IndexTy>
 sycl::event
 radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
+                                    const bool sort_ascending,
                                     // number of sub-arrays to sort (num. of
                                     // rows in a matrix when sorting over rows)
                                     size_t iter_nelems,
@@ -1785,8 +1874,7 @@ radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
     sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName =
-            iota_for_radix_sort_krn<argTy, IndexTy, sort_ascending>;
+        using KernelName = iota_for_radix_sort_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
@@ -1797,16 +1885,14 @@ radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
     });
 
     sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<sort_ascending, IndexTy,
-                                                     IndexedProjT>(
+        radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
             exec_q, iter_nelems, sort_nelems, workspace, res_tp, proj_op,
-            {iota_ev});
+            sort_ascending, {iota_ev});
 
     sycl::event map_back_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(radix_sort_ev);
 
-        using KernelName =
-            index_write_out_for_radix_sort_krn<argTy, IndexTy, sort_ascending>;
+        using KernelName = index_write_out_for_radix_sort_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
