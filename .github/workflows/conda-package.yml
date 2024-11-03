@@ -12,8 +12,9 @@ env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
   TEST_ENV_NAME: test_dpctl
-  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
-  VER_SCRIPT2: "d = j['dpctl'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); d = j['dpctl'][0];"
+  VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
+  VER_SCRIPT3: "print(' '.join(map(lambda s: chr(34) + s + chr(34), [comp for comp in d['depends'] if 'dpcpp' in comp][1:])))"
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
 
 jobs:
@@ -25,7 +26,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -81,7 +82,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -363,7 +364,11 @@ jobs:
         shell: pwsh
         run: |
           $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
-          &$script_path
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
           # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
           $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
@@ -501,7 +506,7 @@ jobs:
         # Needed to be able to run conda index
         run: conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - name: Download artifact
@@ -540,18 +545,28 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install example requirements
-        shell: bash -l {0}
+        shell: bash -ex -l {0}
         env:
-          DPCPP_CMPLR: dpcpp_linux-64">=2024.2"
+          DPCPP_CMPLR: "dpcpp_linux-64>=2024.2"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} setuptools"<72.2.0" $CHANNELS
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake $CHANNELS || exit 1
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ninja $CHANNELS || exit 1
+          DPCTL_DEPENDS="$(python -c "${VER_SCRIPT1} ${VER_SCRIPT3}")"
+          echo "Dpctl dependencies: ${DPCTL_DEPENDS}"
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} "setuptools<72.2.0" $CHANNELS
+          echo "Environment created"
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
+          echo "Cmake and Ninja installed"
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
-          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 ${{ env.DPCPP_CMPLR }} sysroot_linux-64">=2.28"
+          echo "scikit-build installed"
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp \
+              mkl-devel-dpcpp dpcpp_cpp_rt "${DPCTL_DEPENDS}" \
+              $CHANNELS || exit 1
+          echo "IPL installed"
+          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 \
+              ${{ env.DPCPP_CMPLR }} "${DPCTL_DEPENDS}" \
+              "sysroot_linux-64>=2.28"
+          echo "Compiler installed"
       - name: Install dpctl
         shell: bash -l {0}
         run: |
@@ -651,7 +666,7 @@ jobs:
         run: |
           echo ${{ env.CHANNELS }}
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - name: Cache array API tests
@@ -795,7 +810,7 @@ jobs:
         run: conda install anaconda-client -c conda-forge --override-channels
 
       - name: Checkout repo
-        uses: actions/checkout@v4.2.1
+        uses: actions/checkout@v4.2.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

@@ -15,6 +15,8 @@
 # limitations under the License.
 
 
+import itertools
+
 import numpy as np
 import pytest
 from numpy.testing import assert_, assert_array_equal, assert_raises_regex
@@ -655,6 +657,30 @@ def test_roll_2d(data):
     Y = dpt.roll(X, sh, axis=ax)
     Ynp = np.roll(Xnp, sh, axis=ax)
     assert_array_equal(Ynp, dpt.asnumpy(Y))
+
+
+def test_roll_out_bounds_shifts():
+    "See gh-1857"
+    get_queue_or_skip()
+
+    x = dpt.arange(4)
+    y = dpt.roll(x, np.uint64(2**63 + 2))
+    expected = dpt.roll(x, 2)
+    assert dpt.all(y == expected)
+
+    x_empty = x[1:1]
+    y = dpt.roll(x_empty, 11)
+    assert y.size == 0
+
+    x_2d = dpt.reshape(x, (2, 2))
+    y = dpt.roll(x_2d, np.uint64(2**63 + 1), axis=1)
+    expected = dpt.roll(x_2d, 1, axis=1)
+    assert dpt.all(y == expected)
+
+    x_2d_empty = x_2d[:, 1:1]
+    y = dpt.roll(x_2d_empty, 3, axis=1)
+    expected = dpt.empty_like(x_2d_empty)
+    assert dpt.all(y == expected)
 
 
 def test_roll_validation():
@@ -1531,3 +1557,26 @@ def test_repeat_0_size():
     res = dpt.repeat(x, repetitions, axis=1)
     axis_sz = 2 * x.shape[1]
     assert res.shape == (0, axis_sz, 0)
+
+
+def test_result_type_bug_1874():
+    py_sc = True
+    np_sc = np.asarray([py_sc])[0]
+    dts_bool = [py_sc, np_sc]
+    py_sc = int(1)
+    np_sc = np.asarray([py_sc])[0]
+    dts_ints = [py_sc, np_sc]
+    dts_floats = [float(1), np.float64(1)]
+    dts_complexes = [complex(1), np.complex128(1)]
+
+    # iterate over two categories
+    for dts1, dts2 in itertools.product(
+        [dts_bool, dts_ints, dts_floats, dts_complexes], repeat=2
+    ):
+        res_dts = []
+        # iterate over Python scalar/NumPy scalar choices within categories
+        for dt1, dt2 in itertools.product(dts1, dts2):
+            res_dt = dpt.result_type(dt1, dt2)
+            res_dts.append(res_dt)
+        # check that all results are the same
+        assert res_dts and all(res_dts[0] == el for el in res_dts[1:])

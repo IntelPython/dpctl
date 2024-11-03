@@ -30,10 +30,13 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <exception>
+#include <sycl/sycl.hpp>
+
 #include "Python.h"
+
 #include "syclinterface/dpctl_data_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
-#include <sycl/sycl.hpp>
 
 DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
                                 PyObject **obj_array,

@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import operator
+from numbers import Number
 
 import numpy as np
 
@@ -1037,6 +1038,19 @@ def _cast_fill_val(fill_val, dt):
         return fill_val
 
 
+def _validate_fill_value(fill_val):
+    """
+    Validates that `fill_val` is a numeric or boolean scalar.
+    """
+    # TODO: verify if `np.True_` and `np.False_` should be instances of
+    # Number in NumPy, like other NumPy scalars and like Python bools
+    # check for `np.bool_` separately as NumPy<2 has no `np.bool`
+    if not isinstance(fill_val, Number) and not isinstance(fill_val, np.bool_):
+        raise TypeError(
+            f"array cannot be filled with scalar of type {type(fill_val)}"
+        )
+
+
 def full(
     shape,
     fill_value,
@@ -1110,6 +1124,8 @@ def full(
             sycl_queue=sycl_queue,
         )
         return dpt.copy(dpt.broadcast_to(X, shape), order=order)
+    else:
+        _validate_fill_value(fill_value)
 
     sycl_queue = normalize_queue_device(sycl_queue=sycl_queue, device=device)
     usm_type = usm_type if usm_type is not None else "device"
@@ -1480,6 +1496,8 @@ def full_like(
             )
             _manager.add_event_pair(hev, copy_ev)
             return res
+        else:
+            _validate_fill_value(fill_value)
 
         dtype = _get_dtype(dtype, sycl_queue, ref_type=type(fill_value))
         res = _empty_like_orderK(x, dtype, usm_type, sycl_queue)
