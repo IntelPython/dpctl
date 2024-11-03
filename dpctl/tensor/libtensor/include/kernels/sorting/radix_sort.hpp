@@ -1015,7 +1015,7 @@ public:
     template <typename ValueT, typename OutputT, typename ProjT>
     sycl::event operator()(sycl::queue &exec_q,
                            size_t n_iters,
-                           size_t n_values,
+                           size_t n_to_sort,
                            ValueT *input_ptr,
                            OutputT *output_ptr,
                            ProjT proj_op,
@@ -1038,7 +1038,8 @@ public:
             std::min<std::size_t>(n_iters, max_concurrent_work_groups);
 
         // determine which temporary allocation can be accommodated in SLM
-        const auto &SLM_availability = check_slm_size<ValueT>(exec_q, n_values);
+        const auto &SLM_availability =
+            check_slm_size<ValueT>(exec_q, n_to_sort);
 
         const std::size_t n_batch_size = n_work_groups;
 
@@ -1049,7 +1050,7 @@ public:
             constexpr auto storage_for_counters = use_slm_tag{};
 
             return one_group_submitter<_SortKernelLoc>()(
-                exec_q, n_iters, n_iters, n_values, input_ptr, output_ptr,
+                exec_q, n_iters, n_iters, n_to_sort, input_ptr, output_ptr,
                 proj_op, is_ascending, storage_for_values, storage_for_counters,
                 depends);
         }
@@ -1059,7 +1060,7 @@ public:
             constexpr auto storage_for_counters = use_slm_tag{};
 
             return one_group_submitter<_SortKernelPartGlob>()(
-                exec_q, n_iters, n_batch_size, n_values, input_ptr, output_ptr,
+                exec_q, n_iters, n_batch_size, n_to_sort, input_ptr, output_ptr,
                 proj_op, is_ascending, storage_for_values, storage_for_counters,
                 depends);
         }
@@ -1069,7 +1070,7 @@ public:
             constexpr auto storage_for_counters = use_global_mem_tag{};
 
             return one_group_submitter<_SortKernelGlob>()(
-                exec_q, n_iters, n_batch_size, n_values, input_ptr, output_ptr,
+                exec_q, n_iters, n_batch_size, n_to_sort, input_ptr, output_ptr,
                 proj_op, is_ascending, storage_for_values, storage_for_counters,
                 depends);
         }
