@@ -130,6 +130,11 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
 
         auto fn = sort_contig_fns[src_typeid];
 
+        if (nullptr == fn) {
+            throw py::value_error(
+                "Not implemented for the dtype of input arrays");
+        }
+
         sycl::event comp_ev =
             fn(exec_q, iter_nelems, sort_nelems, src.get_data(), dst.get_data(),
                zero_offset, zero_offset, zero_offset, zero_offset, depends);

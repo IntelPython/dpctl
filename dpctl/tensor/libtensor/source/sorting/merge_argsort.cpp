@@ -36,7 +36,7 @@
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 #include "rich_comparisons.hpp"
 
-#include "argsort.hpp"
+#include "merge_argsort.hpp"
 #include "py_argsort_common.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
@@ -93,7 +93,7 @@ struct DescendingArgSortContigFactory
     }
 };
 
-void init_argsort_dispatch_tables(void)
+void init_merge_argsort_dispatch_tables(void)
 {
     using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
 
@@ -108,9 +108,9 @@ void init_argsort_dispatch_tables(void)
     dtb2.populate_dispatch_table(descending_argsort_contig_dispatch_table);
 }
 
-void init_argsort_functions(py::module_ m)
+void init_merge_argsort_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::init_argsort_dispatch_tables();
+    dpctl::tensor::py_internal::init_merge_argsort_dispatch_tables();
 
     auto py_argsort_ascending = [](const dpctl::tensor::usm_ndarray &src,
                                    const int trailing_dims_to_sort,

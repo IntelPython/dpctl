@@ -35,7 +35,7 @@ namespace tensor
 namespace py_internal
 {
 
-extern void init_sort_functions(py::module_);
+extern void init_merge_sort_functions(py::module_);
 
 } // namespace py_internal
 } // namespace tensor

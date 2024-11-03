@@ -36,9 +36,9 @@
 #include "kernels/sorting/merge_sort.hpp"
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
 
+#include "merge_sort.hpp"
 #include "py_sort_common.hpp"
 #include "rich_comparisons.hpp"
-#include "sort.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
@@ -76,7 +76,7 @@ template <typename fnT, typename argTy> struct DescendingSortContigFactory
     }
 };
 
-void init_sort_dispatch_vectors(void)
+void init_merge_sort_dispatch_vectors(void)
 {
     using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
 
@@ -91,9 +91,9 @@ void init_sort_dispatch_vectors(void)
     dtv2.populate_dispatch_vector(descending_sort_contig_dispatch_vector);
 }
 
-void init_sort_functions(py::module_ m)
+void init_merge_sort_functions(py::module_ m)
 {
-    dpctl::tensor::py_internal::init_sort_dispatch_vectors();
+    dpctl::tensor::py_internal::init_merge_sort_dispatch_vectors();
 
     auto py_sort_ascending = [](const dpctl::tensor::usm_ndarray &src,
                                 const int trailing_dims_to_sort,

@@ -130,7 +130,7 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
         auto fn = sort_contig_fns[src_typeid][dst_typeid];
 
         if (fn == nullptr) {
-            throw py::value_error("Not implemented for given index type");
+            throw py::value_error("Not implemented for dtypes of input arrays");
         }
 
         sycl::event comp_ev =
