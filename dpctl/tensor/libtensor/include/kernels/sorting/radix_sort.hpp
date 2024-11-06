@@ -1627,7 +1627,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         ValueT *tmp_arr =
             sycl::malloc_device<ValueT>(n_iters * n_to_sort, exec_q);
         if (nullptr == tmp_arr) {
-            sycl::free(count_ptr, exec_q);
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+            sycl_free_noexcept(count_ptr, exec_q);
             throw std::runtime_error("Could not allocate USM-device memory");
         }
 
@@ -1827,7 +1828,8 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
 
         const sycl::context &ctx = exec_q.get_context();
 
-        cgh.host_task([ctx, workspace] { sycl::free(workspace, ctx); });
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        cgh.host_task([ctx, workspace] { sycl_free_noexcept(workspace, ctx); });
     });
 
     return cleanup_ev;
@@ -1907,7 +1909,8 @@ radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
 
         const sycl::context &ctx = exec_q.get_context();
 
-        cgh.host_task([ctx, workspace] { sycl::free(workspace, ctx); });
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        cgh.host_task([ctx, workspace] { sycl_free_noexcept(workspace, ctx); });
     });
 
     return cleanup_ev;
