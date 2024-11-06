@@ -1579,6 +1579,9 @@
                 <span class="n">target_dev</span> <span class="o">=</span> <span class="n">d</span>
                 <span class="n">inspected</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dtypes</span> <span class="ow">and</span> <span class="n">weak_dtypes</span><span class="p">:</span>
+        <span class="n">dtypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weak_dtypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">has_fp16</span> <span class="ow">and</span> <span class="n">has_fp64</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_dtype_supported_by_device_impl</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
