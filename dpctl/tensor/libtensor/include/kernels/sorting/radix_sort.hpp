@@ -1748,20 +1748,19 @@ radix_sort_axis1_contig_impl(sycl::queue &exec_q,
 }
 
 template <typename ValueT, typename IndexT>
-class populate_indexed_data_for_radix_sort_krn;
+class radix_argsort_index_write_out_krn;
 
-template <typename ValueT, typename IndexT>
-class index_write_out_for_radix_sort_krn;
+template <typename ValueT, typename IndexT> class radix_argsort_iota_krn;
 
 template <typename argTy, typename IndexTy>
 sycl::event
 radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
                                 const bool sort_ascending,
-                                // number of sub-arrays to sort (num. of rows in
-                                // a matrix when sorting over rows)
+                                // number of sub-arrays to sort (num. of
+                                // rows in a matrix when sorting over rows)
                                 size_t iter_nelems,
-                                // size of each array to sort  (length of rows,
-                                // i.e. number of columns)
+                                // size of each array to sort  (length of
+                                // rows, i.e. number of columns)
                                 size_t sort_nelems,
                                 const char *arg_cp,
                                 char *res_cp,
@@ -1770,90 +1769,6 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
                                 ssize_t sort_arg_offset,
                                 ssize_t sort_res_offset,
                                 const std::vector<sycl::event> &depends)
-{
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
-                          iter_arg_offset + sort_arg_offset;
-    IndexTy *res_tp =
-        reinterpret_cast<IndexTy *>(res_cp) + iter_res_offset + sort_res_offset;
-
-    using ValueIndexT = std::pair<argTy, IndexTy>;
-
-    const std::size_t total_nelems = iter_nelems * sort_nelems;
-    const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    ValueIndexT *workspace = sycl::malloc_device<ValueIndexT>(
-        padded_total_nelems + total_nelems, exec_q);
-
-    if (nullptr == workspace) {
-        throw std::runtime_error("Could not allocate workspace on device");
-    }
-
-    ValueIndexT *indexed_data_tp = workspace;
-    ValueIndexT *temp_tp = workspace + padded_total_nelems;
-
-    using Proj = radix_sort_details::ValueProj<argTy, IndexTy>;
-    constexpr Proj proj_op{};
-
-    sycl::event populate_indexed_data_ev =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            using KernelName =
-                populate_indexed_data_for_radix_sort_krn<argTy, IndexTy>;
-
-            cgh.parallel_for<KernelName>(
-                sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                    size_t i = id[0];
-                    IndexTy sort_id = static_cast<IndexTy>(i % sort_nelems);
-                    indexed_data_tp[i] = std::make_pair(arg_tp[i], sort_id);
-                });
-        });
-
-    sycl::event radix_sort_ev =
-        radix_sort_details::parallel_radix_sort_impl<ValueIndexT, Proj>(
-            exec_q, iter_nelems, sort_nelems, indexed_data_tp, temp_tp, proj_op,
-            sort_ascending, {populate_indexed_data_ev});
-
-    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
-
-        using KernelName = index_write_out_for_radix_sort_krn<argTy, IndexTy>;
-
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(total_nelems),
-            [=](sycl::id<1> id) { res_tp[id] = std::get<1>(temp_tp[id]); });
-    });
-
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(write_out_ev);
-
-        const sycl::context &ctx = exec_q.get_context();
-
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, workspace] { sycl_free_noexcept(workspace, ctx); });
-    });
-
-    return cleanup_ev;
-}
-
-template <typename ValueT, typename IndexT> class iota_for_radix_sort_krn;
-
-template <typename argTy, typename IndexTy>
-sycl::event
-radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
-                                    const bool sort_ascending,
-                                    // number of sub-arrays to sort (num. of
-                                    // rows in a matrix when sorting over rows)
-                                    size_t iter_nelems,
-                                    // size of each array to sort  (length of
-                                    // rows, i.e. number of columns)
-                                    size_t sort_nelems,
-                                    const char *arg_cp,
-                                    char *res_cp,
-                                    ssize_t iter_arg_offset,
-                                    ssize_t iter_res_offset,
-                                    ssize_t sort_arg_offset,
-                                    ssize_t sort_res_offset,
-                                    const std::vector<sycl::event> &depends)
 {
     const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
                           iter_arg_offset + sort_arg_offset;
@@ -1877,7 +1792,7 @@ radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
     sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName = iota_for_radix_sort_krn<argTy, IndexTy>;
+        using KernelName = radix_argsort_iota_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
@@ -1895,7 +1810,7 @@ radix_argsort_axis1_contig_alt_impl(sycl::queue &exec_q,
     sycl::event map_back_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(radix_sort_ev);
 
-        using KernelName = index_write_out_for_radix_sort_krn<argTy, IndexTy>;
+        using KernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {

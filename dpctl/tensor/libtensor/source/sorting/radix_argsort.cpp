@@ -80,9 +80,9 @@ sycl::event argsort_axis1_contig_caller(sycl::queue &q,
                                         ssize_t sort_res_offset,
                                         const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::kernels::radix_argsort_axis1_contig_alt_impl;
+    using dpctl::tensor::kernels::radix_argsort_axis1_contig_impl;
 
-    return radix_argsort_axis1_contig_alt_impl<T, I>(
+    return radix_argsort_axis1_contig_impl<T, I>(
         q, is_ascending, iter_nelems, sort_nelems, arg_cp, res_cp,
         iter_arg_offset, iter_res_offset, sort_arg_offset, sort_res_offset,
         depends);
