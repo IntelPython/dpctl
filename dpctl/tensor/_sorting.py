@@ -25,11 +25,26 @@ from ._tensor_sorting_impl import (
     _sort_ascending,
     _sort_descending,
 )
+from ._tensor_sorting_radix_impl import (
+    _radix_argsort_ascending,
+    _radix_argsort_descending,
+    _radix_sort_ascending,
+    _radix_sort_descending,
+    _radix_sort_dtype_supported,
+)
 
 __all__ = ["sort", "argsort"]
 
 
-def sort(x, /, *, axis=-1, descending=False, stable=True):
+def _get_mergesort_impl_fn(descending):
+    return _sort_descending if descending else _sort_ascending
+
+
+def _get_radixsort_impl_fn(descending):
+    return _radix_sort_descending if descending else _radix_sort_ascending
+
+
+def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
     """sort(x, axis=-1, descending=False, stable=True)
 
     Returns a sorted copy of an input array `x`.
@@ -49,7 +64,10 @@ def sort(x, /, *, axis=-1, descending=False, stable=True):
             relative order of `x` values which compare as equal. If `False`,
             the returned array may or may not maintain the relative order of
             `x` values which compare as equal. Default: `True`.
-
+        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
+            Sorting algorithm. The default is `"stable"`, which uses parallel
+            merge-sort or parallel radix-sort algorithms depending on the
+            array data type.
     Returns:
         usm_ndarray:
             a sorted array. The returned array has the same data type and
@@ -74,10 +92,33 @@ def sort(x, /, *, axis=-1, descending=False, stable=True):
             axis,
         ]
         arr = dpt.permute_dims(x, perm)
+    if kind is None:
+        kind = "stable"
+    if not isinstance(kind, str) or kind not in [
+        "stable",
+        "radixsort",
+        "mergesort",
+    ]:
+        raise ValueError(
+            "Unsupported kind value. Expected 'stable', 'mergesort', "
+            f"or 'radixsort', but got '{kind}'"
+        )
+    if kind == "mergesort":
+        impl_fn = _get_mergesort_impl_fn(descending)
+    elif kind == "radixsort":
+        if _radix_sort_dtype_supported(x.dtype.num):
+            impl_fn = _get_radixsort_impl_fn(descending)
+        else:
+            raise ValueError(f"Radix sort is not supported for {x.dtype}")
+    else:
+        dt = x.dtype
+        if dt in [dpt.bool, dpt.uint8, dpt.int8, dpt.int16, dpt.uint16]:
+            impl_fn = _get_radixsort_impl_fn(descending)
+        else:
+            impl_fn = _get_mergesort_impl_fn(descending)
     exec_q = x.sycl_queue
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
-    impl_fn = _sort_descending if descending else _sort_ascending
     if arr.flags.c_contiguous:
         res = dpt.empty_like(arr, order="C")
         ht_ev, impl_ev = impl_fn(
@@ -109,7 +150,15 @@ def sort(x, /, *, axis=-1, descending=False, stable=True):
     return res
 
 
-def argsort(x, axis=-1, descending=False, stable=True):
+def _get_mergeargsort_impl_fn(descending):
+    return _argsort_descending if descending else _argsort_ascending
+
+
+def _get_radixargsort_impl_fn(descending):
+    return _radix_argsort_descending if descending else _radix_argsort_ascending
+
+
+def argsort(x, axis=-1, descending=False, stable=True, kind=None):
     """argsort(x, axis=-1, descending=False, stable=True)
 
     Returns the indices that sort an array `x` along a specified axis.
@@ -129,6 +178,10 @@ def argsort(x, axis=-1, descending=False, stable=True):
             relative order of `x` values which compare as equal. If `False`,
             the returned array may or may not maintain the relative order of
             `x` values which compare as equal. Default: `True`.
+        kind (Optional[Literal["stable", "mergesort", "radixsort"]]):
+            Sorting algorithm. The default is `"stable"`, which uses parallel
+            merge-sort or parallel radix-sort algorithms depending on the
+            array data type.
 
     Returns:
         usm_ndarray:
@@ -157,10 +210,33 @@ def argsort(x, axis=-1, descending=False, stable=True):
             axis,
         ]
         arr = dpt.permute_dims(x, perm)
+    if kind is None:
+        kind = "stable"
+    if not isinstance(kind, str) or kind not in [
+        "stable",
+        "radixsort",
+        "mergesort",
+    ]:
+        raise ValueError(
+            "Unsupported kind value. Expected 'stable', 'mergesort', "
+            f"or 'radixsort', but got '{kind}'"
+        )
+    if kind == "mergesort":
+        impl_fn = _get_mergeargsort_impl_fn(descending)
+    elif kind == "radixsort":
+        if _radix_sort_dtype_supported(x.dtype.num):
+            impl_fn = _get_radixargsort_impl_fn(descending)
+        else:
+            raise ValueError(f"Radix sort is not supported for {x.dtype}")
+    else:
+        dt = x.dtype
+        if dt in [dpt.bool, dpt.uint8, dpt.int8, dpt.int16, dpt.uint16]:
+            impl_fn = _get_radixargsort_impl_fn(descending)
+        else:
+            impl_fn = _get_mergeargsort_impl_fn(descending)
     exec_q = x.sycl_queue
     _manager = du.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
-    impl_fn = _argsort_descending if descending else _argsort_ascending
     index_dt = ti.default_device_index_type(exec_q)
     if arr.flags.c_contiguous:
         res = dpt.empty_like(arr, dtype=index_dt, order="C")

@@ -22,20 +22,15 @@
 /// extension.
 //===--------------------------------------------------------------------===//
 
-#include <sycl/sycl.hpp>
-
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
-
-#include "kernels/sorting/sort.hpp"
-#include "rich_comparisons.hpp"
-#include "sort.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
@@ -48,12 +43,12 @@ namespace py_internal
 
 template <typename sorting_contig_impl_fnT>
 std::pair<sycl::event, sycl::event>
-py_sort(const dpctl::tensor::usm_ndarray &src,
-        const int trailing_dims_to_sort,
-        const dpctl::tensor::usm_ndarray &dst,
-        sycl::queue &exec_q,
-        const std::vector<sycl::event> &depends,
-        const sorting_contig_impl_fnT &stable_sort_contig_fns)
+py_argsort(const dpctl::tensor::usm_ndarray &src,
+           const int trailing_dims_to_sort,
+           const dpctl::tensor::usm_ndarray &dst,
+           sycl::queue &exec_q,
+           const std::vector<sycl::event> &depends,
+           const sorting_contig_impl_fnT &sort_contig_fns)
 {
     int src_nd = src.get_ndim();
     int dst_nd = dst.get_ndim();
@@ -119,18 +114,24 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
-    if (src_typeid != dst_typeid) {
-        throw py::value_error("Both input arrays must have "
-                              "the same value data type");
+    if ((dst_typeid != static_cast<int>(td_ns::typenum_t::INT64)) &&
+        (dst_typeid != static_cast<int>(td_ns::typenum_t::INT32)))
+    {
+        throw py::value_error(
+            "Output index array must have data type int32 or int64");
     }
 
     bool is_src_c_contig = src.is_c_contiguous();
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if (is_src_c_contig && is_dst_c_contig) {
-        constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
-        auto fn = stable_sort_contig_fns[src_typeid];
+        auto fn = sort_contig_fns[src_typeid][dst_typeid];
+
+        if (fn == nullptr) {
+            throw py::value_error("Not implemented for dtypes of input arrays");
+        }
 
         sycl::event comp_ev =
             fn(exec_q, iter_nelems, sort_nelems, src.get_data(), dst.get_data(),
@@ -144,83 +145,6 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
 
     throw py::value_error(
         "Both source and destination arrays must be C-contiguous");
-}
-
-using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
-static sort_contig_fn_ptr_t
-    ascending_sort_contig_dispatch_vector[td_ns::num_types];
-static sort_contig_fn_ptr_t
-    descending_sort_contig_dispatch_vector[td_ns::num_types];
-
-template <typename fnT, typename argTy> struct AscendingSortContigFactory
-{
-    fnT get()
-    {
-        using Comp = typename AscendingSorter<argTy>::type;
-
-        using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
-        return stable_sort_axis1_contig_impl<argTy, Comp>;
-    }
-};
-
-template <typename fnT, typename argTy> struct DescendingSortContigFactory
-{
-    fnT get()
-    {
-        using Comp = typename DescendingSorter<argTy>::type;
-        using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
-        return stable_sort_axis1_contig_impl<argTy, Comp>;
-    }
-};
-
-void init_sort_dispatch_vectors(void)
-{
-    using dpctl::tensor::kernels::sort_contig_fn_ptr_t;
-
-    td_ns::DispatchVectorBuilder<sort_contig_fn_ptr_t,
-                                 AscendingSortContigFactory, td_ns::num_types>
-        dtv1;
-    dtv1.populate_dispatch_vector(ascending_sort_contig_dispatch_vector);
-
-    td_ns::DispatchVectorBuilder<sort_contig_fn_ptr_t,
-                                 DescendingSortContigFactory, td_ns::num_types>
-        dtv2;
-    dtv2.populate_dispatch_vector(descending_sort_contig_dispatch_vector);
-}
-
-void init_sort_functions(py::module_ m)
-{
-    dpctl::tensor::py_internal::init_sort_dispatch_vectors();
-
-    auto py_sort_ascending = [](const dpctl::tensor::usm_ndarray &src,
-                                const int trailing_dims_to_sort,
-                                const dpctl::tensor::usm_ndarray &dst,
-                                sycl::queue &exec_q,
-                                const std::vector<sycl::event> &depends)
-        -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_sort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::ascending_sort_contig_dispatch_vector);
-    };
-    m.def("_sort_ascending", py_sort_ascending, py::arg("src"),
-          py::arg("trailing_dims_to_sort"), py::arg("dst"),
-          py::arg("sycl_queue"), py::arg("depends") = py::list());
-
-    auto py_sort_descending = [](const dpctl::tensor::usm_ndarray &src,
-                                 const int trailing_dims_to_sort,
-                                 const dpctl::tensor::usm_ndarray &dst,
-                                 sycl::queue &exec_q,
-                                 const std::vector<sycl::event> &depends)
-        -> std::pair<sycl::event, sycl::event> {
-        return dpctl::tensor::py_internal::py_sort(
-            src, trailing_dims_to_sort, dst, exec_q, depends,
-            dpctl::tensor::py_internal::descending_sort_contig_dispatch_vector);
-    };
-    m.def("_sort_descending", py_sort_descending, py::arg("src"),
-          py::arg("trailing_dims_to_sort"), py::arg("dst"),
-          py::arg("sycl_queue"), py::arg("depends") = py::list());
-
-    return;
 }
 
 } // end of namespace py_internal

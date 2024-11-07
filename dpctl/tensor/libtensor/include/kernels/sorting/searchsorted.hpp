@@ -31,7 +31,7 @@
 #include <vector>
 
 #include "kernels/dpctl_tensor_types.hpp"
-#include "kernels/sorting/sort_detail.hpp"
+#include "kernels/sorting/search_sorted_detail.hpp"
 #include "utils/offset_utils.hpp"
 
 namespace dpctl
@@ -91,7 +91,7 @@ public:
 
             // lower_bound returns the first pos such that bool(hay[pos] <
             // needle_v) is false, i.e. needle_v <= hay[pos]
-            pos = sort_detail::lower_bound_indexed_impl(
+            pos = search_sorted_detail::lower_bound_indexed_impl(
                 hay_tp, zero, hay_nelems, needle_v, comp, hay_indexer);
         }
         else {
@@ -100,7 +100,7 @@ public:
 
             // upper_bound returns the first pos such that bool(needle_v <
             // hay[pos]) is true, i.e. needle_v < hay[pos]
-            pos = sort_detail::upper_bound_indexed_impl(
+            pos = search_sorted_detail::upper_bound_indexed_impl(
                 hay_tp, zero, hay_nelems, needle_v, comp, hay_indexer);
         }
 
