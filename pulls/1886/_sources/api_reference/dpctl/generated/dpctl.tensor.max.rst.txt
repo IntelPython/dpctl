@@ -1,6 +1,0 @@
-﻿dpctl.tensor.max
-================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: max
