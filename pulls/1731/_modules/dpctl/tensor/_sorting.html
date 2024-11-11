@@ -837,11 +837,26 @@
     <span class="n">_sort_ascending</span><span class="p">,</span>
     <span class="n">_sort_descending</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._tensor_sorting_radix_impl</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_radix_argsort_ascending</span><span class="p">,</span>
+    <span class="n">_radix_argsort_descending</span><span class="p">,</span>
+    <span class="n">_radix_sort_ascending</span><span class="p">,</span>
+    <span class="n">_radix_sort_descending</span><span class="p">,</span>
+    <span class="n">_radix_sort_dtype_supported</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="s2">&quot;argsort&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html#dpctl.tensor.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_sort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_sort_ascending</span>
+
+
+<span class="k">def</span> <span class="nf">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_radix_sort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_radix_sort_ascending</span>
+
+
+<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html#dpctl.tensor.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;sort(x, axis=-1, descending=False, stable=True)</span>
 
 <span class="sd">    Returns a sorted copy of an input array `x`.</span>
@@ -861,7 +876,10 @@
 <span class="sd">            relative order of `x` values which compare as equal. If `False`,</span>
 <span class="sd">            the returned array may or may not maintain the relative order of</span>
 <span class="sd">            `x` values which compare as equal. Default: `True`.</span>
-
+<span class="sd">        kind (Optional[Literal[&quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;]]):</span>
+<span class="sd">            Sorting algorithm. The default is `&quot;stable&quot;`, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the</span>
+<span class="sd">            array data type.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        usm_ndarray:</span>
 <span class="sd">            a sorted array. The returned array has the same data type and</span>
@@ -886,10 +904,33 @@
             <span class="n">axis</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;radixsort&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mergesort&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unsupported kind value. Expected &#39;stable&#39;, &#39;mergesort&#39;, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;or &#39;radixsort&#39;, but got &#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;mergesort&quot;</span><span class="p">:</span>
+        <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;radixsort&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_radix_sort_dtype_supported</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">num</span><span class="p">):</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radix sort is not supported for </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">]:</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_sort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_sort_ascending</span>
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span> <span class="o">=</span> <span class="n">impl_fn</span><span class="p">(</span>
@@ -921,7 +962,15 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="argsort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html#dpctl.tensor.argsort">[docs]</a><span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_argsort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_argsort_ascending</span>
+
+
+<span class="k">def</span> <span class="nf">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_radix_argsort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_radix_argsort_ascending</span>
+
+
+<div class="viewcode-block" id="argsort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html#dpctl.tensor.argsort">[docs]</a><span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;argsort(x, axis=-1, descending=False, stable=True)</span>
 
 <span class="sd">    Returns the indices that sort an array `x` along a specified axis.</span>
@@ -941,6 +990,10 @@
 <span class="sd">            relative order of `x` values which compare as equal. If `False`,</span>
 <span class="sd">            the returned array may or may not maintain the relative order of</span>
 <span class="sd">            `x` values which compare as equal. Default: `True`.</span>
+<span class="sd">        kind (Optional[Literal[&quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;]]):</span>
+<span class="sd">            Sorting algorithm. The default is `&quot;stable&quot;`, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the</span>
+<span class="sd">            array data type.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        usm_ndarray:</span>
@@ -969,10 +1022,33 @@
             <span class="n">axis</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;stable&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;stable&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;radixsort&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mergesort&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unsupported kind value. Expected &#39;stable&#39;, &#39;mergesort&#39;, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;or &#39;radixsort&#39;, but got &#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;mergesort&quot;</span><span class="p">:</span>
+        <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;radixsort&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_radix_sort_dtype_supported</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">num</span><span class="p">):</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radix sort is not supported for </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">]:</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
-    <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_argsort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_argsort_ascending</span>
     <span class="n">index_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">index_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
