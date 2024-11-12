@@ -1,5 +1,4 @@
-//=== tanh.hpp -   Unary function TANH                     ------
-//*-C++-*--/===//
+//=== vec_size_utils.hpp -                            -------/ /*-C++-*--/===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -20,8 +19,8 @@
 //===---------------------------------------------------------------------===//
 ///
 /// \file
-/// This file defines utilities for dispatching elementwise dedicated kernels
-//  for contiguous inputs.
+/// This file defines utilities for selection of hyperparameters for kernels
+/// implementing unary and binary elementwise functions for contiguous inputs
 //===---------------------------------------------------------------------===//
 
 #pragma once
