@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix additional warnings when generating docs [gh-1861](https://github.com/IntelPython/dpctl/pull/1861)
 * Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
 * Add support of CV-qualifiers in `is_complex<T>` helper [gh-1900](https://github.com/IntelPython/dpctl/pull/1900)
+* Tuning work for elementwise functions with modest performance gains (under 10%) [gh-1889](https://github.com/IntelPython/dpctl/pull/1889)
 
 ## [0.18.1] - Oct. 11, 2024
 
