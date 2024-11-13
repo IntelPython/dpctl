@@ -132,8 +132,8 @@ public:
 
 template <typename T,
           typename IndexerT,
-          std::uint32_t n_vecs,
           std::uint32_t vec_sz,
+          std::uint32_t n_vecs,
           bool enable_sg_load,
           typename KernelName>
 sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
@@ -143,6 +143,10 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
                                      const IndexerT &src_indexer,
                                      const std::vector<sycl::event> &depends)
 {
+    static_assert(vec_sz > 0);
+    static_assert(n_vecs > 0);
+    static_assert(vec_sz * n_vecs < (std::uint32_t(1) << 8));
+
     constexpr std::size_t preferred_lws = 256;
 
     const auto &kernel_id = sycl::get_kernel_id<KernelName>();
@@ -206,8 +210,8 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
     using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const IndexerT src_indexer(nd, ssize_t(0), shape_and_strides);
 
-    constexpr std::uint32_t n_vecs = 2;
-    constexpr std::uint32_t vec_sz = 4;
+    constexpr std::uint32_t vec_sz = 4u;
+    constexpr std::uint32_t n_vecs = 2u;
 
     using dpctl::tensor::kernels::alignment_utils::
         disabled_sg_loadstore_wrapper_krn;
@@ -219,7 +223,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
         constexpr bool enable_sg_load = true;
         using KernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, enable_sg_load>;
-        copy_ev = submit_c_contiguous_copy<T, IndexerT, n_vecs, vec_sz,
+        copy_ev = submit_c_contiguous_copy<T, IndexerT, vec_sz, n_vecs,
                                            enable_sg_load, KernelName>(
             exec_q, nelems, src_tp, dst_tp, src_indexer, depends);
     }
@@ -228,7 +232,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
         using InnerKernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, disable_sg_load>;
         using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
-        copy_ev = submit_c_contiguous_copy<T, IndexerT, n_vecs, vec_sz,
+        copy_ev = submit_c_contiguous_copy<T, IndexerT, vec_sz, n_vecs,
                                            disable_sg_load, KernelName>(
             exec_q, nelems, src_tp, dst_tp, src_indexer, depends);
     }
