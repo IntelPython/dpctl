@@ -2632,3 +2632,19 @@ def test_full_functions_raise_type_error():
     x = dpt.ones(1, dtype="i4")
     with pytest.raises(TypeError):
         dpt.full_like(x, "0")
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_setitem_copy_as_contig_alignment(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    dtype_ = dpt.dtype(dt)
+    n0, n1 = 8, 23
+
+    x = dpt.zeros((n0, n1), dtype=dtype_, sycl_queue=q)
+
+    vals = dpt.ones(n1, dtype=dtype_, sycl_queue=q)[dpt.newaxis, :]
+    x[1:, ...] = vals
+    assert dpt.all(x[0] == 0)
+    assert dpt.all(x[1:, :] == vals)
