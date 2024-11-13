@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 * Fix for `tensor.result_type` when all inputs are Python built-in scalars [gh-1877](https://github.com/IntelPython/dpctl/pull/1877)
-
 * Improved error in constructors `tensor.full` and `tensor.full_like` when provided a non-numeric fill value [gh-1878](https://github.com/IntelPython/dpctl/pull/1878)
+* Added a check for pointer alignment when copying to C-contiguous memory [gh-1890](https://github.com/IntelPython/dpctl/pull/1890)
 
 ### Maintenance
 
