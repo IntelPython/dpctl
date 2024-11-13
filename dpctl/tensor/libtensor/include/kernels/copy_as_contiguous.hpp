@@ -121,6 +121,55 @@ public:
 };
 
 template <typename T,
+          typename IndexerT,
+          std::uint32_t n_vecs,
+          std::uint32_t vec_sz,
+          bool enable_sg_load,
+          typename KernelName>
+sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
+                                     size_t nelems,
+                                     const T *src,
+                                     T *dst,
+                                     const IndexerT &src_indexer,
+                                     const std::vector<sycl::event> &depends)
+{
+    constexpr std::size_t preferred_lws = 256;
+
+    const auto &kernel_id = sycl::get_kernel_id<KernelName>();
+
+    auto const &ctx = exec_q.get_context();
+    auto const &dev = exec_q.get_device();
+    auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        ctx, {dev}, {kernel_id});
+
+    auto krn = kb.get_kernel(kernel_id);
+
+    const std::uint32_t max_sg_size = krn.template get_info<
+        sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
+    const std::size_t lws =
+        ((preferred_lws + max_sg_size - 1) / max_sg_size) * max_sg_size;
+
+    constexpr std::uint32_t nelems_per_wi = n_vecs * vec_sz;
+    size_t n_groups =
+        (nelems + nelems_per_wi * lws - 1) / (nelems_per_wi * lws);
+
+    sycl::event copy_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+        cgh.use_kernel_bundle(kb);
+
+        const sycl::range<1> gRange{n_groups * lws};
+        const sycl::range<1> lRange{lws};
+
+        cgh.parallel_for<KernelName>(
+            sycl::nd_range<1>(gRange, lRange),
+            CopyAsCContigFunctor<T, IndexerT, vec_sz, n_vecs, enable_sg_load>(
+                nelems, src, dst, src_indexer));
+    });
+    return copy_ev;
+}
+
+template <typename T,
           typename IndexT,
           int vec_sz,
           int n_vecs,
@@ -145,7 +194,6 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
     using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const IndexerT src_indexer(nd, ssize_t(0), shape_and_strides);
 
-    constexpr std::size_t preferred_lws = 256;
     constexpr std::uint32_t n_vecs = 2;
     constexpr std::uint32_t vec_sz = 4;
 
@@ -155,84 +203,22 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
     using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
     sycl::event copy_ev;
-    if (is_aligned<required_alignment>(src_p) &&
-        is_aligned<required_alignment>(dst_p))
-    {
+    if (is_aligned<required_alignment>(dst_p)) {
         constexpr bool enable_sg_load = true;
         using KernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, enable_sg_load>;
-
-        const auto &kernel_id = sycl::get_kernel_id<KernelName>();
-
-        auto const &ctx = exec_q.get_context();
-        auto const &dev = exec_q.get_device();
-        auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-            ctx, {dev}, {kernel_id});
-
-        auto krn = kb.get_kernel(kernel_id);
-
-        const std::uint32_t max_sg_size = krn.template get_info<
-            sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-        const std::size_t lws =
-            ((preferred_lws + max_sg_size - 1) / max_sg_size) * max_sg_size;
-
-        constexpr std::uint32_t nelems_per_wi = n_vecs * vec_sz;
-        size_t n_groups =
-            (nelems + nelems_per_wi * lws - 1) / (nelems_per_wi * lws);
-
-        copy_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-            cgh.use_kernel_bundle(kb);
-
-            const sycl::range<1> gRange{n_groups * lws};
-            const sycl::range<1> lRange{lws};
-
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(gRange, lRange),
-                CopyAsCContigFunctor<T, IndexerT, vec_sz, n_vecs,
-                                     enable_sg_load>(nelems, src_tp, dst_tp,
-                                                     src_indexer));
-        });
+        copy_ev = submit_c_contiguous_copy<T, IndexerT, n_vecs, vec_sz,
+                                           enable_sg_load, KernelName>(
+            exec_q, nelems, src_tp, dst_tp, src_indexer, depends);
     }
     else {
         constexpr bool disable_sg_load = false;
         using InnerKernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, disable_sg_load>;
         using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
-
-        const auto &kernel_id = sycl::get_kernel_id<KernelName>();
-
-        auto const &ctx = exec_q.get_context();
-        auto const &dev = exec_q.get_device();
-        auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-            ctx, {dev}, {kernel_id});
-
-        auto krn = kb.get_kernel(kernel_id);
-
-        const std::uint32_t max_sg_size = krn.template get_info<
-            sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-        const std::size_t lws =
-            ((preferred_lws + max_sg_size - 1) / max_sg_size) * max_sg_size;
-
-        constexpr std::uint32_t nelems_per_wi = n_vecs * vec_sz;
-        size_t n_groups =
-            (nelems + nelems_per_wi * lws - 1) / (nelems_per_wi * lws);
-
-        copy_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-            cgh.use_kernel_bundle(kb);
-
-            const sycl::range<1> gRange{n_groups * lws};
-            const sycl::range<1> lRange{lws};
-
-            cgh.parallel_for<KernelName>(
-                sycl::nd_range<1>(gRange, lRange),
-                CopyAsCContigFunctor<T, IndexerT, vec_sz, n_vecs,
-                                     disable_sg_load>(nelems, src_tp, dst_tp,
-                                                      src_indexer));
-        });
+        copy_ev = submit_c_contiguous_copy<T, IndexerT, n_vecs, vec_sz,
+                                           disable_sg_load, KernelName>(
+            exec_q, nelems, src_tp, dst_tp, src_indexer, depends);
     }
 
     return copy_ev;
