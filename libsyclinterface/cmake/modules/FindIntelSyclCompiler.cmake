@@ -119,7 +119,7 @@ if(${clangxx_result} MATCHES "0")
     if("x${CMAKE_SYSTEM_NAME}" STREQUAL "xWindows")
         find_file(
             IntelSyclCompiler_SYCL_LIBRARY
-            NAMES "sycl.lib" "sycl6.lib" "sycl7.lib"
+            NAMES "sycl.lib" "sycl6.lib" "sycl7.lib" "sycl8.lib"
             PATHS ${IntelSyclCompiler_LIBRARY_DIR}
         )
         find_file(
