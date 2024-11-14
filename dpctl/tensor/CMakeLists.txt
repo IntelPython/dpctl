@@ -311,5 +311,12 @@ foreach(python_module_name ${_py_trgts})
     # TODO: update source so they refernece individual libraries instead of
     #   dpctl4pybind11.hpp. It will allow to simplify dependency tree
     target_link_libraries(${python_module_name} PRIVATE DpctlCAPI)
+    if (DPCTL_WITH_REDIST)
+        set_target_properties(
+            ${python_module_name}
+            PROPERTIES
+                INSTALL_RPATH "$ORIGIN/../../../.."
+        )
+    endif()
     install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
 endforeach()
