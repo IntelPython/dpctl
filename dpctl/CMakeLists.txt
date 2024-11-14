@@ -146,6 +146,14 @@ function(build_dpctl_ext _trgt _src _dest)
     get_filename_component(_generated_src_dir_dir ${_generated_src_dir} DIRECTORY)
     # TODO: do not set directory if we did not generate header
     target_include_directories(${_trgt} INTERFACE ${_generated_src_dir_dir})
+    set(_rpath_value "$ORIGIN")
+    if (DPCTL_WITH_REDIST)
+        get_filename_component(_src_dir ${_src} DIRECTORY)
+        cmake_path(RELATIVE_PATH CMAKE_SOURCE_DIR BASE_DIRECTORY ${_src_dir} OUTPUT_VARIABLE _relative_path)
+	string(JOIN ":" _expanded_rpath_value ${_rpath_value} "$ORIGIN/${_relative_path}/../../")
+	set(_rpath_value ${_expanded_rpath_value})
+    endif()
+    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH ${_rpath_value})
 
     install(TARGETS ${_trgt}
         LIBRARY DESTINATION ${_dest})
