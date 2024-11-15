@@ -93,7 +93,7 @@ public:
         ssize_t src_offset = orthog_offsets.get_first_offset();
         ssize_t dst_offset = orthog_offsets.get_second_offset();
 
-        const ProjectorT proj{};
+        constexpr ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
@@ -239,7 +239,7 @@ public:
         ssize_t dst_offset = orthog_offsets.get_first_offset();
         ssize_t val_offset = orthog_offsets.get_second_offset();
 
-        const ProjectorT proj{};
+        constexpr ProjectorT proj{};
         for (int axis_idx = 0; axis_idx < k_; ++axis_idx) {
             indT *ind_data = reinterpret_cast<indT *>(ind_[axis_idx]);
 
