@@ -43,7 +43,3 @@ ${PYTHON} -m pip install dist/dpctl*.whl \
 if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
     cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi
-
-# need to create this folder so ensure that .dpctl-post-link.sh can work correctly
-mkdir -p $PREFIX/etc/OpenCL/vendors
-echo "dpctl creates symbolic link to system installed /etc/OpenCL/vendors/intel.icd as a work-around." > $PREFIX/etc/OpenCL/vendors/.dpctl_readme
