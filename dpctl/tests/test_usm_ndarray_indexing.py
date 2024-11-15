@@ -1798,3 +1798,38 @@ def test__copy_utils():
     check__take_multi_index(cu._take_multi_index)
     check__place_impl_validation(cu._place_impl)
     check__put_multi_index_validation(cu._put_multi_index)
+
+
+@pytest.mark.parametrize("mode", ["wrap", "clip"])
+def test_take_indices_oob_py_ssize_t(mode):
+    get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4")
+    inds1 = dpt.full(5, dpt.iinfo(dpt.uint64).max, dtype=dpt.uint64)
+    inds2 = dpt.full(5, dpt.iinfo(dpt.uint64).max, dtype=dpt.uint64)
+
+    # sweep through a small range of indices
+    # to check that OOB indices are well-behaved
+    for i in range(1, 10):
+        inds2 -= i
+        r1 = dpt.take(x, inds1, mode=mode)
+        r2 = dpt.take(x, inds2, mode=mode)
+
+        assert dpt.all(r1 == r2)
+
+
+@pytest.mark.parametrize("mode", ["wrap", "clip"])
+def test_put_indices_oob_py_ssize_t(mode):
+    get_queue_or_skip()
+
+    x = dpt.full(10, -1, dtype="i4")
+    inds = dpt.full(1, dpt.iinfo(dpt.uint64).max, dtype=dpt.uint64)
+
+    # OOB inds are positive, so always
+    # clip to the top of range
+    for i in range(1, 10):
+        inds -= i
+        dpt.put(x, inds, i, mode=mode)
+
+        assert dpt.all(x[:-1] == -1)
+        assert x[-1] == i

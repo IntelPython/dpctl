@@ -92,6 +92,7 @@ The full list of changes that went into this release are:
 * Element-wise `tensor.divide` and comparison operations allow greater range of Python integer and integer array combinations [gh-1771](https://github.com/IntelPython/dpctl/pull/1771)
 * Fix for unexpected behavior when using floating point types for array indexing [gh-1792](https://github.com/IntelPython/dpctl/pull/1792)
 * Enable `pytest --pyargs dpctl.tests` [gh-1833](https://github.com/IntelPython/dpctl/pull/1833)
+* Fix for undefined behavior in indexing using integer arrays [gh-1894](https://github.com/IntelPython/dpctl/pull/1894)
 
 ### Maintenance
 
