@@ -896,8 +896,7 @@
 
 <div class="viewcode-block" id="SyclTimer"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.SyclTimer.html#dpctl.SyclTimer">[docs]</a><span class="k">class</span> <span class="nc">SyclTimer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Context to measure device time and host wall-time of execution</span>
-<span class="sd">    of commands submitted to :class:`dpctl.SyclQueue`.</span>
+<span class="sd">    Context to time execution of tasks submitted to :class:`dpctl.SyclQueue`.</span>
 
 <span class="sd">    :Example:</span>
 <span class="sd">        .. code-block:: python</span>
@@ -911,13 +910,18 @@
 <span class="sd">            milliseconds_sc = 1e3</span>
 <span class="sd">            timer = dpctl.SyclTimer(time_scale = milliseconds_sc)</span>
 
+<span class="sd">            untimed_code_block_1</span>
 <span class="sd">            # use the timer</span>
 <span class="sd">            with timer(queue=q):</span>
-<span class="sd">                code_block1</span>
+<span class="sd">                timed_code_block1</span>
+
+<span class="sd">            untimed_code_block_2</span>
 
 <span class="sd">            # use the timer</span>
 <span class="sd">            with timer(queue=q):</span>
-<span class="sd">                code_block2</span>
+<span class="sd">                timed_code_block2</span>
+
+<span class="sd">            untimed_code_block_3</span>
 
 <span class="sd">            # retrieve elapsed times in milliseconds</span>
 <span class="sd">            wall_dt, device_dt = timer.dt</span>
@@ -928,15 +932,40 @@
 <span class="sd">        associated with these submissions to perform the timing. Thus</span>
 <span class="sd">        :class:`dpctl.SyclTimer` requires the queue with ``&quot;enable_profiling&quot;``</span>
 <span class="sd">        property. In order to be able to collect the profiling information,</span>
-<span class="sd">        the ``dt`` property ensures that both submitted barriers complete their</span>
-<span class="sd">        execution and thus effectively synchronizes the queue.</span>
+<span class="sd">        the ``dt`` property ensures that both tasks submitted by the timer</span>
+<span class="sd">        complete their execution and thus effectively synchronizes the queue.</span>
 
-<span class="sd">        `device_timer` keyword argument controls the type of tasks submitted.</span>
-<span class="sd">        With `device_timer=&quot;queue_barrier&quot;`, queue barrier tasks are used. With</span>
-<span class="sd">        `device_timer=&quot;order_manager&quot;`, a single empty body task is inserted</span>
-<span class="sd">        instead relying on order manager (used by `dpctl.tensor` operations) to</span>
+<span class="sd">        Execution of the above example results in the following task graph,</span>
+<span class="sd">        where each group of tasks is ordered after the one preceding it,</span>
+<span class="sd">        ``[tasks_of_untimed_block1]``, ``[timer_fence_start_task]``,</span>
+<span class="sd">        ``[tasks_of_timed_block1]``, ``[timer_fence_finish_task]``,</span>
+<span class="sd">        ``[tasks_of_untimed_block2]``, ``[timer_fence_start_task]``,</span>
+<span class="sd">        ``[tasks_of_timed_block2]``, ``[timer_fence_finish_task]``,</span>
+<span class="sd">        ``[tasks_of_untimed_block3]``.</span>
+
+<span class="sd">        ``device_timer`` keyword argument controls the type of tasks submitted.</span>
+<span class="sd">        With ``&quot;queue_barrier&quot;`` value, queue barrier tasks are used. With</span>
+<span class="sd">        ``&quot;order_manager&quot;`` value, a single empty body task is inserted</span>
+<span class="sd">        and order manager (used by all `dpctl.tensor` operations) is used to</span>
 <span class="sd">        order these tasks so that they fence operations performed within</span>
 <span class="sd">        timer&#39;s context.</span>
+
+<span class="sd">        Timing offloading operations that do not use the order manager with</span>
+<span class="sd">        the timer that uses ``&quot;order_manager&quot;`` as ``device_timer`` value</span>
+<span class="sd">        will be misleading becaused the tasks submitted by the timer will not</span>
+<span class="sd">        be ordered with respect to tasks we intend to time.</span>
+
+<span class="sd">        Note, that host timer effectively measures the time of task</span>
+<span class="sd">        submissions. To measure host timer wall-time that includes execution</span>
+<span class="sd">        of submitted tasks, make sure to include synchronization point in</span>
+<span class="sd">        the timed block.</span>
+
+<span class="sd">        :Example:</span>
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">            with timer(q):</span>
+<span class="sd">                timed_block</span>
+<span class="sd">                q.wait()</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        host_timer (callable, optional):</span>
@@ -946,7 +975,7 @@
 <span class="sd">        device_timer (Literal[&quot;queue_barrier&quot;, &quot;order_manager&quot;], optional):</span>
 <span class="sd">            Device timing method. Default: &quot;queue_barrier&quot;.</span>
 <span class="sd">        time_scale (Union[int, float], optional):</span>
-<span class="sd">            Ratio of the unit of time of interest and one second.</span>
+<span class="sd">            Ratio of one second and the unit of time-scale of interest.</span>
 <span class="sd">            Default: ``1``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
