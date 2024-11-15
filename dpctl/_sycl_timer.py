@@ -84,8 +84,7 @@ class OrderManagerDeviceTimer(BaseDeviceTimer):
 
 class SyclTimer:
     """
-    Context to measure device time and host wall-time of execution
-    of commands submitted to :class:`dpctl.SyclQueue`.
+    Context to time execution of tasks submitted to :class:`dpctl.SyclQueue`.
 
     :Example:
         .. code-block:: python
@@ -99,13 +98,18 @@ class SyclTimer:
             milliseconds_sc = 1e3
             timer = dpctl.SyclTimer(time_scale = milliseconds_sc)
 
+            untimed_code_block_1
             # use the timer
             with timer(queue=q):
-                code_block1
+                timed_code_block1
+
+            untimed_code_block_2
 
             # use the timer
             with timer(queue=q):
-                code_block2
+                timed_code_block2
+
+            untimed_code_block_3
 
             # retrieve elapsed times in milliseconds
             wall_dt, device_dt = timer.dt
@@ -116,15 +120,40 @@ class SyclTimer:
         associated with these submissions to perform the timing. Thus
         :class:`dpctl.SyclTimer` requires the queue with ``"enable_profiling"``
         property. In order to be able to collect the profiling information,
-        the ``dt`` property ensures that both submitted barriers complete their
-        execution and thus effectively synchronizes the queue.
+        the ``dt`` property ensures that both tasks submitted by the timer
+        complete their execution and thus effectively synchronizes the queue.
 
-        `device_timer` keyword argument controls the type of tasks submitted.
-        With `device_timer="queue_barrier"`, queue barrier tasks are used. With
-        `device_timer="order_manager"`, a single empty body task is inserted
-        instead relying on order manager (used by `dpctl.tensor` operations) to
+        Execution of the above example results in the following task graph,
+        where each group of tasks is ordered after the one preceding it,
+        ``[tasks_of_untimed_block1]``, ``[timer_fence_start_task]``,
+        ``[tasks_of_timed_block1]``, ``[timer_fence_finish_task]``,
+        ``[tasks_of_untimed_block2]``, ``[timer_fence_start_task]``,
+        ``[tasks_of_timed_block2]``, ``[timer_fence_finish_task]``,
+        ``[tasks_of_untimed_block3]``.
+
+        ``device_timer`` keyword argument controls the type of tasks submitted.
+        With ``"queue_barrier"`` value, queue barrier tasks are used. With
+        ``"order_manager"`` value, a single empty body task is inserted
+        and order manager (used by all `dpctl.tensor` operations) is used to
         order these tasks so that they fence operations performed within
         timer's context.
+
+        Timing offloading operations that do not use the order manager with
+        the timer that uses ``"order_manager"`` as ``device_timer`` value
+        will be misleading becaused the tasks submitted by the timer will not
+        be ordered with respect to tasks we intend to time.
+
+        Note, that host timer effectively measures the time of task
+        submissions. To measure host timer wall-time that includes execution
+        of submitted tasks, make sure to include synchronization point in
+        the timed block.
+
+        :Example:
+            .. code-block:: python
+
+            with timer(q):
+                timed_block
+                q.wait()
 
     Args:
         host_timer (callable, optional):
@@ -134,7 +163,7 @@ class SyclTimer:
         device_timer (Literal["queue_barrier", "order_manager"], optional):
             Device timing method. Default: "queue_barrier".
         time_scale (Union[int, float], optional):
-            Ratio of the unit of time of interest and one second.
+            Ratio of one second and the unit of time-scale of interest.
             Default: ``1``.
     """
 
