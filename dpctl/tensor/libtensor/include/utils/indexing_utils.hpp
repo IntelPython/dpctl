@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <limits>
 #include <sycl/sycl.hpp>
+#include <type_traits>
 
 #include "kernels/dpctl_tensor_types.hpp"
 
@@ -46,6 +47,8 @@ namespace indexing_utils
 
 template <typename IndT> struct WrapIndex
 {
+    static_assert(std::is_integral_v<IndT>);
+
     ssize_t operator()(ssize_t max_item, IndT ind) const
     {
         ssize_t projected;
@@ -91,6 +94,8 @@ template <typename IndT> struct WrapIndex
 
 template <typename IndT> struct ClipIndex
 {
+    static_assert(std::is_integral_v<IndT>);
+
     ssize_t operator()(ssize_t max_item, IndT ind) const
     {
         ssize_t projected;
