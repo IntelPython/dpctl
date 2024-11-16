@@ -820,7 +820,7 @@
 <h1>dpctl.SyclTimer.__init__<a class="headerlink" href="#dpctl-sycltimer-init" title="Permalink to this heading">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.SyclTimer.__init__">
-<span class="sig-prename descclassname"><span class="pre">SyclTimer.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host_timer=&lt;built-in</span> <span class="pre">function</span> <span class="pre">perf_counter&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_scale=1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/dpctl/_sycl_timer.html#SyclTimer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.SyclTimer.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">SyclTimer.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host_timer=&lt;built-in</span> <span class="pre">function</span> <span class="pre">perf_counter&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_timer=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_scale=1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/dpctl/_sycl_timer.html#SyclTimer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.SyclTimer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new instance of <a class="reference internal" href="../dpctl.SyclTimer.html#dpctl.SyclTimer" title="dpctl.SyclTimer"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclTimer</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -828,6 +828,7 @@
 <li><p><strong>host_timer</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes no arguments and returns a value
 measuring time.
 Default: <code class="xref py py-meth docutils literal notranslate"><span class="pre">timeit.default_timer()</span></code>.</p></li>
+<li><p><strong>device_timer</strong> (<em>Literal</em><em>[</em><em>&quot;queue_barrier&quot;</em><em>, </em><em>&quot;order_manager&quot;</em><em>]</em><em>, </em><em>optional</em>) – Device timing method. Default: “queue_barrier”</p></li>
 <li><p><strong>time_scale</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>]</em><em>, </em><em>optional</em>) – Scaling factor applied to durations measured by
 the host_timer. Default: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
 </ul>
