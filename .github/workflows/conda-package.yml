@@ -91,7 +91,8 @@ jobs:
           miniforge-variant: Miniforge3
           miniforge-version: latest
           activate-environment: build
-          channels: conda-forge,nodefaults
+          channels: conda-forge
+          conda-remove-defaults: true
           python-version: ${{ matrix.python }}
 
       - name: Install conda build
@@ -263,7 +264,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
-          channels: conda-forge,nodefaults
+          channels: conda-forge
+          conda-remove-defaults: true
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
 
@@ -800,7 +802,8 @@ jobs:
         with:
           run-post: false
           channel-priority: "disabled"
-          channels: conda-forge,nodefaults
+          channels: conda-forge
+          conda-remove-defaults: true
           python-version: '3.11'
 
       - name: Install anaconda-client
