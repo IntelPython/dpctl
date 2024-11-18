@@ -423,7 +423,20 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
 
 // Sub-group load/store
 
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+#ifndef USE_GROUP_LOAD_STORE
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE) &&                               \
+    SYCL_EXT_ONEAPI_GROUP_LOAD_STORE
+#define USE_GROUP_LOAD_STORE 1
+#else
+#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMIPLER > 20250000u)
+#define USE_GROUP_LOAD_STORE 1
+#else
+#define USE_GROUP_LOAD_STORE 0
+#endif
+#endif
+#endif
+
+#if (USE_GROUP_LOAD_STORE)
 namespace ls_ns = sycl::ext::oneapi::experimental;
 #endif
 
@@ -434,8 +447,9 @@ template <std::uint8_t vec_sz,
 auto sub_group_load(const sycl::sub_group &sg,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
-    sycl::vec<ElementType, vec_sz> x;
+#if (USE_GROUP_LOAD_STORE)
+    using ValueT = typename std::remove_cv_t<ElementType>;
+    sycl::vec<ValueT, vec_sz> x{};
     ls_ns::group_load(sg, m_ptr, x);
     return x;
 #else
@@ -449,8 +463,9 @@ template <sycl::access::address_space Space,
 auto sub_group_load(const sycl::sub_group &sg,
                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
-    ElementType x;
+#if (USE_GROUP_LOAD_STORE)
+    using ValueT = typename std::remove_cv_t<ElementType>;
+    ValueT x{};
     ls_ns::group_load(sg, m_ptr, x);
     return x;
 #else
@@ -461,29 +476,41 @@ auto sub_group_load(const sycl::sub_group &sg,
 template <std::uint8_t vec_sz,
           sycl::access::address_space Space,
           sycl::access::decorated DecorateAddress,
+          typename VecT,
           typename ElementType>
-void sub_group_store(const sycl::sub_group &sg,
-                     const sycl::vec<ElementType, vec_sz> &val,
-                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+std::enable_if_t<
+    std::is_same_v<std::remove_cv_t<ElementType>, std::remove_cv_t<VecT>>,
+    void>
+sub_group_store(const sycl::sub_group &sg,
+                const sycl::vec<VecT, vec_sz> &val,
+                sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+#if (USE_GROUP_LOAD_STORE)
     ls_ns::group_store(sg, val, m_ptr);
+    return;
 #else
     sg.store<vec_sz>(m_ptr, val);
+    return;
 #endif
 }
 
 template <sycl::access::address_space Space,
           sycl::access::decorated DecorateAddress,
+          typename VecT,
           typename ElementType>
-void sub_group_store(const sycl::sub_group &sg,
-                     const ElementType &val,
-                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+std::enable_if_t<
+    std::is_same_v<std::remove_cv_t<ElementType>, std::remove_cv_t<VecT>>,
+    void>
+sub_group_store(const sycl::sub_group &sg,
+                const VecT &val,
+                sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
-#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+#if (USE_GROUP_LOAD_STORE)
     ls_ns::group_store(sg, val, m_ptr);
+    return;
 #else
     sg.store(m_ptr, val);
+    return;
 #endif
 }
 
