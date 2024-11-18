@@ -33,6 +33,7 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/sycl_utils.hpp"
 
 namespace dpctl
 {
@@ -48,11 +49,14 @@ using dpctl::tensor::kernels::alignment_utils::
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
+using dpctl::tensor::sycl_utils::sub_group_load;
+using dpctl::tensor::sycl_utils::sub_group_store;
+
 template <typename argT,
           typename resT,
           typename BinaryInplaceOperatorT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 struct BinaryInplaceContigFunctor
 {
@@ -72,7 +76,7 @@ public:
     void operator()(sycl::nd_item<1> ndit) const
     {
         BinaryInplaceOperatorT op{};
-        constexpr std::uint32_t elems_per_wi = vec_sz * n_vecs;
+        constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NB: Workgroup size must be divisible by sub-group size */
 
@@ -82,31 +86,31 @@ public:
                       (vec_sz > 1))
         {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_max_local_range()[0];
+            std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = static_cast<size_t>(elems_per_wi) *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * sgSize);
+            size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
 
-            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
-
-                sycl::vec<argT, vec_sz> arg_vec;
-                sycl::vec<resT, vec_sz> res_vec;
+            if (base + elems_per_wi * sgSize < nelems_) {
 
 #pragma unroll
-                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    const size_t offset = base + it * sgSize;
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&rhs[offset]);
                     auto lhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&lhs[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&lhs[offset]);
 
-                    arg_vec = sg.load<vec_sz>(rhs_multi_ptr);
-                    res_vec = sg.load<vec_sz>(lhs_multi_ptr);
+                    const sycl::vec<argT, vec_sz> &arg_vec =
+                        sub_group_load<vec_sz>(sg, rhs_multi_ptr);
+                    sycl::vec<resT, vec_sz> res_vec =
+                        sub_group_load<vec_sz>(sg, lhs_multi_ptr);
                     op(res_vec, arg_vec);
 
-                    sg.store<vec_sz>(lhs_multi_ptr, res_vec);
+                    sub_group_store<vec_sz>(sg, res_vec, lhs_multi_ptr);
                 }
             }
             else {
@@ -120,32 +124,32 @@ public:
                            BinaryInplaceOperatorT::supports_sg_loadstore::value)
         {
             auto sg = ndit.get_sub_group();
-            std::uint32_t sgSize = sg.get_max_local_range()[0];
+            std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base = static_cast<size_t>(elems_per_wi) *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * sgSize);
+            size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
 
-            if (base + static_cast<size_t>(elems_per_wi * sgSize) < nelems_) {
-                sycl::vec<argT, vec_sz> arg_vec;
-                sycl::vec<resT, vec_sz> res_vec;
-
+            if (base + elems_per_wi * sgSize < nelems_) {
 #pragma unroll
-                for (std::uint32_t it = 0; it < elems_per_wi; it += vec_sz) {
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    const size_t offset = base + it * sgSize;
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&rhs[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&rhs[offset]);
                     auto lhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(&lhs[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&lhs[offset]);
 
-                    arg_vec = sg.load<vec_sz>(rhs_multi_ptr);
-                    res_vec = sg.load<vec_sz>(lhs_multi_ptr);
+                    const sycl::vec<argT, vec_sz> arg_vec =
+                        sub_group_load<vec_sz>(sg, rhs_multi_ptr);
+                    sycl::vec<resT, vec_sz> res_vec =
+                        sub_group_load<vec_sz>(sg, lhs_multi_ptr);
 #pragma unroll
-                    for (std::uint32_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
+                    for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
                         op(res_vec[vec_id], arg_vec[vec_id]);
                     }
-                    sg.store<vec_sz>(lhs_multi_ptr, res_vec);
+                    sub_group_store<vec_sz>(sg, res_vec, lhs_multi_ptr);
                 }
             }
             else {
@@ -157,14 +161,12 @@ public:
         }
         else {
             const size_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            const size_t gid = ndit.get_global_linear_id();
             const size_t elems_per_sg = elems_per_wi * sgSize;
 
-            base = (base / sgSize) * elems_per_sg + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(nelems_, base + elems_per_sg);
-                 offset += sgSize)
-            {
+            const size_t start = (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const size_t end = std::min(nelems_, start + elems_per_sg);
+            for (size_t offset = start; offset < end; offset += sgSize) {
                 op(lhs[offset], rhs[offset]);
             }
         }
@@ -229,7 +231,7 @@ public:
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
         auto sg = ndit.get_sub_group();
-        size_t gid = ndit.get_global_linear_id();
+        const size_t gid = ndit.get_global_linear_id();
 
         std::uint8_t sgSize = sg.get_max_local_range()[0];
         size_t base = gid - sg.get_local_id()[0];
@@ -243,17 +245,16 @@ public:
                 sycl::access::address_space::global_space,
                 sycl::access::decorated::yes>(&mat[base]);
 
-            const argT vec_el = sg.load(in_multi_ptr);
-            resT mat_el = sg.load(out_multi_ptr);
+            const argT vec_el = sub_group_load(sg, in_multi_ptr);
+            resT mat_el = sub_group_load(sg, out_multi_ptr);
 
             op(mat_el, vec_el);
 
-            sg.store(out_multi_ptr, mat_el);
+            sub_group_store(sg, mat_el, out_multi_ptr);
         }
         else {
-            for (size_t k = base + sg.get_local_id()[0]; k < n_elems;
-                 k += sgSize)
-            {
+            const size_t start = base + sg.get_local_id()[0];
+            for (size_t k = start; k < n_elems; k += sgSize) {
                 op(mat[k], padded_vec[k % n1]);
             }
         }
@@ -298,14 +299,14 @@ template <typename argTy,
           typename resTy,
           template <typename T1,
                     typename T2,
-                    unsigned int vs,
-                    unsigned int nv,
+                    std::uint8_t vs,
+                    std::uint8_t nv,
                     bool enable_sg_loadstore>
           class BinaryInplaceContigFunctorT,
-          template <typename T1, typename T2, unsigned int vs, unsigned int nv>
+          template <typename T1, typename T2, std::uint8_t vs, std::uint8_t nv>
           class kernel_name,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u>
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u>
 sycl::event
 binary_inplace_contig_impl(sycl::queue &exec_q,
                            size_t nelems,
@@ -434,10 +435,10 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
 
     // sub-group spans work-items [I, I + sgSize)
     // base = ndit.get_global_linear_id() - sg.get_local_id()[0]
-    // Generically, sg.load( &mat[base]) may load arrays from
+    // Generically, sub_group_load( &mat[base]) may load arrays from
     // different rows of mat. The start corresponds to row (base / n0)
-    // We read sg.load(&padded_vec[(base / n0)]). The vector is padded to
-    // ensure that reads are accessible
+    // We read sub_group_load(&padded_vec[(base / n0)]). The vector is
+    // padded to ensure that reads are accessible
 
     const size_t lws = 128;
 

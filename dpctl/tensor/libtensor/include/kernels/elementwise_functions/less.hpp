@@ -120,8 +120,8 @@ template <typename argT1, typename argT2, typename resT> struct LessFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using LessContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -212,8 +212,8 @@ template <typename argTy1, typename argTy2> struct LessContigHyperparameterSet
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class less_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -227,9 +227,9 @@ sycl::event less_contig_impl(sycl::queue &exec_q,
                              ssize_t res_offset,
                              const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         LessContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr unsigned int n_vecs =
+    constexpr std::uint8_t n_vecs =
         LessContigHyperparameterSet<argTy1, argTy2>::n_vecs;
 
     return elementwise_common::binary_contig_impl<

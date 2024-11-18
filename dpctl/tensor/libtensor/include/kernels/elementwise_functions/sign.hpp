@@ -105,8 +105,8 @@ private:
 
 template <typename argT,
           typename resT = argT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SignContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
@@ -156,7 +156,7 @@ template <typename argTy> struct SignContigHyperparameterSet
 
 } // end of anonymous namespace
 
-template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
+template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class sign_contig_kernel;
 
 template <typename argTy>
@@ -166,8 +166,8 @@ sycl::event sign_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz = SignContigHyperparameterSet<argTy>::vec_sz;
-    constexpr unsigned int n_vecs = SignContigHyperparameterSet<argTy>::n_vecs;
+    constexpr std::uint8_t vec_sz = SignContigHyperparameterSet<argTy>::vec_sz;
+    constexpr std::uint8_t n_vecs = SignContigHyperparameterSet<argTy>::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SignOutputType, SignContigFunctor, sign_contig_kernel, vec_sz,

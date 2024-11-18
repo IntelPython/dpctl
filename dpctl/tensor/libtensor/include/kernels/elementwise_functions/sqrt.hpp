@@ -82,8 +82,8 @@ template <typename argT, typename resT> struct SqrtFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SqrtContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
@@ -130,7 +130,7 @@ template <typename argTy> struct SqrtContigHyperparameterSet
 
 } // end of anonymous namespace
 
-template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
+template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class sqrt_contig_kernel;
 
 template <typename argTy>
@@ -140,8 +140,8 @@ sycl::event sqrt_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz = SqrtContigHyperparameterSet<argTy>::vec_sz;
-    constexpr unsigned int n_vecs = SqrtContigHyperparameterSet<argTy>::n_vecs;
+    constexpr std::uint8_t vec_sz = SqrtContigHyperparameterSet<argTy>::vec_sz;
+    constexpr std::uint8_t n_vecs = SqrtContigHyperparameterSet<argTy>::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SqrtOutputType, SqrtContigFunctor, sqrt_contig_kernel, vec_sz,

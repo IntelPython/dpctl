@@ -153,8 +153,8 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using PowContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -260,8 +260,8 @@ template <typename argTy1, typename argTy2> struct PowContigHyperparameterSet
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class pow_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -275,9 +275,9 @@ sycl::event pow_contig_impl(sycl::queue &exec_q,
                             ssize_t res_offset,
                             const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         PowContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr unsigned int n_vecs =
+    constexpr std::uint8_t n_vecs =
         PowContigHyperparameterSet<argTy1, argTy2>::n_vecs;
 
     return elementwise_common::binary_contig_impl<
@@ -443,8 +443,8 @@ template <typename argT, typename resT> struct PowInplaceFunctor
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using PowInplaceContigFunctor = elementwise_common::BinaryInplaceContigFunctor<
     argT,
@@ -464,8 +464,8 @@ using PowInplaceStridedFunctor =
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class pow_inplace_contig_kernel;
 
 /* @brief Types supported by in-place pow */
@@ -521,9 +521,9 @@ pow_inplace_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         PowContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr unsigned int n_vecs =
+    constexpr std::uint8_t n_vecs =
         PowContigHyperparameterSet<resTy, argTy>::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<

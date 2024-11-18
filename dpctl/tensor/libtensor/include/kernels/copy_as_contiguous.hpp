@@ -44,8 +44,8 @@ namespace copy_as_contig
 
 template <typename T,
           typename IndexerT,
-          std::uint32_t vec_sz = 4u,
-          std::uint32_t n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 class CopyAsCContigFunctor
 {
@@ -68,10 +68,8 @@ public:
     {
         static_assert(vec_sz > 0);
         static_assert(n_vecs > 0);
-        static_assert(vec_sz * n_vecs < (std::uint32_t(1) << 8));
 
-        constexpr std::uint8_t elems_per_wi =
-            static_cast<std::uint8_t>(vec_sz * n_vecs);
+        constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<T>::value) {
@@ -79,14 +77,14 @@ public:
                 ndit.get_sub_group().get_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
 
-            // base = (gid / sgSize) * sgSize * elems_per_wi + (gid % sgSize)
+            // start = (gid / sgSize) * sgSize * elems_per_wi + (gid % sgSize)
             // gid % sgSize == gid - (gid / sgSize) * sgSize
-            const std::size_t elems_per_sg = sgSize * (elems_per_wi - 1);
-            const std::size_t base = (gid / sgSize) * elems_per_sg + gid;
-            const std::size_t offset_max =
-                std::min(nelems, base + sgSize * elems_per_wi);
+            const std::size_t elems_per_sg = sgSize * elems_per_wi;
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems, start + elems_per_sg);
 
-            for (size_t offset = base; offset < offset_max; offset += sgSize) {
+            for (size_t offset = start; offset < end; offset += sgSize) {
                 auto src_offset = src_indexer(offset);
                 dst_p[offset] = src_p[src_offset];
             }
@@ -132,8 +130,8 @@ public:
 
 template <typename T,
           typename IndexerT,
-          std::uint32_t vec_sz,
-          std::uint32_t n_vecs,
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs,
           bool enable_sg_load,
           typename KernelName>
 sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
@@ -145,7 +143,6 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
 {
     static_assert(vec_sz > 0);
     static_assert(n_vecs > 0);
-    static_assert(vec_sz * n_vecs < (std::uint32_t(1) << 8));
 
     constexpr std::size_t preferred_lws = 256;
 
@@ -187,8 +184,8 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
 
 template <typename T,
           typename IndexT,
-          std::uint32_t vec_sz,
-          std::uint32_t n_vecs,
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs,
           bool enable_sgload>
 class as_contig_krn;
 
@@ -210,8 +207,8 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
     using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const IndexerT src_indexer(nd, ssize_t(0), shape_and_strides);
 
-    constexpr std::uint32_t vec_sz = 4u;
-    constexpr std::uint32_t n_vecs = 2u;
+    constexpr std::uint8_t vec_sz = 4u;
+    constexpr std::uint8_t n_vecs = 2u;
 
     using dpctl::tensor::kernels::alignment_utils::
         disabled_sg_loadstore_wrapper_krn;
@@ -256,8 +253,8 @@ template <typename fnT, typename T> struct AsCContigFactory
 
 template <typename T,
           typename IndexerT,
-          std::uint32_t tile_size,
-          std::uint32_t n_lines>
+          std::uint16_t tile_size,
+          std::uint16_t n_lines>
 class as_contig_batch_of_square_matrices_krn;
 
 namespace detail
@@ -283,14 +280,14 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
     const T *src_tp = reinterpret_cast<const T *>(src_p);
     T *dst_tp = reinterpret_cast<T *>(dst_p);
 
-    constexpr std::uint32_t private_tile_size = 4;
-    constexpr std::uint32_t n_lines = 2;
-    constexpr std::uint32_t block_size =
+    constexpr std::uint16_t private_tile_size = 4;
+    constexpr std::uint16_t n_lines = 2;
+    constexpr std::uint16_t block_size =
         n_lines * private_tile_size * private_tile_size;
 
-    constexpr std::uint32_t lws0 = block_size;
-    constexpr std::uint32_t lws1 = n_lines;
-    constexpr std::uint32_t nelems_per_wi = (block_size / lws1);
+    constexpr std::uint16_t lws0 = block_size;
+    constexpr std::uint16_t lws1 = n_lines;
+    constexpr std::uint16_t nelems_per_wi = (block_size / lws1);
 
     static_assert(nelems_per_wi * lws1 == block_size);
     static_assert(nelems_per_wi == private_tile_size * private_tile_size);
@@ -377,40 +374,41 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
             std::array<T, nelems_per_wi> private_block_01 = {T(0)};
             std::array<T, nelems_per_wi> private_block_10 = {T(0)};
 
-            // 0 <= lid_lin < lws0 * lws1 == (block_size * block_size /
-            // nelems_per_wi) == (block_size/private_tile_size)**2
-            constexpr std::uint32_t n_private_tiles_per_axis =
+            // 0 <= lid_lin < lws0 * lws1 ==
+            //       (block_size * block_size / nelems_per_wi) ==
+            //       (block_size/private_tile_size)**2
+            constexpr std::uint16_t n_private_tiles_per_axis =
                 block_size / private_tile_size;
-            const std::uint32_t local_tile_id0 =
+            const std::uint16_t local_tile_id0 =
                 lid_lin / n_private_tiles_per_axis;
-            const std::uint32_t local_tile_id1 =
+            const std::uint16_t local_tile_id1 =
                 lid_lin - local_tile_id0 * n_private_tiles_per_axis;
 
             if (local_tile_id0 <= local_tile_id1) {
-                for (std::uint32_t pr_i0 = 0; pr_i0 < private_tile_size;
+                for (std::uint16_t pr_i0 = 0; pr_i0 < private_tile_size;
                      ++pr_i0)
                 {
-                    for (std::uint32_t pr_i1 = 0; pr_i1 < private_tile_size;
+                    for (std::uint16_t pr_i1 = 0; pr_i1 < private_tile_size;
                          ++pr_i1)
                     {
-                        const std::uint32_t t0_offset =
+                        const std::uint16_t t0_offset =
                             local_tile_id0 * private_tile_size;
-                        const std::uint32_t t1_offset =
+                        const std::uint16_t t1_offset =
                             local_tile_id1 * private_tile_size;
 
-                        const std::uint32_t pr_offset =
+                        const std::uint16_t pr_offset =
                             pr_i1 * private_tile_size + pr_i0;
-                        const std::uint32_t rel_offset =
+                        const std::uint16_t rel_offset =
                             pr_i0 + pr_i1 * block_size;
 
                         // read (local_tile_id0, local_tile_id1)
-                        const std::uint32_t local_01_offset =
+                        const std::uint16_t local_01_offset =
                             (t0_offset + t1_offset * block_size) + rel_offset;
                         private_block_01[pr_offset] =
                             local_block[local_01_offset];
 
                         // read (local_tile_id1, local_tile_id0)
-                        const std::uint32_t local_10_offset =
+                        const std::uint16_t local_10_offset =
                             (t1_offset + t0_offset * block_size) + rel_offset;
                         private_block_10[pr_offset] =
                             local_block[local_10_offset];
@@ -422,20 +420,20 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
                                 sycl::memory_scope::work_group);
 
             if (local_tile_id0 <= local_tile_id1) {
-                for (std::uint32_t pr_i0 = 0; pr_i0 < private_tile_size;
+                for (std::uint16_t pr_i0 = 0; pr_i0 < private_tile_size;
                      ++pr_i0)
                 {
-                    for (std::uint32_t pr_i1 = 0; pr_i1 < private_tile_size;
+                    for (std::uint16_t pr_i1 = 0; pr_i1 < private_tile_size;
                          ++pr_i1)
                     {
-                        const std::uint32_t t0_offset =
+                        const std::uint16_t t0_offset =
                             local_tile_id0 * private_tile_size;
-                        const std::uint32_t t1_offset =
+                        const std::uint16_t t1_offset =
                             local_tile_id1 * private_tile_size;
-                        const std::uint32_t pr_offset =
+                        const std::uint16_t pr_offset =
                             pr_i0 * private_tile_size + pr_i1;
 
-                        const std::uint32_t rel_offset =
+                        const std::uint16_t rel_offset =
                             pr_i0 + pr_i1 * block_size;
 
                         // write back permuted private blocks
@@ -444,7 +442,7 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
                         local_block[local_01_offset] =
                             private_block_10[pr_offset];
 
-                        const std::uint32_t local_10_offset =
+                        const std::uint16_t local_10_offset =
                             (t1_offset + t0_offset * block_size) + rel_offset;
                         local_block[local_10_offset] =
                             private_block_01[pr_offset];
@@ -461,8 +459,8 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
             const std::size_t dst_tile_start1 = src_tile_start1;
 
             if (local_dim0 == block_size && local_dim1 == block_size) {
-                const std::uint32_t dst_i0 = src_i1;
-                const std::uint32_t dst_i1 = src_i0;
+                const std::uint16_t dst_i0 = src_i1;
+                const std::uint16_t dst_i1 = src_i0;
 
                 const std::size_t dst_gid0 = (dst_tile_start0 + dst_i0);
                 const std::size_t dst_gid1 = (dst_tile_start1 + dst_i1);
@@ -471,11 +469,11 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
                     dst_batch_offset + dst_gid0 * dst_stride + dst_gid1 * 1;
                 const std::size_t pr_step_dst = lws1 * dst_stride;
 
-                const std::uint32_t _local_offset0 =
+                const std::uint16_t _local_offset0 =
                     dst_i0 * block_size + dst_i1;
-                const std::uint32_t _pr_step_local = lws1 * block_size;
+                const std::uint16_t _pr_step_local = lws1 * block_size;
 
-                for (std::uint32_t pr_id = 0; pr_id < nelems_per_wi; ++pr_id) {
+                for (std::uint16_t pr_id = 0; pr_id < nelems_per_wi; ++pr_id) {
                     if ((dst_gid1 < n) && ((dst_gid0 + pr_id * lws1) < n)) {
                         dst_tp[dst_offset0 + pr_step_dst * pr_id] =
                             local_block[_local_offset0 +
@@ -485,24 +483,24 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
             }
             else {
                 // map local_linear_id into (local_dim0, local_dim1)
-                for (std::uint32_t el_id = lid_lin;
+                for (std::uint16_t el_id = lid_lin;
                      el_id < local_dim0 * local_dim1; el_id += lws0 * lws1)
                 {
 
                     // 0 <= local_i0 < local_dim0
-                    const std::uint32_t loc_i0 = el_id / local_dim1;
+                    const std::uint16_t loc_i0 = el_id / local_dim1;
                     // 0 <= local_i1 < local_dim1
-                    const std::uint32_t loc_i1 = el_id - loc_i0 * local_dim1;
+                    const std::uint16_t loc_i1 = el_id - loc_i0 * local_dim1;
 
-                    const std::uint32_t dst_i0 = loc_i0;
-                    const std::uint32_t dst_i1 = loc_i1;
+                    const std::uint16_t dst_i0 = loc_i0;
+                    const std::uint16_t dst_i1 = loc_i1;
 
                     const std::size_t dst_gid0 = (dst_tile_start0 + dst_i0);
                     const std::size_t dst_gid1 = (dst_tile_start1 + dst_i1);
 
                     const std::size_t dst_offset =
                         dst_batch_offset + dst_gid0 * dst_stride + dst_gid1 * 1;
-                    const std::uint32_t local_offset =
+                    const std::uint16_t local_offset =
                         loc_i0 * block_size + loc_i1;
 
                     if ((dst_gid1 < n) && (dst_gid0 < n)) {

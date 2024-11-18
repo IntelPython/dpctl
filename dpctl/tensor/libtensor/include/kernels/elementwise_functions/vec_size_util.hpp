@@ -41,30 +41,30 @@ template <typename Ty1,
           typename ArgTy1,
           typename Ty2,
           typename ArgTy2,
-          unsigned int vec_sz_v,
-          unsigned int n_vecs_v>
+          std::uint8_t vec_sz_v,
+          std::uint8_t n_vecs_v>
 struct BinaryContigHyperparameterSetEntry
     : std::conjunction<std::is_same<Ty1, ArgTy1>, std::is_same<Ty2, ArgTy2>>
 {
-    static constexpr unsigned int vec_sz = vec_sz_v;
-    static constexpr unsigned int n_vecs = n_vecs_v;
+    static constexpr std::uint8_t vec_sz = vec_sz_v;
+    static constexpr std::uint8_t n_vecs = n_vecs_v;
 };
 
 template <typename Ty,
           typename ArgTy,
-          unsigned int vec_sz_v,
-          unsigned int n_vecs_v>
+          std::uint8_t vec_sz_v,
+          std::uint8_t n_vecs_v>
 struct UnaryContigHyperparameterSetEntry : std::is_same<Ty, ArgTy>
 {
-    static constexpr unsigned int vec_sz = vec_sz_v;
-    static constexpr unsigned int n_vecs = n_vecs_v;
+    static constexpr std::uint8_t vec_sz = vec_sz_v;
+    static constexpr std::uint8_t n_vecs = n_vecs_v;
 };
 
-template <unsigned int vec_sz_v, unsigned int n_vecs_v>
+template <std::uint8_t vec_sz_v, std::uint8_t n_vecs_v>
 struct ContigHyperparameterSetDefault : std::true_type
 {
-    static constexpr unsigned int vec_sz = vec_sz_v;
-    static constexpr unsigned int n_vecs = n_vecs_v;
+    static constexpr std::uint8_t vec_sz = vec_sz_v;
+    static constexpr std::uint8_t n_vecs = n_vecs_v;
 };
 
 } // end of namespace vec_size_utils

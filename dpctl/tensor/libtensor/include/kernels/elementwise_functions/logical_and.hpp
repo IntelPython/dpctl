@@ -95,8 +95,8 @@ struct LogicalAndFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using LogicalAndContigFunctor = elementwise_common::BinaryContigFunctor<
     argT1,
@@ -184,8 +184,8 @@ struct LogicalAndContigHyperparameterSet
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class logical_and_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -200,9 +200,9 @@ logical_and_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         LogicalAndContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr unsigned int n_vecs =
+    constexpr std::uint8_t n_vecs =
         LogicalAndContigHyperparameterSet<argTy1, argTy2>::n_vecs;
 
     return elementwise_common::binary_contig_impl<

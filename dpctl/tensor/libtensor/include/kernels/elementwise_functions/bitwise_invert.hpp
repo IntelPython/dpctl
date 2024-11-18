@@ -82,8 +82,8 @@ template <typename argT, typename resT> struct BitwiseInvertFunctor
 
 template <typename argT,
           typename resT = argT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using BitwiseInvertContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
@@ -136,7 +136,7 @@ template <typename argTy> struct BitwiseInvertContigHyperparameterSet
 
 } // end of anonymous namespace
 
-template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
+template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class bitwise_invert_contig_kernel;
 
 template <typename argTy>
@@ -147,9 +147,9 @@ bitwise_invert_contig_impl(sycl::queue &exec_q,
                            char *res_p,
                            const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         BitwiseInvertContigHyperparameterSet<argTy>::vec_sz;
-    constexpr unsigned int n_vec =
+    constexpr std::uint8_t n_vec =
         BitwiseInvertContigHyperparameterSet<argTy>::n_vecs;
 
     return elementwise_common::unary_contig_impl<

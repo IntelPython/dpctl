@@ -112,8 +112,8 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using AddContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -256,8 +256,8 @@ template <typename argTy1, typename argTy2> struct AddContigHyperparameterSet
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class add_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -470,8 +470,8 @@ template <typename argT, typename resT> struct AddInplaceFunctor
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using AddInplaceContigFunctor = elementwise_common::BinaryInplaceContigFunctor<
     argT,
@@ -491,8 +491,8 @@ using AddInplaceStridedFunctor =
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class add_inplace_contig_kernel;
 
 /* @brief Types supported by in-place add */

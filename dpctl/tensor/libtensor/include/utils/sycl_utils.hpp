@@ -421,6 +421,72 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
     static constexpr T value = sycl::known_identity<Op, T>::value;
 };
 
+// Sub-group load/store
+
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+namespace ls_ns = sycl::ext::oneapi::experimental;
+#endif
+
+template <std::uint8_t vec_sz,
+          sycl::access::address_space Space,
+          sycl::access::decorated DecorateAddress,
+          typename ElementType>
+auto sub_group_load(const sycl::sub_group &sg,
+                    sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+{
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+    sycl::vec<ElementType, vec_sz> x;
+    ls_ns::group_load(sg, m_ptr, x);
+    return x;
+#else
+    return sg.load<vec_sz>(m_ptr);
+#endif
+}
+
+template <sycl::access::address_space Space,
+          sycl::access::decorated DecorateAddress,
+          typename ElementType>
+auto sub_group_load(const sycl::sub_group &sg,
+                    sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+{
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+    ElementType x;
+    ls_ns::group_load(sg, m_ptr, x);
+    return x;
+#else
+    return sg.load(m_ptr);
+#endif
+}
+
+template <std::uint8_t vec_sz,
+          sycl::access::address_space Space,
+          sycl::access::decorated DecorateAddress,
+          typename ElementType>
+void sub_group_store(const sycl::sub_group &sg,
+                     const sycl::vec<ElementType, vec_sz> &val,
+                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+{
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+    ls_ns::group_store(sg, val, m_ptr);
+#else
+    sg.store<vec_sz>(m_ptr, val);
+#endif
+}
+
+template <sycl::access::address_space Space,
+          sycl::access::decorated DecorateAddress,
+          typename ElementType>
+void sub_group_store(const sycl::sub_group &sg,
+                     const ElementType &val,
+                     sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
+{
+#if defined(SYCL_EXT_ONEAPI_GROUP_LOAD_STORE)
+    ls_ns::group_store(sg, val, m_ptr);
+#else
+    sg.store(m_ptr, val);
+#endif
+}
+
 } // namespace sycl_utils
 } // namespace tensor
 } // namespace dpctl

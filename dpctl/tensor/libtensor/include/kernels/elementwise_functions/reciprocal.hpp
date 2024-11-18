@@ -83,8 +83,8 @@ template <typename argT, typename resT> struct ReciprocalFunctor
 
 template <typename argTy,
           typename resTy = argTy,
-          unsigned int vec_sz = 4u,
-          unsigned int n_vecs = 2u,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using ReciprocalContigFunctor =
     elementwise_common::UnaryContigFunctor<argTy,
@@ -133,7 +133,7 @@ template <typename argTy> struct ReciprocalContigHyperparameterSet
 
 } // end of anonymous namespace
 
-template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
+template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class reciprocal_contig_kernel;
 
 template <typename argTy>
@@ -143,9 +143,9 @@ sycl::event reciprocal_contig_impl(sycl::queue &exec_q,
                                    char *res_p,
                                    const std::vector<sycl::event> &depends = {})
 {
-    constexpr unsigned int vec_sz =
+    constexpr std::uint8_t vec_sz =
         ReciprocalContigHyperparameterSet<argTy>::vec_sz;
-    constexpr unsigned int n_vecs =
+    constexpr std::uint8_t n_vecs =
         ReciprocalContigHyperparameterSet<argTy>::n_vecs;
 
     return elementwise_common::unary_contig_impl<
