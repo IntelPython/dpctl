@@ -31,6 +31,7 @@
 #include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -41,6 +42,8 @@ namespace kernels
 {
 namespace copy_as_contig
 {
+
+using dpctl::tensor::sycl_utils::sub_group_store;
 
 template <typename T,
           typename IndexerT,
@@ -113,7 +116,7 @@ public:
                         const ssize_t src_offset = src_indexer(elem_id);
                         dst_vec[k] = src_p[src_offset];
                     }
-                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
+                    sub_group_store<vec_sz>(sg, dst_vec, dst_multi_ptr);
                 }
             }
             else {
