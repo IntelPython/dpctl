@@ -33,6 +33,7 @@
 #include "kernels/alignment.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -50,6 +51,9 @@ using dpctl::tensor::kernels::alignment_utils::
     disabled_sg_loadstore_wrapper_krn;
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
+
+using dpctl::tensor::sycl_utils::sub_group_load;
+using dpctl::tensor::sycl_utils::sub_group_store;
 
 template <typename T> T clip(const T &x, const T &min, const T &max)
 {
@@ -75,8 +79,8 @@ template <typename T> T clip(const T &x, const T &min, const T &max)
 }
 
 template <typename T,
-          int vec_sz = 4,
-          int n_vecs = 2,
+          std::uint8_t vec_sz = 4,
+          std::uint8_t n_vecs = 2,
           bool enable_sg_loadstore = true>
 class ClipContigFunctor
 {
@@ -100,37 +104,36 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
+
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (is_complex<T>::value || !enable_sg_loadstore) {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            const std::uint16_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const size_t gid = ndit.get_global_linear_id();
+            const uint16_t nelems_per_sg = sgSize * nelems_per_wi;
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
-                 offset += sgSize)
-            {
+            const size_t start =
+                (gid / sgSize) * (nelems_per_sg - sgSize) + gid;
+            const size_t end = std::min(nelems, start + nelems_per_sg);
+
+            for (size_t offset = start; offset < end; offset += sgSize) {
                 dst_p[offset] = clip(x_p[offset], min_p[offset], max_p[offset]);
             }
         }
         else {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t max_sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * max_sgSize);
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize)
-            {
-                sycl::vec<T, vec_sz> x_vec;
-                sycl::vec<T, vec_sz> min_vec;
-                sycl::vec<T, vec_sz> max_vec;
+            const size_t base =
+                nelems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                 sg.get_group_id()[0] * sgSize);
+
+            if (base + nelems_per_wi * sgSize < nelems) {
                 sycl::vec<T, vec_sz> dst_vec;
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    auto idx = base + it * sgSize;
+                    const size_t idx = base + it * sgSize;
                     auto x_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&x_p[idx]);
@@ -144,21 +147,23 @@ public:
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&dst_p[idx]);
 
-                    x_vec = sg.load<vec_sz>(x_multi_ptr);
-                    min_vec = sg.load<vec_sz>(min_multi_ptr);
-                    max_vec = sg.load<vec_sz>(max_multi_ptr);
+                    const sycl::vec<T, vec_sz> x_vec =
+                        sub_group_load<vec_sz>(sg, x_multi_ptr);
+                    const sycl::vec<T, vec_sz> min_vec =
+                        sub_group_load<vec_sz>(sg, min_multi_ptr);
+                    const sycl::vec<T, vec_sz> max_vec =
+                        sub_group_load<vec_sz>(sg, max_multi_ptr);
 #pragma unroll
                     for (std::uint8_t vec_id = 0; vec_id < vec_sz; ++vec_id) {
                         dst_vec[vec_id] = clip(x_vec[vec_id], min_vec[vec_id],
                                                max_vec[vec_id]);
                     }
-                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
+                    sub_group_store<vec_sz>(sg, dst_vec, dst_multi_ptr);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems; k += sgSize) {
                     dst_p[k] = clip(x_p[k], min_p[k], max_p[k]);
                 }
             }
@@ -195,8 +200,8 @@ sycl::event clip_contig_impl(sycl::queue &q,
         cgh.depends_on(depends);
 
         size_t lws = 64;
-        constexpr unsigned int vec_sz = 4;
-        constexpr unsigned int n_vecs = 2;
+        constexpr std::uint8_t vec_sz = 4;
+        constexpr std::uint8_t n_vecs = 2;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);

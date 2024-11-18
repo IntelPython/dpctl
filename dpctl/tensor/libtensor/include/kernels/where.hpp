@@ -32,6 +32,7 @@
 #include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -50,15 +51,18 @@ using dpctl::tensor::kernels::alignment_utils::
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
+using dpctl::tensor::sycl_utils::sub_group_load;
+using dpctl::tensor::sycl_utils::sub_group_store;
+
 template <typename T, typename condT, typename IndexerT>
 class where_strided_kernel;
-template <typename T, typename condT, int vec_sz, int n_vecs>
+template <typename T, typename condT, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class where_contig_kernel;
 
 template <typename T,
           typename condT,
-          int vec_sz = 4,
-          int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 class WhereContigFunctor
 {
@@ -82,42 +86,40 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
+        constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
+
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<condT>::value ||
                       is_complex<T>::value)
         {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            const std::uint16_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const size_t gid = ndit.get_global_linear_id();
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
-                 offset += sgSize)
-            {
+            const std::uint16_t nelems_per_sg = sgSize * nelems_per_wi;
+            const size_t start =
+                (gid / sgSize) * (nelems_per_sg - sgSize) + gid;
+            const size_t end = std::min(nelems, start + nelems_per_sg);
+            for (size_t offset = start; offset < end; offset += sgSize) {
                 using dpctl::tensor::type_utils::convert_impl;
-                bool check = convert_impl<bool, condT>(cond_p[offset]);
+                const bool check = convert_impl<bool, condT>(cond_p[offset]);
                 dst_p[offset] = check ? x1_p[offset] : x2_p[offset];
             }
         }
         else {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t max_sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * max_sgSize);
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize)
-            {
+            const size_t base =
+                nelems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                 sg.get_group_id()[0] * sgSize);
+
+            if (base + nelems_per_wi * sgSize < nelems) {
                 sycl::vec<T, vec_sz> dst_vec;
-                sycl::vec<T, vec_sz> x1_vec;
-                sycl::vec<T, vec_sz> x2_vec;
-                sycl::vec<condT, vec_sz> cond_vec;
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    auto idx = base + it * sgSize;
+                    const size_t idx = base + it * sgSize;
                     auto x1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&x1_p[idx]);
@@ -131,20 +133,22 @@ public:
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&dst_p[idx]);
 
-                    x1_vec = sg.load<vec_sz>(x1_multi_ptr);
-                    x2_vec = sg.load<vec_sz>(x2_multi_ptr);
-                    cond_vec = sg.load<vec_sz>(cond_multi_ptr);
+                    const sycl::vec<T, vec_sz> x1_vec =
+                        sub_group_load<vec_sz>(sg, x1_multi_ptr);
+                    const sycl::vec<T, vec_sz> x2_vec =
+                        sub_group_load<vec_sz>(sg, x2_multi_ptr);
+                    const sycl::vec<condT, vec_sz> cond_vec =
+                        sub_group_load<vec_sz>(sg, cond_multi_ptr);
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; ++k) {
                         dst_vec[k] = cond_vec[k] ? x1_vec[k] : x2_vec[k];
                     }
-                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
+                    sub_group_store<vec_sz>(sg, dst_vec, dst_multi_ptr);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize)
-                {
+                const size_t lane_id = sg.get_local_id()[0];
+                for (size_t k = base + lane_id; k < nelems; k += sgSize) {
                     dst_p[k] = cond_p[k] ? x1_p[k] : x2_p[k];
                 }
             }
@@ -179,8 +183,8 @@ sycl::event where_contig_impl(sycl::queue &q,
         cgh.depends_on(depends);
 
         size_t lws = 64;
-        constexpr unsigned int vec_sz = 4;
-        constexpr unsigned int n_vecs = 2;
+        constexpr std::uint8_t vec_sz = 4u;
+        constexpr std::uint8_t n_vecs = 2u;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
