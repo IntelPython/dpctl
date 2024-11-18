@@ -29,6 +29,7 @@ option(DPCTL_TARGET_CUDA
     "Build DPCTL to target CUDA devices"
     OFF
 )
+option(DPCTL_WITH_REDIST "Build DPCTL assuming DPC++ redistributable is installed into Python prefix" OFF)
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 
