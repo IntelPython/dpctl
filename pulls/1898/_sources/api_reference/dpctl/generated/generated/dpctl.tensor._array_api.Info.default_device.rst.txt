@@ -1,0 +1,6 @@
+dpctl.tensor.\_array\_api.Info.default\_device
+==============================================
+
+.. currentmodule:: dpctl.tensor._array_api
+
+.. automethod:: Info.default_device
