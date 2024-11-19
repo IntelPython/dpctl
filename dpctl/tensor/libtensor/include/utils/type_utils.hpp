@@ -35,12 +35,21 @@ namespace tensor
 namespace type_utils
 {
 
-template <class T> struct is_complex : std::false_type
+template <typename T, typename = void>
+struct is_complex : public std::false_type
 {
 };
-template <class T> struct is_complex<std::complex<T>> : std::true_type
+
+template <typename T>
+struct is_complex<T, std::enable_if_t<std::is_same_v<std::remove_cv_t<T>, std::complex<sycl::half>> ||
+                                      std::is_same_v<std::remove_cv_t<T>, std::complex<float>> ||
+                                      std::is_same_v<std::remove_cv_t<T>, std::complex<double>>>>
+    : public std::true_type
 {
 };
+
+template <typename T>
+constexpr bool is_complex_v = is_complex<T>::value;
 
 template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
 {
