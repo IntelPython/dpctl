@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix warning in documentation generation caused by `diff` docstring [gh-1855](https://github.com/IntelPython/dpctl/pull/1855)
 * Fix additional warnings when generating docs [gh-1861](https://github.com/IntelPython/dpctl/pull/1861)
 * Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
+* Add support of cv-qualifiers and sycl::half type in `is_complex<T>` helper [gh-1900](https://github.com/IntelPython/dpctl/pull/1900)
 
 ## [0.18.1] - Oct. 11, 2024
 
