@@ -459,6 +459,9 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
           auto-activate-base: true
           activate-environment: ""
 
