@@ -77,12 +77,12 @@ public:
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<T>::value) {
             const std::uint16_t sgSize =
-                ndit.get_sub_group().get_local_range()[0];
+                ndit.get_sub_group().get_max_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
 
             // start = (gid / sgSize) * sgSize * elems_per_wi + (gid % sgSize)
             // gid % sgSize == gid - (gid / sgSize) * sgSize
-            const std::size_t elems_per_sg = sgSize * elems_per_wi;
+            const std::uint16_t elems_per_sg = sgSize * elems_per_wi;
             const std::size_t start =
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems, start + elems_per_sg);
@@ -98,20 +98,21 @@ public:
             const size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
+            const std::uint16_t elems_per_sg = elems_per_wi * sgSize;
 
-            if (base + elems_per_wi * sgSize < nelems) {
-                sycl::vec<T, vec_sz> dst_vec;
-
+            if (base + elems_per_sg < nelems) {
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    // it == vec_id * vec_sz, for  0 <= vec_id < n_vecs
                     const size_t block_start_id = base + it * sgSize;
                     auto dst_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&dst_p[block_start_id]);
 
                     const size_t elem_id0 = block_start_id + sg.get_local_id();
+                    sycl::vec<T, vec_sz> dst_vec;
 #pragma unroll
-                    for (std::uint8_t k = 0; k < vec_sz; k++) {
+                    for (std::uint8_t k = 0; k < vec_sz; ++k) {
                         const size_t elem_id = elem_id0 + k * sgSize;
                         const ssize_t src_offset = src_indexer(elem_id);
                         dst_vec[k] = src_p[src_offset];

@@ -428,7 +428,7 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
     SYCL_EXT_ONEAPI_GROUP_LOAD_STORE
 #define USE_GROUP_LOAD_STORE 1
 #else
-#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMIPLER > 20250000u)
+#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMPILER >= 20250100u)
 #define USE_GROUP_LOAD_STORE 1
 #else
 #define USE_GROUP_LOAD_STORE 0
@@ -450,7 +450,7 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     sycl::vec<ValueT, vec_sz> x{};
-    ls_ns::group_load(sg, m_ptr, x);
+    ls_ns::group_load(sg, m_ptr, x, ls_ns::data_placement_blocked);
     return x;
 #else
     return sg.load<vec_sz>(m_ptr);
@@ -466,7 +466,7 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     ValueT x{};
-    ls_ns::group_load(sg, m_ptr, x);
+    ls_ns::group_load(sg, m_ptr, x, ls_ns::data_placement_blocked);
     return x;
 #else
     return sg.load(m_ptr);
@@ -486,7 +486,8 @@ sub_group_store(const sycl::sub_group &sg,
                 sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
 #if (USE_GROUP_LOAD_STORE)
-    ls_ns::group_store(sg, val, m_ptr);
+    static_assert(std::is_same_v<VecT, ElementType>);
+    ls_ns::group_store(sg, val, m_ptr, ls_ns::data_placement_blocked);
     return;
 #else
     sg.store<vec_sz>(m_ptr, val);
@@ -506,7 +507,7 @@ sub_group_store(const sycl::sub_group &sg,
                 sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
 #if (USE_GROUP_LOAD_STORE)
-    ls_ns::group_store(sg, val, m_ptr);
+    ls_ns::group_store(sg, val, m_ptr, ls_ns::data_placement_blocked);
     return;
 #else
     sg.store(m_ptr, val);
