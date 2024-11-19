@@ -26,6 +26,7 @@
 #include <complex>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
+#include <type_traits>
 #include <utility>
 
 namespace dpctl
