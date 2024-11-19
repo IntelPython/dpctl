@@ -43,10 +43,8 @@ struct is_complex : public std::false_type
 template <typename T>
 struct is_complex<
     T,
-    std::enable_if_t<
-        std::is_same_v<std::remove_cv_t<T>, std::complex<sycl::half>> ||
-        std::is_same_v<std::remove_cv_t<T>, std::complex<float>> ||
-        std::is_same_v<std::remove_cv_t<T>, std::complex<double>>>>
+    std::enable_if_t<std::is_same_v<std::remove_cv_t<T>, std::complex<float>> ||
+                     std::is_same_v<std::remove_cv_t<T>, std::complex<double>>>>
     : public std::true_type
 {
 };
