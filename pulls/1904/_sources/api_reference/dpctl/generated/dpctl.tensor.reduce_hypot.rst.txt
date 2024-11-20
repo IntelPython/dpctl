@@ -1,0 +1,6 @@
+﻿dpctl.tensor.reduce\_hypot
+==========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: reduce_hypot
