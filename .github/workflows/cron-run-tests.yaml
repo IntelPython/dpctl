@@ -1,0 +1,149 @@
+name: Run tests suite
+on:
+  # For Branch-Protection check. Only the default branch is supported. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  # To guarantee Maintained check is occasionally updated. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  schedule:
+    - cron: '28 2 * * *'
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  PACKAGE_NAME: dpctl
+  MODULE_NAME: dpctl
+  TEST_ENV_NAME: test_dpctl
+  INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
+
+jobs:
+  test_linux:
+    runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 45
+
+    strategy:
+      matrix:
+        python: ['3.9', '3.10', '3.11', '3.12']
+        experimental: [false]
+        runner: [ubuntu-22.04, ubuntu-24.04]
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Construct channels line
+        run: |
+          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $GITHUB_ENV
+
+      - name: Display channels line
+        run: |
+          echo ${{ env.CHANNELS }}
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+
+      - name: Install dpctl
+        run: |
+          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+
+      - name: Smoke test
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate ${{ env.TEST_ENV_NAME }}
+          python -m dpctl -f
+
+      - name: Create test temp dir
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
+
+      - name: Run tests
+        working-directory: ${{ github.workspace }}/test_tmp
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        run: |
+          . $CONDA/etc/profile.d/conda.sh
+          conda activate ${{ env.TEST_ENV_NAME }}
+          python -m pytest -v --pyargs $MODULE_NAME
+
+          test_linux:
+            runs-on:  ${{ matrix.runner }}
+            timeout-minutes: 30
+
+            strategy:
+              matrix:
+                python: ['3.9', '3.10', '3.11', '3.12']
+                experimental: [false]
+                runner: [ubuntu-22.04]
+            continue-on-error: ${{ matrix.experimental }}
+
+  test_windows:
+    runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+    strategy:
+      matrix:
+        python: ['3.9', '3.10', '3.11', '3.12']
+        experimental: [false]
+        runner: [windows-2019]
+
+    continue-on-error: ${{ matrix.experimental }}
+    env:
+      workdir: '${{ github.workspace }}'
+
+    steps:
+      - name: Construct channels line
+        shell: pwsh
+        run: |
+          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
+
+      - name: Display channels line
+        run: |
+          echo ${{ env.CHANNELS }}
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+          python-version: ${{ matrix.python }}
+
+      - name: Install dpctl
+        run: |
+          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+
+      - name: Configure Intel OpenCL CPU RT
+        shell: pwsh
+        run: |
+          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
+          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+          $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
+          Get-Content -Tail 5 -Path $cl_cfg
+
+      - name: Smoke test
+        shell: cmd /C CALL {0}
+        run: >-
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
+
+      - name: Create empty temporary directory to run tests from
+        shell: cmd /C CALL {0}
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: >-
+          mkdir "${{ env.workdir }}\test_tmp"
+
+      - name: Run tests
+        shell: cmd /C CALL {0}
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        working-directory: ${{ env.workdir }}\test_tmp
+        run: >-
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
