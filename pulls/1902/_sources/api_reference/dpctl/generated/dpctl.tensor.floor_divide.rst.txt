@@ -1,0 +1,10 @@
+﻿dpctl.tensor.floor\_divide
+==========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: floor_divide
+    :no-value:
+
+
