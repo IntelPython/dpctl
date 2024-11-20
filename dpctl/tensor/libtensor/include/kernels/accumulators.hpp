@@ -280,8 +280,9 @@ inclusive_scan_base_step(sycl::queue &exec_q,
                 local_iscan[m_wi] = scan_op(local_iscan[m_wi], addand);
             }
 
-            const nwiT m_max =
-                std::min<nwiT>(n_wi, std::max(i, acc_nelems) - i);
+            const size_t start = std::min(i, acc_nelems);
+            const size_t end = std::min(i + n_wi, acc_nelems);
+            const nwiT m_max = static_cast<nwiT>(end - start);
             for (nwiT m_wi = 0; m_wi < m_max; ++m_wi) {
                 output[out_iter_offset + out_indexer(i + m_wi)] =
                     local_iscan[m_wi];
