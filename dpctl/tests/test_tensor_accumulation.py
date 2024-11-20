@@ -410,3 +410,14 @@ def test_cumulative_logsumexp_closed_form(fpdt):
 
     tol = 4 * dpt.finfo(fpdt).eps
     assert dpt.allclose(r, expected, atol=tol, rtol=tol)
+
+
+@pytest.mark.parametrize("p", [257, 260, 273, 280, 509, 512])
+def test_cumulative_sum_gh_1901(p):
+    get_queue_or_skip()
+
+    n = p * p
+    dt = dpt.int32
+    inp = dpt.ones(n, dtype=dt)
+    r = dpt.cumulative_sum(inp, dtype=dt)
+    assert dpt.all(r == dpt.arange(1, n + 1, dtype=dt))
