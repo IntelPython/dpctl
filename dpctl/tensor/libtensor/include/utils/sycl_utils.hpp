@@ -428,7 +428,7 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
     SYCL_EXT_ONEAPI_GROUP_LOAD_STORE
 #define USE_GROUP_LOAD_STORE 1
 #else
-#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMPILER >= 20250100u)
+#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMPILER > 20250100u)
 #define USE_GROUP_LOAD_STORE 1
 #else
 #define USE_GROUP_LOAD_STORE 0
