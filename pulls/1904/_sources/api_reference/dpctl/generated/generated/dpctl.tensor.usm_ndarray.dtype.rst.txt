@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.dtype
-===============================
-
-.. currentmodule:: dpctl.tensor
-
-.. autoattribute:: usm_ndarray.dtype
