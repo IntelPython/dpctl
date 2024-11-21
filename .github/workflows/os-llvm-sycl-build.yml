@@ -10,6 +10,7 @@ jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
     runs-on: ubuntu-22.04
+    timeout-minutes: 90
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
@@ -109,7 +110,7 @@ jobs:
           pip install numpy cython setuptools pytest scikit-build cmake ninja versioneer[toml]==0.29
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 

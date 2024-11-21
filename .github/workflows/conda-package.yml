@@ -12,19 +12,21 @@ env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
   TEST_ENV_NAME: test_dpctl
-  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); "
-  VER_SCRIPT2: "d = j['dpctl'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); d = j['dpctl'][0];"
+  VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
+  VER_SCRIPT3: "print(' '.join(map(lambda s: chr(34) + s + chr(34), [comp for comp in d['depends'] if 'dpcpp' in comp][1:])))"
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
 
 jobs:
   build_linux:
     runs-on: ubuntu-22.04
+    timeout-minutes: 90
 
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -62,34 +64,42 @@ jobs:
             $CHANNELS \
             conda-recipe
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   build_windows:
     runs-on: windows-2019
+    timeout-minutes: 150
 
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
-    env:
-      conda-bld: C:\Miniconda\conda-bld\win-64\
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-activate-base: true
-          conda-build-version: "*"
-          activate-environment: true
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          activate-environment: build
+          channels: conda-forge
+          conda-remove-defaults: true
           python-version: ${{ matrix.python }}
+
+      - name: Install conda build
+        run: |
+          conda activate
+          conda install -y conda-build
+          conda list -n base
 
       - name: Cache conda packages
         uses: actions/cache@v4
@@ -102,21 +112,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
+          echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c conda-forge --override-channels conda-recipe
+        run: |
+          conda activate
+          conda build --no-test --python ${{ matrix.python }} --numpy 2 -c conda-forge --override-channels conda-recipe
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.conda-bld }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@v4.4.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -124,6 +141,7 @@ jobs:
   test_linux:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 30
 
     strategy:
       matrix:
@@ -215,6 +233,7 @@ jobs:
   test_windows:
     needs: build_windows
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 60
     defaults:
       run:
         shell: cmd /C CALL {0}
@@ -232,38 +251,61 @@ jobs:
         shell: pwsh
         run: |
           echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
+
       - name: Display channels line
         run: |
           echo ${{ env.CHANNELS }}
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
-          conda-build-version: '*'
-          miniconda-version: 'latest'
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
+
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index
+
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
         run: |
+          @echo on
           echo ${{ env.workdir }}
+          mkdir ${{ env.workdir }}\channel
           mkdir ${{ env.workdir }}\channel\win-64
           move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.workdir }}\channel\win-64
-          dir ${{ env.workdir }}\channel\win-64
+          dir ${{ env.workdir }}\channel\win-64\
+
       - name: Index the channel
         shell: cmd /C CALL {0}
-        run: conda index ${{ env.workdir }}\channel
+        run: |
+          @echo on
+          conda index ${{ env.workdir }}\channel
+
+      - name: List content of the channels
+        shell: cmd /C CALL {0}
+        run: |
+          dir ${{ env.workdir }}\channel
+          dir ${{ env.workdir }}\channel\win-64
 
       - name: Dump dpctl version info from created channel into ver.json
         shell: cmd /C CALL {0}
         run: |
+          @echo on
           conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
+          dir ${{ env.workdir }}
+
       - name: Output content of produced ver.json
         shell: pwsh
         run: Get-Content -Path ${{ env.workdir }}\ver.json
+
       - name: Collect dependencies
         shell: cmd /C CALL {0}
         run: |
@@ -275,9 +317,11 @@ jobs:
              SET PACKAGE_VERSION=%%F
           )
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+
       - name: Display lockfile content
         shell: pwsh
         run: Get-Content -Path .\lockfile
+
       - name: Cache conda packages
         uses: actions/cache@v4
         env:
@@ -289,9 +333,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Install opencl_rt
         shell: cmd /C CALL {0}
         run: conda install -n ${{ env.TEST_ENV_NAME }} opencl_rt -c ${{ env.INTEL_CHANNEL }} --override-channels
+
       - name: Install dpctl
         shell: cmd /C CALL {0}
         run: |
@@ -305,37 +351,48 @@ jobs:
           )
           SET TEST_DEPENDENCIES=pytest"<8" pytest-cov cython setuptools
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
           echo "Value of CONDA enviroment variable was: " %CONDA%
           echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
           conda info && conda list -n ${{ env.TEST_ENV_NAME }}
+
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
           $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
-          &$script_path
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
           # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
           $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
+
       - name: Smoke test, step 1
         shell: cmd /C CALL {0}
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -c "import sys; print(sys.executable)"
+
       - name: Smoke test, step 2
         shell: cmd /C CALL {0}
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
+
       - name: Create empty temporary directory to run tests from
         shell: cmd /C CALL {0}
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
         run: >-
           mkdir "${{ env.workdir }}\test_tmp"
+
       - name: List content of workdir folder
         shell: cmd /C CALL {0}
         run: dir "${{ env.workdir }}"
+
       - name: Run tests
         shell: cmd /C CALL {0}
         env:
@@ -348,6 +405,7 @@ jobs:
     needs: test_linux
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: ubuntu-22.04
+    timeout-minutes: 20
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
@@ -384,6 +442,7 @@ jobs:
     needs: test_windows
     if: ${{github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/')}}
     runs-on: windows-2019
+    timeout-minutes: 20
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
@@ -400,6 +459,9 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
           auto-activate-base: true
           activate-environment: ""
 
@@ -430,6 +492,7 @@ jobs:
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
+    timeout-minutes: 60
     env:
       EXAMPLES_ENV_NAME: examples
       BUILD_ENV_NAME: build_env
@@ -445,7 +508,7 @@ jobs:
         # Needed to be able to run conda index
         run: conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - name: Download artifact
@@ -484,18 +547,28 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install example requirements
-        shell: bash -l {0}
+        shell: bash -ex -l {0}
         env:
-          DPCPP_CMPLR: dpcpp_linux-64">=2024.2"
+          DPCPP_CMPLR: "dpcpp_linux-64>=2024.2"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} setuptools"<72.2.0" $CHANNELS
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake $CHANNELS || exit 1
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ninja $CHANNELS || exit 1
+          DPCTL_DEPENDS="$(python -c "${VER_SCRIPT1} ${VER_SCRIPT3}")"
+          echo "Dpctl dependencies: ${DPCTL_DEPENDS}"
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} "setuptools<72.2.0" $CHANNELS
+          echo "Environment created"
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
+          echo "Cmake and Ninja installed"
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp dpcpp_cpp_rt $CHANNELS || exit 1
-          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 ${{ env.DPCPP_CMPLR }} sysroot_linux-64">=2.28"
+          echo "scikit-build installed"
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp \
+              mkl-devel-dpcpp dpcpp_cpp_rt "${DPCTL_DEPENDS}" \
+              $CHANNELS || exit 1
+          echo "IPL installed"
+          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 \
+              ${{ env.DPCPP_CMPLR }} "${DPCTL_DEPENDS}" \
+              "sysroot_linux-64>=2.28"
+          echo "Compiler installed"
       - name: Install dpctl
         shell: bash -l {0}
         run: |
@@ -577,6 +650,7 @@ jobs:
   array-api-conformity:
     needs: build_linux
     runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 90
     permissions:
       pull-requests: write
 
@@ -594,7 +668,7 @@ jobs:
         run: |
           echo ${{ env.CHANNELS }}
       - name: Checkout dpctl repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
       - name: Cache array API tests
@@ -722,6 +796,7 @@ jobs:
     name: Clean up anaconda packages
     needs: [upload_linux, upload_windows]
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash -el {0}
@@ -731,13 +806,14 @@ jobs:
           run-post: false
           channel-priority: "disabled"
           channels: conda-forge
+          conda-remove-defaults: true
           python-version: '3.11'
 
       - name: Install anaconda-client
         run: conda install anaconda-client -c conda-forge --override-channels
 
       - name: Checkout repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

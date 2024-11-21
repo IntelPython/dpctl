@@ -16,8 +16,9 @@ jobs:
   # The isort job sorts all imports in .py, .pyx, .pxd files
   isort:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -28,11 +29,12 @@ jobs:
   black:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       # Set up a Python environment for use in actions
       - uses: actions/setup-python@v5
         with:
@@ -43,13 +45,14 @@ jobs:
         with:
           src: "."
           options: "--check"
-          version: "22.12.0"
+          version: "24.4.2"
 
   flake8:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-    - uses: actions/checkout@v4.1.7
+    - uses: actions/checkout@v4.2.2
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
