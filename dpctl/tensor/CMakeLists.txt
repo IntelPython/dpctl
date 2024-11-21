@@ -1,7 +1,7 @@
 file(GLOB _cython_sources *.pyx)
 foreach(_cy_file ${_cython_sources})
     get_filename_component(_trgt ${_cy_file} NAME_WLE)
-    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl/tensor")
+    build_dpctl_ext(${_trgt} ${_cy_file} "dpctl/tensor" RELATIVE_PATH "..")
     target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 endforeach()
@@ -284,5 +284,12 @@ foreach(python_module_name ${_py_trgts})
     # TODO: update source so they refernece individual libraries instead of
     #   dpctl4pybind11.hpp. It will allow to simplify dependency tree
     target_link_libraries(${python_module_name} PRIVATE DpctlCAPI)
+    if (DPCTL_WITH_REDIST)
+        set_target_properties(
+            ${python_module_name}
+            PROPERTIES
+                INSTALL_RPATH "$ORIGIN/../../../.."
+        )
+    endif()
     install(TARGETS ${python_module_name} DESTINATION "dpctl/tensor")
 endforeach()

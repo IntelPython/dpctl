@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
 
+### Fixed
+
+* Fix for `tensor.result_type` when all inputs are Python built-in scalars [gh-1904](https://github.com/IntelPython/dpctl/pull/1904)
+
+
 ## [0.18.1] - Oct. 11, 2024
 
 ### Changed
