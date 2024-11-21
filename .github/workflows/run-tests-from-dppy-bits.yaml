@@ -66,16 +66,6 @@ jobs:
           conda activate ${{ env.TEST_ENV_NAME }}
           python -m pytest -v --pyargs $MODULE_NAME
 
-          test_linux:
-            runs-on:  ${{ matrix.runner }}
-            timeout-minutes: 30
-
-            strategy:
-              matrix:
-                python: ['3.9', '3.10', '3.11', '3.12']
-                experimental: [false]
-                runner: [ubuntu-22.04]
-            continue-on-error: ${{ matrix.experimental }}
 
   test_windows:
     runs-on:  ${{ matrix.runner }}
