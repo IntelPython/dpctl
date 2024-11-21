@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This is necessary to help DPC++ find Intel libraries such as SVML, IRNG, etc in build prefix
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${BUILD_PREFIX}/lib"
+export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
 # Intel LLVM must cooperate with compiler and sysroot from conda
 echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot -target ${HOST}" > icpx_for_conda.cfg
@@ -22,7 +22,7 @@ export CMAKE_GENERATOR=Ninja
 # Make CMake verbose
 export VERBOSE=1
 
-CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero"
+CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero -DDPCTL_WITH_REDIST=ON"
 
 # -wnx flags mean: --wheel --no-isolation --skip-dependency-check
 ${PYTHON} -m build -w -n -x
@@ -43,7 +43,3 @@ ${PYTHON} -m pip install dist/dpctl*.whl \
 if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
     cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
 fi
-
-# need to create this folder so ensure that .dpctl-post-link.sh can work correctly
-mkdir -p $PREFIX/etc/OpenCL/vendors
-echo "dpctl creates symbolic link to system installed /etc/OpenCL/vendors/intel.icd as a work-around." > $PREFIX/etc/OpenCL/vendors/.dpctl_readme

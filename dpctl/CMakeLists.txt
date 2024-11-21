@@ -105,7 +105,7 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 function(build_dpctl_ext _trgt _src _dest)
     set(options SYCL)
-    cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "" "" ${ARGN})
+    cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "RELATIVE_PATH" "" ${ARGN})
     add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
     set(_cythonize_trgt "${_trgt}_cythonize_pyx")
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
@@ -146,6 +146,14 @@ function(build_dpctl_ext _trgt _src _dest)
     get_filename_component(_generated_src_dir_dir ${_generated_src_dir} DIRECTORY)
     # TODO: do not set directory if we did not generate header
     target_include_directories(${_trgt} INTERFACE ${_generated_src_dir_dir})
+    set(_rpath_value "$ORIGIN")
+    if (BUILD_DPCTL_EXT_RELATIVE_PATH)
+        set(_rpath_value "${_rpath_value}/${BUILD_DPCTL_EXT_RELATIVE_PATH}")
+    endif()
+    if (DPCTL_WITH_REDIST)
+        set(_rpath_value "${_rpath_value}:${_rpath_value}/../../..")
+    endif()
+    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH ${_rpath_value})
 
     install(TARGETS ${_trgt}
         LIBRARY DESTINATION ${_dest})

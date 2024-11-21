@@ -314,6 +314,11 @@ target_include_directories(DPCTLSyclInterfaceHeaders INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+if (DPCTL_WITH_REDIST)
+   cmake_path(RELATIVE_PATH CMAKE_SOURCE_DIR BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} OUTPUT_VARIABLE _relative_path)
+   set_target_properties(DPCTLSyclInterface PROPERTIES INSTALL_RPATH "$ORIGIN/${_relative_path}/../../")
+endif()
+
 install(TARGETS
     DPCTLSyclInterface
     LIBRARY
