@@ -25,6 +25,7 @@
 #pragma once
 #include <cmath>
 #include <complex>
+#include <sycl/sycl.hpp>
 
 namespace dpctl
 {
