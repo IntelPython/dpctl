@@ -215,15 +215,16 @@ inclusive_scan_base_step(sycl::queue &exec_q,
             const size_t gid = it.get_global_id(0);
             const size_t lid = it.get_local_id(0);
 
-            const size_t iter_gid = gid / (acc_groups * wg_size);
-            const size_t chunk_gid = gid - (iter_gid * acc_groups * wg_size);
+            const size_t reduce_chunks = acc_groups * wg_size;
+            const size_t iter_gid = gid / reduce_chunks;
+            const size_t chunk_gid = gid - (iter_gid * reduce_chunks);
 
-            std::array<outputT, n_wi> local_iscan;
-
-            size_t i = chunk_gid * n_wi;
+            const size_t i = chunk_gid * n_wi;
             const auto &iter_offsets = iter_indexer(iter_gid);
             const auto &inp_iter_offset = iter_offsets.get_first_offset();
             const auto &out_iter_offset = iter_offsets.get_second_offset();
+
+            std::array<outputT, n_wi> local_iscan;
 
 #pragma unroll
             for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
@@ -279,8 +280,9 @@ inclusive_scan_base_step(sycl::queue &exec_q,
                 local_iscan[m_wi] = scan_op(local_iscan[m_wi], addand);
             }
 
-            const nwiT m_max =
-                std::min<nwiT>(n_wi, std::max(i, acc_nelems) - i);
+            const size_t start = std::min(i, acc_nelems);
+            const size_t end = std::min(i + n_wi, acc_nelems);
+            const nwiT m_max = static_cast<nwiT>(end - start);
             for (nwiT m_wi = 0; m_wi < m_max; ++m_wi) {
                 output[out_iter_offset + out_indexer(i + m_wi)] =
                     local_iscan[m_wi];
@@ -324,7 +326,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                                    std::vector<sycl::event> &host_tasks,
                                    const std::vector<sycl::event> &depends = {})
 {
-    ScanOpT scan_op = ScanOpT();
+    ScanOpT scan_op{};
     constexpr outputT identity = su_ns::Identity<ScanOpT, outputT>::value;
 
     constexpr size_t _iter_nelems = 1;
@@ -352,9 +354,9 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         size_t n_groups_ = n_groups;
         size_t temp_size = 0;
         while (n_groups_ > 1) {
-            const auto this_size = (n_groups_ - 1);
+            const size_t this_size = (n_groups_ - 1);
             temp_size += this_size;
-            n_groups_ = ceiling_quotient<size_t>(this_size, chunk_size);
+            n_groups_ = ceiling_quotient(this_size, chunk_size);
         }
 
         // allocate
