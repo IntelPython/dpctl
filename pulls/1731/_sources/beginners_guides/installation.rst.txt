@@ -170,8 +170,8 @@ And for AMD devices
 
     python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
 
-Note that the  `oneAPI for AMD GPUs <codeplay_amd_plugin_>` plugin requires the architecture
-be specified and only one architecture can be specified at a time.
+Note that the  `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
+one architecture can be specified at a time.
 
 It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
 architecture all at once:
