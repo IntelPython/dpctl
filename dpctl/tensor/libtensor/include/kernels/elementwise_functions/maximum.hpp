@@ -29,12 +29,14 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "kernels/dpctl_tensor_types.hpp"
+#include "vec_size_util.hpp"
+
 #include "utils/math_utils.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 
 namespace dpctl
@@ -70,9 +72,13 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
         }
         else if constexpr (std::is_floating_point_v<argT1> ||
                            std::is_same_v<argT1, sycl::half>)
-            return (std::isnan(in1) || in1 > in2) ? in1 : in2;
-        else
+        {
+            const bool choose_first = (std::isnan(in1) || (in1 > in2));
+            return (choose_first) ? in1 : in2;
+        }
+        else {
             return (in1 > in2) ? in1 : in2;
+        }
     }
 
     template <int vec_sz>
@@ -83,11 +89,17 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
         sycl::vec<resT, vec_sz> res;
 #pragma unroll
         for (int i = 0; i < vec_sz; ++i) {
-            if constexpr (std::is_floating_point_v<argT1>)
-                res[i] =
-                    (sycl::isnan(in1[i]) || in1[i] > in2[i]) ? in1[i] : in2[i];
-            else
-                res[i] = (in1[i] > in2[i]) ? in1[i] : in2[i];
+            const auto &v1 = in1[i];
+            const auto &v2 = in2[i];
+            if constexpr (std::is_floating_point_v<argT1> ||
+                          std::is_same_v<argT1, sycl::half>)
+            {
+                const bool choose_first = (std::isnan(v1) || (v1 > v2));
+                res[i] = (choose_first) ? v1 : v2;
+            }
+            else {
+                res[i] = (v1 > v2) ? v1 : v2;
+            }
         }
         return res;
     }
@@ -96,8 +108,8 @@ template <typename argT1, typename argT2, typename resT> struct MaximumFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using MaximumContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -182,11 +194,31 @@ template <typename T1, typename T2> struct MaximumOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::BinaryContigHyperparameterSetEntry;
+using vsu_ns::ContigHyperparameterSetDefault;
+
+template <typename argTy1, typename argTy2>
+struct MaximumContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class maximum_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -200,10 +232,16 @@ sycl::event maximum_contig_impl(sycl::queue &exec_q,
                                 ssize_t res_offset,
                                 const std::vector<sycl::event> &depends = {})
 {
+    constexpr std::uint8_t vec_sz =
+        MaximumContigHyperparameterSet<argTy1, argTy2>::vec_sz;
+    constexpr std::uint8_t n_vecs =
+        MaximumContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, MaximumOutputType, MaximumContigFunctor,
-        maximum_contig_kernel>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
-                               arg2_offset, res_p, res_offset, depends);
+        maximum_contig_kernel, vec_sz, n_vecs>(exec_q, nelems, arg1_p,
+                                               arg1_offset, arg2_p, arg2_offset,
+                                               res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct MaximumContigFactory

@@ -30,6 +30,8 @@
 #include <type_traits>
 
 #include "sycl_complex.hpp"
+#include "vec_size_util.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -110,8 +112,8 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using AddContigFunctor =
     elementwise_common::BinaryContigFunctor<argT1,
@@ -196,11 +198,66 @@ template <typename T1, typename T2> struct AddOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::BinaryContigHyperparameterSetEntry;
+using vsu_ns::ContigHyperparameterSetDefault;
+
+template <typename argTy1, typename argTy2> struct AddContigHyperparameterSet
+{
+    using value_type = typename std::disjunction<
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           std::int32_t,
+                                           argTy2,
+                                           std::int32_t,
+                                           2u,
+                                           2u>,
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           std::int32_t,
+                                           argTy2,
+                                           std::int32_t,
+                                           2u,
+                                           2u>,
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           std::int64_t,
+                                           argTy2,
+                                           std::int64_t,
+                                           2u,
+                                           2u>,
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           std::uint64_t,
+                                           argTy2,
+                                           std::uint64_t,
+                                           2u,
+                                           2u>,
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           float,
+                                           argTy2,
+                                           float,
+                                           2u,
+                                           2u>,
+        BinaryContigHyperparameterSetEntry<argTy1,
+                                           double,
+                                           argTy2,
+                                           double,
+                                           1u,
+                                           2u>,
+        ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
 template <typename argT1,
           typename argT2,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class add_contig_kernel;
 
 template <typename argTy1, typename argTy2>
@@ -214,10 +271,13 @@ sycl::event add_contig_impl(sycl::queue &exec_q,
                             ssize_t res_offset,
                             const std::vector<sycl::event> &depends = {})
 {
+    constexpr auto vec_sz = AddContigHyperparameterSet<argTy1, argTy2>::vec_sz;
+    constexpr auto n_vecs = AddContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+
     return elementwise_common::binary_contig_impl<
-        argTy1, argTy2, AddOutputType, AddContigFunctor, add_contig_kernel>(
-        exec_q, nelems, arg1_p, arg1_offset, arg2_p, arg2_offset, res_p,
-        res_offset, depends);
+        argTy1, argTy2, AddOutputType, AddContigFunctor, add_contig_kernel,
+        vec_sz, n_vecs>(exec_q, nelems, arg1_p, arg1_offset, arg2_p,
+                        arg2_offset, res_p, res_offset, depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct AddContigFactory
@@ -410,8 +470,8 @@ template <typename argT, typename resT> struct AddInplaceFunctor
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using AddInplaceContigFunctor = elementwise_common::BinaryInplaceContigFunctor<
     argT,
@@ -431,8 +491,8 @@ using AddInplaceStridedFunctor =
 
 template <typename argT,
           typename resT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class add_inplace_contig_kernel;
 
 /* @brief Types supported by in-place add */
@@ -489,9 +549,13 @@ add_inplace_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
+    constexpr auto vec_sz = AddContigHyperparameterSet<resTy, argTy>::vec_sz;
+    constexpr auto n_vecs = AddContigHyperparameterSet<resTy, argTy>::n_vecs;
+
     return elementwise_common::binary_inplace_contig_impl<
-        argTy, resTy, AddInplaceContigFunctor, add_inplace_contig_kernel>(
-        exec_q, nelems, arg_p, arg_offset, res_p, res_offset, depends);
+        argTy, resTy, AddInplaceContigFunctor, add_inplace_contig_kernel,
+        vec_sz, n_vecs>(exec_q, nelems, arg_p, arg_offset, res_p, res_offset,
+                        depends);
 }
 
 template <typename fnT, typename T1, typename T2> struct AddInplaceContigFactory

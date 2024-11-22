@@ -31,6 +31,7 @@
 #include "dpctl_tensor_types.hpp"
 #include "kernels/alignment.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpctl
@@ -49,13 +50,16 @@ using dpctl::tensor::kernels::alignment_utils::
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
+using dpctl::tensor::sycl_utils::sub_group_load;
+using dpctl::tensor::sycl_utils::sub_group_store;
+
 template <typename srcT, typename dstT, typename IndexerT>
 class copy_cast_generic_kernel;
 
 template <typename srcT,
           typename dstT,
-          unsigned int vec_sz,
-          unsigned int n_vecs>
+          std::uint8_t vec_sz,
+          std::uint8_t n_vecs>
 class copy_cast_contig_kernel;
 
 template <typename srcT, typename dstT, typename IndexerT>
@@ -207,8 +211,8 @@ template <typename fnT, typename D, typename S> struct CopyAndCastGenericFactory
 template <typename srcT,
           typename dstT,
           typename CastFnT,
-          int vec_sz = 4,
-          int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 class ContigCopyFunctor
 {
@@ -227,58 +231,55 @@ public:
     {
         CastFnT fn{};
 
+        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<srcT>::value ||
                       is_complex<dstT>::value)
         {
-            std::uint8_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            size_t base = ndit.get_global_linear_id();
+            std::uint16_t sgSize = ndit.get_sub_group().get_local_range()[0];
+            const size_t gid = ndit.get_global_linear_id();
 
-            base = (base / sgSize) * sgSize * n_vecs * vec_sz + (base % sgSize);
-            for (size_t offset = base;
-                 offset < std::min(nelems, base + sgSize * (n_vecs * vec_sz));
-                 offset += sgSize)
-            {
+            // start = (gid / sgSize) * elems_per_sg + (gid % sgSize)
+            const std::uint16_t elems_per_sg = sgSize * elems_per_wi;
+            const size_t start = (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const size_t end = std::min(nelems, start + elems_per_sg);
+            for (size_t offset = start; offset < end; offset += sgSize) {
                 dst_p[offset] = fn(src_p[offset]);
             }
         }
         else {
             auto sg = ndit.get_sub_group();
-            std::uint8_t sgSize = sg.get_local_range()[0];
-            std::uint8_t max_sgSize = sg.get_max_local_range()[0];
-            size_t base = n_vecs * vec_sz *
-                          (ndit.get_group(0) * ndit.get_local_range(0) +
-                           sg.get_group_id()[0] * max_sgSize);
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
+            const size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
 
-            if (base + n_vecs * vec_sz * sgSize < nelems &&
-                sgSize == max_sgSize)
-            {
-                sycl::vec<srcT, vec_sz> src_vec;
+            if (base + elems_per_wi * sgSize < nelems) {
                 sycl::vec<dstT, vec_sz> dst_vec;
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
+                    const size_t offset = base + it * sgSize;
                     auto src_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(
-                        &src_p[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&src_p[offset]);
                     auto dst_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
-                        sycl::access::decorated::yes>(
-                        &dst_p[base + it * sgSize]);
+                        sycl::access::decorated::yes>(&dst_p[offset]);
 
-                    src_vec = sg.load<vec_sz>(src_multi_ptr);
+                    const sycl::vec<srcT, vec_sz> src_vec =
+                        sub_group_load<vec_sz>(sg, src_multi_ptr);
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; k++) {
                         dst_vec[k] = fn(src_vec[k]);
                     }
-                    sg.store<vec_sz>(dst_multi_ptr, dst_vec);
+                    sub_group_store<vec_sz>(sg, dst_vec, dst_multi_ptr);
                 }
             }
             else {
-                for (size_t k = base + sg.get_local_id()[0]; k < nelems;
-                     k += sgSize)
-                {
+                const size_t start = base + sg.get_local_id()[0];
+                for (size_t k = start; k < nelems; k += sgSize) {
                     dst_p[k] = fn(src_p[k]);
                 }
             }
@@ -332,8 +333,8 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_cp);
 
         size_t lws = 64;
-        constexpr unsigned int vec_sz = 4;
-        constexpr unsigned int n_vecs = 2;
+        constexpr std::uint32_t vec_sz = 4;
+        constexpr std::uint32_t n_vecs = 2;
         const size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);

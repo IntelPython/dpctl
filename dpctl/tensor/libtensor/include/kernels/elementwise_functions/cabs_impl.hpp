@@ -57,21 +57,16 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
     constexpr realT p_inf = std::numeric_limits<realT>::infinity();
 
-    if (std::isinf(x)) {
-        return p_inf;
-    }
-    else if (std::isinf(y)) {
-        return p_inf;
-    }
-    else if (std::isnan(x)) {
-        return q_nan;
-    }
-    else if (std::isnan(y)) {
-        return q_nan;
-    }
-    else {
-        return exprm_ns::abs(exprm_ns::complex<realT>(z));
-    }
+    const realT res =
+        std::isinf(x)
+            ? p_inf
+            : ((std::isinf(y)
+                    ? p_inf
+                    : ((std::isnan(x)
+                            ? q_nan
+                            : exprm_ns::abs(exprm_ns::complex<realT>(z))))));
+
+    return res;
 }
 
 } // namespace detail

@@ -31,9 +31,11 @@
 #include <type_traits>
 
 #include "cabs_impl.hpp"
-#include "kernels/elementwise_functions/common.hpp"
+#include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/elementwise_functions/common.hpp"
+
 #include "utils/offset_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
@@ -103,8 +105,8 @@ private:
 
 template <typename argT,
           typename resT = argT,
-          unsigned int vec_sz = 4,
-          unsigned int n_vecs = 2,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
           bool enable_sg_loadstore = true>
 using SignContigFunctor =
     elementwise_common::UnaryContigFunctor<argT,
@@ -135,7 +137,26 @@ template <typename T> struct SignOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-template <typename T1, typename T2, unsigned int vec_sz, unsigned int n_vecs>
+namespace
+{
+
+namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
+
+using vsu_ns::ContigHyperparameterSetDefault;
+using vsu_ns::UnaryContigHyperparameterSetEntry;
+
+template <typename argTy> struct SignContigHyperparameterSet
+{
+    using value_type =
+        typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
+
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
+};
+
+} // end of anonymous namespace
+
+template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class sign_contig_kernel;
 
 template <typename argTy>
@@ -145,9 +166,12 @@ sycl::event sign_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
+    constexpr std::uint8_t vec_sz = SignContigHyperparameterSet<argTy>::vec_sz;
+    constexpr std::uint8_t n_vecs = SignContigHyperparameterSet<argTy>::n_vecs;
+
     return elementwise_common::unary_contig_impl<
-        argTy, SignOutputType, SignContigFunctor, sign_contig_kernel>(
-        exec_q, nelems, arg_p, res_p, depends);
+        argTy, SignOutputType, SignContigFunctor, sign_contig_kernel, vec_sz,
+        n_vecs>(exec_q, nelems, arg_p, res_p, depends);
 }
 
 template <typename fnT, typename T> struct SignContigFactory
