@@ -126,30 +126,10 @@ template <typename T> T logaddexp(T x, T y)
         const T tmp = x - y;
         constexpr T zero(0);
 
-        if constexpr (std::is_same_v<T, sycl::half>) {
-            return (tmp > zero)
-                       ? (x + sycl::log1p(sycl::exp(-tmp)))
-                       : ((tmp <= zero) ? y + sycl::log1p(sycl::exp(tmp))
-                                        : std::numeric_limits<T>::quiet_NaN());
-        }
-        else {
-            if constexpr (std::is_same_v<T, double>) {
-                // FIXME: switch to `sycl::log1p` when
-                // compiler segfault in CUDA build is fixed
-                return (tmp > zero)
-                           ? (x + std::log1p(sycl::exp(-tmp)))
-                           : ((tmp <= zero)
-                                  ? y + std::log1p(sycl::exp(tmp))
-                                  : std::numeric_limits<T>::quiet_NaN());
-            }
-            else {
-                return (tmp > zero)
-                           ? (x + sycl::log1p(sycl::exp(-tmp)))
-                           : ((tmp <= zero)
-                                  ? y + sycl::log1p(sycl::exp(tmp))
-                                  : std::numeric_limits<T>::quiet_NaN());
-            }
-        }
+        return (tmp > zero)
+                   ? (x + sycl::log1p(sycl::exp(-tmp)))
+                   : ((tmp <= zero) ? y + sycl::log1p(sycl::exp(tmp))
+                                    : std::numeric_limits<T>::quiet_NaN());
     }
 }
 
