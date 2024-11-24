@@ -123,6 +123,9 @@ of valid settings are:
     * - ``cuda:*``
       - All devices only from CUDA backend are available
 
+    * - ``hip:*``
+      - All devices only from HIP backend are available
+
     * - ``level_zero:0,1``
       - Two specific devices from Level-Zero backend are available
 

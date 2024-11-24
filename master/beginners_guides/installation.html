@@ -881,7 +881,7 @@ see <a class="reference internal" href="#building-from-source">Building from sou
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.17.0dev2+16.g475c5313d62)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.17.0dev2+17.gcd233611559)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
@@ -946,8 +946,20 @@ The following plugins from CodePlay are supported:</p>
 <li><p><a class="reference external" href="https://developer.codeplay.com/products/oneapi/amd/">oneAPI for AMD GPUs</a></p></li>
 </ul>
 </div></blockquote>
-<p>Build <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be built for CUDA devices as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON&quot;</span>
+</pre></div>
+</div>
+<p>And for AMD devices</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
+</pre></div>
+</div>
+<p>Note that the  <cite>oneAPI for AMD GPUs</cite> plugin requires the architecture be specified and only
+one architecture can be specified at a time.</p>
+<p>It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
+architecture all at once:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON \</span>
+<span class="s2">-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
 </pre></div>
 </div>
 </section>
