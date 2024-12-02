@@ -40,9 +40,12 @@ dependencies = [
   # This restrictions are for dependabot, actual restrictions are set with
   # conda.
   # TODO: populate it during build process
-  # TODO: do we have to set sycl runtime dependencies here
-  # "dpcpp-cpp-rt>=0.59.0",
-  # "intel-cmplr-lib-rt>=0.59.0"
+  # TODO: ensure that intel-sycl-rt and intel-cmplr-lib-rt have same version
+  # perhaps by pinning both.
+  # "intel-sycl-rt>=2025.0.0",
+  # "intel-cmplr-lib-rt>=2025.0.0"
+  "intel-cmplr-lib-rt",
+  "intel-sycl-rt",
   "numpy>=1.23.0"
 ]
 description = "A lightweight Python wrapper for a subset of SYCL."
