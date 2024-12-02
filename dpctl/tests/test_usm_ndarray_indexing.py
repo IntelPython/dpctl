@@ -405,6 +405,31 @@ def test_boolean_indexing_validation():
         x[ii[0, :]]
 
 
+def test_boolean_indexing_getitem_empty_mask():
+    get_queue_or_skip()
+    x = dpt.ones((2, 3, 4), dtype="i4")
+    ii = dpt.ones((0,), dtype="?")
+    assert x[ii].size == 0
+    ii1 = dpt.ones((0, 3), dtype="?")
+    assert x[ii1].size == 0
+    ii2 = dpt.ones((0, 3, 4), dtype="?")
+    assert x[ii2].size == 0
+
+
+def test_boolean_indexing_setitem_empty_mask():
+    get_queue_or_skip()
+    x = dpt.ones((2, 3, 4), dtype="i4")
+    ii = dpt.ones((0,), dtype="?")
+    x[ii] = 0
+    assert dpt.all(x == 1)
+    ii1 = dpt.ones((0, 3), dtype="?")
+    x[ii1] = 0
+    assert dpt.all(x == 1)
+    ii2 = dpt.ones((0, 3, 4), dtype="?")
+    x[ii2] = 0
+    assert dpt.all(x == 1)
+
+
 def test_integer_indexing_1d():
     get_queue_or_skip()
     x = dpt.arange(10, dtype="i4")
