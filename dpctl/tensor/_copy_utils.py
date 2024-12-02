@@ -924,6 +924,8 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     else:
         rhs = dpt.astype(vals, ary.dtype)
     rhs = dpt.broadcast_to(rhs, expected_vals_shape)
+    if mask_nelems == 0:
+        return
     dep_ev = _manager.submitted_events
     hev, pl_ev = ti._place(
         dst=ary,
