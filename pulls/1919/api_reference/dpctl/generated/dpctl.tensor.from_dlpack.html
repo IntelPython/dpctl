@@ -831,10 +831,7 @@ from a Python object <code class="docutils literal notranslate"><span class="pre
 <li><p><strong>device</strong> (Optional[str, <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>, <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>, tuple([<a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntEnum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></a>, int])])) – <p>Device where the output array is to be placed. <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword values can be:</p>
 <ul>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>The data remains on the same device. If the data backing up
-input object <code class="docutils literal notranslate"><span class="pre">x</span></code> resides on <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> device, the return
-type would be <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, otherwise the return
-type would be <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>The data remains on the same device.</p>
 </dd>
 </dl>
 </li>
@@ -865,23 +862,12 @@ is obtained via <a class="reference internal" href="generated/dpctl.tensor.usm_n
 method: an integer enumerator representing the device type followed by
 an integer representing the index of the device.
 The only supported <a class="reference internal" href="../tensor.constants.html#dpctl.tensor.DLDeviceType" title="dpctl.tensor.DLDeviceType"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.DLDeviceType</span></code></a> device types
-are <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> requested, the
-output type is <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, otherwise it is
-<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>.</p>
+are <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>.</p>
 </dd>
 </dl>
 </li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If the return type if <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, the associated
-SYCL queue is derived from the <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword. When <code class="docutils literal notranslate"><span class="pre">device</span></code>
-keyword value has type <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, the explicit queue
-instance is used, when <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword value has type <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>,
-the <code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code> is used. In all other cases, the cached
-SYCL queue corresponding the implied SYCL device is used.</p>
-</div>
 </p></li>
 <li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>Boolean indicating whether or not to copy the input.</p>
 <ul>
@@ -898,9 +884,25 @@ be reused.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array containing the data in <code class="docutils literal notranslate"><span class="pre">x</span></code>. When <code class="docutils literal notranslate"><span class="pre">copy</span></code> is
+<dd class="field-even"><p><p>An array containing the data in <code class="docutils literal notranslate"><span class="pre">x</span></code>. When <code class="docutils literal notranslate"><span class="pre">copy</span></code> is
 <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>, this may be a view into the original
 memory.</p>
+<p>The type of the returned object
+depends on where the data backing up input object <code class="docutils literal notranslate"><span class="pre">x</span></code> resides.
+If it resides in a USM allocation on a SYCL device, the
+type <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> is returned, otherwise if it resides
+on <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> device the type is <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, and otherwise
+an exception is raised.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the return type is <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a>, the associated
+SYCL queue is derived from the <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword. When <code class="docutils literal notranslate"><span class="pre">device</span></code>
+keyword value has type <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, the explicit queue
+instance is used, when <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword value has type <a class="reference internal" href="../tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a>,
+the <code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code> is used. In all other cases, the cached
+SYCL queue corresponding to the implied SYCL device is used.</p>
+</div>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Alternative[<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)">numpy.ndarray</a>]</p>
