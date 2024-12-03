@@ -976,10 +976,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
             Device where the output array is to be placed. ``device`` keyword values can be:
 
             * ``None``
-                The data remains on the same device. If the data backing up
-                input object ``x`` resides on ``"kDLCPU"`` device, the return
-                type would be :class:`numpy.ndarray`, otherwise the return
-                type would be :class:`dpctl.tensor.usm_ndarray`.
+                The data remains on the same device.
             * oneAPI filter selector string
                 SYCL device selected by :ref:`filter selector string <filter_selector_string>`.
             * :class:`dpctl.SyclDevice`
@@ -995,20 +992,9 @@ def from_dlpack(x, /, *, device=None, copy=None):
                method: an integer enumerator representing the device type followed by
                an integer representing the index of the device.
                The only supported :class:`dpctl.tensor.DLDeviceType` device types
-               are ``"kDLCPU"`` and ``"kDLOneAPI"``. If ``"kDLCPU"`` requested, the
-               output type is :class:`numpy.ndarray`, otherwise it is
-               :class:`dpctl.tensor.usm_ndarray`.
+               are ``"kDLCPU"`` and ``"kDLOneAPI"``.
 
             Default: ``None``.
-
-            .. note::
-
-                If the return type if :class:`dpctl.tensor.usm_ndarray`, the associated
-                SYCL queue is derived from the ``device`` keyword. When ``device``
-                keyword value has type :class:`dpctl.SyclQueue`, the explicit queue
-                instance is used, when ``device`` keyword value has type :class:`dpctl.tensor.Device`,
-                the ``device.sycl_queue`` is used. In all other cases, the cached
-                SYCL queue corresponding the implied SYCL device is used.
 
         copy (bool, optional)
             Boolean indicating whether or not to copy the input.
@@ -1028,6 +1014,22 @@ def from_dlpack(x, /, *, device=None, copy=None):
             An array containing the data in ``x``. When ``copy`` is
             ``None`` or ``False``, this may be a view into the original
             memory.
+
+            The type of the returned object
+            depends on where the data backing up input object ``x`` resides.
+            If it resides in a USM allocation on a SYCL device, the
+            type :class:`dpctl.tensor.usm_ndarray` is returned, otherwise if it resides
+            on ``"kDLCPU"`` device the type is :class:`numpy.ndarray`, and otherwise
+            an exception is raised.
+
+            .. note::
+
+                If the return type is :class:`dpctl.tensor.usm_ndarray`, the associated
+                SYCL queue is derived from the ``device`` keyword. When ``device``
+                keyword value has type :class:`dpctl.SyclQueue`, the explicit queue
+                instance is used, when ``device`` keyword value has type :class:`dpctl.tensor.Device`,
+                the ``device.sycl_queue`` is used. In all other cases, the cached
+                SYCL queue corresponding to the implied SYCL device is used.
 
     Raises:
         TypeError:
