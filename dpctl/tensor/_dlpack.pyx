@@ -965,41 +965,66 @@ cdef object _create_device(object device, object dl_device):
 def from_dlpack(x, /, *, device=None, copy=None):
     """from_dlpack(x, /, *, device=None, copy=None)
 
-    Constructs :class:`dpctl.tensor.usm_ndarray` instance from a Python
-    object ``x`` that implements ``__dlpack__`` protocol.
+    Constructs :class:`dpctl.tensor.usm_ndarray` or :class:`numpy.ndarray` instance
+    from a Python object ``x`` that implements ``__dlpack__`` protocol.
 
     Args:
         x (object):
             A Python object representing an array that supports
             ``__dlpack__`` protocol.
         device (Optional[str, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, tuple([:class:`enum.IntEnum`, int])])):
-            Array API concept of a device where the output array is to be placed.
-            ``device`` can be ``None``, a oneAPI filter selector
-            string, an instance of :class:`dpctl.SyclDevice` corresponding to
-            a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device` object
-            returned by :attr:`dpctl.tensor.usm_ndarray.device`, or a
-            2-tuple matching the format of the output of the ``__dlpack_device__``
-            method, an integer enumerator representing the device type followed by
-            an integer representing the index of the device. The only supported
-            :class:`dpctl.tensor.DLDeviceType` types are "kDLCPU" and
-            "kDLOneAPI".
+            Device where the output array is to be placed. ``device`` keyword values can be:
+
+            * ``None``
+                The data remains on the same device. If the data backing up
+                input object ``x`` resides on ``"kDLCPU"`` device, the return
+                type would be :class:`numpy.ndarray`, otherwise the return
+                type would be :class:`dpctl.tensor.usm_ndarray`.
+            * oneAPI filter selector string
+                SYCL device selected by :ref:`filter selector string <filter_selector_string>`.
+            * :class:`dpctl.SyclDevice`
+                explicit SYCL device that must correspond to
+                a non-partitioned SYCL device.
+            * :class:`dpctl.SyclQueue`
+                implies SYCL device targeted by the SYCL queue.
+            * :class:`dpctl.tensor.Device`
+                implies SYCL device `device.sycl_queue`. The `Device` object
+                is obtained via :attr:`dpctl.tensor.usm_ndarray.device`.
+            * ``(device_type, device_id)``
+               2-tuple matching the format of the output of the ``__dlpack_device__``
+               method: an integer enumerator representing the device type followed by
+               an integer representing the index of the device.
+               The only supported :class:`dpctl.tensor.DLDeviceType` device types
+               are ``"kDLCPU"`` and ``"kDLOneAPI"``. If ``"kDLCPU"`` requested, the
+               output type is :class:`numpy.ndarray`, otherwise it is
+               :class:`dpctl.tensor.usm_ndarray`.
+
             Default: ``None``.
+
+            .. note::
+
+                If the return type if :class:`dpctl.tensor.usm_ndarray`, the associated
+                SYCL queue is derived from the ``device`` keyword. When ``device``
+                keyword value has type :class:`dpctl.SyclQueue`, the explicit queue
+                instance is used, when ``device`` keyword value has type :class:`dpctl.tensor.Device`,
+                the ``device.sycl_queue`` is used. In all other cases, the cached
+                SYCL queue corresponding the implied SYCL device is used.
+
         copy (bool, optional)
             Boolean indicating whether or not to copy the input.
 
             * If ``copy`` is ``True``, the input will always be
-                copied.
+              copied.
             * If ``False``, a ``BufferError`` will be raised if a
-                copy is deemed necessary.
+              copy is deemed necessary.
             * If ``None``, a copy will be made only if deemed
-                necessary, otherwise, the existing memory buffer will
-                be reused.
+              necessary, otherwise, the existing memory buffer will
+              be reused.
 
             Default: ``None``.
 
     Returns:
-        usm_ndarray:
+        Alternative[usm_ndarray, numpy.ndarray]:
             An array containing the data in ``x``. When ``copy`` is
             ``None`` or ``False``, this may be a view into the original
             memory.
@@ -1008,7 +1033,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
         TypeError:
             if ``x`` does not implement ``__dlpack__`` method
         ValueError:
-            if the input array resides on an unsupported device
+            if data of the input object resides on an unsupported device
 
     See https://dmlc.github.io/dlpack/latest/ for more details.
 
@@ -1031,7 +1056,9 @@ def from_dlpack(x, /, *, device=None, copy=None):
                     return self._array.__dlpack_device__()
 
             C = Container(dpt.linspace(0, 100, num=20, dtype="int16"))
+            # create usm_ndarray view
             X = dpt.from_dlpack(C)
+            # migrate content of the container to device of type kDLCPU
             Y = dpt.from_dlpack(C, device=(dpt.DLDeviceType.kDLCPU, 0))
 
     """
