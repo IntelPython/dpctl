@@ -750,7 +750,7 @@ class LegacyContainer:
 
 
 class Container:
-    "Helper class implementing legacy `__dlpack__` protocol"
+    "Helper class implementing `__dlpack__` protocol version 1.0"
 
     def __init__(self, array):
         self._array = array
