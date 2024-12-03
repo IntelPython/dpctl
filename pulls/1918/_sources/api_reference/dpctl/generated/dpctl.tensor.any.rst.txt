@@ -1,0 +1,6 @@
+﻿dpctl.tensor.any
+================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: any
