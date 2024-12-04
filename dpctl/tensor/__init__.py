@@ -201,6 +201,7 @@ from ._set_functions import (
 )
 from ._sorting import argsort, sort
 from ._testing import allclose
+from ._topk import top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
@@ -387,4 +388,5 @@ __all__ = [
     "DLDeviceType",
     "take_along_axis",
     "put_along_axis",
+    "top_k",
 ]
