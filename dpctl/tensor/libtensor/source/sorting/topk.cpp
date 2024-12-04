@@ -1,0 +1,387 @@
+//
+//                      Data Parallel Control (dpctl)
+//
+// Copyright 2020-2024 Intel Corporation
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+//===--------------------------------------------------------------------===//
+///
+/// \file
+/// This file defines functions of dpctl.tensor._tensor_sorting_impl
+/// extension.
+//===--------------------------------------------------------------------===//
+
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <optional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
+
+#include "utils/math_utils.hpp"
+#include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
+#include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
+
+#include "kernels/sorting/topk.hpp"
+#include "rich_comparisons.hpp"
+#include "topk.hpp"
+
+namespace td_ns = dpctl::tensor::type_dispatch;
+
+namespace dpctl
+{
+namespace tensor
+{
+namespace py_internal
+{
+
+typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
+                                          std::size_t,
+                                          std::size_t,
+                                          py::ssize_t,
+                                          bool,
+                                          const char *,
+                                          char *,
+                                          char *,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          py::ssize_t,
+                                          const std::vector<sycl::event> &);
+
+static topk_impl_fn_ptr_t topk_dispatch_vector[td_ns::num_types];
+
+namespace
+{
+
+template <typename argTy, typename IndexTy>
+sycl::event
+topk_caller(sycl::queue &exec_q,
+            std::size_t iter_nelems, // number of sub-arrays to sort (num. of
+                                     // rows in a matrix when sorting over rows)
+            std::size_t axis_nelems, // size of each array to sort  (length of
+                                     // rows, i.e. number of columns)
+            py::ssize_t k,
+            bool largest,
+            const char *arg_cp,
+            char *vals_cp,
+            char *inds_cp,
+            py::ssize_t iter_arg_offset,
+            py::ssize_t iter_vals_offset,
+            py::ssize_t iter_inds_offset,
+            py::ssize_t axis_arg_offset,
+            py::ssize_t axis_vals_offset,
+            py::ssize_t axis_inds_offset,
+            const std::vector<sycl::event> &depends)
+{
+    using dpctl::tensor::kernels::topk_impl;
+    if (largest) {
+        using CompTy =
+            typename dpctl::tensor::py_internal::DescendingSorter<argTy>::type;
+        return topk_impl<argTy, IndexTy, CompTy>(
+            exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
+            iter_arg_offset, iter_vals_offset, iter_inds_offset,
+            axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+    }
+    else {
+        using CompTy =
+            typename dpctl::tensor::py_internal::AscendingSorter<argTy>::type;
+        return topk_impl<argTy, IndexTy, CompTy>(
+            exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
+            iter_arg_offset, iter_vals_offset, iter_inds_offset,
+            axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+    }
+}
+
+} // namespace
+
+std::pair<sycl::event, sycl::event>
+py_topk(const dpctl::tensor::usm_ndarray &src,
+        const int trailing_dims_to_search,
+        const py::ssize_t k,
+        const bool largest,
+        const dpctl::tensor::usm_ndarray &vals,
+        const dpctl::tensor::usm_ndarray &inds,
+        sycl::queue &exec_q,
+        const std::vector<sycl::event> &depends)
+{
+    int src_nd = src.get_ndim();
+    int vals_nd = vals.get_ndim();
+    int inds_nd = inds.get_ndim();
+    if (src_nd != vals_nd || src_nd != inds_nd) {
+        throw py::value_error("The input and output arrays must have "
+                              "the same array ranks");
+    }
+    int iteration_nd = src_nd - trailing_dims_to_search;
+    if (trailing_dims_to_search <= 0 || iteration_nd < 0) {
+        throw py::value_error(
+            "trailing_dims_to_search must be positive, but no "
+            "greater than rank of the array being searched");
+    }
+
+    const py::ssize_t *src_shape_ptr = src.get_shape_raw();
+    const py::ssize_t *vals_shape_ptr = vals.get_shape_raw();
+    const py::ssize_t *inds_shape_ptr = inds.get_shape_raw();
+
+    bool same_shapes = true;
+    std::size_t iter_nelems(1);
+    for (int i = 0; same_shapes && (i < iteration_nd); ++i) {
+        auto src_shape_i = src_shape_ptr[i];
+        same_shapes = same_shapes && (src_shape_i == vals_shape_ptr[i] &&
+                                      src_shape_i == inds_shape_ptr[i]);
+        iter_nelems *= static_cast<std::size_t>(src_shape_i);
+    }
+
+    if (!same_shapes) {
+        throw py::value_error(
+            "Destination shape does not match the input shape");
+    }
+
+    std::size_t vals_k(1);
+    std::size_t inds_k(1);
+    std::size_t axis_nelems(1);
+    for (int i = iteration_nd; i < src_nd; ++i) {
+        axis_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
+        vals_k *= static_cast<std::size_t>(vals_shape_ptr[i]);
+        inds_k *= static_cast<std::size_t>(inds_shape_ptr[i]);
+    }
+
+    bool valid_k = (vals_k == static_cast<std::size_t>(k) &&
+                    inds_k == static_cast<std::size_t>(k) &&
+                    axis_nelems >= static_cast<std::size_t>(k));
+    if (!valid_k) {
+        throw py::value_error(
+            "The value of k is invalid for the input and destination arrays");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, vals, inds})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vals);
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(inds);
+
+    if ((iter_nelems == 0) || (axis_nelems == 0)) {
+        // Nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, vals) || overlap(src, inds)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vals,
+                                                               k * iter_nelems);
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(inds,
+                                                               k * iter_nelems);
+
+    int src_typenum = src.get_typenum();
+    int vals_typenum = vals.get_typenum();
+    int inds_typenum = inds.get_typenum();
+
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int vals_typeid = array_types.typenum_to_lookup_id(vals_typenum);
+    int inds_typeid = array_types.typenum_to_lookup_id(inds_typenum);
+
+    if (src_typeid != vals_typeid) {
+        throw py::value_error("Input array and vals array must have "
+                              "the same data type");
+    }
+
+    if (inds_typeid != static_cast<int>(td_ns::typenum_t::INT64)) {
+        throw py::value_error("Inds array must have data type int64");
+    }
+
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_vals_c_contig = vals.is_c_contiguous();
+    bool is_inds_c_contig = inds.is_c_contiguous();
+
+    if (is_src_c_contig && is_vals_c_contig && is_inds_c_contig) {
+        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
+
+        auto fn = topk_dispatch_vector[src_typeid];
+
+        sycl::event comp_ev =
+            fn(exec_q, iter_nelems, axis_nelems, k, largest, src.get_data(),
+               vals.get_data(), inds.get_data(), zero_offset, zero_offset,
+               zero_offset, zero_offset, zero_offset, zero_offset, depends);
+
+        sycl::event keep_args_alive_ev =
+            dpctl::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
+
+        return std::make_pair(keep_args_alive_ev, comp_ev);
+    }
+
+    return std::make_pair(sycl::event(), sycl::event());
+}
+
+std::pair<sycl::event, sycl::event>
+py_topk(const dpctl::tensor::usm_ndarray &src,
+        const py::ssize_t k,
+        const bool largest,
+        const dpctl::tensor::usm_ndarray &vals,
+        const dpctl::tensor::usm_ndarray &inds,
+        sycl::queue &exec_q,
+        const std::vector<sycl::event> &depends)
+{
+    int src_nd = src.get_ndim();
+    int vals_nd = vals.get_ndim();
+    int inds_nd = inds.get_ndim();
+    if (vals_nd != 1 || inds_nd != 1) {
+        throw py::value_error("Output arrays must be one-dimensional");
+    }
+
+    const py::ssize_t *src_shape_ptr = src.get_shape_raw();
+    const py::ssize_t *vals_shape_ptr = vals.get_shape_raw();
+    const py::ssize_t *inds_shape_ptr = inds.get_shape_raw();
+
+    std::size_t axis_nelems(1);
+    for (int i = 0; i < src_nd; ++i) {
+        axis_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
+    }
+
+    bool valid_k = (axis_nelems >= static_cast<std::size_t>(k) &&
+                    vals_shape_ptr[0] == k && inds_shape_ptr[0] == k);
+    if (!valid_k) {
+        throw py::value_error(
+            "The value of k is invalid for the input and destination arrays");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {src, vals, inds})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vals);
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(inds);
+
+    if (axis_nelems == 0) {
+        // Nothing to do
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    if (overlap(src, vals) || overlap(src, inds)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vals, k);
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(inds, k);
+
+    int src_typenum = src.get_typenum();
+    int vals_typenum = vals.get_typenum();
+    int inds_typenum = inds.get_typenum();
+
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int vals_typeid = array_types.typenum_to_lookup_id(vals_typenum);
+    int inds_typeid = array_types.typenum_to_lookup_id(inds_typenum);
+
+    if (src_typeid != vals_typeid) {
+        throw py::value_error("Input array and vals array must have "
+                              "the same data type");
+    }
+
+    if (inds_typeid != static_cast<int>(td_ns::typenum_t::INT64)) {
+        throw py::value_error("Inds array must have data type int64");
+    }
+
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_vals_c_contig = vals.is_c_contiguous();
+    bool is_inds_c_contig = inds.is_c_contiguous();
+
+    if (is_src_c_contig && is_vals_c_contig && is_inds_c_contig) {
+        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        static constexpr std::size_t iter_nelems = 1;
+
+        auto fn = topk_dispatch_vector[src_typeid];
+
+        sycl::event comp_ev =
+            fn(exec_q, iter_nelems, axis_nelems, k, largest, src.get_data(),
+               vals.get_data(), inds.get_data(), zero_offset, zero_offset,
+               zero_offset, zero_offset, zero_offset, zero_offset, depends);
+
+        sycl::event keep_args_alive_ev =
+            dpctl::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
+
+        return std::make_pair(keep_args_alive_ev, comp_ev);
+    }
+
+    return std::make_pair(sycl::event(), sycl::event());
+}
+
+template <typename fnT, typename T> struct TopKFactory
+{
+    fnT get()
+    {
+        using IdxT = std::int64_t;
+        return topk_caller<T, IdxT>;
+    }
+};
+
+void init_topk_dispatch_vectors(void)
+{
+    td_ns::DispatchVectorBuilder<topk_impl_fn_ptr_t, TopKFactory,
+                                 td_ns::num_types>
+        dvb;
+    dvb.populate_dispatch_vector(topk_dispatch_vector);
+}
+
+void init_topk_functions(py::module_ m)
+{
+    dpctl::tensor::py_internal::init_topk_dispatch_vectors();
+
+    auto py_topk = [](const dpctl::tensor::usm_ndarray &src,
+                      std::optional<const int> trailing_dims_to_search,
+                      const py::ssize_t k, const bool largest,
+                      const dpctl::tensor::usm_ndarray &vals,
+                      const dpctl::tensor::usm_ndarray &inds,
+                      sycl::queue &exec_q,
+                      const std::vector<sycl::event> &depends)
+        -> std::pair<sycl::event, sycl::event> {
+        if (trailing_dims_to_search) {
+            return dpctl::tensor::py_internal::py_topk(
+                src, trailing_dims_to_search.value(), k, largest, vals, inds,
+                exec_q, depends);
+        }
+        else {
+            return dpctl::tensor::py_internal::py_topk(src, k, largest, vals,
+                                                       inds, exec_q, depends);
+        }
+    };
+
+    m.def("_topk", py_topk, py::arg("src"), py::arg("trailing_dims_to_search"),
+          py::arg("k"), py::arg("largest"), py::arg("vals"), py::arg("inds"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+}
+
+} // end of namespace py_internal
+} // end of namespace tensor
+} // end of namespace dpctl
