@@ -26,6 +26,7 @@ __author__ = "Intel Corp."
 import os
 import os.path
 
+from . import _init_helper
 from ._device_selection import select_device_with_aspects
 from ._sycl_context import SyclContext, SyclContextCreationError
 from ._sycl_device import (
@@ -137,3 +138,4 @@ def get_include():
 
 __version__ = get_versions()["version"]
 del get_versions
+del _init_helper
