@@ -76,6 +76,23 @@ static topk_impl_fn_ptr_t topk_dispatch_vector[td_ns::num_types];
 namespace
 {
 
+template <typename T, typename = void>
+struct use_radix_sort : public std::false_type
+{
+};
+
+template <typename T>
+struct use_radix_sort<
+    T,
+    std::enable_if_t<std::disjunction<std::is_same<T, bool>,
+                                      std::is_same<T, std::uint8_t>,
+                                      std::is_same<T, std::int8_t>,
+                                      std::is_same<T, std::uint16_t>,
+                                      std::is_same<T, std::int16_t>>::value>>
+    : public std::true_type
+{
+};
+
 template <typename argTy, typename IndexTy>
 sycl::event
 topk_caller(sycl::queue &exec_q,
@@ -96,22 +113,33 @@ topk_caller(sycl::queue &exec_q,
             py::ssize_t axis_inds_offset,
             const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::kernels::topk_impl;
-    if (largest) {
-        using CompTy =
-            typename dpctl::tensor::py_internal::DescendingSorter<argTy>::type;
-        return topk_impl<argTy, IndexTy, CompTy>(
-            exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
-            iter_arg_offset, iter_vals_offset, iter_inds_offset,
+    if constexpr (use_radix_sort<argTy>::value) {
+        using dpctl::tensor::kernels::topk_radix_impl;
+        auto ascending = !largest;
+        return topk_radix_impl<argTy, IndexTy>(
+            exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
+            inds_cp, iter_arg_offset, iter_vals_offset, iter_inds_offset,
             axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
     }
     else {
-        using CompTy =
-            typename dpctl::tensor::py_internal::AscendingSorter<argTy>::type;
-        return topk_impl<argTy, IndexTy, CompTy>(
-            exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
-            iter_arg_offset, iter_vals_offset, iter_inds_offset,
-            axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        using dpctl::tensor::kernels::topk_merge_impl;
+        if (largest) {
+            using CompTy =
+                typename dpctl::tensor::py_internal::DescendingSorter<
+                    argTy>::type;
+            return topk_merge_impl<argTy, IndexTy, CompTy>(
+                exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
+                iter_arg_offset, iter_vals_offset, iter_inds_offset,
+                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        }
+        else {
+            using CompTy = typename dpctl::tensor::py_internal::AscendingSorter<
+                argTy>::type;
+            return topk_merge_impl<argTy, IndexTy, CompTy>(
+                exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
+                iter_arg_offset, iter_vals_offset, iter_inds_offset,
+                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        }
     }
 }
 
