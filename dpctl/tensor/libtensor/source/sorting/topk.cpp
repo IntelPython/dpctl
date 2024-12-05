@@ -58,7 +58,7 @@ namespace py_internal
 typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
                                           std::size_t,
                                           std::size_t,
-                                          py::ssize_t,
+                                          std::size_t,
                                           bool,
                                           const char *,
                                           char *,
@@ -83,7 +83,7 @@ topk_caller(sycl::queue &exec_q,
                                      // rows in a matrix when sorting over rows)
             std::size_t axis_nelems, // size of each array to sort  (length of
                                      // rows, i.e. number of columns)
-            py::ssize_t k,
+            std::size_t k,
             bool largest,
             const char *arg_cp,
             char *vals_cp,
@@ -120,7 +120,7 @@ topk_caller(sycl::queue &exec_q,
 std::pair<sycl::event, sycl::event>
 py_topk(const dpctl::tensor::usm_ndarray &src,
         const int trailing_dims_to_search,
-        const py::ssize_t k,
+        const std::size_t k,
         const bool largest,
         const dpctl::tensor::usm_ndarray &vals,
         const dpctl::tensor::usm_ndarray &inds,
@@ -168,9 +168,7 @@ py_topk(const dpctl::tensor::usm_ndarray &src,
         inds_k *= static_cast<std::size_t>(inds_shape_ptr[i]);
     }
 
-    bool valid_k = (vals_k == static_cast<std::size_t>(k) &&
-                    inds_k == static_cast<std::size_t>(k) &&
-                    axis_nelems >= static_cast<std::size_t>(k));
+    bool valid_k = (vals_k == k && inds_k == k && axis_nelems >= k);
     if (!valid_k) {
         throw py::value_error(
             "The value of k is invalid for the input and destination arrays");
@@ -243,7 +241,7 @@ py_topk(const dpctl::tensor::usm_ndarray &src,
 
 std::pair<sycl::event, sycl::event>
 py_topk(const dpctl::tensor::usm_ndarray &src,
-        const py::ssize_t k,
+        const std::size_t k,
         const bool largest,
         const dpctl::tensor::usm_ndarray &vals,
         const dpctl::tensor::usm_ndarray &inds,
@@ -266,8 +264,9 @@ py_topk(const dpctl::tensor::usm_ndarray &src,
         axis_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
-    bool valid_k = (axis_nelems >= static_cast<std::size_t>(k) &&
-                    vals_shape_ptr[0] == k && inds_shape_ptr[0] == k);
+    bool valid_k =
+        (axis_nelems >= k && static_cast<std::size_t>(vals_shape_ptr[0]) == k &&
+         static_cast<std::size_t>(inds_shape_ptr[0]) == k);
     if (!valid_k) {
         throw py::value_error(
             "The value of k is invalid for the input and destination arrays");
@@ -360,7 +359,7 @@ void init_topk_functions(py::module_ m)
 
     auto py_topk = [](const dpctl::tensor::usm_ndarray &src,
                       std::optional<const int> trailing_dims_to_search,
-                      const py::ssize_t k, const bool largest,
+                      const std::size_t k, const bool largest,
                       const dpctl::tensor::usm_ndarray &vals,
                       const dpctl::tensor::usm_ndarray &inds,
                       sycl::queue &exec_q,
