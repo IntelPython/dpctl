@@ -86,7 +86,7 @@ sycl::event topk_full_sort_impl(
                              // matrix when sorting over rows)
     std::size_t sort_nelems, // size of each array to sort  (length of rows,
                              // i.e. number of columns)
-    dpctl::tensor::ssize_t k,
+    std::size_t k,
     const argTy *arg_tp,
     argTy *vals_tp,
     IndexTy *inds_tp,
@@ -174,7 +174,7 @@ topk_impl(sycl::queue &exec_q,
                                    // in a matrix when sorting over rows)
           std::size_t axis_nelems, // size of each array to sort  (length of
                                    // rows, i.e. number of columns)
-          dpctl::tensor::ssize_t k,
+          std::size_t k,
           const char *arg_cp,
           char *vals_cp,
           char *inds_cp,
@@ -186,7 +186,7 @@ topk_impl(sycl::queue &exec_q,
           dpctl::tensor::ssize_t axis_inds_offset,
           const std::vector<sycl::event> &depends)
 {
-    if (axis_nelems < static_cast<std::size_t>(k)) {
+    if (axis_nelems < k) {
         throw std::runtime_error("Invalid sort axis size for value of k");
     }
 
@@ -200,9 +200,7 @@ topk_impl(sycl::queue &exec_q,
     using dpctl::tensor::kernels::IndexComp;
     const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
 
-    if (axis_nelems <= 512 || k >= 1024 ||
-        static_cast<std::size_t>(k) > axis_nelems / 2)
-    {
+    if (axis_nelems <= 512 || k >= 1024 || k > axis_nelems / 2) {
         return topk_full_sort_impl(exec_q, iter_nelems, axis_nelems, k, arg_tp,
                                    vals_tp, inds_tp, index_comp, depends);
     }
@@ -256,22 +254,19 @@ topk_impl(sycl::queue &exec_q,
                                                           sorted_block_size);
 
         // round k up for the later merge kernel
-        const dpctl::tensor::ssize_t round_k_to = elems_per_wi;
-        dpctl::tensor::ssize_t k_rounded =
-            merge_sort_detail::quotient_ceil<dpctl::tensor::ssize_t>(
-                k, round_k_to) *
-            round_k_to;
+        std::size_t k_rounded =
+            merge_sort_detail::quotient_ceil<std::size_t>(k, elems_per_wi) *
+            elems_per_wi;
 
         // get length of tail for alloc size
         auto rem = axis_nelems % sorted_block_size;
-        auto alloc_len = (rem && rem < static_cast<std::size_t>(k_rounded))
+        auto alloc_len = (rem && rem < k_rounded)
                              ? rem + k_rounded * (n_segments - 1)
                              : k_rounded * n_segments;
 
         // if allocation would be sufficiently large or k is larger than
         // elements processed, use full sort
-        if (static_cast<std::size_t>(k_rounded) >= axis_nelems ||
-            static_cast<std::size_t>(k_rounded) >= sorted_block_size ||
+        if (k_rounded >= axis_nelems || k_rounded >= sorted_block_size ||
             alloc_len >= axis_nelems / 2)
         {
             return topk_full_sort_impl(exec_q, iter_nelems, axis_nelems, k,
@@ -386,7 +381,7 @@ topk_impl(sycl::queue &exec_q,
                     for (std::size_t array_id = k_segment_start_idx + lid;
                          array_id < k_segment_end_idx; array_id += lws)
                     {
-                        if (lid < static_cast<std::size_t>(k_rounded)) {
+                        if (lid < k_rounded) {
                             index_data[iter_id * alloc_len + array_id] =
                                 out_src[array_id - k_segment_start_idx];
                         }
