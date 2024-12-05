@@ -23,5 +23,5 @@ if hasattr(os, "add_dll_directory"):
     if "VIRTUAL_ENV" in os.environ:
         venv_dir = os.environ["VIRTUAL_ENV"]
         expected_dir = os.path.join(venv_dir, "Library", "bin")
-        if os.exists(expected_dir):
+        if os.path.exists(expected_dir):
             os.add_dll_directory(expected_dir)
