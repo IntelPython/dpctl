@@ -744,31 +744,58 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
     const indT1 *cumsum_data = reinterpret_cast<const indT1 *>(cumsum_cp);
     indT2 *indexes_data = reinterpret_cast<indT2 *>(indexes_cp);
 
+    constexpr std::size_t nominal_lws = 256u;
+    const std::size_t masked_extent = iter_size;
+    const std::size_t lws = std::min(masked_extent, nominal_lws);
+
+    const std::size_t n_groups = (masked_extent + lws - 1) / lws;
+    sycl::range<1> gRange{n_groups * lws};
+    sycl::range<1> lRange{lws};
+
+    sycl::nd_range<1> ndRange{gRange, lRange};
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<class non_zero_indexes_krn<indT1, indT2>>(
-            sycl::range<1>(iter_size), [=](sycl::id<1> idx) {
-                auto i = idx[0];
 
-                auto cs_curr_val = cumsum_data[i] - 1;
-                auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
-                bool cond = (cs_curr_val == cs_prev_val);
+        const std::size_t lacc_size = std::min(lws, masked_extent) + 1;
+        sycl::local_accessor<indT1, 1> lacc(lacc_size, cgh);
 
+        using KernelName = class non_zero_indexes_krn<indT1, indT2>;
+
+        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
+            const std::size_t group_i = ndit.get_group(0);
+            const std::uint32_t l_i = ndit.get_local_id(0);
+            const std::uint32_t lws = ndit.get_local_range(0);
+
+            const std::size_t masked_block_start = group_i * lws;
+
+            for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
+                const size_t offset = masked_block_start + i;
+                lacc[i] = (offset == 0) ? indT1(0)
+                          : (offset - 1 < masked_extent)
+                              ? cumsum_data[offset - 1]
+                              : cumsum_data[masked_extent - 1] + 1;
+            }
+
+            sycl::group_barrier(ndit.get_group());
+
+            const std::size_t i = masked_block_start + l_i;
+            const auto cs_val = lacc[l_i];
+            const bool cond = (lacc[l_i + 1] == cs_val + 1);
+
+            if (cond && (i < masked_extent)) {
                 ssize_t i_ = static_cast<ssize_t>(i);
                 for (int dim = nd; --dim > 0;) {
-                    auto sd = mask_shape[dim];
-                    ssize_t q = i_ / sd;
-                    ssize_t r = (i_ - q * sd);
-                    if (cond) {
-                        indexes_data[cs_curr_val + dim * nz_elems] =
-                            static_cast<indT2>(r);
-                    }
+                    const auto sd = mask_shape[dim];
+                    const ssize_t q = i_ / sd;
+                    const ssize_t r = (i_ - q * sd);
+                    indexes_data[cs_val + dim * nz_elems] =
+                        static_cast<indT2>(r);
                     i_ = q;
                 }
-                if (cond) {
-                    indexes_data[cs_curr_val] = static_cast<indT2>(i_);
-                }
-            });
+                indexes_data[cs_val] = static_cast<indT2>(i_);
+            }
+        });
     });
 
     return comp_ev;
