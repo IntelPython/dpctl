@@ -16,14 +16,19 @@
 
 import os
 import os.path
+import sys
 
-if hasattr(os, "add_dll_directory"):
+is_venv_win32 = (
+    sys.platform == "win32"
+    and sys.base_exec_prefix != sys.exec_prefix
+    and os.path.isfile(os.path.join(sys.exec_prefix, "pyvenv.cfg"))
+)
+
+if is_venv_win32:
     # For virtual environments on Windows, add folder
     # with DPC++ libraries to the DLL search path gh-1745
-    if "VIRTUAL_ENV" in os.environ:
-        venv_dir = os.environ["VIRTUAL_ENV"]
-        # Expect to find file per PEP-0405
-        expected_file = os.path.join(venv_dir, "pyvenv.cfg")
-        dll_dir = os.path.join(venv_dir, "Library", "bin")
-        if os.path.isdir(dll_dir) and os.path.isfile(expected_file):
-            os.add_dll_directory(dll_dir)
+    dll_dir = os.path.join(sys.exec_prefix, "Library", "bin")
+    if os.path.isdir(dll_dir):
+        os.add_dll_directory(dll_dir)
+
+del is_venv_win32
