@@ -1736,6 +1736,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">rhs</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">expected_vals_shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask_nelems</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
     <span class="n">dep_ev</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
     <span class="n">hev</span><span class="p">,</span> <span class="n">pl_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_place</span><span class="p">(</span>
         <span class="n">dst</span><span class="o">=</span><span class="n">ary</span><span class="p">,</span>
