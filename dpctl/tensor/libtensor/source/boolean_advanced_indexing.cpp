@@ -65,6 +65,14 @@ static masked_extract_all_slices_strided_impl_fn_ptr_t
         [td_ns::num_types];
 
 using dpctl::tensor::kernels::indexing::
+    masked_extract_all_slices_contig_impl_fn_ptr_t;
+
+static masked_extract_all_slices_contig_impl_fn_ptr_t
+    masked_extract_all_slices_contig_i32_impl_dispatch_vector[td_ns::num_types];
+static masked_extract_all_slices_contig_impl_fn_ptr_t
+    masked_extract_all_slices_contig_i64_impl_dispatch_vector[td_ns::num_types];
+
+using dpctl::tensor::kernels::indexing::
     masked_extract_some_slices_strided_impl_fn_ptr_t;
 
 static masked_extract_some_slices_strided_impl_fn_ptr_t
@@ -111,6 +119,24 @@ void populate_masked_extract_dispatch_vectors(void)
         dvb4;
     dvb4.populate_dispatch_vector(
         masked_extract_some_slices_strided_i64_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractAllSlicesContigFactoryForInt32;
+    td_ns::DispatchVectorBuilder<masked_extract_all_slices_contig_impl_fn_ptr_t,
+                                 MaskExtractAllSlicesContigFactoryForInt32,
+                                 td_ns::num_types>
+        dvb5;
+    dvb5.populate_dispatch_vector(
+        masked_extract_all_slices_contig_i32_impl_dispatch_vector);
+
+    using dpctl::tensor::kernels::indexing::
+        MaskExtractAllSlicesContigFactoryForInt64;
+    td_ns::DispatchVectorBuilder<masked_extract_all_slices_contig_impl_fn_ptr_t,
+                                 MaskExtractAllSlicesContigFactoryForInt64,
+                                 td_ns::num_types>
+        dvb6;
+    dvb6.populate_dispatch_vector(
+        masked_extract_all_slices_contig_i64_impl_dispatch_vector);
 }
 
 std::pair<sycl::event, sycl::event>
@@ -223,50 +249,67 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
     sycl::event extract_ev;
     std::vector<sycl::event> host_task_events{};
     if (axis_start == 0 && axis_end == src_nd) {
-        // empty orthogonal directions
-        auto fn =
-            (use_i32)
-                ? masked_extract_all_slices_strided_i32_impl_dispatch_vector
-                      [src_typeid]
-                : masked_extract_all_slices_strided_i64_impl_dispatch_vector
-                      [src_typeid];
-
         assert(dst_shape_vec.size() == 1);
         assert(dst_strides_vec.size() == 1);
 
-        using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        const auto &ptr_size_event_tuple1 =
-            device_allocate_and_pack<py::ssize_t>(
-                exec_q, host_task_events, src_shape_vec, src_strides_vec);
-        py::ssize_t *packed_src_shape_strides =
-            std::get<0>(ptr_size_event_tuple1);
-        if (packed_src_shape_strides == nullptr) {
-            throw std::runtime_error("Unable to allocated device memory");
+        if (src.is_c_contiguous()) {
+            auto fn =
+                (use_i32)
+                    ? masked_extract_all_slices_contig_i32_impl_dispatch_vector
+                          [src_typeid]
+                    : masked_extract_all_slices_contig_i64_impl_dispatch_vector
+                          [src_typeid];
+
+            extract_ev =
+                fn(exec_q, cumsum_sz, src_data_p, cumsum_data_p, dst_data_p,
+                   dst_shape_vec[0], dst_strides_vec[0], depends);
+
+            //
+            host_task_events.push_back(extract_ev);
         }
-        sycl::event copy_src_shape_strides_ev =
-            std::get<2>(ptr_size_event_tuple1);
+        else {
+            // empty orthogonal directions
+            auto fn =
+                (use_i32)
+                    ? masked_extract_all_slices_strided_i32_impl_dispatch_vector
+                          [src_typeid]
+                    : masked_extract_all_slices_strided_i64_impl_dispatch_vector
+                          [src_typeid];
 
-        std::vector<sycl::event> all_deps;
-        all_deps.reserve(depends.size() + 1);
-        all_deps.insert(all_deps.end(), depends.begin(), depends.end());
-        all_deps.push_back(copy_src_shape_strides_ev);
+            using dpctl::tensor::offset_utils::device_allocate_and_pack;
+            const auto &ptr_size_event_tuple1 =
+                device_allocate_and_pack<py::ssize_t>(
+                    exec_q, host_task_events, src_shape_vec, src_strides_vec);
+            py::ssize_t *packed_src_shape_strides =
+                std::get<0>(ptr_size_event_tuple1);
+            if (packed_src_shape_strides == nullptr) {
+                throw std::runtime_error("Unable to allocated device memory");
+            }
+            sycl::event copy_src_shape_strides_ev =
+                std::get<2>(ptr_size_event_tuple1);
 
-        assert(all_deps.size() == depends.size() + 1);
+            std::vector<sycl::event> all_deps;
+            all_deps.reserve(depends.size() + 1);
+            all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+            all_deps.push_back(copy_src_shape_strides_ev);
 
-        extract_ev = fn(exec_q, cumsum_sz, src_data_p, cumsum_data_p,
-                        dst_data_p, src_nd, packed_src_shape_strides,
-                        dst_shape_vec[0], dst_strides_vec[0], all_deps);
+            assert(all_deps.size() == depends.size() + 1);
 
-        sycl::event cleanup_tmp_allocations_ev =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(extract_ev);
-                const auto &ctx = exec_q.get_context();
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, packed_src_shape_strides] {
-                    sycl_free_noexcept(packed_src_shape_strides, ctx);
+            extract_ev = fn(exec_q, cumsum_sz, src_data_p, cumsum_data_p,
+                            dst_data_p, src_nd, packed_src_shape_strides,
+                            dst_shape_vec[0], dst_strides_vec[0], all_deps);
+
+            sycl::event cleanup_tmp_allocations_ev =
+                exec_q.submit([&](sycl::handler &cgh) {
+                    cgh.depends_on(extract_ev);
+                    const auto &ctx = exec_q.get_context();
+                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+                    cgh.host_task([ctx, packed_src_shape_strides] {
+                        sycl_free_noexcept(packed_src_shape_strides, ctx);
+                    });
                 });
-            });
-        host_task_events.push_back(cleanup_tmp_allocations_ev);
+            host_task_events.push_back(cleanup_tmp_allocations_ev);
+        }
     }
     else {
         // non-empty othogonal directions
