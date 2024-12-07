@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.18.2] - Nov. XX, 2024
+## [0.18.3] - Dec. XX, 2024
+
+### Fixed
+
+* Enabled `dpctl` in virtual environment on Windows platform (issue [gh-1745](https://github.com/IntelPython/dpctl/issues/1745)) [gh-1924](https://github.com/IntelPython/dpctl/pull/1924)
+
+## [0.18.2] - Nov. 21, 2024
 
 ### Maintenance
 
