@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev] - XXX. XX, XXXX
+## [dev] - XXX. XX, 2025
 
 ### Added
 
@@ -36,6 +36,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
 * Add support of CV-qualifiers in `is_complex<T>` helper [gh-1900](https://github.com/IntelPython/dpctl/pull/1900)
 * Tuning work for elementwise functions with modest performance gains (under 10%) [gh-1889](https://github.com/IntelPython/dpctl/pull/1889)
+
+## [0.18.3] - Dec. 07, 2024
+
+### Fixed
+
+* Enabled `dpctl` in virtual environment on Windows platform (issue [gh-1745](https://github.com/IntelPython/dpctl/issues/1745)) [gh-1924](https://github.com/IntelPython/dpctl/pull/1924)
+
+## [0.18.2] - Nov. 21, 2024
+
+### Maintenance
+
+* Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
+
+### Fixed
+
+* Fix for `tensor.result_type` when all inputs are Python built-in scalars [gh-1904](https://github.com/IntelPython/dpctl/pull/1904)
 
 ## [0.18.1] - Oct. 11, 2024
 
