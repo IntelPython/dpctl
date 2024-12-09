@@ -672,9 +672,13 @@ def astype(
     f_contig = usm_ary.flags.f_contiguous
     needs_copy = copy or not ary_dtype == target_dtype
     if not needs_copy and (order != "K"):
-        needs_copy = (c_contig and order not in ["A", "C"]) or (
-            f_contig and order not in ["A", "F"]
-        )
+        # ensure that order="F" for C-contig input triggers copy,
+        # and order="C" for F-contig input triggers copy too.
+        # 1D arrays which are both C- and F- contig should not
+        # force copying for neither order="F", nor order="C", see gh-1926
+        needs_copy = (
+            c_contig and not f_contig and order not in ["A", "C"]
+        ) or (not c_contig and f_contig and order not in ["A", "F"])
     if not needs_copy:
         return usm_ary
     copy_order = "C"
