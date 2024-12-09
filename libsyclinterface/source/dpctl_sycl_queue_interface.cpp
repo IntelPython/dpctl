@@ -216,6 +216,14 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_LOCAL_ACCESSOR:
         arg_set = set_local_accessor_arg(cgh, idx, (MDLocalAccessor *)Arg);
         break;
+    case DPCTL_WORK_GROUP_MEMORY:
+    {
+        size_t num_bytes = reinterpret_cast<std::uintptr_t>(Arg);
+        sycl::ext::oneapi::experimental::work_group_memory<char[]> mem{
+            num_bytes, cgh};
+        cgh.set_arg(idx, mem);
+        break;
+    }
     default:
         arg_set = false;
         break;
