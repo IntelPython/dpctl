@@ -404,25 +404,47 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
             const size_t src_size = stack_elem.get_size();
             outputT *local_scans = stack_elem.get_local_scans_ptr();
 
+            using UpdateKernelName =
+                class inclusive_scan_1d_iter_chunk_update_krn<
+                    inputT, outputT, n_wi, IndexerT, TransformerT,
+                    NoOpTransformerT, ScanOpT, include_initial>;
+
+            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
+
+            auto const &ctx = exec_q.get_context();
+            auto const &dev = exec_q.get_device();
+            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+                ctx, {dev}, {kernel_id});
+
+            auto krn = kb.get_kernel(kernel_id);
+
+            const std::uint32_t sg_size = krn.template get_info<
+                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
             // output[ chunk_size * (i + 1) + j] += temp[i]
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(dependent_event);
+                cgh.use_kernel_bundle(kb);
 
                 constexpr nwiT updates_per_wi = n_wi;
-                const size_t n_items = ceiling_quotient<size_t>(src_size, n_wi);
+                const size_t n_items =
+                    ceiling_quotient<size_t>(src_size, sg_size * n_wi) *
+                    sg_size;
 
-                using UpdateKernelName =
-                    class inclusive_scan_1d_iter_chunk_update_krn<
-                        inputT, outputT, n_wi, IndexerT, TransformerT,
-                        NoOpTransformerT, ScanOpT, include_initial>;
+                sycl::range<1> gRange{n_items};
+                sycl::range<1> lRange{sg_size};
+                sycl::nd_range<1> ndRange{gRange, lRange};
 
                 cgh.parallel_for<UpdateKernelName>(
-                    {n_items}, [chunk_size, src, src_size, local_scans, scan_op,
-                                identity](auto wiid) {
-                        const size_t gid = n_wi * wiid[0];
+                    ndRange, [chunk_size, src, src_size, local_scans, scan_op,
+                              identity](sycl::nd_item<1> ndit) {
+                        const std::uint32_t lws = ndit.get_local_range(0);
+                        const size_t block_offset =
+                            ndit.get_group(0) * n_wi * lws;
 #pragma unroll
                         for (size_t i = 0; i < updates_per_wi; ++i) {
-                            const size_t src_id = gid + i;
+                            const size_t src_id =
+                                block_offset + ndit.get_local_id(0) + i * lws;
                             if (src_id < src_size) {
                                 const size_t scan_id = (src_id / chunk_size);
                                 src[src_id] =
@@ -661,33 +683,55 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             size_t local_stride = stack_elem.get_local_stride();
 
+            using UpdateKernelName = class inclusive_scan_iter_chunk_update_krn<
+                inputT, outputT, n_wi, TransformerT, NoOpTransformerT, ScanOpT,
+                include_initial>;
+
+            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
+
+            auto const &ctx = exec_q.get_context();
+            auto const &dev = exec_q.get_device();
+            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+                ctx, {dev}, {kernel_id});
+
+            auto krn = kb.get_kernel(kernel_id);
+
+            const std::uint32_t sg_size = krn.template get_info<
+                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
             constexpr nwiT updates_per_wi = n_wi;
             const size_t update_nelems =
-                ceiling_quotient<size_t>(src_size, updates_per_wi);
+                ceiling_quotient<size_t>(src_size, sg_size * updates_per_wi) *
+                sg_size;
 
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(dependent_event);
+                cgh.use_kernel_bundle(kb);
 
-                using UpdateKernelName =
-                    class inclusive_scan_iter_chunk_update_krn<
-                        inputT, outputT, n_wi, TransformerT, NoOpTransformerT,
-                        ScanOpT, include_initial>;
+                sycl::range<1> gRange{iter_nelems * update_nelems};
+                sycl::range<1> lRange{sg_size};
+
+                sycl::nd_range<1> ndRange{gRange, lRange};
 
                 cgh.parallel_for<UpdateKernelName>(
-                    {iter_nelems * update_nelems},
+                    ndRange,
                     [chunk_size, update_nelems, src_size, local_stride, src,
-                     local_scans, scan_op, identity](auto wiid) {
-                        const size_t gid = wiid[0];
+                     local_scans, scan_op, identity](sycl::nd_item<1> ndit) {
+                        const size_t gr_id = ndit.get_group(0);
 
-                        const size_t iter_gid = gid / update_nelems;
-                        const size_t axis_gid =
-                            gid - (iter_gid * update_nelems);
+                        const size_t iter_gid = gr_id / update_nelems;
+                        const size_t axis_gr_id =
+                            gr_id - (iter_gid * update_nelems);
 
-                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const std::uint32_t lws = ndit.get_local_range(0);
+
+                        const size_t src_axis_id0 =
+                            axis_gr_id * updates_per_wi * lws;
                         const size_t src_iter_id = iter_gid * src_size;
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_axis_id =
+                                src_axis_id0 + ndit.get_local_id(0) + i * lws;
                             const size_t src_id = src_axis_id + src_iter_id;
 
                             if (src_axis_id < src_size) {
