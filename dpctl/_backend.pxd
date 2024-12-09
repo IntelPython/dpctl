@@ -69,7 +69,8 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _FLOAT              'DPCTL_FLOAT32_T',
         _DOUBLE             'DPCTL_FLOAT64_T',
         _VOID_PTR           'DPCTL_VOID_PTR',
-        _LOCAL_ACCESSOR     'DPCTL_LOCAL_ACCESSOR'
+        _LOCAL_ACCESSOR     'DPCTL_LOCAL_ACCESSOR',
+        _WORK_GROUP_MEMORY  'DPCTL_WORK_GROUP_MEMORY'
 
     ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
         _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
@@ -468,3 +469,18 @@ cdef extern from "syclinterface/dpctl_sycl_usm_interface.h":
     cdef DPCTLSyclDeviceRef DPCTLUSM_GetPointerDevice(
         DPCTLSyclUSMRef MRef,
         DPCTLSyclContextRef CRef)
+
+cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
+    cdef struct RawWorkGroupMemoryTy
+    ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
+
+
+    cdef struct DPCTLOpaqueWorkGroupMemory
+    ctypedef DPCTLOpaqueWorkGroupMemory *DPCTLSyclWorkGroupMemoryRef;
+
+    cdef DPCTLSyclWorkGroupMemoryRef DPCTLWorkGroupMemory_Create(size_t nbytes);
+
+    cdef void DPCTLWorkGroupMemory_Delete(
+        DPCTLSyclWorkGroupMemoryRef Ref);
+
+    cdef bint DPCTLWorkGroupMemory_Available();

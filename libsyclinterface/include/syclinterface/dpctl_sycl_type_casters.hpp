@@ -80,6 +80,10 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclPlatformRef>,
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclEventRef>,
                                    DPCTLEventVectorRef)
 
+#include "dpctl_sycl_extension_interface.h"
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(RawWorkGroupMemory,
+                                   DPCTLSyclWorkGroupMemoryRef)
+
 #endif
 
 } // namespace dpctl::syclinterface
