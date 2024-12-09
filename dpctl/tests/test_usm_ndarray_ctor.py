@@ -1435,6 +1435,17 @@ def test_astype_device():
     assert r.sycl_queue == q2
 
 
+def test_astype_gh_1926():
+    get_queue_or_skip()
+
+    x = dpt.ones(10_000)
+    x_ = dpt.astype(x, x.dtype, copy=False, order="C")
+    assert x is x_
+
+    x__ = dpt.astype(x, x.dtype, copy=False, order="F")
+    assert x is x__
+
+
 def test_copy():
     try:
         X = dpt.usm_ndarray((5, 5), "i4")[2:4, 1:4]
