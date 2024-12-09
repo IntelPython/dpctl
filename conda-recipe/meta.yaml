@@ -22,8 +22,8 @@ requirements:
     # TODO: keep in sync with /pyproject.toml
     build:
         - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
         - {{ compiler('dpcpp') }} >={{ required_compiler_version }}
-        - sysroot_linux-64 >=2.28  # [linux]
     host:
         - python
         - pip >=24.0
@@ -57,6 +57,7 @@ test:
     requires:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - {{ stdlib('c') }}
         - cython
         - setuptools
         - pytest
