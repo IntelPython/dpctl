@@ -1438,7 +1438,7 @@ def test_astype_device():
 def test_astype_gh_1926():
     get_queue_or_skip()
 
-    x = dpt.ones(10_000)
+    x = dpt.ones(64)
     x_ = dpt.astype(x, x.dtype, copy=False, order="C")
     assert x is x_
 
