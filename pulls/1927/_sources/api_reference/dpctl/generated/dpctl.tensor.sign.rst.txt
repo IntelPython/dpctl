@@ -1,0 +1,10 @@
+﻿dpctl.tensor.sign
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: sign
+    :no-value:
+
+
