@@ -67,3 +67,12 @@ cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
         "dpctl::syclinterface::wrap<sycl::event>" (const event *)
     cdef event * unwrap_event "dpctl::syclinterface::unwrap<sycl::event>" (
         dpctl_backend.DPCTLSyclEventRef)
+
+    # work group memory extension[
+    cdef dpctl_backend.DPCTLSyclWorkGroupMemoryRef wrap_work_group_memory \
+            "dpctl::syclinterface::wrap<RawWorkGroupMemory>" \
+            (const RawWorkGroupMemory *)
+
+    cdef RawWorkGroupMemory * unwrap_work_group_memory \
+            "dpctl::syclinterface::unwrap<RawWorkGroupMemory>" (
+            dpctl_backend.DPCTLSyclWorkGroupMemoryRef)

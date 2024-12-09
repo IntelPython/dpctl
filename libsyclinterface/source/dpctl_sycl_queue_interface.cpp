@@ -42,6 +42,10 @@
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 
+#ifdef SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY
+#include "dpctl_sycl_extension_interface.h"
+#endif
+
 using namespace sycl;
 
 #define SET_LOCAL_ACCESSOR_ARG(CGH, NDIM, ARGTY, R, IDX)                       \
@@ -216,6 +220,18 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_LOCAL_ACCESSOR:
         arg_set = set_local_accessor_arg(cgh, idx, (MDLocalAccessor *)Arg);
         break;
+#ifdef SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY
+    case DPCTL_WORK_GROUP_MEMORY:
+    {
+        auto ref = static_cast<DPCTLSyclWorkGroupMemoryRef>(Arg);
+        RawWorkGroupMemory *raw_mem = unwrap<RawWorkGroupMemory>(ref);
+        size_t num_bytes = raw_mem->nbytes;
+        sycl::ext::oneapi::experimental::work_group_memory<char[]> mem{
+            num_bytes, cgh};
+        cgh.set_arg(idx, mem);
+        break;
+    }
+#endif
     default:
         arg_set = false;
         break;
