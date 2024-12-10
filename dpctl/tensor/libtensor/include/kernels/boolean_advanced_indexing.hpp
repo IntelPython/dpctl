@@ -48,64 +48,72 @@ template <typename OrthogIndexerT,
           typename MaskedSrcIndexerT,
           typename MaskedDstIndexerT,
           typename dataT,
-          typename indT>
+          typename indT,
+          typename LocalAccessorT>
 struct MaskedExtractStridedFunctor
 {
-    MaskedExtractStridedFunctor(const char *src_data_p,
-                                const char *cumsum_data_p,
-                                char *dst_data_p,
-                                size_t orthog_iter_size,
+    MaskedExtractStridedFunctor(const dataT *src_data_p,
+                                const indT *cumsum_data_p,
+                                dataT *dst_data_p,
                                 size_t masked_iter_size,
                                 const OrthogIndexerT &orthog_src_dst_indexer_,
                                 const MaskedSrcIndexerT &masked_src_indexer_,
-                                const MaskedDstIndexerT &masked_dst_indexer_)
-        : src_cp(src_data_p), cumsum_cp(cumsum_data_p), dst_cp(dst_data_p),
-          orthog_nelems(orthog_iter_size), masked_nelems(masked_iter_size),
+                                const MaskedDstIndexerT &masked_dst_indexer_,
+                                const LocalAccessorT &lacc_)
+        : src(src_data_p), cumsum(cumsum_data_p), dst(dst_data_p),
+          masked_nelems(masked_iter_size),
           orthog_src_dst_indexer(orthog_src_dst_indexer_),
           masked_src_indexer(masked_src_indexer_),
-          masked_dst_indexer(masked_dst_indexer_)
+          masked_dst_indexer(masked_dst_indexer_), lacc(lacc_)
     {
+        static_assert(
+            std::is_same_v<indT, typename LocalAccessorT::value_type>);
     }
 
-    void operator()(sycl::id<1> idx) const
+    void operator()(sycl::nd_item<2> ndit) const
     {
-        const dataT *src_data = reinterpret_cast<const dataT *>(src_cp);
-        dataT *dst_data = reinterpret_cast<dataT *>(dst_cp);
-        const indT *cumsum_data = reinterpret_cast<const indT *>(cumsum_cp);
+        const std::size_t orthog_i = ndit.get_global_id(0);
+        const std::uint32_t l_i = ndit.get_local_id(1);
+        const std::uint32_t lws = ndit.get_local_range(1);
 
-        size_t global_i = idx[0];
-        size_t orthog_i = global_i / masked_nelems;
-        size_t masked_i = global_i - masked_nelems * orthog_i;
+        const std::size_t masked_i = ndit.get_global_id(1);
+        const std::size_t masked_block_start = masked_i - l_i;
 
-        indT current_running_count = cumsum_data[masked_i];
-        bool mask_set =
-            (masked_i == 0)
-                ? (current_running_count == 1)
-                : (current_running_count == cumsum_data[masked_i - 1] + 1);
+        const std::size_t max_offset = masked_nelems + 1;
+        for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
+            const size_t offset = masked_block_start + i;
+            lacc[i] = (offset == 0)           ? indT(0)
+                      : (offset < max_offset) ? cumsum[offset - 1]
+                                              : cumsum[masked_nelems - 1] + 1;
+        }
 
-        // dst[cumsum[i], j] - 1 = src[i, j] if cumsum[i] == ((i > 0) ?
-        // cumsum[i-1]
-        // + 1 : 1)
-        if (mask_set) {
-            auto orthog_offsets =
-                orthog_src_dst_indexer(static_cast<ssize_t>(orthog_i));
+        sycl::group_barrier(ndit.get_group());
 
-            size_t total_src_offset = masked_src_indexer(masked_i) +
-                                      orthog_offsets.get_first_offset();
-            size_t total_dst_offset =
+        const indT current_running_count = lacc[l_i + 1];
+        const bool mask_set = (masked_i == 0)
+                                  ? (current_running_count == 1)
+                                  : (current_running_count == lacc[l_i] + 1);
+
+        // dst[cumsum[i] - 1, j] = src[i, j]
+        //     if cumsum[i] == ((i > 0) ? cumsum[i-1] + 1 : 1)
+        if (mask_set && (masked_i < masked_nelems)) {
+            const auto &orthog_offsets = orthog_src_dst_indexer(orthog_i);
+
+            const size_t total_src_offset = masked_src_indexer(masked_i) +
+                                            orthog_offsets.get_first_offset();
+            const size_t total_dst_offset =
                 masked_dst_indexer(current_running_count - 1) +
                 orthog_offsets.get_second_offset();
 
-            dst_data[total_dst_offset] = src_data[total_src_offset];
+            dst[total_dst_offset] = src[total_src_offset];
         }
     }
 
 private:
-    const char *src_cp = nullptr;
-    const char *cumsum_cp = nullptr;
-    char *dst_cp = nullptr;
-    size_t orthog_nelems = 0;
-    size_t masked_nelems = 0;
+    const dataT *src = nullptr;
+    const indT *cumsum = nullptr;
+    dataT *dst = nullptr;
+    const size_t masked_nelems = 0;
     // has nd, shape, src_strides, dst_strides for
     // dimensions that ARE NOT masked
     const OrthogIndexerT orthog_src_dst_indexer;
@@ -114,70 +122,79 @@ private:
     const MaskedSrcIndexerT masked_src_indexer;
     // has 1, dst_strides for dimensions that ARE masked
     const MaskedDstIndexerT masked_dst_indexer;
+    LocalAccessorT lacc;
 };
 
 template <typename OrthogIndexerT,
           typename MaskedDstIndexerT,
           typename MaskedRhsIndexerT,
           typename dataT,
-          typename indT>
+          typename indT,
+          typename LocalAccessorT>
 struct MaskedPlaceStridedFunctor
 {
-    MaskedPlaceStridedFunctor(char *dst_data_p,
-                              const char *cumsum_data_p,
-                              const char *rhs_data_p,
-                              size_t orthog_iter_size,
+    MaskedPlaceStridedFunctor(dataT *dst_data_p,
+                              const indT *cumsum_data_p,
+                              const dataT *rhs_data_p,
                               size_t masked_iter_size,
                               const OrthogIndexerT &orthog_dst_rhs_indexer_,
                               const MaskedDstIndexerT &masked_dst_indexer_,
-                              const MaskedRhsIndexerT &masked_rhs_indexer_)
-        : dst_cp(dst_data_p), cumsum_cp(cumsum_data_p), rhs_cp(rhs_data_p),
-          orthog_nelems(orthog_iter_size), masked_nelems(masked_iter_size),
+                              const MaskedRhsIndexerT &masked_rhs_indexer_,
+                              const LocalAccessorT &lacc_)
+        : dst(dst_data_p), cumsum(cumsum_data_p), rhs(rhs_data_p),
+          masked_nelems(masked_iter_size),
           orthog_dst_rhs_indexer(orthog_dst_rhs_indexer_),
           masked_dst_indexer(masked_dst_indexer_),
-          masked_rhs_indexer(masked_rhs_indexer_)
+          masked_rhs_indexer(masked_rhs_indexer_), lacc(lacc_)
     {
+        static_assert(
+            std::is_same_v<indT, typename LocalAccessorT::value_type>);
     }
 
-    void operator()(sycl::id<1> idx) const
+    void operator()(sycl::nd_item<2> ndit) const
     {
-        dataT *dst_data = reinterpret_cast<dataT *>(dst_cp);
-        const indT *cumsum_data = reinterpret_cast<const indT *>(cumsum_cp);
-        const dataT *rhs_data = reinterpret_cast<const dataT *>(rhs_cp);
+        const std::size_t orthog_i = ndit.get_global_id(0);
+        const std::uint32_t l_i = ndit.get_local_id(1);
+        const std::uint32_t lws = ndit.get_local_range(1);
 
-        size_t global_i = idx[0];
-        size_t orthog_i = global_i / masked_nelems;
-        size_t masked_i = global_i - masked_nelems * orthog_i;
+        const size_t masked_i = ndit.get_global_id(1);
+        const size_t masked_block_start = masked_i - l_i;
 
-        indT current_running_count = cumsum_data[masked_i];
-        bool mask_set =
-            (masked_i == 0)
-                ? (current_running_count == 1)
-                : (current_running_count == cumsum_data[masked_i - 1] + 1);
+        const std::size_t max_offset = masked_nelems + 1;
+        for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
+            const size_t offset = masked_block_start + i;
+            lacc[i] = (offset == 0)           ? indT(0)
+                      : (offset < max_offset) ? cumsum[offset - 1]
+                                              : cumsum[masked_nelems - 1] + 1;
+        }
 
-        // src[i, j] = rhs[cumsum[i] - 1, j] if cumsum[i] == ((i > 0) ?
-        // cumsum[i-1]
-        // + 1 : 1)
-        if (mask_set) {
-            auto orthog_offsets =
-                orthog_dst_rhs_indexer(static_cast<ssize_t>(orthog_i));
+        sycl::group_barrier(ndit.get_group());
 
-            size_t total_dst_offset = masked_dst_indexer(masked_i) +
-                                      orthog_offsets.get_first_offset();
-            size_t total_rhs_offset =
+        const indT current_running_count = lacc[l_i + 1];
+        const bool mask_set = (masked_i == 0)
+                                  ? (current_running_count == 1)
+                                  : (current_running_count == lacc[l_i] + 1);
+
+        // src[i, j] = rhs[cumsum[i] - 1, j]
+        // if cumsum[i] == ((i > 0) ? cumsum[i-1] + 1 : 1)
+        if (mask_set && (masked_i < masked_nelems)) {
+            const auto &orthog_offsets = orthog_dst_rhs_indexer(orthog_i);
+
+            const size_t total_dst_offset = masked_dst_indexer(masked_i) +
+                                            orthog_offsets.get_first_offset();
+            const size_t total_rhs_offset =
                 masked_rhs_indexer(current_running_count - 1) +
                 orthog_offsets.get_second_offset();
 
-            dst_data[total_dst_offset] = rhs_data[total_rhs_offset];
+            dst[total_dst_offset] = rhs[total_rhs_offset];
         }
     }
 
 private:
-    char *dst_cp = nullptr;
-    const char *cumsum_cp = nullptr;
-    const char *rhs_cp = nullptr;
-    size_t orthog_nelems = 0;
-    size_t masked_nelems = 0;
+    dataT *dst = nullptr;
+    const indT *cumsum = nullptr;
+    const dataT *rhs = nullptr;
+    const size_t masked_nelems = 0;
     // has nd, shape, dst_strides, rhs_strides for
     // dimensions that ARE NOT masked
     const OrthogIndexerT orthog_dst_rhs_indexer;
@@ -186,12 +203,106 @@ private:
     const MaskedDstIndexerT masked_dst_indexer;
     // has 1, rhs_strides for dimensions that ARE masked
     const MaskedRhsIndexerT masked_rhs_indexer;
+    LocalAccessorT lacc;
 };
 
 // ======= Masked extraction ================================
 
-template <typename OrthoIndexerT,
-          typename MaskedSrcIndexerT,
+namespace
+{
+
+template <std::size_t I, std::size_t... IR>
+std::size_t _get_lws_impl(std::size_t n)
+{
+    if constexpr (sizeof...(IR) == 0) {
+        return I;
+    }
+    else {
+        return (n < I) ? _get_lws_impl<IR...>(n) : I;
+    }
+}
+
+std::size_t get_lws(std::size_t n)
+{
+    constexpr std::size_t lws0 = 256u;
+    constexpr std::size_t lws1 = 128u;
+    constexpr std::size_t lws2 = 64u;
+    return _get_lws_impl<lws0, lws1, lws2>(n);
+}
+
+} // end of anonymous namespace
+
+template <typename MaskedDstIndexerT, typename dataT, typename indT>
+class masked_extract_all_slices_contig_impl_krn;
+
+typedef sycl::event (*masked_extract_all_slices_contig_impl_fn_ptr_t)(
+    sycl::queue &,
+    ssize_t,
+    const char *,
+    const char *,
+    char *,
+    ssize_t,
+    ssize_t,
+    const std::vector<sycl::event> &);
+
+template <typename dataT, typename indT>
+sycl::event masked_extract_all_slices_contig_impl(
+    sycl::queue &exec_q,
+    ssize_t iteration_size,
+    const char *src_p,
+    const char *cumsum_p,
+    char *dst_p,
+    ssize_t dst_size, // dst is 1D
+    ssize_t dst_stride,
+    const std::vector<sycl::event> &depends = {})
+{
+    constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
+
+    constexpr NoOpIndexer masked_src_indexer{};
+    const Strided1DIndexer masked_dst_indexer(/* size */ dst_size,
+                                              /* step */ dst_stride);
+
+    using KernelName =
+        class masked_extract_all_slices_contig_impl_krn<Strided1DIndexer, dataT,
+                                                        indT>;
+
+    using LocalAccessorT = sycl::local_accessor<indT, 1>;
+    using Impl =
+        struct MaskedExtractStridedFunctor<TwoZeroOffsets_Indexer, NoOpIndexer,
+                                           Strided1DIndexer, dataT, indT,
+                                           LocalAccessorT>;
+
+    const std::size_t masked_extent = iteration_size;
+
+    const std::size_t lws = get_lws(masked_extent);
+
+    const std::size_t n_groups = (iteration_size + lws - 1) / lws;
+
+    sycl::range<2> gRange{1, n_groups * lws};
+    sycl::range<2> lRange{1, lws};
+
+    sycl::nd_range<2> ndRange(gRange, lRange);
+
+    const dataT *src_tp = reinterpret_cast<const dataT *>(src_p);
+    const indT *cumsum_tp = reinterpret_cast<const indT *>(cumsum_p);
+    dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
+
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        const std::size_t lacc_size = std::min(lws, masked_extent) + 1;
+        LocalAccessorT lacc(lacc_size, cgh);
+
+        cgh.parallel_for<KernelName>(
+            ndRange, Impl(src_tp, cumsum_tp, dst_tp, masked_extent,
+                          orthog_src_dst_indexer, masked_src_indexer,
+                          masked_dst_indexer, lacc));
+    });
+
+    return comp_ev;
+}
+
+template <typename MaskedSrcIndexerT,
           typename MaskedDstIndexerT,
           typename dataT,
           typename indT>
@@ -223,11 +334,6 @@ sycl::event masked_extract_all_slices_strided_impl(
     ssize_t dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    //  using MaskedExtractStridedFunctor;
-    //  using Strided1DIndexer;
-    //  using StridedIndexer;
-    //  using TwoZeroOffsets_Indexer;
-
     constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
@@ -236,18 +342,40 @@ sycl::event masked_extract_all_slices_strided_impl(
     const Strided1DIndexer masked_dst_indexer(/* size */ dst_size,
                                               /* step */ dst_stride);
 
+    using KernelName = class masked_extract_all_slices_strided_impl_krn<
+        StridedIndexer, Strided1DIndexer, dataT, indT>;
+
+    using LocalAccessorT = sycl::local_accessor<indT, 1>;
+    using Impl =
+        struct MaskedExtractStridedFunctor<TwoZeroOffsets_Indexer,
+                                           StridedIndexer, Strided1DIndexer,
+                                           dataT, indT, LocalAccessorT>;
+
+    const std::size_t masked_nelems = iteration_size;
+
+    const std::size_t lws = get_lws(masked_nelems);
+
+    const std::size_t n_groups = (masked_nelems + lws - 1) / lws;
+
+    sycl::range<2> gRange{1, n_groups * lws};
+    sycl::range<2> lRange{1, lws};
+
+    sycl::nd_range<2> ndRange(gRange, lRange);
+
+    const dataT *src_tp = reinterpret_cast<const dataT *>(src_p);
+    const indT *cumsum_tp = reinterpret_cast<const indT *>(cumsum_p);
+    dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for<class masked_extract_all_slices_strided_impl_krn<
-            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer, dataT,
-            indT>>(
-            sycl::range<1>(static_cast<size_t>(iteration_size)),
-            MaskedExtractStridedFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
-                                        Strided1DIndexer, dataT, indT>(
-                src_p, cumsum_p, dst_p, 1, iteration_size,
-                orthog_src_dst_indexer, masked_src_indexer,
-                masked_dst_indexer));
+        const std::size_t lacc_size = std::min(lws, masked_nelems) + 1;
+        LocalAccessorT lacc(lacc_size, cgh);
+
+        cgh.parallel_for<KernelName>(
+            ndRange, Impl(src_tp, cumsum_tp, dst_tp, iteration_size,
+                          orthog_src_dst_indexer, masked_src_indexer,
+                          masked_dst_indexer, lacc));
     });
 
     return comp_ev;
@@ -299,11 +427,6 @@ sycl::event masked_extract_some_slices_strided_impl(
     ssize_t masked_dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    //  using MaskedExtractStridedFunctor;
-    //  using Strided1DIndexer;
-    //  using StridedIndexer;
-    //  using TwoOffsets_StridedIndexer;
-
     const TwoOffsets_StridedIndexer orthog_src_dst_indexer{
         orthog_nd, ortho_src_offset, ortho_dst_offset,
         packed_ortho_src_dst_shape_strides};
@@ -313,23 +436,67 @@ sycl::event masked_extract_some_slices_strided_impl(
     const Strided1DIndexer masked_dst_indexer{/* size */ masked_dst_size,
                                               /* step */ masked_dst_stride};
 
+    using KernelName = class masked_extract_some_slices_strided_impl_krn<
+        TwoOffsets_StridedIndexer, StridedIndexer, Strided1DIndexer, dataT,
+        indT>;
+
+    using LocalAccessorT = sycl::local_accessor<indT, 1>;
+    using Impl =
+        struct MaskedExtractStridedFunctor<TwoOffsets_StridedIndexer,
+                                           StridedIndexer, Strided1DIndexer,
+                                           dataT, indT, LocalAccessorT>;
+
+    const std::size_t masked_extent = masked_nelems;
+
+    const std::size_t lws = get_lws(masked_extent);
+
+    const size_t n_groups = ((masked_extent + lws - 1) / lws);
+    const size_t orthog_extent = static_cast<size_t>(orthog_nelems);
+
+    sycl::range<2> gRange{orthog_extent, n_groups * lws};
+    sycl::range<2> lRange{1, lws};
+
+    sycl::nd_range<2> ndRange(gRange, lRange);
+
+    const dataT *src_tp = reinterpret_cast<const dataT *>(src_p);
+    const indT *cumsum_tp = reinterpret_cast<const indT *>(cumsum_p);
+    dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for<class masked_extract_some_slices_strided_impl_krn<
-            TwoOffsets_StridedIndexer, StridedIndexer, Strided1DIndexer, dataT,
-            indT>>(
-            sycl::range<1>(static_cast<size_t>(orthog_nelems * masked_nelems)),
-            MaskedExtractStridedFunctor<TwoOffsets_StridedIndexer,
-                                        StridedIndexer, Strided1DIndexer, dataT,
-                                        indT>(
-                src_p, cumsum_p, dst_p, orthog_nelems, masked_nelems,
-                orthog_src_dst_indexer, masked_src_indexer,
-                masked_dst_indexer));
+        const std::size_t lacc_size =
+            std::min<std::size_t>(lws, masked_extent) + 1;
+        LocalAccessorT lacc(lacc_size, cgh);
+
+        cgh.parallel_for<KernelName>(
+            ndRange, Impl(src_tp, cumsum_tp, dst_tp, masked_nelems,
+                          orthog_src_dst_indexer, masked_src_indexer,
+                          masked_dst_indexer, lacc));
     });
 
     return comp_ev;
 }
+
+template <typename fnT, typename T>
+struct MaskExtractAllSlicesContigFactoryForInt32
+{
+    fnT get()
+    {
+        fnT fn = masked_extract_all_slices_contig_impl<T, std::int32_t>;
+        return fn;
+    }
+};
+
+template <typename fnT, typename T>
+struct MaskExtractAllSlicesContigFactoryForInt64
+{
+    fnT get()
+    {
+        fnT fn = masked_extract_all_slices_contig_impl<T, std::int64_t>;
+        return fn;
+    }
+};
 
 template <typename fnT, typename T>
 struct MaskExtractAllSlicesStridedFactoryForInt32
@@ -413,18 +580,40 @@ sycl::event masked_place_all_slices_strided_impl(
     const StridedIndexer masked_dst_indexer(nd, 0, packed_dst_shape_strides);
     const Strided1DCyclicIndexer masked_rhs_indexer(0, rhs_size, rhs_stride);
 
+    using KernelName = class masked_place_all_slices_strided_impl_krn<
+        TwoZeroOffsets_Indexer, StridedIndexer, Strided1DCyclicIndexer, dataT,
+        indT>;
+
+    constexpr std::size_t nominal_lws = 256;
+    const std::size_t masked_extent = iteration_size;
+    const std::size_t lws = std::min(masked_extent, nominal_lws);
+
+    const std::size_t n_groups = (masked_extent + lws - 1) / lws;
+
+    sycl::range<2> gRange{1, n_groups * lws};
+    sycl::range<2> lRange{1, lws};
+    sycl::nd_range<2> ndRange{gRange, lRange};
+
+    using LocalAccessorT = sycl::local_accessor<indT, 1>;
+
+    dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
+    const dataT *rhs_tp = reinterpret_cast<const dataT *>(rhs_p);
+    const indT *cumsum_tp = reinterpret_cast<const indT *>(cumsum_p);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for<class masked_place_all_slices_strided_impl_krn<
-            TwoZeroOffsets_Indexer, StridedIndexer, Strided1DCyclicIndexer,
-            dataT, indT>>(
-            sycl::range<1>(static_cast<size_t>(iteration_size)),
+        const std::size_t lacc_size = std::min(masked_extent, lws) + 1;
+        LocalAccessorT lacc(lacc_size, cgh);
+
+        cgh.parallel_for<KernelName>(
+            ndRange,
             MaskedPlaceStridedFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
-                                      Strided1DCyclicIndexer, dataT, indT>(
-                dst_p, cumsum_p, rhs_p, 1, iteration_size,
-                orthog_dst_rhs_indexer, masked_dst_indexer,
-                masked_rhs_indexer));
+                                      Strided1DCyclicIndexer, dataT, indT,
+                                      LocalAccessorT>(
+                dst_tp, cumsum_tp, rhs_tp, iteration_size,
+                orthog_dst_rhs_indexer, masked_dst_indexer, masked_rhs_indexer,
+                lacc));
     });
 
     return comp_ev;
@@ -487,18 +676,41 @@ sycl::event masked_place_some_slices_strided_impl(
     const Strided1DCyclicIndexer masked_rhs_indexer{0, masked_rhs_size,
                                                     masked_rhs_stride};
 
+    using KernelName = class masked_place_some_slices_strided_impl_krn<
+        TwoOffsets_StridedIndexer, StridedIndexer, Strided1DCyclicIndexer,
+        dataT, indT>;
+
+    constexpr std::size_t nominal_lws = 256;
+    const std::size_t orthog_extent = orthog_nelems;
+    const std::size_t masked_extent = masked_nelems;
+    const std::size_t lws = std::min(masked_extent, nominal_lws);
+
+    const std::size_t n_groups = (masked_extent + lws - 1) / lws;
+
+    sycl::range<2> gRange{orthog_extent, n_groups * lws};
+    sycl::range<2> lRange{1, lws};
+    sycl::nd_range<2> ndRange{gRange, lRange};
+
+    using LocalAccessorT = sycl::local_accessor<indT, 1>;
+
+    dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
+    const dataT *rhs_tp = reinterpret_cast<const dataT *>(rhs_p);
+    const indT *cumsum_tp = reinterpret_cast<const indT *>(cumsum_p);
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for<class masked_place_some_slices_strided_impl_krn<
-            TwoOffsets_StridedIndexer, StridedIndexer, Strided1DCyclicIndexer,
-            dataT, indT>>(
-            sycl::range<1>(static_cast<size_t>(orthog_nelems * masked_nelems)),
+        const std::size_t lacc_size = std::min(masked_extent, lws) + 1;
+        LocalAccessorT lacc(lacc_size, cgh);
+
+        cgh.parallel_for<KernelName>(
+            ndRange,
             MaskedPlaceStridedFunctor<TwoOffsets_StridedIndexer, StridedIndexer,
-                                      Strided1DCyclicIndexer, dataT, indT>(
-                dst_p, cumsum_p, rhs_p, orthog_nelems, masked_nelems,
-                orthog_dst_rhs_indexer, masked_dst_indexer,
-                masked_rhs_indexer));
+                                      Strided1DCyclicIndexer, dataT, indT,
+                                      LocalAccessorT>(
+                dst_tp, cumsum_tp, rhs_tp, masked_nelems,
+                orthog_dst_rhs_indexer, masked_dst_indexer, masked_rhs_indexer,
+                lacc));
     });
 
     return comp_ev;
@@ -571,31 +783,58 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
     const indT1 *cumsum_data = reinterpret_cast<const indT1 *>(cumsum_cp);
     indT2 *indexes_data = reinterpret_cast<indT2 *>(indexes_cp);
 
+    constexpr std::size_t nominal_lws = 256u;
+    const std::size_t masked_extent = iter_size;
+    const std::size_t lws = std::min(masked_extent, nominal_lws);
+
+    const std::size_t n_groups = (masked_extent + lws - 1) / lws;
+    sycl::range<1> gRange{n_groups * lws};
+    sycl::range<1> lRange{lws};
+
+    sycl::nd_range<1> ndRange{gRange, lRange};
+
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        cgh.parallel_for<class non_zero_indexes_krn<indT1, indT2>>(
-            sycl::range<1>(iter_size), [=](sycl::id<1> idx) {
-                auto i = idx[0];
 
-                auto cs_curr_val = cumsum_data[i] - 1;
-                auto cs_prev_val = (i > 0) ? cumsum_data[i - 1] : indT1(0);
-                bool cond = (cs_curr_val == cs_prev_val);
+        const std::size_t lacc_size = std::min(lws, masked_extent) + 1;
+        sycl::local_accessor<indT1, 1> lacc(lacc_size, cgh);
 
+        using KernelName = class non_zero_indexes_krn<indT1, indT2>;
+
+        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> ndit) {
+            const std::size_t group_i = ndit.get_group(0);
+            const std::uint32_t l_i = ndit.get_local_id(0);
+            const std::uint32_t lws = ndit.get_local_range(0);
+
+            const std::size_t masked_block_start = group_i * lws;
+
+            for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
+                const size_t offset = masked_block_start + i;
+                lacc[i] = (offset == 0) ? indT1(0)
+                          : (offset - 1 < masked_extent)
+                              ? cumsum_data[offset - 1]
+                              : cumsum_data[masked_extent - 1] + 1;
+            }
+
+            sycl::group_barrier(ndit.get_group());
+
+            const std::size_t i = masked_block_start + l_i;
+            const auto cs_val = lacc[l_i];
+            const bool cond = (lacc[l_i + 1] == cs_val + 1);
+
+            if (cond && (i < masked_extent)) {
                 ssize_t i_ = static_cast<ssize_t>(i);
                 for (int dim = nd; --dim > 0;) {
-                    auto sd = mask_shape[dim];
-                    ssize_t q = i_ / sd;
-                    ssize_t r = (i_ - q * sd);
-                    if (cond) {
-                        indexes_data[cs_curr_val + dim * nz_elems] =
-                            static_cast<indT2>(r);
-                    }
+                    const auto sd = mask_shape[dim];
+                    const ssize_t q = i_ / sd;
+                    const ssize_t r = (i_ - q * sd);
+                    indexes_data[cs_val + dim * nz_elems] =
+                        static_cast<indT2>(r);
                     i_ = q;
                 }
-                if (cond) {
-                    indexes_data[cs_curr_val] = static_cast<indT2>(i_);
-                }
-            });
+                indexes_data[cs_val] = static_cast<indT2>(i_);
+            }
+        });
     });
 
     return comp_ev;
