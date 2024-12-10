@@ -326,7 +326,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                                    std::vector<sycl::event> &host_tasks,
                                    const std::vector<sycl::event> &depends = {})
 {
-    ScanOpT scan_op{};
+    constexpr ScanOpT scan_op{};
     constexpr outputT identity = su_ns::Identity<ScanOpT, outputT>::value;
 
     constexpr size_t _iter_nelems = 1;
@@ -436,8 +436,12 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                 sycl::nd_range<1> ndRange{gRange, lRange};
 
                 cgh.parallel_for<UpdateKernelName>(
-                    ndRange, [chunk_size, src, src_size, local_scans, scan_op,
-                              identity](sycl::nd_item<1> ndit) {
+                    ndRange, [chunk_size, src, src_size,
+                              local_scans](sycl::nd_item<1> ndit) {
+                        constexpr ScanOpT scan_op{};
+                        constexpr outputT identity =
+                            su_ns::Identity<ScanOpT, outputT>::value;
+
                         const std::uint32_t lws = ndit.get_local_range(0);
                         const size_t block_offset =
                             ndit.get_group(0) * n_wi * lws;
@@ -447,11 +451,10 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                                 block_offset + ndit.get_local_id(0) + i * lws;
                             if (src_id < src_size) {
                                 const size_t scan_id = (src_id / chunk_size);
-                                src[src_id] =
-                                    (scan_id > 0)
-                                        ? scan_op(src[src_id],
-                                                  local_scans[scan_id - 1])
-                                        : scan_op(src[src_id], identity);
+                                const outputT modifier =
+                                    (scan_id > 0) ? local_scans[scan_id - 1]
+                                                  : identity;
+                                src[src_id] = scan_op(src[src_id], modifier);
                             }
                         }
                     });
@@ -561,7 +564,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                 std::vector<sycl::event> &host_tasks,
                                 const std::vector<sycl::event> &depends = {})
 {
-    ScanOpT scan_op = ScanOpT();
+    constexpr ScanOpT scan_op{};
     constexpr outputT identity = su_ns::Identity<ScanOpT, outputT>::value;
 
     using IterIndexerT =
@@ -708,43 +711,44 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                 cgh.depends_on(dependent_event);
                 cgh.use_kernel_bundle(kb);
 
-                sycl::range<1> gRange{iter_nelems * update_nelems};
-                sycl::range<1> lRange{sg_size};
+                sycl::range<2> gRange{iter_nelems, update_nelems};
+                sycl::range<2> lRange{1, sg_size};
 
-                sycl::nd_range<1> ndRange{gRange, lRange};
+                sycl::nd_range<2> ndRange{gRange, lRange};
 
                 cgh.parallel_for<UpdateKernelName>(
-                    ndRange,
-                    [chunk_size, update_nelems, src_size, local_stride, src,
-                     local_scans, scan_op, identity](sycl::nd_item<1> ndit) {
-                        const size_t gr_id = ndit.get_group(0);
+                    ndRange, [chunk_size, src_size, local_stride, src,
+                              local_scans](sycl::nd_item<2> ndit) {
+                        constexpr ScanOpT scan_op{};
+                        constexpr outputT identity =
+                            su_ns::Identity<ScanOpT, outputT>::value;
 
-                        const size_t iter_gid = gr_id / update_nelems;
-                        const size_t axis_gr_id =
-                            gr_id - (iter_gid * update_nelems);
+                        const size_t iter_gid = ndit.get_group(0);
+                        const size_t axis_gr_id = ndit.get_group(1);
 
                         const std::uint32_t lws = ndit.get_local_range(0);
 
                         const size_t src_axis_id0 =
                             axis_gr_id * updates_per_wi * lws;
                         const size_t src_iter_id = iter_gid * src_size;
+                        const size_t scan_id0 = iter_gid * local_stride;
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
                             const size_t src_axis_id =
                                 src_axis_id0 + ndit.get_local_id(0) + i * lws;
-                            const size_t src_id = src_axis_id + src_iter_id;
 
                             if (src_axis_id < src_size) {
                                 const size_t scan_axis_id =
                                     src_axis_id / chunk_size;
-                                const size_t scan_id =
-                                    scan_axis_id + iter_gid * local_stride;
+                                const size_t scan_id = scan_axis_id + scan_id0;
 
-                                src[src_id] =
+                                const outputT modifier =
                                     (scan_axis_id > 0)
-                                        ? scan_op(src[src_id],
-                                                  local_scans[scan_id - 1])
-                                        : scan_op(src[src_id], identity);
+                                        ? local_scans[scan_id - 1]
+                                        : identity;
+
+                                const size_t src_id = src_axis_id + src_iter_id;
+                                src[src_id] = scan_op(src[src_id], modifier);
                             }
                         }
                     });
@@ -759,35 +763,55 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             const size_t local_stride = stack_elem.get_local_stride();
 
+            using UpdateKernelName =
+                class inclusive_scan_final_chunk_update_krn<
+                    inputT, outputT, n_wi, OutIterIndexerT, OutIndexerT,
+                    TransformerT, NoOpTransformerT, ScanOpT, include_initial>;
+
+            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
+
+            auto const &ctx = exec_q.get_context();
+            auto const &dev = exec_q.get_device();
+            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+                ctx, {dev}, {kernel_id});
+
+            auto krn = kb.get_kernel(kernel_id);
+
+            const std::uint32_t sg_size = krn.template get_info<
+                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
             constexpr nwiT updates_per_wi = n_wi;
             const size_t update_nelems =
-                ceiling_quotient<size_t>(src_size, updates_per_wi);
+                ceiling_quotient<size_t>(src_size, sg_size * updates_per_wi) *
+                sg_size;
+
+            sycl::range<2> gRange{iter_nelems, update_nelems};
+            sycl::range<2> lRange{1, sg_size};
+
+            sycl::nd_range<2> ndRange{gRange, lRange};
 
             dependent_event = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(dependent_event);
 
-                using UpdateKernelName =
-                    class inclusive_scan_final_chunk_update_krn<
-                        inputT, outputT, n_wi, OutIterIndexerT, OutIndexerT,
-                        TransformerT, NoOpTransformerT, ScanOpT,
-                        include_initial>;
-
                 cgh.parallel_for<UpdateKernelName>(
-                    {iter_nelems * update_nelems},
-                    [chunk_size, update_nelems, src_size, local_stride, src,
-                     local_scans, scan_op, identity, out_iter_indexer,
-                     out_indexer](auto wiid) {
-                        const size_t gid = wiid[0];
+                    ndRange,
+                    [chunk_size, src_size, local_stride, src, local_scans,
+                     out_iter_indexer, out_indexer](sycl::nd_item<2> ndit) {
+                        constexpr ScanOpT scan_op{};
+                        constexpr outputT identity =
+                            su_ns::Identity<ScanOpT, outputT>::value;
 
-                        const size_t iter_gid = gid / update_nelems;
-                        const size_t axis_gid =
-                            gid - (iter_gid * update_nelems);
+                        const std::uint32_t lws = ndit.get_local_range(1);
 
-                        const size_t src_axis_id0 = axis_gid * updates_per_wi;
+                        const size_t iter_gid = ndit.get_group(0);
+
+                        const size_t src_axis_id0 =
+                            ndit.get_group(1) * updates_per_wi * lws +
+                            ndit.get_local_id(1);
                         const size_t src_iter_id = out_iter_indexer(iter_gid);
 #pragma unroll
                         for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            const size_t src_axis_id = src_axis_id0 + i;
+                            const size_t src_axis_id = src_axis_id0 + i * lws;
                             const size_t src_id =
                                 out_indexer(src_axis_id) + src_iter_id;
 
@@ -797,11 +821,12 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                 const size_t scan_id =
                                     scan_axis_id + iter_gid * local_stride;
 
-                                src[src_id] =
+                                const outputT modifier =
                                     (scan_axis_id > 0)
-                                        ? scan_op(src[src_id],
-                                                  local_scans[scan_id - 1])
-                                        : scan_op(src[src_id], identity);
+                                        ? local_scans[scan_id - 1]
+                                        : identity;
+
+                                src[src_id] = scan_op(src[src_id], modifier);
                             }
                         }
                     });
