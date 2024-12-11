@@ -56,23 +56,24 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
             over the flattened array. Default: ``None``.
         mode (Literal["largest", "smallest"]):
             search mode. Must be one of the following modes:
-            -  `"largest"`: return the `k` largest elements.
-            -  `"smallest"`: return the `k` smallest elements.
+
+            - `"largest"`: return the `k` largest elements.
+            - `"smallest"`: return the `k` smallest elements.
+
             Default: `"largest"`.
 
     Returns:
-        tuple[usm_ndarray, usm_ndarray]:
+        tuple[usm_ndarray, usm_ndarray]
             a namedtuple `(values, indices)` whose
 
-        - first element `values` will be an array containing the `k` largest or
-          smallest elements of `x`. The array has the same data type as `x`.
-          If `axis` was `None`, `values` will be a one-dimensional array
-          with shape `(k,)` and otherwise, `values` will have shape
-          `x.shape[:axis] + (k,) + x.shape[axis+1:]`
-
-        - second element `indices` will be an array containing indices of `x`
-          that result in `values`. The array will have the same shape as
-          `values` and will have the default array index data type.
+            * first element `values` will be an array containing the `k`
+              largest or smallest elements of `x`. The array has the same data
+              type as `x`. If `axis` was `None`, `values` will be a
+              one-dimensional array with shape `(k,)` and otherwise, `values`
+              will have shape `x.shape[:axis] + (k,) + x.shape[axis+1:]`
+            * second element `indices` will be an array containing indices of
+              `x` that result in `values`. The array will have the same shape
+              as `values` and will have the default array index data type.
     """
     largest = _get_top_k_largest(mode)
     if not isinstance(x, dpt.usm_ndarray):
