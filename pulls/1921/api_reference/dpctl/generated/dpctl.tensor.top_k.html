@@ -821,7 +821,7 @@
 <h1>dpctl.tensor.top_k<a class="headerlink" href="#dpctl-tensor-top-k" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.tensor.top_k">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">top_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'largest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_topk.html#top_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.top_k" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">top_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'largest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_sorting.html#top_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.top_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the <cite>k</cite> largest or smallest values and their indices in the input
 array <cite>x</cite> along the specified axis <cite>axis</cite>.</p>
 <dl class="field-list simple">
@@ -831,28 +831,31 @@ array <cite>x</cite> along the specified axis <cite>axis</cite>.</p>
 <li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of elements to find. Must be a positive integer value.</p></li>
 <li><p><strong>axis</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – axis along which to search. If <cite>None</cite>, the search will be performed
 over the flattened array. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>mode</strong> (<em>Literal</em><em>[</em><em>&quot;largest&quot;</em><em>, </em><em>&quot;smallest&quot;</em><em>]</em>) – search mode. Must be one of the following modes:
--  <cite>“largest”</cite>: return the <cite>k</cite> largest elements.
--  <cite>“smallest”</cite>: return the <cite>k</cite> smallest elements.
-Default: <cite>“largest”</cite>.</p></li>
+<li><p><strong>mode</strong> (<em>Literal</em><em>[</em><em>&quot;largest&quot;</em><em>, </em><em>&quot;smallest&quot;</em><em>]</em>) – <p>search mode. Must be one of the following modes:</p>
+<ul>
+<li><p><cite>”largest”</cite>: return the <cite>k</cite> largest elements.</p></li>
+<li><p><cite>”smallest”</cite>: return the <cite>k</cite> smallest elements.</p></li>
+</ul>
+<p>Default: <cite>“largest”</cite>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p>a namedtuple <cite>(values, indices)</cite> whose</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuple[usm_ndarray, usm_ndarray]</dt><dd><p>a namedtuple <cite>(values, indices)</cite> whose</p>
 <ul class="simple">
-<li><p>first element <cite>values</cite> will be an array containing the <cite>k</cite> largest or
-smallest elements of <cite>x</cite>. The array has the same data type as <cite>x</cite>.
-If <cite>axis</cite> was <cite>None</cite>, <cite>values</cite> will be a one-dimensional array
-with shape <cite>(k,)</cite> and otherwise, <cite>values</cite> will have shape
-<cite>x.shape[:axis] + (k,) + x.shape[axis+1:]</cite></p></li>
-<li><p>second element <cite>indices</cite> will be an array containing indices of <cite>x</cite>
-that result in <cite>values</cite>. The array will have the same shape as
-<cite>values</cite> and will have the default array index data type.</p></li>
+<li><p>first element <cite>values</cite> will be an array containing the <cite>k</cite>
+largest or smallest elements of <cite>x</cite>. The array will have the same
+data type as <cite>x</cite>. If <cite>axis</cite> was <cite>None</cite>, <cite>values</cite> will be a
+one-dimensional array with shape <cite>(k,)</cite> and otherwise, <cite>values</cite>
+will have shape <cite>x.shape[:axis] + (k,) + x.shape[axis+1:]</cite></p></li>
+<li><p>second element <cite>indices</cite> will be an array containing indices of
+<cite>x</cite> that result in <cite>values</cite>. The array will have the same shape
+as <cite>values</cite> and will have the default array index data type.</p></li>
 </ul>
-</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>, <a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a>]</p>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>

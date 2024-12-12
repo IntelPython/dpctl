@@ -827,6 +827,9 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
@@ -837,6 +840,10 @@
     <span class="n">_argsort_descending</span><span class="p">,</span>
     <span class="n">_sort_ascending</span><span class="p">,</span>
     <span class="n">_sort_descending</span><span class="p">,</span>
+    <span class="n">_topk</span><span class="p">,</span>
+    <span class="n">_topk_indices</span><span class="p">,</span>
+    <span class="n">_topk_vals</span><span class="p">,</span>
+    <span class="n">_use_radix_sort</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._tensor_sorting_radix_impl</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_radix_argsort_ascending</span><span class="p">,</span>
@@ -925,7 +932,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radix sort is not supported for </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
             <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
@@ -1043,7 +1050,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Radix sort is not supported for </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
-        <span class="k">if</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint16</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
             <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">impl_fn</span> <span class="o">=</span> <span class="n">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">)</span>
@@ -1080,6 +1087,465 @@
         <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">res</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;largest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;smallest&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">modes</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;`mode` must be `largest` or `smallest`. Got `</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">`.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TopKResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
+
+
+<div class="viewcode-block" id="top_k"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html#dpctl.tensor.top_k">[docs]</a><span class="k">def</span> <span class="nf">top_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;largest&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;top_k(x, k, axis=None, mode=&quot;largest&quot;)</span>
+
+<span class="sd">    Returns the `k` largest or smallest values and their indices in the input</span>
+<span class="sd">    array `x` along the specified axis `axis`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        k (int):</span>
+<span class="sd">            number of elements to find. Must be a positive integer value.</span>
+<span class="sd">        axis (Optional[int]):</span>
+<span class="sd">            axis along which to search. If `None`, the search will be performed</span>
+<span class="sd">            over the flattened array. Default: ``None``.</span>
+<span class="sd">        mode (Literal[&quot;largest&quot;, &quot;smallest&quot;]):</span>
+<span class="sd">            search mode. Must be one of the following modes:</span>
+
+<span class="sd">            - `&quot;largest&quot;`: return the `k` largest elements.</span>
+<span class="sd">            - `&quot;smallest&quot;`: return the `k` smallest elements.</span>
+
+<span class="sd">            Default: `&quot;largest&quot;`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[usm_ndarray, usm_ndarray]</span>
+<span class="sd">            a namedtuple `(values, indices)` whose</span>
+
+<span class="sd">            * first element `values` will be an array containing the `k`</span>
+<span class="sd">              largest or smallest elements of `x`. The array will have the same</span>
+<span class="sd">              data type as `x`. If `axis` was `None`, `values` will be a</span>
+<span class="sd">              one-dimensional array with shape `(k,)` and otherwise, `values`</span>
+<span class="sd">              will have shape `x.shape[:axis] + (k,) + x.shape[axis+1:]`</span>
+<span class="sd">            * second element `indices` will be an array containing indices of</span>
+<span class="sd">              `x` that result in `values`. The array will have the same shape</span>
+<span class="sd">              as `values` and will have the default array index data type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">largest</span> <span class="o">=</span> <span class="n">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`k` must be a positive integer value&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">if</span> <span class="n">nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds 1&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">TopKResult</span><span class="p">(</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">),</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">nd</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">a1</span> <span class="o">==</span> <span class="n">nd</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">axis</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">nd</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">k</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="n">sz</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds </span><span class="si">{</span><span class="n">sz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="c1"># allocate outputs</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="p">),</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span> <span class="o">=</span> <span class="n">_topk</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+            <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+            <span class="n">inds</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span> <span class="o">=</span> <span class="n">_topk</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+            <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+            <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+            <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+            <span class="n">inds</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TopKResult</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">inds</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">top_k_indices</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;largest&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;top_k_indices(x, k, axis=None, mode=&quot;largest&quot;)</span>
+
+<span class="sd">    Returns the indices of the `k` largest or smallest values in the input array</span>
+<span class="sd">    `x` along the specified axis `axis`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        k (int):</span>
+<span class="sd">            number of indices to find. Must be a positive integer value.</span>
+<span class="sd">        axis (Optional[int]):</span>
+<span class="sd">            axis along which to search. If `None`, the search will be performed</span>
+<span class="sd">            over the flattened array. Default: ``None``.</span>
+<span class="sd">        mode (Literal[&quot;largest&quot;, &quot;smallest&quot;]):</span>
+<span class="sd">            search mode. Must be one of the following modes:</span>
+
+<span class="sd">            - `&quot;largest&quot;`: return the indices of the `k` largest elements.</span>
+<span class="sd">            - `&quot;smallest&quot;`: return the indices of the `k` smallest elements.</span>
+
+<span class="sd">            Default: `&quot;largest&quot;`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray</span>
+<span class="sd">            an array containing indices of the `k` largest or smallest elements</span>
+<span class="sd">            of `x`. If `axis` was `None`, the array will be one-dimensional</span>
+<span class="sd">            with shape `(k,)` and otherwise, will have shape</span>
+<span class="sd">            `x.shape[:axis] + (k,) + x.shape[axis+1:]`.</span>
+<span class="sd">            The array will have the default array index data type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">largest</span> <span class="o">=</span> <span class="n">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`k` must be a positive integer value&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">if</span> <span class="n">nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds 1&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">nd</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">a1</span> <span class="o">==</span> <span class="n">nd</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">axis</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">nd</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">k</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="n">sz</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds </span><span class="si">{</span><span class="n">sz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">inds_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="p">)</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">inds_dt</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">argsort_fn</span> <span class="o">=</span> <span class="n">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+            <span class="n">_argsorted</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inds_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="n">ht1_ev</span><span class="p">,</span> <span class="n">argsort_ev</span> <span class="o">=</span> <span class="n">argsort_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_sort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">_argsorted</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht1_ev</span><span class="p">,</span> <span class="n">argsort_ev</span><span class="p">)</span>
+            <span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">_argsorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">argsort_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">argtopk_ev</span> <span class="o">=</span> <span class="n">_topk_indices</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+                <span class="n">inds</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">argtopk_ev</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">argsort_fn</span> <span class="o">=</span> <span class="n">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+            <span class="n">_argsorted</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">inds_dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="n">ht1_ev</span><span class="p">,</span> <span class="n">argsort_ev</span> <span class="o">=</span> <span class="n">argsort_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_sort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">_argsorted</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht1_ev</span><span class="p">,</span> <span class="n">argsort_ev</span><span class="p">)</span>
+            <span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">_argsorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">argsort_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span> <span class="o">=</span> <span class="n">_topk_indices</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+                <span class="n">inds</span><span class="o">=</span><span class="n">inds</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inds</span>
+
+
+<span class="k">def</span> <span class="nf">top_k_values</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;largest&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;top_k_values(x, k, axis=None, mode=&quot;largest&quot;)</span>
+
+<span class="sd">    Returns the `k` largest or smallest values in the input array `x` along the</span>
+<span class="sd">    specified axis `axis`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (usm_ndarray):</span>
+<span class="sd">            input array.</span>
+<span class="sd">        k (int):</span>
+<span class="sd">            number of elements to find. Must be a positive integer value.</span>
+<span class="sd">        axis (Optional[int]):</span>
+<span class="sd">            axis along which to search. If `None`, the search will be performed</span>
+<span class="sd">            over the flattened array. Default: ``None``.</span>
+<span class="sd">        mode (Literal[&quot;largest&quot;, &quot;smallest&quot;]):</span>
+<span class="sd">            search mode. Must be one of the following modes:</span>
+
+<span class="sd">            - `&quot;largest&quot;`: return the `k` largest values.</span>
+<span class="sd">            - `&quot;smallest&quot;`: return the `k` smallest values.</span>
+
+<span class="sd">            Default: `&quot;largest&quot;`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        usm_ndarray</span>
+<span class="sd">            an array containing the `k` largest or smallest elements of `x`.</span>
+<span class="sd">            If `axis` was `None`, the array will be one-dimensional with shape</span>
+<span class="sd">            `(k,)` and otherwise, will have shape</span>
+<span class="sd">            `x.shape[:axis] + (k,) + x.shape[axis+1:]`.</span>
+<span class="sd">            The array will have the same data type as `x`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">largest</span> <span class="o">=</span> <span class="n">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected type dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`k` must be a positive integer value&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">if</span> <span class="n">nd</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds 1&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">),)</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">k</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">nd</span><span class="p">,</span> <span class="n">msg_prefix</span><span class="o">=</span><span class="s2">&quot;axis&quot;</span><span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">a1</span> <span class="o">==</span> <span class="n">nd</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+                <span class="n">axis</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+        <span class="n">n_search_dims</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">res_sh</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">nd</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">k</span><span class="p">,)</span>
+
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;</span> <span class="n">sz</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`k`=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is out of bounds </span><span class="si">{</span><span class="n">sz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">exec_q</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">res_sh</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sort_fn</span> <span class="o">=</span> <span class="n">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+            <span class="n">_sorted</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="n">ht1_ev</span><span class="p">,</span> <span class="n">sort_ev</span> <span class="o">=</span> <span class="n">sort_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_sort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">_sorted</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht1_ev</span><span class="p">,</span> <span class="n">sort_ev</span><span class="p">)</span>
+            <span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">sort_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">topk_vals_ev</span> <span class="o">=</span> <span class="n">_topk_vals</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+                <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">topk_vals_ev</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+        <span class="p">)</span>
+        <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">copy_ev</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_use_radix_sort</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sort_fn</span> <span class="o">=</span> <span class="n">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">largest</span><span class="p">)</span>
+            <span class="n">_sorted</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="n">ht1_ev</span><span class="p">,</span> <span class="n">sort_ev</span> <span class="o">=</span> <span class="n">sort_fn</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_sort</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">_sorted</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht1_ev</span><span class="p">,</span> <span class="n">sort_ev</span><span class="p">)</span>
+            <span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dst</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">sort_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht2_ev</span><span class="p">,</span> <span class="n">write_out_ev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span> <span class="o">=</span> <span class="n">_topk_vals</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span>
+                <span class="n">trailing_dims_to_search</span><span class="o">=</span><span class="n">n_search_dims</span><span class="p">,</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                <span class="n">largest</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
+                <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+                <span class="n">depends</span><span class="o">=</span><span class="p">[</span><span class="n">copy_ev</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">impl_ev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">a1</span> <span class="o">!=</span> <span class="n">nd</span><span class="p">:</span>
+        <span class="n">inv_perm</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">perm</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">inv_perm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">vals</span>
 </pre></div>
         </article>
       </div>
