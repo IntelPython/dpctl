@@ -132,27 +132,81 @@ size_t choose_workgroup_size(const size_t nelems,
     return wg;
 }
 
+namespace
+{
+
+template <typename LocAccT, typename OpT>
+void _fold(LocAccT &local_mem_acc,
+           const std::uint32_t lid,
+           const std::uint32_t cutoff,
+           const std::uint32_t step,
+           const OpT &op)
+{
+    if (lid < cutoff) {
+        local_mem_acc[lid] = op(local_mem_acc[lid], local_mem_acc[step + lid]);
+    }
+}
+
+template <typename LocAccT, typename OpT>
+void _fold(LocAccT &local_mem_acc,
+           const std::uint32_t lid,
+           const std::uint32_t step,
+           const OpT &op)
+{
+    if (lid < step) {
+        local_mem_acc[lid] = op(local_mem_acc[lid], local_mem_acc[step + lid]);
+    }
+}
+
+} // namespace
+
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
 T custom_reduce_over_group(const GroupT &wg,
                            LocAccT local_mem_acc,
                            const T &local_val,
                            const OpT &op)
 {
-    size_t wgs = wg.get_local_linear_range();
-    local_mem_acc[wg.get_local_linear_id()] = local_val;
+    const std::uint32_t wgs = wg.get_local_linear_range();
+    const std::uint32_t lid = wg.get_local_linear_id();
 
+    local_mem_acc[lid] = local_val;
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    std::uint32_t n_witems = wgs;
+    if (wgs & (wgs - 1)) {
+        // wgs is not a power of 2
+#pragma unroll
+        for (std::uint32_t sz = 1024; sz >= 32; sz >>= 1) {
+            if (n_witems >= sz) {
+                const std::uint32_t n_witems_ = (n_witems + 1) >> 1;
+                _fold(local_mem_acc, lid, n_witems - n_witems_, n_witems_, op);
+                sycl::group_barrier(wg, sycl::memory_scope::work_group);
+                n_witems = n_witems_;
+            }
+        }
+    }
+    else {
+        // wgs is a power of 2
+#pragma unroll
+        for (std::uint32_t sz = 1024; sz >= 32; sz >>= 1) {
+            if (n_witems >= sz) {
+                n_witems = (n_witems + 1) >> 1;
+                _fold(local_mem_acc, lid, n_witems, op);
+                sycl::group_barrier(wg, sycl::memory_scope::work_group);
+            }
+        }
+    }
 
     T red_val_over_wg = local_mem_acc[0];
     if (wg.leader()) {
-        for (size_t i = 1; i < wgs; ++i) {
+        for (std::uint32_t i = 1; i < n_witems; ++i) {
             red_val_over_wg = op(red_val_over_wg, local_mem_acc[i]);
         }
     }
 
-    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+    // sycl::group_barrier(wg, sycl::memory_scope::work_group);
 
-    return sycl::group_broadcast(wg, red_val_over_wg);
+    return sycl::group_broadcast(wg, red_val_over_wg, 0);
 }
 
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
