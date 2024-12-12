@@ -166,6 +166,8 @@ T custom_reduce_over_group(const GroupT &wg,
                            const T &local_val,
                            const OpT &op)
 {
+    constexpr std::uint32_t low_sz = 8u;
+    constexpr std::uint32_t high_sz = 1024u;
     const std::uint32_t wgs = wg.get_local_linear_range();
     const std::uint32_t lid = wg.get_local_linear_id();
 
@@ -176,7 +178,7 @@ T custom_reduce_over_group(const GroupT &wg,
     if (wgs & (wgs - 1)) {
         // wgs is not a power of 2
 #pragma unroll
-        for (std::uint32_t sz = 1024; sz >= 32; sz >>= 1) {
+        for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
                 const std::uint32_t n_witems_ = (n_witems + 1) >> 1;
                 _fold(local_mem_acc, lid, n_witems - n_witems_, n_witems_, op);
@@ -188,7 +190,7 @@ T custom_reduce_over_group(const GroupT &wg,
     else {
         // wgs is a power of 2
 #pragma unroll
-        for (std::uint32_t sz = 1024; sz >= 32; sz >>= 1) {
+        for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
                 n_witems = (n_witems + 1) >> 1;
                 _fold(local_mem_acc, lid, n_witems, op);
@@ -203,8 +205,6 @@ T custom_reduce_over_group(const GroupT &wg,
             red_val_over_wg = op(red_val_over_wg, local_mem_acc[i]);
         }
     }
-
-    // sycl::group_barrier(wg, sycl::memory_scope::work_group);
 
     return sycl::group_broadcast(wg, red_val_over_wg, 0);
 }
