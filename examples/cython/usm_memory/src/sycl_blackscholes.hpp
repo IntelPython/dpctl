@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
 #include <oneapi/mkl/rng/device.hpp>
+#include <sycl/sycl.hpp>
 
 template <typename T> class black_scholes_kernel;
 

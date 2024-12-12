@@ -35,7 +35,7 @@ cdef extern from "use_sycl_buffer.hpp":
         size_t,         # number of columns of the input matrix
         const T *,      # data pointer of the input matrix
         T *             # pointer for the resulting vector
-    ) nogil except+
+    ) except+ nogil
 
 
 def columnwise_total(cython.floating[:, ::1] mat, queue=None):
@@ -83,7 +83,7 @@ def columnwise_total(cython.floating[:, ::1] mat, queue=None):
         q = c_dpctl.SyclQueue(queue)
     exec_queue_ptr = unwrap_queue(q.get_queue_ref())
 
-    with nogil:
+    with nogil, cython.boundscheck(False):
         native_columnwise_total(
             exec_queue_ptr[0], n_rows, n_cols, &mat[0,0], &res_memslice[0]
         )
