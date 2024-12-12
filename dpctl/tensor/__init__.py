@@ -199,9 +199,8 @@ from ._set_functions import (
     unique_inverse,
     unique_values,
 )
-from ._sorting import argsort, sort
+from ._sorting import argsort, sort, top_k
 from ._testing import allclose
-from ._topk import top_k
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
 __all__ = [
