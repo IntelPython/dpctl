@@ -491,7 +491,11 @@ def take_along_axis(x, indices, /, *, axis=-1, mode="wrap"):
             "from input arguments. "
         )
     mode_i = _get_indexing_mode(mode)
-    indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
+    indexes_dt = (
+        dpt.uint64
+        if indices.dtype == dpt.uint64
+        else ti.default_device_index_type(exec_q.sycl_device)
+    )
     _ind = tuple(
         (
             indices
@@ -567,7 +571,11 @@ def put_along_axis(x, indices, vals, /, *, axis=-1, mode="wrap"):
         )
     out_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     mode_i = _get_indexing_mode(mode)
-    indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
+    indexes_dt = (
+        dpt.uint64
+        if indices.dtype == dpt.uint64
+        else ti.default_device_index_type(exec_q.sycl_device)
+    )
     _ind = tuple(
         (
             indices
