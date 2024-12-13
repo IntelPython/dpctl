@@ -1864,14 +1864,13 @@ def test_take_along_axis_uint64_indices():
     get_queue_or_skip()
 
     inds = dpt.arange(1, 10, 2, dtype="u8")
-
     x = dpt.tile(dpt.asarray([0, -1], dtype="i4"), 5)
     res = dpt.take_along_axis(x, inds)
     assert dpt.all(res == -1)
 
-    x = dpt.tile(dpt.asarray([0, -1], dtype="i4"), (2, 5))
-    inds = dpt.arange(1, 10, 2, dtype="u8")
-    inds = dpt.broadcast_to(inds, (2, 5))
+    sh0 = 2
+    inds = dpt.broadcast_to(inds, (sh0,) + inds.shape)
+    x = dpt.broadcast_to(x, (sh0,) + x.shape)
     res = dpt.take_along_axis(x, inds, axis=1)
     assert dpt.all(res == -1)
 
@@ -1880,14 +1879,14 @@ def test_put_along_axis_uint64_indices():
     get_queue_or_skip()
 
     inds = dpt.arange(1, 10, 2, dtype="u8")
-
     x = dpt.zeros(10, dtype="i4")
     dpt.put_along_axis(x, inds, dpt.asarray(2, dtype=x.dtype))
     expected = dpt.tile(dpt.asarray([0, 2], dtype="i4"), 5)
     assert dpt.all(x == expected)
 
-    x = dpt.zeros((2, 10), dtype="i4")
-    inds = dpt.broadcast_to(inds, (2, 5))
+    sh0 = 2
+    inds = dpt.broadcast_to(inds, (sh0,) + inds.shape)
+    x = dpt.zeros((sh0,) + x.shape, dtype="i4")
     dpt.put_along_axis(x, inds, dpt.asarray(2, dtype=x.dtype), axis=1)
     expected = dpt.tile(dpt.asarray([0, 2], dtype="i4"), (2, 5))
     assert dpt.all(expected == x)
