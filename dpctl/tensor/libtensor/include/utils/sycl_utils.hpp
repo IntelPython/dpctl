@@ -132,27 +132,81 @@ size_t choose_workgroup_size(const size_t nelems,
     return wg;
 }
 
+namespace
+{
+
+template <typename LocAccT, typename OpT>
+void _fold(LocAccT &local_mem_acc,
+           const std::uint32_t lid,
+           const std::uint32_t cutoff,
+           const std::uint32_t step,
+           const OpT &op)
+{
+    if (lid < cutoff) {
+        local_mem_acc[lid] = op(local_mem_acc[lid], local_mem_acc[step + lid]);
+    }
+}
+
+template <typename LocAccT, typename OpT>
+void _fold(LocAccT &local_mem_acc,
+           const std::uint32_t lid,
+           const std::uint32_t step,
+           const OpT &op)
+{
+    if (lid < step) {
+        local_mem_acc[lid] = op(local_mem_acc[lid], local_mem_acc[step + lid]);
+    }
+}
+
+} // namespace
+
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
 T custom_reduce_over_group(const GroupT &wg,
                            LocAccT local_mem_acc,
                            const T &local_val,
                            const OpT &op)
 {
-    size_t wgs = wg.get_local_linear_range();
-    local_mem_acc[wg.get_local_linear_id()] = local_val;
+    constexpr std::uint32_t low_sz = 8u;
+    constexpr std::uint32_t high_sz = 1024u;
+    const std::uint32_t wgs = wg.get_local_linear_range();
+    const std::uint32_t lid = wg.get_local_linear_id();
 
+    local_mem_acc[lid] = local_val;
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    std::uint32_t n_witems = wgs;
+    if (wgs & (wgs - 1)) {
+        // wgs is not a power of 2
+#pragma unroll
+        for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
+            if (n_witems >= sz) {
+                const std::uint32_t n_witems_ = (n_witems + 1) >> 1;
+                _fold(local_mem_acc, lid, n_witems - n_witems_, n_witems_, op);
+                sycl::group_barrier(wg, sycl::memory_scope::work_group);
+                n_witems = n_witems_;
+            }
+        }
+    }
+    else {
+        // wgs is a power of 2
+#pragma unroll
+        for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
+            if (n_witems >= sz) {
+                n_witems = (n_witems + 1) >> 1;
+                _fold(local_mem_acc, lid, n_witems, op);
+                sycl::group_barrier(wg, sycl::memory_scope::work_group);
+            }
+        }
+    }
 
     T red_val_over_wg = local_mem_acc[0];
     if (wg.leader()) {
-        for (size_t i = 1; i < wgs; ++i) {
+        for (std::uint32_t i = 1; i < n_witems; ++i) {
             red_val_over_wg = op(red_val_over_wg, local_mem_acc[i]);
         }
     }
 
-    sycl::group_barrier(wg, sycl::memory_scope::work_group);
-
-    return sycl::group_broadcast(wg, red_val_over_wg);
+    return sycl::group_broadcast(wg, red_val_over_wg, 0);
 }
 
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
@@ -428,7 +482,7 @@ struct Identity<Op, T, std::enable_if_t<UseBuiltInIdentity<Op, T>::value>>
     SYCL_EXT_ONEAPI_GROUP_LOAD_STORE
 #define USE_GROUP_LOAD_STORE 1
 #else
-#if defined(__INTEL_LLVM_COMPILER) && (__INTEL_LLVM_COMPILER > 20250100u)
+#if defined(__LIBSYCL_MAJOR_VERSION) && (__LIBSYCL_MAJOR_VERSION >= 8u)
 #define USE_GROUP_LOAD_STORE 1
 #else
 #define USE_GROUP_LOAD_STORE 0
@@ -450,7 +504,8 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     sycl::vec<ValueT, vec_sz> x{};
-    ls_ns::group_load(sg, m_ptr, x, ls_ns::data_placement_blocked);
+    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
 #else
     return sg.load<vec_sz>(m_ptr);
@@ -466,7 +521,8 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     ValueT x{};
-    ls_ns::group_load(sg, m_ptr, x, ls_ns::data_placement_blocked);
+    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
 #else
     return sg.load(m_ptr);
@@ -487,7 +543,8 @@ sub_group_store(const sycl::sub_group &sg,
 {
 #if (USE_GROUP_LOAD_STORE)
     static_assert(std::is_same_v<VecT, ElementType>);
-    ls_ns::group_store(sg, val, m_ptr, ls_ns::data_placement_blocked);
+    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    ls_ns::group_store(sg, val, m_ptr, striped);
     return;
 #else
     sg.store<vec_sz>(m_ptr, val);
@@ -507,7 +564,8 @@ sub_group_store(const sycl::sub_group &sg,
                 sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
 #if (USE_GROUP_LOAD_STORE)
-    ls_ns::group_store(sg, val, m_ptr, ls_ns::data_placement_blocked);
+    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    ls_ns::group_store(sg, val, m_ptr, striped);
     return;
 #else
     sg.store(m_ptr, val);
