@@ -615,7 +615,7 @@ jobs:
           do
             pushd $d
             conda activate --stack ${{ env.BUILD_ENV_NAME }}
-            python setup.py build_ext --inplace || exit 1
+            CC=icx CXX=icpx python setup.py build_ext --inplace || exit 1
             conda deactivate
             python -m pytest tests || exit 1
             popd
