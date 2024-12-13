@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
 namespace cg_solver
 {

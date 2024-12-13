@@ -29,8 +29,11 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <algorithm>
+#include <cstddef>
+#include <sycl/sycl.hpp>
+
+using std::size_t;
 
 inline size_t upper_multiple(size_t n, size_t wg)
 {

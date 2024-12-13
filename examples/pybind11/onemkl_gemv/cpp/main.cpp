@@ -25,10 +25,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "cg_solver.hpp"
-#include <CL/sycl.hpp>
 #include <chrono>
 #include <iostream>
 #include <oneapi/mkl.hpp>
+#include <sycl/sycl.hpp>
 
 using T = double;
 

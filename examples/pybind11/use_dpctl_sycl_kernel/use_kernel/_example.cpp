@@ -27,10 +27,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl4pybind11.hpp"
-#include <CL/sycl.hpp>
 #include <cstdint>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 #include <vector>
 
 namespace py = pybind11;

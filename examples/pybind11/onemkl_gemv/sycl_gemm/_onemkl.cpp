@@ -27,7 +27,7 @@
 //===----------------------------------------------------------------------===//
 
 // clang-format off
-#include <CL/sycl.hpp>
+#include <sycl/sycl.hpp>
 #include <oneapi/mkl.hpp>
 #include "cg_solver.hpp"
 #include <pybind11/pybind11.h>

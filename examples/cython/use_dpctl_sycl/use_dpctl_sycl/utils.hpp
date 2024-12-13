@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <CL/sycl.hpp>
 #include <string>
+#include <sycl/sycl.hpp>
 
 std::string get_device_name(sycl::device d)
 {
