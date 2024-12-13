@@ -569,6 +569,7 @@ jobs:
               ${{ env.DPCPP_CMPLR }} "${DPCTL_DEPENDS}" \
               "sysroot_linux-64>=2.28"
           echo "Compiler installed"
+          conda list -n ${{ env.BUILD_ENV_NAME }}
       - name: Install dpctl
         shell: bash -l {0}
         run: |
