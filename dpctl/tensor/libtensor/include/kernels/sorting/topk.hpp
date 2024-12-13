@@ -36,6 +36,7 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "merge_sort.hpp"
 #include "radix_sort.hpp"
+#include "search_sorted_detail.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include <sycl/ext/oneapi/sub_group_mask.hpp>
 
@@ -247,14 +248,16 @@ sycl::event topk_merge_impl(
         // This assumption permits doing away with using a loop
         assert(sorted_block_size % lws == 0);
 
+        using search_sorted_detail::quotient_ceil;
         const std::size_t n_segments =
-            merge_sort_detail::quotient_ceil<std::size_t>(axis_nelems,
-                                                          sorted_block_size);
+            quotient_ceil<std::size_t>(axis_nelems, sorted_block_size);
 
-        // round k up for the later merge kernel
+        // round k up for the later merge kernel if necessary
+        const std::size_t round_k_to = dev.has(sycl::aspect::cpu) ? 32 : 4;
         std::size_t k_rounded =
-            merge_sort_detail::quotient_ceil<std::size_t>(k, elems_per_wi) *
-            elems_per_wi;
+            (k < round_k_to)
+                ? k
+                : quotient_ceil<std::size_t>(k, round_k_to) * round_k_to;
 
         // get length of tail for alloc size
         auto rem = axis_nelems % sorted_block_size;
@@ -322,8 +325,7 @@ sycl::event topk_merge_impl(
                     sycl::group_barrier(it.get_group());
 
                     const std::size_t chunk =
-                        merge_sort_detail::quotient_ceil<std::size_t>(
-                            sorted_block_size, lws);
+                        quotient_ceil<std::size_t>(sorted_block_size, lws);
 
                     const std::size_t chunk_start_idx = lid * chunk;
                     const std::size_t chunk_end_idx =
