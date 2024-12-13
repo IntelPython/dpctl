@@ -337,6 +337,8 @@ def top_k(x, k, /, *, axis=None, mode="largest"):
     if axis is None:
         sz = x.size
         if nd == 0:
+            if k > 1:
+                raise ValueError(f"`k`={k} is out of bounds 1")
             return TopKResult(
                 dpt.copy(x, order="C"),
                 dpt.zeros_like(
