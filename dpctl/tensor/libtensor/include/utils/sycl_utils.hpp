@@ -166,7 +166,10 @@ T custom_reduce_over_group(const GroupT &wg,
                            const T &local_val,
                            const OpT &op)
 {
+    // value experimentally tuned to achieve best runtime on Iris Xe,
+    // Arc A140V integrated Intel GPUs, and discrete Intel Max GPU.
     constexpr std::uint32_t low_sz = 8u;
+    // maximal work-group size
     constexpr std::uint32_t high_sz = 1024u;
     const std::uint32_t wgs = wg.get_local_linear_range();
     const std::uint32_t lid = wg.get_local_linear_id();
@@ -192,7 +195,7 @@ T custom_reduce_over_group(const GroupT &wg,
 #pragma unroll
         for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
-                n_witems = (n_witems + 1) >> 1;
+                n_witems >>= 1;
                 _fold(local_mem_acc, lid, n_witems, op);
                 sycl::group_barrier(wg, sycl::memory_scope::work_group);
             }
