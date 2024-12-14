@@ -19,12 +19,12 @@ find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
 # -w is to set working directory (and correctly set __pyx_f[] array of filenames)
-set(CYTHON_FLAGS "-w \"${CMAKE_SOURCE_DIR}\" --module-name _syclbuffer")
+set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
 
 set(py_module_name _syclbuffer)
 
-set(_cy_source syclbuffer/_buffer_example.pyx)
+set(_cy_source syclbuffer/_syclbuffer.pyx)
 add_cython_target(${py_module_name} ${_cy_source} CXX OUTPUT_VAR _generated_cy_src)
 Python_add_library(${py_module_name} MODULE WITH_SOABI ${_generated_cy_src})
 add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_generated_cy_src})
