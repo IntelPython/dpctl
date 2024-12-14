@@ -549,7 +549,7 @@ jobs:
       - name: Install example requirements
         shell: bash -ex -l {0}
         env:
-          DPCPP_CMPLR: "dpcpp_linux-64>=2024.2"
+          DPCPP_CMPLR: "dpcpp_linux-64>=2025.0"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
@@ -615,7 +615,7 @@ jobs:
           do
             pushd $d
             conda activate --stack ${{ env.BUILD_ENV_NAME }}
-            CC=icx CXX=icpx python setup.py build_ext --inplace || exit 1
+            CC=icx CXX=icpx python setup.py develop -G Ninja  || exit 1
             conda deactivate
             python -m pytest tests || exit 1
             popd
