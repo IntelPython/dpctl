@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMShared.memset
+===================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMShared.memset
