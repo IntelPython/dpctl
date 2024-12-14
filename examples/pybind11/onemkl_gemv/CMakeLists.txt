@@ -27,28 +27,21 @@ FetchContent_MakeAvailable(pybind11)
 find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
-find_library(mkl_core NAMES mkl_core PATHS ${MKL_LIBRARY_DIR} REQUIRED)
-find_library(mkl_sycl NAMES mkl_sycl PATHS ${MKL_LIBRARY_DIR} REQUIRED)
-find_library(mkl_intel_ilp64 NAMES mkl_intel_ilp64 PATHS ${MKL_LIBRARY_DIR} REQUIRED)
-find_library(mkl_tbb_thread NAMES mkl_tbb_thread PATHS ${MKL_LIBRARY_DIR} REQUIRED)
-find_library(tbb NAMES tbb PATHS ${TBB_LIBRARY_DIR} REQUIRED)
-find_library(OpenCL NAMES OpenCL REQUIRED)
+find_package(TBB REQUIRED)
+
+set(MKL_ARCH "intel64")
+set(MKL_LINK "dynamic")
+set(MKL_THREADING "tbb_thread")
+set(MKL_INTERFACE "ilp64")
+find_package(MKL REQUIRED)
 
 set(py_module_name _onemkl)
 
 set(_sources sycl_gemm/_onemkl.cpp)
-pybind11_add_module(${py_module_name}
-    MODULE
-    ${_sources}
-)
+pybind11_add_module(${py_module_name} MODULE ${_sources})
 add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
-target_compile_definitions(${py_module_name} PRIVATE -DMKL_ILP64)
-target_include_directories(${py_module_name}
-    PUBLIC ${MKL_INCLUDE_DIR} sycl_gemm
-)
-target_link_libraries(${py_module_name}
-    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb}
-)
+target_include_directories(${py_module_name} PUBLIC sycl_gemm)
+target_link_libraries(${py_module_name} PRIVATE MKL::MKL_SYCL)
 
 install(TARGETS ${py_module_name} DESTINATION sycl_gemm)
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
@@ -70,11 +63,7 @@ add_executable(standalone_cpp
 target_compile_options(standalone_cpp
   PRIVATE -O3 -Wno-deprecated-declarations
 )
-target_include_directories(standalone_cpp
-  PUBLIC ${MKL_INCLUDE_DIR} ${TBB_INCLUDE_DIR} sycl_gemm
-  )
-target_link_libraries(standalone_cpp
-    PRIVATE ${mkl_sycl} ${mkl_intel_ilp64} ${mkl_tbb_thread} ${mkl_core} ${tbb} ${OpenCL}
-)
+target_include_directories(standalone_cpp PUBLIC sycl_gemm)
+target_link_libraries(standalone_cpp PRIVATE MKL::MKL_SYCL)
 
 set(ignoreMe "${SKBUILD}")

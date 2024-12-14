@@ -587,14 +587,8 @@ jobs:
           for d in $(find . -maxdepth 1 -type d -not -path ".")
           do
             pushd $d
-            export MKLROOT=${CONDA_PREFIX}
-            export TBBROOT=${CONDA_PREFIX}
             conda activate --stack build_env
-            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja -- \
-                -DTBB_LIBRARY_DIR=${TBBROOT}/lib \
-                -DMKL_LIBRARY_DIR=${MKLROOT}/lib \
-                -DMKL_INCLUDE_DIR=${MKLROOT}/include \
-                -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
             conda deactivate
             if [ -e tests ]
             then
