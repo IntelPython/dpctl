@@ -92,3 +92,24 @@ def test_topk_1d_smallest(dtype, n):
     assert s.indices.shape == (k,)
     assert dpt.all(s.values == dpt.zeros(k, dtype=dtype))
     assert dpt.all(s.values == inp[s.indices])
+
+
+# triage failing top k radix implementation on CPU
+# replicates from Python behavior of radix sort topk implementation
+def test_topk_largest_1d_radix_i1_255():
+    get_queue_or_skip()
+    n = 255
+    dt = "i1"
+
+    o = dpt.ones(n, dtype=dt)
+    z = dpt.zeros(n, dtype=dt)
+    zo = dpt.concat((o, z))
+    inp = dpt.roll(zo, 734)
+    k = 5
+
+    sorted = dpt.copy(dpt.sort(inp, descending=True, kind="radixsort")[:k])
+    argsorted = dpt.copy(
+        dpt.argsort(inp, descending=True, kind="radixsort")[:k]
+    )
+    assert dpt.all(sorted == dpt.ones(k, dtype=dt))
+    assert dpt.all(sorted == inp[argsorted])
