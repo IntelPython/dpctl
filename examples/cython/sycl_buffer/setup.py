@@ -14,46 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from setuptools import Extension, setup
-from setuptools.command.build_ext import build_ext
-
-import dpctl
-
-
-class custom_build_ext(build_ext):
-    def build_extensions(self):
-        self.compiler.set_executable("compiler_so", "icpx -fsycl -fPIC")
-        self.compiler.set_executable("compiler_cxx", "icpx -fsycl -fPIC")
-        self.compiler.set_executable(
-            "linker_so",
-            "icpx -fsycl -shared -fpic -fsycl-device-code-split=per_kernel",
-        )
-        build_ext.build_extensions(self)
-
-
-ext_modules = [
-    Extension(
-        name="syclbuffer._syclbuffer",
-        sources=[
-            "syclbuffer/_buffer_example.pyx",
-        ],
-        depends=[
-            "src/use_sycl_buffer.hpp",
-        ],
-        include_dirs=[
-            ".",
-            "./src",
-            dpctl.get_include(),
-        ],
-        extra_compile_args=[
-            "-Wall",
-            "-Wextra",
-            "-fsycl",
-        ],
-        extra_link_args=["-fPIC"],
-        language="c++",
-    )
-]
+from skbuild import setup
 
 setup(
     name="syclbuffer",
@@ -68,6 +29,5 @@ setup(
     license="Apache 2.0",
     author="Intel Corporation",
     url="https://github.com/IntelPython/dpctl",
-    ext_modules=ext_modules,
-    cmdclass={"build_ext": custom_build_ext},
+    packages=["syclbuffer"],
 )

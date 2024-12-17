@@ -549,7 +549,7 @@ jobs:
       - name: Install example requirements
         shell: bash -ex -l {0}
         env:
-          DPCPP_CMPLR: "dpcpp_linux-64>=2024.2"
+          DPCPP_CMPLR: "dpcpp_linux-64>=2025.0"
         run: |
           CHANNELS="${{ env.CHANNELS }}"
           . $CONDA/etc/profile.d/conda.sh
@@ -569,6 +569,7 @@ jobs:
               ${{ env.DPCPP_CMPLR }} "${DPCTL_DEPENDS}" \
               "sysroot_linux-64>=2.28"
           echo "Compiler installed"
+          conda list -n ${{ env.BUILD_ENV_NAME }}
       - name: Install dpctl
         shell: bash -l {0}
         run: |
@@ -586,14 +587,8 @@ jobs:
           for d in $(find . -maxdepth 1 -type d -not -path ".")
           do
             pushd $d
-            export MKLROOT=${CONDA_PREFIX}
-            export TBBROOT=${CONDA_PREFIX}
             conda activate --stack build_env
-            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja -- \
-                -DTBB_LIBRARY_DIR=${TBBROOT}/lib \
-                -DMKL_LIBRARY_DIR=${MKLROOT}/lib \
-                -DMKL_INCLUDE_DIR=${MKLROOT}/include \
-                -DTBB_INCLUDE_DIR=${TBBROOT}/include || exit 1
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
             conda deactivate
             if [ -e tests ]
             then
@@ -614,7 +609,7 @@ jobs:
           do
             pushd $d
             conda activate --stack ${{ env.BUILD_ENV_NAME }}
-            python setup.py build_ext --inplace || exit 1
+            CC=icx CXX=icpx python setup.py develop -G Ninja  || exit 1
             conda deactivate
             python -m pytest tests || exit 1
             popd

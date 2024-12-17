@@ -14,40 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import Cython.Build
-import setuptools
-from setuptools.command.build_ext import build_ext as build_ext_base
+from skbuild import setup
 
-import dpctl
-
-
-class custom_build_ext(build_ext_base):
-    def build_extensions(self):
-        self.compiler.set_executable("compiler_so", "icx -fsycl -fPIC")
-        self.compiler.set_executable("compiler_cxx", "icpx -fsycl -fPIC")
-        self.compiler.set_executable(
-            "linker_so",
-            "icpx -fsycl -shared -fpic -fsycl-device-code-split=per_kernel",
-        )
-        super().build_extensions()
-
-
-ext = setuptools.Extension(
-    "use_dpctl_sycl._cython_api",
-    ["./use_dpctl_sycl/_cython_api.pyx"],
-    include_dirs=[dpctl.get_include(), "./use_dpctl_sycl"],
-    language="c++",
-)
-
-(cythonized_ext,) = Cython.Build.cythonize(
-    [
-        ext,
-    ]
-)
-
-setuptools.setup(
+setup(
     name="use_dpctl_sycl",
     version="0.0.0",
-    ext_modules=[cythonized_ext],
-    cmdclass={"build_ext": custom_build_ext},
+    description="An example of Cython extension calling SYCL Cython API",
+    long_description="""
+    Example of using SYCL to work on host allocated NumPy array using
+    SYCL buffers and SYCL functions.
+
+    See README.md for more details.
+    """,
+    license="Apache 2.0",
+    author="Intel Corporation",
+    url="https://github.com/IntelPython/dpctl",
+    packages=["use_dpctl_sycl"],
 )
