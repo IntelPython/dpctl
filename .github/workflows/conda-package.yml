@@ -24,7 +24,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -80,7 +80,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4.2.2
         with:
@@ -145,7 +145,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -239,7 +239,7 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         experimental: [false]
         runner: [windows-2019]
     continue-on-error: ${{ matrix.experimental }}
@@ -408,7 +408,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Download conda artifact
         uses: actions/download-artifact@v4
@@ -445,7 +445,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
