@@ -96,9 +96,9 @@ def test_topk_1d_smallest(dtype, n):
 
 # triage failing top k radix implementation on CPU
 # replicates from Python behavior of radix sort topk implementation
-def test_topk_largest_1d_radix_i1_255():
+@pytest.mark.parametrize("n", [33, 255, 511, 1021, 8193])
+def test_topk_largest_1d_radix_i1_255(n):
     get_queue_or_skip()
-    n = 255
     dt = "i1"
 
     o = dpt.ones(n, dtype=dt)
