@@ -58,8 +58,14 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
                 cgh.depends_on(*(unwrap<sycl::event>(depERefs[ev_id])));
             }
             cgh.host_task([obj_array_size, obj_vec]() {
+                const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+                const bool finalizing = _Py_IsFinalizing();
+#else
+                const bool finalizing = Py_IsFinalizing();
+#endif
                 // if the main thread has not finilized the interpreter yet
-                if (Py_IsInitialized() && !_Py_IsFinalizing()) {
+                if (initialized && !finalizing) {
                     PyGILState_STATE gstate;
                     gstate = PyGILState_Ensure();
                     for (size_t i = 0; i < obj_array_size; ++i) {
