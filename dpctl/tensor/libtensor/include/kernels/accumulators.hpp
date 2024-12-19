@@ -288,11 +288,11 @@ inclusive_scan_base_step_blocked(sycl::queue &exec_q,
 
             slm_iscan_tmp[(lid + 1) % wg_size] = wg_iscan_val;
             it.barrier(sycl::access::fence_space::local_space);
-            outputT addand = (lid == 0) ? identity : slm_iscan_tmp[lid];
+            const outputT modifier = (lid == 0) ? identity : slm_iscan_tmp[lid];
 
 #pragma unroll
             for (nwiT m_wi = 0; m_wi < n_wi; ++m_wi) {
-                local_iscan[m_wi] = scan_op(local_iscan[m_wi], addand);
+                local_iscan[m_wi] = scan_op(local_iscan[m_wi], modifier);
             }
 
             const std::size_t start = std::min(i, acc_nelems);
