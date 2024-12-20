@@ -34,9 +34,10 @@
 #include <vector>
 
 #include "kernels/dpctl_tensor_types.hpp"
-#include "merge_sort.hpp"
-#include "radix_sort.hpp"
-#include "search_sorted_detail.hpp"
+#include "kernels/sorting/merge_sort.hpp"
+#include "kernels/sorting/radix_sort.hpp"
+#include "kernels/sorting/search_sorted_detail.hpp"
+#include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include <sycl/ext/oneapi/sub_group_mask.hpp>
 
@@ -95,20 +96,26 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
         throw std::runtime_error("Unable to allocate device_memory");
     }
 
+    using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy, CompT>;
+
+#if 1
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+
+    sycl::event populate_indexed_data_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, index_data, iter_nelems * axis_nelems, depends);
+#else
     sycl::event populate_indexed_data_ev =
         exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(depends);
 
             auto const &range = sycl::range<1>(iter_nelems * axis_nelems);
 
-            using KernelName =
-                topk_populate_index_data_krn<argTy, IndexTy, CompT>;
-
-            cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
+            cgh.parallel_for<IotaKernelName>(range, [=](sycl::id<1> id) {
                 std::size_t i = id[0];
                 index_data[i] = static_cast<IndexTy>(i);
             });
         });
+#endif
 
     std::size_t sorted_block_size;
     // Sort segments of the array
@@ -480,18 +487,25 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
 
+    using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
+
+#if 1
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+
+    sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, workspace, total_nelems, depends);
+#else
     sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName = topk_iota_krn<argTy, IndexTy>;
-
-        cgh.parallel_for<KernelName>(
+        cgh.parallel_for<IotaKernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
                 size_t i = id[0];
                 IndexTy sort_id = static_cast<IndexTy>(i);
                 workspace[i] = sort_id;
             });
     });
+#endif
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
