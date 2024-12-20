@@ -261,10 +261,13 @@ T custom_inclusive_scan_over_group(GroupT &&wg,
         sycl::group_barrier(wg, sycl::memory_scope::work_group);
     }
 
-    if (sgr_id == 0 && lane_id < n_aggregates) {
+    if (sgr_id == 0) {
         const std::uint32_t offset =
             (large_wg) ? n_aggregates - max_sgSize : 0u;
-        T __scan_val = (offset + lane_id > 0)
+        const bool in_range = (lane_id < n_aggregates);
+        const bool in_bounds = in_range && (lane_id > 0 || large_wg);
+
+        T __scan_val = (in_bounds)
                            ? local_mem_acc[(offset + lane_id) * max_sgSize - 1]
                            : identity;
         for (std::uint32_t step = 1; step < sgSize; step *= 2) {
@@ -273,12 +276,13 @@ T custom_inclusive_scan_over_group(GroupT &&wg,
                 (advanced_lane ? lane_id - step : lane_id);
             const T modifier =
                 sycl::select_from_group(sg, __scan_val, src_lane_id);
-            if (advanced_lane) {
+            if (advanced_lane && in_range) {
                 __scan_val = op(__scan_val, modifier);
             }
         }
-        sycl::group_barrier(sg);
-        local_mem_acc[(offset + lane_id) * max_sgSize - 1] = __scan_val;
+        if (in_bounds) {
+            local_mem_acc[(offset + lane_id) * max_sgSize - 1] = __scan_val;
+        }
     }
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
 
