@@ -498,10 +498,10 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
             exec_q, iter_nelems, axis_nelems, workspace, tmp_tp, proj_op,
             ascending, {iota_ev});
 
+    radix_sort_ev.wait();
+
     // Write out top k of the temporary
     sycl::event write_topk_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
-
         using KernelName = topk_radix_map_back_krn<argTy, IndexTy>;
 
         cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
@@ -519,9 +519,9 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
         });
     });
 
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(write_topk_ev);
+    write_topk_ev.wait();
 
+    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
         const sycl::context &ctx = exec_q.get_context();
 
         using dpctl::tensor::alloc_utils::sycl_free_noexcept;
