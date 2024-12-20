@@ -1588,11 +1588,11 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         using CountT = std::uint32_t;
 
         // memory for storing count and offset values
-        CountT *count_ptr =
-            sycl::malloc_device<CountT>(n_iters * n_counts, exec_q);
-        if (nullptr == count_ptr) {
-            throw std::runtime_error("Could not allocate USM-device memory");
-        }
+        auto count_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<CountT>(
+                n_iters * n_counts, exec_q);
+
+        CountT *count_ptr = count_owner.get();
 
         constexpr std::uint32_t zero_radix_iter{0};
 
@@ -1605,25 +1605,17 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
                                                    n_counts, count_ptr, proj_op,
                                                    is_ascending, depends);
 
-            sort_ev = exec_q.submit([=](sycl::handler &cgh) {
-                cgh.depends_on(sort_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, count_ptr]() { sycl_free_noexcept(count_ptr, ctx); });
-            });
+            sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {sort_ev}, count_owner);
 
             return sort_ev;
         }
 
-        ValueT *tmp_arr =
-            sycl::malloc_device<ValueT>(n_iters * n_to_sort, exec_q);
-        if (nullptr == tmp_arr) {
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            sycl_free_noexcept(count_ptr, exec_q);
-            throw std::runtime_error("Could not allocate USM-device memory");
-        }
+        auto tmp_arr_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<ValueT>(
+                n_iters * n_to_sort, exec_q);
+
+        ValueT *tmp_arr = tmp_arr_owner.get();
 
         // iterations per each bucket
         assert("Number of iterations must be even" && radix_iters % 2 == 0);
@@ -1657,17 +1649,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             }
         }
 
-        sort_ev = exec_q.submit([=](sycl::handler &cgh) {
-            cgh.depends_on(sort_ev);
-
-            const sycl::context &ctx = exec_q.get_context();
-
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task([ctx, count_ptr, tmp_arr]() {
-                sycl_free_noexcept(tmp_arr, ctx);
-                sycl_free_noexcept(count_ptr, ctx);
-            });
-        });
+        sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {sort_ev}, tmp_arr_owner, count_owner);
     }
 
     return sort_ev;
@@ -1769,13 +1752,12 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
         reinterpret_cast<IndexTy *>(res_cp) + iter_res_offset + sort_res_offset;
 
     const std::size_t total_nelems = iter_nelems * sort_nelems;
-    const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    IndexTy *workspace = sycl::malloc_device<IndexTy>(
-        padded_total_nelems + total_nelems, exec_q);
+    auto workspace_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(total_nelems,
+                                                                 exec_q);
 
-    if (nullptr == workspace) {
-        throw std::runtime_error("Could not allocate workspace on device");
-    }
+    // get raw USM pointer
+    IndexTy *workspace = workspace_owner.get();
 
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
@@ -1820,14 +1802,8 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
             });
     });
 
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(map_back_ev);
-
-        const sycl::context &ctx = exec_q.get_context();
-
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, workspace] { sycl_free_noexcept(workspace, ctx); });
-    });
+    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {map_back_ev}, workspace_owner);
 
     return cleanup_ev;
 }
