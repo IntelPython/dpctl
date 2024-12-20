@@ -30,8 +30,9 @@
 #include <iterator>
 #include <limits>
 #include <stdexcept>
-#include <sycl/sycl.hpp>
 #include <vector>
+
+#include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/sorting/merge_sort.hpp"
@@ -90,11 +91,11 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
                           const CompT &comp,
                           const std::vector<sycl::event> &depends)
 {
-    IndexTy *index_data =
-        sycl::malloc_device<IndexTy>(iter_nelems * axis_nelems, exec_q);
-    if (index_data == nullptr) {
-        throw std::runtime_error("Unable to allocate device_memory");
-    }
+    auto index_data_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+            iter_nelems * axis_nelems, exec_q);
+    // extract USM pointer
+    IndexTy *index_data = index_data_owner.get();
 
     using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy, CompT>;
 
@@ -153,14 +154,8 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
     });
 
     sycl::event cleanup_host_task_event =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(write_out_ev);
-            const sycl::context &ctx = exec_q.get_context();
-
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task(
-                [ctx, index_data] { sycl_free_noexcept(index_data, ctx); });
-        });
+        dpctl::tensor::alloc_utils::async_smart_free(exec_q, {write_out_ev},
+                                                     index_data_owner);
 
     return cleanup_host_task_event;
 };
@@ -283,11 +278,11 @@ sycl::event topk_merge_impl(
                                              index_comp, depends);
         }
 
-        IndexTy *index_data =
-            sycl::malloc_device<IndexTy>(iter_nelems * alloc_len, exec_q);
-        if (index_data == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
+        auto index_data_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+                iter_nelems * alloc_len, exec_q);
+        // get raw USM pointer
+        IndexTy *index_data = index_data_owner.get();
 
         // no need to populate index data: SLM will be populated with default
         // values
@@ -427,14 +422,8 @@ sycl::event topk_merge_impl(
         });
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(write_topk_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, index_data] { sycl_free_noexcept(index_data, ctx); });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {write_topk_ev}, index_data_owner);
 
         return cleanup_host_task_event;
     }
@@ -474,15 +463,13 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
 
     const std::size_t total_nelems = iter_nelems * axis_nelems;
     const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    IndexTy *workspace = sycl::malloc_device<IndexTy>(
-        padded_total_nelems + total_nelems, exec_q);
+    auto workspace_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+            padded_total_nelems + total_nelems, exec_q);
 
-    IndexTy *tmp_tp = sycl::malloc_device<IndexTy>(total_nelems, exec_q);
-
-    if (nullptr == workspace || nullptr == tmp_tp) {
-        throw std::runtime_error(
-            "Not enough device memory for radix sort topk");
-    }
+    // get raw USM pointer
+    IndexTy *workspace = workspace_owner.get();
+    IndexTy *tmp_tp = workspace + padded_total_nelems;
 
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
@@ -536,17 +523,8 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
         });
     });
 
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(write_topk_ev);
-
-        const sycl::context &ctx = exec_q.get_context();
-
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, workspace, tmp_tp] {
-            sycl_free_noexcept(workspace, ctx);
-            sycl_free_noexcept(tmp_tp, ctx);
-        });
-    });
+    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {write_topk_ev}, workspace_owner);
 
     return cleanup_ev;
 }
