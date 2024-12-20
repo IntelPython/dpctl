@@ -1483,7 +1483,10 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         dev.template get_info<sycl::info::device::max_work_group_size>();
 
     constexpr std::uint16_t ref_wg_size = 64;
-    if (n_to_sort <= 16384 && ref_wg_size * 8 <= max_wg_size) {
+    constexpr bool enable_one_wg_radix_sort = false;
+    if (enable_one_wg_radix_sort && n_to_sort <= 16384 &&
+        ref_wg_size * 8 <= max_wg_size)
+    {
         using _RadixSortKernel = OneWorkGroupRadixSortKernel<ValueT, ProjT>;
 
         if (n_to_sort <= 64 && ref_wg_size <= max_wg_size) {
