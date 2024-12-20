@@ -38,6 +38,7 @@
 #include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
@@ -1256,9 +1257,7 @@ private:
                             const uint16_t id = wi * block_size + i;
                             if (id < n)
                                 values[i] = std::move(
-                                    this_input_arr[iter_val_offset +
-                                                   static_cast<std::size_t>(
-                                                       id)]);
+                                    this_input_arr[iter_val_offset + id]);
                         }
 
                         while (true) {
@@ -1272,8 +1271,7 @@ private:
                                 // counting phase
                                 auto pcounter =
                                     get_accessor_pointer(counter_acc) +
-                                    static_cast<std::size_t>(wi) +
-                                    iter_counter_offset;
+                                    (wi + iter_counter_offset);
 
 // initialize counters
 #pragma unroll
@@ -1348,19 +1346,15 @@ private:
 
                                     // scan contiguous numbers
                                     uint16_t bin_sum[bin_count];
-                                    bin_sum[0] =
-                                        counter_acc[iter_counter_offset +
-                                                    static_cast<std::size_t>(
-                                                        wi * bin_count)];
+                                    const std::size_t counter_offset0 =
+                                        iter_counter_offset + wi * bin_count;
+                                    bin_sum[0] = counter_acc[counter_offset0];
 
 #pragma unroll
                                     for (uint16_t i = 1; i < bin_count; ++i)
                                         bin_sum[i] =
                                             bin_sum[i - 1] +
-                                            counter_acc
-                                                [iter_counter_offset +
-                                                 static_cast<std::size_t>(
-                                                     wi * bin_count + i)];
+                                            counter_acc[counter_offset0 + i];
 
                                     sycl::group_barrier(ndit.get_group());
 
@@ -1374,10 +1368,7 @@ private:
 // add to local sum, generate exclusive scan result
 #pragma unroll
                                     for (uint16_t i = 0; i < bin_count; ++i)
-                                        counter_acc[iter_counter_offset +
-                                                    static_cast<std::size_t>(
-                                                        wi * bin_count + i +
-                                                        1)] =
+                                        counter_acc[counter_offset0 + i + 1] =
                                             sum_scan + bin_sum[i];
 
                                     if (wi == 0)
@@ -1407,10 +1398,8 @@ private:
                                     if (r < n) {
                                         // move the values to source range and
                                         // destroy the values
-                                        this_output_arr
-                                            [iter_val_offset +
-                                             static_cast<std::size_t>(r)] =
-                                                std::move(values[i]);
+                                        this_output_arr[iter_val_offset + r] =
+                                            std::move(values[i]);
                                     }
                                 }
 
@@ -1422,8 +1411,7 @@ private:
                             for (uint16_t i = 0; i < block_size; ++i) {
                                 const uint16_t r = indices[i];
                                 if (r < n)
-                                    exchange_acc[iter_exchange_offset +
-                                                 static_cast<std::size_t>(r)] =
+                                    exchange_acc[iter_exchange_offset + r] =
                                         std::move(values[i]);
                             }
 
@@ -1435,8 +1423,7 @@ private:
                                 if (id < n)
                                     values[i] = std::move(
                                         exchange_acc[iter_exchange_offset +
-                                                     static_cast<std::size_t>(
-                                                         id)]);
+                                                     id]);
                             }
 
                             sycl::group_barrier(ndit.get_group());
@@ -1795,18 +1782,26 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
 
+    using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
+
+#if 1
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
+
+    sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, workspace, total_nelems, depends);
+#else
+
     sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName = radix_argsort_iota_krn<argTy, IndexTy>;
-
-        cgh.parallel_for<KernelName>(
+        cgh.parallel_for<IotaKernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
                 size_t i = id[0];
                 IndexTy sort_id = static_cast<IndexTy>(i);
                 workspace[i] = sort_id;
             });
     });
+#endif
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
