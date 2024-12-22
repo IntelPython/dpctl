@@ -777,7 +777,10 @@ accumulate_1d_contig_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        const std::size_t wg_size = 256;
+        // base_scan_striped algorithm does not execute correctly
+        // on HIP device with wg_size > 64
+        const std::size_t wg_size =
+            (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_gpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
@@ -1181,7 +1184,10 @@ accumulate_strided_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        const std::size_t wg_size = 256;
+        // base_scan_striped algorithm does not execute correctly
+        // on HIP device with wg_size > 64
+        const std::size_t wg_size =
+            (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_gpu, InpIndexerT,
                                 OutIndexerT, InpIndexerT, OutIndexerT,
@@ -1235,7 +1241,10 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        const std::size_t wg_size = 256;
+        // base_scan_striped algorithm does not execute correctly
+        // on HIP device with wg_size > 64
+        const std::size_t wg_size =
+            (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -1346,7 +1355,10 @@ cumsum_val_strided_impl(sycl::queue &q,
     }
     else {
         constexpr nwiT n_wi_for_gpu = 4;
-        const std::size_t wg_size = 256;
+        // base_scan_striped algorithm does not execute correctly
+        // on HIP device with wg_size > 64
+        const std::size_t wg_size =
+            (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
