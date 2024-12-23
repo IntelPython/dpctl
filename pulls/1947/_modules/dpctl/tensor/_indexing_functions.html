@@ -1304,11 +1304,7 @@
             <span class="s2">&quot;from input arguments. &quot;</span>
         <span class="p">)</span>
     <span class="n">mode_i</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
-    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span>
-        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span>
-        <span class="k">else</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">_ind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">indices</span>
@@ -1384,11 +1380,7 @@
         <span class="p">)</span>
     <span class="n">out_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_</span><span class="p">)</span>
     <span class="n">mode_i</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
-    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span>
-        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span>
-        <span class="k">else</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">indexes_dt</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">_ind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">indices</span>
