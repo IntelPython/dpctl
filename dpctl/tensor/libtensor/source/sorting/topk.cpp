@@ -114,7 +114,7 @@ sycl::event topk_caller(sycl::queue &exec_q,
         using dpctl::tensor::kernels::topk_radix_impl;
         const auto ascending = !largest;
 
-        if (axis_nelems > 16384) {
+        if (true) {
             return topk_radix_impl<argTy, IndexTy>(
                 exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
                 inds_cp, iter_arg_offset, iter_vals_offset, iter_inds_offset,
