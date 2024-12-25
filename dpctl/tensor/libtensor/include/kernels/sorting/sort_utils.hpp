@@ -97,6 +97,27 @@ sycl::event iota_impl(sycl::queue &exec_q,
     return e;
 }
 
+template <class KernelName, typename IndexTy>
+sycl::event map_back_impl(sycl::queue &exec_q,
+                          std::size_t nelems,
+                          const IndexTy *flat_index_data,
+                          IndexTy *reduced_index_data,
+                          std::size_t row_size,
+                          const std::vector<sycl::event> &dependent_events)
+{
+    sycl::event map_back_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(dependent_events);
+
+        cgh.parallel_for<KernelName>(
+            sycl::range<1>(nelems), [=](sycl::id<1> id) {
+                const IndexTy linear_index = flat_index_data[id];
+                reduced_index_data[id] = (linear_index % row_size);
+            });
+    });
+
+    return map_back_ev;
+}
+
 } // end of namespace sort_utils_detail
 } // end of namespace kernels
 } // end of namespace tensor
