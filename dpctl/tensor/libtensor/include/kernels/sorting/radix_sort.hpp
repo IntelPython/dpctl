@@ -63,6 +63,45 @@ class radix_sort_reorder_peer_kernel;
 template <std::uint32_t, bool, typename... TrailingNames>
 class radix_sort_reorder_kernel;
 
+/*! @brief Computes smallest exponent such that `n <= (1 << exponent)` */
+template <typename SizeT,
+          std::enable_if_t<std::is_unsigned_v<SizeT> &&
+                               sizeof(SizeT) == sizeof(std::uint64_t),
+                           int> = 0>
+std::uint32_t ceil_log2(SizeT n)
+{
+    if (n <= 1)
+        return std::uint32_t{1};
+
+    std::uint32_t exp{1};
+    --n;
+    if (n >= (SizeT{1} << 32)) {
+        n >>= 32;
+        exp += 32;
+    }
+    if (n >= (SizeT{1} << 16)) {
+        n >>= 16;
+        exp += 16;
+    }
+    if (n >= (SizeT{1} << 8)) {
+        n >>= 8;
+        exp += 8;
+    }
+    if (n >= (SizeT{1} << 4)) {
+        n >>= 4;
+        exp += 4;
+    }
+    if (n >= (SizeT{1} << 2)) {
+        n >>= 2;
+        exp += 2;
+    }
+    if (n >= (SizeT{1} << 1)) {
+        n >>= 1;
+        ++exp;
+    }
+    return exp;
+}
+
 //----------------------------------------------------------
 // bitwise order-preserving conversions to unsigned integers
 //----------------------------------------------------------
@@ -1145,7 +1184,7 @@ private:
         const std::size_t max_slm_size =
             dev.template get_info<sycl::info::device::local_mem_size>() / 2;
 
-        const auto n_uniform = 1 << (std::uint32_t(std::log2(n - 1)) + 1);
+        const auto n_uniform = 1 << ceil_log2(n);
         const auto req_slm_size_val = sizeof(T) * n_uniform;
 
         return ((req_slm_size_val + req_slm_size_counters) <= max_slm_size)
