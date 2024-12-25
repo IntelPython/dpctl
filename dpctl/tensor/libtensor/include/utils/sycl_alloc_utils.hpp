@@ -133,7 +133,7 @@ smart_malloc_shared(std::size_t count,
 
 template <typename T>
 std::unique_ptr<T, USMDeleter>
-smart_malloc_jost(std::size_t count,
+smart_malloc_host(std::size_t count,
                   const sycl::queue &q,
                   const sycl::property_list &propList = {})
 {
