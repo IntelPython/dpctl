@@ -71,6 +71,41 @@ void scale_topk_params(const std::uint64_t nelems_per_slm,
     throw std::runtime_error("Could not construct top k kernel parameters");
 }
 
+template <class KernelName, typename argTy, typename IndexTy>
+sycl::event write_out_impl(sycl::queue &exec_q,
+                           std::size_t iter_nelems,
+                           std::size_t k,
+                           const argTy *arg_tp,
+                           const IndexTy *index_data,
+                           std::size_t iter_index_stride,
+                           std::size_t axis_nelems,
+                           argTy *vals_tp,
+                           IndexTy *inds_tp,
+                           const std::vector<sycl::event> &depends)
+{
+    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
+            const std::size_t gid = id[0];
+
+            const std::size_t iter_gid = gid / k;
+            const std::size_t axis_gid = gid - (iter_gid * k);
+
+            const std::size_t src_idx = iter_gid * iter_index_stride + axis_gid;
+            const std::size_t dst_idx = gid;
+
+            const IndexTy res_ind = index_data[src_idx];
+            const argTy v = arg_tp[res_ind];
+
+            vals_tp[dst_idx] = v;
+            inds_tp[dst_idx] = (res_ind % axis_nelems);
+        });
+    });
+
+    return write_out_ev;
+}
+
 } // namespace topk_detail
 
 template <typename T1, typename T2, typename T3>
@@ -132,26 +167,13 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
         exec_q, iter_nelems, axis_nelems, index_data, comp, sorted_block_size,
         {base_sort_ev});
 
-    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(merges_ev);
+    using WriteOutKernelName =
+        topk_full_merge_map_back_krn<argTy, IndexTy, CompT>;
 
-        using KernelName = topk_full_merge_map_back_krn<argTy, IndexTy, CompT>;
-
-        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-            std::size_t gid = id[0];
-
-            std::size_t iter_gid = gid / k;
-            std::size_t axis_gid = gid - (iter_gid * k);
-
-            std::size_t src_idx = iter_gid * axis_nelems + axis_gid;
-            std::size_t dst_idx = iter_gid * k + axis_gid;
-
-            const IndexTy res_ind = index_data[src_idx];
-            const argTy v = arg_tp[res_ind];
-            vals_tp[dst_idx] = v;
-            inds_tp[dst_idx] = res_ind % axis_nelems;
-        });
-    });
+    sycl::event write_out_ev =
+        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+            exec_q, iter_nelems, k, arg_tp, index_data, axis_nelems,
+            axis_nelems, vals_tp, inds_tp, {merges_ev});
 
     sycl::event cleanup_host_task_event =
         dpctl::tensor::alloc_utils::async_smart_free(exec_q, {write_out_ev},
@@ -399,27 +421,13 @@ sycl::event topk_merge_impl(
                 k_rounded, {base_sort_ev});
 
         // Write out top k of the merge-sorted memory
-        sycl::event write_topk_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(merges_ev);
+        using WriteOutKernelName =
+            topk_partial_merge_map_back_krn<argTy, IndexTy, ValueComp>;
 
-            using KernelName =
-                topk_partial_merge_map_back_krn<argTy, IndexTy, ValueComp>;
-
-            cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-                const std::size_t gid = id[0];
-
-                const std::size_t iter_gid = gid / k;
-                const std::size_t axis_gid = gid - (iter_gid * k);
-
-                const std::size_t src_idx = iter_gid * alloc_len + axis_gid;
-                const std::size_t dst_idx = gid;
-
-                const IndexTy res_ind = index_data[src_idx];
-                const argTy v = arg_tp[res_ind];
-                vals_tp[dst_idx] = v;
-                inds_tp[dst_idx] = (res_ind % axis_nelems);
-            });
-        });
+        sycl::event write_topk_ev =
+            topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+                exec_q, iter_nelems, k, arg_tp, index_data, alloc_len,
+                axis_nelems, vals_tp, inds_tp, {merges_ev});
 
         sycl::event cleanup_host_task_event =
             dpctl::tensor::alloc_utils::async_smart_free(
@@ -502,26 +510,12 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
             ascending, {iota_ev});
 
     // Write out top k of the temporary
-    sycl::event write_topk_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
+    using WriteOutKernelName = topk_radix_map_back_krn<argTy, IndexTy>;
 
-        using KernelName = topk_radix_map_back_krn<argTy, IndexTy>;
-
-        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-            const std::size_t gid = id[0];
-
-            const std::size_t iter_gid = gid / k;
-            const std::size_t axis_gid = gid - (iter_gid * k);
-
-            const std::size_t src_idx = iter_gid * axis_nelems + axis_gid;
-            const std::size_t dst_idx = gid;
-
-            const IndexTy res_ind = tmp_tp[src_idx];
-            const argTy v = arg_tp[res_ind];
-            vals_tp[dst_idx] = v;
-            inds_tp[dst_idx] = (res_ind % axis_nelems);
-        });
-    });
+    sycl::event write_topk_ev =
+        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+            exec_q, iter_nelems, k, arg_tp, tmp_tp, axis_nelems, axis_nelems,
+            vals_tp, inds_tp, {radix_sort_ev});
 
     sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
         exec_q, {write_topk_ev}, workspace_owner);
