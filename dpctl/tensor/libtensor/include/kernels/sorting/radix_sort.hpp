@@ -1766,41 +1766,21 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
 
     using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
 
-#if 1
     using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
     sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, workspace, total_nelems, depends);
-#else
-
-    sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-
-        cgh.parallel_for<IotaKernelName>(
-            sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                size_t i = id[0];
-                IndexTy sort_id = static_cast<IndexTy>(i);
-                workspace[i] = sort_id;
-            });
-    });
-#endif
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
             exec_q, iter_nelems, sort_nelems, workspace, res_tp, proj_op,
             sort_ascending, {iota_ev});
 
-    sycl::event map_back_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
+    using MapBackKernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
+    using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
 
-        using KernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
-
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                IndexTy linear_index = res_tp[id];
-                res_tp[id] = (linear_index % sort_nelems);
-            });
-    });
+    sycl::event map_back_ev = map_back_impl<MapBackKernelName, IndexTy>(
+        exec_q, total_nelems, res_tp, res_tp, sort_nelems, {radix_sort_ev});
 
     sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
         exec_q, {map_back_ev}, workspace_owner);

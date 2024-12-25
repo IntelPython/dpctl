@@ -83,23 +83,50 @@ sycl::event write_out_impl(sycl::queue &exec_q,
                            IndexTy *inds_tp,
                            const std::vector<sycl::event> &depends)
 {
+    constexpr std::uint32_t lws = 64;
+    constexpr std::uint32_t n_wi = 4;
+    const std::size_t nelems = iter_nelems * k;
+    const std::size_t n_groups = (nelems + lws * n_wi - 1) / (n_wi * lws);
+
+    sycl::range<1> lRange{lws};
+    sycl::range<1> gRange{n_groups * lws};
+    sycl::nd_range<1> ndRange{gRange, lRange};
+
     sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-            const std::size_t gid = id[0];
+        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> it) {
+            const std::size_t gid = it.get_global_linear_id();
+            const auto &sg = it.get_sub_group();
+            const std::uint32_t lane_id = sg.get_local_id()[0];
+            const std::uint32_t sg_size = sg.get_max_local_range()[0];
 
-            const std::size_t iter_gid = gid / k;
-            const std::size_t axis_gid = gid - (iter_gid * k);
+            const std::size_t start_id =
+                (gid - lane_id) * sg_size * n_wi + lane_id;
 
-            const std::size_t src_idx = iter_gid * iter_index_stride + axis_gid;
-            const std::size_t dst_idx = gid;
+#pragma unroll
+            for (std::uint32_t i = 0; i < n_wi; ++i) {
+                const std::size_t data_id = start_id + i * sg_size;
 
-            const IndexTy res_ind = index_data[src_idx];
-            const argTy v = arg_tp[res_ind];
+                if (data_id < nelems) {
+                    const std::size_t iter_id = data_id / k;
 
-            vals_tp[dst_idx] = v;
-            inds_tp[dst_idx] = (res_ind % axis_nelems);
+                    /*
+                    const std::size_t axis_gid = data_id - (iter_gid * k);
+                    const std::size_t src_idx = iter_gid * iter_index_stride +
+                    axis_gid;
+                    */
+                    const std::size_t src_idx =
+                        data_id + iter_id * (iter_index_stride - k);
+
+                    const IndexTy res_ind = index_data[src_idx];
+                    const argTy v = arg_tp[res_ind];
+
+                    const std::size_t dst_idx = data_id;
+                    vals_tp[dst_idx] = v;
+                    inds_tp[dst_idx] = (res_ind % axis_nelems);
+                }
+            }
         });
     });
 

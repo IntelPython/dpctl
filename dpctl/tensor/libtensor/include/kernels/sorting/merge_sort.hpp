@@ -816,23 +816,8 @@ sycl::event stable_argsort_axis1_contig_impl(
 
     using IotaKernelName = populate_index_data_krn<argTy, IndexTy, ValueComp>;
 
-#if 1
     sycl::event populate_indexed_data_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, res_tp, total_nelems, depends);
-
-#else
-    sycl::event populate_indexed_data_ev =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
-
-            const sycl::range<1> range{total_nelems};
-
-            cgh.parallel_for<IotaKernelName>(range, [=](sycl::id<1> id) {
-                size_t i = id[0];
-                res_tp[i] = static_cast<IndexTy>(i);
-            });
-        });
-#endif
 
     // Sort segments of the array
     sycl::event base_sort_ev =
@@ -847,21 +832,11 @@ sycl::event stable_argsort_axis1_contig_impl(
         exec_q, iter_nelems, sort_nelems, res_tp, index_comp, sorted_block_size,
         {base_sort_ev});
 
-    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(merges_ev);
+    using MapBackKernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
+    using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
 
-        auto temp_acc =
-            merge_sort_detail::GetReadOnlyAccess<decltype(res_tp)>{}(res_tp,
-                                                                     cgh);
-
-        using KernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
-
-        const sycl::range<1> range{total_nelems};
-
-        cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
-            res_tp[id] = (temp_acc[id] % sort_nelems);
-        });
-    });
+    sycl::event write_out_ev = map_back_impl<MapBackKernelName, IndexTy>(
+        exec_q, total_nelems, res_tp, res_tp, sort_nelems, {merges_ev});
 
     return write_out_ev;
 }
