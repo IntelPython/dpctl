@@ -574,7 +574,7 @@ template <typename inputT,
           typename ScanOpT,
           bool include_initial>
 sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
-                                   const std::size_t wg_size,
+                                   const std::uint32_t wg_size,
                                    const std::size_t n_elems,
                                    const inputT *input,
                                    outputT *output,
@@ -768,7 +768,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        const std::size_t wg_size = 256;
+        const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_cpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
                                          include_initial>(
@@ -779,7 +779,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
         constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
-        const std::size_t wg_size =
+        const std::uint32_t wg_size =
             (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_gpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
@@ -812,7 +812,7 @@ template <typename inputT,
           typename ScanOpT,
           bool include_initial>
 sycl::event inclusive_scan_iter(sycl::queue &exec_q,
-                                const std::size_t wg_size,
+                                const std::uint32_t wg_size,
                                 const std::size_t iter_nelems,
                                 const std::size_t acc_nelems,
                                 const inputT *input,
@@ -1173,7 +1173,7 @@ accumulate_strided_impl(sycl::queue &q,
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        const std::size_t wg_size = 256;
+        const std::uint32_t wg_size = 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_cpu, InpIndexerT,
                                 OutIndexerT, InpIndexerT, OutIndexerT,
@@ -1186,7 +1186,7 @@ accumulate_strided_impl(sycl::queue &q,
         constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
-        const std::size_t wg_size =
+        const std::uint32_t wg_size =
             (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_gpu, InpIndexerT,
@@ -1232,7 +1232,7 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        const std::size_t wg_size = 256;
+        const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          NoOpIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -1243,7 +1243,7 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
         constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
-        const std::size_t wg_size =
+        const std::uint32_t wg_size =
             (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          NoOpIndexerT, transformerT,
@@ -1346,7 +1346,7 @@ cumsum_val_strided_impl(sycl::queue &q,
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
         constexpr nwiT n_wi_for_cpu = 8;
-        const std::size_t wg_size = 256;
+        const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          StridedIndexerT, transformerT,
                                          AccumulateOpT, include_initial>(
@@ -1357,7 +1357,7 @@ cumsum_val_strided_impl(sycl::queue &q,
         constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
-        const std::size_t wg_size =
+        const std::uint32_t wg_size =
             (q.get_backend() == sycl::backend::ext_oneapi_hip) ? 64 : 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_gpu,
                                          StridedIndexerT, transformerT,
