@@ -48,6 +48,7 @@ namespace kernels
 namespace maximum
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 

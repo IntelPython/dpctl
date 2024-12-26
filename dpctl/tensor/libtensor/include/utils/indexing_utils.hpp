@@ -40,6 +40,8 @@ namespace tensor
 namespace indexing_utils
 {
 
+using dpctl::tensor::ssize_t;
+
 /*
  * ssize_t for indices is a design choice, dpctl::tensor::usm_ndarray
  * uses py::ssize_t for shapes and strides internally and Python uses

@@ -49,6 +49,7 @@ namespace kernels
 namespace expm1
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;

@@ -41,6 +41,8 @@ namespace kernels
 namespace constructors
 {
 
+using dpctl::tensor::ssize_t;
+
 /*!
   @defgroup CtorKernels
  */

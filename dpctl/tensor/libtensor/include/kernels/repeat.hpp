@@ -43,6 +43,7 @@ namespace kernels
 namespace repeat
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexer,

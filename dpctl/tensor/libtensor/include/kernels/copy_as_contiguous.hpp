@@ -44,6 +44,7 @@ namespace kernels
 namespace copy_as_contig
 {
 
+using dpctl::tensor::ssize_t;
 using dpctl::tensor::sycl_utils::sub_group_store;
 
 template <typename T,

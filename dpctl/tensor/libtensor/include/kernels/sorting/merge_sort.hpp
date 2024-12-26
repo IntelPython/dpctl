@@ -46,6 +46,7 @@ namespace kernels
 namespace merge_sort_detail
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::kernels::search_sorted_detail;
 
 /*! @brief Merge two contiguous sorted segments */
