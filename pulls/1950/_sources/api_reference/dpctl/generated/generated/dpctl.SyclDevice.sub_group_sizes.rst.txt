@@ -1,0 +1,6 @@
+dpctl.SyclDevice.sub\_group\_sizes
+==================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.sub_group_sizes
