@@ -149,7 +149,7 @@ class round_contig_kernel;
 
 template <typename argTy>
 sycl::event round_contig_impl(sycl::queue &exec_q,
-                              size_t nelems,
+                              std::size_t nelems,
                               const char *arg_p,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
@@ -192,7 +192,7 @@ template <typename T1, typename T2, typename T3> class round_strided_kernel;
 template <typename argTy>
 sycl::event
 round_strided_impl(sycl::queue &exec_q,
-                   size_t nelems,
+                   std::size_t nelems,
                    int nd,
                    const ssize_t *shape_and_strides,
                    const char *arg_p,

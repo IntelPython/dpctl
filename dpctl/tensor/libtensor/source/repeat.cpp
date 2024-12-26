@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -136,13 +137,13 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t reps_sz = reps.get_size();
-    size_t cumsum_sz = cumsum.get_size();
+    std::size_t reps_sz = reps.get_size();
+    std::size_t cumsum_sz = cumsum.get_size();
 
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
-    size_t orthog_nelems(1); // number of orthogonal iterations
+    std::size_t orthog_nelems(1); // number of orthogonal iterations
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -154,11 +155,11 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
         same_orthog_dims = same_orthog_dims && (src_sh_i == dst_shape[i]);
     }
 
-    size_t src_axis_nelems(1);
+    std::size_t src_axis_nelems(1);
     if (src_nd > 0) {
         src_axis_nelems = src_shape[axis];
     }
-    size_t dst_axis_nelems(dst_shape[axis]);
+    std::size_t dst_axis_nelems(dst_shape[axis]);
 
     // shape at repeated axis must be equal to the sum of reps
     if (!same_orthog_dims || src_axis_nelems != reps_sz ||
@@ -296,8 +297,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             dst_shape_vec, dst_strides_vec, axis, axis + 1, orthog_dst_shape,
             axis_dst_shape, orthog_dst_strides, axis_dst_stride);
 
-        assert(orthog_src_shape.size() == static_cast<size_t>(orthog_nd));
-        assert(orthog_dst_shape.size() == static_cast<size_t>(orthog_nd));
+        assert(orthog_src_shape.size() == static_cast<std::size_t>(orthog_nd));
+        assert(orthog_dst_shape.size() == static_cast<std::size_t>(orthog_nd));
         assert(std::equal(orthog_src_shape.begin(), orthog_src_shape.end(),
                           orthog_dst_shape.begin()));
 
@@ -400,9 +401,9 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t src_sz = src.get_size();
-    size_t reps_sz = reps.get_size();
-    size_t cumsum_sz = cumsum.get_size();
+    std::size_t src_sz = src.get_size();
+    std::size_t reps_sz = reps.get_size();
+    std::size_t cumsum_sz = cumsum.get_size();
 
     // shape at repeated axis must be equal to the sum of reps
     if (src_sz != reps_sz || src_sz != cumsum_sz) {
@@ -542,7 +543,7 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_orthog_dims(true);
-    size_t orthog_nelems(1); // number of orthogonal iterations
+    std::size_t orthog_nelems(1); // number of orthogonal iterations
     for (auto i = 0; i < axis; ++i) {
         auto src_sh_i = src_shape[i];
         orthog_nelems *= src_sh_i;
@@ -554,11 +555,11 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
         same_orthog_dims = same_orthog_dims && (src_sh_i == dst_shape[i]);
     }
 
-    size_t src_axis_nelems(1);
+    std::size_t src_axis_nelems(1);
     if (src_nd > 0) {
         src_axis_nelems = src_shape[axis];
     }
-    size_t dst_axis_nelems(dst_shape[axis]);
+    std::size_t dst_axis_nelems(dst_shape[axis]);
 
     // shape at repeated axis must be equal to the shape of src at the axis *
     // reps
@@ -672,8 +673,8 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
             dst_shape_vec, dst_strides_vec, axis, axis + 1, orthog_dst_shape,
             axis_dst_shape, orthog_dst_strides, axis_dst_stride);
 
-        assert(orthog_src_shape.size() == static_cast<size_t>(orthog_nd));
-        assert(orthog_dst_shape.size() == static_cast<size_t>(orthog_nd));
+        assert(orthog_src_shape.size() == static_cast<std::size_t>(orthog_nd));
+        assert(orthog_dst_shape.size() == static_cast<std::size_t>(orthog_nd));
         assert(std::equal(orthog_src_shape.begin(), orthog_src_shape.end(),
                           orthog_dst_shape.begin()));
 
@@ -759,8 +760,8 @@ py_repeat_by_scalar(const dpctl::tensor::usm_ndarray &src,
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t src_sz = src.get_size();
-    size_t dst_sz = dst.get_size();
+    std::size_t src_sz = src.get_size();
+    std::size_t dst_sz = dst.get_size();
 
     // shape at repeated axis must be equal to the shape of src at the axis *
     // reps

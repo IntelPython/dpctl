@@ -24,6 +24,7 @@
 
 #pragma once
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -53,13 +54,13 @@ template <typename T,
 class CopyAsCContigFunctor
 {
 private:
-    const size_t nelems;
+    const std::size_t nelems;
     const T *src_p = nullptr;
     T *dst_p = nullptr;
     IndexerT src_indexer;
 
 public:
-    CopyAsCContigFunctor(size_t n,
+    CopyAsCContigFunctor(std::size_t n,
                          const T *src_,
                          T *dst_,
                          const IndexerT &src_indexer_)
@@ -87,7 +88,7 @@ public:
                 (gid / sgSize) * (elems_per_sg - sgSize) + gid;
             const std::size_t end = std::min(nelems, start + elems_per_sg);
 
-            for (size_t offset = start; offset < end; offset += sgSize) {
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
                 auto src_offset = src_indexer(offset);
                 dst_p[offset] = src_p[src_offset];
             }
@@ -95,7 +96,7 @@ public:
         else {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
-            const size_t base =
+            const std::size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
             const std::uint16_t elems_per_sg = elems_per_wi * sgSize;
@@ -104,16 +105,17 @@ public:
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
                     // it == vec_id * vec_sz, for  0 <= vec_id < n_vecs
-                    const size_t block_start_id = base + it * sgSize;
+                    const std::size_t block_start_id = base + it * sgSize;
                     auto dst_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&dst_p[block_start_id]);
 
-                    const size_t elem_id0 = block_start_id + sg.get_local_id();
+                    const std::size_t elem_id0 =
+                        block_start_id + sg.get_local_id();
                     sycl::vec<T, vec_sz> dst_vec;
 #pragma unroll
                     for (std::uint8_t k = 0; k < vec_sz; ++k) {
-                        const size_t elem_id = elem_id0 + k * sgSize;
+                        const std::size_t elem_id = elem_id0 + k * sgSize;
                         const ssize_t src_offset = src_indexer(elem_id);
                         dst_vec[k] = src_p[src_offset];
                     }
@@ -121,9 +123,9 @@ public:
                 }
             }
             else {
-                const size_t lane_id = sg.get_local_id()[0];
-                const size_t k0 = base + lane_id;
-                for (size_t k = k0; k < nelems; k += sgSize) {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                const std::size_t k0 = base + lane_id;
+                for (std::size_t k = k0; k < nelems; k += sgSize) {
                     const ssize_t src_offset = src_indexer(k);
                     dst_p[k] = src_p[src_offset];
                 }
@@ -139,7 +141,7 @@ template <typename T,
           bool enable_sg_load,
           typename KernelName>
 sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
-                                     size_t nelems,
+                                     std::size_t nelems,
                                      const T *src,
                                      T *dst,
                                      const IndexerT &src_indexer,
@@ -167,8 +169,8 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
 
     constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
-    const size_t nelems_per_group = nelems_per_wi * lws;
-    const size_t n_groups =
+    const std::size_t nelems_per_group = nelems_per_wi * lws;
+    const std::size_t n_groups =
         (nelems + nelems_per_group - 1) / (nelems_per_group);
 
     sycl::event copy_ev = exec_q.submit([&](sycl::handler &cgh) {
@@ -196,7 +198,7 @@ class as_contig_krn;
 template <typename T>
 sycl::event
 as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
-                                   size_t nelems,
+                                   std::size_t nelems,
                                    int nd,
                                    const ssize_t *shape_and_strides,
                                    const char *src_p,
@@ -243,7 +245,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
 
 typedef sycl::event (*as_c_contiguous_array_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const ssize_t *,
     const char *,
@@ -270,9 +272,9 @@ namespace detail
 template <typename T, typename BatchIndexerT>
 sycl::event as_c_contiguous_batch_of_square_matrices_impl(
     sycl::queue &exec_q,
-    size_t batch_nelems,
+    std::size_t batch_nelems,
     const BatchIndexerT &batch_two_offsets_indexer,
-    size_t n,
+    std::size_t n,
     const char *src_p,
     ssize_t src_ld,
     char *dst_p,
@@ -320,7 +322,7 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> nd_it) {
             // 1. Read block from source array into SLM
             const std::uint32_t lid_lin = nd_it.get_local_linear_id();
-            const size_t gr_id_lin = nd_it.get_group_linear_id();
+            const std::size_t gr_id_lin = nd_it.get_group_linear_id();
 
             const std::size_t batch_id = gr_id_lin / (n_tiles * n_tiles);
             const std::size_t rem = gr_id_lin - batch_id * (n_tiles * n_tiles);
@@ -523,10 +525,10 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
 template <typename T>
 sycl::event as_c_contiguous_1d_batch_of_square_matrices_impl(
     sycl::queue &exec_q,
-    size_t batch_nelems,
+    std::size_t batch_nelems,
     ssize_t src_batch_step,
     ssize_t dst_batch_step,
-    size_t n,
+    std::size_t n,
     const char *src_p,
     ssize_t src_ld,
     char *dst_p,
@@ -554,10 +556,10 @@ sycl::event as_c_contiguous_1d_batch_of_square_matrices_impl(
 typedef sycl::event (
     *as_c_contiguous_1d_batch_of_square_matrices_impl_fn_ptr_t)(
     sycl::queue &, /* execution queue */
-    size_t,        /* number of batch elements */
+    std::size_t,   /* number of batch elements */
     ssize_t,       /* distance between batches in source array */
     ssize_t,       /* distance between batches in destination array */
-    size_t,        /* size of square matrices in the batch */
+    std::size_t,   /* size of square matrices in the batch */
     const char *,
     ssize_t, /* untyped pointer to F-contig source array, and matrix leading
                 dimension */
@@ -575,11 +577,11 @@ struct AsCContig1DBatchOfSquareMatricesFactory
 template <typename T>
 sycl::event as_c_contiguous_nd_batch_of_square_matrices_impl(
     sycl::queue &exec_q,
-    size_t batch_nelems,
+    std::size_t batch_nelems,
     int batch_nd,
     const ssize_t *src_batch_shape_strides,
     const ssize_t dst_batch_step,
-    size_t n,
+    std::size_t n,
     const char *src_p,
     ssize_t src_ld,
     char *dst_p,
@@ -610,12 +612,12 @@ sycl::event as_c_contiguous_nd_batch_of_square_matrices_impl(
 typedef sycl::event (
     *as_c_contiguous_nd_batch_of_square_matrices_impl_fn_ptr_t)(
     sycl::queue &, /* execution queue */
-    size_t,        /* number of matrices in the batch */
+    std::size_t,   /* number of matrices in the batch */
     int,
     const ssize_t *, /* dimensionality, and packed [shape, src_strides]
                         describing iteration over batch in source array */
     ssize_t,         /* distance between batches in destination array */
-    size_t,          /* matrix size */
+    std::size_t,     /* matrix size */
     const char *,
     ssize_t, /* untyped pointer to source array of F-contig matrices, and
                 leading dimension of the matrix */

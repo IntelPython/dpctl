@@ -23,6 +23,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <algorithm>
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <vector>
@@ -83,10 +84,10 @@ void copy_numpy_ndarray_into_usm_ndarray(
     const py::ssize_t *src_shape = npy_src.shape();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
     for (int i = 0; shapes_equal && (i < src_ndim); ++i) {
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
-        src_nelems *= static_cast<size_t>(src_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
     }
 
     if (!shapes_equal) {
@@ -225,9 +226,9 @@ void copy_numpy_ndarray_into_usm_ndarray(
                              simplified_shape, simplified_src_strides,
                              simplified_dst_strides, src_offset, dst_offset);
 
-    assert(simplified_shape.size() == static_cast<size_t>(nd));
-    assert(simplified_src_strides.size() == static_cast<size_t>(nd));
-    assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+    assert(simplified_shape.size() == static_cast<std::size_t>(nd));
+    assert(simplified_src_strides.size() == static_cast<std::size_t>(nd));
+    assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
     // handle nd == 0
     if (nd == 0) {

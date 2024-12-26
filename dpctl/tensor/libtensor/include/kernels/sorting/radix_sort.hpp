@@ -28,6 +28,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -1020,8 +1021,8 @@ private:
 public:
     template <typename ValueT, typename OutputT, typename ProjT>
     sycl::event operator()(sycl::queue &exec_q,
-                           size_t n_iters,
-                           size_t n_to_sort,
+                           std::size_t n_iters,
+                           std::size_t n_to_sort,
                            ValueT *input_ptr,
                            OutputT *output_ptr,
                            ProjT proj_op,
@@ -1170,9 +1171,9 @@ private:
                   typename SLM_value_tag,
                   typename SLM_counter_tag>
         sycl::event operator()(sycl::queue &exec_q,
-                               size_t n_iters,
-                               size_t n_batch_size,
-                               size_t n_values,
+                               std::size_t n_iters,
+                               std::size_t n_batch_size,
+                               std::size_t n_values,
                                InputT *input_arr,
                                OutputT *output_arr,
                                const ProjT &proj_op,
@@ -1205,7 +1206,7 @@ private:
 
             std::size_t n_batches = (n_iters + n_batch_size - 1) / n_batch_size;
 
-            for (size_t batch_id = 0; batch_id < n_batches; ++batch_id) {
+            for (std::size_t batch_id = 0; batch_id < n_batches; ++batch_id) {
 
                 const std::size_t block_start = batch_id * n_batch_size;
 
@@ -1725,10 +1726,10 @@ radix_sort_axis1_contig_impl(sycl::queue &exec_q,
                              const bool sort_ascending,
                              // number of sub-arrays to sort (num. of rows in a
                              // matrix when sorting over rows)
-                             size_t iter_nelems,
+                             std::size_t iter_nelems,
                              // size of each array to sort  (length of rows,
                              // i.e. number of columns)
-                             size_t sort_nelems,
+                             std::size_t sort_nelems,
                              const char *arg_cp,
                              char *res_cp,
                              ssize_t iter_arg_offset,
@@ -1764,10 +1765,10 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
                                 const bool sort_ascending,
                                 // number of sub-arrays to sort (num. of
                                 // rows in a matrix when sorting over rows)
-                                size_t iter_nelems,
+                                std::size_t iter_nelems,
                                 // size of each array to sort  (length of
                                 // rows, i.e. number of columns)
-                                size_t sort_nelems,
+                                std::size_t sort_nelems,
                                 const char *arg_cp,
                                 char *res_cp,
                                 ssize_t iter_arg_offset,
@@ -1802,7 +1803,7 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                size_t i = id[0];
+                std::size_t i = id[0];
                 IndexTy sort_id = static_cast<IndexTy>(i);
                 workspace[i] = sort_id;
             });

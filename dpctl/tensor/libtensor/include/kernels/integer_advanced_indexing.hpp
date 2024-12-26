@@ -25,6 +25,7 @@
 #pragma once
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -56,7 +57,7 @@ private:
     char *dst_ = nullptr;
     char **ind_ = nullptr;
     int k_ = 0;
-    size_t ind_nelems_ = 0;
+    std::size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
     const OrthogIndexer orthog_strider;
     const IndicesIndexer ind_strider;
@@ -67,7 +68,7 @@ public:
                 char *dst_cp,
                 char **ind_cp,
                 int k,
-                size_t ind_nelems,
+                std::size_t ind_nelems,
                 const ssize_t *axes_shape_and_strides,
                 const OrthogIndexer &orthog_strider_,
                 const IndicesIndexer &ind_strider_,
@@ -120,8 +121,8 @@ template <typename ProjectorT,
 class take_kernel;
 
 typedef sycl::event (*take_fn_ptr_t)(sycl::queue &,
-                                     size_t,
-                                     size_t,
+                                     std::size_t,
+                                     std::size_t,
                                      int,
                                      int,
                                      int,
@@ -138,8 +139,8 @@ typedef sycl::event (*take_fn_ptr_t)(sycl::queue &,
 
 template <typename ProjectorT, typename Ty, typename indT>
 sycl::event take_impl(sycl::queue &q,
-                      size_t orthog_nelems,
-                      size_t ind_nelems,
+                      std::size_t orthog_nelems,
+                      std::size_t ind_nelems,
                       int nd,
                       int ind_nd,
                       int k,
@@ -176,7 +177,7 @@ sycl::event take_impl(sycl::queue &q,
             take_kernel<ProjectorT, OrthogIndexerT, NthStrideIndexerT,
                         AxesIndexerT, Ty, indT>;
 
-        const size_t gws = orthog_nelems * ind_nelems;
+        const std::size_t gws = orthog_nelems * ind_nelems;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(gws),
@@ -202,7 +203,7 @@ private:
     const char *val_ = nullptr;
     char **ind_ = nullptr;
     int k_ = 0;
-    size_t ind_nelems_ = 0;
+    std::size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
     const OrthogIndexer orthog_strider;
     const IndicesIndexer ind_strider;
@@ -213,7 +214,7 @@ public:
                const char *val_cp,
                char **ind_cp,
                int k,
-               size_t ind_nelems,
+               std::size_t ind_nelems,
                const ssize_t *axes_shape_and_strides,
                const OrthogIndexer &orthog_strider_,
                const IndicesIndexer &ind_strider_,
@@ -267,8 +268,8 @@ template <typename ProjectorT,
 class put_kernel;
 
 typedef sycl::event (*put_fn_ptr_t)(sycl::queue &,
-                                    size_t,
-                                    size_t,
+                                    std::size_t,
+                                    std::size_t,
                                     int,
                                     int,
                                     int,
@@ -285,8 +286,8 @@ typedef sycl::event (*put_fn_ptr_t)(sycl::queue &,
 
 template <typename ProjectorT, typename Ty, typename indT>
 sycl::event put_impl(sycl::queue &q,
-                     size_t orthog_nelems,
-                     size_t ind_nelems,
+                     std::size_t orthog_nelems,
+                     std::size_t ind_nelems,
                      int nd,
                      int ind_nd,
                      int k,
@@ -323,7 +324,7 @@ sycl::event put_impl(sycl::queue &q,
             put_kernel<ProjectorT, OrthogIndexerT, NthStrideIndexerT,
                        AxesIndexerT, Ty, indT>;
 
-        const size_t gws = orthog_nelems * ind_nelems;
+        const std::size_t gws = orthog_nelems * ind_nelems;
 
         cgh.parallel_for<KernelName>(
             sycl::range<1>(gws),

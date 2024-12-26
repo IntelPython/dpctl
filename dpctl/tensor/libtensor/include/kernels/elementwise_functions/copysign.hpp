@@ -148,7 +148,7 @@ class copysign_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event copysign_contig_impl(sycl::queue &exec_q,
-                                 size_t nelems,
+                                 std::size_t nelems,
                                  const char *arg1_p,
                                  ssize_t arg1_offset,
                                  const char *arg2_p,
@@ -200,7 +200,7 @@ class copysign_strided_kernel;
 template <typename argTy1, typename argTy2>
 sycl::event
 copysign_strided_impl(sycl::queue &exec_q,
-                      size_t nelems,
+                      std::size_t nelems,
                       int nd,
                       const ssize_t *shape_and_strides,
                       const char *arg1_p,

@@ -23,6 +23,7 @@
 //===--------------------------------------------------------------------===//
 
 #include <complex>
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -52,7 +53,7 @@ namespace py_internal
 using dpctl::utils::keep_args_alive;
 
 typedef sycl::event (*zeros_contig_fn_ptr_t)(sycl::queue &,
-                                             size_t,
+                                             std::size_t,
                                              char *,
                                              const std::vector<sycl::event> &);
 
@@ -72,7 +73,7 @@ typedef sycl::event (*zeros_contig_fn_ptr_t)(sycl::queue &,
  */
 template <typename dstTy>
 sycl::event zeros_contig_impl(sycl::queue &exec_q,
-                              size_t nelems,
+                              std::size_t nelems,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
 {
@@ -128,7 +129,7 @@ usm_ndarray_zeros(const dpctl::tensor::usm_ndarray &dst,
         auto fn = zeros_contig_dispatch_vector[dst_typeid];
 
         sycl::event zeros_contig_event =
-            fn(exec_q, static_cast<size_t>(dst_nelems), dst_data, depends);
+            fn(exec_q, static_cast<std::size_t>(dst_nelems), dst_data, depends);
 
         return std::make_pair(
             keep_args_alive(exec_q, {dst}, {zeros_contig_event}),

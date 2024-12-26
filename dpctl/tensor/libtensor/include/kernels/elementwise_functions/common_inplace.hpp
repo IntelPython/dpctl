@@ -63,12 +63,12 @@ struct BinaryInplaceContigFunctor
 private:
     const argT *rhs = nullptr;
     resT *lhs = nullptr;
-    const size_t nelems_;
+    const std::size_t nelems_;
 
 public:
     BinaryInplaceContigFunctor(const argT *rhs_tp,
                                resT *lhs_tp,
-                               const size_t n_elems)
+                               const std::size_t n_elems)
         : rhs(rhs_tp), lhs(lhs_tp), nelems_(n_elems)
     {
     }
@@ -88,7 +88,7 @@ public:
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base =
+            std::size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
 
@@ -96,7 +96,7 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
-                    const size_t offset = base + it * sgSize;
+                    const std::size_t offset = base + it * sgSize;
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&rhs[offset]);
@@ -114,8 +114,8 @@ public:
                 }
             }
             else {
-                const size_t lane_id = sg.get_local_id()[0];
-                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     op(lhs[k], rhs[k]);
                 }
             }
@@ -126,14 +126,14 @@ public:
             auto sg = ndit.get_sub_group();
             std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            size_t base =
+            std::size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
 
             if (base + elems_per_wi * sgSize < nelems_) {
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
-                    const size_t offset = base + it * sgSize;
+                    const std::size_t offset = base + it * sgSize;
                     auto rhs_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&rhs[offset]);
@@ -153,20 +153,22 @@ public:
                 }
             }
             else {
-                const size_t lane_id = sg.get_local_id()[0];
-                for (size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
                     op(lhs[k], rhs[k]);
                 }
             }
         }
         else {
-            const size_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            const size_t gid = ndit.get_global_linear_id();
-            const size_t elems_per_sg = elems_per_wi * sgSize;
+            const std::size_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const std::size_t gid = ndit.get_global_linear_id();
+            const std::size_t elems_per_sg = elems_per_wi * sgSize;
 
-            const size_t start = (gid / sgSize) * (elems_per_sg - sgSize) + gid;
-            const size_t end = std::min(nelems_, start + elems_per_sg);
-            for (size_t offset = start; offset < end; offset += sgSize) {
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems_, start + elems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
                 op(lhs[offset], rhs[offset]);
             }
         }
@@ -211,14 +213,14 @@ struct BinaryInplaceRowMatrixBroadcastingFunctor
 private:
     const argT *padded_vec;
     resT *mat;
-    size_t n_elems;
-    size_t n1;
+    std::size_t n_elems;
+    std::size_t n1;
 
 public:
     BinaryInplaceRowMatrixBroadcastingFunctor(const argT *row_tp,
                                               resT *mat_tp,
-                                              size_t n_elems_in_mat,
-                                              size_t n_elems_in_row)
+                                              std::size_t n_elems_in_mat,
+                                              std::size_t n_elems_in_row)
         : padded_vec(row_tp), mat(mat_tp), n_elems(n_elems_in_mat),
           n1(n_elems_in_row)
     {
@@ -231,10 +233,10 @@ public:
         static_assert(BinaryOperatorT::supports_sg_loadstore::value);
 
         auto sg = ndit.get_sub_group();
-        const size_t gid = ndit.get_global_linear_id();
+        const std::size_t gid = ndit.get_global_linear_id();
 
         std::uint8_t sgSize = sg.get_max_local_range()[0];
-        size_t base = gid - sg.get_local_id()[0];
+        std::size_t base = gid - sg.get_local_id()[0];
 
         if (base + sgSize < n_elems) {
             auto in_multi_ptr = sycl::address_space_cast<
@@ -253,8 +255,8 @@ public:
             sub_group_store(sg, mat_el, out_multi_ptr);
         }
         else {
-            const size_t start = base + sg.get_local_id()[0];
-            for (size_t k = start; k < n_elems; k += sgSize) {
+            const std::size_t start = base + sg.get_local_id()[0];
+            for (std::size_t k = start; k < n_elems; k += sgSize) {
                 op(mat[k], padded_vec[k % n1]);
             }
         }
@@ -265,7 +267,7 @@ public:
 
 typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     ssize_t,
     char *,
@@ -274,7 +276,7 @@ typedef sycl::event (*binary_inplace_contig_impl_fn_ptr_t)(
 
 typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const ssize_t *,
     const char *,
@@ -287,8 +289,8 @@ typedef sycl::event (*binary_inplace_strided_impl_fn_ptr_t)(
 typedef sycl::event (*binary_inplace_row_matrix_broadcast_impl_fn_ptr_t)(
     sycl::queue &,
     std::vector<sycl::event> &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     ssize_t,
     char *,
@@ -309,7 +311,7 @@ template <typename argTy,
           std::uint8_t n_vecs = 2u>
 sycl::event
 binary_inplace_contig_impl(sycl::queue &exec_q,
-                           size_t nelems,
+                           std::size_t nelems,
                            const char *rhs_p,
                            ssize_t rhs_offset,
                            char *lhs_p,
@@ -319,8 +321,8 @@ binary_inplace_contig_impl(sycl::queue &exec_q,
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        const size_t lws = 128;
-        const size_t n_groups =
+        const std::size_t lws = 128;
+        const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
@@ -364,7 +366,7 @@ template <typename argTy,
           class kernel_name>
 sycl::event
 binary_inplace_strided_impl(sycl::queue &exec_q,
-                            size_t nelems,
+                            std::size_t nelems,
                             int nd,
                             const ssize_t *shape_and_strides,
                             const char *rhs_p,
@@ -402,8 +404,8 @@ template <typename argT,
 sycl::event binary_inplace_row_matrix_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
-    size_t n0,
-    size_t n1,
+    std::size_t n0,
+    std::size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
     ssize_t vec_offset,
     char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
@@ -416,10 +418,10 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
     const auto &dev = exec_q.get_device();
     const auto &sg_sizes = dev.get_info<sycl::info::device::sub_group_sizes>();
     // Get device-specific kernel info max_sub_group_size
-    size_t max_sgSize =
+    std::size_t max_sgSize =
         *(std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
 
-    size_t n1_padded = n1 + max_sgSize;
+    std::size_t n1_padded = n1 + max_sgSize;
     argT *padded_vec = sycl::malloc_device<argT>(n1_padded, exec_q);
 
     if (padded_vec == nullptr) {
@@ -440,14 +442,14 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
     // We read sub_group_load(&padded_vec[(base / n0)]). The vector is
     // padded to ensure that reads are accessible
 
-    const size_t lws = 128;
+    const std::size_t lws = 128;
 
     sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(make_padded_vec_ev);
 
         auto lwsRange = sycl::range<1>(lws);
-        size_t n_elems = n0 * n1;
-        size_t n_groups = (n_elems + lws - 1) / lws;
+        std::size_t n_elems = n0 * n1;
+        std::size_t n_groups = (n_elems + lws - 1) / lws;
         auto gwsRange = sycl::range<1>(n_groups * lws);
 
         cgh.parallel_for<class kernel_name<argT, resT>>(

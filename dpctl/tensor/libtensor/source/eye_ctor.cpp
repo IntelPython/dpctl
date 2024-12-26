@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
@@ -112,7 +113,7 @@ usm_ndarray_eye(py::ssize_t k,
 
     auto fn = eye_dispatch_vector[dst_typeid];
 
-    eye_event = fn(exec_q, static_cast<size_t>(nelem), start, end, step,
+    eye_event = fn(exec_q, static_cast<std::size_t>(nelem), start, end, step,
                    dst_data, depends);
 
     return std::make_pair(keep_args_alive(exec_q, {dst}, {eye_event}),

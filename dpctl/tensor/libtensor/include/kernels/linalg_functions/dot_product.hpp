@@ -62,7 +62,7 @@ private:
     outT *out_ = nullptr;
     BatchIndexerT batch_indexer_;
     RedIndexerT reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
+    std::size_t reduction_max_gid_ = 0;
 
 public:
     SequentialDotProduct(const lhsT *lhs,
@@ -70,7 +70,7 @@ public:
                          outT *out,
                          BatchIndexerT batch_indexer,
                          RedIndexerT reduced_dims_indexer,
-                         size_t reduction_size)
+                         std::size_t reduction_size)
         : lhs_(lhs), rhs_(rhs), out_(out), batch_indexer_(batch_indexer),
           reduced_dims_indexer_(reduced_dims_indexer),
           reduction_max_gid_(reduction_size)
@@ -86,7 +86,7 @@ public:
         const ssize_t &out_batch_offset = batch_offsets.get_third_offset();
 
         outT red_val(0);
-        for (size_t m = 0; m < reduction_max_gid_; ++m) {
+        for (std::size_t m = 0; m < reduction_max_gid_; ++m) {
             auto reduction_offsets = reduced_dims_indexer_(m);
             auto lhs_reduction_offset = reduction_offsets.get_first_offset();
             auto rhs_reduction_offset = reduction_offsets.get_second_offset();
@@ -117,9 +117,9 @@ private:
     const ReductionOpT reduction_op_;
     const BatchIndexerT batch_indexer_;
     const RedIndexerT reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t batches_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t batches_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     DotProductFunctor(const lhsT *lhs,
@@ -128,9 +128,9 @@ public:
                       const ReductionOpT &reduction_op,
                       const BatchIndexerT &batch_indexer,
                       const RedIndexerT &arg_reduced_dims_indexer,
-                      size_t reduction_size,
-                      size_t iteration_size,
-                      size_t reduction_size_per_wi)
+                      std::size_t reduction_size,
+                      std::size_t iteration_size,
+                      std::size_t reduction_size_per_wi)
         : lhs_(lhs), rhs_(rhs), out_(res), reduction_op_(reduction_op),
           batch_indexer_(batch_indexer),
           reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -141,11 +141,12 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t batch_id = it.get_group(0) % batches_;
-        const size_t reduction_batch_id = it.get_group(0) / batches_;
+        const std::size_t batch_id = it.get_group(0) % batches_;
+        const std::size_t reduction_batch_id = it.get_group(0) / batches_;
 
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -159,12 +160,12 @@ public:
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
 
         outT local_red_val(0);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
@@ -213,9 +214,9 @@ private:
     const BatchIndexerT batch_indexer_;
     const RedIndexerT reduced_dims_indexer_;
     SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t batches_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t batches_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     DotProductCustomFunctor(const lhsT *lhs,
@@ -225,9 +226,9 @@ public:
                             const BatchIndexerT &batch_indexer,
                             const RedIndexerT &arg_reduced_dims_indexer,
                             SlmT local_mem,
-                            size_t reduction_size,
-                            size_t iteration_size,
-                            size_t reduction_size_per_wi)
+                            std::size_t reduction_size,
+                            std::size_t iteration_size,
+                            std::size_t reduction_size_per_wi)
         : lhs_(lhs), rhs_(rhs), out_(res), reduction_op_(reduction_op),
           batch_indexer_(batch_indexer),
           reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -238,11 +239,12 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t batch_id = it.get_group(0) % batches_;
-        const size_t reduction_batch_id = it.get_group(0) / batches_;
+        const std::size_t batch_id = it.get_group(0) % batches_;
+        const std::size_t reduction_batch_id = it.get_group(0) / batches_;
 
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -256,12 +258,12 @@ public:
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
 
         outT local_red_val(0);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
@@ -305,8 +307,8 @@ sycl::event sequential_dot_product(sycl::queue &exec_q,
                                    const lhsTy *lhs,
                                    const rhsTy *rhs,
                                    resTy *res,
-                                   size_t batches,
-                                   size_t reduction_nelems,
+                                   std::size_t batches,
+                                   std::size_t reduction_nelems,
                                    const BatchIndexerT &batch_indexer,
                                    const RedIndexerT &reduction_indexer,
                                    const std::vector<sycl::event> &depends)
@@ -343,11 +345,11 @@ sycl::event submit_atomic_dot_product(sycl::queue &exec_q,
                                       const lhsTy *lhs,
                                       const rhsTy *rhs,
                                       resTy *res,
-                                      size_t wg,
-                                      size_t batches,
-                                      size_t reduction_nelems,
-                                      size_t reductions_per_wi,
-                                      size_t reduction_groups,
+                                      std::size_t wg,
+                                      std::size_t batches,
+                                      std::size_t reduction_nelems,
+                                      std::size_t reductions_per_wi,
+                                      std::size_t reduction_groups,
                                       const BatchIndexerT &batch_indexer,
                                       const RedIndexerT &reduction_indexer,
                                       const std::vector<sycl::event> &depends)
@@ -405,8 +407,8 @@ class dot_product_krn;
 
 typedef sycl::event (*dot_product_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     const char *,
     char *,
@@ -423,8 +425,8 @@ typedef sycl::event (*dot_product_impl_fn_ptr_t)(
 
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event dot_product_impl(sycl::queue &exec_q,
-                             size_t batches,
-                             size_t reduction_nelems,
+                             std::size_t batches,
+                             std::size_t reduction_nelems,
                              const char *lhs_cp,
                              const char *rhs_cp,
                              char *res_cp,
@@ -445,7 +447,7 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputOutputBatchIndexerT =
@@ -504,14 +506,14 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
                                                   reduction_rhs_offset,
                                                   reduction_shape_stride};
 
-        constexpr size_t preferred_reductions_per_wi =
+        constexpr std::size_t preferred_reductions_per_wi =
             4; // determined experimentally
-        size_t reductions_per_wi =
+        std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                ? std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferred_reductions_per_wi;
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
 
@@ -529,8 +531,8 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
 
 typedef sycl::event (*dot_product_contig_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     const char *,
     char *,
@@ -544,8 +546,8 @@ typedef sycl::event (*dot_product_contig_impl_fn_ptr_t)(
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event
 dot_product_contig_impl(sycl::queue &exec_q,
-                        size_t batches,
-                        size_t reduction_nelems,
+                        std::size_t batches,
+                        std::size_t reduction_nelems,
                         const char *lhs_cp,
                         const char *rhs_cp,
                         char *res_cp,
@@ -564,7 +566,7 @@ dot_product_contig_impl(sycl::queue &exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputBatchIndexerT =
@@ -619,14 +621,14 @@ dot_product_contig_impl(sycl::queue &exec_q,
         constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
                                                       NoOpIndexerT{}};
 
-        constexpr size_t preferred_reductions_per_wi =
+        constexpr std::size_t preferred_reductions_per_wi =
             4; // determined experimentally
-        size_t reductions_per_wi =
+        std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                ? std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferred_reductions_per_wi;
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
 
@@ -657,9 +659,9 @@ private:
     const ReductionOpT reduction_op_;
     const BatchIndexerT batch_indexer_;
     const RedIndexerT reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t batches_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t batches_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     DotProductNoAtomicFunctor(const lhsT *lhs,
@@ -668,9 +670,9 @@ public:
                               const ReductionOpT &reduction_op,
                               const BatchIndexerT &batch_indexer,
                               const RedIndexerT &arg_reduced_dims_indexer,
-                              size_t reduction_size,
-                              size_t iteration_size,
-                              size_t reduction_size_per_wi)
+                              std::size_t reduction_size,
+                              std::size_t iteration_size,
+                              std::size_t reduction_size_per_wi)
         : lhs_(lhs), rhs_(rhs), out_(res), reduction_op_(reduction_op),
           batch_indexer_(batch_indexer),
           reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -681,12 +683,13 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t batch_id = it.get_group(0) % batches_;
-        const size_t reduction_batch_id = it.get_group(0) / batches_;
-        const size_t n_reduction_groups = it.get_group_range(0) / batches_;
+        const std::size_t batch_id = it.get_group(0) % batches_;
+        const std::size_t reduction_batch_id = it.get_group(0) / batches_;
+        const std::size_t n_reduction_groups = it.get_group_range(0) / batches_;
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -700,12 +703,12 @@ public:
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
 
         outT local_red_val(0);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
@@ -756,9 +759,9 @@ private:
     const BatchIndexerT batch_indexer_;
     const RedIndexerT reduced_dims_indexer_;
     SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t batches_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t batches_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     DotProductNoAtomicCustomFunctor(const lhsT *lhs,
@@ -768,9 +771,9 @@ public:
                                     const BatchIndexerT &batch_indexer,
                                     const RedIndexerT &arg_reduced_dims_indexer,
                                     SlmT local_mem,
-                                    size_t reduction_size,
-                                    size_t iteration_size,
-                                    size_t reduction_size_per_wi)
+                                    std::size_t reduction_size,
+                                    std::size_t iteration_size,
+                                    std::size_t reduction_size_per_wi)
         : lhs_(lhs), rhs_(rhs), out_(res), reduction_op_(reduction_op),
           batch_indexer_(batch_indexer),
           reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -781,12 +784,13 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t batch_id = it.get_group(0) % batches_;
-        const size_t reduction_batch_id = it.get_group(0) / batches_;
-        const size_t n_reduction_groups = it.get_group_range(0) / batches_;
+        const std::size_t batch_id = it.get_group(0) % batches_;
+        const std::size_t reduction_batch_id = it.get_group(0) / batches_;
+        const std::size_t n_reduction_groups = it.get_group_range(0) / batches_;
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -800,12 +804,12 @@ public:
         const auto &out_batch_offset = batch_offsets_.get_third_offset();
 
         outT local_red_val(0);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto reduction_offsets_ = reduced_dims_indexer_(arg_reduce_gid);
@@ -854,11 +858,11 @@ submit_no_atomic_dot_product(sycl::queue &exec_q,
                              const lhsTy *lhs,
                              const rhsTy *rhs,
                              resTy *res,
-                             size_t wg,
-                             size_t batches,
-                             size_t reduction_nelems,
-                             size_t reductions_per_wi,
-                             size_t reduction_groups,
+                             std::size_t wg,
+                             std::size_t batches,
+                             std::size_t reduction_nelems,
+                             std::size_t reductions_per_wi,
+                             std::size_t reduction_groups,
                              const BatchIndexerT &batch_indexer,
                              const RedIndexerT &reduction_indexer,
                              const std::vector<sycl::event> &depends)
@@ -916,8 +920,8 @@ class dot_product_tree_reduction_krn;
 
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event dot_product_tree_impl(sycl::queue &exec_q,
-                                  size_t batches,
-                                  size_t reduction_nelems,
+                                  std::size_t batches,
+                                  std::size_t reduction_nelems,
                                   const char *lhs_cp,
                                   const char *rhs_cp,
                                   char *res_cp,
@@ -938,7 +942,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputOutputBatchIndexerT =
@@ -963,15 +967,15 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
     using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
                                                    sycl::logical_or<resTy>,
                                                    sycl::plus<resTy>>::type;
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         using BatchIndexerT =
             dpctl::tensor::offset_utils::ThreeOffsets_StridedIndexer;
@@ -990,9 +994,9 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1012,12 +1016,12 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -1067,7 +1071,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 in_out_iter_indexer, reduction_indexer, depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -1076,9 +1080,10 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -1130,8 +1135,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -1164,8 +1169,8 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 template <typename lhsTy, typename rhsTy, typename resTy>
 sycl::event
 dot_product_contig_tree_impl(sycl::queue &exec_q,
-                             size_t batches,
-                             size_t reduction_nelems,
+                             std::size_t batches,
+                             std::size_t reduction_nelems,
                              const char *lhs_cp,
                              const char *rhs_cp,
                              char *res_cp,
@@ -1184,7 +1189,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputBatchIndexerT =
@@ -1214,15 +1219,15 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
     using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
                                                    sycl::logical_or<resTy>,
                                                    sycl::plus<resTy>>::type;
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         using InputBatchIndexerT =
             dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -1246,9 +1251,9 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1267,12 +1272,12 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -1317,7 +1322,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 inp_out_batch_indexer, reduction_indexer, depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -1326,9 +1331,10 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             using InputIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -1377,8 +1383,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /

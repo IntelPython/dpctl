@@ -35,6 +35,7 @@
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>

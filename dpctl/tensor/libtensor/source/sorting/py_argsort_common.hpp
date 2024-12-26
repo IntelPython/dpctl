@@ -23,6 +23,7 @@
 //===--------------------------------------------------------------------===//
 
 #include "dpctl4pybind11.hpp"
+#include <cstddef>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
@@ -66,19 +67,19 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
 
     bool same_shapes = true;
-    size_t iter_nelems(1);
+    std::size_t iter_nelems(1);
 
     for (int i = 0; same_shapes && (i < iteration_nd); ++i) {
         auto src_shape_i = src_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_i == dst_shape_ptr[i]);
-        iter_nelems *= static_cast<size_t>(src_shape_i);
+        iter_nelems *= static_cast<std::size_t>(src_shape_i);
     }
 
-    size_t sort_nelems(1);
+    std::size_t sort_nelems(1);
     for (int i = iteration_nd; same_shapes && (i < src_nd); ++i) {
         auto src_shape_i = src_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_i == dst_shape_ptr[i]);
-        sort_nelems *= static_cast<size_t>(src_shape_i);
+        sort_nelems *= static_cast<std::size_t>(src_shape_i);
     }
 
     if (!same_shapes) {

@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
@@ -114,10 +115,10 @@ py_clip(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
     bool shapes_equal(true);
-    size_t nelems(1);
+    std::size_t nelems(1);
     for (int i = 0; i < nd; ++i) {
         const auto &sh_i = dst_shape[i];
-        nelems *= static_cast<size_t>(sh_i);
+        nelems *= static_cast<std::size_t>(sh_i);
         shapes_equal = shapes_equal && (min_shape[i] == sh_i) &&
                        (max_shape[i] == sh_i) && (src_shape[i] == sh_i);
     }

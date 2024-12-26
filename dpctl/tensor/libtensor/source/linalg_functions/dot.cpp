@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <stdexcept>
@@ -235,27 +236,27 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
     const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
 
     bool same_shapes = true;
-    size_t batches(1);
+    std::size_t batches(1);
     for (int i = 0; same_shapes && (i < batch_dims); ++i) {
         same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]) &&
                       (x2_shape_ptr[i] == dst_shape_ptr[i]);
         batches *= x1_shape_ptr[i];
     }
-    size_t x1_outer_nelems(1);
+    std::size_t x1_outer_nelems(1);
     for (int i = batch_dims; same_shapes && (i < (batch_dims + x1_outer_dims));
          ++i)
     {
         same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]);
         x1_outer_nelems *= x1_shape_ptr[i];
     }
-    size_t inner_nelems(1);
+    std::size_t inner_nelems(1);
     for (int i = batch_dims; i < (batch_dims + inner_dims); ++i) {
         auto x1_shape_idx = x1_outer_dims + i;
         same_shapes =
             same_shapes && (x1_shape_ptr[x1_shape_idx] == x2_shape_ptr[i]);
         inner_nelems *= x1_shape_ptr[x1_shape_idx];
     }
-    size_t x2_outer_nelems(1);
+    std::size_t x2_outer_nelems(1);
     for (int i = 0; same_shapes && (i < x2_outer_dims); ++i) {
         auto x2_shape_idx = batch_dims + inner_dims + i;
         same_shapes =
@@ -268,12 +269,12 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                               "appropriate shapes");
     }
 
-    size_t dst_nelems = batches * x1_outer_nelems * x2_outer_nelems;
+    std::size_t dst_nelems = batches * x1_outer_nelems * x2_outer_nelems;
     if (dst_nelems == 0) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    if (static_cast<size_t>(dst.get_size()) != dst_nelems) {
+    if (static_cast<std::size_t>(dst.get_size()) != dst_nelems) {
         throw py::value_error("dst shape and size mismatch");
     }
 
@@ -429,9 +430,9 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 reduce_all_elems = (simplified_batch_shape[0] == 1);
                 dot_product_c_contig =
                     (simplified_batch_dst_strides[0] == 1) &&
-                    (static_cast<size_t>(simplified_batch_x1_strides[0]) ==
+                    (static_cast<std::size_t>(simplified_batch_x1_strides[0]) ==
                      inner_nelems) &&
-                    (static_cast<size_t>(simplified_batch_x2_strides[0]) ==
+                    (static_cast<std::size_t>(simplified_batch_x2_strides[0]) ==
                      inner_nelems);
             }
 
@@ -689,22 +690,25 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
             {
                 bool gemm_batch_c_contig = false;
 
-                if ((static_cast<size_t>(outer_inner_x1_strides[0]) ==
+                if ((static_cast<std::size_t>(outer_inner_x1_strides[0]) ==
                          inner_nelems &&
                      outer_inner_x1_strides[1] == 1) &&
-                    (static_cast<size_t>(outer_inner_x2_strides[0]) ==
+                    (static_cast<std::size_t>(outer_inner_x2_strides[0]) ==
                          inner_nelems &&
                      outer_inner_x2_strides[1] == 1) &&
-                    (static_cast<size_t>(outer_inner_dst_strides[0]) ==
+                    (static_cast<std::size_t>(outer_inner_dst_strides[0]) ==
                          x2_outer_nelems &&
                      outer_inner_dst_strides[1] == 1))
                 {
                     gemm_batch_c_contig =
-                        (static_cast<size_t>(simplified_batch_x1_strides[0]) ==
+                        (static_cast<std::size_t>(
+                             simplified_batch_x1_strides[0]) ==
                          x1_outer_nelems * inner_nelems) &&
-                        (static_cast<size_t>(simplified_batch_x2_strides[0]) ==
+                        (static_cast<std::size_t>(
+                             simplified_batch_x2_strides[0]) ==
                          x2_outer_nelems * inner_nelems) &&
-                        (static_cast<size_t>(simplified_batch_dst_strides[0]) ==
+                        (static_cast<std::size_t>(
+                             simplified_batch_dst_strides[0]) ==
                          x1_outer_nelems * x2_outer_nelems);
                 }
 
