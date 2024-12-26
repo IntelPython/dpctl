@@ -1720,6 +1720,8 @@ private:
 
 } // end of namespace radix_sort_details
 
+using dpctl::tensor::ssize_t;
+
 template <typename argTy>
 sycl::event
 radix_sort_axis1_contig_impl(sycl::queue &exec_q,

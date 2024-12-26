@@ -51,6 +51,7 @@ namespace kernels
 namespace rsqrt
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 template <typename argT, typename resT> struct RsqrtFunctor

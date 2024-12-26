@@ -42,6 +42,8 @@ namespace tensor
 namespace kernels
 {
 
+using dpctl::tensor::ssize_t;
+
 template <typename argTy,
           typename indTy,
           bool left_side,

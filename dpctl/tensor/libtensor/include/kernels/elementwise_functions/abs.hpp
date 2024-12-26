@@ -52,6 +52,7 @@ namespace abs
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using dpctl::tensor::ssize_t;
 using dpctl::tensor::type_utils::is_complex;
 
 template <typename argT, typename resT> struct AbsFunctor

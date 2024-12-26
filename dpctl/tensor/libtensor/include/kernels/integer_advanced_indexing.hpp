@@ -44,6 +44,8 @@ namespace kernels
 namespace indexing
 {
 
+using dpctl::tensor::ssize_t;
+
 template <typename ProjectorT,
           typename OrthogIndexer,
           typename IndicesIndexer,

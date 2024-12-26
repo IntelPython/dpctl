@@ -47,6 +47,7 @@ namespace tensor
 namespace kernels
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace su_ns = dpctl::tensor::sycl_utils;
 

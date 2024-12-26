@@ -49,6 +49,7 @@ namespace kernels
 namespace atan
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::kernels::vec_size_utils::ContigHyperparameterSetDefault;

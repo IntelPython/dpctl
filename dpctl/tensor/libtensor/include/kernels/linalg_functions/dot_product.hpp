@@ -47,6 +47,7 @@ namespace tensor
 namespace kernels
 {
 
+using dpctl::tensor::ssize_t;
 namespace su_ns = dpctl::tensor::sycl_utils;
 
 template <typename lhsT,

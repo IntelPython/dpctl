@@ -46,6 +46,7 @@ namespace kernels
 namespace clip
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 using dpctl::tensor::kernels::alignment_utils::

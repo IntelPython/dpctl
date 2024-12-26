@@ -44,6 +44,7 @@ namespace kernels
 namespace elementwise_common
 {
 
+using dpctl::tensor::ssize_t;
 using dpctl::tensor::kernels::alignment_utils::
     disabled_sg_loadstore_wrapper_krn;
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
