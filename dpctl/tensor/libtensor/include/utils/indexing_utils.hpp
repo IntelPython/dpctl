@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <sycl/sycl.hpp>
@@ -119,7 +120,7 @@ template <typename IndT> struct ClipIndex
             else {
                 constexpr IndT lb(0);
                 const IndT ub = static_cast<IndT>(max_item - 1);
-                projected = static_cast<size_t>(sycl::clamp(ind, lb, ub));
+                projected = static_cast<std::size_t>(sycl::clamp(ind, lb, ub));
             }
         }
         else {

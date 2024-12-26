@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -149,7 +150,7 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
     const bool both_f_contig = is_src_f_contig && is_dst_f_contig;
 
     // normalize shift parameter to be 0 <= offset < src_nelems
-    size_t offset =
+    std::size_t offset =
         (shift > 0) ? (shift % src_nelems) : src_nelems + (shift % src_nelems);
 
     const char *src_data = src.get_data();
@@ -266,7 +267,7 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
             "have the same number of dimensions.");
     }
 
-    if (static_cast<size_t>(src_nd) != shifts.size()) {
+    if (static_cast<std::size_t>(src_nd) != shifts.size()) {
         throw py::value_error(
             "copy_usm_ndarray_for_roll_nd requires shifts to "
             "contain an integral shift for each array dimension.");
@@ -325,7 +326,7 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
     for (int i = 0; i < src_nd; ++i) {
         // normalize shift parameter to be 0 <= offset < dim
         py::ssize_t dim = src_shape_ptr[i];
-        size_t offset =
+        std::size_t offset =
             (shifts[i] >= 0) ? (shifts[i] % dim) : dim + (shifts[i] % dim);
 
         normalized_shifts.push_back(offset);

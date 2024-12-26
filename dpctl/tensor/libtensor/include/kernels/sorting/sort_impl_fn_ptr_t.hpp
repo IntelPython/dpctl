@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <sycl/sycl.hpp>
 #include <vector>
 
@@ -35,8 +36,8 @@ namespace kernels
 {
 
 typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
-                                            size_t,
-                                            size_t,
+                                            std::size_t,
+                                            std::size_t,
                                             const char *,
                                             char *,
                                             ssize_t,

@@ -35,6 +35,7 @@
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 

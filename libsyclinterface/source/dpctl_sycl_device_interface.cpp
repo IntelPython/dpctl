@@ -34,6 +34,7 @@
 #include "dpctl_utils_helper.h"
 #include <algorithm>
 #include <cstring>
+#include <stddef.h>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 #include <vector>

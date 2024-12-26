@@ -24,6 +24,7 @@
 
 #include "simplify_iteration_space.hpp"
 #include "utils/strided_iters.hpp"
+#include <cstddef>
 #include <pybind11/pybind11.h>
 #include <vector>
 
@@ -55,8 +56,8 @@ void simplify_iteration_space_1(int &nd,
         simplified_strides.insert(std::end(simplified_strides),
                                   std::begin(strides), std::end(strides));
 
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
-        assert(simplified_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
+        assert(simplified_strides.size() == static_cast<std::size_t>(nd));
         int contracted_nd = simplify_iteration_stride(
             nd, simplified_shape.data(), simplified_strides.data(),
             offset // modified by reference
@@ -79,8 +80,8 @@ void simplify_iteration_space_1(int &nd,
             offset += (shape[0] - 1) * strides[0];
         }
 
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
-        assert(simplified_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
+        assert(simplified_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -102,19 +103,19 @@ void simplify_iteration_space(int &nd,
         simplified_shape.reserve(nd);
         simplified_shape.insert(std::begin(simplified_shape), shape,
                                 shape + nd);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src_strides.reserve(nd);
         simplified_src_strides.insert(std::end(simplified_src_strides),
                                       std::begin(src_strides),
                                       std::end(src_strides));
-        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
         simplified_dst_strides.insert(std::end(simplified_dst_strides),
                                       std::begin(dst_strides),
                                       std::end(dst_strides));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd = simplify_iteration_two_strides(
             nd, simplified_shape.data(), simplified_src_strides.data(),
@@ -134,7 +135,7 @@ void simplify_iteration_space(int &nd,
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src_strides.reserve(nd);
         simplified_dst_strides.reserve(nd);
@@ -152,8 +153,8 @@ void simplify_iteration_space(int &nd,
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_src_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -181,25 +182,25 @@ void simplify_iteration_space_3(
         // and improve access pattern
         simplified_shape.reserve(nd);
         simplified_shape.insert(std::end(simplified_shape), shape, shape + nd);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src1_strides.insert(std::end(simplified_src1_strides),
                                        std::begin(src1_strides),
                                        std::end(src1_strides));
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_src2_strides.reserve(nd);
         simplified_src2_strides.insert(std::end(simplified_src2_strides),
                                        std::begin(src2_strides),
                                        std::end(src2_strides));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
         simplified_dst_strides.insert(std::end(simplified_dst_strides),
                                       std::begin(dst_strides),
                                       std::end(dst_strides));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd = simplify_iteration_three_strides(
             nd, simplified_shape.data(), simplified_src1_strides.data(),
@@ -222,7 +223,7 @@ void simplify_iteration_space_3(
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src2_strides.reserve(nd);
@@ -246,9 +247,9 @@ void simplify_iteration_space_3(
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -280,31 +281,31 @@ void simplify_iteration_space_4(
         // and improve access pattern
         simplified_shape.reserve(nd);
         simplified_shape.insert(std::end(simplified_shape), shape, shape + nd);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src1_strides.insert(std::end(simplified_src1_strides),
                                        std::begin(src1_strides),
                                        std::end(src1_strides));
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_src2_strides.reserve(nd);
         simplified_src2_strides.insert(std::end(simplified_src2_strides),
                                        std::begin(src2_strides),
                                        std::end(src2_strides));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_src3_strides.reserve(nd);
         simplified_src3_strides.insert(std::end(simplified_src3_strides),
                                        std::begin(src3_strides),
                                        std::end(src3_strides));
-        assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src3_strides.size() == static_cast<std::size_t>(nd));
 
         simplified_dst_strides.reserve(nd);
         simplified_dst_strides.insert(std::end(simplified_dst_strides),
                                       std::begin(dst_strides),
                                       std::end(dst_strides));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd = simplify_iteration_four_strides(
             nd, simplified_shape.data(), simplified_src1_strides.data(),
@@ -331,7 +332,7 @@ void simplify_iteration_space_4(
         // Populate vectors
         simplified_shape.reserve(nd);
         simplified_shape.push_back(shape[0]);
-        assert(simplified_shape.size() == static_cast<size_t>(nd));
+        assert(simplified_shape.size() == static_cast<std::size_t>(nd));
 
         simplified_src1_strides.reserve(nd);
         simplified_src2_strides.reserve(nd);
@@ -359,10 +360,10 @@ void simplify_iteration_space_4(
             simplified_dst_strides.push_back(dst_strides[0]);
         }
 
-        assert(simplified_src1_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_src2_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_src3_strides.size() == static_cast<size_t>(nd));
-        assert(simplified_dst_strides.size() == static_cast<size_t>(nd));
+        assert(simplified_src1_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src2_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_src3_strides.size() == static_cast<std::size_t>(nd));
+        assert(simplified_dst_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -379,12 +380,12 @@ void compact_iteration_space(int &nd,
         // and improve access pattern
         compact_shape.reserve(nd);
         compact_shape.insert(std::begin(compact_shape), shape, shape + nd);
-        assert(compact_shape.size() == static_cast<size_t>(nd));
+        assert(compact_shape.size() == static_cast<std::size_t>(nd));
 
         compact_strides.reserve(nd);
         compact_strides.insert(std::end(compact_strides), std::begin(strides),
                                std::end(strides));
-        assert(compact_strides.size() == static_cast<size_t>(nd));
+        assert(compact_strides.size() == static_cast<std::size_t>(nd));
 
         int contracted_nd =
             compact_iteration(nd, compact_shape.data(), compact_strides.data());
@@ -397,11 +398,11 @@ void compact_iteration_space(int &nd,
         // Populate vectors
         compact_shape.reserve(nd);
         compact_shape.push_back(shape[0]);
-        assert(compact_shape.size() == static_cast<size_t>(nd));
+        assert(compact_shape.size() == static_cast<std::size_t>(nd));
 
         compact_strides.reserve(nd);
         compact_strides.push_back(strides[0]);
-        assert(compact_strides.size() == static_cast<size_t>(nd));
+        assert(compact_strides.size() == static_cast<std::size_t>(nd));
     }
 }
 
@@ -452,7 +453,7 @@ void split_iteration_space(const std::vector<py::ssize_t> &shape_vec,
 py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
                                  std::vector<py::ssize_t> const &shape)
 {
-    size_t nd = shape.size();
+    std::size_t nd = shape.size();
     if (nd != mi.size()) {
         throw py::value_error(
             "Multi-index and shape vectors must have the same length.");
@@ -460,7 +461,7 @@ py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
 
     py::ssize_t flat_index = 0;
     py::ssize_t s = 1;
-    for (size_t i = 0; i < nd; ++i) {
+    for (std::size_t i = 0; i < nd; ++i) {
         flat_index += mi.at(nd - 1 - i) * s;
         s *= shape.at(nd - 1 - i);
     }
@@ -471,7 +472,7 @@ py::ssize_t _ravel_multi_index_c(std::vector<py::ssize_t> const &mi,
 py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &mi,
                                  std::vector<py::ssize_t> const &shape)
 {
-    size_t nd = shape.size();
+    std::size_t nd = shape.size();
     if (nd != mi.size()) {
         throw py::value_error(
             "Multi-index and shape vectors must have the same length.");
@@ -479,7 +480,7 @@ py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &mi,
 
     py::ssize_t flat_index = 0;
     py::ssize_t s = 1;
-    for (size_t i = 0; i < nd; ++i) {
+    for (std::size_t i = 0; i < nd; ++i) {
         flat_index += mi.at(i) * s;
         s *= shape.at(i);
     }
@@ -490,12 +491,12 @@ py::ssize_t _ravel_multi_index_f(std::vector<py::ssize_t> const &mi,
 std::vector<py::ssize_t> _unravel_index_c(py::ssize_t flat_index,
                                           std::vector<py::ssize_t> const &shape)
 {
-    size_t nd = shape.size();
+    std::size_t nd = shape.size();
     std::vector<py::ssize_t> mi;
     mi.resize(nd);
 
     py::ssize_t i_ = flat_index;
-    for (size_t dim = 0; dim + 1 < nd; ++dim) {
+    for (std::size_t dim = 0; dim + 1 < nd; ++dim) {
         const py::ssize_t si = shape[nd - 1 - dim];
         const py::ssize_t q = i_ / si;
         const py::ssize_t r = (i_ - q * si);
@@ -511,12 +512,12 @@ std::vector<py::ssize_t> _unravel_index_c(py::ssize_t flat_index,
 std::vector<py::ssize_t> _unravel_index_f(py::ssize_t flat_index,
                                           std::vector<py::ssize_t> const &shape)
 {
-    size_t nd = shape.size();
+    std::size_t nd = shape.size();
     std::vector<py::ssize_t> mi;
     mi.resize(nd);
 
     py::ssize_t i_ = flat_index;
-    for (size_t dim = 0; dim + 1 < nd; ++dim) {
+    for (std::size_t dim = 0; dim + 1 < nd; ++dim) {
         const py::ssize_t si = shape[dim];
         const py::ssize_t q = i_ / si;
         const py::ssize_t r = (i_ - q * si);

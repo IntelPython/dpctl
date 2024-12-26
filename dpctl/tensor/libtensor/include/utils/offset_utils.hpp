@@ -27,6 +27,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <sycl/sycl.hpp>
 #include <tuple>
 #include <vector>
@@ -83,7 +84,7 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 } // namespace detail
 
 template <typename indT, typename... Vs>
-std::tuple<indT *, size_t, sycl::event>
+std::tuple<indT *, std::size_t, sycl::event>
 device_allocate_and_pack(sycl::queue &q,
                          std::vector<sycl::event> &host_task_events,
                          Vs &&...vs)
@@ -128,7 +129,7 @@ device_allocate_and_pack(sycl::queue &q,
 struct NoOpIndexer
 {
     constexpr NoOpIndexer() {}
-    constexpr size_t operator()(size_t gid) const { return gid; }
+    constexpr std::size_t operator()(std::size_t gid) const { return gid; }
 };
 
 using dpctl::tensor::ssize_t;
@@ -146,7 +147,7 @@ struct StridedIndexer
 
     ssize_t operator()(ssize_t gid) const { return compute_offset(gid); }
 
-    ssize_t operator()(size_t gid) const
+    ssize_t operator()(std::size_t gid) const
     {
         return compute_offset(static_cast<ssize_t>(gid));
     }
@@ -184,7 +185,7 @@ struct UnpackedStridedIndexer
 
     ssize_t operator()(ssize_t gid) const { return compute_offset(gid); }
 
-    ssize_t operator()(size_t gid) const
+    ssize_t operator()(std::size_t gid) const
     {
         return compute_offset(static_cast<ssize_t>(gid));
     }
@@ -212,63 +213,63 @@ private:
 
 struct Strided1DIndexer
 {
-    Strided1DIndexer(size_t _size) : offset{}, size(_size), step(1) {}
+    Strided1DIndexer(std::size_t _size) : offset{}, size(_size), step(1) {}
     Strided1DIndexer(ssize_t _size)
-        : offset{}, size(static_cast<size_t>(_size)), step(1)
+        : offset{}, size(static_cast<std::size_t>(_size)), step(1)
     {
     }
-    Strided1DIndexer(size_t _size, ssize_t _step)
+    Strided1DIndexer(std::size_t _size, ssize_t _step)
         : offset{}, size(_size), step(_step)
     {
     }
-    Strided1DIndexer(size_t _size, size_t _step)
+    Strided1DIndexer(std::size_t _size, std::size_t _step)
         : offset{}, size(_size), step(static_cast<ssize_t>(_step))
     {
     }
     Strided1DIndexer(ssize_t _size, ssize_t _step)
-        : offset{}, size(static_cast<size_t>(_size)), step(_step)
+        : offset{}, size(static_cast<std::size_t>(_size)), step(_step)
     {
     }
-    Strided1DIndexer(ssize_t _offset, size_t _size, ssize_t _step)
+    Strided1DIndexer(ssize_t _offset, std::size_t _size, ssize_t _step)
         : offset(_offset), size(_size), step(_step)
     {
     }
-    Strided1DIndexer(ssize_t _offset, size_t _size, size_t _step)
+    Strided1DIndexer(ssize_t _offset, std::size_t _size, std::size_t _step)
         : offset(_offset), size(_size), step(static_cast<ssize_t>(_step))
     {
     }
     Strided1DIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
-        : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
+        : offset(_offset), size(static_cast<std::size_t>(_size)), step(_step)
     {
     }
 
-    ssize_t operator()(size_t gid) const
+    ssize_t operator()(std::size_t gid) const
     {
         // ensure 0 <= gid < size
-        return offset + std::min<size_t>(gid, size - 1) * step;
+        return offset + std::min<std::size_t>(gid, size - 1) * step;
     }
 
 private:
     ssize_t offset = 0;
-    size_t size = 1;
+    std::size_t size = 1;
     ssize_t step = 1;
 };
 
 struct Strided1DCyclicIndexer
 {
     Strided1DCyclicIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
-        : offset(_offset), size(static_cast<size_t>(_size)), step(_step)
+        : offset(_offset), size(static_cast<std::size_t>(_size)), step(_step)
     {
     }
 
-    ssize_t operator()(size_t gid) const
+    ssize_t operator()(std::size_t gid) const
     {
         return offset + (gid % size) * step;
     }
 
 private:
     ssize_t offset = 0;
-    size_t size = 1;
+    std::size_t size = 1;
     ssize_t step = 1;
 };
 
@@ -306,7 +307,7 @@ struct TwoOffsets_StridedIndexer
         return compute_offsets(gid);
     }
 
-    TwoOffsets<ssize_t> operator()(size_t gid) const
+    TwoOffsets<ssize_t> operator()(std::size_t gid) const
     {
         return compute_offsets(static_cast<ssize_t>(gid));
     }
@@ -409,7 +410,7 @@ struct ThreeOffsets_StridedIndexer
         return compute_offsets(gid);
     }
 
-    ThreeOffsets<ssize_t> operator()(size_t gid) const
+    ThreeOffsets<ssize_t> operator()(std::size_t gid) const
     {
         return compute_offsets(static_cast<ssize_t>(gid));
     }
@@ -533,7 +534,7 @@ struct FourOffsets_StridedIndexer
         return compute_offsets(gid);
     }
 
-    constexpr FourOffsets<ssize_t> operator()(size_t gid) const
+    constexpr FourOffsets<ssize_t> operator()(std::size_t gid) const
     {
         return compute_offsets(static_cast<ssize_t>(gid));
     }
@@ -592,7 +593,7 @@ struct NthStrideOffset
     {
     }
 
-    size_t operator()(ssize_t gid, int n) const
+    std::size_t operator()(ssize_t gid, int n) const
     {
         ssize_t relative_offset(0);
         _ind.get_displacement<const ssize_t *, const ssize_t *>(
@@ -618,7 +619,7 @@ template <int nd> struct FixedDimStridedIndexer
         : _ind(_shape), strides(_strides), starting_offset(_offset)
     {
     }
-    size_t operator()(size_t gid) const
+    std::size_t operator()(std::size_t gid) const
     {
         dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
@@ -653,7 +654,7 @@ template <int nd> struct TwoOffsets_FixedDimStridedIndexer
     {
     }
 
-    TwoOffsets<ssize_t> operator()(size_t gid) const
+    TwoOffsets<ssize_t> operator()(std::size_t gid) const
     {
         dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));
@@ -700,7 +701,7 @@ template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
     {
     }
 
-    ThreeOffsets<ssize_t> operator()(size_t gid) const
+    ThreeOffsets<ssize_t> operator()(std::size_t gid) const
     {
         dpctl::tensor::strides::CIndexer_array<nd, ssize_t> local_indexer(
             std::move(_ind));

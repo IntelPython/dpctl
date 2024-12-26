@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
@@ -100,10 +101,10 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
     const py::ssize_t *cond_shape = condition.get_shape_raw();
 
     bool shapes_equal(true);
-    size_t nelems(1);
+    std::size_t nelems(1);
     for (int i = 0; i < nd; ++i) {
         const auto &sh_i = dst_shape[i];
-        nelems *= static_cast<size_t>(sh_i);
+        nelems *= static_cast<std::size_t>(sh_i);
         shapes_equal = shapes_equal && (x1_shape[i] == sh_i) &&
                        (x2_shape[i] == sh_i) && (cond_shape[i] == sh_i);
     }

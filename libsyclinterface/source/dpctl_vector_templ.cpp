@@ -27,6 +27,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_vector_macros.h"
+#include <stddef.h>
 #include <type_traits>
 #include <vector>
 

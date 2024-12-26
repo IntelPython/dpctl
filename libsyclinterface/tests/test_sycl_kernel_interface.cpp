@@ -34,6 +34,7 @@
 #include "dpctl_utils.h"
 #include <array>
 #include <gtest/gtest.h>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 
 using namespace sycl;

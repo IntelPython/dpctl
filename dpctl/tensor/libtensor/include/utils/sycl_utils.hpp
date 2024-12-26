@@ -103,28 +103,28 @@ template <typename T, typename Op> struct IsSyclOp
 
 /*! @brief Find the smallest multiple of supported sub-group size larger than
  * nelems */
-template <size_t f = 4>
-size_t choose_workgroup_size(const size_t nelems,
-                             const std::vector<size_t> &sg_sizes)
+template <std::size_t f = 4>
+std::size_t choose_workgroup_size(const std::size_t nelems,
+                                  const std::vector<std::size_t> &sg_sizes)
 {
-    std::vector<size_t> wg_choices;
+    std::vector<std::size_t> wg_choices;
     wg_choices.reserve(f * sg_sizes.size());
 
     for (const auto &sg_size : sg_sizes) {
 #pragma unroll
-        for (size_t i = 1; i <= f; ++i) {
+        for (std::size_t i = 1; i <= f; ++i) {
             wg_choices.push_back(sg_size * i);
         }
     }
     std::sort(std::begin(wg_choices), std::end(wg_choices));
 
-    size_t wg = 1;
-    for (size_t i = 0; i < wg_choices.size(); ++i) {
+    std::size_t wg = 1;
+    for (std::size_t i = 0; i < wg_choices.size(); ++i) {
         if (wg_choices[i] == wg) {
             continue;
         }
         wg = wg_choices[i];
-        size_t n_groups = ((nelems + wg - 1) / wg);
+        std::size_t n_groups = ((nelems + wg - 1) / wg);
         if (n_groups == 1)
             break;
     }

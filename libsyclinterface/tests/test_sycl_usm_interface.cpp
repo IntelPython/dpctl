@@ -33,6 +33,7 @@
 #include "dpctl_sycl_usm_interface.h"
 #include <cstring>
 #include <gtest/gtest.h>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 
 using namespace sycl;

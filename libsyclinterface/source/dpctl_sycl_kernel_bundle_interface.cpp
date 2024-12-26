@@ -32,6 +32,7 @@
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h> /* OpenCL headers     */
 #include <sstream>
+#include <stddef.h>
 #include <sycl/backend/opencl.hpp>
 #include <sycl/sycl.hpp> /* Sycl headers       */
 #include <utility>

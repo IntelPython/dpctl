@@ -29,6 +29,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
+#include <stddef.h>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 

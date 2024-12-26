@@ -33,6 +33,7 @@
 #include "dpctl_sycl_type_casters.hpp"
 #include <exception>
 #include <sstream>
+#include <stddef.h>
 #include <stdexcept>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>

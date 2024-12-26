@@ -23,6 +23,7 @@
 /// dpctl.tensor.extract, dpctl.tensor.nonzero
 //===----------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -176,7 +177,7 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool same_ortho_dims(true);
-    size_t ortho_nelems(1); // number of orthogonal iterations
+    std::size_t ortho_nelems(1); // number of orthogonal iterations
 
     for (auto i = 0; i < axis_start; ++i) {
         auto src_sh_i = src_shape[i];
@@ -190,8 +191,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
             same_ortho_dims && (src_sh_i == dst_shape[i - (mask_span_sz - 1)]);
     }
 
-    size_t masked_src_nelems(1);
-    size_t masked_dst_nelems(dst_shape[axis_start]);
+    std::size_t masked_src_nelems(1);
+    std::size_t masked_dst_nelems(dst_shape[axis_start]);
     for (auto i = axis_start; i < axis_end; ++i) {
         masked_src_nelems *= src_shape[i];
     }
@@ -199,7 +200,7 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
     // masked_dst_nelems is number of set elements in the mask, or last element
     // in cumsum
     if (!same_ortho_dims ||
-        (masked_src_nelems != static_cast<size_t>(cumsum_sz)))
+        (masked_src_nelems != static_cast<std::size_t>(cumsum_sz)))
     {
         throw py::value_error("Inconsistent array dimensions");
     }
@@ -345,8 +346,8 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
             masked_dst_shape, // 4 vectors modified
             ortho_dst_strides, masked_dst_strides);
 
-        assert(ortho_src_shape.size() == static_cast<size_t>(ortho_nd));
-        assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
+        assert(ortho_src_shape.size() == static_cast<std::size_t>(ortho_nd));
+        assert(ortho_dst_shape.size() == static_cast<std::size_t>(ortho_nd));
         assert(std::equal(ortho_src_shape.begin(), ortho_src_shape.end(),
                           ortho_dst_shape.begin()));
 
@@ -519,7 +520,7 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *rhs_shape = rhs.get_shape_raw();
     bool same_ortho_dims(true);
-    size_t ortho_nelems(1); // number of orthogonal iterations
+    std::size_t ortho_nelems(1); // number of orthogonal iterations
 
     for (auto i = 0; i < axis_start; ++i) {
         auto dst_sh_i = dst_shape[i];
@@ -533,13 +534,13 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
             same_ortho_dims && (dst_sh_i == rhs_shape[i - (mask_span_sz - 1)]);
     }
 
-    size_t masked_dst_nelems(1);
+    std::size_t masked_dst_nelems(1);
     for (auto i = axis_start; i < axis_end; ++i) {
         masked_dst_nelems *= dst_shape[i];
     }
 
     if (!same_ortho_dims ||
-        (masked_dst_nelems != static_cast<size_t>(cumsum_sz)))
+        (masked_dst_nelems != static_cast<std::size_t>(cumsum_sz)))
     {
         throw py::value_error("Inconsistent array dimensions");
     }
@@ -667,8 +668,8 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
             masked_rhs_shape, // 4 vectors modified
             ortho_rhs_strides, masked_rhs_strides);
 
-        assert(ortho_dst_shape.size() == static_cast<size_t>(ortho_nd));
-        assert(ortho_rhs_shape.size() == static_cast<size_t>(ortho_nd));
+        assert(ortho_dst_shape.size() == static_cast<std::size_t>(ortho_nd));
+        assert(ortho_rhs_shape.size() == static_cast<std::size_t>(ortho_nd));
         assert(std::equal(ortho_dst_shape.begin(), ortho_dst_shape.end(),
                           ortho_rhs_shape.begin()));
 
@@ -769,7 +770,7 @@ py_nonzero(const dpctl::tensor::usm_ndarray
         throw py::value_error("Index array must be a C-contiguous matrix");
     }
 
-    size_t _ndim = mask_shape.size();
+    std::size_t _ndim = mask_shape.size();
     if (_ndim > std::numeric_limits<int>::max()) {
         throw py::value_error("Shape is too large");
     }

@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <limits>
@@ -81,18 +82,18 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
 
     bool same_shapes = true;
-    size_t iter_nelems(1);
+    std::size_t iter_nelems(1);
     for (int i = 0; same_shapes && (i < iter_nd); ++i) {
         auto src_shape_i = src_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_i == dst_shape_ptr[i]);
-        iter_nelems *= static_cast<size_t>(src_shape_i);
+        iter_nelems *= static_cast<std::size_t>(src_shape_i);
     }
 
-    size_t acc_nelems(1);
+    std::size_t acc_nelems(1);
     for (int i = iter_nd; same_shapes && (i < src_nd); ++i) {
         auto dst_shape_i = dst_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_ptr[i] == dst_shape_i);
-        acc_nelems *= static_cast<size_t>(dst_shape_i);
+        acc_nelems *= static_cast<std::size_t>(dst_shape_i);
     }
 
     if (!same_shapes) {
@@ -267,18 +268,18 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
 
     bool same_shapes = true;
-    size_t iter_nelems(1);
+    std::size_t iter_nelems(1);
     for (int i = 0; same_shapes && (i < iter_nd); ++i) {
         auto src_shape_i = src_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_i == dst_shape_ptr[i]);
-        iter_nelems *= static_cast<size_t>(src_shape_i);
+        iter_nelems *= static_cast<std::size_t>(src_shape_i);
     }
 
-    size_t acc_nelems(1);
+    std::size_t acc_nelems(1);
     for (int i = iter_nd; same_shapes && (i < src_nd); ++i) {
         auto dst_shape_i = dst_shape_ptr[i];
         same_shapes = same_shapes && (src_shape_ptr[i] + 1 == dst_shape_i);
-        acc_nelems *= static_cast<size_t>(dst_shape_i);
+        acc_nelems *= static_cast<std::size_t>(dst_shape_i);
     }
 
     if (!same_shapes) {

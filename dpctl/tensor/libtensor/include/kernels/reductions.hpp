@@ -53,7 +53,7 @@ namespace su_ns = dpctl::tensor::sycl_utils;
 namespace reduction_detail
 {
 
-inline size_t get_work_group_size(const sycl::device &d)
+inline std::size_t get_work_group_size(const sycl::device &d)
 {
     // prevents running out of resources on CPU
     return std::min<std::size_t>(
@@ -93,7 +93,7 @@ private:
     outT identity_;
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
+    std::size_t reduction_max_gid_ = 0;
 
 public:
     SequentialReduction(const argT *inp,
@@ -102,7 +102,7 @@ public:
                         const outT &identity_val,
                         const InputOutputIterIndexerT &arg_res_iter_indexer,
                         const InputRedIndexerT &arg_reduced_dims_indexer,
-                        size_t reduction_size)
+                        std::size_t reduction_size)
         : inp_(inp), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -120,7 +120,7 @@ public:
             inp_out_iter_offsets_.get_second_offset();
 
         outT red_val(identity_);
-        for (size_t m = 0; m < reduction_max_gid_; ++m) {
+        for (std::size_t m = 0; m < reduction_max_gid_; ++m) {
             const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
@@ -162,9 +162,9 @@ private:
     const outT identity_;
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     ReductionOverGroupWithAtomicFunctor(
@@ -174,9 +174,9 @@ public:
         const outT &identity_val,
         const InputOutputIterIndexerT &arg_res_iter_indexer,
         const InputRedIndexerT &arg_reduced_dims_indexer,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
+        std::size_t reduction_size,
+        std::size_t iteration_size,
+        std::size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -187,11 +187,12 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
 
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -203,12 +204,12 @@ public:
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto inp_reduction_offset =
@@ -295,9 +296,9 @@ private:
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     CustomReductionOverGroupWithAtomicFunctor(
@@ -308,9 +309,9 @@ public:
         const InputOutputIterIndexerT &arg_res_iter_indexer,
         const InputRedIndexerT &arg_reduced_dims_indexer,
         SlmT local_mem,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
+        std::size_t reduction_size,
+        std::size_t iteration_size,
+        std::size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -321,11 +322,12 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
 
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
         // work-items operate over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -337,12 +339,12 @@ public:
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        size_t arg_reduce_gid_max = std::min(
+        std::size_t arg_reduce_gid_max = std::min(
             reduction_max_gid_, arg_reduce_gid0 + reductions_per_wi * wg);
 
-        for (size_t arg_reduce_gid = arg_reduce_gid0;
+        for (std::size_t arg_reduce_gid = arg_reduce_gid0;
              arg_reduce_gid < arg_reduce_gid_max; arg_reduce_gid += wg)
         {
             auto inp_reduction_offset =
@@ -418,9 +420,9 @@ private:
     const outT identity_;
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     ReductionOverGroupNoAtomicFunctor(
@@ -430,9 +432,9 @@ public:
         const outT &identity_val,
         const InputOutputIterIndexerT &arg_res_iter_indexer,
         const InputRedIndexerT &arg_reduced_dims_indexer,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
+        std::size_t reduction_size,
+        std::size_t iteration_size,
+        std::size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -443,12 +445,14 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t n_reduction_groups =
+            it.get_group_range(0) / iter_gws_;
 
         // work-items operates over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -460,10 +464,10 @@ public:
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+        for (std::size_t m = 0; m < reductions_per_wi; ++m) {
+            std::size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
 
             if (arg_reduce_gid < reduction_max_gid_) {
                 auto inp_reduction_offset =
@@ -526,9 +530,9 @@ private:
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     CustomReductionOverGroupNoAtomicFunctor(
@@ -539,9 +543,9 @@ public:
         const InputOutputIterIndexerT &arg_res_iter_indexer,
         const InputRedIndexerT &arg_reduced_dims_indexer,
         SlmT local_mem,
-        size_t reduction_size,
-        size_t iteration_size,
-        size_t reduction_size_per_wi)
+        std::size_t reduction_size,
+        std::size_t iteration_size,
+        std::size_t reduction_size_per_wi)
         : inp_(data), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), inp_out_iter_indexer_(arg_res_iter_indexer),
           inp_reduced_dims_indexer_(arg_reduced_dims_indexer),
@@ -552,12 +556,14 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t n_reduction_groups =
+            it.get_group_range(0) / iter_gws_;
 
         // work-items operates over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -569,10 +575,10 @@ public:
         const auto &out_iter_offset = inp_out_iter_offsets_.get_second_offset();
 
         outT local_red_val(identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+        for (std::size_t m = 0; m < reductions_per_wi; ++m) {
+            std::size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
 
             if (arg_reduce_gid < reduction_max_gid_) {
                 auto inp_reduction_offset =
@@ -623,8 +629,8 @@ sequential_reduction(sycl::queue &exec_q,
                      const argTy *arg,
                      resTy *res,
                      resTy identity_val,
-                     size_t iter_nelems,
-                     size_t reduction_nelems,
+                     std::size_t iter_nelems,
+                     std::size_t reduction_nelems,
                      const InputOutputIterIndexerT &in_out_iter_indexer,
                      const ReductionIndexerT &reduction_indexer,
                      const std::vector<sycl::event> &depends)
@@ -662,11 +668,11 @@ submit_atomic_reduction(sycl::queue &exec_q,
                         const argTy *arg,
                         resTy *res,
                         resTy identity_val,
-                        size_t wg,
-                        size_t iter_nelems,
-                        size_t reduction_nelems,
-                        size_t reductions_per_wi,
-                        size_t reduction_groups,
+                        std::size_t wg,
+                        std::size_t iter_nelems,
+                        std::size_t reduction_nelems,
+                        std::size_t reductions_per_wi,
+                        std::size_t reduction_groups,
                         const InputOutputIterIndexerT &in_out_iter_indexer,
                         const ReductionIndexerT &reduction_indexer,
                         const std::vector<sycl::event> &depends)
@@ -725,8 +731,8 @@ class reduction_over_group_with_atomics_krn;
 
 typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     int,
@@ -743,10 +749,10 @@ using dpctl::tensor::sycl_utils::choose_workgroup_size;
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_with_atomics_strided_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
@@ -765,7 +771,7 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
@@ -818,13 +824,13 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
         const ReductionIndexerT reduction_indexer{red_nd, reduction_arg_offset,
                                                   reduction_shape_stride};
 
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
+        constexpr std::size_t preferred_reductions_per_wi = 8;
+        std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                ? std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferred_reductions_per_wi;
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
 
@@ -844,8 +850,8 @@ sycl::event reduction_over_group_with_atomics_strided_impl(
 
 typedef sycl::event (*reduction_contig_impl_fn_ptr)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     ssize_t,
@@ -857,10 +863,10 @@ typedef sycl::event (*reduction_contig_impl_fn_ptr)(
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -876,7 +882,7 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -920,13 +926,13 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
                                                           result_indexer};
         constexpr ReductionIndexerT reduction_indexer{};
 
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
+        constexpr std::size_t preferred_reductions_per_wi = 8;
+        std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                ? std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferred_reductions_per_wi;
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
 
@@ -946,10 +952,10 @@ sycl::event reduction_axis1_over_group_with_atomics_contig_impl(
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of cols in a matrix
-                        // when reducing over cols)
-    size_t reduction_nelems, // size of each reduction  (length of cols, i.e.
-                             // number of rows)
+    std::size_t iter_nelems,      // number of reductions    (num. of cols in a
+                                  // matrix when reducing over cols)
+    std::size_t reduction_nelems, // size of each reduction  (length of cols,
+                                  // i.e. number of rows)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -965,7 +971,7 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
@@ -1007,13 +1013,13 @@ sycl::event reduction_axis0_over_group_with_atomics_contig_impl(
         const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
                                                   /* step */ iter_nelems};
 
-        constexpr size_t preferred_reductions_per_wi = 8;
-        size_t reductions_per_wi =
+        constexpr std::size_t preferred_reductions_per_wi = 8;
+        std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
-                ? std::max<size_t>(1, (reduction_nelems + wg - 1) / wg)
+                ? std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg)
                 : preferred_reductions_per_wi;
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
 
@@ -1044,11 +1050,11 @@ submit_no_atomic_reduction(sycl::queue &exec_q,
                            const argTy *arg,
                            resTy *res,
                            resTy identity_val,
-                           size_t wg,
-                           size_t iter_nelems,
-                           size_t reduction_nelems,
-                           size_t reductions_per_wi,
-                           size_t reduction_groups,
+                           std::size_t wg,
+                           std::size_t iter_nelems,
+                           std::size_t reduction_nelems,
+                           std::size_t reductions_per_wi,
+                           std::size_t reduction_groups,
                            const InputOutputIterIndexerT &in_out_iter_indexer,
                            const ReductionIndexerT &reduction_indexer,
                            const std::vector<sycl::event> &depends)
@@ -1100,8 +1106,8 @@ class reduction_over_group_temps_krn;
 
 typedef sycl::event (*reduction_strided_impl_fn_ptr)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     int,
@@ -1119,10 +1125,10 @@ class reduction_over_group_temps_empty_krn;
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_over_group_temps_strided_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
@@ -1166,7 +1172,7 @@ sycl::event reduction_over_group_temps_strided_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
@@ -1189,11 +1195,11 @@ sycl::event reduction_over_group_temps_strided_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -1212,9 +1218,9 @@ sycl::event reduction_over_group_temps_strided_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1230,12 +1236,12 @@ sycl::event reduction_over_group_temps_strided_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -1284,7 +1290,7 @@ sycl::event reduction_over_group_temps_strided_impl(
                 depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -1293,9 +1299,10 @@ sycl::event reduction_over_group_temps_strided_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1352,8 +1359,8 @@ sycl::event reduction_over_group_temps_strided_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -1388,10 +1395,10 @@ sycl::event reduction_over_group_temps_strided_impl(
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_axis1_over_group_temps_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -1414,7 +1421,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -1441,11 +1448,11 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -1468,9 +1475,9 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1486,12 +1493,12 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -1533,7 +1540,7 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
                 depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -1542,9 +1549,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1593,8 +1601,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -1629,10 +1637,10 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
 template <typename argTy, typename resTy, typename ReductionOpT>
 sycl::event reduction_axis0_over_group_temps_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -1655,7 +1663,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
@@ -1680,11 +1688,11 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -1708,9 +1716,9 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -1726,12 +1734,12 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -1774,7 +1782,7 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
                 depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -1783,9 +1791,10 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -1834,8 +1843,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -1888,7 +1897,7 @@ private:
     outT idx_identity_;
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
+    std::size_t reduction_max_gid_ = 0;
 
 public:
     SequentialSearchReduction(
@@ -1900,7 +1909,7 @@ public:
         const outT &idx_identity_val,
         const InputOutputIterIndexerT &arg_res_iter_indexer,
         const InputRedIndexerT &arg_reduced_dims_indexer,
-        size_t reduction_size)
+        std::size_t reduction_size)
         : inp_(inp), out_(res), reduction_op_(reduction_op),
           identity_(identity_val), idx_reduction_op_(idx_reduction_op),
           idx_identity_(idx_identity_val),
@@ -1921,7 +1930,7 @@ public:
 
         argT red_val(identity_);
         outT idx_val(idx_identity_);
-        for (size_t m = 0; m < reduction_max_gid_; ++m) {
+        for (std::size_t m = 0; m < reduction_max_gid_; ++m) {
             const ssize_t inp_reduction_offset = inp_reduced_dims_indexer_(m);
             const ssize_t inp_offset = inp_iter_offset + inp_reduction_offset;
 
@@ -2014,9 +2023,9 @@ private:
     const outT idx_identity_;
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     SearchReduction(const argT *data,
@@ -2029,9 +2038,9 @@ public:
                     const outT &idx_identity_val,
                     const InputOutputIterIndexerT &arg_res_iter_indexer,
                     const InputRedIndexerT &arg_reduced_dims_indexer,
-                    size_t reduction_size,
-                    size_t iteration_size,
-                    size_t reduction_size_per_wi)
+                    std::size_t reduction_size,
+                    std::size_t iteration_size,
+                    std::size_t reduction_size_per_wi)
         : inp_(data), vals_(vals), inds_(inds), out_(res),
           reduction_op_(reduction_op), identity_(identity_val),
           idx_reduction_op_(idx_reduction_op), idx_identity_(idx_identity_val),
@@ -2044,12 +2053,14 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t n_reduction_groups =
+            it.get_group_range(0) / iter_gws_;
 
         // work-items operates over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -2062,10 +2073,10 @@ public:
 
         argT local_red_val(identity_);
         outT local_idx(idx_identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+        for (std::size_t m = 0; m < reductions_per_wi; ++m) {
+            std::size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
 
             if (arg_reduce_gid < reduction_max_gid_) {
                 auto inp_reduction_offset =
@@ -2170,9 +2181,9 @@ private:
     const InputOutputIterIndexerT inp_out_iter_indexer_;
     const InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
-    size_t reduction_max_gid_ = 0;
-    size_t iter_gws_ = 1;
-    size_t reductions_per_wi = 16;
+    std::size_t reduction_max_gid_ = 0;
+    std::size_t iter_gws_ = 1;
+    std::size_t reductions_per_wi = 16;
 
 public:
     CustomSearchReduction(const argT *data,
@@ -2186,9 +2197,9 @@ public:
                           const InputOutputIterIndexerT &arg_res_iter_indexer,
                           const InputRedIndexerT &arg_reduced_dims_indexer,
                           SlmT local_mem,
-                          size_t reduction_size,
-                          size_t iteration_size,
-                          size_t reduction_size_per_wi)
+                          std::size_t reduction_size,
+                          std::size_t iteration_size,
+                          std::size_t reduction_size_per_wi)
         : inp_(data), vals_(vals), inds_(inds), out_(res),
           reduction_op_(reduction_op), identity_(identity_val),
           idx_reduction_op_(idx_reduction_op), idx_identity_(idx_identity_val),
@@ -2201,12 +2212,14 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        const size_t reduction_lid = it.get_local_id(0);
-        const size_t wg = it.get_local_range(0); //   0 <= reduction_lid < wg
+        const std::size_t reduction_lid = it.get_local_id(0);
+        const std::size_t wg =
+            it.get_local_range(0); //   0 <= reduction_lid < wg
 
-        const size_t iter_gid = it.get_group(0) % iter_gws_;
-        const size_t reduction_batch_id = it.get_group(0) / iter_gws_;
-        const size_t n_reduction_groups = it.get_group_range(0) / iter_gws_;
+        const std::size_t iter_gid = it.get_group(0) % iter_gws_;
+        const std::size_t reduction_batch_id = it.get_group(0) / iter_gws_;
+        const std::size_t n_reduction_groups =
+            it.get_group_range(0) / iter_gws_;
 
         // work-items operates over input with indices
         //   inp_data_id = reduction_batch_id * wg * reductions_per_wi + m * wg
@@ -2219,10 +2232,10 @@ public:
 
         argT local_red_val(identity_);
         outT local_idx(idx_identity_);
-        size_t arg_reduce_gid0 =
+        std::size_t arg_reduce_gid0 =
             reduction_lid + reduction_batch_id * wg * reductions_per_wi;
-        for (size_t m = 0; m < reductions_per_wi; ++m) {
-            size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
+        for (std::size_t m = 0; m < reductions_per_wi; ++m) {
+            std::size_t arg_reduce_gid = arg_reduce_gid0 + m * wg;
 
             if (arg_reduce_gid < reduction_max_gid_) {
                 auto inp_reduction_offset =
@@ -2384,8 +2397,8 @@ public:
 
 typedef sycl::event (*search_strided_impl_fn_ptr)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     int,
@@ -2452,11 +2465,11 @@ submit_search_reduction(sycl::queue &exec_q,
                         resTy *res,
                         argTy identity_val,
                         resTy idx_identity_val,
-                        size_t wg,
-                        size_t iter_nelems,
-                        size_t reduction_nelems,
-                        size_t reductions_per_wi,
-                        size_t reduction_groups,
+                        std::size_t wg,
+                        std::size_t iter_nelems,
+                        std::size_t reduction_nelems,
+                        std::size_t reductions_per_wi,
+                        std::size_t reduction_groups,
                         const InputOutputIterIndexerT &in_out_iter_indexer,
                         const ReductionIndexerT &reduction_indexer,
                         const std::vector<sycl::event> &depends)
@@ -2508,10 +2521,10 @@ template <typename argTy,
           typename IndexOpT>
 sycl::event search_over_group_temps_strided_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     int iter_nd,
@@ -2555,7 +2568,7 @@ sycl::event search_over_group_temps_strided_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputOutputIterIndexerT =
@@ -2585,11 +2598,11 @@ sycl::event search_over_group_temps_strided_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 4;
+    constexpr std::size_t preferred_reductions_per_wi = 4;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -2608,9 +2621,9 @@ sycl::event search_over_group_temps_strided_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -2628,12 +2641,12 @@ sycl::event search_over_group_temps_strided_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -2696,7 +2709,7 @@ sycl::event search_over_group_temps_strided_impl(
                     depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -2709,9 +2722,10 @@ sycl::event search_over_group_temps_strided_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -2766,8 +2780,8 @@ sycl::event search_over_group_temps_strided_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -2805,8 +2819,8 @@ sycl::event search_over_group_temps_strided_impl(
 
 typedef sycl::event (*search_contig_impl_fn_ptr)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     ssize_t,
@@ -2820,10 +2834,10 @@ template <typename argTy,
           typename IndexOpT>
 sycl::event search_axis1_over_group_temps_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -2847,7 +2861,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using InputIterIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
@@ -2881,11 +2895,11 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -2907,9 +2921,9 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -2927,12 +2941,12 @@ sycl::event search_axis1_over_group_temps_contig_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -2989,7 +3003,7 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                     depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -3002,9 +3016,10 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -3056,8 +3071,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /
@@ -3099,10 +3114,10 @@ template <typename argTy,
           typename IndexOpT>
 sycl::event search_axis0_over_group_temps_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of reductions    (num. of rows in a matrix
-                        // when reducing over rows)
-    size_t reduction_nelems, // size of each reduction  (length of rows, i.e.
-                             // number of columns)
+    std::size_t iter_nelems,      // number of reductions    (num. of rows in a
+                                  // matrix when reducing over rows)
+    std::size_t reduction_nelems, // size of each reduction  (length of rows,
+                                  // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -3126,7 +3141,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
 
     const sycl::device &d = exec_q.get_device();
     const auto &sg_sizes = d.get_info<sycl::info::device::sub_group_sizes>();
-    size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
+    std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
     if (reduction_nelems < wg) {
         using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
@@ -3163,11 +3178,11 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         return comp_ev;
     }
 
-    constexpr size_t preferred_reductions_per_wi = 8;
+    constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
-    size_t max_wg = reduction_detail::get_work_group_size(d);
+    std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    size_t reductions_per_wi(preferred_reductions_per_wi);
+    std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
         // Perform reduction using one 1 work-group per iteration,
         // can output directly to res
@@ -3190,9 +3205,9 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             wg = max_wg;
         }
         reductions_per_wi =
-            std::max<size_t>(1, (reduction_nelems + wg - 1) / wg);
+            std::max<std::size_t>(1, (reduction_nelems + wg - 1) / wg);
 
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + reductions_per_wi * wg - 1) /
             (reductions_per_wi * wg);
         assert(reduction_groups == 1);
@@ -3210,12 +3225,12 @@ sycl::event search_axis0_over_group_temps_contig_impl(
     }
     else {
         // more than one work-groups is needed, requires a temporary
-        size_t reduction_groups =
+        std::size_t reduction_groups =
             (reduction_nelems + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
         assert(reduction_groups > 1);
 
-        size_t second_iter_reduction_groups_ =
+        std::size_t second_iter_reduction_groups_ =
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
@@ -3273,7 +3288,7 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                     depends);
         }
 
-        size_t remaining_reduction_nelems = reduction_groups;
+        std::size_t remaining_reduction_nelems = reduction_groups;
 
         resTy *temp_arg = partially_reduced_tmp;
         resTy *temp2_arg = partially_reduced_tmp2;
@@ -3286,9 +3301,10 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         while (remaining_reduction_nelems >
                preferred_reductions_per_wi * max_wg)
         {
-            size_t reduction_groups_ = (remaining_reduction_nelems +
-                                        preferred_reductions_per_wi * wg - 1) /
-                                       (preferred_reductions_per_wi * wg);
+            std::size_t reduction_groups_ =
+                (remaining_reduction_nelems + preferred_reductions_per_wi * wg -
+                 1) /
+                (preferred_reductions_per_wi * wg);
             assert(reduction_groups_ > 1);
 
             // keep reducing
@@ -3340,8 +3356,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
         constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
-        reductions_per_wi =
-            std::max<size_t>(1, (remaining_reduction_nelems + wg - 1) / wg);
+        reductions_per_wi = std::max<std::size_t>(
+            1, (remaining_reduction_nelems + wg - 1) / wg);
 
         reduction_groups =
             (remaining_reduction_nelems + reductions_per_wi * wg - 1) /

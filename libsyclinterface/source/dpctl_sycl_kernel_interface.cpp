@@ -30,6 +30,7 @@
 #include "dpctl_string_utils.hpp"
 #include "dpctl_sycl_type_casters.hpp"
 #include <cstdint>
+#include <stddef.h>
 #include <sycl/sycl.hpp> /* Sycl headers */
 
 using namespace sycl;

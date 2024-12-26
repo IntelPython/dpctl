@@ -31,6 +31,7 @@
 #include "dpctl_utils.h"
 #include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
+#include <stddef.h>
 #include <string>
 
 using dpctl::syclinterface::dpctl_default_selector;
