@@ -75,6 +75,8 @@ std::uint32_t ceil_log2(SizeT n)
 
     std::uint32_t exp{1};
     --n;
+    // if n > 2^b, n = q * 2^b + r for q > 0 and 0 <= r < 2^b
+    // ceil_log2(q * 2^b + r) == ceil_log2(q * 2^b) == q + ceil_log2(n1)
     if (n >= (SizeT{1} << 32)) {
         n >>= 32;
         exp += 32;
