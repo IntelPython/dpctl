@@ -30,6 +30,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 #include "sycl/sycl.hpp"
@@ -140,12 +141,50 @@ smart_malloc_host(std::size_t count,
     return smart_malloc<T>(count, q, sycl::usm::alloc::host, propList);
 }
 
+namespace
+{
+template <typename T> struct valid_smart_ptr : public std::false_type
+{
+};
+
+template <typename ValT, typename DelT>
+struct valid_smart_ptr<std::unique_ptr<ValT, DelT> &>
+    : public std::is_same<DelT, USMDeleter>
+{
+};
+
+template <typename ValT, typename DelT>
+struct valid_smart_ptr<std::unique_ptr<ValT, DelT>>
+    : public std::is_same<DelT, USMDeleter>
+{
+};
+
+// base case
+template <typename... Rest> struct all_valid_smart_ptrs
+{
+    static constexpr bool value = true;
+};
+
+template <typename Arg, typename... RestArgs>
+struct all_valid_smart_ptrs<Arg, RestArgs...>
+{
+    static constexpr bool value = valid_smart_ptr<Arg>::value &&
+                                  (all_valid_smart_ptrs<RestArgs...>::value);
+};
+} // namespace
+
 template <typename... Args>
 sycl::event async_smart_free(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends,
                              Args &&...args)
 {
     constexpr std::size_t n = sizeof...(Args);
+    static_assert(
+        n > 0, "async_smart_free requires at least one smart pointer argument");
+
+    static_assert(
+        all_valid_smart_ptrs<Args...>::value,
+        "async_smart_free requires unique_ptr created with smart_malloc");
 
     std::vector<void *> ptrs;
     ptrs.reserve(n);
