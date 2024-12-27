@@ -30,13 +30,15 @@
 #include <iterator>
 #include <limits>
 #include <stdexcept>
-#include <sycl/sycl.hpp>
 #include <vector>
 
+#include <sycl/sycl.hpp>
+
 #include "kernels/dpctl_tensor_types.hpp"
-#include "merge_sort.hpp"
-#include "radix_sort.hpp"
-#include "search_sorted_detail.hpp"
+#include "kernels/sorting/merge_sort.hpp"
+#include "kernels/sorting/radix_sort.hpp"
+#include "kernels/sorting/search_sorted_detail.hpp"
+#include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include <sycl/ext/oneapi/sub_group_mask.hpp>
 
@@ -69,6 +71,68 @@ void scale_topk_params(const std::uint64_t nelems_per_slm,
     throw std::runtime_error("Could not construct top k kernel parameters");
 }
 
+template <class KernelName, typename argTy, typename IndexTy>
+sycl::event write_out_impl(sycl::queue &exec_q,
+                           std::size_t iter_nelems,
+                           std::size_t k,
+                           const argTy *arg_tp,
+                           const IndexTy *index_data,
+                           std::size_t iter_index_stride,
+                           std::size_t axis_nelems,
+                           argTy *vals_tp,
+                           IndexTy *inds_tp,
+                           const std::vector<sycl::event> &depends)
+{
+    constexpr std::uint32_t lws = 64;
+    constexpr std::uint32_t n_wi = 4;
+    const std::size_t nelems = iter_nelems * k;
+    const std::size_t n_groups = (nelems + lws * n_wi - 1) / (n_wi * lws);
+
+    sycl::range<1> lRange{lws};
+    sycl::range<1> gRange{n_groups * lws};
+    sycl::nd_range<1> ndRange{gRange, lRange};
+
+    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> it) {
+            const std::size_t gid = it.get_global_linear_id();
+            const auto &sg = it.get_sub_group();
+            const std::uint32_t lane_id = sg.get_local_id()[0];
+            const std::uint32_t sg_size = sg.get_max_local_range()[0];
+
+            const std::size_t start_id =
+                (gid - lane_id) * sg_size * n_wi + lane_id;
+
+#pragma unroll
+            for (std::uint32_t i = 0; i < n_wi; ++i) {
+                const std::size_t data_id = start_id + i * sg_size;
+
+                if (data_id < nelems) {
+                    const std::size_t iter_id = data_id / k;
+
+                    /*
+                    const std::size_t axis_gid = data_id - (iter_gid * k);
+                    const std::size_t src_idx = iter_gid * iter_index_stride +
+                    axis_gid;
+                    */
+                    const std::size_t src_idx =
+                        data_id + iter_id * (iter_index_stride - k);
+
+                    const IndexTy res_ind = index_data[src_idx];
+                    const argTy v = arg_tp[res_ind];
+
+                    const std::size_t dst_idx = data_id;
+                    vals_tp[dst_idx] = v;
+                    inds_tp[dst_idx] = (res_ind % axis_nelems);
+                }
+            }
+        });
+    });
+
+    return write_out_ev;
+}
+
 } // namespace topk_detail
 
 template <typename T1, typename T2, typename T3>
@@ -89,26 +153,18 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
                           const CompT &comp,
                           const std::vector<sycl::event> &depends)
 {
-    IndexTy *index_data =
-        sycl::malloc_device<IndexTy>(iter_nelems * axis_nelems, exec_q);
-    if (index_data == nullptr) {
-        throw std::runtime_error("Unable to allocate device_memory");
-    }
+    auto index_data_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+            iter_nelems * axis_nelems, exec_q);
+    // extract USM pointer
+    IndexTy *index_data = index_data_owner.get();
 
-    sycl::event populate_indexed_data_ev =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(depends);
+    using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy, CompT>;
 
-            auto const &range = sycl::range<1>(iter_nelems * axis_nelems);
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
-            using KernelName =
-                topk_populate_index_data_krn<argTy, IndexTy, CompT>;
-
-            cgh.parallel_for<KernelName>(range, [=](sycl::id<1> id) {
-                std::size_t i = id[0];
-                index_data[i] = static_cast<IndexTy>(i);
-            });
-        });
+    sycl::event populate_indexed_data_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, index_data, iter_nelems * axis_nelems, depends);
 
     std::size_t sorted_block_size;
     // Sort segments of the array
@@ -124,35 +180,17 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
         exec_q, iter_nelems, axis_nelems, index_data, comp, sorted_block_size,
         {base_sort_ev});
 
-    sycl::event write_out_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(merges_ev);
+    using WriteOutKernelName =
+        topk_full_merge_map_back_krn<argTy, IndexTy, CompT>;
 
-        using KernelName = topk_full_merge_map_back_krn<argTy, IndexTy, CompT>;
-
-        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-            std::size_t gid = id[0];
-
-            std::size_t iter_gid = gid / k;
-            std::size_t axis_gid = gid - (iter_gid * k);
-
-            std::size_t src_idx = iter_gid * axis_nelems + axis_gid;
-            std::size_t dst_idx = iter_gid * k + axis_gid;
-
-            auto res_ind = index_data[src_idx];
-            vals_tp[dst_idx] = arg_tp[res_ind];
-            inds_tp[dst_idx] = res_ind % axis_nelems;
-        });
-    });
+    sycl::event write_out_ev =
+        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+            exec_q, iter_nelems, k, arg_tp, index_data, axis_nelems,
+            axis_nelems, vals_tp, inds_tp, {merges_ev});
 
     sycl::event cleanup_host_task_event =
-        exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(write_out_ev);
-            const sycl::context &ctx = exec_q.get_context();
-
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task(
-                [ctx, index_data] { sycl_free_noexcept(index_data, ctx); });
-        });
+        dpctl::tensor::alloc_utils::async_smart_free(exec_q, {write_out_ev},
+                                                     index_data_owner);
 
     return cleanup_host_task_event;
 };
@@ -275,11 +313,11 @@ sycl::event topk_merge_impl(
                                              index_comp, depends);
         }
 
-        IndexTy *index_data =
-            sycl::malloc_device<IndexTy>(iter_nelems * alloc_len, exec_q);
-        if (index_data == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
+        auto index_data_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+                iter_nelems * alloc_len, exec_q);
+        // get raw USM pointer
+        IndexTy *index_data = index_data_owner.get();
 
         // no need to populate index data: SLM will be populated with default
         // values
@@ -396,36 +434,17 @@ sycl::event topk_merge_impl(
                 k_rounded, {base_sort_ev});
 
         // Write out top k of the merge-sorted memory
-        sycl::event write_topk_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(merges_ev);
+        using WriteOutKernelName =
+            topk_partial_merge_map_back_krn<argTy, IndexTy, ValueComp>;
 
-            using KernelName =
-                topk_partial_merge_map_back_krn<argTy, IndexTy, ValueComp>;
-
-            cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-                std::size_t gid = id[0];
-
-                std::size_t iter_gid = gid / k;
-                std::size_t axis_gid = gid - (iter_gid * k);
-
-                std::size_t src_idx = iter_gid * alloc_len + axis_gid;
-                std::size_t dst_idx = iter_gid * k + axis_gid;
-
-                auto res_ind = index_data[src_idx];
-                vals_tp[dst_idx] = arg_tp[res_ind];
-                inds_tp[dst_idx] = res_ind % axis_nelems;
-            });
-        });
+        sycl::event write_topk_ev =
+            topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+                exec_q, iter_nelems, k, arg_tp, index_data, alloc_len,
+                axis_nelems, vals_tp, inds_tp, {merges_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(write_topk_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, index_data] { sycl_free_noexcept(index_data, ctx); });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {write_topk_ev}, index_data_owner);
 
         return cleanup_host_task_event;
     }
@@ -465,33 +484,25 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
 
     const std::size_t total_nelems = iter_nelems * axis_nelems;
     const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    IndexTy *workspace = sycl::malloc_device<IndexTy>(
-        padded_total_nelems + total_nelems, exec_q);
+    auto workspace_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(
+            padded_total_nelems + total_nelems, exec_q);
 
-    IndexTy *tmp_tp = sycl::malloc_device<IndexTy>(total_nelems, exec_q);
-
-    if (nullptr == workspace || nullptr == tmp_tp) {
-        throw std::runtime_error(
-            "Not enough device memory for radix sort topk");
-    }
+    // get raw USM pointer
+    IndexTy *workspace = workspace_owner.get();
+    IndexTy *tmp_tp = workspace + padded_total_nelems;
 
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
 
-    sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
+    using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
 
-        using KernelName = topk_iota_krn<argTy, IndexTy>;
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                size_t i = id[0];
-                IndexTy sort_id = static_cast<IndexTy>(i);
-                workspace[i] = sort_id;
-            });
-    });
+    sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, workspace, total_nelems, depends);
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
@@ -499,37 +510,15 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
             ascending, {iota_ev});
 
     // Write out top k of the temporary
-    sycl::event write_topk_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
+    using WriteOutKernelName = topk_radix_map_back_krn<argTy, IndexTy>;
 
-        using KernelName = topk_radix_map_back_krn<argTy, IndexTy>;
+    sycl::event write_topk_ev =
+        topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
+            exec_q, iter_nelems, k, arg_tp, tmp_tp, axis_nelems, axis_nelems,
+            vals_tp, inds_tp, {radix_sort_ev});
 
-        cgh.parallel_for<KernelName>(iter_nelems * k, [=](sycl::id<1> id) {
-            std::size_t gid = id[0];
-
-            std::size_t iter_gid = gid / k;
-            std::size_t axis_gid = gid - (iter_gid * k);
-
-            std::size_t src_idx = iter_gid * axis_nelems + axis_gid;
-            std::size_t dst_idx = iter_gid * k + axis_gid;
-
-            IndexTy res_ind = tmp_tp[src_idx];
-            vals_tp[dst_idx] = arg_tp[res_ind];
-            inds_tp[dst_idx] = res_ind % axis_nelems;
-        });
-    });
-
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(write_topk_ev);
-
-        const sycl::context &ctx = exec_q.get_context();
-
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, workspace, tmp_tp] {
-            sycl_free_noexcept(workspace, ctx);
-            sycl_free_noexcept(tmp_tp, ctx);
-        });
-    });
+    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {write_topk_ev}, workspace_owner);
 
     return cleanup_ev;
 }
