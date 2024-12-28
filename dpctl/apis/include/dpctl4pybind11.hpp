@@ -198,7 +198,13 @@ private:
     {
         void operator()(py::object *p) const
         {
-            bool guard = (Py_IsInitialized() && !_Py_IsFinalizing());
+            const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+            const bool finilizing = _Py_IsFinalizing();
+#else
+            const bool finilizing = Py_IsFinalizing();
+#endif
+            const bool guard = initialized && !finilizing;
 
             if (guard) {
                 delete p;

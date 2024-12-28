@@ -166,7 +166,10 @@ T custom_reduce_over_group(const GroupT &wg,
                            const T &local_val,
                            const OpT &op)
 {
+    // value experimentally tuned to achieve best runtime on Iris Xe,
+    // Arc A140V integrated Intel GPUs, and discrete Intel Max GPU.
     constexpr std::uint32_t low_sz = 8u;
+    // maximal work-group size
     constexpr std::uint32_t high_sz = 1024u;
     const std::uint32_t wgs = wg.get_local_linear_range();
     const std::uint32_t lid = wg.get_local_linear_id();
@@ -192,7 +195,7 @@ T custom_reduce_over_group(const GroupT &wg,
 #pragma unroll
         for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
-                n_witems = (n_witems + 1) >> 1;
+                n_witems >>= 1;
                 _fold(local_mem_acc, lid, n_witems, op);
                 sycl::group_barrier(wg, sycl::memory_scope::work_group);
             }
@@ -209,29 +212,89 @@ T custom_reduce_over_group(const GroupT &wg,
     return sycl::group_broadcast(wg, red_val_over_wg, 0);
 }
 
-template <typename T, typename GroupT, typename LocAccT, typename OpT>
-T custom_inclusive_scan_over_group(const GroupT &wg,
-                                   LocAccT local_mem_acc,
-                                   const T local_val,
-                                   const OpT &op)
+template <typename GroupT,
+          typename SubGroupT,
+          typename LocAccT,
+          typename T,
+          typename OpT>
+T custom_inclusive_scan_over_group(GroupT &&wg,
+                                   SubGroupT &&sg,
+                                   LocAccT &&local_mem_acc,
+                                   const T &local_val,
+                                   const T &identity,
+                                   OpT &&op)
 {
     const std::uint32_t local_id = wg.get_local_id(0);
     const std::uint32_t wgs = wg.get_local_range(0);
-    local_mem_acc[local_id] = local_val;
 
-    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+    const std::uint32_t lane_id = sg.get_local_id()[0];
+    const std::uint32_t sgSize = sg.get_local_range()[0];
 
-    if (wg.leader()) {
-        T scan_val = local_mem_acc[0];
-        for (std::uint32_t i = 1; i < wgs; ++i) {
-            scan_val = op(local_mem_acc[i], scan_val);
-            local_mem_acc[i] = scan_val;
+    T scan_val = local_val;
+    for (std::uint32_t step = 1; step < sgSize; step *= 2) {
+        const bool advanced_lane = (lane_id >= step);
+        const std::uint32_t src_lane_id =
+            (advanced_lane ? lane_id - step : lane_id);
+        const T modifier = sycl::select_from_group(sg, scan_val, src_lane_id);
+        if (advanced_lane) {
+            scan_val = op(scan_val, modifier);
         }
     }
 
-    // ensure all work-items see the same SLM that leader updated
+    local_mem_acc[local_id] = scan_val;
     sycl::group_barrier(wg, sycl::memory_scope::work_group);
-    return local_mem_acc[local_id];
+
+    const std::uint32_t max_sgSize = sg.get_max_local_range()[0];
+    const std::uint32_t sgr_id = sg.get_group_id()[0];
+
+    // now scan
+    const std::uint32_t n_aggregates = 1 + ((wgs - 1) / max_sgSize);
+    const bool large_wg = (n_aggregates > max_sgSize);
+    if (large_wg) {
+        if (wg.leader()) {
+            T _scan_val = identity;
+            for (std::uint32_t i = 1; i <= n_aggregates - max_sgSize; ++i) {
+                _scan_val = op(local_mem_acc[i * max_sgSize - 1], _scan_val);
+                local_mem_acc[i * max_sgSize - 1] = _scan_val;
+            }
+        }
+        sycl::group_barrier(wg, sycl::memory_scope::work_group);
+    }
+
+    if (sgr_id == 0) {
+        const std::uint32_t offset =
+            (large_wg) ? n_aggregates - max_sgSize : 0u;
+        const bool in_range = (lane_id < n_aggregates);
+        const bool in_bounds = in_range && (lane_id > 0 || large_wg);
+
+        T __scan_val = (in_bounds)
+                           ? local_mem_acc[(offset + lane_id) * max_sgSize - 1]
+                           : identity;
+        for (std::uint32_t step = 1; step < sgSize; step *= 2) {
+            const bool advanced_lane = (lane_id >= step);
+            const std::uint32_t src_lane_id =
+                (advanced_lane ? lane_id - step : lane_id);
+            const T modifier =
+                sycl::select_from_group(sg, __scan_val, src_lane_id);
+            if (advanced_lane && in_range) {
+                __scan_val = op(__scan_val, modifier);
+            }
+        }
+        if (in_bounds) {
+            local_mem_acc[(offset + lane_id) * max_sgSize - 1] = __scan_val;
+        }
+    }
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    if (sgr_id > 0) {
+        const T modifier = local_mem_acc[sgr_id * max_sgSize - 1];
+        scan_val = op(scan_val, modifier);
+    }
+
+    // ensure all work-items finished reading from SLM
+    sycl::group_barrier(wg, sycl::memory_scope::work_group);
+
+    return scan_val;
 }
 
 // Reduction functors
