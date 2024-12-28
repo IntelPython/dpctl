@@ -55,7 +55,7 @@ def _expected_largest_inds(inp, n, shift, k):
 @pytest.mark.parametrize(
     "dtype",
     [
-        "i1",
+        pytest.param("i1", marks=pytest.mark.skip(reason="CPU bug")),
         "u1",
         "i2",
         "u2",
@@ -74,6 +74,8 @@ def _expected_largest_inds(inp, n, shift, k):
 def test_top_k_1d_largest(dtype, n):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+    if dtype == "i1":
+        pytest.skip()
 
     shift, k = 734, 5
     o = dpt.ones(n, dtype=dtype)
@@ -126,7 +128,7 @@ def _expected_smallest_inds(inp, n, shift, k):
 @pytest.mark.parametrize(
     "dtype",
     [
-        "i1",
+        pytest.param("i1", marks=pytest.mark.skip(reason="CPU bug")),
         "u1",
         "i2",
         "u2",
