@@ -228,7 +228,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -v --pyargs $MODULE_NAME
+          python -m pytest -v --skip-known-top-k-failures-on-cpu --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
@@ -399,7 +399,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.workdir }}\test_tmp
         run: >-
-          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --skip-known-top-k-failures-on-cpu --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux

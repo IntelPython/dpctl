@@ -62,6 +62,14 @@ def pytest_addoption(parser):
         default=False,
         help="skip test_syclinterface",
     )
+    parser.addoption(
+        "--skip-known-top-k-failures-on-cpu",
+        action="store_true",
+        default=False,
+        help="skip top_k tests for types int8/int16 known to "
+        "fail on CPU devices on older architectures with "
+        "DPC++ 2025.0",
+    )
 
 
 def pytest_collection_modifyitems(config, items):

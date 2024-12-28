@@ -20,6 +20,11 @@ import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 
+@pytest.fixture
+def skip_known_failues_on_cpu(request):
+    return request.config.getoption("--skip-known-top-k-failures-on-cpu")
+
+
 def _expected_largest_inds(inp, n, shift, k):
     "Computed expected top_k indices for mode='largest'"
     assert k < n
@@ -52,10 +57,17 @@ def _expected_largest_inds(inp, n, shift, k):
     return expected_inds
 
 
+def _skip_if_workaround_is_needed(q, dtype, n, enabled):
+    if enabled:
+        dev = q.sycl_device
+        if dev.is_cpu and dtype in ["i1", "i2"] and n > 128:
+            pytest.skip(reason="CPU driver bug")
+
+
 @pytest.mark.parametrize(
     "dtype",
     [
-        pytest.param("i1", marks=pytest.mark.skip(reason="CPU bug")),
+        "i1",
         "u1",
         "i2",
         "u2",
@@ -71,11 +83,10 @@ def _expected_largest_inds(inp, n, shift, k):
     ],
 )
 @pytest.mark.parametrize("n", [33, 43, 255, 511, 1021, 8193])
-def test_top_k_1d_largest(dtype, n):
+def test_top_k_1d_largest(dtype, n, skip_known_failues_on_cpu):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
-    if dtype == "i1":
-        pytest.skip()
+    _skip_if_workaround_is_needed(q, dtype, n, skip_known_failues_on_cpu)
 
     shift, k = 734, 5
     o = dpt.ones(n, dtype=dtype)
@@ -128,7 +139,7 @@ def _expected_smallest_inds(inp, n, shift, k):
 @pytest.mark.parametrize(
     "dtype",
     [
-        pytest.param("i1", marks=pytest.mark.skip(reason="CPU bug")),
+        "i1",
         "u1",
         "i2",
         "u2",
@@ -144,9 +155,11 @@ def _expected_smallest_inds(inp, n, shift, k):
     ],
 )
 @pytest.mark.parametrize("n", [37, 39, 61, 255, 257, 513, 1021, 8193])
-def test_top_k_1d_smallest(dtype, n):
+def test_top_k_1d_smallest(dtype, n, skip_known_failues_on_cpu):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
+
+    _skip_if_workaround_is_needed(q, dtype, n, skip_known_failues_on_cpu)
 
     shift, k = 734, 5
     o = dpt.ones(n, dtype=dtype)
@@ -163,3 +176,91 @@ def test_top_k_1d_smallest(dtype, n):
     assert dpt.all(s.indices == expected_inds)
     assert dpt.all(s.values == dpt.zeros(k, dtype=dtype)), s.values
     assert dpt.all(s.values == inp[s.indices]), s.indices
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        # skip short types to ensure that m*n can be represented
+        # in the type
+        "i4",
+        "u4",
+        "i8",
+        "u8",
+        "f2",
+        "f4",
+        "f8",
+        "c8",
+        "c16",
+    ],
+)
+@pytest.mark.parametrize("n", [37, 39, 61, 255, 257, 513, 1021, 8193])
+def test_top_k_2d_largest(dtype, n):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    m, k = 8, 3
+    if dtype == "f2" and m * n > 2000:
+        pytest.skip(
+            "f2 can not distinguish between large integers used in this test"
+        )
+
+    x = dpt.reshape(dpt.arange(m * n, dtype=dtype), (m, n))
+
+    r = dpt.top_k(x, k, axis=1)
+
+    assert r.values.shape == (m, k)
+    assert r.indices.shape == (m, k)
+    expected_inds = dpt.reshape(dpt.arange(n, dtype=r.indices.dtype), (1, n))[
+        :, -k:
+    ]
+    assert expected_inds.shape == (1, k)
+    assert dpt.all(
+        dpt.sort(r.indices, axis=1) == dpt.sort(expected_inds, axis=1)
+    ), (r.indices, expected_inds)
+    expected_vals = x[:, -k:]
+    assert dpt.all(
+        dpt.sort(r.values, axis=1) == dpt.sort(expected_vals, axis=1)
+    )
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        # skip short types to ensure that m*n can be represented
+        # in the type
+        "i4",
+        "u4",
+        "i8",
+        "u8",
+        "f2",
+        "f4",
+        "f8",
+        "c8",
+        "c16",
+    ],
+)
+@pytest.mark.parametrize("n", [37, 39, 61, 255, 257, 513, 1021, 8193])
+def test_top_k_2d_smallest(dtype, n):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dtype, q)
+
+    m, k = 8, 3
+    if dtype == "f2" and m * n > 2000:
+        pytest.skip(
+            "f2 can not distinguish between large integers used in this test"
+        )
+
+    x = dpt.reshape(dpt.arange(m * n, dtype=dtype), (m, n))
+
+    r = dpt.top_k(x, k, axis=1, mode="smallest")
+
+    assert r.values.shape == (m, k)
+    assert r.indices.shape == (m, k)
+    expected_inds = dpt.reshape(dpt.arange(n, dtype=r.indices.dtype), (1, n))[
+        :, :k
+    ]
+    assert dpt.all(
+        dpt.sort(r.indices, axis=1) == dpt.sort(expected_inds, axis=1)
+    )
+    assert dpt.all(dpt.sort(r.values, axis=1) == dpt.sort(x[:, :k], axis=1))
