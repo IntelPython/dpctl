@@ -93,11 +93,6 @@ jobs:
               cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
 
-      - name: Install system components
-        shell: bash -l {0}
-        run: |
-          sudo apt-get install libtinfo5
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
