@@ -28,6 +28,10 @@
 
 #include <exception>
 #include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <type_traits>
+#include <vector>
 
 #include "sycl/sycl.hpp"
 
@@ -73,9 +77,135 @@ void sycl_free_noexcept(T *ptr, const sycl::context &ctx) noexcept
     }
 }
 
-template <typename T> void sycl_free_noexcept(T *ptr, sycl::queue &q) noexcept
+template <typename T>
+void sycl_free_noexcept(T *ptr, const sycl::queue &q) noexcept
 {
     sycl_free_noexcept(ptr, q.get_context());
+}
+
+class USMDeleter
+{
+private:
+    sycl::context ctx_;
+
+public:
+    USMDeleter(const sycl::queue &q) : ctx_(q.get_context()) {}
+    USMDeleter(const sycl::context &ctx) : ctx_(ctx) {}
+
+    template <typename T> void operator()(T *ptr) const
+    {
+        sycl_free_noexcept(ptr, ctx_);
+    }
+};
+
+template <typename T>
+std::unique_ptr<T, USMDeleter>
+smart_malloc(std::size_t count,
+             const sycl::queue &q,
+             sycl::usm::alloc kind,
+             const sycl::property_list &propList = {})
+{
+    T *ptr = sycl::malloc<T>(count, q, kind, propList);
+    if (nullptr == ptr) {
+        throw std::runtime_error("Unable to allocate device_memory");
+    }
+
+    auto usm_deleter = USMDeleter(q);
+    return std::unique_ptr<T, USMDeleter>(ptr, usm_deleter);
+}
+
+template <typename T>
+std::unique_ptr<T, USMDeleter>
+smart_malloc_device(std::size_t count,
+                    const sycl::queue &q,
+                    const sycl::property_list &propList = {})
+{
+    return smart_malloc<T>(count, q, sycl::usm::alloc::device, propList);
+}
+
+template <typename T>
+std::unique_ptr<T, USMDeleter>
+smart_malloc_shared(std::size_t count,
+                    const sycl::queue &q,
+                    const sycl::property_list &propList = {})
+{
+    return smart_malloc<T>(count, q, sycl::usm::alloc::shared, propList);
+}
+
+template <typename T>
+std::unique_ptr<T, USMDeleter>
+smart_malloc_host(std::size_t count,
+                  const sycl::queue &q,
+                  const sycl::property_list &propList = {})
+{
+    return smart_malloc<T>(count, q, sycl::usm::alloc::host, propList);
+}
+
+namespace
+{
+template <typename T> struct valid_smart_ptr : public std::false_type
+{
+};
+
+template <typename ValT, typename DelT>
+struct valid_smart_ptr<std::unique_ptr<ValT, DelT> &>
+    : public std::is_same<DelT, USMDeleter>
+{
+};
+
+template <typename ValT, typename DelT>
+struct valid_smart_ptr<std::unique_ptr<ValT, DelT>>
+    : public std::is_same<DelT, USMDeleter>
+{
+};
+
+// base case
+template <typename... Rest> struct all_valid_smart_ptrs
+{
+    static constexpr bool value = true;
+};
+
+template <typename Arg, typename... RestArgs>
+struct all_valid_smart_ptrs<Arg, RestArgs...>
+{
+    static constexpr bool value = valid_smart_ptr<Arg>::value &&
+                                  (all_valid_smart_ptrs<RestArgs...>::value);
+};
+} // namespace
+
+template <typename... Args>
+sycl::event async_smart_free(sycl::queue &exec_q,
+                             const std::vector<sycl::event> &depends,
+                             Args &&...args)
+{
+    constexpr std::size_t n = sizeof...(Args);
+    static_assert(
+        n > 0, "async_smart_free requires at least one smart pointer argument");
+
+    static_assert(
+        all_valid_smart_ptrs<Args...>::value,
+        "async_smart_free requires unique_ptr created with smart_malloc");
+
+    std::vector<void *> ptrs;
+    ptrs.reserve(n);
+    (ptrs.push_back(reinterpret_cast<void *>(args.get())), ...);
+
+    std::vector<USMDeleter> dels;
+    dels.reserve(n);
+    (dels.push_back(args.get_deleter()), ...);
+
+    sycl::event ht_e = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        cgh.host_task([ptrs, dels]() {
+            for (size_t i = 0; i < ptrs.size(); ++i) {
+                dels[i](ptrs[i]);
+            }
+        });
+    });
+    (args.release(), ...);
+
+    return ht_e;
 }
 
 } // end of namespace alloc_utils

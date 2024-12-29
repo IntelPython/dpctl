@@ -199,7 +199,7 @@ from ._set_functions import (
     unique_inverse,
     unique_values,
 )
-from ._sorting import argsort, sort
+from ._sorting import argsort, sort, top_k
 from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 
@@ -387,4 +387,5 @@ __all__ = [
     "DLDeviceType",
     "take_along_axis",
     "put_along_axis",
+    "top_k",
 ]
