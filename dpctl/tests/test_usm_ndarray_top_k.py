@@ -100,9 +100,9 @@ def test_top_k_1d_largest(dtype, n, skip_known_failues_on_cpu):
     assert s.values.shape == (k,)
     assert s.values.dtype == inp.dtype
     assert s.indices.shape == (k,)
-    assert dpt.all(s.indices == expected_inds)
     assert dpt.all(s.values == dpt.ones(k, dtype=dtype)), s.values
     assert dpt.all(s.values == inp[s.indices]), s.indices
+    assert dpt.all(s.indices == expected_inds), (s.indices, expected_inds)
 
 
 def _expected_smallest_inds(inp, n, shift, k):
@@ -173,9 +173,9 @@ def test_top_k_1d_smallest(dtype, n, skip_known_failues_on_cpu):
     assert s.values.shape == (k,)
     assert s.values.dtype == inp.dtype
     assert s.indices.shape == (k,)
-    assert dpt.all(s.indices == expected_inds)
     assert dpt.all(s.values == dpt.zeros(k, dtype=dtype)), s.values
     assert dpt.all(s.values == inp[s.indices]), s.indices
+    assert dpt.all(s.indices == expected_inds), (s.indices, expected_inds)
 
 
 @pytest.mark.parametrize(
@@ -264,3 +264,67 @@ def test_top_k_2d_smallest(dtype, n):
         dpt.sort(r.indices, axis=1) == dpt.sort(expected_inds, axis=1)
     )
     assert dpt.all(dpt.sort(r.values, axis=1) == dpt.sort(x[:, :k], axis=1))
+
+
+def test_top_k_0d():
+    get_queue_or_skip()
+
+    a = dpt.ones(tuple(), dtype="i4")
+    assert a.ndim == 0
+    assert a.size == 1
+
+    r = dpt.top_k(a, 1)
+    assert r.values == a
+    assert r.indices == dpt.zeros_like(a, dtype=r.indices.dtype)
+
+
+def test_top_k_noncontig():
+    get_queue_or_skip()
+
+    a = dpt.arange(256, dtype=dpt.int32)[::2]
+    r = dpt.top_k(a, 3)
+
+    assert dpt.all(dpt.sort(r.values) == dpt.asarray([250, 252, 254])), r.values
+    assert dpt.all(
+        dpt.sort(r.indices) == dpt.asarray([125, 126, 127])
+    ), r.indices
+
+
+def test_top_k_axis0():
+    get_queue_or_skip()
+
+    m, n, k = 128, 8, 3
+    x = dpt.reshape(dpt.arange(m * n, dtype=dpt.int32), (m, n))
+
+    r = dpt.top_k(x, k, axis=0, mode="smallest")
+    assert r.values.shape == (k, n)
+    assert r.indices.shape == (k, n)
+    expected_inds = dpt.reshape(dpt.arange(m, dtype=r.indices.dtype), (m, 1))[
+        :k, :
+    ]
+    assert dpt.all(
+        dpt.sort(r.indices, axis=0) == dpt.sort(expected_inds, axis=0)
+    )
+    assert dpt.all(dpt.sort(r.values, axis=0) == dpt.sort(x[:k, :], axis=0))
+
+
+def test_top_k_validation():
+    get_queue_or_skip()
+    x = dpt.ones(10, dtype=dpt.int64)
+    with pytest.raises(ValueError):
+        # k must be positive
+        dpt.top_k(x, -1)
+    with pytest.raises(TypeError):
+        # argument should be usm_ndarray
+        dpt.top_k(list(), 2)
+    x2 = dpt.reshape(x, (2, 5))
+    with pytest.raises(ValueError):
+        # k must not exceed array dimension
+        # along specified axis
+        dpt.top_k(x2, 100, axis=1)
+    with pytest.raises(ValueError):
+        # for 0d arrays, k must be 1
+        dpt.top_k(x[0], 2)
+    with pytest.raises(ValueError):
+        # mode must be "largest", or "smallest"
+        dpt.top_k(x, 2, mode="invalid")
