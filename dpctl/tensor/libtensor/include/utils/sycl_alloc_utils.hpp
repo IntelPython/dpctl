@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <iostream>
 
@@ -50,7 +51,7 @@ public:
         typedef usm_host_allocator<U> other;
     };
 
-    void deallocate(T *ptr, size_t n)
+    void deallocate(T *ptr, std::size_t n)
     {
         try {
             baseT::deallocate(ptr, n);

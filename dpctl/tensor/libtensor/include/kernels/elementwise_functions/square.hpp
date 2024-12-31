@@ -49,6 +49,7 @@ namespace kernels
 namespace square
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -160,7 +161,7 @@ class square_contig_kernel;
 
 template <typename argTy>
 sycl::event square_contig_impl(sycl::queue &exec_q,
-                               size_t nelems,
+                               std::size_t nelems,
                                const char *arg_p,
                                char *res_p,
                                const std::vector<sycl::event> &depends = {})
@@ -205,7 +206,7 @@ template <typename T1, typename T2, typename T3> class square_strided_kernel;
 template <typename argTy>
 sycl::event
 square_strided_impl(sycl::queue &exec_q,
-                    size_t nelems,
+                    std::size_t nelems,
                     int nd,
                     const ssize_t *shape_and_strides,
                     const char *arg_p,

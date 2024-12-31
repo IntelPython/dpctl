@@ -26,6 +26,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <stdexcept>
@@ -211,15 +212,15 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t dst_nelems = dst.get_size();
+    std::size_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    size_t reduction_nelems(1);
+    std::size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
-        reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
+        reduction_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
     // check that dst and src do not overlap
@@ -263,7 +264,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
             fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
         }
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -296,7 +297,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
             fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
         }
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -374,17 +375,17 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
         bool array_reduce_all_elems = false;
-        size_t iter_nelems = dst_nelems;
+        std::size_t iter_nelems = dst_nelems;
 
         if (simplified_reduction_src_strides[0] == 1) {
             array_reduce_all_elems = (simplified_iteration_shape[0] == 1);
             mat_reduce_over_axis1 =
                 (simplified_iteration_dst_strides[0] == 1) &&
-                (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
-                 reduction_nelems);
+                (static_cast<std::size_t>(
+                     simplified_iteration_src_strides[0]) == reduction_nelems);
         }
-        else if (static_cast<size_t>(simplified_reduction_src_strides[0]) ==
-                 iter_nelems)
+        else if (static_cast<std::size_t>(
+                     simplified_reduction_src_strides[0]) == iter_nelems)
         {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
@@ -554,15 +555,15 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t dst_nelems = dst.get_size();
+    std::size_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    size_t reduction_nelems(1);
+    std::size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
-        reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
+        reduction_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
     // check that dst and src do not overlap
@@ -591,7 +592,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     {
         auto fn = axis1_temps_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -615,7 +616,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
     {
         auto fn = axis0_temps_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -693,17 +694,17 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
         bool array_reduce_all_elems = false;
-        size_t iter_nelems = dst_nelems;
+        std::size_t iter_nelems = dst_nelems;
 
         if (simplified_reduction_src_strides[0] == 1) {
             array_reduce_all_elems = (simplified_iteration_shape[0] == 1);
             mat_reduce_over_axis1 =
                 (simplified_iteration_dst_strides[0] == 1) &&
-                (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
-                 reduction_nelems);
+                (static_cast<std::size_t>(
+                     simplified_iteration_src_strides[0]) == reduction_nelems);
         }
-        else if (static_cast<size_t>(simplified_reduction_src_strides[0]) ==
-                 iter_nelems)
+        else if (static_cast<std::size_t>(
+                     simplified_reduction_src_strides[0]) == iter_nelems)
         {
             mat_reduce_over_axis0 =
                 (simplified_iteration_dst_strides[0] == 1) &&
@@ -842,15 +843,15 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t dst_nelems = dst.get_size();
+    std::size_t dst_nelems = dst.get_size();
 
     if (dst_nelems == 0) {
         return std::make_pair(sycl::event(), sycl::event());
     }
 
-    size_t reduction_nelems(1);
+    std::size_t reduction_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
-        reduction_nelems *= static_cast<size_t>(src_shape_ptr[i]);
+        reduction_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
     // check that dst and src do not overlap
@@ -877,7 +878,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     if (is_src_c_contig && is_dst_c_contig) {
         auto fn = axis1_contig_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -899,7 +900,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     else if (is_src_f_contig && dst_nd == 1) {
         auto fn = axis0_contig_dispatch_table[src_typeid][dst_typeid];
         if (fn != nullptr) {
-            size_t iter_nelems = dst_nelems;
+            std::size_t iter_nelems = dst_nelems;
 
             constexpr py::ssize_t zero_offset = 0;
 
@@ -974,15 +975,15 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
     if ((reduction_nd == 1) && (iteration_nd == 1)) {
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
-        size_t iter_nelems = dst_nelems;
+        std::size_t iter_nelems = dst_nelems;
 
         if (compact_reduction_src_strides[0] == 1) {
             mat_reduce_over_axis1 =
                 (simplified_iteration_dst_strides[0] == 1) &&
-                (static_cast<size_t>(simplified_iteration_src_strides[0]) ==
-                 reduction_nelems);
+                (static_cast<std::size_t>(
+                     simplified_iteration_src_strides[0]) == reduction_nelems);
         }
-        else if (static_cast<size_t>(compact_reduction_src_strides[0]) ==
+        else if (static_cast<std::size_t>(compact_reduction_src_strides[0]) ==
                  iter_nelems)
         {
             mat_reduce_over_axis0 =
@@ -1129,11 +1130,11 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
 
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
 
-    size_t dst_nelems = dst.get_size();
+    std::size_t dst_nelems = dst.get_size();
 
-    size_t red_nelems(1);
+    std::size_t red_nelems(1);
     for (int i = dst_nd; i < src_nd; ++i) {
-        red_nelems *= static_cast<size_t>(src_shape_ptr[i]);
+        red_nelems *= static_cast<std::size_t>(src_shape_ptr[i]);
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -1256,16 +1257,16 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
         bool mat_reduce_over_axis1 = false;
         bool mat_reduce_over_axis0 = false;
         bool array_reduce_all_elems = false;
-        size_t iter_nelems = dst_nelems;
+        std::size_t iter_nelems = dst_nelems;
 
         if (simplified_red_src_strides[0] == 1) {
             array_reduce_all_elems = (simplified_iter_shape[0] == 1);
             mat_reduce_over_axis1 =
                 (simplified_iter_dst_strides[0] == 1) &&
-                (static_cast<size_t>(simplified_iter_src_strides[0]) ==
+                (static_cast<std::size_t>(simplified_iter_src_strides[0]) ==
                  red_nelems);
         }
-        else if (static_cast<size_t>(simplified_red_src_strides[0]) ==
+        else if (static_cast<std::size_t>(simplified_red_src_strides[0]) ==
                  iter_nelems)
         {
             mat_reduce_over_axis0 = (simplified_iter_dst_strides[0] == 1) &&

@@ -24,6 +24,7 @@
 
 #pragma once
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -43,6 +44,7 @@ namespace kernels
 namespace copy_and_cast
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 using dpctl::tensor::kernels::alignment_utils::
@@ -113,7 +115,7 @@ public:
  */
 typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const ssize_t *,
     const char *,
@@ -159,7 +161,7 @@ typedef sycl::event (*copy_and_cast_generic_fn_ptr_t)(
 template <typename dstTy, typename srcTy>
 sycl::event
 copy_and_cast_generic_impl(sycl::queue &q,
-                           size_t nelems,
+                           std::size_t nelems,
                            int nd,
                            const ssize_t *shape_and_strides,
                            const char *src_p,
@@ -217,12 +219,14 @@ template <typename srcT,
 class ContigCopyFunctor
 {
 private:
-    const size_t nelems;
+    const std::size_t nelems;
     const srcT *src_p = nullptr;
     dstT *dst_p = nullptr;
 
 public:
-    ContigCopyFunctor(const size_t nelems_, const srcT *src_p_, dstT *dst_p_)
+    ContigCopyFunctor(const std::size_t nelems_,
+                      const srcT *src_p_,
+                      dstT *dst_p_)
         : nelems(nelems_), src_p(src_p_), dst_p(dst_p_)
     {
     }
@@ -238,20 +242,21 @@ public:
                       is_complex<dstT>::value)
         {
             std::uint16_t sgSize = ndit.get_sub_group().get_local_range()[0];
-            const size_t gid = ndit.get_global_linear_id();
+            const std::size_t gid = ndit.get_global_linear_id();
 
             // start = (gid / sgSize) * elems_per_sg + (gid % sgSize)
             const std::uint16_t elems_per_sg = sgSize * elems_per_wi;
-            const size_t start = (gid / sgSize) * (elems_per_sg - sgSize) + gid;
-            const size_t end = std::min(nelems, start + elems_per_sg);
-            for (size_t offset = start; offset < end; offset += sgSize) {
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems, start + elems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
                 dst_p[offset] = fn(src_p[offset]);
             }
         }
         else {
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
-            const size_t base =
+            const std::size_t base =
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
 
@@ -260,7 +265,7 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    const size_t offset = base + it * sgSize;
+                    const std::size_t offset = base + it * sgSize;
                     auto src_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&src_p[offset]);
@@ -278,8 +283,8 @@ public:
                 }
             }
             else {
-                const size_t start = base + sg.get_local_id()[0];
-                for (size_t k = start; k < nelems; k += sgSize) {
+                const std::size_t start = base + sg.get_local_id()[0];
+                for (std::size_t k = start; k < nelems; k += sgSize) {
                     dst_p[k] = fn(src_p[k]);
                 }
             }
@@ -292,7 +297,7 @@ public:
  */
 typedef sycl::event (*copy_and_cast_contig_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     char *,
     const std::vector<sycl::event> &);
@@ -318,7 +323,7 @@ typedef sycl::event (*copy_and_cast_contig_fn_ptr_t)(
  */
 template <typename dstTy, typename srcTy>
 sycl::event copy_and_cast_contig_impl(sycl::queue &q,
-                                      size_t nelems,
+                                      std::size_t nelems,
                                       const char *src_cp,
                                       char *dst_cp,
                                       const std::vector<sycl::event> &depends)
@@ -332,10 +337,10 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         const srcTy *src_tp = reinterpret_cast<const srcTy *>(src_cp);
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_cp);
 
-        size_t lws = 64;
+        std::size_t lws = 64;
         constexpr std::uint32_t vec_sz = 4;
         constexpr std::uint32_t n_vecs = 2;
-        const size_t n_groups =
+        const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
@@ -393,7 +398,7 @@ template <typename fnT, typename D, typename S> struct CopyAndCastContigFactory
  */
 typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const std::array<ssize_t, 1> &,
     const std::array<ssize_t, 1> &,
     const std::array<ssize_t, 1> &,
@@ -409,7 +414,7 @@ typedef sycl::event (*copy_and_cast_1d_fn_ptr_t)(
  */
 typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const std::array<ssize_t, 2> &,
     const std::array<ssize_t, 2> &,
     const std::array<ssize_t, 2> &,
@@ -451,7 +456,7 @@ typedef sycl::event (*copy_and_cast_2d_fn_ptr_t)(
 template <typename dstTy, typename srcTy, int nd>
 sycl::event
 copy_and_cast_nd_specialized_impl(sycl::queue &q,
-                                  size_t nelems,
+                                  std::size_t nelems,
                                   const std::array<ssize_t, nd> &shape,
                                   const std::array<ssize_t, nd> &src_strides,
                                   const std::array<ssize_t, nd> &dst_strides,
@@ -544,7 +549,7 @@ public:
 
 typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     ssize_t *,
     const char *,
@@ -597,7 +602,7 @@ typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
 template <typename dstTy, typename srcTy>
 void copy_and_cast_from_host_impl(
     sycl::queue &q,
-    size_t nelems,
+    std::size_t nelems,
     int nd,
     ssize_t *shape_and_strides,
     const char *host_src_p,
@@ -663,7 +668,7 @@ struct CopyAndCastFromHostFactory
 
 typedef void (*copy_and_cast_from_host_contig_blocking_fn_ptr_t)(
     sycl::queue &,
-    size_t,       /* nelems */
+    std::size_t,  /* nelems */
     const char *, /* src_pointer */
     ssize_t,      /* src_offset */
     char *,       /* dst_pointer */
@@ -699,7 +704,7 @@ typedef void (*copy_and_cast_from_host_contig_blocking_fn_ptr_t)(
 template <typename dstTy, typename srcTy>
 void copy_and_cast_from_host_contig_impl(
     sycl::queue &q,
-    size_t nelems,
+    std::size_t nelems,
     const char *host_src_p,
     ssize_t src_offset,
     char *dst_p,
@@ -792,7 +797,7 @@ public:
 // define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     sycl::queue &,
-    size_t,       // num_elements
+    std::size_t,  // num_elements
     int,          // src_nd
     int,          // dst_nd
     ssize_t *,    // packed shapes and strides
@@ -824,7 +829,7 @@ typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
 template <typename Ty>
 sycl::event
 copy_for_reshape_generic_impl(sycl::queue &q,
-                              size_t nelems,
+                              std::size_t nelems,
                               int src_nd,
                               int dst_nd,
                               ssize_t *packed_shapes_and_strides,
@@ -881,21 +886,21 @@ template <typename fnT, typename Ty> struct CopyForReshapeGenericFactory
 /*! @brief Functor to cyclically roll global_id to the left */
 struct LeftRolled1DTransformer
 {
-    LeftRolled1DTransformer(size_t offset, size_t size)
+    LeftRolled1DTransformer(std::size_t offset, std::size_t size)
         : offset_(offset), size_(size)
     {
     }
 
-    size_t operator()(size_t gid) const
+    std::size_t operator()(std::size_t gid) const
     {
-        const size_t shifted_gid =
+        const std::size_t shifted_gid =
             ((gid < offset_) ? gid + size_ - offset_ : gid - offset_);
         return shifted_gid;
     }
 
 private:
-    size_t offset_ = 0;
-    size_t size_ = 1;
+    std::size_t offset_ = 0;
+    std::size_t size_ = 1;
 };
 
 /*! @brief Indexer functor to compose indexer and transformer */
@@ -903,7 +908,7 @@ template <typename IndexerT, typename TransformerT> struct CompositionIndexer
 {
     CompositionIndexer(IndexerT f, TransformerT t) : f_(f), t_(t) {}
 
-    auto operator()(size_t gid) const { return f_(t_(gid)); }
+    auto operator()(std::size_t gid) const { return f_(t_(gid)); }
 
 private:
     IndexerT f_;
@@ -924,7 +929,7 @@ struct RolledNDIndexer
     {
     }
 
-    ssize_t operator()(size_t gid) const { return compute_offset(gid); }
+    ssize_t operator()(std::size_t gid) const { return compute_offset(gid); }
 
 private:
     int nd_ = -1;
@@ -973,7 +978,7 @@ public:
 
     void operator()(sycl::id<1> wiid) const
     {
-        const size_t gid = wiid.get(0);
+        const std::size_t gid = wiid.get(0);
 
         const ssize_t src_offset = src_indexer_(gid);
         const ssize_t dst_offset = dst_indexer_(gid);
@@ -985,8 +990,8 @@ public:
 // define function type
 typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
     sycl::queue &,
-    size_t,          // shift
-    size_t,          // num_elements
+    std::size_t,     // shift
+    std::size_t,     // num_elements
     int,             // common_nd
     const ssize_t *, // packed shapes and strides
     const char *,    // src_data_ptr
@@ -1021,8 +1026,8 @@ typedef sycl::event (*copy_for_roll_strided_fn_ptr_t)(
  */
 template <typename Ty>
 sycl::event copy_for_roll_strided_impl(sycl::queue &q,
-                                       size_t shift,
-                                       size_t nelems,
+                                       std::size_t shift,
+                                       std::size_t nelems,
                                        int nd,
                                        const ssize_t *packed_shapes_and_strides,
                                        const char *src_p,
@@ -1073,8 +1078,8 @@ sycl::event copy_for_roll_strided_impl(sycl::queue &q,
 // define function type
 typedef sycl::event (*copy_for_roll_contig_fn_ptr_t)(
     sycl::queue &,
-    size_t,       // shift
-    size_t,       // num_elements
+    std::size_t,  // shift
+    std::size_t,  // num_elements
     const char *, // src_data_ptr
     ssize_t,      // src_offset
     char *,       // dst_data_ptr
@@ -1106,8 +1111,8 @@ template <typename Ty> class copy_for_roll_contig_kernel;
  */
 template <typename Ty>
 sycl::event copy_for_roll_contig_impl(sycl::queue &q,
-                                      size_t shift,
-                                      size_t nelems,
+                                      std::size_t shift,
+                                      std::size_t nelems,
                                       const char *src_p,
                                       ssize_t src_offset,
                                       char *dst_p,
@@ -1176,7 +1181,7 @@ class copy_for_roll_ndshift_strided_kernel;
 // define function type
 typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
     sycl::queue &,
-    size_t,          // num_elements
+    std::size_t,     // num_elements
     int,             // common_nd
     const ssize_t *, // packed shape, strides, shifts
     const char *,    // src_data_ptr
@@ -1188,7 +1193,7 @@ typedef sycl::event (*copy_for_roll_ndshift_strided_fn_ptr_t)(
 template <typename Ty>
 sycl::event copy_for_roll_ndshift_strided_impl(
     sycl::queue &q,
-    size_t nelems,
+    std::size_t nelems,
     int nd,
     const ssize_t *packed_shapes_and_strides_and_shifts,
     const char *src_p,

@@ -26,6 +26,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <vector>
@@ -41,6 +42,8 @@ namespace tensor
 namespace kernels
 {
 
+using dpctl::tensor::ssize_t;
+
 template <typename argTy,
           typename indTy,
           bool left_side,
@@ -54,7 +57,7 @@ private:
     const argTy *hay_tp;
     const argTy *needles_tp;
     indTy *positions_tp;
-    const size_t hay_nelems;
+    const std::size_t hay_nelems;
     const HayIndexerT hay_indexer;
     const NeedlesIndexerT needles_indexer;
     const PositionsIndexerT positions_indexer;
@@ -63,7 +66,7 @@ public:
     SearchSortedFunctor(const argTy *hay_,
                         const argTy *needles_,
                         indTy *positions_,
-                        const size_t hay_nelems_,
+                        const std::size_t hay_nelems_,
                         const HayIndexerT &hay_indexer_,
                         const NeedlesIndexerT &needles_indexer_,
                         const PositionsIndexerT &positions_indexer_)
@@ -78,13 +81,13 @@ public:
     {
         const Compare comp{};
 
-        const size_t i = id[0];
+        const std::size_t i = id[0];
         const argTy needle_v = needles_tp[needles_indexer(i)];
 
         // position of the needle_v in the hay array
         indTy pos{};
 
-        constexpr size_t zero(0);
+        constexpr std::size_t zero(0);
         if constexpr (left_side) {
             // search in hay in left-closed interval, give `pos` such that
             // hay[pos - 1] < needle_v <= hay[pos]
@@ -110,8 +113,8 @@ public:
 
 typedef sycl::event (*searchsorted_contig_impl_fp_ptr_t)(
     sycl::queue &,
-    const size_t,
-    const size_t,
+    const std::size_t,
+    const std::size_t,
     const char *,
     const ssize_t,
     const char *,
@@ -125,8 +128,8 @@ class searchsorted_contig_impl_krn;
 
 template <typename argTy, typename indTy, bool left_closed, typename Compare>
 sycl::event searchsorted_contig_impl(sycl::queue &exec_q,
-                                     const size_t hay_nelems,
-                                     const size_t needles_nelems,
+                                     const std::size_t hay_nelems,
+                                     const std::size_t needles_nelems,
                                      const char *hay_cp,
                                      const ssize_t hay_offset,
                                      const char *needles_cp,
@@ -170,8 +173,8 @@ sycl::event searchsorted_contig_impl(sycl::queue &exec_q,
 
 typedef sycl::event (*searchsorted_strided_impl_fp_ptr_t)(
     sycl::queue &,
-    const size_t,
-    const size_t,
+    const std::size_t,
+    const std::size_t,
     const char *,
     const ssize_t,
     const ssize_t,
@@ -189,8 +192,8 @@ class searchsorted_strided_impl_krn;
 template <typename argTy, typename indTy, bool left_closed, typename Compare>
 sycl::event searchsorted_strided_impl(
     sycl::queue &exec_q,
-    const size_t hay_nelems,
-    const size_t needles_nelems,
+    const std::size_t hay_nelems,
+    const std::size_t needles_nelems,
     const char *hay_cp,
     const ssize_t hay_offset,
     // hay is 1D, so hay_nelems, hay_offset, hay_stride describe strided array

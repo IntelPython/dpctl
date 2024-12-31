@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_utils.h"
+#include <stddef.h>
 
 void DPCTLCString_Delete(__dpctl_take const char *str) { delete[] str; }
 

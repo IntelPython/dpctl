@@ -27,8 +27,10 @@
 
 #include "dpctl_capi.h"
 #include <complex>
+#include <cstddef> // for std::size_t for C++ linkage
 #include <memory>
 #include <pybind11/pybind11.h>
+#include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -759,7 +761,7 @@ public:
      *  lifetime of the USM allocation.
      */
     usm_memory(void *usm_ptr,
-               size_t nbytes,
+               std::size_t nbytes,
                const sycl::queue &q,
                std::shared_ptr<void> shptr)
     {
@@ -819,7 +821,7 @@ public:
         return reinterpret_cast<char *>(MRef);
     }
 
-    size_t get_nbytes() const
+    std::size_t get_nbytes() const
     {
         auto const &api = ::dpctl::detail::dpctl_capi::get();
         Py_MemoryObject *mem_obj = reinterpret_cast<Py_MemoryObject *>(m_ptr);

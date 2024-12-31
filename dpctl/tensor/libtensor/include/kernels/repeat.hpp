@@ -25,6 +25,7 @@
 #pragma once
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -42,6 +43,7 @@ namespace kernels
 namespace repeat
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexer,
@@ -65,7 +67,7 @@ private:
     T *dst = nullptr;
     const repT *reps = nullptr;
     const repT *cumsum = nullptr;
-    size_t src_axis_nelems = 1;
+    std::size_t src_axis_nelems = 1;
     const OrthogIndexer orthog_strider;
     const SrcAxisIndexer src_axis_strider;
     const DstAxisIndexer dst_axis_strider;
@@ -76,7 +78,7 @@ public:
                           T *dst_,
                           const repT *reps_,
                           const repT *cumsum_,
-                          size_t src_axis_nelems_,
+                          std::size_t src_axis_nelems_,
                           const OrthogIndexer &orthog_strider_,
                           const SrcAxisIndexer &src_axis_strider_,
                           const DstAxisIndexer &dst_axis_strider_,
@@ -90,7 +92,7 @@ public:
 
     void operator()(sycl::id<1> idx) const
     {
-        size_t id = idx[0];
+        std::size_t id = idx[0];
         auto i_orthog = id / src_axis_nelems;
         auto i_along = id - (i_orthog * src_axis_nelems);
 
@@ -109,8 +111,8 @@ public:
 
 typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     const char *,
@@ -130,8 +132,8 @@ typedef sycl::event (*repeat_by_sequence_fn_ptr_t)(
 template <typename T, typename repT>
 sycl::event
 repeat_by_sequence_impl(sycl::queue &q,
-                        size_t orthog_nelems,
-                        size_t src_axis_nelems,
+                        std::size_t orthog_nelems,
+                        std::size_t src_axis_nelems,
                         const char *src_cp,
                         char *dst_cp,
                         const char *reps_cp,
@@ -169,7 +171,7 @@ repeat_by_sequence_impl(sycl::queue &q,
         const Strided1DIndexer reps_indexer{/* size */ reps_shape,
                                             /* step */ reps_stride};
 
-        const size_t gws = orthog_nelems * src_axis_nelems;
+        const std::size_t gws = orthog_nelems * src_axis_nelems;
 
         cgh.parallel_for<repeat_by_sequence_kernel<
             TwoOffsets_StridedIndexer, Strided1DIndexer, Strided1DIndexer,
@@ -196,7 +198,7 @@ template <typename fnT, typename T> struct RepeatSequenceFactory
 
 typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     char *,
     const char *,
@@ -211,7 +213,7 @@ typedef sycl::event (*repeat_by_sequence_1d_fn_ptr_t)(
 
 template <typename T, typename repT>
 sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
-                                       size_t src_nelems,
+                                       std::size_t src_nelems,
                                        const char *src_cp,
                                        char *dst_cp,
                                        const char *reps_cp,
@@ -242,7 +244,7 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
         const Strided1DIndexer reps_indexer{/* size */ reps_shape,
                                             /* step */ reps_stride};
 
-        const size_t gws = src_nelems;
+        const std::size_t gws = src_nelems;
 
         cgh.parallel_for<repeat_by_sequence_kernel<
             TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer,
@@ -282,7 +284,7 @@ private:
     const T *src = nullptr;
     T *dst = nullptr;
     const ssize_t reps = 1;
-    size_t dst_axis_nelems = 0;
+    std::size_t dst_axis_nelems = 0;
     const OrthogIndexer orthog_strider;
     const SrcAxisIndexer src_axis_strider;
     const DstAxisIndexer dst_axis_strider;
@@ -291,7 +293,7 @@ public:
     RepeatScalarFunctor(const T *src_,
                         T *dst_,
                         const ssize_t reps_,
-                        size_t dst_axis_nelems_,
+                        std::size_t dst_axis_nelems_,
                         const OrthogIndexer &orthog_strider_,
                         const SrcAxisIndexer &src_axis_strider_,
                         const DstAxisIndexer &dst_axis_strider_)
@@ -303,7 +305,7 @@ public:
 
     void operator()(sycl::id<1> idx) const
     {
-        size_t id = idx[0];
+        std::size_t id = idx[0];
         auto i_orthog = id / dst_axis_nelems;
         auto i_along = id - (i_orthog * dst_axis_nelems);
 
@@ -319,8 +321,8 @@ public:
 
 typedef sycl::event (*repeat_by_scalar_fn_ptr_t)(
     sycl::queue &,
-    size_t,
-    size_t,
+    std::size_t,
+    std::size_t,
     const char *,
     char *,
     const ssize_t,
@@ -336,8 +338,8 @@ typedef sycl::event (*repeat_by_scalar_fn_ptr_t)(
 
 template <typename T>
 sycl::event repeat_by_scalar_impl(sycl::queue &q,
-                                  size_t orthog_nelems,
-                                  size_t dst_axis_nelems,
+                                  std::size_t orthog_nelems,
+                                  std::size_t dst_axis_nelems,
                                   const char *src_cp,
                                   char *dst_cp,
                                   const ssize_t reps,
@@ -366,7 +368,7 @@ sycl::event repeat_by_scalar_impl(sycl::queue &q,
         const Strided1DIndexer dst_axis_indexer{/* size */ dst_axis_shape,
                                                 /* step */ dst_axis_stride};
 
-        const size_t gws = orthog_nelems * dst_axis_nelems;
+        const std::size_t gws = orthog_nelems * dst_axis_nelems;
 
         cgh.parallel_for<repeat_by_scalar_kernel<
             TwoOffsets_StridedIndexer, Strided1DIndexer, Strided1DIndexer, T>>(
@@ -391,7 +393,7 @@ template <typename fnT, typename T> struct RepeatScalarFactory
 
 typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     char *,
     const ssize_t,
@@ -403,7 +405,7 @@ typedef sycl::event (*repeat_by_scalar_1d_fn_ptr_t)(
 
 template <typename T>
 sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
-                                     size_t dst_nelems,
+                                     std::size_t dst_nelems,
                                      const char *src_cp,
                                      char *dst_cp,
                                      const ssize_t reps,
@@ -426,7 +428,7 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
         const Strided1DIndexer dst_indexer{/* size */ dst_shape,
                                            /* step */ dst_stride};
 
-        const size_t gws = dst_nelems;
+        const std::size_t gws = dst_nelems;
 
         cgh.parallel_for<repeat_by_scalar_kernel<
             TwoZeroOffsets_Indexer, StridedIndexer, Strided1DIndexer, T>>(

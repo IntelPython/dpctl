@@ -24,6 +24,7 @@
 
 #pragma once
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <new>
@@ -47,6 +48,7 @@ namespace kernels
 namespace accumulators
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename T> T ceiling_quotient(T n, T m) { return (n + m - 1) / m; }

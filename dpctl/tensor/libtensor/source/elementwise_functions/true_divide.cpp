@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
@@ -178,7 +179,7 @@ template <typename T> class divide_by_scalar_krn;
 
 typedef sycl::event (*divide_by_scalar_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const ssize_t *,
     const char *,
@@ -190,7 +191,7 @@ typedef sycl::event (*divide_by_scalar_fn_ptr_t)(
 
 template <typename T, typename scalarT>
 sycl::event divide_by_scalar(sycl::queue &exec_q,
-                             size_t nelems,
+                             std::size_t nelems,
                              int nd,
                              const ssize_t *shape_and_strides,
                              const char *arg_p,
@@ -270,10 +271,10 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; i < dst_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
     }
     if (!shapes_equal) {

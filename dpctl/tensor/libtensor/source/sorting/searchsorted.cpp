@@ -22,6 +22,7 @@
 /// extension.
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -217,10 +218,10 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
     }
 
     // check that needle and positions have the same shape
-    size_t needles_nelems(1);
+    std::size_t needles_nelems(1);
     bool same_shape(true);
 
-    const size_t hay_nelems = static_cast<size_t>(hay.get_shape(0));
+    const std::size_t hay_nelems = static_cast<std::size_t>(hay.get_shape(0));
 
     const py::ssize_t *needles_shape_ptr = needles.get_shape_raw();
     const py::ssize_t *positions_shape_ptr = needles.get_shape_raw();
@@ -230,7 +231,7 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
         const auto positions_sh_i = positions_shape_ptr[i];
 
         same_shape = same_shape && (needles_sh_i == positions_sh_i);
-        needles_nelems *= static_cast<size_t>(needles_sh_i);
+        needles_nelems *= static_cast<std::size_t>(needles_sh_i);
     }
 
     if (!same_shape) {

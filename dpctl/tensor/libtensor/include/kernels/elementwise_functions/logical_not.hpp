@@ -47,6 +47,7 @@ namespace kernels
 namespace logical_not
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -117,7 +118,7 @@ class logical_not_contig_kernel;
 template <typename argTy>
 sycl::event
 logical_not_contig_impl(sycl::queue &exec_q,
-                        size_t nelems,
+                        std::size_t nelems,
                         const char *arg_p,
                         char *res_p,
                         const std::vector<sycl::event> &depends = {})
@@ -158,7 +159,7 @@ class logical_not_strided_kernel;
 template <typename argTy>
 sycl::event
 logical_not_strided_impl(sycl::queue &exec_q,
-                         size_t nelems,
+                         std::size_t nelems,
                          int nd,
                          const ssize_t *shape_and_strides,
                          const char *arg_p,

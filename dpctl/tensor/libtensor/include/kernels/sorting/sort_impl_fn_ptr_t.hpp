@@ -24,8 +24,11 @@
 
 #pragma once
 
+#include <cstddef>
 #include <sycl/sycl.hpp>
 #include <vector>
+
+#include "kernels/dpctl_tensor_types.hpp"
 
 namespace dpctl
 {
@@ -34,9 +37,11 @@ namespace tensor
 namespace kernels
 {
 
+using dpctl::tensor::ssize_t;
+
 typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
-                                            size_t,
-                                            size_t,
+                                            std::size_t,
+                                            std::size_t,
                                             const char *,
                                             char *,
                                             ssize_t,
@@ -45,6 +50,6 @@ typedef sycl::event (*sort_contig_fn_ptr_t)(sycl::queue &,
                                             ssize_t,
                                             const std::vector<sycl::event> &);
 
-}
+} // namespace kernels
 } // namespace tensor
 } // namespace dpctl
