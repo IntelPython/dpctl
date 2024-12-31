@@ -101,8 +101,7 @@ sycl::event write_out_impl(sycl::queue &exec_q,
             const std::uint32_t lane_id = sg.get_local_id()[0];
             const std::uint32_t sg_size = sg.get_max_local_range()[0];
 
-            const std::size_t start_id =
-                (gid - lane_id) * sg_size * n_wi + lane_id;
+            const std::size_t start_id = (gid - lane_id) * n_wi + lane_id;
 
 #pragma unroll
             for (std::uint32_t i = 0; i < n_wi; ++i) {
