@@ -58,7 +58,7 @@ sycl::event iota_impl(sycl::queue &exec_q,
     sycl::event e = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(dependent_events);
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> it) {
-            const std::size_t gid = it.get_global_id();
+            const std::size_t gid = it.get_global_linear_id();
             const auto &sg = it.get_sub_group();
             const std::uint32_t lane_id = sg.get_local_id()[0];
 
