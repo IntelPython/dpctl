@@ -1253,6 +1253,24 @@ private:
             const std::size_t n_batches =
                 (n_iters + n_batch_size - 1) / n_batch_size;
 
+            const auto &kernel_id = sycl::get_kernel_id<KernelName>();
+
+            auto const &ctx = exec_q.get_context();
+            auto const &dev = exec_q.get_device();
+            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+                ctx, {dev}, {kernel_id});
+
+            const auto &krn = kb.get_kernel(kernel_id);
+
+            const std::uint32_t krn_sg_size = krn.template get_info<
+                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
+            // due to a bug in CPU device implementation, an additional
+            // synchronization is necessary for short sub-group sizes
+            const bool work_around_needed =
+                exec_q.get_device().has(sycl::aspect::cpu) &&
+                (krn_sg_size < 16);
+
             for (std::size_t batch_id = 0; batch_id < n_batches; ++batch_id) {
 
                 const std::size_t block_start = batch_id * n_batch_size;
@@ -1269,6 +1287,7 @@ private:
 
                 sort_ev = exec_q.submit([&](sycl::handler &cgh) {
                     cgh.depends_on(deps);
+                    cgh.use_kernel_bundle(kb);
 
                     // allocation to use for value exchanges
                     auto exchange_acc = buf_val.get_acc(cgh);
@@ -1357,6 +1376,11 @@ private:
                                         counters[i] = &pcounter[bin * wg_size];
                                         indices[i] = *counters[i];
                                         *counters[i] = indices[i] + 1;
+
+                                        if (work_around_needed) {
+                                            sycl::group_barrier(
+                                                ndit.get_group());
+                                        }
                                     }
                                 }
                                 else {
@@ -1389,6 +1413,11 @@ private:
                                         counters[i] = &pcounter[bin * wg_size];
                                         indices[i] = *counters[i];
                                         *counters[i] = indices[i] + 1;
+
+                                        if (work_around_needed) {
+                                            sycl::group_barrier(
+                                                ndit.get_group());
+                                        }
                                     }
                                 }
 
