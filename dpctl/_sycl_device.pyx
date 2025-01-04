@@ -1950,9 +1950,7 @@ cdef class SyclDevice(_SyclDevice):
 
     cdef int get_overall_ordinal(self):
         """ If this device is a root ``sycl::device``, returns the ordinal
-        position of this device in the vector ``sycl::device::get_devices()``
-        filtered to contain only devices with the same backend as this
-        device.
+        position of this device in the vector ``sycl::device::get_devices()``.
 
         Returns -1 if the device is a sub-device, or the device could not
         be found in the vector.
@@ -2044,6 +2042,18 @@ cdef class SyclDevice(_SyclDevice):
                     return ":".join((dt_str, str(relId)))
                 else:
                     return str(relId)
+
+    def get_device_id(self):
+        cdef int dev_id = -1
+
+        if self.parent_device:
+            raise TypeError("This SyclDevice is not a root device")
+
+        dev_id = self.get_overall_ordinal()
+        if dev_id < 0:
+            raise ValueError
+        return dev_id
+
 
 cdef api DPCTLSyclDeviceRef SyclDevice_GetDeviceRef(SyclDevice dev):
     """
