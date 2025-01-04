@@ -9,7 +9,7 @@ permissions: read-all
 jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
 
     env:
@@ -92,11 +92,6 @@ jobs:
               [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
               cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
-
-      - name: Install system components
-        shell: bash -l {0}
-        run: |
-          sudo apt-get install libtinfo5
 
       - name: Setup Python
         uses: actions/setup-python@v5
