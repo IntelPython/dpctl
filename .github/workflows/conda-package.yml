@@ -217,26 +217,10 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
           gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
-      - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
-      - name: Location of working directory
-        working-directory: ${{ github.workspace }}
-        run: pwd
-      - name: List directory of checkout
-        working-directory: ${{ github.workspace }}
-        run: ls -l dpctl
       - name: Create test temp dir
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
         run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
-      - name: Create symbolic link to checked-out tests folder
-        run: ln -s ${GITHUB_WORKSPACE}/dpctl/tests/ ${GITHUB_WORKSPACE}/test_tmp/dpctl_tests
-      - name: List content of symbolic directory
-        run: ls -l ${GITHUB_WORKSPACE}/test_tmp/dpctl_tests
-      - name: List directory of temp_tmp
-        working-directory: ${{ github.workspace }}/test_tmp
-        run: ls -l
       - name: Run tests
         working-directory: ${{ github.workspace }}/test_tmp
         env:
@@ -244,7 +228,7 @@ jobs:
         run: |
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -v --skip-known-top-k-failures-on-cpu dpctl_tests
+          python -m pytest -v --pyargs $MODULE_NAME
 
   test_windows:
     needs: build_windows
@@ -398,29 +382,16 @@ jobs:
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
 
-      - uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
-
       - name: Create empty temporary directory to run tests from
         shell: cmd /C CALL {0}
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
         run: >-
-          mkdir "${{ env.workdir }}\test_tmp" && mkdir "${{ env.workdir }}\test_tmp\dpctl_tests"
-
-      - name: Copy tests from checkout
-        shell: cmd /C CALL {0}
-        run: >-
-          xcopy /S /E "${{ env.workdir }}\dpctl\tests" "${{ env.workdir }}\test_tmp\dpctl_tests"
+          mkdir "${{ env.workdir }}\test_tmp"
 
       - name: List content of workdir folder
         shell: cmd /C CALL {0}
         run: dir "${{ env.workdir }}"
-
-      - name: List content of test_tmp folder
-        shell: cmd /C CALL {0}
-        run: dir "${{ env.workdir }}\test_tmp"
 
       - name: Run tests
         shell: cmd /C CALL {0}
@@ -428,7 +399,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.workdir }}\test_tmp
         run: >-
-          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --skip-known-top-k-failures-on-cpu dpctl_tests
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
 
   upload_linux:
     needs: test_linux

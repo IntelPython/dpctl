@@ -22,7 +22,7 @@ from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 @pytest.fixture
 def skip_known_failues_on_cpu(request):
-    return request.config.getoption("--skip-known-top-k-failures-on-cpu")
+    return False
 
 
 def _expected_largest_inds(inp, n, shift, k):
