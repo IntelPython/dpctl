@@ -38,6 +38,7 @@
 #include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 
 namespace dpctl
@@ -61,6 +62,48 @@ class radix_sort_reorder_peer_kernel;
 
 template <std::uint32_t, bool, typename... TrailingNames>
 class radix_sort_reorder_kernel;
+
+/*! @brief Computes smallest exponent such that `n <= (1 << exponent)` */
+template <typename SizeT,
+          std::enable_if_t<std::is_unsigned_v<SizeT> &&
+                               sizeof(SizeT) == sizeof(std::uint64_t),
+                           int> = 0>
+std::uint32_t ceil_log2(SizeT n)
+{
+    // if n > 2^b, n = q * 2^b + r for q > 0 and 0 <= r < 2^b
+    // floor_log2(q * 2^b + r) == floor_log2(q * 2^b) == q + floor_log2(n1)
+    // ceil_log2(n) == 1 + floor_log2(n-1)
+    if (n <= 1)
+        return std::uint32_t{1};
+
+    std::uint32_t exp{1};
+    --n;
+    if (n >= (SizeT{1} << 32)) {
+        n >>= 32;
+        exp += 32;
+    }
+    if (n >= (SizeT{1} << 16)) {
+        n >>= 16;
+        exp += 16;
+    }
+    if (n >= (SizeT{1} << 8)) {
+        n >>= 8;
+        exp += 8;
+    }
+    if (n >= (SizeT{1} << 4)) {
+        n >>= 4;
+        exp += 4;
+    }
+    if (n >= (SizeT{1} << 2)) {
+        n >>= 2;
+        exp += 2;
+    }
+    if (n >= (SizeT{1} << 1)) {
+        n >>= 1;
+        ++exp;
+    }
+    return exp;
+}
 
 //----------------------------------------------------------
 // bitwise order-preserving conversions to unsigned integers
@@ -95,16 +138,20 @@ template <bool is_ascending,
 std::make_unsigned_t<IntT> order_preserving_cast(IntT val)
 {
     using UIntT = std::make_unsigned_t<IntT>;
-    // ascending_mask: 100..0
-    constexpr UIntT ascending_mask =
-        (UIntT(1) << std::numeric_limits<IntT>::digits);
-    // descending_mask: 011..1
-    constexpr UIntT descending_mask = (std::numeric_limits<UIntT>::max() >> 1);
-
-    constexpr UIntT mask = (is_ascending) ? ascending_mask : descending_mask;
     const UIntT uint_val = sycl::bit_cast<UIntT>(val);
 
-    return (uint_val ^ mask);
+    if constexpr (is_ascending) {
+        // ascending_mask: 100..0
+        constexpr UIntT ascending_mask =
+            (UIntT(1) << std::numeric_limits<IntT>::digits);
+        return (uint_val ^ ascending_mask);
+    }
+    else {
+        // descending_mask: 011..1
+        constexpr UIntT descending_mask =
+            (std::numeric_limits<UIntT>::max() >> 1);
+        return (uint_val ^ descending_mask);
+    }
 }
 
 template <bool is_ascending> std::uint16_t order_preserving_cast(sycl::half val)
@@ -1003,10 +1050,10 @@ template <typename Names, std::uint16_t... Constants>
 class radix_sort_one_wg_krn;
 
 template <typename KernelNameBase,
-          uint16_t wg_size = 256,
-          uint16_t block_size = 16,
+          std::uint16_t wg_size = 256,
+          std::uint16_t block_size = 16,
           std::uint32_t radix = 4,
-          uint16_t req_sub_group_size = (block_size < 4 ? 32 : 16)>
+          std::uint16_t req_sub_group_size = (block_size < 4 ? 32 : 16)>
 struct subgroup_radix_sort
 {
 private:
@@ -1020,8 +1067,8 @@ private:
 public:
     template <typename ValueT, typename OutputT, typename ProjT>
     sycl::event operator()(sycl::queue &exec_q,
-                           size_t n_iters,
-                           size_t n_to_sort,
+                           std::size_t n_iters,
+                           std::size_t n_to_sort,
                            ValueT *input_ptr,
                            OutputT *output_ptr,
                            ProjT proj_op,
@@ -1118,8 +1165,8 @@ private:
     };
 
     static_assert(wg_size <= 1024);
-    static constexpr uint16_t bin_count = (1 << radix);
-    static constexpr uint16_t counter_buf_sz = wg_size * bin_count + 1;
+    static constexpr std::uint16_t bin_count = (1 << radix);
+    static constexpr std::uint16_t counter_buf_sz = wg_size * bin_count + 1;
 
     enum class temp_allocations
     {
@@ -1135,7 +1182,7 @@ private:
         assert(n <= (SizeT(1) << 16));
 
         constexpr auto req_slm_size_counters =
-            counter_buf_sz * sizeof(uint32_t);
+            counter_buf_sz * sizeof(std::uint16_t);
 
         const auto &dev = exec_q.get_device();
 
@@ -1144,7 +1191,7 @@ private:
         const std::size_t max_slm_size =
             dev.template get_info<sycl::info::device::local_mem_size>() / 2;
 
-        const auto n_uniform = 1 << (std::uint32_t(std::log2(n - 1)) + 1);
+        const auto n_uniform = 1 << ceil_log2(n);
         const auto req_slm_size_val = sizeof(T) * n_uniform;
 
         return ((req_slm_size_val + req_slm_size_counters) <= max_slm_size)
@@ -1170,9 +1217,9 @@ private:
                   typename SLM_value_tag,
                   typename SLM_counter_tag>
         sycl::event operator()(sycl::queue &exec_q,
-                               size_t n_iters,
-                               size_t n_batch_size,
-                               size_t n_values,
+                               std::size_t n_iters,
+                               std::size_t n_batch_size,
+                               std::size_t n_values,
                                InputT *input_arr,
                                OutputT *output_arr,
                                const ProjT &proj_op,
@@ -1186,7 +1233,7 @@ private:
             assert(n_values <= static_cast<std::size_t>(block_size) *
                                    static_cast<std::size_t>(wg_size));
 
-            uint16_t n = static_cast<uint16_t>(n_values);
+            const std::uint16_t n = static_cast<std::uint16_t>(n_values);
             static_assert(std::is_same_v<std::remove_cv_t<InputT>, OutputT>);
 
             using ValueT = OutputT;
@@ -1195,17 +1242,36 @@ private:
 
             TempBuf<ValueT, SLM_value_tag> buf_val(
                 n_batch_size, static_cast<std::size_t>(block_size * wg_size));
-            TempBuf<std::uint32_t, SLM_counter_tag> buf_count(
+            TempBuf<std::uint16_t, SLM_counter_tag> buf_count(
                 n_batch_size, static_cast<std::size_t>(counter_buf_sz));
 
             sycl::range<1> lRange{wg_size};
 
             sycl::event sort_ev;
-            std::vector<sycl::event> deps = depends;
+            std::vector<sycl::event> deps{depends};
 
-            std::size_t n_batches = (n_iters + n_batch_size - 1) / n_batch_size;
+            const std::size_t n_batches =
+                (n_iters + n_batch_size - 1) / n_batch_size;
 
-            for (size_t batch_id = 0; batch_id < n_batches; ++batch_id) {
+            const auto &kernel_id = sycl::get_kernel_id<KernelName>();
+
+            auto const &ctx = exec_q.get_context();
+            auto const &dev = exec_q.get_device();
+            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+                ctx, {dev}, {kernel_id});
+
+            const auto &krn = kb.get_kernel(kernel_id);
+
+            const std::uint32_t krn_sg_size = krn.template get_info<
+                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
+            // due to a bug in CPU device implementation, an additional
+            // synchronization is necessary for short sub-group sizes
+            const bool work_around_needed =
+                exec_q.get_device().has(sycl::aspect::cpu) &&
+                (krn_sg_size < 16);
+
+            for (std::size_t batch_id = 0; batch_id < n_batches; ++batch_id) {
 
                 const std::size_t block_start = batch_id * n_batch_size;
 
@@ -1221,6 +1287,7 @@ private:
 
                 sort_ev = exec_q.submit([&](sycl::handler &cgh) {
                     cgh.depends_on(deps);
+                    cgh.use_kernel_bundle(kb);
 
                     // allocation to use for value exchanges
                     auto exchange_acc = buf_val.get_acc(cgh);
@@ -1244,49 +1311,49 @@ private:
                         const std::size_t iter_exchange_offset =
                             iter_id * exchange_acc_iter_stride;
 
-                        uint16_t wi = ndit.get_local_linear_id();
-                        uint16_t begin_bit = 0;
+                        std::uint16_t wi = ndit.get_local_linear_id();
+                        std::uint16_t begin_bit = 0;
 
-                        constexpr uint16_t end_bit =
+                        constexpr std::uint16_t end_bit =
                             number_of_bits_in_type<KeyT>();
 
-// copy from input array into values
+                        // copy from input array into values
 #pragma unroll
-                        for (uint16_t i = 0; i < block_size; ++i) {
-                            const uint16_t id = wi * block_size + i;
-                            if (id < n)
-                                values[i] = std::move(
-                                    this_input_arr[iter_val_offset +
-                                                   static_cast<std::size_t>(
-                                                       id)]);
+                        for (std::uint16_t i = 0; i < block_size; ++i) {
+                            const std::uint16_t id = wi * block_size + i;
+                            values[i] =
+                                (id < n) ? this_input_arr[iter_val_offset + id]
+                                         : ValueT{};
                         }
 
                         while (true) {
                             // indices for indirect access in the "re-order"
                             // phase
-                            uint16_t indices[block_size];
+                            std::uint16_t indices[block_size];
                             {
                                 // pointers to bucket's counters
-                                uint32_t *counters[block_size];
+                                std::uint16_t *counters[block_size];
 
                                 // counting phase
                                 auto pcounter =
                                     get_accessor_pointer(counter_acc) +
-                                    static_cast<std::size_t>(wi) +
-                                    iter_counter_offset;
+                                    (wi + iter_counter_offset);
 
-// initialize counters
+                                // initialize counters
 #pragma unroll
-                                for (uint16_t i = 0; i < bin_count; ++i)
-                                    pcounter[i * wg_size] = std::uint32_t{0};
+                                for (std::uint16_t i = 0; i < bin_count; ++i)
+                                    pcounter[i * wg_size] = std::uint16_t{0};
 
                                 sycl::group_barrier(ndit.get_group());
 
                                 if (is_ascending) {
 #pragma unroll
-                                    for (uint16_t i = 0; i < block_size; ++i) {
-                                        const uint16_t id = wi * block_size + i;
-                                        constexpr uint16_t bin_mask =
+                                    for (std::uint16_t i = 0; i < block_size;
+                                         ++i)
+                                    {
+                                        const std::uint16_t id =
+                                            wi * block_size + i;
+                                        constexpr std::uint16_t bin_mask =
                                             bin_count - 1;
 
                                         // points to the padded element, i.e. id
@@ -1295,7 +1362,7 @@ private:
                                             default_out_of_range_bin_id =
                                                 bin_mask;
 
-                                        const uint16_t bin =
+                                        const std::uint16_t bin =
                                             (id < n)
                                                 ? get_bucket_id<bin_mask>(
                                                       order_preserving_cast<
@@ -1309,13 +1376,21 @@ private:
                                         counters[i] = &pcounter[bin * wg_size];
                                         indices[i] = *counters[i];
                                         *counters[i] = indices[i] + 1;
+
+                                        if (work_around_needed) {
+                                            sycl::group_barrier(
+                                                ndit.get_group());
+                                        }
                                     }
                                 }
                                 else {
 #pragma unroll
-                                    for (uint16_t i = 0; i < block_size; ++i) {
-                                        const uint16_t id = wi * block_size + i;
-                                        constexpr uint16_t bin_mask =
+                                    for (std::uint16_t i = 0; i < block_size;
+                                         ++i)
+                                    {
+                                        const std::uint16_t id =
+                                            wi * block_size + i;
+                                        constexpr std::uint16_t bin_mask =
                                             bin_count - 1;
 
                                         // points to the padded element, i.e. id
@@ -1324,7 +1399,7 @@ private:
                                             default_out_of_range_bin_id =
                                                 bin_mask;
 
-                                        const uint16_t bin =
+                                        const std::uint16_t bin =
                                             (id < n)
                                                 ? get_bucket_id<bin_mask>(
                                                       order_preserving_cast<
@@ -1338,6 +1413,11 @@ private:
                                         counters[i] = &pcounter[bin * wg_size];
                                         indices[i] = *counters[i];
                                         *counters[i] = indices[i] + 1;
+
+                                        if (work_around_needed) {
+                                            sycl::group_barrier(
+                                                ndit.get_group());
+                                        }
                                     }
                                 }
 
@@ -1347,37 +1427,32 @@ private:
                                 {
 
                                     // scan contiguous numbers
-                                    uint16_t bin_sum[bin_count];
-                                    bin_sum[0] =
-                                        counter_acc[iter_counter_offset +
-                                                    static_cast<std::size_t>(
-                                                        wi * bin_count)];
+                                    std::uint16_t bin_sum[bin_count];
+                                    const std::size_t counter_offset0 =
+                                        iter_counter_offset + wi * bin_count;
+                                    bin_sum[0] = counter_acc[counter_offset0];
 
 #pragma unroll
-                                    for (uint16_t i = 1; i < bin_count; ++i)
+                                    for (std::uint16_t i = 1; i < bin_count;
+                                         ++i)
                                         bin_sum[i] =
                                             bin_sum[i - 1] +
-                                            counter_acc
-                                                [iter_counter_offset +
-                                                 static_cast<std::size_t>(
-                                                     wi * bin_count + i)];
+                                            counter_acc[counter_offset0 + i];
 
                                     sycl::group_barrier(ndit.get_group());
 
                                     // exclusive scan local sum
-                                    uint16_t sum_scan =
+                                    std::uint16_t sum_scan =
                                         sycl::exclusive_scan_over_group(
                                             ndit.get_group(),
                                             bin_sum[bin_count - 1],
-                                            sycl::plus<uint16_t>());
+                                            sycl::plus<std::uint16_t>());
 
 // add to local sum, generate exclusive scan result
 #pragma unroll
-                                    for (uint16_t i = 0; i < bin_count; ++i)
-                                        counter_acc[iter_counter_offset +
-                                                    static_cast<std::size_t>(
-                                                        wi * bin_count + i +
-                                                        1)] =
+                                    for (std::uint16_t i = 0; i < bin_count;
+                                         ++i)
+                                        counter_acc[counter_offset0 + i + 1] =
                                             sum_scan + bin_sum[i];
 
                                     if (wi == 0)
@@ -1388,11 +1463,13 @@ private:
                                 }
 
 #pragma unroll
-                                for (uint16_t i = 0; i < block_size; ++i) {
+                                for (std::uint16_t i = 0; i < block_size; ++i) {
                                     // a global index is a local offset plus a
                                     // global base index
                                     indices[i] += *counters[i];
                                 }
+
+                                sycl::group_barrier(ndit.get_group());
                             }
 
                             begin_bit += radix;
@@ -1400,43 +1477,36 @@ private:
                             // "re-order" phase
                             sycl::group_barrier(ndit.get_group());
                             if (begin_bit >= end_bit) {
-// the last iteration - writing out the result
+                                // the last iteration - writing out the result
 #pragma unroll
-                                for (uint16_t i = 0; i < block_size; ++i) {
-                                    const uint16_t r = indices[i];
+                                for (std::uint16_t i = 0; i < block_size; ++i) {
+                                    const std::uint16_t r = indices[i];
                                     if (r < n) {
-                                        // move the values to source range and
-                                        // destroy the values
-                                        this_output_arr
-                                            [iter_val_offset +
-                                             static_cast<std::size_t>(r)] =
-                                                std::move(values[i]);
+                                        this_output_arr[iter_val_offset + r] =
+                                            values[i];
                                     }
                                 }
 
                                 return;
                             }
 
-// data exchange
+                            // data exchange
 #pragma unroll
-                            for (uint16_t i = 0; i < block_size; ++i) {
-                                const uint16_t r = indices[i];
+                            for (std::uint16_t i = 0; i < block_size; ++i) {
+                                const std::uint16_t r = indices[i];
                                 if (r < n)
-                                    exchange_acc[iter_exchange_offset +
-                                                 static_cast<std::size_t>(r)] =
-                                        std::move(values[i]);
+                                    exchange_acc[iter_exchange_offset + r] =
+                                        values[i];
                             }
 
                             sycl::group_barrier(ndit.get_group());
 
 #pragma unroll
-                            for (uint16_t i = 0; i < block_size; ++i) {
-                                const uint16_t id = wi * block_size + i;
+                            for (std::uint16_t i = 0; i < block_size; ++i) {
+                                const std::uint16_t id = wi * block_size + i;
                                 if (id < n)
-                                    values[i] = std::move(
-                                        exchange_acc[iter_exchange_offset +
-                                                     static_cast<std::size_t>(
-                                                         id)]);
+                                    values[i] =
+                                        exchange_acc[iter_exchange_offset + id];
                             }
 
                             sycl::group_barrier(ndit.get_group());
@@ -1601,11 +1671,11 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         using CountT = std::uint32_t;
 
         // memory for storing count and offset values
-        CountT *count_ptr =
-            sycl::malloc_device<CountT>(n_iters * n_counts, exec_q);
-        if (nullptr == count_ptr) {
-            throw std::runtime_error("Could not allocate USM-device memory");
-        }
+        auto count_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<CountT>(
+                n_iters * n_counts, exec_q);
+
+        CountT *count_ptr = count_owner.get();
 
         constexpr std::uint32_t zero_radix_iter{0};
 
@@ -1618,25 +1688,17 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
                                                    n_counts, count_ptr, proj_op,
                                                    is_ascending, depends);
 
-            sort_ev = exec_q.submit([=](sycl::handler &cgh) {
-                cgh.depends_on(sort_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, count_ptr]() { sycl_free_noexcept(count_ptr, ctx); });
-            });
+            sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {sort_ev}, count_owner);
 
             return sort_ev;
         }
 
-        ValueT *tmp_arr =
-            sycl::malloc_device<ValueT>(n_iters * n_to_sort, exec_q);
-        if (nullptr == tmp_arr) {
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            sycl_free_noexcept(count_ptr, exec_q);
-            throw std::runtime_error("Could not allocate USM-device memory");
-        }
+        auto tmp_arr_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<ValueT>(
+                n_iters * n_to_sort, exec_q);
+
+        ValueT *tmp_arr = tmp_arr_owner.get();
 
         // iterations per each bucket
         assert("Number of iterations must be even" && radix_iters % 2 == 0);
@@ -1670,17 +1732,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
             }
         }
 
-        sort_ev = exec_q.submit([=](sycl::handler &cgh) {
-            cgh.depends_on(sort_ev);
-
-            const sycl::context &ctx = exec_q.get_context();
-
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task([ctx, count_ptr, tmp_arr]() {
-                sycl_free_noexcept(tmp_arr, ctx);
-                sycl_free_noexcept(count_ptr, ctx);
-            });
-        });
+        sort_ev = dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {sort_ev}, tmp_arr_owner, count_owner);
     }
 
     return sort_ev;
@@ -1725,10 +1778,10 @@ radix_sort_axis1_contig_impl(sycl::queue &exec_q,
                              const bool sort_ascending,
                              // number of sub-arrays to sort (num. of rows in a
                              // matrix when sorting over rows)
-                             size_t iter_nelems,
+                             std::size_t iter_nelems,
                              // size of each array to sort  (length of rows,
                              // i.e. number of columns)
-                             size_t sort_nelems,
+                             std::size_t sort_nelems,
                              const char *arg_cp,
                              char *res_cp,
                              ssize_t iter_arg_offset,
@@ -1764,10 +1817,10 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
                                 const bool sort_ascending,
                                 // number of sub-arrays to sort (num. of
                                 // rows in a matrix when sorting over rows)
-                                size_t iter_nelems,
+                                std::size_t iter_nelems,
                                 // size of each array to sort  (length of
                                 // rows, i.e. number of columns)
-                                size_t sort_nelems,
+                                std::size_t sort_nelems,
                                 const char *arg_cp,
                                 char *res_cp,
                                 ssize_t iter_arg_offset,
@@ -1782,57 +1835,38 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
         reinterpret_cast<IndexTy *>(res_cp) + iter_res_offset + sort_res_offset;
 
     const std::size_t total_nelems = iter_nelems * sort_nelems;
-    const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
-    IndexTy *workspace = sycl::malloc_device<IndexTy>(
-        padded_total_nelems + total_nelems, exec_q);
+    auto workspace_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<IndexTy>(total_nelems,
+                                                                 exec_q);
 
-    if (nullptr == workspace) {
-        throw std::runtime_error("Could not allocate workspace on device");
-    }
+    // get raw USM pointer
+    IndexTy *workspace = workspace_owner.get();
 
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
     const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
 
-    sycl::event iota_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
+    using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
 
-        using KernelName = radix_argsort_iota_krn<argTy, IndexTy>;
+    using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                size_t i = id[0];
-                IndexTy sort_id = static_cast<IndexTy>(i);
-                workspace[i] = sort_id;
-            });
-    });
+    sycl::event iota_ev = iota_impl<IotaKernelName, IndexTy>(
+        exec_q, workspace, total_nelems, depends);
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<IndexTy, IndexedProjT>(
             exec_q, iter_nelems, sort_nelems, workspace, res_tp, proj_op,
             sort_ascending, {iota_ev});
 
-    sycl::event map_back_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(radix_sort_ev);
+    using MapBackKernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
+    using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
 
-        using KernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
+    sycl::event map_back_ev = map_back_impl<MapBackKernelName, IndexTy>(
+        exec_q, total_nelems, res_tp, res_tp, sort_nelems, {radix_sort_ev});
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(total_nelems), [=](sycl::id<1> id) {
-                IndexTy linear_index = res_tp[id];
-                res_tp[id] = (linear_index % sort_nelems);
-            });
-    });
-
-    sycl::event cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(map_back_ev);
-
-        const sycl::context &ctx = exec_q.get_context();
-
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, workspace] { sycl_free_noexcept(workspace, ctx); });
-    });
+    sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {map_back_ev}, workspace_owner);
 
     return cleanup_ev;
 }
