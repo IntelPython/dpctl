@@ -16,7 +16,7 @@
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>oneAPI programming model - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -651,6 +651,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -843,7 +844,7 @@ computational tasks submitted by the <code class="docutils literal notranslate">
 function will execute on. To create a queue, one must specify a device to target.</p>
 <p>In <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code> is represented by <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> Python type,
 and a Python API to call such a function might look like</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call_compute</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">call_compute</span><span class="p">(</span>
     <span class="n">exec_q</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">,</span>
     <span class="o">...</span><span class="p">,</span>
     <span class="n">dependent_events</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -880,7 +881,7 @@ Python type representing the USM allocation.</p>
 </div>
 <p>This design choice allows <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> to have a preferred queue to use when operating on any single
 USM allocation. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unary_func</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">unary_func</span><span class="p">(</span><span class="n">x</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
     <span class="n">code1</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">_func_impl</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
     <span class="n">code2</span>
@@ -890,7 +891,7 @@ USM allocation. For example:</p>
 <a class="reference internal" href="../beginners_guides/tensor_intro.html#dpctl-tensor-compute-follows-data"><span class="std std-ref">programming model</span></a>
 adopted in <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> insists that queues associated with each object be the same, in which
 case it is the execution queue used. Alternatively <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.ExecutionPlacementError" title="dpctl.utils.ExecutionPlacementError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">dpctl.utils.ExecutionPlacementError</span></code></a> is raised.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">binary_func</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">binary_func</span><span class="p">(</span>
     <span class="n">x1</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span>
     <span class="n">x2</span> <span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">usm_ndarray</span>
 <span class="p">):</span>
@@ -902,8 +903,8 @@ case it is the execution queue used. Alternatively <a class="reference internal"
 </div>
 <p>In order to ensure that compute-follows-data works seamlessly out-of-the-box, <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> maintains
 a cache of with context and device as keys and queues as values used by <a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">Device</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span><span class="n">sycl_dev</span><span class="p">)</span>
@@ -917,8 +918,8 @@ a cache of with context and device as keys and queues as values used by <a class
 <p>Since <a class="reference internal" href="../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="dpctl.tensor.Device"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> class is used by all <a class="reference internal" href="../api_reference/dpctl/tensor.creation_functions.html#dpctl-tensor-creation-functions"><span class="std std-ref">array creation functions</span></a>
 in <a class="reference internal" href="../api_reference/dpctl/tensor.html#module-dpctl.tensor" title="dpctl.tensor"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a>, the same value used as <code class="docutils literal notranslate"><span class="pre">device</span></code> keyword argument results in array instances that
 can be combined together in accordance with compute-follows-data programming model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpctl</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># queue for default-constructed device is used</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span>

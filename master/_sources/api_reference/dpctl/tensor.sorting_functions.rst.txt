@@ -10,3 +10,4 @@ Sorting functions
 
    argsort
    sort
+   top_k

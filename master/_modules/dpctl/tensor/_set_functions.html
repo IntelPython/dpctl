@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._set_functions - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -650,6 +650,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -826,13 +827,13 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
 
-<span class="kn">from</span> <span class="nn">._tensor_elementwise_impl</span> <span class="kn">import</span> <span class="n">_not_equal</span><span class="p">,</span> <span class="n">_subtract</span>
-<span class="kn">from</span> <span class="nn">._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_elementwise_impl</span><span class="w"> </span><span class="kn">import</span> <span class="n">_not_equal</span><span class="p">,</span> <span class="n">_subtract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">,</span>
     <span class="n">_extract</span><span class="p">,</span>
     <span class="n">_full_usm_ndarray</span><span class="p">,</span>
@@ -841,7 +842,7 @@
     <span class="n">default_device_index_type</span><span class="p">,</span>
     <span class="n">mask_positions</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._tensor_sorting_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_sorting_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_argsort_ascending</span><span class="p">,</span>
     <span class="n">_searchsorted_left</span><span class="p">,</span>
     <span class="n">_sort_ascending</span><span class="p">,</span>
@@ -858,24 +859,24 @@
 <span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">UniqueAllResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniqueAllResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">indices</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">inverse_indices</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">counts</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
 
 
-<span class="k">class</span> <span class="nc">UniqueCountsResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniqueCountsResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">counts</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
 
 
-<span class="k">class</span> <span class="nc">UniqueInverseResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniqueInverseResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">inverse_indices</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
 
 
-<div class="viewcode-block" id="unique_values"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_values.html#dpctl.tensor.unique_values">[docs]</a><span class="k">def</span> <span class="nf">unique_values</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="unique_values"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_values.html#dpctl.tensor.unique_values">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unique_values</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unique_values(x)</span>
 
 <span class="sd">    Returns the unique elements of an input array `x`.</span>
@@ -960,7 +961,7 @@
     <span class="k">return</span> <span class="n">unique_vals</span></div>
 
 
-<div class="viewcode-block" id="unique_counts"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_counts.html#dpctl.tensor.unique_counts">[docs]</a><span class="k">def</span> <span class="nf">unique_counts</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueCountsResult</span><span class="p">:</span>
+<div class="viewcode-block" id="unique_counts"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_counts.html#dpctl.tensor.unique_counts">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unique_counts</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueCountsResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unique_counts(x)</span>
 
 <span class="sd">    Returns the unique elements of an input array `x` and the corresponding</span>
@@ -1093,7 +1094,7 @@
     <span class="k">return</span> <span class="n">UniqueCountsResult</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">,</span> <span class="n">_counts</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unique_inverse"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_inverse.html#dpctl.tensor.unique_inverse">[docs]</a><span class="k">def</span> <span class="nf">unique_inverse</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="unique_inverse"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_inverse.html#dpctl.tensor.unique_inverse">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unique_inverse</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unique_inverse</span>
 
 <span class="sd">    Returns the unique elements of an input array x and the indices from the</span>
@@ -1252,7 +1253,7 @@
     <span class="k">return</span> <span class="n">UniqueInverseResult</span><span class="p">(</span><span class="n">unique_vals</span><span class="p">,</span> <span class="n">inv</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="unique_all"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_all.html#dpctl.tensor.unique_all">[docs]</a><span class="k">def</span> <span class="nf">unique_all</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueAllResult</span><span class="p">:</span>
+<div class="viewcode-block" id="unique_all"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unique_all.html#dpctl.tensor.unique_all">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unique_all</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniqueAllResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unique_all(x)</span>
 
 <span class="sd">    Returns the unique elements of an input array `x`, the first occurring</span>

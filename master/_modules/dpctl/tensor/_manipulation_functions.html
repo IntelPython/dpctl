@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._manipulation_functions - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -650,6 +650,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -827,19 +828,19 @@
 <span class="c1">#  limitations under the License.</span>
 
 
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dputils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dputils</span>
 
-<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="n">_broadcast_strides</span>
-<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
-<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_supported_dtype</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_broadcast_strides</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_supported_dtype</span><span class="p">,</span> <span class="n">_to_device_supported_dtype</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;Implementation module for array manipulation &quot;</span>
@@ -847,7 +848,7 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_broadcast_shape_impl</span><span class="p">(</span><span class="n">shapes</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_broadcast_shape_impl</span><span class="p">(</span><span class="n">shapes</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">shapes</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">mutable_shapes</span> <span class="o">=</span> <span class="kc">False</span>
@@ -886,7 +887,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">common_shape</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast the input shapes into a single shape;</span>
 <span class="sd">    returns tuple broadcasted shape.</span>
@@ -895,7 +896,7 @@
     <span class="k">return</span> <span class="n">_broadcast_shape_impl</span><span class="p">(</span><span class="n">array_shapes</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="permute_dims"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.permute_dims.html#dpctl.tensor.permute_dims">[docs]</a><span class="k">def</span> <span class="nf">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+<div class="viewcode-block" id="permute_dims"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.permute_dims.html#dpctl.tensor.permute_dims">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;permute_dims(x, axes)</span>
 
 <span class="sd">    Permute the axes (dimensions) of an array; returns the permuted</span>
@@ -932,7 +933,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="expand_dims"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.expand_dims.html#dpctl.tensor.expand_dims">[docs]</a><span class="k">def</span> <span class="nf">expand_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="expand_dims"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.expand_dims.html#dpctl.tensor.expand_dims">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">expand_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;expand_dims(x, axis)</span>
 
 <span class="sd">    Expands the shape of an array by inserting a new axis (dimension)</span>
@@ -978,7 +979,7 @@
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="squeeze"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.squeeze.html#dpctl.tensor.squeeze">[docs]</a><span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="squeeze"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.squeeze.html#dpctl.tensor.squeeze">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">squeeze</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;squeeze(x, axis)</span>
 
 <span class="sd">    Removes singleton dimensions (axes) from array `x`.</span>
@@ -1023,7 +1024,7 @@
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="broadcast_to"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.broadcast_to.html#dpctl.tensor.broadcast_to">[docs]</a><span class="k">def</span> <span class="nf">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+<div class="viewcode-block" id="broadcast_to"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.broadcast_to.html#dpctl.tensor.broadcast_to">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;broadcast_to(x, shape)</span>
 
 <span class="sd">    Broadcast an array to a new `shape`; returns the broadcasted</span>
@@ -1060,7 +1061,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="broadcast_arrays"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.broadcast_arrays.html#dpctl.tensor.broadcast_arrays">[docs]</a><span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="broadcast_arrays"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.broadcast_arrays.html#dpctl.tensor.broadcast_arrays">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;broadcast_arrays(*arrays)</span>
 
 <span class="sd">    Broadcasts one or more :class:`dpctl.tensor.usm_ndarrays` against</span>
@@ -1091,7 +1092,7 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">X</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="flip"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.flip.html#dpctl.tensor.flip">[docs]</a><span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="flip"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.flip.html#dpctl.tensor.flip">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;flip(x, axis)</span>
 
 <span class="sd">    Reverses the order of elements in an array `x` along the given `axis`.</span>
@@ -1123,7 +1124,7 @@
     <span class="k">return</span> <span class="n">X</span><span class="p">[</span><span class="n">indexer</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.roll.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="roll"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.roll.html#dpctl.tensor.roll">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    roll(x, shift, axis)</span>
 
@@ -1199,7 +1200,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_arrays_validation</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">check_ndim</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_arrays_validation</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">check_ndim</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Missing 1 required positional argument: &#39;arrays&#39;.&quot;</span><span class="p">)</span>
@@ -1239,7 +1240,7 @@
     <span class="k">return</span> <span class="n">res_dtype</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span>
 
 
-<span class="k">def</span> <span class="nf">_check_same_shapes</span><span class="p">(</span><span class="n">X0_shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">arrays</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_same_shapes</span><span class="p">(</span><span class="n">X0_shape</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">arrays</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="n">Xi_shape</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">X0j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">X0_shape</span><span class="p">):</span>
@@ -1252,7 +1253,7 @@
                 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_concat_axis_None</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_concat_axis_None</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
     <span class="s2">&quot;Implementation of concat(arrays, axis=None).&quot;</span>
     <span class="n">res_dtype</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">_arrays_validation</span><span class="p">(</span>
         <span class="n">arrays</span><span class="p">,</span> <span class="n">check_ndim</span><span class="o">=</span><span class="kc">False</span>
@@ -1307,7 +1308,7 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<div class="viewcode-block" id="concat"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.concat.html#dpctl.tensor.concat">[docs]</a><span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="concat"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.concat.html#dpctl.tensor.concat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">concat</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;concat(arrays, axis)</span>
 
 <span class="sd">    Joins a sequence of arrays along an existing axis.</span>
@@ -1377,7 +1378,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.stack.html#dpctl.tensor.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.stack.html#dpctl.tensor.stack">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    stack(arrays, axis)</span>
 
@@ -1438,7 +1439,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="unstack"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unstack.html#dpctl.tensor.unstack">[docs]</a><span class="k">def</span> <span class="nf">unstack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="unstack"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.unstack.html#dpctl.tensor.unstack">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">unstack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;unstack(x, axis=0)</span>
 
 <span class="sd">    Splits an array in a sequence of arrays along the given axis.</span>
@@ -1467,7 +1468,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.moveaxis.html#dpctl.tensor.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.moveaxis.html#dpctl.tensor.moveaxis">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">moveaxis</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;moveaxis(x, source, destination)</span>
 
 <span class="sd">    Moves axes of an array to new positions.</span>
@@ -1518,7 +1519,7 @@
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">swapaxes</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;swapaxes(x, axis1, axis2)</span>
 
 <span class="sd">    Interchanges two axes of an array.</span>
@@ -1556,7 +1557,7 @@
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">permute_dims</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.repeat.html#dpctl.tensor.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.repeat.html#dpctl.tensor.repeat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;repeat(x, repeats, axis=None)</span>
 
 <span class="sd">    Repeat elements of an array on a per-element basis.</span>
@@ -1780,7 +1781,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="tile"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.tile.html#dpctl.tensor.tile">[docs]</a><span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repetitions</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="tile"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.tile.html#dpctl.tensor.tile">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">repetitions</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;tile(x, repetitions)</span>
 
 <span class="sd">    Repeat an input array `x` along each axis a number of times given by</span>
