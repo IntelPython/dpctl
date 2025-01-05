@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -836,18 +836,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Intel Corp.&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_init_helper</span>
-<span class="kn">from</span> <span class="nn">._device_selection</span> <span class="kn">import</span> <span class="n">select_device_with_aspects</span>
-<span class="kn">from</span> <span class="nn">._sycl_context</span> <span class="kn">import</span> <span class="n">SyclContext</span><span class="p">,</span> <span class="n">SyclContextCreationError</span>
-<span class="kn">from</span> <span class="nn">._sycl_device</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_init_helper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._device_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">select_device_with_aspects</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclContext</span><span class="p">,</span> <span class="n">SyclContextCreationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_device</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SyclDevice</span><span class="p">,</span>
     <span class="n">SyclDeviceCreationError</span><span class="p">,</span>
     <span class="n">SyclSubDeviceCreationError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._sycl_device_factory</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_device_factory</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_devices</span><span class="p">,</span>
     <span class="n">get_num_devices</span><span class="p">,</span>
     <span class="n">has_accelerator_devices</span><span class="p">,</span>
@@ -858,18 +858,18 @@
     <span class="n">select_default_device</span><span class="p">,</span>
     <span class="n">select_gpu_device</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._sycl_event</span> <span class="kn">import</span> <span class="n">SyclEvent</span>
-<span class="kn">from</span> <span class="nn">._sycl_platform</span> <span class="kn">import</span> <span class="n">SyclPlatform</span><span class="p">,</span> <span class="n">get_platforms</span><span class="p">,</span> <span class="n">lsplatform</span>
-<span class="kn">from</span> <span class="nn">._sycl_queue</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_platform</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclPlatform</span><span class="p">,</span> <span class="n">get_platforms</span><span class="p">,</span> <span class="n">lsplatform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_queue</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SyclKernelInvalidRangeError</span><span class="p">,</span>
     <span class="n">SyclKernelSubmitError</span><span class="p">,</span>
     <span class="n">SyclQueue</span><span class="p">,</span>
     <span class="n">SyclQueueCreationError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._sycl_queue_manager</span> <span class="kn">import</span> <span class="n">get_device_cached_queue</span>
-<span class="kn">from</span> <span class="nn">._sycl_timer</span> <span class="kn">import</span> <span class="n">SyclTimer</span>
-<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">get_versions</span>
-<span class="kn">from</span> <span class="nn">.enum_types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_queue_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device_cached_queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_timer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclTimer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_versions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enum_types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">backend_type</span><span class="p">,</span>
     <span class="n">device_type</span><span class="p">,</span>
     <span class="n">event_status_type</span><span class="p">,</span>
@@ -939,7 +939,7 @@
     <span class="n">os</span><span class="o">.</span><span class="n">add_dll_directory</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../api_reference/dpctl/generated/dpctl.get_include.html#dpctl.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../api_reference/dpctl/generated/dpctl.get_include.html#dpctl.get_include">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_include</span><span class="p">():</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains the dpctl \*.h header files.</span>
 

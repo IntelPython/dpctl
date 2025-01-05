@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._reshape - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -826,13 +826,13 @@
 <span class="c1">#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
-<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_copy_usm_ndarray_for_reshape</span><span class="p">,</span>
     <span class="n">_ravel_multi_index</span><span class="p">,</span>
     <span class="n">_unravel_index</span><span class="p">,</span>
@@ -841,7 +841,7 @@
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Implementation module for :func:`dpctl.tensor.reshape`.&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_make_unit_indexes</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_unit_indexes</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct a diagonal matrix with with one on the diagonal</span>
 <span class="sd">    except if the corresponding element of shape is 1.</span>
@@ -853,15 +853,15 @@
     <span class="k">return</span> <span class="n">mi</span>
 
 
-<span class="k">def</span> <span class="nf">ti_unravel_index</span><span class="p">(</span><span class="n">flat_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ti_unravel_index</span><span class="p">(</span><span class="n">flat_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_unravel_index</span><span class="p">(</span><span class="n">flat_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">ti_ravel_multi_index</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ti_ravel_multi_index</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_ravel_multi_index</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">reshaped_strides</span><span class="p">(</span><span class="n">old_sh</span><span class="p">,</span> <span class="n">old_sts</span><span class="p">,</span> <span class="n">new_sh</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reshaped_strides</span><span class="p">(</span><span class="n">old_sh</span><span class="p">,</span> <span class="n">old_sts</span><span class="p">,</span> <span class="n">new_sh</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When reshaping array with `old_sh` shape and `old_sts` strides</span>
 <span class="sd">    into the new shape `new_sh`, returns the new stride if the reshape</span>
@@ -900,7 +900,7 @@
     <span class="k">return</span> <span class="n">new_sts</span> <span class="k">if</span> <span class="n">valid</span> <span class="k">else</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.reshape.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="reshape"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.reshape.html#dpctl.tensor.reshape">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;reshape(x, shape, order=&quot;C&quot;)</span>
 
 <span class="sd">    Reshapes array ``x`` into new shape.</span>

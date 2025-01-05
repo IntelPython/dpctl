@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._device - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -826,14 +826,14 @@
 <span class="c1">#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_device_factory</span> <span class="kn">import</span> <span class="n">_cached_default_device</span>
-<span class="kn">from</span> <span class="nn">dpctl._sycl_queue_manager</span> <span class="kn">import</span> <span class="n">get_device_cached_queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl._sycl_device_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">_cached_default_device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl._sycl_queue_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device_cached_queue</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Implementation of array API mandated Device class&quot;</span>
 
 
-<div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device">[docs]</a><span class="k">class</span> <span class="nc">Device</span><span class="p">:</span>
+<div class="viewcode-block" id="Device"><a class="viewcode-back" href="../../../api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Device</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An object representing Data-API concept of device.</span>
 
@@ -849,11 +849,11 @@
     <span class="n">__device_queue_map__</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">sycl_queue_</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;No public constructor&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Device.create_device(device=None)</span>
 
 <span class="sd">        Creates instance of Device from argument.</span>
@@ -894,33 +894,33 @@
         <span class="k">return</span> <span class="n">obj</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclQueue` used to offload to this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sycl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclContext` associated with this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">sycl_context</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :class:`dpctl.SyclDevice` targeted by this :class:`.Device`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">sycl_device</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Instance of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2"> is not initialized&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">fs</span> <span class="o">=</span> <span class="n">sd</span><span class="o">.</span><span class="n">filter_string</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Device(</span><span class="si">{</span><span class="n">fs</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -928,17 +928,17 @@
             <span class="c1"># This is a sub-device</span>
             <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">print_device_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_device_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Outputs information about targeted SYCL device&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call ``wait`` method of the underlying ``sycl_queue``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue_</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Equality comparison based on underlying ``sycl_queue``.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
@@ -946,12 +946,12 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute object&#39;s hash value.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sycl_queue</span><span class="o">.</span><span class="fm">__hash__</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;normalize_queue_device(sycl_queue=None, device=None)</span>
 
 <span class="sd">    Utility to process exclusive keyword arguments &#39;device&#39;</span>

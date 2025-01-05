@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._testing - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -827,16 +827,16 @@
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
 
-<span class="kn">from</span> <span class="nn">._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
-<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_to_device_supported_dtype</span>
 
 
-<span class="k">def</span> <span class="nf">_allclose_complex_fp</span><span class="p">(</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_allclose_complex_fp</span><span class="p">(</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
     <span class="n">z1r</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
     <span class="n">z1i</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
     <span class="n">z2r</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">z2</span><span class="p">)</span>
@@ -882,7 +882,7 @@
     <span class="k">return</span> <span class="n">check5</span>
 
 
-<span class="k">def</span> <span class="nf">_allclose_real_fp</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_allclose_real_fp</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">equal_nan</span><span class="p">:</span>
         <span class="n">check1</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">r2</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
@@ -908,11 +908,11 @@
     <span class="k">return</span> <span class="n">check4</span>
 
 
-<span class="k">def</span> <span class="nf">_allclose_others</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_allclose_others</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">r1</span> <span class="o">==</span> <span class="n">r2</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="allclose"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.allclose.html#dpctl.tensor.allclose">[docs]</a><span class="k">def</span> <span class="nf">allclose</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="allclose"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.allclose.html#dpctl.tensor.allclose">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">allclose</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;allclose(a1, a2, atol=1e-8, rtol=1e-5, equal_nan=False)</span>
 
 <span class="sd">    Returns True if two arrays are element-wise equal within tolerances.</span>

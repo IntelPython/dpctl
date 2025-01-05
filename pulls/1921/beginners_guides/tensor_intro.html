@@ -16,7 +16,7 @@
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>Intro to dpctl.tensor - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -915,8 +915,8 @@ instance associated with new target device have the same underlying <code class=
 <p>Here is an example of migration without a copy using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> method:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Example: Use <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to zero-copy migrate array content to be associated with a different <code class="docutils literal notranslate"><span class="pre">sycl::queue</span></code></span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">q_prof</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;enable_profiling&quot;</span><span class="p">)</span>
@@ -942,7 +942,7 @@ instance associated with new target device have the same underlying <code class=
 the current device to the host, and then from the host to the target device:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">.to_device</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
 
@@ -954,7 +954,7 @@ the current device to the host, and then from the host to the target device:</p>
 <p>An alternative way to migrate data is to use <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">asarray()</span></code></a> and specify device-placement keyword arguments:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">asarray</span></code> to migrate data may involve copy via host</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
 
@@ -967,8 +967,8 @@ the current device to the host, and then from the host to the target device:</p>
 devices as well migration from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> may be accomplished in a single call:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Example: <code class="docutils literal notranslate"><span class="pre">asarray</span></code> may migrate multiple arrays</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 <span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;opencl:gpu&quot;</span><span class="p">)</span>
@@ -984,7 +984,7 @@ of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.te
 new array is created on the same device where <cite>fill_value</cite> array was allocated.</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Example: Using <code class="docutils literal notranslate"><span class="pre">usm_ndarray</span></code> as arguments to array construction _dpctl_tensor_utility_functions</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span>
 
 <span class="c1"># Zero-dimensional array allocated on CPU device</span>
 <span class="n">pi_on_device</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tensor</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
@@ -1034,7 +1034,7 @@ using the following coercion rule:</p>
 the USM-type of the output array has the smallest score of all its inputs.</p>
 <p>The convenience function <a class="reference internal" href="../api_reference/dpctl/utils.html#dpctl.utils.get_coerced_usm_type" title="dpctl.utils.get_coerced_usm_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_coerced_usm_type()</span></code></a> is a convenience function to determine the USM-type
 following this convention:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">get_coerced_usm_type</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_coerced_usm_type</span>
 
 <span class="c1"># r1 has value &quot;device&quot;</span>
 <span class="n">r1</span> <span class="o">=</span> <span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="s2">&quot;device&quot;</span><span class="p">,</span> <span class="s2">&quot;shared&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">])</span>
@@ -1052,9 +1052,9 @@ following this convention:</p>
 <p>Python objects, such as sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, or <a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a> objects,
 or NumPy arrays can be converted to <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> using <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray" title="dpctl.tensor.asarray"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asarray()</span></code></a>
 function.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mkl_random</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">mkl_random</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Sample from true random number generator</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rs</span> <span class="o">=</span> <span class="n">mkl_random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">brng</span><span class="o">=</span><span class="s2">&quot;nondeterm&quot;</span><span class="p">)</span>
@@ -1072,16 +1072,16 @@ function.</p>
 </div>
 <p>The content of <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray</span></code></a> may be copied into
 a NumPy array using <code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.tensor.asnumpy()</span></code> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dpctl</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpctl</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="k">def</span> <span class="nf">sieve_pass</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span> <span class="n">v</span> <span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sieve_pass</span><span class="p">(</span><span class="n">r</span> <span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span> <span class="n">v</span> <span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
     <span class="s2">&quot;Single pass of sieve of Eratosthenes&quot;</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">r</span> <span class="o">&gt;</span> <span class="n">v</span><span class="p">])</span>
     <span class="n">r</span><span class="p">[</span> <span class="p">(</span><span class="n">r</span> <span class="o">&gt;</span> <span class="n">m</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">r</span> <span class="o">%</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">return</span> <span class="n">m</span>
 
-<span class="k">def</span> <span class="nf">sieve</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sieve</span><span class="p">(</span><span class="n">n</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
     <span class="s2">&quot;Find primes &lt;=n using sieve of Erathosthenes&quot;</span>
     <span class="n">idt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span>

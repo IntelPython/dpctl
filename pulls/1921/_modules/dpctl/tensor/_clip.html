@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._clip - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -827,32 +827,32 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">tei</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._copy_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tei</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_empty_like_orderK</span><span class="p">,</span>
     <span class="n">_empty_like_pair_orderK</span><span class="p">,</span>
     <span class="n">_empty_like_triple_orderK</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_dtype</span><span class="p">,</span>
     <span class="n">_get_queue_usm_type</span><span class="p">,</span>
     <span class="n">_get_shape</span><span class="p">,</span>
     <span class="n">_validate_dtype</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._manipulation_functions</span> <span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_can_cast</span>
-<span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_can_cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
 
-<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">,</span>
     <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_check_clip_dtypes</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_clip_dtypes</span><span class="p">(</span><span class="n">res_dtype</span><span class="p">,</span> <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="s2">&quot;Checks if both types `arg1_dtype` and `arg2_dtype` can be&quot;</span>
     <span class="s2">&quot;cast to `res_dtype` according to the rule `safe`&quot;</span>
     <span class="k">if</span> <span class="n">arg1_dtype</span> <span class="o">==</span> <span class="n">res_dtype</span> <span class="ow">and</span> <span class="n">arg2_dtype</span> <span class="o">==</span> <span class="n">res_dtype</span><span class="p">:</span>
@@ -871,7 +871,7 @@
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_clip_none</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">_binary_fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_clip_none</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">_binary_fn</span><span class="p">):</span>
     <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">q2</span><span class="p">,</span> <span class="n">val_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1069,7 +1069,7 @@
         <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.clip.html#dpctl.tensor.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.clip.html#dpctl.tensor.clip">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;clip(x, min=None, max=None, out=None, order=&quot;K&quot;)</span>
 
 <span class="sd">    Clips to the range [`min_i`, `max_i`] for each element `x_i`</span>

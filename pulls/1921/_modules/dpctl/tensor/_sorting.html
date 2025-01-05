@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._sorting - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -827,22 +827,22 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">du</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
 
-<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
-<span class="kn">from</span> <span class="nn">._tensor_sorting_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_sorting_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_argsort_ascending</span><span class="p">,</span>
     <span class="n">_argsort_descending</span><span class="p">,</span>
     <span class="n">_sort_ascending</span><span class="p">,</span>
     <span class="n">_sort_descending</span><span class="p">,</span>
     <span class="n">_topk</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._tensor_sorting_radix_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_sorting_radix_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_radix_argsort_ascending</span><span class="p">,</span>
     <span class="n">_radix_argsort_descending</span><span class="p">,</span>
     <span class="n">_radix_sort_ascending</span><span class="p">,</span>
@@ -853,15 +853,15 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sort&quot;</span><span class="p">,</span> <span class="s2">&quot;argsort&quot;</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_mergesort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_sort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_sort_ascending</span>
 
 
-<span class="k">def</span> <span class="nf">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_radixsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_radix_sort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_radix_sort_ascending</span>
 
 
-<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html#dpctl.tensor.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html#dpctl.tensor.sort">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;sort(x, axis=-1, descending=False, stable=True)</span>
 
 <span class="sd">    Returns a sorted copy of an input array `x`.</span>
@@ -967,15 +967,15 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_mergeargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_argsort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_argsort_ascending</span>
 
 
-<span class="k">def</span> <span class="nf">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_radixargsort_impl_fn</span><span class="p">(</span><span class="n">descending</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">_radix_argsort_descending</span> <span class="k">if</span> <span class="n">descending</span> <span class="k">else</span> <span class="n">_radix_argsort_ascending</span>
 
 
-<div class="viewcode-block" id="argsort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html#dpctl.tensor.argsort">[docs]</a><span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="argsort"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html#dpctl.tensor.argsort">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;argsort(x, axis=-1, descending=False, stable=True)</span>
 
 <span class="sd">    Returns the indices that sort an array `x` along a specified axis.</span>
@@ -1086,7 +1086,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_top_k_largest</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;largest&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;smallest&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">modes</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
@@ -1096,12 +1096,12 @@
         <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">TopKResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopKResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
     <span class="n">indices</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span>
 
 
-<div class="viewcode-block" id="top_k"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html#dpctl.tensor.top_k">[docs]</a><span class="k">def</span> <span class="nf">top_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;largest&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="top_k"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html#dpctl.tensor.top_k">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">top_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;largest&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;top_k(x, k, axis=None, mode=&quot;largest&quot;)</span>
 
 <span class="sd">    Returns the `k` largest or smallest values and their indices in the input</span>

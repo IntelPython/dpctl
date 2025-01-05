@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._indexing_functions - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -827,23 +827,23 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span>
 
-<span class="kn">from</span> <span class="nn">._copy_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_extract_impl</span><span class="p">,</span>
     <span class="n">_nonzero_impl</span><span class="p">,</span>
     <span class="n">_put_multi_index</span><span class="p">,</span>
     <span class="n">_take_multi_index</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 
-<span class="k">def</span> <span class="nf">_get_indexing_mode</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_indexing_mode</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="n">modes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;wrap&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">modes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -853,7 +853,7 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="take"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take.html#dpctl.tensor.take">[docs]</a><span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="take"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take.html#dpctl.tensor.take">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;take(x, indices, axis=None, mode=&quot;wrap&quot;)</span>
 
 <span class="sd">    Takes elements from an array along a given axis at given indices.</span>
@@ -948,7 +948,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="put"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.put.html#dpctl.tensor.put">[docs]</a><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="put"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.put.html#dpctl.tensor.put">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;put(x, indices, vals, axis=None, mode=&quot;wrap&quot;)</span>
 
 <span class="sd">    Puts values into an array along a given axis at given indices.</span>
@@ -1097,7 +1097,7 @@
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">put_ev</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="extract"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.extract.html#dpctl.tensor.extract">[docs]</a><span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+<div class="viewcode-block" id="extract"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.extract.html#dpctl.tensor.extract">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;extract(condition, arr)</span>
 
 <span class="sd">    Returns the elements of an array that satisfies the condition.</span>
@@ -1142,7 +1142,7 @@
     <span class="k">return</span> <span class="n">_extract_impl</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">condition</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="place"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.place.html#dpctl.tensor.place">[docs]</a><span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+<div class="viewcode-block" id="place"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.place.html#dpctl.tensor.place">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;place(arr, mask, vals)</span>
 
 <span class="sd">    Change elements of an array based on conditional and input values.</span>
@@ -1210,7 +1210,7 @@
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">hev</span><span class="p">,</span> <span class="n">pl_ev</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.nonzero.html#dpctl.tensor.nonzero">[docs]</a><span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+<div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.nonzero.html#dpctl.tensor.nonzero">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">nonzero</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;nonzero(arr)</span>
 
 <span class="sd">    Return the indices of non-zero elements.</span>
@@ -1237,13 +1237,13 @@
     <span class="k">return</span> <span class="n">_nonzero_impl</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_range</span><span class="p">(</span><span class="n">sh_i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">usm_t</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_range</span><span class="p">(</span><span class="n">sh_i</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">nd</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">usm_t</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
     <span class="n">ind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sh_i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_t</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
     <span class="n">ind</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sh_i</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nd</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ind</span>
 
 
-<div class="viewcode-block" id="take_along_axis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html#dpctl.tensor.take_along_axis">[docs]</a><span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="take_along_axis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take_along_axis.html#dpctl.tensor.take_along_axis">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">take_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns elements from an array at the one-dimensional indices specified</span>
 <span class="sd">    by ``indices`` along a provided ``axis``.</span>
@@ -1320,7 +1320,7 @@
     <span class="k">return</span> <span class="n">_take_multi_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">_ind</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode_i</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="put_along_axis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.put_along_axis.html#dpctl.tensor.put_along_axis">[docs]</a><span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="put_along_axis"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.put_along_axis.html#dpctl.tensor.put_along_axis">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">put_along_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Puts elements into an array at the one-dimensional indices specified by</span>
 <span class="sd">    ``indices`` along a provided ``axis``.</span>

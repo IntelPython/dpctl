@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._reduction - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -827,21 +827,21 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_reductions_impl</span> <span class="k">as</span> <span class="nn">tri</span>
-<span class="kn">from</span> <span class="nn">dpctl.utils</span> <span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_reductions_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tri</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
 
-<span class="kn">from</span> <span class="nn">._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
-<span class="kn">from</span> <span class="nn">._type_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_default_accumulation_dtype</span><span class="p">,</span>
     <span class="n">_default_accumulation_dtype_fp_types</span><span class="p">,</span>
     <span class="n">_to_device_supported_dtype</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_reduction_over_axis</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_reduction_over_axis</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">,</span>
@@ -999,7 +999,7 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sum.html#dpctl.tensor.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.sum.html#dpctl.tensor.sum">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the sum of elements in the input array ``x``.</span>
 
@@ -1064,7 +1064,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="prod"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.prod.html#dpctl.tensor.prod">[docs]</a><span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="prod"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.prod.html#dpctl.tensor.prod">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the product of elements in the input array ``x``.</span>
 
@@ -1128,7 +1128,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logsumexp"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.logsumexp.html#dpctl.tensor.logsumexp">[docs]</a><span class="k">def</span> <span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="logsumexp"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.logsumexp.html#dpctl.tensor.logsumexp">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the logarithm of the sum of exponentials of elements in the</span>
 <span class="sd">    input array ``x``.</span>
@@ -1190,7 +1190,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reduce_hypot"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.reduce_hypot.html#dpctl.tensor.reduce_hypot">[docs]</a><span class="k">def</span> <span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="reduce_hypot"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.reduce_hypot.html#dpctl.tensor.reduce_hypot">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the square root of the sum of squares of elements in the input</span>
 <span class="sd">    array ``x``.</span>
@@ -1251,7 +1251,7 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_comparison_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_reduction_fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_comparison_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_reduction_fn</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1349,7 +1349,7 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="max"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.max.html#dpctl.tensor.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="max"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.max.html#dpctl.tensor.max">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the maximum value of the input array ``x``.</span>
 
@@ -1382,7 +1382,7 @@
     <span class="k">return</span> <span class="n">_comparison_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_max_over_axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="min"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.min.html#dpctl.tensor.min">[docs]</a><span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="min"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.min.html#dpctl.tensor.min">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the minimum value of the input array ``x``.</span>
 
@@ -1415,7 +1415,7 @@
     <span class="k">return</span> <span class="n">_comparison_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_min_over_axis</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_search_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_reduction_fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_search_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">_reduction_fn</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1514,7 +1514,7 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<div class="viewcode-block" id="argmax"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmax.html#dpctl.tensor.argmax">[docs]</a><span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="argmax"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmax.html#dpctl.tensor.argmax">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the maximum values of the input array ``x`` along a</span>
 <span class="sd">    specified axis.</span>
@@ -1551,7 +1551,7 @@
     <span class="k">return</span> <span class="n">_search_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_argmax_over_axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="argmin"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmin.html#dpctl.tensor.argmin">[docs]</a><span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="argmin"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.argmin.html#dpctl.tensor.argmin">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the minimum values of the input array ``x`` along a</span>
 <span class="sd">    specified axis.</span>
@@ -1588,7 +1588,7 @@
     <span class="k">return</span> <span class="n">_search_over_axis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">tri</span><span class="o">.</span><span class="n">_argmin_over_axis</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="count_nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.count_nonzero.html#dpctl.tensor.count_nonzero">[docs]</a><span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="count_nonzero"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.count_nonzero.html#dpctl.tensor.count_nonzero">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">count_nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Counts the number of elements in the input array ``x`` which are non-zero.</span>
 
