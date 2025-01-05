@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `dpctl.tensor.top_k` per Python Array API specification: [#1921](https://github.com/IntelPython/dpctl/pull/1921)
+
 ### Changed
 
 * Improved performance of copy-and-cast operations from `numpy.ndarray` to `tensor.usm_ndarray` for contiguous inputs [gh-1829](https://github.com/IntelPython/dpctl/pull/1829)
