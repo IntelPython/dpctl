@@ -31,9 +31,11 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
+
+#include <stddef.h>
+
 #include <cstring>
 #include <gtest/gtest.h>
-#include <stddef.h>
 #include <sycl/sycl.hpp>
 
 using namespace sycl;
