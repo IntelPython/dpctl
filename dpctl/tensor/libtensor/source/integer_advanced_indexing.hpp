@@ -43,7 +43,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &,
                  const py::object &,
                  const dpctl::tensor::usm_ndarray &,
                  int,
-                 uint8_t,
+                 std::uint8_t,
                  sycl::queue &,
                  const std::vector<sycl::event> & = {});
 
@@ -52,7 +52,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &,
                 const py::object &,
                 const dpctl::tensor::usm_ndarray &,
                 int,
-                uint8_t,
+                std::uint8_t,
                 sycl::queue &,
                 const std::vector<sycl::event> & = {});
 

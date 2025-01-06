@@ -245,7 +245,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
                  const py::object &py_ind,
                  const dpctl::tensor::usm_ndarray &dst,
                  int axis_start,
-                 uint8_t mode,
+                 std::uint8_t mode,
                  sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
@@ -560,7 +560,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
                 const py::object &py_ind,
                 const dpctl::tensor::usm_ndarray &val,
                 int axis_start,
-                uint8_t mode,
+                std::uint8_t mode,
                 sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends)
 {
