@@ -199,7 +199,7 @@ sycl::event async_smart_free(sycl::queue &exec_q,
         cgh.depends_on(depends);
 
         cgh.host_task([ptrs, dels]() {
-            for (size_t i = 0; i < ptrs.size(); ++i) {
+            for (std::size_t i = 0; i < ptrs.size(); ++i) {
                 dels[i](ptrs[i]);
             }
         });

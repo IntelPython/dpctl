@@ -1,4 +1,3 @@
-
 //===--- test_sycl_device_interface.cpp - Test cases for device interface  ===//
 //
 //                      Data Parallel Control (dpCtl)
@@ -32,8 +31,10 @@
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils.h"
 #include "dpctl_utils_helper.h"
-#include <gtest/gtest.h>
+
 #include <stddef.h>
+
+#include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
 
 using namespace sycl;

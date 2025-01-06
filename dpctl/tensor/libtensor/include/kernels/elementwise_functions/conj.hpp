@@ -103,7 +103,7 @@ using ConjStridedFunctor = elementwise_common::
 template <typename T> struct ConjOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, bool, int8_t>,
+        td_ns::TypeMapResultEntry<T, bool, std::int8_t>,
         td_ns::TypeMapResultEntry<T, std::uint8_t>,
         td_ns::TypeMapResultEntry<T, std::uint16_t>,
         td_ns::TypeMapResultEntry<T, std::uint32_t>,

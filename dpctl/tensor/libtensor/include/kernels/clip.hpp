@@ -113,7 +113,7 @@ public:
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
-            const uint16_t nelems_per_sg = sgSize * nelems_per_wi;
+            const std::uint16_t nelems_per_sg = sgSize * nelems_per_wi;
 
             const std::size_t start =
                 (gid / sgSize) * (nelems_per_sg - sgSize) + gid;

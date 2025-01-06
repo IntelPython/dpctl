@@ -31,9 +31,13 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_type_casters.hpp"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include <cstdint>
 #include <exception>
 #include <sstream>
-#include <stddef.h>
 #include <stdexcept>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
@@ -45,49 +49,49 @@ using namespace sycl;
         switch ((ARGTY)) {                                                     \
         case DPCTL_INT8_T:                                                     \
         {                                                                      \
-            auto la = local_accessor<int8_t, NDIM>(R, CGH);                    \
+            auto la = local_accessor<std::int8_t, NDIM>(R, CGH);               \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_UINT8_T:                                                    \
         {                                                                      \
-            auto la = local_accessor<uint8_t, NDIM>(R, CGH);                   \
+            auto la = local_accessor<std::uint8_t, NDIM>(R, CGH);              \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_INT16_T:                                                    \
         {                                                                      \
-            auto la = local_accessor<int16_t, NDIM>(R, CGH);                   \
+            auto la = local_accessor<std::int16_t, NDIM>(R, CGH);              \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_UINT16_T:                                                   \
         {                                                                      \
-            auto la = local_accessor<uint16_t, NDIM>(R, CGH);                  \
+            auto la = local_accessor<std::uint16_t, NDIM>(R, CGH);             \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_INT32_T:                                                    \
         {                                                                      \
-            auto la = local_accessor<int32_t, NDIM>(R, CGH);                   \
+            auto la = local_accessor<std::int32_t, NDIM>(R, CGH);              \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_UINT32_T:                                                   \
         {                                                                      \
-            auto la = local_accessor<uint32_t, NDIM>(R, CGH);                  \
+            auto la = local_accessor<std::uint32_t, NDIM>(R, CGH);             \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_INT64_T:                                                    \
         {                                                                      \
-            auto la = local_accessor<int64_t, NDIM>(R, CGH);                   \
+            auto la = local_accessor<std::int64_t, NDIM>(R, CGH);              \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
         case DPCTL_UINT64_T:                                                   \
         {                                                                      \
-            auto la = local_accessor<uint64_t, NDIM>(R, CGH);                  \
+            auto la = local_accessor<std::uint64_t, NDIM>(R, CGH);             \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
@@ -119,8 +123,8 @@ using namespace dpctl::syclinterface;
 
 typedef struct complex
 {
-    uint64_t real;
-    uint64_t imag;
+    std::uint64_t real;
+    std::uint64_t imag;
 } complexNumber;
 
 void set_dependent_events(handler &cgh,
@@ -177,28 +181,28 @@ bool set_kernel_arg(handler &cgh,
 
     switch (ArgTy) {
     case DPCTL_INT8_T:
-        cgh.set_arg(idx, *(int8_t *)Arg);
+        cgh.set_arg(idx, *(std::int8_t *)Arg);
         break;
     case DPCTL_UINT8_T:
-        cgh.set_arg(idx, *(uint8_t *)Arg);
+        cgh.set_arg(idx, *(std::uint8_t *)Arg);
         break;
     case DPCTL_INT16_T:
-        cgh.set_arg(idx, *(int16_t *)Arg);
+        cgh.set_arg(idx, *(std::int16_t *)Arg);
         break;
     case DPCTL_UINT16_T:
-        cgh.set_arg(idx, *(uint16_t *)Arg);
+        cgh.set_arg(idx, *(std::uint16_t *)Arg);
         break;
     case DPCTL_INT32_T:
-        cgh.set_arg(idx, *(int32_t *)Arg);
+        cgh.set_arg(idx, *(std::int32_t *)Arg);
         break;
     case DPCTL_UINT32_T:
-        cgh.set_arg(idx, *(uint32_t *)Arg);
+        cgh.set_arg(idx, *(std::uint32_t *)Arg);
         break;
     case DPCTL_INT64_T:
-        cgh.set_arg(idx, *(int64_t *)Arg);
+        cgh.set_arg(idx, *(std::int64_t *)Arg);
         break;
     case DPCTL_UINT64_T:
-        cgh.set_arg(idx, *(uint64_t *)Arg);
+        cgh.set_arg(idx, *(std::uint64_t *)Arg);
         break;
     case DPCTL_FLOAT32_T:
         cgh.set_arg(idx, *(float *)Arg);
