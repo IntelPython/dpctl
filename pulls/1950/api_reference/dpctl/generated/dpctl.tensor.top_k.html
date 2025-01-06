@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.logical_or" href="dpctl.tensor.logical_or.html" /><link rel="prev" title="dpctl.tensor.logical_and" href="dpctl.tensor.logical_and.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="Statistical Functions" href="../tensor.statistical_functions.html" /><link rel="prev" title="dpctl.tensor.sort" href="dpctl.tensor.sort.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.logical_not - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
+        <title>dpctl.tensor.top_k - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -512,7 +512,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tensor.data_types.html">Data types</a></li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.elementwise_functions.html">Element-wise functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.elementwise_functions.html">Element-wise functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.abs.html">dpctl.tensor.abs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.acos.html">dpctl.tensor.acos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.acosh.html">dpctl.tensor.acosh</a></li>
@@ -558,7 +558,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.log10.html">dpctl.tensor.log10</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.logaddexp.html">dpctl.tensor.logaddexp</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.logical_and.html">dpctl.tensor.logical_and</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.logical_not</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.logical_not.html">dpctl.tensor.logical_not</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.logical_or.html">dpctl.tensor.logical_or</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.logical_xor.html">dpctl.tensor.logical_xor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.maximum.html">dpctl.tensor.maximum</a></li>
@@ -648,10 +648,10 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.unique_values.html">dpctl.tensor.unique_values</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.sorting_functions.html">Sorting functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -797,7 +797,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.logical_not.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.top_k.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -817,29 +817,45 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-tensor-logical-not">
-<h1>dpctl.tensor.logical_not<a class="headerlink" href="#dpctl-tensor-logical-not" title="Permalink to this heading">¶</a></h1>
-<dl class="py data">
-<dt class="sig sig-object py" id="dpctl.tensor.logical_not">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">logical_not</span></span><a class="headerlink" href="#dpctl.tensor.logical_not" title="Permalink to this definition">¶</a></dt>
-<dd><p>logical_not(x, /, *, out=None, order=’K’)</p>
-<p>Computes the logical NOT for each element <cite>x_i</cite> of input array <cite>x</cite>.</p>
+          <section id="dpctl-tensor-top-k">
+<h1>dpctl.tensor.top_k<a class="headerlink" href="#dpctl-tensor-top-k" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.top_k">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">top_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'largest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/dpctl/tensor/_sorting.html#top_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.top_k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the <cite>k</cite> largest or smallest values and their indices in the input
+array <cite>x</cite> along the specified axis <cite>axis</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
-<li><p><strong>out</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Output array to populate. Array must have the correct
-shape and the expected data type.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>,</em><em>&quot;F&quot;</em><em>,</em><em>&quot;A&quot;</em><em>,</em><em>&quot;K&quot;</em><em>, </em><em>optional</em>) – memory layout of the new
-output array, if parameter <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Default: “K”.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – input array.</p></li>
+<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of elements to find. Must be a positive integer value.</p></li>
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – axis along which to search. If <cite>None</cite>, the search will be performed
+over the flattened array. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>mode</strong> (<em>Literal</em><em>[</em><em>&quot;largest&quot;</em><em>, </em><em>&quot;smallest&quot;</em><em>]</em>) – <p>search mode. Must be one of the following modes:</p>
+<ul>
+<li><p><cite>”largest”</cite>: return the <cite>k</cite> largest elements.</p></li>
+<li><p><cite>”smallest”</cite>: return the <cite>k</cite> smallest elements.</p></li>
+</ul>
+<p>Default: <cite>“largest”</cite>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array containing the element-wise logical NOT results.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuple[usm_ndarray, usm_ndarray]</dt><dd><p>a namedtuple <cite>(values, indices)</cite> whose</p>
+<ul class="simple">
+<li><p>first element <cite>values</cite> will be an array containing the <cite>k</cite>
+largest or smallest elements of <cite>x</cite>. The array has the same data
+type as <cite>x</cite>. If <cite>axis</cite> was <cite>None</cite>, <cite>values</cite> will be a
+one-dimensional array with shape <cite>(k,)</cite> and otherwise, <cite>values</cite>
+will have shape <cite>x.shape[:axis] + (k,) + x.shape[axis+1:]</cite></p></li>
+<li><p>second element <cite>indices</cite> will be an array containing indices of
+<cite>x</cite> that result in <cite>values</cite>. The array will have the same shape
+as <cite>values</cite> and will have the default array index data type.</p></li>
+</ul>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -851,23 +867,23 @@ Default: “K”.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.tensor.logical_or.html">
+          <a class="next-page" href="../tensor.statistical_functions.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.logical_or</div>
+                <div class="title">Statistical Functions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.tensor.logical_and.html">
+          <a class="prev-page" href="dpctl.tensor.sort.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.tensor.logical_and</div>
+                <div class="title">dpctl.tensor.sort</div>
                 
               </div>
             </a>
@@ -901,8 +917,8 @@ Default: “K”.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.tensor.logical_not</a><ul>
-<li><a class="reference internal" href="#dpctl.tensor.logical_not"><code class="docutils literal notranslate"><span class="pre">logical_not</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.tensor.top_k</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.top_k"><code class="docutils literal notranslate"><span class="pre">top_k()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -16,7 +16,7 @@
 
     <link rel="shortcut icon" href="../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl Cython API - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -651,6 +651,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -819,7 +820,7 @@
           <section id="dpctl-cython-api">
 <span id="id1"></span><h1><a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> Cython API<a class="headerlink" href="#dpctl-cython-api" title="Permalink to this heading">¶</a></h1>
 <p>All Python modules of <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> come with <code class="docutils literal notranslate"><span class="pre">__init__.pxd</span></code> alongside <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> files
-permitting doing both <code class="code highlight python docutils literal highlight-python"><span class="kn">import</span> <span class="nn">dpctl</span></code> and <code class="code docutils literal notranslate"><span class="pre">cimport</span> <span class="pre">dpctl</span> <span class="pre">as</span> <span class="pre">c_dpctl</span></code>.</p>
+permitting doing both <code class="code highlight python docutils literal highlight-python"><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span></code> and <code class="code docutils literal notranslate"><span class="pre">cimport</span> <span class="pre">dpctl</span> <span class="pre">as</span> <span class="pre">c_dpctl</span></code>.</p>
 <p>Locations of Cython declaration files in the package installation layout are as follows:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>__init__.pxd
 _backend.pxd
