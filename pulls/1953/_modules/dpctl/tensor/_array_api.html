@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._array_api - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -651,6 +651,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -827,9 +828,9 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">default_device_complex_type</span><span class="p">,</span>
     <span class="n">default_device_fp_type</span><span class="p">,</span>
     <span class="n">default_device_index_type</span><span class="p">,</span>
@@ -837,7 +838,7 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_isdtype_impl</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_isdtype_impl</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span>
@@ -865,12 +866,12 @@
 <span class="n">__array_api_version__</span> <span class="o">=</span> <span class="s2">&quot;2023.12&quot;</span>
 
 
-<div class="viewcode-block" id="Info"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor._array_api.Info.html#dpctl.tensor.Info">[docs]</a><span class="k">class</span> <span class="nc">Info</span><span class="p">:</span>
+<div class="viewcode-block" id="Info"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor._array_api.Info.html#dpctl.tensor.Info">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Info</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    namespace returned by ``__array_namespace_info__()``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;boolean indexing&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;data-dependent shapes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -892,7 +893,7 @@
             <span class="s2">&quot;uint64&quot;</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="Info.capabilities"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.capabilities.html#dpctl.tensor.Info.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Info.capabilities"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.capabilities.html#dpctl.tensor.Info.capabilities">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        capabilities()</span>
 
@@ -915,7 +916,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Info.default_device"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.default_device.html#dpctl.tensor.Info.default_device">[docs]</a>    <span class="k">def</span> <span class="nf">default_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Info.default_device"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.default_device.html#dpctl.tensor.Info.default_device">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">default_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        default_device()</span>
 
@@ -923,7 +924,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Info.default_dtypes"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.default_dtypes.html#dpctl.tensor.Info.default_dtypes">[docs]</a>    <span class="k">def</span> <span class="nf">default_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Info.default_dtypes"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.default_dtypes.html#dpctl.tensor.Info.default_dtypes">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">default_dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        default_dtypes(*, device=None)</span>
 
@@ -959,7 +960,7 @@
             <span class="s2">&quot;indexing&quot;</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="Info.dtypes"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.dtypes.html#dpctl.tensor.Info.dtypes">[docs]</a>    <span class="k">def</span> <span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Info.dtypes"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.dtypes.html#dpctl.tensor.Info.dtypes">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        dtypes(*, device=None, kind=None)</span>
 
@@ -1027,7 +1028,7 @@
                 <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">_fp64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_isdtype_impl</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
             <span class="p">}</span></div>
 
-<div class="viewcode-block" id="Info.devices"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.devices.html#dpctl.tensor.Info.devices">[docs]</a>    <span class="k">def</span> <span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Info.devices"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.devices.html#dpctl.tensor.Info.devices">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        devices()</span>
 
@@ -1036,7 +1037,7 @@
         <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_devices</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="__array_namespace_info__"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.__array_namespace_info__.html#dpctl.tensor.__array_namespace_info__">[docs]</a><span class="k">def</span> <span class="nf">__array_namespace_info__</span><span class="p">():</span>
+<div class="viewcode-block" id="__array_namespace_info__"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.__array_namespace_info__.html#dpctl.tensor.__array_namespace_info__">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">__array_namespace_info__</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    __array_namespace_info__()</span>
 

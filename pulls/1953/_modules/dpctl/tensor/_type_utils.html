@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._type_utils - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -651,6 +651,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -826,15 +827,15 @@
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 
 
-<span class="k">def</span> <span class="nf">_all_data_types</span><span class="p">(</span><span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_all_data_types</span><span class="p">(</span><span class="n">_fp16</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">):</span>
     <span class="n">_non_fp_types</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
@@ -876,7 +877,7 @@
             <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_is_maximal_inexact_type</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_maximal_inexact_type</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if data type `dt` is the</span>
 <span class="sd">    maximal size inexact data type</span>
@@ -886,7 +887,7 @@
     <span class="k">return</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">complex64</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_dtype_supported_by_device_impl</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dtype_supported_by_device_impl</span><span class="p">(</span>
     <span class="n">dt</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">has_fp64</span><span class="p">:</span>
@@ -903,7 +904,7 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_can_cast</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_can_cast</span><span class="p">(</span>
     <span class="n">from_</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">to_</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_fp16</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">_fp64</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -926,7 +927,7 @@
     <span class="k">return</span> <span class="n">can_cast_v</span>
 
 
-<span class="k">def</span> <span class="nf">_to_device_supported_dtype_impl</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_device_supported_dtype_impl</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">has_fp64</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">has_fp16</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="n">dpt</span><span class="o">.</span><span class="n">float16</span><span class="p">:</span>
@@ -941,18 +942,18 @@
     <span class="k">return</span> <span class="n">dt</span>
 
 
-<span class="k">def</span> <span class="nf">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
     <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
 
     <span class="k">return</span> <span class="n">_to_device_supported_dtype_impl</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_default_unary</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">ret_buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_default_unary</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">ret_buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_reciprocal</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_reciprocal</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="c1"># if the kind of result is different from the kind of input, we use the</span>
     <span class="c1"># default floating-point dtype for the resulting kind. This guarantees</span>
     <span class="c1"># alignment of reciprocal and divide output types.</span>
@@ -966,7 +967,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_negative</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_negative</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">buf_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="c1"># negative is not defined for boolean data type</span>
     <span class="k">if</span> <span class="n">arg_dtype</span><span class="o">.</span><span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -978,7 +979,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_subtract</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_subtract</span><span class="p">(</span>
     <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">buf1_dt</span><span class="p">,</span> <span class="n">buf2_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span>
 <span class="p">):</span>
     <span class="c1"># subtract is not defined for boolean data type</span>
@@ -992,7 +993,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_find_buf_dtype</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">,</span> <span class="n">acceptance_fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_buf_dtype</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">,</span> <span class="n">acceptance_fn</span><span class="p">):</span>
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">query_fn</span><span class="p">(</span><span class="n">arg_dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">res_dt</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_dt</span>
@@ -1013,7 +1014,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_get_device_default_dtype</span><span class="p">(</span><span class="n">dt_kind</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_device_default_dtype</span><span class="p">(</span><span class="n">dt_kind</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">dt_kind</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">default_device_bool_type</span><span class="p">(</span><span class="n">sycl_dev</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">dt_kind</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span>
@@ -1027,13 +1028,13 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_default_binary</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_default_binary</span><span class="p">(</span>
     <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">ret_buf1_dt</span><span class="p">,</span> <span class="n">ret_buf2_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span>
 <span class="p">):</span>
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_acceptance_fn_divide</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_acceptance_fn_divide</span><span class="p">(</span>
     <span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">ret_buf1_dt</span><span class="p">,</span> <span class="n">ret_buf2_dt</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">sycl_dev</span>
 <span class="p">):</span>
     <span class="c1"># both are being promoted, if the kind of result is</span>
@@ -1054,7 +1055,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">_find_buf_dtype2</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">,</span> <span class="n">acceptance_fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_buf_dtype2</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">,</span> <span class="n">acceptance_fn</span><span class="p">):</span>
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">query_fn</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">res_dt</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_dt</span>
@@ -1090,7 +1091,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_find_buf_dtype_in_place_op</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_buf_dtype_in_place_op</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">,</span> <span class="n">query_fn</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">):</span>
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">query_fn</span><span class="p">(</span><span class="n">arg1_dtype</span><span class="p">,</span> <span class="n">arg2_dtype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">res_dt</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">res_dt</span>
@@ -1105,47 +1106,47 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">class</span> <span class="nc">WeakBooleanType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeakBooleanType</span><span class="p">:</span>
     <span class="s2">&quot;Python type representing type of Python boolean objects&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
 
 
-<span class="k">class</span> <span class="nc">WeakIntegralType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeakIntegralType</span><span class="p">:</span>
     <span class="s2">&quot;Python type representing type of Python integral objects&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
 
 
-<span class="k">class</span> <span class="nc">WeakFloatingType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeakFloatingType</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Python type representing type of Python floating point objects&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
 
 
-<span class="k">class</span> <span class="nc">WeakComplexType</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeakComplexType</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Python type representing type of Python complex floating point objects&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">o_</span> <span class="o">=</span> <span class="n">o</span>
 
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">o_</span>
 
 
-<span class="k">def</span> <span class="nf">_weak_type_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_weak_type_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="n">_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;?&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">WeakBooleanType</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_map</span><span class="p">[</span><span class="s2">&quot;?&quot;</span><span class="p">]</span>
@@ -1162,7 +1163,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_strong_dtype_num_kind</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
     <span class="n">_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
@@ -1172,14 +1173,14 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized kind </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> for dtype </span><span class="si">{</span><span class="n">o</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_weak_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span>
         <span class="n">dtype</span><span class="p">,</span>
         <span class="p">(</span><span class="n">WeakBooleanType</span><span class="p">,</span> <span class="n">WeakIntegralType</span><span class="p">,</span> <span class="n">WeakFloatingType</span><span class="p">,</span> <span class="n">WeakComplexType</span><span class="p">),</span>
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_resolve_weak_types</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_weak_types</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="s2">&quot;Resolves weak data type per NEP-0050&quot;</span>
     <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">o2_dtype</span><span class="p">):</span>
@@ -1219,7 +1220,7 @@
         <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span>
 
 
-<span class="k">def</span> <span class="nf">_resolve_weak_types_all_py_ints</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_weak_types_all_py_ints</span><span class="p">(</span><span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="s2">&quot;Resolves weak data type per NEP-0050 for comparisons and&quot;</span>
     <span class="s2">&quot; divide, where result type is known and special behavior&quot;</span>
     <span class="s2">&quot;is needed to handle mixed integer kinds and Python integers&quot;</span>
@@ -1276,7 +1277,7 @@
         <span class="k">return</span> <span class="n">o1_dtype</span><span class="p">,</span> <span class="n">o2_dtype</span>
 
 
-<span class="k">def</span> <span class="nf">_resolve_one_strong_two_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_one_strong_two_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="s2">&quot;Resolves weak data types per NEP-0050,&quot;</span>
     <span class="s2">&quot;where the second and third arguments are&quot;</span>
     <span class="s2">&quot;permitted to be weak types&quot;</span>
@@ -1361,7 +1362,7 @@
         <span class="k">return</span> <span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span>
 
 
-<span class="k">def</span> <span class="nf">_resolve_one_strong_one_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_one_strong_one_weak_types</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
     <span class="s2">&quot;Resolves one weak data type with one strong data type per NEP-0050&quot;</span>
     <span class="k">if</span> <span class="n">_is_weak_dtype</span><span class="p">(</span><span class="n">st_dtype</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
@@ -1382,25 +1383,25 @@
         <span class="k">return</span> <span class="n">dtype</span>
 
 
-<span class="k">class</span> <span class="nc">finfo_object</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">finfo_object</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `numpy.finfo` subclass which returns Python floating-point scalars for</span>
 <span class="sd">    `eps`, `max`, `min`, and `smallest_normal` attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
         <span class="n">_supported_dtype</span><span class="p">([</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        number of bits occupied by the real-valued floating-point data type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">bits</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">smallest_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">smallest_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        smallest positive real-valued floating-point number with full</span>
 <span class="sd">        precision.</span>
@@ -1408,12 +1409,12 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">smallest_normal</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tiny</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tiny</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;an alias for `smallest_normal`&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">tiny</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">eps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        difference between 1.0 and the next smallest representable real-valued</span>
 <span class="sd">        floating-point number larger than 1.0 according to the IEEE-754</span>
@@ -1422,7 +1423,7 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">epsneg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epsneg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        difference between 1.0 and the next smallest representable real-valued</span>
 <span class="sd">        floating-point number smaller than 1.0 according to the IEEE-754</span>
@@ -1431,22 +1432,22 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">epsneg</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;smallest representable real-valued number.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;largest representable real-valued number.&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;the approximate decimal resolution of this type.&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        the approximate number of decimal digits to which this kind of</span>
 <span class="sd">        floating point type is precise.</span>
@@ -1454,7 +1455,7 @@
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">precision</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        the dtype for which finfo returns information. For complex input, the</span>
 <span class="sd">        returned dtype is the associated floating point dtype for its real and</span>
@@ -1462,14 +1463,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="n">dtype</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finfo</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.can_cast.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="can_cast"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.can_cast.html#dpctl.tensor.can_cast">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; can_cast(from, to, casting=&quot;safe&quot;)</span>
 
 <span class="sd">    Determines if one data type can be cast to another data type according \</span>
@@ -1521,7 +1522,7 @@
         <span class="k">return</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">dtype_from</span><span class="p">,</span> <span class="n">dtype_to</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="result_type"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.result_type.html#dpctl.tensor.result_type">[docs]</a><span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
+<div class="viewcode-block" id="result_type"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.result_type.html#dpctl.tensor.result_type">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    result_type(*arrays_and_dtypes)</span>
 
@@ -1604,7 +1605,7 @@
     <span class="k">return</span> <span class="n">res_dt</span></div>
 
 
-<div class="viewcode-block" id="iinfo"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.iinfo.html#dpctl.tensor.iinfo">[docs]</a><span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="iinfo"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.iinfo.html#dpctl.tensor.iinfo">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;iinfo(dtype)</span>
 
 <span class="sd">    Returns machine limits for integer data types.</span>
@@ -1633,7 +1634,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="finfo"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.finfo.html#dpctl.tensor.finfo">[docs]</a><span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<div class="viewcode-block" id="finfo"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.finfo.html#dpctl.tensor.finfo">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;finfo(type)</span>
 
 <span class="sd">    Returns machine limits for floating-point data types.</span>
@@ -1671,14 +1672,14 @@
     <span class="k">return</span> <span class="n">finfo_object</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_supported_dtype</span><span class="p">(</span><span class="n">dtypes</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">dtype</span><span class="o">.</span><span class="n">char</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;?bBhHiIlLqQefdFD&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dpctl doesn&#39;t support dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<div class="viewcode-block" id="isdtype"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.isdtype.html#dpctl.tensor.isdtype">[docs]</a><span class="k">def</span> <span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<div class="viewcode-block" id="isdtype"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.isdtype.html#dpctl.tensor.isdtype">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;isdtype(dtype, kind)</span>
 
 <span class="sd">    Returns a boolean indicating whether a provided `dtype` is</span>
@@ -1720,7 +1721,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_default_accumulation_dtype</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_default_accumulation_dtype</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gives default output data type for given input data</span>
 <span class="sd">    type `inp_dt` when accumulation is performed on queue `q`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1743,7 +1744,7 @@
     <span class="k">return</span> <span class="n">res_dt</span>
 
 
-<span class="k">def</span> <span class="nf">_default_accumulation_dtype_fp_types</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_default_accumulation_dtype_fp_types</span><span class="p">(</span><span class="n">inp_dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gives default output data type for given input data</span>
 <span class="sd">    type `inp_dt` when accumulation is performed on queue `q`</span>
 <span class="sd">    and the accumulation supports only floating-point data types</span>

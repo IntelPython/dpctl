@@ -15,7 +15,7 @@
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.tensor._ctors - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -651,6 +651,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.sorting_functions.html">Sorting functions</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of Sorting functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference/dpctl/generated/dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api_reference/dpctl/tensor.statistical_functions.html">Statistical Functions</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of Statistical Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -827,20 +828,20 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Number</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.memory</span> <span class="k">as</span> <span class="nn">dpm</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._copy_utils</span> <span class="kn">import</span> <span class="n">_empty_like_orderK</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._data_types</span> <span class="kn">import</span> <span class="n">_get_dtype</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._usmarray</span> <span class="kn">import</span> <span class="n">_is_object_with_buffer_protocol</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.memory</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_empty_like_orderK</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._usmarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">_is_object_with_buffer_protocol</span>
 
 <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Implementation of creation functions in :module:`dpctl.tensor`&quot;</span>
 
@@ -848,7 +849,7 @@
 <span class="n">_host_set</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="kc">None</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_array_info_dispatch</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_array_info_dispatch</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">obj</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -880,7 +881,7 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_array_info_sequence</span><span class="p">(</span><span class="n">li</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_array_info_sequence</span><span class="p">(</span><span class="n">li</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">li</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">range</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected list, tuple, or range, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">li</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">li</span><span class="p">)</span>
@@ -905,7 +906,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,)</span> <span class="o">+</span> <span class="n">dim</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">device</span>
 
 
-<span class="k">def</span> <span class="nf">_asarray_from_usm_ndarray</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_asarray_from_usm_ndarray</span><span class="p">(</span>
     <span class="n">usm_ndary</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -985,7 +986,7 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">_map_to_device_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_map_to_device_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
     <span class="n">dtc</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">char</span>
     <span class="k">if</span> <span class="n">dtc</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dt</span>
@@ -1007,7 +1008,7 @@
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized data type &#39;</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">&#39; encountered.&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_usm_ndarray_from_suai</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="n">sua_iface</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__sycl_usm_array_interface__&quot;</span><span class="p">)</span>
     <span class="n">membuf</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">as_usm_memory</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="n">ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
@@ -1026,7 +1027,7 @@
     <span class="k">return</span> <span class="n">ary</span>
 
 
-<span class="k">def</span> <span class="nf">_asarray_from_numpy_ndarray</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_asarray_from_numpy_ndarray</span><span class="p">(</span>
     <span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span>
 <span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -1083,7 +1084,7 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dev</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that dtype is natively supported by device.</span>
 
 <span class="sd">    Arg:</span>
@@ -1115,7 +1116,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_usm_types_walker</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_usm_types_walker</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">usm_types_list</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="n">usm_types_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
         <span class="k">return</span>
@@ -1134,7 +1135,7 @@
     <span class="k">raise</span> <span class="ne">TypeError</span>
 
 
-<span class="k">def</span> <span class="nf">_device_copy_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">_manager</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_device_copy_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">_manager</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">sycl_queue</span>
         <span class="n">deps</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
@@ -1159,7 +1160,7 @@
     <span class="k">raise</span> <span class="ne">TypeError</span>
 
 
-<span class="k">def</span> <span class="nf">_copy_through_host_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">usm_res</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_through_host_walker</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">usm_res</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seq_o</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span>
@@ -1200,7 +1201,7 @@
     <span class="n">usm_res</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">seq_o</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_asarray_from_seq</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_asarray_from_seq</span><span class="p">(</span>
     <span class="n">seq_obj</span><span class="p">,</span>
     <span class="n">seq_shape</span><span class="p">,</span>
     <span class="n">seq_dt</span><span class="p">,</span>
@@ -1251,7 +1252,7 @@
         <span class="k">return</span> <span class="n">res</span>
 
 
-<span class="k">def</span> <span class="nf">_asarray_from_seq_single_device</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_asarray_from_seq_single_device</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">,</span>
     <span class="n">seq_shape</span><span class="p">,</span>
     <span class="n">seq_dt</span><span class="p">,</span>
@@ -1284,7 +1285,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span>
+<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.asarray.html#dpctl.tensor.asarray">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">asarray</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -1475,7 +1476,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.empty.html#dpctl.tensor.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span>
+<div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.empty.html#dpctl.tensor.empty">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">empty</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1540,7 +1541,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_coerce_and_infer_dt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">allow_bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_coerce_and_infer_dt</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">,</span> <span class="n">allow_bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="s2">&quot;Deduce arange type from sequence spec&quot;</span>
     <span class="n">nd</span><span class="p">,</span> <span class="n">seq_dt</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">_array_info_sequence</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">_host_set</span> <span class="ow">or</span> <span class="n">nd</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">),):</span>
@@ -1557,14 +1558,14 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data type </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_round_for_arange</span><span class="p">(</span><span class="n">tmp</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_round_for_arange</span><span class="p">(</span><span class="n">tmp</span><span class="p">):</span>
     <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tmp</span><span class="p">:</span>
         <span class="n">tmp</span> <span class="o">=</span> <span class="n">tmp</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">tmp</span>
 
 
-<span class="k">def</span> <span class="nf">_get_arange_length</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_arange_length</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
     <span class="s2">&quot;Compute length of arange sequence&quot;</span>
     <span class="n">span</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="s2">&quot;__float__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">span</span><span class="p">,</span> <span class="s2">&quot;__float__&quot;</span><span class="p">):</span>
@@ -1578,7 +1579,7 @@
     <span class="k">return</span> <span class="n">_round_for_arange</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sc_ty</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A way to convert object to NumPy scalar type.</span>
 <span class="sd">    Raises OverflowError if obj can not be represented</span>
 <span class="sd">    using the requested scalar type.</span>
@@ -1587,7 +1588,7 @@
     <span class="k">return</span> <span class="n">zd_arr</span><span class="p">[</span><span class="nb">tuple</span><span class="p">()]</span>
 
 
-<div class="viewcode-block" id="arange"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.arange.html#dpctl.tensor.arange">[docs]</a><span class="k">def</span> <span class="nf">arange</span><span class="p">(</span>
+<div class="viewcode-block" id="arange"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.arange.html#dpctl.tensor.arange">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">arange</span><span class="p">(</span>
     <span class="n">start</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1698,7 +1699,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.zeros.html#dpctl.tensor.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span>
+<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.zeros.html#dpctl.tensor.zeros">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">zeros</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1767,7 +1768,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.ones.html#dpctl.tensor.ones">[docs]</a><span class="k">def</span> <span class="nf">ones</span><span class="p">(</span>
+<div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.ones.html#dpctl.tensor.ones">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ones</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1835,7 +1836,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_cast_fill_val</span><span class="p">(</span><span class="n">fill_val</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_cast_fill_val</span><span class="p">(</span><span class="n">fill_val</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Casts the Python scalar `fill_val` to another Python type coercible to the</span>
 <span class="sd">    requested data type `dt`, if necessary.</span>
@@ -1851,7 +1852,7 @@
         <span class="k">return</span> <span class="n">fill_val</span>
 
 
-<span class="k">def</span> <span class="nf">_validate_fill_value</span><span class="p">(</span><span class="n">fill_val</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_fill_value</span><span class="p">(</span><span class="n">fill_val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validates that `fill_val` is a numeric or boolean scalar.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1864,7 +1865,7 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="full"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full">[docs]</a><span class="k">def</span> <span class="nf">full</span><span class="p">(</span>
+<div class="viewcode-block" id="full"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.full.html#dpctl.tensor.full">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">full</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="n">fill_value</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -1959,7 +1960,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<span class="k">def</span> <span class="nf">_normalize_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility function for processing the `order` keyword of array-like</span>
 <span class="sd">    constructors, which support `&quot;K&quot;` and `&quot;A&quot;` orders.</span>
@@ -1974,7 +1975,7 @@
     <span class="k">return</span> <span class="n">order</span>
 
 
-<div class="viewcode-block" id="empty_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.empty_like.html#dpctl.tensor.empty_like">[docs]</a><span class="k">def</span> <span class="nf">empty_like</span><span class="p">(</span>
+<div class="viewcode-block" id="empty_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.empty_like.html#dpctl.tensor.empty_like">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">empty_like</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2050,7 +2051,7 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.zeros_like.html#dpctl.tensor.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span>
+<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.zeros_like.html#dpctl.tensor.zeros_like">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">zeros_like</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2134,7 +2135,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ones_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.ones_like.html#dpctl.tensor.ones_like">[docs]</a><span class="k">def</span> <span class="nf">ones_like</span><span class="p">(</span>
+<div class="viewcode-block" id="ones_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.ones_like.html#dpctl.tensor.ones_like">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">ones_like</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2215,7 +2216,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="full_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.full_like.html#dpctl.tensor.full_like">[docs]</a><span class="k">def</span> <span class="nf">full_like</span><span class="p">(</span>
+<div class="viewcode-block" id="full_like"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.full_like.html#dpctl.tensor.full_like">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">full_like</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">fill_value</span><span class="p">,</span>
@@ -2332,7 +2333,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="linspace"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.linspace.html#dpctl.tensor.linspace">[docs]</a><span class="k">def</span> <span class="nf">linspace</span><span class="p">(</span>
+<div class="viewcode-block" id="linspace"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.linspace.html#dpctl.tensor.linspace">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">linspace</span><span class="p">(</span>
     <span class="n">start</span><span class="p">,</span>
     <span class="n">stop</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -2430,7 +2431,7 @@
     <span class="k">return</span> <span class="n">res</span> <span class="k">if</span> <span class="n">int_dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">int_dt</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="eye"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.eye.html#dpctl.tensor.eye">[docs]</a><span class="k">def</span> <span class="nf">eye</span><span class="p">(</span>
+<div class="viewcode-block" id="eye"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.eye.html#dpctl.tensor.eye">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">eye</span><span class="p">(</span>
     <span class="n">n_rows</span><span class="p">,</span>
     <span class="n">n_cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -2526,7 +2527,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="tril"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.tril.html#dpctl.tensor.tril">[docs]</a><span class="k">def</span> <span class="nf">tril</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="tril"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.tril.html#dpctl.tensor.tril">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">tril</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the lower triangular part of a matrix (or a stack of matrices)</span>
 <span class="sd">    ``x``.</span>
@@ -2604,7 +2605,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="triu"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.triu.html#dpctl.tensor.triu">[docs]</a><span class="k">def</span> <span class="nf">triu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="triu"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.triu.html#dpctl.tensor.triu">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">triu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the upper triangular part of a matrix (or a stack of matrices)</span>
 <span class="sd">    ``x``.</span>
@@ -2682,7 +2683,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="meshgrid"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.meshgrid.html#dpctl.tensor.meshgrid">[docs]</a><span class="k">def</span> <span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="meshgrid"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.meshgrid.html#dpctl.tensor.meshgrid">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;xy&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates list of :class:`dpctl.tensor.usm_ndarray` coordinate matrices</span>
 <span class="sd">    from vectors.</span>
