@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add support of CV-qualifiers in `is_complex<T>` helper [gh-1900](https://github.com/IntelPython/dpctl/pull/1900)
 * Tuning work for elementwise functions with modest performance gains (under 10%) [gh-1889](https://github.com/IntelPython/dpctl/pull/1889)
 * Support for Python 3.13 for `dpctl` [gh-1941](https://github.com/IntelPython/dpctl/pull/1941)
+* Change libtensor to use `std::size_t` and `dpctl::tensor::ssize_t` throughout and fix missing includes for `std::size_t` and `size_t` [gh-1950](https://github.com/IntelPython/dpctl/pull/1950)
 
 ## [0.18.3] - Dec. 07, 2024
 
