@@ -23,6 +23,7 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <sycl/sycl.hpp>
@@ -42,6 +43,7 @@ namespace kernels
 namespace indexing
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 template <typename OrthogIndexerT,
@@ -55,7 +57,7 @@ struct MaskedExtractStridedFunctor
     MaskedExtractStridedFunctor(const dataT *src_data_p,
                                 const indT *cumsum_data_p,
                                 dataT *dst_data_p,
-                                size_t masked_iter_size,
+                                std::size_t masked_iter_size,
                                 const OrthogIndexerT &orthog_src_dst_indexer_,
                                 const MaskedSrcIndexerT &masked_src_indexer_,
                                 const MaskedDstIndexerT &masked_dst_indexer_,
@@ -81,7 +83,7 @@ struct MaskedExtractStridedFunctor
 
         const std::size_t max_offset = masked_nelems + 1;
         for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
-            const size_t offset = masked_block_start + i;
+            const std::size_t offset = masked_block_start + i;
             lacc[i] = (offset == 0)           ? indT(0)
                       : (offset < max_offset) ? cumsum[offset - 1]
                                               : cumsum[masked_nelems - 1] + 1;
@@ -99,9 +101,10 @@ struct MaskedExtractStridedFunctor
         if (mask_set && (masked_i < masked_nelems)) {
             const auto &orthog_offsets = orthog_src_dst_indexer(orthog_i);
 
-            const size_t total_src_offset = masked_src_indexer(masked_i) +
-                                            orthog_offsets.get_first_offset();
-            const size_t total_dst_offset =
+            const std::size_t total_src_offset =
+                masked_src_indexer(masked_i) +
+                orthog_offsets.get_first_offset();
+            const std::size_t total_dst_offset =
                 masked_dst_indexer(current_running_count - 1) +
                 orthog_offsets.get_second_offset();
 
@@ -113,7 +116,7 @@ private:
     const dataT *src = nullptr;
     const indT *cumsum = nullptr;
     dataT *dst = nullptr;
-    const size_t masked_nelems = 0;
+    const std::size_t masked_nelems = 0;
     // has nd, shape, src_strides, dst_strides for
     // dimensions that ARE NOT masked
     const OrthogIndexerT orthog_src_dst_indexer;
@@ -136,7 +139,7 @@ struct MaskedPlaceStridedFunctor
     MaskedPlaceStridedFunctor(dataT *dst_data_p,
                               const indT *cumsum_data_p,
                               const dataT *rhs_data_p,
-                              size_t masked_iter_size,
+                              std::size_t masked_iter_size,
                               const OrthogIndexerT &orthog_dst_rhs_indexer_,
                               const MaskedDstIndexerT &masked_dst_indexer_,
                               const MaskedRhsIndexerT &masked_rhs_indexer_,
@@ -157,12 +160,12 @@ struct MaskedPlaceStridedFunctor
         const std::uint32_t l_i = ndit.get_local_id(1);
         const std::uint32_t lws = ndit.get_local_range(1);
 
-        const size_t masked_i = ndit.get_global_id(1);
-        const size_t masked_block_start = masked_i - l_i;
+        const std::size_t masked_i = ndit.get_global_id(1);
+        const std::size_t masked_block_start = masked_i - l_i;
 
         const std::size_t max_offset = masked_nelems + 1;
         for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
-            const size_t offset = masked_block_start + i;
+            const std::size_t offset = masked_block_start + i;
             lacc[i] = (offset == 0)           ? indT(0)
                       : (offset < max_offset) ? cumsum[offset - 1]
                                               : cumsum[masked_nelems - 1] + 1;
@@ -180,9 +183,10 @@ struct MaskedPlaceStridedFunctor
         if (mask_set && (masked_i < masked_nelems)) {
             const auto &orthog_offsets = orthog_dst_rhs_indexer(orthog_i);
 
-            const size_t total_dst_offset = masked_dst_indexer(masked_i) +
-                                            orthog_offsets.get_first_offset();
-            const size_t total_rhs_offset =
+            const std::size_t total_dst_offset =
+                masked_dst_indexer(masked_i) +
+                orthog_offsets.get_first_offset();
+            const std::size_t total_rhs_offset =
                 masked_rhs_indexer(current_running_count - 1) +
                 orthog_offsets.get_second_offset();
 
@@ -194,7 +198,7 @@ private:
     dataT *dst = nullptr;
     const indT *cumsum = nullptr;
     const dataT *rhs = nullptr;
-    const size_t masked_nelems = 0;
+    const std::size_t masked_nelems = 0;
     // has nd, shape, dst_strides, rhs_strides for
     // dimensions that ARE NOT masked
     const OrthogIndexerT orthog_dst_rhs_indexer;
@@ -450,8 +454,8 @@ sycl::event masked_extract_some_slices_strided_impl(
 
     const std::size_t lws = get_lws(masked_extent);
 
-    const size_t n_groups = ((masked_extent + lws - 1) / lws);
-    const size_t orthog_extent = static_cast<size_t>(orthog_nelems);
+    const std::size_t n_groups = ((masked_extent + lws - 1) / lws);
+    const std::size_t orthog_extent = static_cast<std::size_t>(orthog_nelems);
 
     sycl::range<2> gRange{orthog_extent, n_groups * lws};
     sycl::range<2> lRange{1, lws};
@@ -809,7 +813,7 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
             const std::size_t masked_block_start = group_i * lws;
 
             for (std::uint32_t i = l_i; i < lacc.size(); i += lws) {
-                const size_t offset = masked_block_start + i;
+                const std::size_t offset = masked_block_start + i;
                 lacc[i] = (offset == 0) ? indT1(0)
                           : (offset - 1 < masked_extent)
                               ? cumsum_data[offset - 1]

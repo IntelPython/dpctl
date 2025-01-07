@@ -50,6 +50,7 @@ namespace kernels
 namespace conj
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -102,7 +103,7 @@ using ConjStridedFunctor = elementwise_common::
 template <typename T> struct ConjOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, bool, int8_t>,
+        td_ns::TypeMapResultEntry<T, bool, std::int8_t>,
         td_ns::TypeMapResultEntry<T, std::uint8_t>,
         td_ns::TypeMapResultEntry<T, std::uint16_t>,
         td_ns::TypeMapResultEntry<T, std::uint32_t>,
@@ -145,7 +146,7 @@ class conj_contig_kernel;
 
 template <typename argTy>
 sycl::event conj_contig_impl(sycl::queue &exec_q,
-                             size_t nelems,
+                             std::size_t nelems,
                              const char *arg_p,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
@@ -188,7 +189,7 @@ template <typename T1, typename T2, typename T3> class conj_strided_kernel;
 template <typename argTy>
 sycl::event
 conj_strided_impl(sycl::queue &exec_q,
-                  size_t nelems,
+                  std::size_t nelems,
                   int nd,
                   const ssize_t *shape_and_strides,
                   const char *arg_p,

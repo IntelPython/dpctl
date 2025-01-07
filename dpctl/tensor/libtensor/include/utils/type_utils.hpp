@@ -24,6 +24,7 @@
 
 #pragma once
 #include <complex>
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <type_traits>

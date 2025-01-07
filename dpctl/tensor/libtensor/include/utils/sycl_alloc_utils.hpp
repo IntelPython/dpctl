@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <iostream>
 #include <memory>
@@ -54,7 +55,7 @@ public:
         typedef usm_host_allocator<U> other;
     };
 
-    void deallocate(T *ptr, size_t n)
+    void deallocate(T *ptr, std::size_t n)
     {
         try {
             baseT::deallocate(ptr, n);
@@ -198,7 +199,7 @@ sycl::event async_smart_free(sycl::queue &exec_q,
         cgh.depends_on(depends);
 
         cgh.host_task([ptrs, dels]() {
-            for (size_t i = 0; i < ptrs.size(); ++i) {
+            for (std::size_t i = 0; i < ptrs.size(); ++i) {
                 dels[i](ptrs[i]);
             }
         });

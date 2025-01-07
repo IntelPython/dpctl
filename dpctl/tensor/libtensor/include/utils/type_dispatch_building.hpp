@@ -26,6 +26,7 @@
 #pragma once
 
 #include <complex>
+#include <cstdint>
 #include <type_traits>
 
 #include <sycl/sycl.hpp>
@@ -69,14 +70,14 @@ private:
     {
         std::vector<funcPtrT> per_dstTy = {
             factory<funcPtrT, dstTy, bool>{}.get(),
-            factory<funcPtrT, dstTy, int8_t>{}.get(),
-            factory<funcPtrT, dstTy, uint8_t>{}.get(),
-            factory<funcPtrT, dstTy, int16_t>{}.get(),
-            factory<funcPtrT, dstTy, uint16_t>{}.get(),
-            factory<funcPtrT, dstTy, int32_t>{}.get(),
-            factory<funcPtrT, dstTy, uint32_t>{}.get(),
-            factory<funcPtrT, dstTy, int64_t>{}.get(),
-            factory<funcPtrT, dstTy, uint64_t>{}.get(),
+            factory<funcPtrT, dstTy, std::int8_t>{}.get(),
+            factory<funcPtrT, dstTy, std::uint8_t>{}.get(),
+            factory<funcPtrT, dstTy, std::int16_t>{}.get(),
+            factory<funcPtrT, dstTy, std::uint16_t>{}.get(),
+            factory<funcPtrT, dstTy, std::int32_t>{}.get(),
+            factory<funcPtrT, dstTy, std::uint32_t>{}.get(),
+            factory<funcPtrT, dstTy, std::int64_t>{}.get(),
+            factory<funcPtrT, dstTy, std::uint64_t>{}.get(),
             factory<funcPtrT, dstTy, sycl::half>{}.get(),
             factory<funcPtrT, dstTy, float>{}.get(),
             factory<funcPtrT, dstTy, double>{}.get(),
@@ -93,14 +94,14 @@ public:
     void populate_dispatch_table(funcPtrT table[][_num_types]) const
     {
         const auto map_by_dst_type = {row_per_dst_type<bool>(),
-                                      row_per_dst_type<int8_t>(),
-                                      row_per_dst_type<uint8_t>(),
-                                      row_per_dst_type<int16_t>(),
-                                      row_per_dst_type<uint16_t>(),
-                                      row_per_dst_type<int32_t>(),
-                                      row_per_dst_type<uint32_t>(),
-                                      row_per_dst_type<int64_t>(),
-                                      row_per_dst_type<uint64_t>(),
+                                      row_per_dst_type<std::int8_t>(),
+                                      row_per_dst_type<std::uint8_t>(),
+                                      row_per_dst_type<std::int16_t>(),
+                                      row_per_dst_type<std::uint16_t>(),
+                                      row_per_dst_type<std::int32_t>(),
+                                      row_per_dst_type<std::uint32_t>(),
+                                      row_per_dst_type<std::int64_t>(),
+                                      row_per_dst_type<std::uint64_t>(),
                                       row_per_dst_type<sycl::half>(),
                                       row_per_dst_type<float>(),
                                       row_per_dst_type<double>(),
@@ -108,9 +109,9 @@ public:
                                       row_per_dst_type<std::complex<double>>()};
         assert(map_by_dst_type.size() == _num_types);
         int dst_id = 0;
-        for (auto &row : map_by_dst_type) {
+        for (const auto &row : map_by_dst_type) {
             int src_id = 0;
-            for (auto &fn_ptr : row) {
+            for (const auto &fn_ptr : row) {
                 table[dst_id][src_id] = fn_ptr;
                 ++src_id;
             }
@@ -139,14 +140,14 @@ public:
     void populate_dispatch_vector(funcPtrT vector[]) const
     {
         const auto fn_map_by_type = {func_per_type<bool>(),
-                                     func_per_type<int8_t>(),
-                                     func_per_type<uint8_t>(),
-                                     func_per_type<int16_t>(),
-                                     func_per_type<uint16_t>(),
-                                     func_per_type<int32_t>(),
-                                     func_per_type<uint32_t>(),
-                                     func_per_type<int64_t>(),
-                                     func_per_type<uint64_t>(),
+                                     func_per_type<std::int8_t>(),
+                                     func_per_type<std::uint8_t>(),
+                                     func_per_type<std::int16_t>(),
+                                     func_per_type<std::uint16_t>(),
+                                     func_per_type<std::int32_t>(),
+                                     func_per_type<std::uint32_t>(),
+                                     func_per_type<std::int64_t>(),
+                                     func_per_type<std::uint64_t>(),
                                      func_per_type<sycl::half>(),
                                      func_per_type<float>(),
                                      func_per_type<double>(),
@@ -154,7 +155,7 @@ public:
                                      func_per_type<std::complex<double>>()};
         assert(fn_map_by_type.size() == _num_types);
         int ty_id = 0;
-        for (auto &fn : fn_map_by_type) {
+        for (const auto &fn : fn_map_by_type) {
             vector[ty_id] = fn;
             ++ty_id;
         }

@@ -31,6 +31,7 @@
 
 #pragma once
 #include <exception>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 
 #include "Python.h"

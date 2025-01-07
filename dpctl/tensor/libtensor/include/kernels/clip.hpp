@@ -25,6 +25,7 @@
 #pragma once
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -45,6 +46,7 @@ namespace kernels
 namespace clip
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 using dpctl::tensor::kernels::alignment_utils::
@@ -85,14 +87,14 @@ template <typename T,
 class ClipContigFunctor
 {
 private:
-    size_t nelems = 0;
+    std::size_t nelems = 0;
     const T *x_p = nullptr;
     const T *min_p = nullptr;
     const T *max_p = nullptr;
     T *dst_p = nullptr;
 
 public:
-    ClipContigFunctor(size_t nelems_,
+    ClipContigFunctor(std::size_t nelems_,
                       const T *x_p_,
                       const T *min_p_,
                       const T *max_p_,
@@ -110,14 +112,14 @@ public:
         if constexpr (is_complex<T>::value || !enable_sg_loadstore) {
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_local_range()[0];
-            const size_t gid = ndit.get_global_linear_id();
-            const uint16_t nelems_per_sg = sgSize * nelems_per_wi;
+            const std::size_t gid = ndit.get_global_linear_id();
+            const std::uint16_t nelems_per_sg = sgSize * nelems_per_wi;
 
-            const size_t start =
+            const std::size_t start =
                 (gid / sgSize) * (nelems_per_sg - sgSize) + gid;
-            const size_t end = std::min(nelems, start + nelems_per_sg);
+            const std::size_t end = std::min(nelems, start + nelems_per_sg);
 
-            for (size_t offset = start; offset < end; offset += sgSize) {
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
                 dst_p[offset] = clip(x_p[offset], min_p[offset], max_p[offset]);
             }
         }
@@ -125,7 +127,7 @@ public:
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            const size_t base =
+            const std::size_t base =
                 nelems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                  sg.get_group_id()[0] * sgSize);
 
@@ -133,7 +135,7 @@ public:
                 sycl::vec<T, vec_sz> dst_vec;
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    const size_t idx = base + it * sgSize;
+                    const std::size_t idx = base + it * sgSize;
                     auto x_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&x_p[idx]);
@@ -162,8 +164,8 @@ public:
                 }
             }
             else {
-                const size_t lane_id = sg.get_local_id()[0];
-                for (size_t k = base + lane_id; k < nelems; k += sgSize) {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems; k += sgSize) {
                     dst_p[k] = clip(x_p[k], min_p[k], max_p[k]);
                 }
             }
@@ -175,7 +177,7 @@ template <typename T, int vec_sz, int n_vecs> class clip_contig_kernel;
 
 typedef sycl::event (*clip_contig_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     const char *,
     const char *,
@@ -184,7 +186,7 @@ typedef sycl::event (*clip_contig_impl_fn_ptr_t)(
 
 template <typename T>
 sycl::event clip_contig_impl(sycl::queue &q,
-                             size_t nelems,
+                             std::size_t nelems,
                              const char *x_cp,
                              const char *min_cp,
                              const char *max_cp,
@@ -199,10 +201,10 @@ sycl::event clip_contig_impl(sycl::queue &q,
     sycl::event clip_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        size_t lws = 64;
+        std::size_t lws = 64;
         constexpr std::uint8_t vec_sz = 4;
         constexpr std::uint8_t n_vecs = 2;
-        const size_t n_groups =
+        const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
@@ -258,7 +260,7 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
-        size_t gid = id[0];
+        std::size_t gid = id[0];
         auto offsets = indexer(static_cast<ssize_t>(gid));
         dst_p[offsets.get_fourth_offset()] = clip(
             x_p[offsets.get_first_offset()], min_p[offsets.get_second_offset()],
@@ -270,7 +272,7 @@ template <typename T, typename IndexerT> class clip_strided_kernel;
 
 typedef sycl::event (*clip_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const char *,
     const char *,
@@ -285,7 +287,7 @@ typedef sycl::event (*clip_strided_impl_fn_ptr_t)(
 
 template <typename T>
 sycl::event clip_strided_impl(sycl::queue &q,
-                              size_t nelems,
+                              std::size_t nelems,
                               int nd,
                               const char *x_cp,
                               const char *min_cp,

@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
@@ -209,13 +210,13 @@ _populate_kernel_params(sycl::queue &exec_q,
 std::vector<dpctl::tensor::usm_ndarray> parse_py_ind(const sycl::queue &q,
                                                      const py::object &py_ind)
 {
-    size_t ind_count = py::len(py_ind);
+    std::size_t ind_count = py::len(py_ind);
     std::vector<dpctl::tensor::usm_ndarray> res;
     res.reserve(ind_count);
 
     bool nd_is_known = false;
     int nd = -1;
-    for (size_t i = 0; i < ind_count; ++i) {
+    for (std::size_t i = 0; i < ind_count; ++i) {
         py::object el_i = py_ind[py::cast(i)];
         dpctl::tensor::usm_ndarray arr_i =
             py::cast<dpctl::tensor::usm_ndarray>(el_i);
@@ -244,7 +245,7 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
                  const py::object &py_ind,
                  const dpctl::tensor::usm_ndarray &dst,
                  int axis_start,
-                 uint8_t mode,
+                 std::uint8_t mode,
                  sycl::queue &exec_q,
                  const std::vector<sycl::event> &depends)
 {
@@ -295,12 +296,12 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
     bool orthog_shapes_equal(true);
-    size_t orthog_nelems(1);
+    std::size_t orthog_nelems(1);
     for (int i = 0; i < (src_nd - k); ++i) {
         auto idx1 = (i < axis_start) ? i : i + k;
         auto idx2 = (i < axis_start) ? i : i + ind_nd;
 
-        orthog_nelems *= static_cast<size_t>(src_shape[idx1]);
+        orthog_nelems *= static_cast<std::size_t>(src_shape[idx1]);
         orthog_shapes_equal =
             orthog_shapes_equal && (src_shape[idx1] == dst_shape[idx2]);
     }
@@ -346,9 +347,9 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
     int ind_typenum = ind_rep.get_typenum();
     int ind_type_id = array_types.typenum_to_lookup_id(ind_typenum);
 
-    size_t ind_nelems(1);
+    std::size_t ind_nelems(1);
     for (int i = 0; i < ind_nd; ++i) {
-        ind_nelems *= static_cast<size_t>(ind_shape[i]);
+        ind_nelems *= static_cast<std::size_t>(ind_shape[i]);
 
         if (!(ind_shape[i] == dst_shape[axis_start + i])) {
             throw py::value_error(
@@ -559,7 +560,7 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
                 const py::object &py_ind,
                 const dpctl::tensor::usm_ndarray &val,
                 int axis_start,
-                uint8_t mode,
+                std::uint8_t mode,
                 sycl::queue &exec_q,
                 const std::vector<sycl::event> &depends)
 {
@@ -606,18 +607,18 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
         }
     }
 
-    size_t dst_nelems = dst.get_size();
+    std::size_t dst_nelems = dst.get_size();
 
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *val_shape = val.get_shape_raw();
 
     bool orthog_shapes_equal(true);
-    size_t orthog_nelems(1);
+    std::size_t orthog_nelems(1);
     for (int i = 0; i < (dst_nd - k); ++i) {
         auto idx1 = (i < axis_start) ? i : i + k;
         auto idx2 = (i < axis_start) ? i : i + ind_nd;
 
-        orthog_nelems *= static_cast<size_t>(dst_shape[idx1]);
+        orthog_nelems *= static_cast<std::size_t>(dst_shape[idx1]);
         orthog_shapes_equal =
             orthog_shapes_equal && (dst_shape[idx1] == val_shape[idx2]);
     }
@@ -665,9 +666,9 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
     int ind_typenum = ind_rep.get_typenum();
     int ind_type_id = array_types.typenum_to_lookup_id(ind_typenum);
 
-    size_t ind_nelems(1);
+    std::size_t ind_nelems(1);
     for (int i = 0; i < ind_nd; ++i) {
-        ind_nelems *= static_cast<size_t>(ind_shape[i]);
+        ind_nelems *= static_cast<std::size_t>(ind_shape[i]);
 
         if (!(ind_shape[i] == val_shape[axis_start + i])) {
             throw py::value_error(

@@ -28,6 +28,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -1771,6 +1772,8 @@ private:
 };
 
 } // end of namespace radix_sort_details
+
+using dpctl::tensor::ssize_t;
 
 template <typename argTy>
 sycl::event

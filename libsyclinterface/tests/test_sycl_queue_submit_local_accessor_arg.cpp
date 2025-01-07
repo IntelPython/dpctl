@@ -32,6 +32,9 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
+
+#include <stddef.h>
+
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -40,7 +43,7 @@
 
 namespace
 {
-constexpr size_t SIZE = 100;
+constexpr std::size_t SIZE = 100;
 
 using namespace dpctl::syclinterface;
 
@@ -48,12 +51,12 @@ template <typename T>
 void submit_kernel(DPCTLSyclQueueRef QRef,
                    DPCTLSyclKernelBundleRef KBRef,
                    std::vector<char> spirvBuffer,
-                   size_t spirvFileSize,
+                   std::size_t spirvFileSize,
                    DPCTLKernelArgType kernelArgTy,
                    std::string kernelName)
 {
-    constexpr size_t NARGS = 2;
-    constexpr size_t RANGE_NDIMS = 1;
+    constexpr std::size_t NARGS = 2;
+    constexpr std::size_t RANGE_NDIMS = 1;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
@@ -69,8 +72,8 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     auto la1 = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
 
     // Create kernel args for vector_add
-    size_t gRange[] = {SIZE};
-    size_t lRange[] = {SIZE / 10};
+    std::size_t gRange[] = {SIZE};
+    std::size_t lRange[] = {SIZE / 10};
     void *args_1d[NARGS] = {unwrap<void>(a), (void *)&la1};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR,
                                               DPCTL_LOCAL_ACCESSOR};
@@ -173,7 +176,7 @@ void submit_kernel(sycl::queue q, const unsigned long N, T *a)
 }
 
 template <typename T>
-void driver(size_t N)
+void driver(std::size_t N)
 {
     sycl::queue q;
     auto *a = sycl::malloc_shared<T>(N, q);
@@ -184,7 +187,7 @@ void driver(size_t N)
 
 int main(int argc, const char **argv)
 {
-    size_t N = 0;
+    std::size_t N = 0;
     std::cout << "Enter problem size in N:\n";
     std::cin >> N;
     std::cout << "Executing with N = " << N << std::endl;
@@ -208,7 +211,7 @@ int main(int argc, const char **argv)
 struct TestQueueSubmitWithLocalAccessor : public ::testing::Test
 {
     std::ifstream spirvFile;
-    size_t spirvFileSize_;
+    std::size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
     DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
@@ -249,7 +252,7 @@ struct TestQueueSubmitWithLocalAccessor : public ::testing::Test
 struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
 {
     std::ifstream spirvFile;
-    size_t spirvFileSize_;
+    std::size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
@@ -288,58 +291,58 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForInt8)
 {
-    submit_kernel<int8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                          DPCTLKernelArgType::DPCTL_INT8_T,
-                          "_ZTS14SyclKernel_SLMIaE");
+    submit_kernel<std::int8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                               DPCTLKernelArgType::DPCTL_INT8_T,
+                               "_ZTS14SyclKernel_SLMIaE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUInt8)
 {
-    submit_kernel<uint8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_UINT8_T,
-                           "_ZTS14SyclKernel_SLMIhE");
+    submit_kernel<std::uint8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_UINT8_T,
+                                "_ZTS14SyclKernel_SLMIhE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForInt16)
 {
-    submit_kernel<int16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT16_T,
-                           "_ZTS14SyclKernel_SLMIsE");
+    submit_kernel<std::int16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT16_T,
+                                "_ZTS14SyclKernel_SLMIsE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUInt16)
 {
-    submit_kernel<uint16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT16_T,
-                            "_ZTS14SyclKernel_SLMItE");
+    submit_kernel<std::uint16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT16_T,
+                                 "_ZTS14SyclKernel_SLMItE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForInt32)
 {
-    submit_kernel<int32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT32_T,
-                           "_ZTS14SyclKernel_SLMIiE");
+    submit_kernel<std::int32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT32_T,
+                                "_ZTS14SyclKernel_SLMIiE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUInt32)
 {
-    submit_kernel<uint32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT32_T,
-                            "_ZTS14SyclKernel_SLMIjE");
+    submit_kernel<std::uint32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT32_T,
+                                 "_ZTS14SyclKernel_SLMIjE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForInt64)
 {
-    submit_kernel<int64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT64_T,
-                           "_ZTS14SyclKernel_SLMIlE");
+    submit_kernel<std::int64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT64_T,
+                                "_ZTS14SyclKernel_SLMIlE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUInt64)
 {
-    submit_kernel<uint64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT64_T,
-                            "_ZTS14SyclKernel_SLMImE");
+    submit_kernel<std::uint64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT64_T,
+                                 "_ZTS14SyclKernel_SLMImE");
 }
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForFloat)
@@ -360,10 +363,10 @@ TEST_F(TestQueueSubmitWithLocalAccessorFP64, CheckForDouble)
 
 TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUnsupportedArgTy)
 {
-    size_t gRange[] = {SIZE};
-    size_t lRange[] = {SIZE / 10};
-    size_t RANGE_NDIMS = 1;
-    constexpr size_t NARGS = 2;
+    std::size_t gRange[] = {SIZE};
+    std::size_t lRange[] = {SIZE / 10};
+    std::size_t RANGE_NDIMS = 1;
+    constexpr std::size_t NARGS = 2;
 
     auto la = MDLocalAccessor{1, DPCTL_UNSUPPORTED_KERNEL_ARG, SIZE / 10, 1, 1};
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS14SyclKernel_SLMImE");

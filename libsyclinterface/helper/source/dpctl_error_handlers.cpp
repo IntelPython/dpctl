@@ -29,6 +29,7 @@
 #include <sstream>
 #ifdef _WIN32
 #include <cstdlib>
+#include <stddef.h>
 #endif
 #ifdef ENABLE_GLOG
 #include <glog/logging.h>

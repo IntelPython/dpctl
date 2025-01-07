@@ -33,6 +33,9 @@
 #include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_queue_interface.h"
+
+#include <stddef.h>
+
 #include <array>
 #include <filesystem>
 #include <fstream>

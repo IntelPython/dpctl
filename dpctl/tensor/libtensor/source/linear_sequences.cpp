@@ -24,6 +24,7 @@
 
 #include "dpctl4pybind11.hpp"
 #include <complex>
+#include <cstddef>
 #include <pybind11/complex.h>
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
@@ -52,7 +53,7 @@ namespace py_internal
 
 typedef sycl::event (*lin_space_step_fn_ptr_t)(
     sycl::queue &,
-    size_t, // num_elements
+    std::size_t, // num_elements
     const py::object &start,
     const py::object &step,
     char *, // dst_data_ptr
@@ -79,7 +80,7 @@ typedef sycl::event (*lin_space_step_fn_ptr_t)(
  */
 template <typename Ty>
 sycl::event lin_space_step_impl(sycl::queue &exec_q,
-                                size_t nelems,
+                                std::size_t nelems,
                                 const py::object &start,
                                 const py::object &step,
                                 char *array_data,
@@ -98,7 +99,7 @@ sycl::event lin_space_step_impl(sycl::queue &exec_q,
 
 typedef sycl::event (*lin_space_affine_fn_ptr_t)(
     sycl::queue &,
-    size_t, // num_elements
+    std::size_t, // num_elements
     const py::object &start,
     const py::object &end,
     bool include_endpoint,
@@ -127,7 +128,7 @@ typedef sycl::event (*lin_space_affine_fn_ptr_t)(
  */
 template <typename Ty>
 sycl::event lin_space_affine_impl(sycl::queue &exec_q,
-                                  size_t nelems,
+                                  std::size_t nelems,
                                   const py::object &start,
                                   const py::object &end,
                                   bool include_endpoint,
@@ -195,7 +196,7 @@ usm_ndarray_linear_sequence_step(const py::object &start,
     auto fn = lin_space_step_dispatch_vector[dst_typeid];
 
     linspace_step_event =
-        fn(exec_q, static_cast<size_t>(len), start, dt, dst_data, depends);
+        fn(exec_q, static_cast<std::size_t>(len), start, dt, dst_data, depends);
 
     return std::make_pair(keep_args_alive(exec_q, {dst}, {linspace_step_event}),
                           linspace_step_event);
@@ -244,8 +245,8 @@ usm_ndarray_linear_sequence_affine(const py::object &start,
 
     auto fn = lin_space_affine_dispatch_vector[dst_typeid];
 
-    linspace_affine_event = fn(exec_q, static_cast<size_t>(len), start, end,
-                               include_endpoint, dst_data, depends);
+    linspace_affine_event = fn(exec_q, static_cast<std::size_t>(len), start,
+                               end, include_endpoint, dst_data, depends);
 
     return std::make_pair(
         keep_args_alive(exec_q, {dst}, {linspace_affine_event}),

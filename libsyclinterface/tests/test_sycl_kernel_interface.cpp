@@ -32,6 +32,9 @@
 #include "dpctl_sycl_kernel_interface.h"
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_utils.h"
+
+#include <stddef.h>
+
 #include <array>
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>

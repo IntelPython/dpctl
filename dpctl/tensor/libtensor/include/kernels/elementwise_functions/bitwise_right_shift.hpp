@@ -48,6 +48,7 @@ namespace kernels
 namespace bitwise_right_shift
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -203,7 +204,7 @@ class bitwise_right_shift_contig_kernel;
 template <typename argTy1, typename argTy2>
 sycl::event
 bitwise_right_shift_contig_impl(sycl::queue &exec_q,
-                                size_t nelems,
+                                std::size_t nelems,
                                 const char *arg1_p,
                                 ssize_t arg1_offset,
                                 const char *arg2_p,
@@ -258,7 +259,7 @@ class bitwise_right_shift_strided_kernel;
 template <typename argTy1, typename argTy2>
 sycl::event bitwise_right_shift_strided_impl(
     sycl::queue &exec_q,
-    size_t nelems,
+    std::size_t nelems,
     int nd,
     const ssize_t *shape_and_strides,
     const char *arg1_p,
@@ -399,7 +400,7 @@ struct BitwiseRightShiftInplaceTypeMapFactory
 template <typename argTy, typename resTy>
 sycl::event bitwise_right_shift_inplace_contig_impl(
     sycl::queue &exec_q,
-    size_t nelems,
+    std::size_t nelems,
     const char *arg_p,
     ssize_t arg_offset,
     char *res_p,
@@ -442,7 +443,7 @@ class bitwise_right_shift_inplace_strided_kernel;
 template <typename argTy, typename resTy>
 sycl::event bitwise_right_shift_inplace_strided_impl(
     sycl::queue &exec_q,
-    size_t nelems,
+    std::size_t nelems,
     int nd,
     const ssize_t *shape_and_strides,
     const char *arg_p,

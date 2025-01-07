@@ -29,6 +29,9 @@
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_utils.h"
 #include "dpctl_utils_helper.h"
+
+#include <stddef.h>
+
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
 

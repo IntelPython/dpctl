@@ -39,7 +39,7 @@ TEST(TestServicesFns, ChkDPCPPVersion)
     ASSERT_TRUE(ver.length() > 0);
 
     std::string ver_from_cmplr(ASSTR(__VERSION__));
-    std::size_t found = ver_from_cmplr.find(ver);
+    auto found = ver_from_cmplr.find(ver);
 
     // version returned by DPCTLService_GetDPCPPVersion
     // should occur as a substring in the version obtained

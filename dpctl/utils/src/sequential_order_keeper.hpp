@@ -2,6 +2,7 @@
 #include <sycl/sycl.hpp>
 
 #include <algorithm>
+#include <cstddef>
 #include <vector>
 
 namespace
@@ -37,7 +38,7 @@ private:
 
 public:
     SequentialOrder() : host_task_events{}, submitted_events{} {}
-    SequentialOrder(size_t n) : host_task_events{}, submitted_events{}
+    SequentialOrder(std::size_t n) : host_task_events{}, submitted_events{}
     {
         host_task_events.reserve(n);
         submitted_events.reserve(n);
@@ -76,7 +77,10 @@ public:
         return *this;
     }
 
-    size_t get_num_submitted_events() const { return submitted_events.size(); }
+    std::size_t get_num_submitted_events() const
+    {
+        return submitted_events.size();
+    }
 
     const std::vector<sycl::event> &get_host_task_events()
     {
@@ -90,7 +94,10 @@ public:
         }
     */
 
-    size_t get_num_host_task_events() const { return host_task_events.size(); }
+    std::size_t get_num_host_task_events() const
+    {
+        return host_task_events.size();
+    }
 
     const std::vector<sycl::event> &get_submitted_events()
     {
@@ -148,7 +155,7 @@ public:
     void add_list_to_host_task_events(const sycl::event (&ht_events)[num])
     {
         prune_complete();
-        for (size_t i = 0; i < num; ++i) {
+        for (std::size_t i = 0; i < num; ++i) {
             const auto &e = ht_events[i];
             if (!is_event_complete(e))
                 host_task_events.push_back(e);
@@ -159,7 +166,7 @@ public:
     void add_list_to_submitted_events(const sycl::event (&comp_events)[num])
     {
         prune_complete();
-        for (size_t i = 0; i < num; ++i) {
+        for (std::size_t i = 0; i < num; ++i) {
             const auto &e = comp_events[i];
             if (!is_event_complete(e))
                 submitted_events.push_back(e);

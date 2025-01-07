@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -79,10 +80,10 @@ usm_ndarray_triul(sycl::queue &exec_q,
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; shapes_equal && i < src_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
     }
     if (!shapes_equal) {

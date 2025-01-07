@@ -25,6 +25,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <sycl/sycl.hpp>
@@ -45,6 +46,7 @@ namespace kernels
 namespace merge_sort_detail
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::kernels::search_sorted_detail;
 
 /*! @brief Merge two contiguous sorted segments */
@@ -213,13 +215,13 @@ namespace
 {
 template <typename Iter, typename Compare>
 void insertion_sort_impl(Iter first,
-                         const size_t begin,
-                         const size_t end,
+                         const std::size_t begin,
+                         const std::size_t end,
                          Compare comp)
 {
-    for (size_t i = begin + 1; i < end; ++i) {
+    for (std::size_t i = begin + 1; i < end; ++i) {
         const auto val_i = first[i];
-        size_t j = i - 1;
+        std::size_t j = i - 1;
         while ((j + 1 > begin) && (comp(val_i, first[j]))) {
             first[j + 1] = first[j];
             --j;
@@ -232,14 +234,14 @@ void insertion_sort_impl(Iter first,
 
 template <typename Iter, typename Compare>
 void bubble_sort_impl(Iter first,
-                      const size_t begin,
-                      const size_t end,
+                      const std::size_t begin,
+                      const std::size_t end,
                       Compare comp)
 {
     if (begin < end) {
-        for (size_t i = begin; i < end; ++i) {
+        for (std::size_t i = begin; i < end; ++i) {
             // Handle intermediate items
-            for (size_t idx = i + 1; idx < end; ++idx) {
+            for (std::size_t idx = i + 1; idx < end; ++idx) {
                 if (comp(first[idx], first[i])) {
                     std::swap(first[i], first[idx]);
                 }
@@ -250,8 +252,8 @@ void bubble_sort_impl(Iter first,
 
 template <typename Iter, typename Compare>
 void leaf_sort_impl(Iter first,
-                    const size_t begin,
-                    const size_t end,
+                    const std::size_t begin,
+                    const std::size_t end,
                     Compare comp)
 {
     return insertion_sort_impl<Iter, Compare>(
@@ -343,12 +345,12 @@ class sort_base_step_contig_krn;
 template <typename InpAcc, typename OutAcc, typename Comp>
 sycl::event
 sort_base_step_contig_impl(sycl::queue &q,
-                           const size_t iter_nelems,
-                           const size_t sort_nelems,
+                           const std::size_t iter_nelems,
+                           const std::size_t sort_nelems,
                            const InpAcc input,
                            OutAcc output,
                            const Comp &comp,
-                           const size_t conseq_nelems_sorted,
+                           const std::size_t conseq_nelems_sorted,
                            const std::vector<sycl::event> &depends = {})
 {
 
@@ -356,8 +358,8 @@ sort_base_step_contig_impl(sycl::queue &q,
     using outT = typename GetValueType<OutAcc>::value_type;
     using KernelName = sort_base_step_contig_krn<inpT, outT, Comp>;
 
-    const size_t n_segments =
-        quotient_ceil<size_t>(sort_nelems, conseq_nelems_sorted);
+    const std::size_t n_segments =
+        quotient_ceil<std::size_t>(sort_nelems, conseq_nelems_sorted);
 
     sycl::event base_sort = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -368,17 +370,17 @@ sort_base_step_contig_impl(sycl::queue &q,
         auto output_acc = GetWriteDiscardAccess<OutAcc>{}(output, cgh);
 
         cgh.parallel_for<KernelName>(gRange, [=](sycl::id<1> id) {
-            const size_t iter_id = id[0] / n_segments;
-            const size_t segment_id = id[0] - iter_id * n_segments;
+            const std::size_t iter_id = id[0] / n_segments;
+            const std::size_t segment_id = id[0] - iter_id * n_segments;
 
-            const size_t iter_offset = iter_id * sort_nelems;
-            const size_t beg_id =
+            const std::size_t iter_offset = iter_id * sort_nelems;
+            const std::size_t beg_id =
                 iter_offset + segment_id * conseq_nelems_sorted;
-            const size_t end_id =
+            const std::size_t end_id =
                 iter_offset +
-                std::min<size_t>((segment_id + 1) * conseq_nelems_sorted,
-                                 sort_nelems);
-            for (size_t i = beg_id; i < end_id; ++i) {
+                std::min<std::size_t>((segment_id + 1) * conseq_nelems_sorted,
+                                      sort_nelems);
+            for (std::size_t i = beg_id; i < end_id; ++i) {
                 output_acc[i] = input_acc[i];
             }
 
@@ -395,12 +397,12 @@ class sort_over_work_group_contig_krn;
 template <typename InpAcc, typename OutAcc, typename Comp>
 sycl::event
 sort_over_work_group_contig_impl(sycl::queue &q,
-                                 size_t iter_nelems,
-                                 size_t sort_nelems,
+                                 std::size_t iter_nelems,
+                                 std::size_t sort_nelems,
                                  const InpAcc input,
                                  OutAcc output,
                                  const Comp &comp,
-                                 size_t &nelems_wg_sorts,
+                                 std::size_t &nelems_wg_sorts,
                                  const std::vector<sycl::event> &depends = {})
 {
     using inpT = typename GetValueType<InpAcc>::value_type;
@@ -430,7 +432,7 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     constexpr std::uint32_t sub_groups_per_work_group = 4;
     const std::uint32_t elems_per_wi = dev.has(sycl::aspect::cpu) ? 8 : 2;
 
-    const size_t lws = sub_groups_per_work_group * max_sg_size;
+    const std::size_t lws = sub_groups_per_work_group * max_sg_size;
 
     nelems_wg_sorts = elems_per_wi * lws;
 
@@ -445,8 +447,8 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     // This assumption permits doing away with using a loop
     assert(nelems_wg_sorts % lws == 0);
 
-    const size_t n_segments =
-        quotient_ceil<size_t>(sort_nelems, nelems_wg_sorts);
+    const std::size_t n_segments =
+        quotient_ceil<std::size_t>(sort_nelems, nelems_wg_sorts);
 
     sycl::event base_sort_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -466,18 +468,19 @@ sort_over_work_group_contig_impl(sycl::queue &q,
         sycl::nd_range<1> ndRange(global_range, local_range);
 
         cgh.parallel_for<KernelName>(ndRange, [=](sycl::nd_item<1> it) {
-            const size_t group_id = it.get_group_linear_id();
-            const size_t iter_id = group_id / n_segments;
-            const size_t segment_id = group_id - iter_id * n_segments;
-            const size_t lid = it.get_local_linear_id();
+            const std::size_t group_id = it.get_group_linear_id();
+            const std::size_t iter_id = group_id / n_segments;
+            const std::size_t segment_id = group_id - iter_id * n_segments;
+            const std::size_t lid = it.get_local_linear_id();
 
-            const size_t segment_start_idx = segment_id * nelems_wg_sorts;
-            const size_t segment_end_idx = std::min<size_t>(
+            const std::size_t segment_start_idx = segment_id * nelems_wg_sorts;
+            const std::size_t segment_end_idx = std::min<std::size_t>(
                 segment_start_idx + nelems_wg_sorts, sort_nelems);
-            const size_t wg_chunk_size = segment_end_idx - segment_start_idx;
+            const std::size_t wg_chunk_size =
+                segment_end_idx - segment_start_idx;
 
             // load input into SLM
-            for (size_t array_id = segment_start_idx + lid;
+            for (std::size_t array_id = segment_start_idx + lid;
                  array_id < segment_end_idx; array_id += lws)
             {
                 T v = (array_id < sort_nelems)
@@ -487,10 +490,11 @@ sort_over_work_group_contig_impl(sycl::queue &q,
             }
             sycl::group_barrier(it.get_group());
 
-            const size_t chunk = quotient_ceil<size_t>(nelems_wg_sorts, lws);
+            const std::size_t chunk =
+                quotient_ceil<std::size_t>(nelems_wg_sorts, lws);
 
-            const size_t chunk_start_idx = lid * chunk;
-            const size_t chunk_end_idx =
+            const std::size_t chunk_start_idx = lid * chunk;
+            const std::size_t chunk_end_idx =
                 sycl::min(chunk_start_idx + chunk, wg_chunk_size);
 
             leaf_sort_impl(work_space, chunk_start_idx, chunk_end_idx, comp);
@@ -498,22 +502,24 @@ sort_over_work_group_contig_impl(sycl::queue &q,
             sycl::group_barrier(it.get_group());
 
             bool data_in_temp = false;
-            size_t n_chunks_merged = 1;
+            std::size_t n_chunks_merged = 1;
 
             // merge chunk while n_chunks_merged * chunk < wg_chunk_size
-            const size_t max_chunks_merged = 1 + ((wg_chunk_size - 1) / chunk);
+            const std::size_t max_chunks_merged =
+                1 + ((wg_chunk_size - 1) / chunk);
             for (; n_chunks_merged < max_chunks_merged;
                  data_in_temp = !data_in_temp, n_chunks_merged *= 2)
             {
-                const size_t nelems_sorted_so_far = n_chunks_merged * chunk;
-                const size_t q = (lid / n_chunks_merged);
-                const size_t start_1 =
+                const std::size_t nelems_sorted_so_far =
+                    n_chunks_merged * chunk;
+                const std::size_t q = (lid / n_chunks_merged);
+                const std::size_t start_1 =
                     sycl::min(2 * nelems_sorted_so_far * q, wg_chunk_size);
-                const size_t end_1 =
+                const std::size_t end_1 =
                     sycl::min(start_1 + nelems_sorted_so_far, wg_chunk_size);
-                const size_t end_2 =
+                const std::size_t end_2 =
                     sycl::min(end_1 + nelems_sorted_so_far, wg_chunk_size);
-                const size_t offset = chunk * (lid - q * n_chunks_merged);
+                const std::size_t offset = chunk * (lid - q * n_chunks_merged);
 
                 if (data_in_temp) {
                     merge_impl(offset, scratch_space, work_space, start_1,
@@ -527,7 +533,7 @@ sort_over_work_group_contig_impl(sycl::queue &q,
             }
 
             const auto &out_src = (data_in_temp) ? scratch_space : work_space;
-            for (size_t array_id = segment_start_idx + lid;
+            for (std::size_t array_id = segment_start_idx + lid;
                  array_id < segment_end_idx; array_id += lws)
             {
                 if (array_id < sort_nelems) {
@@ -567,11 +573,11 @@ template <typename T, typename Comp> class merge_adjacent_blocks_from_temp_krn;
 template <typename Acc, typename Comp>
 sycl::event
 merge_sorted_block_contig_impl(sycl::queue &q,
-                               size_t iter_nelems,
-                               size_t sort_nelems,
+                               std::size_t iter_nelems,
+                               std::size_t sort_nelems,
                                Acc output,
                                const Comp comp,
-                               size_t sorted_block_size,
+                               std::size_t sorted_block_size,
                                const std::vector<sycl::event> &depends = {})
 {
 
@@ -581,9 +587,9 @@ merge_sorted_block_contig_impl(sycl::queue &q,
     // experimentally determined value
     // size of segments worked upon by each work-item during merging
     const sycl::device &dev = q.get_device();
-    const size_t segment_size = (dev.has(sycl::aspect::cpu)) ? 32 : 4;
+    const std::size_t segment_size = (dev.has(sycl::aspect::cpu)) ? 32 : 4;
 
-    const size_t chunk_size =
+    const std::size_t chunk_size =
         (sorted_block_size < segment_size) ? sorted_block_size : segment_size;
 
     assert(sorted_block_size % chunk_size == 0);
@@ -597,7 +603,7 @@ merge_sorted_block_contig_impl(sycl::queue &q,
     bool used_depends = false;
 
     sycl::event dep_ev;
-    size_t chunks_merged = sorted_block_size / chunk_size;
+    std::size_t chunks_merged = sorted_block_size / chunk_size;
 
     assert(!(chunks_merged & (chunks_merged - 1)));
 
@@ -617,8 +623,8 @@ merge_sorted_block_contig_impl(sycl::queue &q,
                 used_depends = true;
             }
 
-            const size_t n_chunks =
-                quotient_ceil<size_t>(sort_nelems, chunk_size);
+            const std::size_t n_chunks =
+                quotient_ceil<std::size_t>(sort_nelems, chunk_size);
 
             if (needs_copy) {
                 sycl::accessor temp_acc{temp_buf, cgh, sycl::write_only,
@@ -707,10 +713,10 @@ merge_sorted_block_contig_impl(sycl::queue &q,
 template <typename argTy, typename Comp = std::less<argTy>>
 sycl::event stable_sort_axis1_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of sub-arrays to sort (num. of rows in a
-                        // matrix when sorting over rows)
-    size_t sort_nelems, // size of each array to sort  (length of rows, i.e.
-                        // number of columns)
+    std::size_t iter_nelems, // number of sub-arrays to sort (num. of rows in a
+                             // matrix when sorting over rows)
+    std::size_t sort_nelems, // size of each array to sort  (length of rows,
+                             // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -728,7 +734,7 @@ sycl::event stable_sort_axis1_contig_impl(
 
     // constant chosen experimentally to ensure monotonicity of
     // sorting performance, as measured on GPU Max, and Iris Xe
-    constexpr size_t sequential_sorting_threshold = 16;
+    constexpr std::size_t sequential_sorting_threshold = 16;
 
     if (sort_nelems < sequential_sorting_threshold) {
         // equal work-item sorts entire row
@@ -741,7 +747,7 @@ sycl::event stable_sort_axis1_contig_impl(
         return sequential_sorting_ev;
     }
     else {
-        size_t sorted_block_size{};
+        std::size_t sorted_block_size{};
 
         // Sort segments of the array
         sycl::event base_sort_ev =
@@ -788,10 +794,10 @@ template <typename argTy,
           typename ValueComp = std::less<argTy>>
 sycl::event stable_argsort_axis1_contig_impl(
     sycl::queue &exec_q,
-    size_t iter_nelems, // number of sub-arrays to sort (num. of rows in a
-                        // matrix when sorting over rows)
-    size_t sort_nelems, // size of each array to sort  (length of rows, i.e.
-                        // number of columns)
+    std::size_t iter_nelems, // number of sub-arrays to sort (num. of rows in a
+                             // matrix when sorting over rows)
+    std::size_t sort_nelems, // size of each array to sort  (length of rows,
+                             // i.e. number of columns)
     const char *arg_cp,
     char *res_cp,
     ssize_t iter_arg_offset,
@@ -807,10 +813,10 @@ sycl::event stable_argsort_axis1_contig_impl(
 
     const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
 
-    static constexpr size_t determine_automatically = 0;
-    size_t sorted_block_size = determine_automatically;
+    static constexpr std::size_t determine_automatically = 0;
+    std::size_t sorted_block_size = determine_automatically;
 
-    const size_t total_nelems = iter_nelems * sort_nelems;
+    const std::size_t total_nelems = iter_nelems * sort_nelems;
 
     using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 

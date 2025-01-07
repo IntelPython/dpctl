@@ -32,6 +32,10 @@
 #include "dpctl_sycl_queue_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_sycl_usm_interface.h"
+
+#include <stddef.h>
+
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
@@ -41,7 +45,7 @@
 
 namespace
 {
-constexpr size_t SIZE = 1024;
+constexpr std::size_t SIZE = 1024;
 static_assert(SIZE % 8 == 0);
 
 using namespace dpctl::syclinterface;
@@ -50,15 +54,15 @@ template <typename T>
 void submit_kernel(DPCTLSyclQueueRef QRef,
                    DPCTLSyclKernelBundleRef KBRef,
                    std::vector<char> spirvBuffer,
-                   size_t spirvFileSize,
+                   std::size_t spirvFileSize,
                    DPCTLKernelArgType kernelArgTy,
                    std::string kernelName)
 {
     T scalarVal = 3;
-    constexpr size_t NARGS = 4;
-    constexpr size_t RANGE_NDIMS_1 = 1;
-    constexpr size_t RANGE_NDIMS_2 = 2;
-    constexpr size_t RANGE_NDIMS_3 = 3;
+    constexpr std::size_t NARGS = 4;
+    constexpr std::size_t RANGE_NDIMS_1 = 1;
+    constexpr std::size_t RANGE_NDIMS_2 = 2;
+    constexpr std::size_t RANGE_NDIMS_3 = 3;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
@@ -72,7 +76,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     ASSERT_TRUE(c != nullptr);
 
     // Create kernel args for vector_add
-    size_t Range[] = {SIZE};
+    std::size_t Range[] = {SIZE};
     void *args[NARGS] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
                          (void *)&scalarVal};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
@@ -83,7 +87,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     ASSERT_TRUE(E1Ref != nullptr);
 
     // Create kernel args for vector_add
-    size_t Range2D[] = {SIZE, 1};
+    std::size_t Range2D[] = {SIZE, 1};
     DPCTLSyclEventRef DepEvs[] = {E1Ref};
     auto E2Ref =
         DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes, NARGS,
@@ -91,7 +95,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     ASSERT_TRUE(E2Ref != nullptr);
 
     // Create kernel args for vector_add
-    size_t Range3D[] = {SIZE, 1, 1};
+    std::size_t Range3D[] = {SIZE, 1, 1};
     DPCTLSyclEventRef DepEvs2[] = {E1Ref, E2Ref};
     auto E3Ref =
         DPCTLQueue_SubmitRange(kernel, QRef, args, addKernelArgTypes, NARGS,
@@ -173,7 +177,7 @@ void submit_kernel(
 }
 
 template <typename T>
-void driver(size_t N)
+void driver(std::size_t N)
 {
     sycl::queue q;
     auto *a = sycl::malloc_shared<T>(N, q);
@@ -190,19 +194,19 @@ void driver(size_t N)
 
 int main(int argc, const char **argv)
 {
-    size_t N = 0;
+    std::size_t N = 0;
     std::cout << "Enter problem size in N:\n";
     std::cin >> N;
     std::cout << "Executing with N = " << N << std::endl;
 
-    driver<int8_t>(N);
-    driver<uint8_t>(N);
-    driver<int16_t>(N);
-    driver<uint16_t>(N);
-    driver<int32_t>(N);
-    driver<uint32_t>(N);
-    driver<int64_t>(N);
-    driver<uint64_t>(N);
+    driver<std::int8_t>(N);
+    driver<std::uint8_t>(N);
+    driver<std::int16_t>(N);
+    driver<std::uint16_t>(N);
+    driver<std::int32_t>(N);
+    driver<std::uint32_t>(N);
+    driver<std::int64_t>(N);
+    driver<std::uint64_t>(N);
     driver<float>(N);
     driver<double>(N);
 
@@ -213,7 +217,7 @@ int main(int argc, const char **argv)
 struct TestQueueSubmit : public ::testing::Test
 {
     std::ifstream spirvFile;
-    size_t spirvFileSize_;
+    std::size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
     DPCTLSyclQueueRef QRef = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
@@ -254,7 +258,7 @@ struct TestQueueSubmit : public ::testing::Test
 struct TestQueueSubmitFP64 : public ::testing::Test
 {
     std::ifstream spirvFile;
-    size_t spirvFileSize_;
+    std::size_t spirvFileSize_;
     std::vector<char> spirvBuffer_;
     DPCTLSyclDeviceRef DRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
@@ -293,58 +297,58 @@ struct TestQueueSubmitFP64 : public ::testing::Test
 
 TEST_F(TestQueueSubmit, CheckForInt8)
 {
-    submit_kernel<int8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                          DPCTLKernelArgType::DPCTL_INT8_T,
-                          "_ZTS11RangeKernelIaE");
+    submit_kernel<std::int8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                               DPCTLKernelArgType::DPCTL_INT8_T,
+                               "_ZTS11RangeKernelIaE");
 }
 
 TEST_F(TestQueueSubmit, CheckForUInt8)
 {
-    submit_kernel<uint8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_UINT8_T,
-                           "_ZTS11RangeKernelIhE");
+    submit_kernel<std::uint8_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_UINT8_T,
+                                "_ZTS11RangeKernelIhE");
 }
 
 TEST_F(TestQueueSubmit, CheckForInt16)
 {
-    submit_kernel<int16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT16_T,
-                           "_ZTS11RangeKernelIsE");
+    submit_kernel<std::int16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT16_T,
+                                "_ZTS11RangeKernelIsE");
 }
 
 TEST_F(TestQueueSubmit, CheckForUInt16)
 {
-    submit_kernel<uint16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT16_T,
-                            "_ZTS11RangeKernelItE");
+    submit_kernel<std::uint16_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT16_T,
+                                 "_ZTS11RangeKernelItE");
 }
 
 TEST_F(TestQueueSubmit, CheckForInt32)
 {
-    submit_kernel<int32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT32_T,
-                           "_ZTS11RangeKernelIiE");
+    submit_kernel<std::int32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT32_T,
+                                "_ZTS11RangeKernelIiE");
 }
 
 TEST_F(TestQueueSubmit, CheckForUInt32)
 {
-    submit_kernel<uint32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT32_T,
-                            "_ZTS11RangeKernelIjE");
+    submit_kernel<std::uint32_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT32_T,
+                                 "_ZTS11RangeKernelIjE");
 }
 
 TEST_F(TestQueueSubmit, CheckForInt64)
 {
-    submit_kernel<int64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                           DPCTLKernelArgType::DPCTL_INT64_T,
-                           "_ZTS11RangeKernelIlE");
+    submit_kernel<std::int64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                DPCTLKernelArgType::DPCTL_INT64_T,
+                                "_ZTS11RangeKernelIlE");
 }
 
 TEST_F(TestQueueSubmit, CheckForUInt64)
 {
-    submit_kernel<uint64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
-                            DPCTLKernelArgType::DPCTL_UINT64_T,
-                            "_ZTS11RangeKernelImE");
+    submit_kernel<std::uint64_t>(QRef, KBRef, spirvBuffer_, spirvFileSize_,
+                                 DPCTLKernelArgType::DPCTL_UINT64_T,
+                                 "_ZTS11RangeKernelImE");
 }
 
 TEST_F(TestQueueSubmit, CheckForFloat)
@@ -367,9 +371,9 @@ TEST_F(TestQueueSubmit, CheckForUnsupportedArgTy)
 {
 
     int scalarVal = 3;
-    size_t Range[] = {SIZE};
-    size_t RANGE_NDIMS = 1;
-    constexpr size_t NARGS = 4;
+    std::size_t Range[] = {SIZE};
+    std::size_t RANGE_NDIMS = 1;
+    constexpr std::size_t NARGS = 4;
 
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS11RangeKernelIdE");
     void *args[NARGS] = {unwrap<void>(nullptr), unwrap<void>(nullptr),

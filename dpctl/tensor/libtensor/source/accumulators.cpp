@@ -22,6 +22,7 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===----------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -101,10 +102,10 @@ void populate_mask_positions_dispatch_vectors(void)
     return;
 }
 
-size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
-                         const dpctl::tensor::usm_ndarray &cumsum,
-                         sycl::queue &exec_q,
-                         const std::vector<sycl::event> &depends)
+std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
+                              const dpctl::tensor::usm_ndarray &cumsum,
+                              sycl::queue &exec_q,
+                              const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(cumsum);
 
@@ -163,7 +164,7 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                       ? mask_positions_contig_i32_dispatch_vector[mask_typeid]
                       : mask_positions_contig_i64_dispatch_vector[mask_typeid];
 
-        size_t total_set;
+        std::size_t total_set;
 
         {
             py::gil_scoped_release release;
@@ -204,7 +205,7 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
-    if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
+    if (2 * static_cast<std::size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         {
             py::gil_scoped_release release;
 
@@ -223,7 +224,7 @@ size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     dependent_events.insert(dependent_events.end(), depends.begin(),
                             depends.end());
 
-    size_t total_set;
+    std::size_t total_set;
 
     {
         py::gil_scoped_release release;
@@ -263,10 +264,10 @@ void populate_cumsum_1d_dispatch_vectors(void)
     return;
 }
 
-size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
-                    const dpctl::tensor::usm_ndarray &cumsum,
-                    sycl::queue &exec_q,
-                    std::vector<sycl::event> const &depends)
+std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
+                         const dpctl::tensor::usm_ndarray &cumsum,
+                         sycl::queue &exec_q,
+                         std::vector<sycl::event> const &depends)
 {
     // cumsum is 1D
     if (cumsum.get_ndim() != 1) {
@@ -324,8 +325,8 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
                 "this cumsum requires integer type, got src_typeid=" +
                 std::to_string(src_typeid));
         }
-        size_t total = fn(exec_q, src_size, src_data, cumsum_data,
-                          host_task_events, depends);
+        std::size_t total = fn(exec_q, src_size, src_data, cumsum_data,
+                               host_task_events, depends);
         {
             py::gil_scoped_release release;
             sycl::event::wait(host_task_events);
@@ -364,7 +365,7 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     }
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
 
-    if (2 * static_cast<size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
+    if (2 * static_cast<std::size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         {
             py::gil_scoped_release release;
 
@@ -382,8 +383,9 @@ size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     dependent_events.insert(dependent_events.end(), depends.begin(),
                             depends.end());
 
-    size_t total = strided_fn(exec_q, src_size, src_data, nd, shape_strides,
-                              cumsum_data, host_task_events, dependent_events);
+    std::size_t total =
+        strided_fn(exec_q, src_size, src_data, nd, shape_strides, cumsum_data,
+                   host_task_events, dependent_events);
 
     {
         py::gil_scoped_release release;

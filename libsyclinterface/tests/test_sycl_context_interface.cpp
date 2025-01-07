@@ -29,6 +29,9 @@
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_types.h"
+
+#include <stddef.h>
+
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
 #include <vector>

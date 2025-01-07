@@ -51,6 +51,7 @@ namespace kernels
 namespace reciprocal
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -138,7 +139,7 @@ class reciprocal_contig_kernel;
 
 template <typename argTy>
 sycl::event reciprocal_contig_impl(sycl::queue &exec_q,
-                                   size_t nelems,
+                                   std::size_t nelems,
                                    const char *arg_p,
                                    char *res_p,
                                    const std::vector<sycl::event> &depends = {})
@@ -185,7 +186,7 @@ class reciprocal_strided_kernel;
 template <typename argTy>
 sycl::event
 reciprocal_strided_impl(sycl::queue &exec_q,
-                        size_t nelems,
+                        std::size_t nelems,
                         int nd,
                         const ssize_t *shape_and_strides,
                         const char *arg_p,

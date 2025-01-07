@@ -29,6 +29,7 @@
 #include "utils/strided_iters.hpp"
 #include "utils/type_utils.hpp"
 #include <complex>
+#include <cstddef>
 #include <sycl/sycl.hpp>
 
 namespace dpctl
@@ -39,6 +40,8 @@ namespace kernels
 {
 namespace constructors
 {
+
+using dpctl::tensor::ssize_t;
 
 /*!
   @defgroup CtorKernels
@@ -97,7 +100,7 @@ public:
  */
 template <typename Ty>
 sycl::event lin_space_step_impl(sycl::queue &exec_q,
-                                size_t nelems,
+                                std::size_t nelems,
                                 Ty start_v,
                                 Ty step_v,
                                 char *array_data,
@@ -123,10 +126,10 @@ private:
     Ty *p = nullptr;
     Ty start_v;
     Ty end_v;
-    size_t n;
+    std::size_t n;
 
 public:
-    LinearSequenceAffineFunctor(char *dst_p, Ty v0, Ty v1, size_t den)
+    LinearSequenceAffineFunctor(char *dst_p, Ty v0, Ty v1, std::size_t den)
         : p(reinterpret_cast<Ty *>(dst_p)), start_v(v0), end_v(v1),
           n((den == 0) ? 1 : den)
     {
@@ -188,7 +191,7 @@ public:
  */
 template <typename Ty>
 sycl::event lin_space_affine_impl(sycl::queue &exec_q,
-                                  size_t nelems,
+                                  std::size_t nelems,
                                   Ty start_v,
                                   Ty end_v,
                                   bool include_endpoint,
@@ -238,7 +241,7 @@ sycl::event lin_space_affine_impl(sycl::queue &exec_q,
  */
 template <typename dstTy>
 sycl::event full_contig_impl(sycl::queue &q,
-                             size_t nelems,
+                             std::size_t nelems,
                              dstTy fill_v,
                              char *dst_p,
                              const std::vector<sycl::event> &depends)
@@ -294,7 +297,7 @@ public:
 template <typename dstTy>
 sycl::event full_strided_impl(sycl::queue &q,
                               int nd,
-                              size_t nelems,
+                              std::size_t nelems,
                               const ssize_t *shape_strides,
                               dstTy fill_v,
                               char *dst_p,
@@ -321,7 +324,7 @@ sycl::event full_strided_impl(sycl::queue &q,
 /* ================ Eye ================== */
 
 typedef sycl::event (*eye_fn_ptr_t)(sycl::queue &,
-                                    size_t nelems, // num_elements
+                                    std::size_t nelems, // num_elements
                                     ssize_t start,
                                     ssize_t end,
                                     ssize_t step,
@@ -375,7 +378,7 @@ public:
  */
 template <typename Ty>
 sycl::event eye_impl(sycl::queue &exec_q,
-                     size_t nelems,
+                     std::size_t nelems,
                      const ssize_t start,
                      const ssize_t end,
                      const ssize_t step,

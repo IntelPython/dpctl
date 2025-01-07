@@ -22,6 +22,7 @@
 /// extension.
 //===--------------------------------------------------------------------===//
 
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <utility>
@@ -67,8 +68,8 @@ namespace
 
 template <bool is_ascending, typename T>
 sycl::event sort_axis1_contig_caller(sycl::queue &q,
-                                     size_t iter_nelems,
-                                     size_t sort_nelems,
+                                     std::size_t iter_nelems,
+                                     std::size_t sort_nelems,
                                      const char *arg_cp,
                                      char *res_cp,
                                      ssize_t iter_arg_offset,

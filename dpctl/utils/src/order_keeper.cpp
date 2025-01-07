@@ -1,4 +1,5 @@
 #include "dpctl4pybind11.hpp"
+#include <cstddef>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 

@@ -30,6 +30,9 @@
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
+
+#include <stddef.h>
+
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -79,7 +82,7 @@ constexpr auto build_param_pairs(const std::array<T1, S1> &arr1,
     return paramPairs;
 }
 
-template <typename PArr, std::size_t... I>
+template <typename PArr, size_t... I>
 auto build_gtest_values_impl(const PArr &arr, std::index_sequence<I...>)
 {
     return ::testing::Values(arr[I]...);

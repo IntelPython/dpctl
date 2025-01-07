@@ -25,6 +25,7 @@
 #pragma once
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -44,6 +45,7 @@ namespace kernels
 namespace search
 {
 
+using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
 using dpctl::tensor::kernels::alignment_utils::
@@ -67,14 +69,14 @@ template <typename T,
 class WhereContigFunctor
 {
 private:
-    size_t nelems = 0;
+    std::size_t nelems = 0;
     const condT *cond_p = nullptr;
     const T *x1_p = nullptr;
     const T *x2_p = nullptr;
     T *dst_p = nullptr;
 
 public:
-    WhereContigFunctor(size_t nelems_,
+    WhereContigFunctor(std::size_t nelems_,
                        const condT *cond_p_,
                        const T *x1_p_,
                        const T *x2_p_,
@@ -94,13 +96,13 @@ public:
         {
             const std::uint16_t sgSize =
                 ndit.get_sub_group().get_local_range()[0];
-            const size_t gid = ndit.get_global_linear_id();
+            const std::size_t gid = ndit.get_global_linear_id();
 
             const std::uint16_t nelems_per_sg = sgSize * nelems_per_wi;
-            const size_t start =
+            const std::size_t start =
                 (gid / sgSize) * (nelems_per_sg - sgSize) + gid;
-            const size_t end = std::min(nelems, start + nelems_per_sg);
-            for (size_t offset = start; offset < end; offset += sgSize) {
+            const std::size_t end = std::min(nelems, start + nelems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
                 using dpctl::tensor::type_utils::convert_impl;
                 const bool check = convert_impl<bool, condT>(cond_p[offset]);
                 dst_p[offset] = check ? x1_p[offset] : x2_p[offset];
@@ -110,7 +112,7 @@ public:
             auto sg = ndit.get_sub_group();
             const std::uint16_t sgSize = sg.get_max_local_range()[0];
 
-            const size_t base =
+            const std::size_t base =
                 nelems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                  sg.get_group_id()[0] * sgSize);
 
@@ -119,7 +121,7 @@ public:
 
 #pragma unroll
                 for (std::uint8_t it = 0; it < n_vecs * vec_sz; it += vec_sz) {
-                    const size_t idx = base + it * sgSize;
+                    const std::size_t idx = base + it * sgSize;
                     auto x1_multi_ptr = sycl::address_space_cast<
                         sycl::access::address_space::global_space,
                         sycl::access::decorated::yes>(&x1_p[idx]);
@@ -147,8 +149,8 @@ public:
                 }
             }
             else {
-                const size_t lane_id = sg.get_local_id()[0];
-                for (size_t k = base + lane_id; k < nelems; k += sgSize) {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems; k += sgSize) {
                     dst_p[k] = cond_p[k] ? x1_p[k] : x2_p[k];
                 }
             }
@@ -158,7 +160,7 @@ public:
 
 typedef sycl::event (*where_contig_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const char *,
     const char *,
     const char *,
@@ -167,7 +169,7 @@ typedef sycl::event (*where_contig_impl_fn_ptr_t)(
 
 template <typename T, typename condT>
 sycl::event where_contig_impl(sycl::queue &q,
-                              size_t nelems,
+                              std::size_t nelems,
                               const char *cond_cp,
                               const char *x1_cp,
                               const char *x2_cp,
@@ -182,10 +184,10 @@ sycl::event where_contig_impl(sycl::queue &q,
     sycl::event where_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        size_t lws = 64;
+        std::size_t lws = 64;
         constexpr std::uint8_t vec_sz = 4u;
         constexpr std::uint8_t n_vecs = 2u;
-        const size_t n_groups =
+        const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
         const auto lws_range = sycl::range<1>(lws);
@@ -245,7 +247,7 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
-        size_t gid = id[0];
+        std::size_t gid = id[0];
         auto offsets = indexer(static_cast<ssize_t>(gid));
 
         using dpctl::tensor::type_utils::convert_impl;
@@ -260,7 +262,7 @@ public:
 
 typedef sycl::event (*where_strided_impl_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     int,
     const char *,
     const char *,
@@ -275,7 +277,7 @@ typedef sycl::event (*where_strided_impl_fn_ptr_t)(
 
 template <typename T, typename condT>
 sycl::event where_strided_impl(sycl::queue &q,
-                               size_t nelems,
+                               std::size_t nelems,
                                int nd,
                                const char *cond_cp,
                                const char *x1_cp,

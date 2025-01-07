@@ -28,6 +28,7 @@
 
 #include <algorithm> // sort
 #include <array>
+#include <cstddef>
 #include <numeric> // std::iota
 #include <tuple>
 #include <vector>
@@ -536,7 +537,7 @@ int simplify_iteration_two_strides(const int nd,
 template <typename T, class Error, typename vecT = std::vector<T>>
 std::tuple<vecT, vecT, T> contract_iter(const vecT &shape, const vecT &strides)
 {
-    const size_t dim = shape.size();
+    const std::size_t dim = shape.size();
     if (dim != strides.size()) {
         throw Error("Shape and strides must be of equal size.");
     }
@@ -555,7 +556,7 @@ template <typename T, class Error, typename vecT = std::vector<T>>
 std::tuple<vecT, vecT, T, vecT, T>
 contract_iter2(const vecT &shape, const vecT &strides1, const vecT &strides2)
 {
-    const size_t dim = shape.size();
+    const std::size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size()) {
         throw Error("Shape and strides must be of equal size.");
     }
@@ -712,7 +713,7 @@ std::tuple<vecT, vecT, T, vecT, T, vecT, T> contract_iter3(const vecT &shape,
                                                            const vecT &strides2,
                                                            const vecT &strides3)
 {
-    const size_t dim = shape.size();
+    const std::size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||
         dim != strides3.size())
     {
@@ -902,7 +903,7 @@ contract_iter4(const vecT &shape,
                const vecT &strides3,
                const vecT &strides4)
 {
-    const size_t dim = shape.size();
+    const std::size_t dim = shape.size();
     if (dim != strides1.size() || dim != strides2.size() ||
         dim != strides3.size() || dim != strides4.size())
     {

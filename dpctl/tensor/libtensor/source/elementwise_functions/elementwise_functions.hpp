@@ -24,6 +24,7 @@
 //===----------------------------------------------------------------------===//
 #pragma once
 
+#include <cstddef>
 #include <exception>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
@@ -107,10 +108,10 @@ py_unary_ufunc(const dpctl::tensor::usm_ndarray &src,
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; i < src_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src_shape[i]);
         shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
     }
     if (!shapes_equal) {
@@ -355,10 +356,10 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     const py::ssize_t *src2_shape = src2.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     bool shapes_equal(true);
-    size_t src_nelems(1);
+    std::size_t src_nelems(1);
 
     for (int i = 0; i < dst_nd; ++i) {
-        src_nelems *= static_cast<size_t>(src1_shape[i]);
+        src_nelems *= static_cast<std::size_t>(src1_shape[i]);
         shapes_equal = shapes_equal && (src1_shape[i] == dst_shape[i] &&
                                         src2_shape[i] == dst_shape[i]);
     }
@@ -485,8 +486,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             dst_data + dst_offset * dst_itemsize))
                     {
-                        size_t n0 = simplified_shape[0];
-                        size_t n1 = simplified_shape[1];
+                        std::size_t n0 = simplified_shape[0];
+                        std::size_t n1 = simplified_shape[1];
                         sycl::event comp_ev = matrix_row_broadcast_fn(
                             exec_q, host_tasks, n0, n1, src1_data, src1_offset,
                             src2_data, src2_offset, dst_data, dst_offset,
@@ -519,8 +520,8 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                         is_aligned<required_alignment>(
                             dst_data + dst_offset * dst_itemsize))
                     {
-                        size_t n0 = simplified_shape[1];
-                        size_t n1 = simplified_shape[0];
+                        std::size_t n0 = simplified_shape[1];
+                        std::size_t n1 = simplified_shape[0];
                         sycl::event comp_ev = row_matrix_broadcast_fn(
                             exec_q, host_tasks, n0, n1, src1_data, src1_offset,
                             src2_data, src2_offset, dst_data, dst_offset,
@@ -672,10 +673,10 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
     const py::ssize_t *rhs_shape = rhs.get_shape_raw();
     const py::ssize_t *lhs_shape = lhs.get_shape_raw();
     bool shapes_equal(true);
-    size_t rhs_nelems(1);
+    std::size_t rhs_nelems(1);
 
     for (int i = 0; i < lhs_nd; ++i) {
-        rhs_nelems *= static_cast<size_t>(rhs_shape[i]);
+        rhs_nelems *= static_cast<std::size_t>(rhs_shape[i]);
         shapes_equal = shapes_equal && (rhs_shape[i] == lhs_shape[i]);
     }
     if (!shapes_equal) {
@@ -776,8 +777,8 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
                     contig_row_matrix_broadcast_dispatch_table[rhs_typeid]
                                                               [lhs_typeid];
                 if (row_matrix_broadcast_fn != nullptr) {
-                    size_t n0 = simplified_shape[1];
-                    size_t n1 = simplified_shape[0];
+                    std::size_t n0 = simplified_shape[1];
+                    std::size_t n1 = simplified_shape[0];
                     sycl::event comp_ev = row_matrix_broadcast_fn(
                         exec_q, host_tasks, n0, n1, rhs_data, rhs_offset,
                         lhs_data, lhs_offset, depends);

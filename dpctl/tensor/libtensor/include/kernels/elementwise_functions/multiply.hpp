@@ -50,6 +50,7 @@ namespace kernels
 namespace multiply
 {
 
+using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
 
@@ -215,7 +216,7 @@ class multiply_contig_kernel;
 
 template <typename argTy1, typename argTy2>
 sycl::event multiply_contig_impl(sycl::queue &exec_q,
-                                 size_t nelems,
+                                 std::size_t nelems,
                                  const char *arg1_p,
                                  ssize_t arg1_offset,
                                  const char *arg2_p,
@@ -267,7 +268,7 @@ class multiply_strided_kernel;
 template <typename argTy1, typename argTy2>
 sycl::event
 multiply_strided_impl(sycl::queue &exec_q,
-                      size_t nelems,
+                      std::size_t nelems,
                       int nd,
                       const ssize_t *shape_and_strides,
                       const char *arg1_p,
@@ -316,8 +317,8 @@ template <typename argT1, typename argT2, typename resT>
 sycl::event multiply_contig_matrix_contig_row_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
-    size_t n0,
-    size_t n1,
+    std::size_t n0,
+    std::size_t n1,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
     ssize_t mat_offset,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
@@ -366,8 +367,8 @@ template <typename argT1, typename argT2, typename resT>
 sycl::event multiply_contig_row_contig_matrix_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
-    size_t n0,
-    size_t n1,
+    std::size_t n0,
+    std::size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
     ssize_t vec_offset,
     const char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
@@ -503,7 +504,7 @@ struct MultiplyInplaceTypeMapFactory
 template <typename argTy, typename resTy>
 sycl::event
 multiply_inplace_contig_impl(sycl::queue &exec_q,
-                             size_t nelems,
+                             std::size_t nelems,
                              const char *arg_p,
                              ssize_t arg_offset,
                              char *res_p,
@@ -543,7 +544,7 @@ class multiply_inplace_strided_kernel;
 template <typename argTy, typename resTy>
 sycl::event multiply_inplace_strided_impl(
     sycl::queue &exec_q,
-    size_t nelems,
+    std::size_t nelems,
     int nd,
     const ssize_t *shape_and_strides,
     const char *arg_p,
@@ -590,8 +591,8 @@ template <typename argT, typename resT>
 sycl::event multiply_inplace_row_matrix_broadcast_impl(
     sycl::queue &exec_q,
     std::vector<sycl::event> &host_tasks,
-    size_t n0,
-    size_t n1,
+    std::size_t n0,
+    std::size_t n1,
     const char *vec_p, // typeless pointer to (n1,) contiguous row
     ssize_t vec_offset,
     char *mat_p, // typeless pointer to (n0, n1) C-contiguous matrix
