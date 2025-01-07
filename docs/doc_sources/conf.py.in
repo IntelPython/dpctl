@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath("."))
 import extlinks_gen as urlgen  # noqa: E402
 
 project = "Data Parallel Control (dpctl)"
-copyright = "2020-2024, Intel Corp."
+copyright = "2020-2025, Intel Corp."
 author = "Intel Corp."
 
 version = dpctl.__version__.strip(".dirty")
