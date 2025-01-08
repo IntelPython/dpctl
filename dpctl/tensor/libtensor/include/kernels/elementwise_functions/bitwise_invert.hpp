@@ -118,7 +118,7 @@ template <typename argTy> struct BitwiseInvertOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -135,7 +135,7 @@ template <typename argTy> struct BitwiseInvertContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class bitwise_invert_contig_kernel;
@@ -148,10 +148,10 @@ bitwise_invert_contig_impl(sycl::queue &exec_q,
                            char *res_p,
                            const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        BitwiseInvertContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vec =
-        BitwiseInvertContigHyperparameterSet<argTy>::n_vecs;
+    using BitwiseInvertHS =
+        hyperparam_detail::BitwiseInvertContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = BitwiseInvertHS::vec_sz;
+    constexpr std::uint8_t n_vec = BitwiseInvertHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, BitwiseInvertOutputType, BitwiseInvertContigFunctor,

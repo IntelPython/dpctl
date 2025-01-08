@@ -118,7 +118,7 @@ template <typename argTy> struct IsNanOutputType
     using value_type = bool;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -135,7 +135,7 @@ template <typename argTy> struct IsNanContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class isnan_contig_kernel;
@@ -147,8 +147,9 @@ sycl::event isnan_contig_impl(sycl::queue &exec_q,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = IsNanContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs = IsNanContigHyperparameterSet<argTy>::n_vecs;
+    using IsNanHS = hyperparam_detail::IsNanContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = IsNanHS::vec_sz;
+    constexpr std::uint8_t n_vecs = IsNanHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, IsNanOutputType, IsNanContigFunctor, isnan_contig_kernel, vec_sz,

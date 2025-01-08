@@ -180,7 +180,7 @@ template <typename T1, typename T2> struct TrueDivideOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -198,7 +198,7 @@ struct TrueDivideContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -219,10 +219,10 @@ true_divide_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        TrueDivideContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        TrueDivideContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using DivHS =
+        hyperparam_detail::TrueDivideContigHyperparameterSet<argTy1, argTy2>;
+    constexpr std::uint8_t vec_sz = DivHS::vec_sz;
+    constexpr std::uint8_t n_vecs = DivHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, TrueDivideOutputType, TrueDivideContigFunctor,
@@ -538,10 +538,10 @@ true_divide_inplace_contig_impl(sycl::queue &exec_q,
                                 ssize_t res_offset,
                                 const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        TrueDivideContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        TrueDivideContigHyperparameterSet<resTy, argTy>::vec_sz;
+    using DivHS =
+        hyperparam_detail::TrueDivideContigHyperparameterSet<resTy, argTy>;
+    constexpr std::uint8_t vec_sz = DivHS::vec_sz;
+    constexpr std::uint8_t n_vecs = DivHS::vec_sz;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, TrueDivideInplaceContigFunctor,

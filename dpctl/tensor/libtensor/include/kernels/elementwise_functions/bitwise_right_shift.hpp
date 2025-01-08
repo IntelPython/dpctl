@@ -174,7 +174,7 @@ template <typename T1, typename T2> struct BitwiseRightShiftOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -192,7 +192,7 @@ struct BitwiseRightShiftContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -213,10 +213,11 @@ bitwise_right_shift_contig_impl(sycl::queue &exec_q,
                                 ssize_t res_offset,
                                 const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        BitwiseRightShiftContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        BitwiseRightShiftContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using BitwiseRSHS =
+        hyperparam_detail::BitwiseRightShiftContigHyperparameterSet<argTy1,
+                                                                    argTy2>;
+    constexpr std::uint8_t vec_sz = BitwiseRSHS::vec_sz;
+    constexpr std::uint8_t n_vecs = BitwiseRSHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, BitwiseRightShiftOutputType,
@@ -407,11 +408,13 @@ sycl::event bitwise_right_shift_inplace_contig_impl(
     ssize_t res_offset,
     const std::vector<sycl::event> &depends = {})
 {
+    using BitwiseRSHS =
+        hyperparam_detail::BitwiseRightShiftContigHyperparameterSet<resTy,
+                                                                    argTy>;
+
     // res = OP(res, arg)
-    constexpr std::uint8_t vec_sz =
-        BitwiseRightShiftContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        BitwiseRightShiftContigHyperparameterSet<resTy, argTy>::n_vecs;
+    constexpr std::uint8_t vec_sz = BitwiseRSHS::vec_sz;
+    constexpr std::uint8_t n_vecs = BitwiseRSHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, BitwiseRightShiftInplaceContigFunctor,

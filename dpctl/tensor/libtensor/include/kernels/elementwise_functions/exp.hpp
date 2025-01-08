@@ -153,7 +153,7 @@ template <typename T> struct ExpOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -170,7 +170,7 @@ template <typename argTy> struct ExpContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class exp_contig_kernel;
@@ -182,8 +182,9 @@ sycl::event exp_contig_impl(sycl::queue &exec_q,
                             char *res_p,
                             const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = ExpContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs = ExpContigHyperparameterSet<argTy>::n_vecs;
+    using ExpHS = hyperparam_detail::ExpContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = ExpHS::vec_sz;
+    constexpr std::uint8_t n_vecs = ExpHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, ExpOutputType, ExpContigFunctor, exp_contig_kernel, vec_sz,

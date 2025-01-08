@@ -163,7 +163,7 @@ template <typename T1, typename T2> struct LogicalXorOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -181,7 +181,7 @@ struct LogicalXorContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -202,10 +202,10 @@ logical_xor_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        LogicalXorContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        LogicalXorContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using LogicalXorHS =
+        hyperparam_detail::LogicalXorContigHyperparameterSet<argTy1, argTy2>;
+    constexpr std::uint8_t vec_sz = LogicalXorHS::vec_sz;
+    constexpr std::uint8_t n_vecs = LogicalXorHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, LogicalXorOutputType, LogicalXorContigFunctor,

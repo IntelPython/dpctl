@@ -172,7 +172,7 @@ template <typename T> struct AtanOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -189,7 +189,7 @@ template <typename argTy> struct AtanContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class atan_contig_kernel;
@@ -201,8 +201,9 @@ sycl::event atan_contig_impl(sycl::queue &exec_q,
                              char *res_p,
                              const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = AtanContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vec = AtanContigHyperparameterSet<argTy>::n_vecs;
+    using AtanHS = hyperparam_detail::AtanContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = AtanHS::vec_sz;
+    constexpr std::uint8_t n_vec = AtanHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AtanOutputType, AtanContigFunctor, atan_contig_kernel, vec_sz,

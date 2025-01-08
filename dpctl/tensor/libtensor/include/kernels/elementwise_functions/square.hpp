@@ -137,7 +137,7 @@ template <typename T> struct SquareOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -154,7 +154,7 @@ template <typename argTy> struct SquareContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class square_contig_kernel;
@@ -166,10 +166,9 @@ sycl::event square_contig_impl(sycl::queue &exec_q,
                                char *res_p,
                                const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        SquareContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        SquareContigHyperparameterSet<argTy>::n_vecs;
+    using SquareHS = hyperparam_detail::SquareContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = SquareHS::vec_sz;
+    constexpr std::uint8_t n_vecs = SquareHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SquareOutputType, SquareContigFunctor, square_contig_kernel,

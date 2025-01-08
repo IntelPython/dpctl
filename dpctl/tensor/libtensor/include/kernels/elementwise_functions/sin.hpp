@@ -217,7 +217,7 @@ template <typename T> struct SinOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -234,7 +234,7 @@ template <typename argTy> struct SinContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class sin_contig_kernel;
@@ -246,8 +246,9 @@ sycl::event sin_contig_impl(sycl::queue &exec_q,
                             char *res_p,
                             const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = SinContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs = SinContigHyperparameterSet<argTy>::n_vecs;
+    using SinHS = hyperparam_detail::SinContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = SinHS::vec_sz;
+    constexpr std::uint8_t n_vecs = SinHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SinOutputType, SinContigFunctor, sin_contig_kernel, vec_sz,

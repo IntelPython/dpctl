@@ -204,7 +204,7 @@ template <typename T1, typename T2> struct FloorDivideOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -222,7 +222,7 @@ struct FloorDivideContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -243,10 +243,10 @@ floor_divide_contig_impl(sycl::queue &exec_q,
                          ssize_t res_offset,
                          const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        FloorDivideContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        FloorDivideContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using FloorDivideHS =
+        hyperparam_detail::FloorDivideContigHyperparameterSet<argTy1, argTy2>;
+    constexpr std::uint8_t vec_sz = FloorDivideHS::vec_sz;
+    constexpr std::uint8_t n_vecs = FloorDivideHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, FloorDivideOutputType, FloorDivideContigFunctor,
@@ -469,10 +469,11 @@ floor_divide_inplace_contig_impl(sycl::queue &exec_q,
                                  ssize_t res_offset,
                                  const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        FloorDivideContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        FloorDivideContigHyperparameterSet<resTy, argTy>::n_vecs;
+    using FloorDivideHS =
+        hyperparam_detail::FloorDivideContigHyperparameterSet<resTy, argTy>;
+
+    constexpr std::uint8_t vec_sz = FloorDivideHS::vec_sz;
+    constexpr std::uint8_t n_vecs = FloorDivideHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, FloorDivideInplaceContigFunctor,
