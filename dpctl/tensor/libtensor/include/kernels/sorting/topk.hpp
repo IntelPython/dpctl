@@ -32,6 +32,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <sycl/ext/oneapi/sub_group_mask.hpp>
 #include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -40,7 +41,6 @@
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "kernels/sorting/sort_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
-#include <sycl/ext/oneapi/sub_group_mask.hpp>
 
 namespace dpctl
 {
@@ -134,11 +134,9 @@ sycl::event write_out_impl(sycl::queue &exec_q,
 
 } // namespace topk_detail
 
-template <typename T1, typename T2, typename T3>
-class topk_populate_index_data_krn;
+template <typename T1, typename T2> class topk_populate_index_data_krn;
 
-template <typename T1, typename T2, typename T3>
-class topk_full_merge_map_back_krn;
+template <typename T1, typename T2> class topk_full_merge_map_back_krn;
 
 template <typename argTy, typename IndexTy, typename CompT>
 sycl::event
@@ -158,7 +156,7 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
     // extract USM pointer
     IndexTy *index_data = index_data_owner.get();
 
-    using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy, CompT>;
+    using IotaKernelName = topk_populate_index_data_krn<argTy, IndexTy>;
 
     using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
@@ -179,8 +177,7 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
         exec_q, iter_nelems, axis_nelems, index_data, comp, sorted_block_size,
         {base_sort_ev});
 
-    using WriteOutKernelName =
-        topk_full_merge_map_back_krn<argTy, IndexTy, CompT>;
+    using WriteOutKernelName = topk_full_merge_map_back_krn<argTy, IndexTy>;
 
     sycl::event write_out_ev =
         topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
@@ -194,8 +191,7 @@ topk_full_merge_sort_impl(sycl::queue &exec_q,
     return cleanup_host_task_event;
 };
 
-template <typename T1, typename T2, typename T3>
-class topk_partial_merge_map_back_krn;
+template <typename T1, typename T2> class topk_partial_merge_map_back_krn;
 
 template <typename T1, typename T2, typename Comp>
 class topk_over_work_group_krn;
@@ -213,24 +209,15 @@ sycl::event topk_merge_impl(
     const char *arg_cp,
     char *vals_cp,
     char *inds_cp,
-    dpctl::tensor::ssize_t iter_arg_offset,
-    dpctl::tensor::ssize_t iter_vals_offset,
-    dpctl::tensor::ssize_t iter_inds_offset,
-    dpctl::tensor::ssize_t axis_arg_offset,
-    dpctl::tensor::ssize_t axis_vals_offset,
-    dpctl::tensor::ssize_t axis_inds_offset,
     const std::vector<sycl::event> &depends)
 {
     if (axis_nelems < k) {
         throw std::runtime_error("Invalid sort axis size for value of k");
     }
 
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
-                          iter_arg_offset + axis_arg_offset;
-    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp) + iter_vals_offset +
-                     axis_vals_offset;
-    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp) + iter_inds_offset +
-                       axis_inds_offset;
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
+    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
+    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
 
     using dpctl::tensor::kernels::IndexComp;
     const IndexComp<IndexTy, argTy, ValueComp> index_comp{arg_tp, ValueComp{}};
@@ -434,7 +421,7 @@ sycl::event topk_merge_impl(
 
         // Write out top k of the merge-sorted memory
         using WriteOutKernelName =
-            topk_partial_merge_map_back_krn<argTy, IndexTy, ValueComp>;
+            topk_partial_merge_map_back_krn<argTy, IndexTy>;
 
         sycl::event write_topk_ev =
             topk_detail::write_out_impl<WriteOutKernelName, argTy, IndexTy>(
@@ -462,24 +449,15 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
                             const char *arg_cp,
                             char *vals_cp,
                             char *inds_cp,
-                            dpctl::tensor::ssize_t iter_arg_offset,
-                            dpctl::tensor::ssize_t iter_vals_offset,
-                            dpctl::tensor::ssize_t iter_inds_offset,
-                            dpctl::tensor::ssize_t axis_arg_offset,
-                            dpctl::tensor::ssize_t axis_vals_offset,
-                            dpctl::tensor::ssize_t axis_inds_offset,
                             const std::vector<sycl::event> &depends)
 {
     if (axis_nelems < k) {
         throw std::runtime_error("Invalid sort axis size for value of k");
     }
 
-    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp) +
-                          iter_arg_offset + axis_arg_offset;
-    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp) + iter_vals_offset +
-                     axis_vals_offset;
-    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp) + iter_inds_offset +
-                       axis_inds_offset;
+    const argTy *arg_tp = reinterpret_cast<const argTy *>(arg_cp);
+    argTy *vals_tp = reinterpret_cast<argTy *>(vals_cp);
+    IndexTy *inds_tp = reinterpret_cast<IndexTy *>(inds_cp);
 
     const std::size_t total_nelems = iter_nelems * axis_nelems;
     const std::size_t padded_total_nelems = ((total_nelems + 63) / 64) * 64;
@@ -494,7 +472,7 @@ sycl::event topk_radix_impl(sycl::queue &exec_q,
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
-    const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
+    const IndexedProjT proj_op{arg_tp};
 
     using IotaKernelName = topk_iota_krn<argTy, IndexTy>;
 

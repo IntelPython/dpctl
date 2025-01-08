@@ -46,14 +46,14 @@
 #include "rich_comparisons.hpp"
 #include "topk.hpp"
 
-namespace td_ns = dpctl::tensor::type_dispatch;
-
 namespace dpctl
 {
 namespace tensor
 {
 namespace py_internal
 {
+
+namespace td_ns = dpctl::tensor::type_dispatch;
 
 typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
                                           std::size_t,
@@ -63,12 +63,6 @@ typedef sycl::event (*topk_impl_fn_ptr_t)(sycl::queue &,
                                           const char *,
                                           char *,
                                           char *,
-                                          py::ssize_t,
-                                          py::ssize_t,
-                                          py::ssize_t,
-                                          py::ssize_t,
-                                          py::ssize_t,
-                                          py::ssize_t,
                                           const std::vector<sycl::event> &);
 
 static topk_impl_fn_ptr_t topk_dispatch_vector[td_ns::num_types];
@@ -102,21 +96,14 @@ sycl::event topk_caller(sycl::queue &exec_q,
                         const char *arg_cp,
                         char *vals_cp,
                         char *inds_cp,
-                        py::ssize_t iter_arg_offset,
-                        py::ssize_t iter_vals_offset,
-                        py::ssize_t iter_inds_offset,
-                        py::ssize_t axis_arg_offset,
-                        py::ssize_t axis_vals_offset,
-                        py::ssize_t axis_inds_offset,
                         const std::vector<sycl::event> &depends)
 {
     if constexpr (use_radix_sort<argTy>::value) {
         using dpctl::tensor::kernels::topk_radix_impl;
         auto ascending = !largest;
-        return topk_radix_impl<argTy, IndexTy>(
-            exec_q, iter_nelems, axis_nelems, k, ascending, arg_cp, vals_cp,
-            inds_cp, iter_arg_offset, iter_vals_offset, iter_inds_offset,
-            axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+        return topk_radix_impl<argTy, IndexTy>(exec_q, iter_nelems, axis_nelems,
+                                               k, ascending, arg_cp, vals_cp,
+                                               inds_cp, depends);
     }
     else {
         using dpctl::tensor::kernels::topk_merge_impl;
@@ -126,16 +113,14 @@ sycl::event topk_caller(sycl::queue &exec_q,
                     argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
-                iter_arg_offset, iter_vals_offset, iter_inds_offset,
-                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+                depends);
         }
         else {
             using CompTy = typename dpctl::tensor::py_internal::AscendingSorter<
                 argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
-                iter_arg_offset, iter_vals_offset, iter_inds_offset,
-                axis_arg_offset, axis_vals_offset, axis_inds_offset, depends);
+                depends);
         }
     }
 }
@@ -268,14 +253,11 @@ py_topk(const dpctl::tensor::usm_ndarray &src,
     bool is_inds_c_contig = inds.is_c_contiguous();
 
     if (is_src_c_contig && is_vals_c_contig && is_inds_c_contig) {
-        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
-
         auto fn = topk_dispatch_vector[src_typeid];
 
         sycl::event comp_ev =
             fn(exec_q, iter_nelems, axis_nelems, k, largest, src.get_data(),
-               vals.get_data(), inds.get_data(), zero_offset, zero_offset,
-               zero_offset, zero_offset, zero_offset, zero_offset, depends);
+               vals.get_data(), inds.get_data(), depends);
 
         sycl::event keep_args_alive_ev =
             dpctl::utils::keep_args_alive(exec_q, {src, vals, inds}, {comp_ev});
