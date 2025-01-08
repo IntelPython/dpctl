@@ -212,7 +212,7 @@ private:
 
 // ======= Masked extraction ================================
 
-namespace
+namespace detail
 {
 
 template <std::size_t I, std::size_t... IR>
@@ -234,7 +234,7 @@ std::size_t get_lws(std::size_t n)
     return _get_lws_impl<lws0, lws1, lws2>(n);
 }
 
-} // end of anonymous namespace
+} // end of namespace detail
 
 template <typename MaskedDstIndexerT, typename dataT, typename indT>
 class masked_extract_all_slices_contig_impl_krn;
@@ -278,7 +278,7 @@ sycl::event masked_extract_all_slices_contig_impl(
 
     const std::size_t masked_extent = iteration_size;
 
-    const std::size_t lws = get_lws(masked_extent);
+    const std::size_t lws = detail::get_lws(masked_extent);
 
     const std::size_t n_groups = (iteration_size + lws - 1) / lws;
 
@@ -357,7 +357,7 @@ sycl::event masked_extract_all_slices_strided_impl(
 
     const std::size_t masked_nelems = iteration_size;
 
-    const std::size_t lws = get_lws(masked_nelems);
+    const std::size_t lws = detail::get_lws(masked_nelems);
 
     const std::size_t n_groups = (masked_nelems + lws - 1) / lws;
 
@@ -452,7 +452,7 @@ sycl::event masked_extract_some_slices_strided_impl(
 
     const std::size_t masked_extent = masked_nelems;
 
-    const std::size_t lws = get_lws(masked_extent);
+    const std::size_t lws = detail::get_lws(masked_extent);
 
     const std::size_t n_groups = ((masked_extent + lws - 1) / lws);
     const std::size_t orthog_extent = static_cast<std::size_t>(orthog_nelems);

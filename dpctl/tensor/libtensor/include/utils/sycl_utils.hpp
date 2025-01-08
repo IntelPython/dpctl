@@ -132,7 +132,7 @@ std::size_t choose_workgroup_size(const std::size_t nelems,
     return wg;
 }
 
-namespace
+namespace detail
 {
 
 template <typename LocAccT, typename OpT>
@@ -158,7 +158,7 @@ void _fold(LocAccT &local_mem_acc,
     }
 }
 
-} // namespace
+} // end of namespace detail
 
 template <typename T, typename GroupT, typename LocAccT, typename OpT>
 T custom_reduce_over_group(const GroupT &wg,
@@ -184,7 +184,8 @@ T custom_reduce_over_group(const GroupT &wg,
         for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
                 const std::uint32_t n_witems_ = (n_witems + 1) >> 1;
-                _fold(local_mem_acc, lid, n_witems - n_witems_, n_witems_, op);
+                detail::_fold(local_mem_acc, lid, n_witems - n_witems_,
+                              n_witems_, op);
                 sycl::group_barrier(wg, sycl::memory_scope::work_group);
                 n_witems = n_witems_;
             }
@@ -196,7 +197,7 @@ T custom_reduce_over_group(const GroupT &wg,
         for (std::uint32_t sz = high_sz; sz >= low_sz; sz >>= 1) {
             if (n_witems >= sz) {
                 n_witems >>= 1;
-                _fold(local_mem_acc, lid, n_witems, op);
+                detail::_fold(local_mem_acc, lid, n_witems, op);
                 sycl::group_barrier(wg, sycl::memory_scope::work_group);
             }
         }

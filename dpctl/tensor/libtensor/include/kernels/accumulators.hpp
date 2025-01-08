@@ -90,7 +90,7 @@ template <typename BinOpT, typename T> struct can_use_inclusive_scan_over_group
     static constexpr bool value = sycl::has_known_identity<BinOpT, T>::value;
 };
 
-namespace
+namespace detail
 {
 template <typename T> class stack_t
 {
@@ -141,7 +141,7 @@ public:
     std::size_t get_local_stride() const { return local_stride_; }
 };
 
-} // end of anonymous namespace
+} // end of namespace detail
 
 // Iterative cumulative summation
 
@@ -627,7 +627,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
             throw std::bad_alloc();
         }
 
-        std::vector<stack_t<outputT>> stack{};
+        std::vector<detail::stack_t<outputT>> stack{};
 
         // inclusive scans over blocks
         n_groups_ = n_groups;
@@ -867,7 +867,7 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             throw std::bad_alloc();
         }
 
-        std::vector<stack_strided_t<outputT>> stack{};
+        std::vector<detail::stack_strided_t<outputT>> stack{};
 
         // inclusive scans over blocks
         acc_groups_ = acc_groups;
