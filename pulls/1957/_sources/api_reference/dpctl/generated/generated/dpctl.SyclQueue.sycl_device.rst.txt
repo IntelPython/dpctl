@@ -1,0 +1,6 @@
+dpctl.SyclQueue.sycl\_device
+============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclQueue.sycl_device
