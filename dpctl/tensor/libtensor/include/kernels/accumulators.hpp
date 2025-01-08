@@ -27,7 +27,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <new>
 #include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
@@ -170,15 +169,6 @@ template <typename inputT,
           typename ScanOpT,
           bool include_initial>
 class inclusive_scan_iter_local_scan_striped_krn;
-
-template <typename inputT,
-          typename outputT,
-          nwiT n_wi,
-          typename TransformerT,
-          typename OtherTransformerT,
-          typename ScanOpT,
-          bool include_initial>
-class inclusive_scan_iter_chunk_update_krn;
 
 template <typename inputT,
           typename outputT,
@@ -554,15 +544,69 @@ inclusive_scan_base_step(sycl::queue &exec_q,
     }
 }
 
-template <typename inputT,
+template <typename outputT, nwiT n_wi, typename ScanOpT>
+class inclusive_scan_1d_iter_chunk_update_krn;
+
+template <typename UpdateKernelName,
           typename outputT,
           nwiT n_wi,
-          typename TransformerT,
-          typename OtherIndexerT,
-          typename OtherTransformerT,
-          typename ScanOpT,
-          bool include_initial>
-class inclusive_scan_1d_iter_chunk_update_krn;
+          typename ScanOpT>
+sycl::event update_local_chunks_1d(sycl::queue &exec_q,
+                                   outputT *src,
+                                   std::size_t src_size,
+                                   const outputT *local_scans,
+                                   std::size_t chunk_size,
+                                   const sycl::event &dependent_event)
+{
+    const auto &ctx = exec_q.get_context();
+    const auto &dev = exec_q.get_device();
+
+    const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
+    auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        ctx, {dev}, {kernel_id});
+    auto krn = kb.get_kernel(kernel_id);
+
+    const std::uint32_t sg_size = krn.template get_info<
+        sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
+    // output[ chunk_size * (i + 1) + j] += temp[i]
+    sycl::event update_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(dependent_event);
+        cgh.use_kernel_bundle(kb);
+
+        constexpr nwiT updates_per_wi = n_wi;
+        const std::size_t n_items =
+            ceiling_quotient<std::size_t>(src_size, sg_size * n_wi) * sg_size;
+
+        sycl::range<1> gRange{n_items};
+        sycl::range<1> lRange{sg_size};
+        sycl::nd_range<1> ndRange{gRange, lRange};
+
+        cgh.parallel_for<UpdateKernelName>(
+            ndRange,
+            [chunk_size, src, src_size, local_scans](sycl::nd_item<1> ndit) {
+                constexpr ScanOpT scan_op{};
+                constexpr outputT identity =
+                    su_ns::Identity<ScanOpT, outputT>::value;
+
+                const std::uint32_t lws = ndit.get_local_range(0);
+                const std::size_t block_offset = ndit.get_group(0) * n_wi * lws;
+#pragma unroll
+                for (std::size_t i = 0; i < updates_per_wi; ++i) {
+                    const std::size_t src_id =
+                        block_offset + ndit.get_local_id(0) + i * lws;
+                    if (src_id < src_size) {
+                        const std::size_t scan_id = (src_id / chunk_size);
+                        const outputT modifier =
+                            (scan_id > 0) ? local_scans[scan_id - 1] : identity;
+                        src[src_id] = scan_op(src[src_id], modifier);
+                    }
+                }
+            });
+    });
+
+    return update_event;
+}
 
 /*
  * output[j] = sum( input[s0 + i * s1], 0 <= i <= j)
@@ -621,11 +665,10 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         }
 
         // allocate
-        outputT *temp = sycl::malloc_device<outputT>(temp_size, exec_q);
-
-        if (!temp) {
-            throw std::bad_alloc();
-        }
+        auto temp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<outputT>(temp_size,
+                                                                     exec_q);
+        outputT *temp = temp_owner.get();
 
         std::vector<detail::stack_t<outputT>> stack{};
 
@@ -663,72 +706,21 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
             const auto &stack_elem = stack[stack_id];
             outputT *src = stack_elem.get_src_ptr();
             const std::size_t src_size = stack_elem.get_size();
-            outputT *local_scans = stack_elem.get_local_scans_ptr();
+            const outputT *local_scans = stack_elem.get_local_scans_ptr();
 
             using UpdateKernelName =
-                class inclusive_scan_1d_iter_chunk_update_krn<
-                    inputT, outputT, n_wi, IndexerT, TransformerT,
-                    NoOpTransformerT, ScanOpT, include_initial>;
+                class inclusive_scan_1d_iter_chunk_update_krn<outputT, n_wi,
+                                                              ScanOpT>;
 
-            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
-
-            auto const &ctx = exec_q.get_context();
-            auto const &dev = exec_q.get_device();
-            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-                ctx, {dev}, {kernel_id});
-
-            auto krn = kb.get_kernel(kernel_id);
-
-            const std::uint32_t sg_size = krn.template get_info<
-                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-            // output[ chunk_size * (i + 1) + j] += temp[i]
-            dependent_event = exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(dependent_event);
-                cgh.use_kernel_bundle(kb);
-
-                constexpr nwiT updates_per_wi = n_wi;
-                const std::size_t n_items =
-                    ceiling_quotient<std::size_t>(src_size, sg_size * n_wi) *
-                    sg_size;
-
-                sycl::range<1> gRange{n_items};
-                sycl::range<1> lRange{sg_size};
-                sycl::nd_range<1> ndRange{gRange, lRange};
-
-                cgh.parallel_for<UpdateKernelName>(
-                    ndRange, [chunk_size, src, src_size,
-                              local_scans](sycl::nd_item<1> ndit) {
-                        constexpr ScanOpT scan_op{};
-                        constexpr outputT identity =
-                            su_ns::Identity<ScanOpT, outputT>::value;
-
-                        const std::uint32_t lws = ndit.get_local_range(0);
-                        const std::size_t block_offset =
-                            ndit.get_group(0) * n_wi * lws;
-#pragma unroll
-                        for (std::size_t i = 0; i < updates_per_wi; ++i) {
-                            const std::size_t src_id =
-                                block_offset + ndit.get_local_id(0) + i * lws;
-                            if (src_id < src_size) {
-                                const std::size_t scan_id =
-                                    (src_id / chunk_size);
-                                const outputT modifier =
-                                    (scan_id > 0) ? local_scans[scan_id - 1]
-                                                  : identity;
-                                src[src_id] = scan_op(src[src_id], modifier);
-                            }
-                        }
-                    });
-            });
+            dependent_event = update_local_chunks_1d<UpdateKernelName, outputT,
+                                                     n_wi, ScanOpT>(
+                exec_q, src, src_size, local_scans, chunk_size,
+                dependent_event);
         }
 
-        sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(dependent_event);
-            const auto &ctx = exec_q.get_context();
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task([ctx, temp]() { sycl_free_noexcept(temp, ctx); });
-        });
+        sycl::event free_ev = dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {dependent_event}, temp_owner);
+
         host_tasks.push_back(free_ev);
     }
 
@@ -792,16 +784,119 @@ accumulate_1d_contig_impl(sycl::queue &q,
     return comp_ev;
 }
 
-template <typename inputT,
-          typename outputT,
+template <typename outputT,
           nwiT n_wi,
           typename IterIndexerT,
           typename IndexerT,
-          typename TransformerT,
-          typename OtherTransformerT,
-          typename ScanOpT,
-          bool include_initial>
+          typename ScanOpT>
 class inclusive_scan_final_chunk_update_krn;
+
+template <typename UpdateKernelName,
+          typename outputT,
+          nwiT n_wi,
+          typename OutIterIndexerT,
+          typename OutIndexerT,
+          typename ScanOpT>
+sycl::event final_update_local_chunks(sycl::queue &exec_q,
+                                      std::size_t iter_nelems,
+                                      outputT *src,
+                                      std::size_t src_size,
+                                      const outputT *local_scans,
+                                      std::size_t chunk_size,
+                                      std::size_t local_stride,
+                                      const OutIterIndexerT &out_iter_indexer,
+                                      const OutIndexerT &out_indexer,
+                                      sycl::event dependent_event)
+{
+    const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
+
+    auto const &ctx = exec_q.get_context();
+    auto const &dev = exec_q.get_device();
+    auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+        ctx, {dev}, {kernel_id});
+
+    auto krn = kb.get_kernel(kernel_id);
+
+    const std::uint32_t sg_size = krn.template get_info<
+        sycl::info::kernel_device_specific::max_sub_group_size>(dev);
+
+    constexpr nwiT updates_per_wi = n_wi;
+    const std::size_t updates_per_sg = sg_size * updates_per_wi;
+    const std::size_t update_nelems =
+        ceiling_quotient(src_size, updates_per_sg) * sg_size;
+
+    sycl::range<2> gRange{iter_nelems, update_nelems};
+    sycl::range<2> lRange{1, sg_size};
+
+    sycl::nd_range<2> ndRange{gRange, lRange};
+
+    sycl::event update_event = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(dependent_event);
+
+        cgh.parallel_for<UpdateKernelName>(
+            ndRange, [chunk_size, src_size, local_stride, src, local_scans,
+                      out_iter_indexer, out_indexer](sycl::nd_item<2> ndit) {
+                constexpr ScanOpT scan_op{};
+                constexpr outputT identity =
+                    su_ns::Identity<ScanOpT, outputT>::value;
+
+                const std::uint32_t lws = ndit.get_local_range(1);
+
+                const std::size_t iter_gid = ndit.get_group(0);
+
+                const std::size_t src_axis_id0 =
+                    ndit.get_group(1) * updates_per_wi * lws +
+                    ndit.get_local_id(1);
+                const std::size_t src_iter_id = out_iter_indexer(iter_gid);
+#pragma unroll
+                for (nwiT i = 0; i < updates_per_wi; ++i) {
+                    const std::size_t src_axis_id = src_axis_id0 + i * lws;
+                    const std::size_t src_id =
+                        out_indexer(src_axis_id) + src_iter_id;
+
+                    if (src_axis_id < src_size) {
+                        const std::size_t scan_axis_id =
+                            src_axis_id / chunk_size;
+                        const std::size_t scan_id =
+                            scan_axis_id + iter_gid * local_stride;
+
+                        const outputT modifier = (scan_axis_id > 0)
+                                                     ? local_scans[scan_id - 1]
+                                                     : identity;
+
+                        src[src_id] = scan_op(src[src_id], modifier);
+                    }
+                }
+            });
+    });
+
+    return update_event;
+}
+
+template <typename outputT, nwiT n_wi, typename ScanOpT>
+class inclusive_scan_iter_chunk_update_krn;
+
+template <typename UpdateKernelName,
+          typename outputT,
+          nwiT n_wi,
+          typename ScanOpT>
+sycl::event update_local_chunks(sycl::queue &exec_q,
+                                std::size_t iter_nelems,
+                                outputT *src,
+                                std::size_t src_size,
+                                const outputT *local_scans,
+                                std::size_t chunk_size,
+                                std::size_t local_stride,
+                                sycl::event dependent_event)
+{
+    constexpr NoOpIndexer out_indexer{};
+    constexpr NoOpIndexer iter_out_indexer{};
+
+    return final_update_local_chunks<UpdateKernelName, outputT, n_wi,
+                                     NoOpIndexer, NoOpIndexer, ScanOpT>(
+        exec_q, iter_nelems, src, src_size, local_scans, chunk_size,
+        local_stride, iter_out_indexer, out_indexer, dependent_event);
+}
 
 template <typename inputT,
           typename outputT,
@@ -860,12 +955,10 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         }
 
         // allocate
-        outputT *temp =
-            sycl::malloc_device<outputT>(iter_nelems * temp_size, exec_q);
-
-        if (!temp) {
-            throw std::bad_alloc();
-        }
+        auto temp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<outputT>(
+                iter_nelems * temp_size, exec_q);
+        outputT *temp = temp_owner.get();
 
         std::vector<detail::stack_strided_t<outputT>> stack{};
 
@@ -951,76 +1044,14 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
             outputT *local_scans = stack_elem.get_local_scans_ptr();
             std::size_t local_stride = stack_elem.get_local_stride();
 
-            using UpdateKernelName = class inclusive_scan_iter_chunk_update_krn<
-                inputT, outputT, n_wi, TransformerT, NoOpTransformerT, ScanOpT,
-                include_initial>;
+            using UpdateKernelName =
+                class inclusive_scan_iter_chunk_update_krn<outputT, n_wi,
+                                                           ScanOpT>;
 
-            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
-
-            auto const &ctx = exec_q.get_context();
-            auto const &dev = exec_q.get_device();
-            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-                ctx, {dev}, {kernel_id});
-
-            auto krn = kb.get_kernel(kernel_id);
-
-            const std::uint32_t sg_size = krn.template get_info<
-                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-            constexpr nwiT updates_per_wi = n_wi;
-            const std::size_t update_nelems =
-                ceiling_quotient<std::size_t>(src_size,
-                                              sg_size * updates_per_wi) *
-                sg_size;
-
-            dependent_event = exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(dependent_event);
-                cgh.use_kernel_bundle(kb);
-
-                sycl::range<2> gRange{iter_nelems, update_nelems};
-                sycl::range<2> lRange{1, sg_size};
-
-                sycl::nd_range<2> ndRange{gRange, lRange};
-
-                cgh.parallel_for<UpdateKernelName>(
-                    ndRange, [chunk_size, src_size, local_stride, src,
-                              local_scans](sycl::nd_item<2> ndit) {
-                        constexpr ScanOpT scan_op{};
-                        constexpr outputT identity =
-                            su_ns::Identity<ScanOpT, outputT>::value;
-
-                        const std::size_t iter_gid = ndit.get_group(0);
-                        const std::size_t axis_gr_id = ndit.get_group(1);
-
-                        const std::uint32_t lws = ndit.get_local_range(0);
-
-                        const std::size_t src_axis_id0 =
-                            axis_gr_id * updates_per_wi * lws;
-                        const std::size_t src_iter_id = iter_gid * src_size;
-                        const std::size_t scan_id0 = iter_gid * local_stride;
-#pragma unroll
-                        for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            const std::size_t src_axis_id =
-                                src_axis_id0 + ndit.get_local_id(0) + i * lws;
-
-                            if (src_axis_id < src_size) {
-                                const std::size_t scan_axis_id =
-                                    src_axis_id / chunk_size;
-                                const std::size_t scan_id =
-                                    scan_axis_id + scan_id0;
-
-                                const outputT modifier =
-                                    (scan_axis_id > 0)
-                                        ? local_scans[scan_id - 1]
-                                        : identity;
-
-                                const std::size_t src_id =
-                                    src_axis_id + src_iter_id;
-                                src[src_id] = scan_op(src[src_id], modifier);
-                            }
-                        }
-                    });
-            });
+            dependent_event =
+                update_local_chunks<UpdateKernelName, outputT, n_wi, ScanOpT>(
+                    exec_q, iter_nelems, src, src_size, local_scans, chunk_size,
+                    local_stride, dependent_event);
         }
 
         // last stack element is always directly to output
@@ -1033,83 +1064,19 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
 
             using UpdateKernelName =
                 class inclusive_scan_final_chunk_update_krn<
-                    inputT, outputT, n_wi, OutIterIndexerT, OutIndexerT,
-                    TransformerT, NoOpTransformerT, ScanOpT, include_initial>;
+                    outputT, n_wi, OutIterIndexerT, OutIndexerT, ScanOpT>;
 
-            const auto &kernel_id = sycl::get_kernel_id<UpdateKernelName>();
-
-            auto const &ctx = exec_q.get_context();
-            auto const &dev = exec_q.get_device();
-            auto kb = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
-                ctx, {dev}, {kernel_id});
-
-            auto krn = kb.get_kernel(kernel_id);
-
-            const std::uint32_t sg_size = krn.template get_info<
-                sycl::info::kernel_device_specific::max_sub_group_size>(dev);
-
-            constexpr nwiT updates_per_wi = n_wi;
-            const std::size_t update_nelems =
-                ceiling_quotient<std::size_t>(src_size,
-                                              sg_size * updates_per_wi) *
-                sg_size;
-
-            sycl::range<2> gRange{iter_nelems, update_nelems};
-            sycl::range<2> lRange{1, sg_size};
-
-            sycl::nd_range<2> ndRange{gRange, lRange};
-
-            dependent_event = exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(dependent_event);
-
-                cgh.parallel_for<UpdateKernelName>(
-                    ndRange,
-                    [chunk_size, src_size, local_stride, src, local_scans,
-                     out_iter_indexer, out_indexer](sycl::nd_item<2> ndit) {
-                        constexpr ScanOpT scan_op{};
-                        constexpr outputT identity =
-                            su_ns::Identity<ScanOpT, outputT>::value;
-
-                        const std::uint32_t lws = ndit.get_local_range(1);
-
-                        const std::size_t iter_gid = ndit.get_group(0);
-
-                        const std::size_t src_axis_id0 =
-                            ndit.get_group(1) * updates_per_wi * lws +
-                            ndit.get_local_id(1);
-                        const std::size_t src_iter_id =
-                            out_iter_indexer(iter_gid);
-#pragma unroll
-                        for (nwiT i = 0; i < updates_per_wi; ++i) {
-                            const std::size_t src_axis_id =
-                                src_axis_id0 + i * lws;
-                            const std::size_t src_id =
-                                out_indexer(src_axis_id) + src_iter_id;
-
-                            if (src_axis_id < src_size) {
-                                const std::size_t scan_axis_id =
-                                    src_axis_id / chunk_size;
-                                const std::size_t scan_id =
-                                    scan_axis_id + iter_gid * local_stride;
-
-                                const outputT modifier =
-                                    (scan_axis_id > 0)
-                                        ? local_scans[scan_id - 1]
-                                        : identity;
-
-                                src[src_id] = scan_op(src[src_id], modifier);
-                            }
-                        }
-                    });
-            });
+            dependent_event =
+                final_update_local_chunks<UpdateKernelName, outputT, n_wi,
+                                          OutIterIndexerT, OutIndexerT,
+                                          ScanOpT>(
+                    exec_q, iter_nelems, src, src_size, local_scans, chunk_size,
+                    local_stride, out_iter_indexer, out_indexer,
+                    dependent_event);
         }
 
-        sycl::event free_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(dependent_event);
-            const auto &ctx = exec_q.get_context();
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task([ctx, temp]() { sycl_free_noexcept(temp, ctx); });
-        });
+        sycl::event free_ev = dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {dependent_event}, temp_owner);
         host_tasks.push_back(free_ev);
     }
 
@@ -1255,11 +1222,10 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     }
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
-    cumsumT *last_elem_host_usm = sycl::malloc_host<cumsumT>(1, q);
+    auto host_usm_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
+    cumsumT *last_elem_host_usm = host_usm_owner.get();
 
-    if (last_elem_host_usm == nullptr) {
-        throw std::bad_alloc();
-    }
     sycl::event copy_e = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
         cgh.copy<cumsumT>(last_elem, last_elem_host_usm, 1);
@@ -1267,8 +1233,8 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     copy_e.wait();
     std::size_t return_val = static_cast<std::size_t>(*last_elem_host_usm);
 
-    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-    sycl_free_noexcept(last_elem_host_usm, q);
+    // free USM host allocation
+    host_usm_owner.reset(nullptr);
 
     return return_val;
 }
@@ -1370,11 +1336,10 @@ cumsum_val_strided_impl(sycl::queue &q,
 
     cumsumT *last_elem = cumsum_data_ptr + (n_elems - 1);
 
-    cumsumT *last_elem_host_usm = sycl::malloc_host<cumsumT>(1, q);
+    auto host_usm_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_host<cumsumT>(1, q);
+    cumsumT *last_elem_host_usm = host_usm_owner.get();
 
-    if (last_elem_host_usm == nullptr) {
-        throw std::bad_alloc();
-    }
     sycl::event copy_e = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(comp_ev);
         cgh.copy<cumsumT>(last_elem, last_elem_host_usm, 1);
@@ -1382,8 +1347,8 @@ cumsum_val_strided_impl(sycl::queue &q,
     copy_e.wait();
     std::size_t return_val = static_cast<std::size_t>(*last_elem_host_usm);
 
-    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-    sycl_free_noexcept(last_elem_host_usm, q);
+    // free USM-host temporary
+    host_usm_owner.reset(nullptr);
 
     return return_val;
 }
