@@ -2343,11 +2343,10 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::max_work_group_size>() / 2);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
@@ -2390,31 +2389,28 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-                iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+            const std::size_t tmp_alloc_size =
+                iter_nelems * (
+                                  /* temp */ reduction_nelems +
+                                  /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            // get unique_ptr owning the temporary allocation
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+            // get raw USM pointer
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+            ;
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
@@ -2455,15 +2451,8 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -2644,12 +2633,10 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
@@ -2692,31 +2679,26 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
+            ;
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::StridedIndexer;
@@ -2761,15 +2743,8 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3033,12 +3008,10 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
@@ -3073,31 +3046,25 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
@@ -3133,15 +3100,8 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3234,12 +3194,11 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
 
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            resTy *tmp = tmp_owner.get();
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
@@ -3275,31 +3234,25 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
@@ -3337,15 +3290,8 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3621,12 +3567,11 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
 
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
             constexpr ResIndexerT res_indexer{};
@@ -3645,31 +3590,24 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                 res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
             constexpr ResIndexerT res_indexer{};
@@ -3689,15 +3627,8 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                 res_nd, 0, res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -3789,12 +3720,10 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
             constexpr ResIndexerT res_indexer{};
@@ -3813,31 +3742,24 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
             constexpr ResIndexerT res_indexer{};
@@ -3857,15 +3779,8 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 res_nd, 0, res_shapes_strides, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -4042,12 +3957,10 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -4063,31 +3976,23 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -4106,15 +4011,8 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }
@@ -4197,12 +4095,10 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
         std::size_t max_wg = reduction_detail::get_work_group_size(dev);
 
         if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
-            resTy *tmp = sycl::malloc_device<resTy>(
-                iter_nelems * reduction_nelems, exec_q);
-
-            if (!tmp) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    iter_nelems * reduction_nelems, exec_q);
+            resTy *tmp = tmp_owner.get();
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -4219,31 +4115,23 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     preferred_reductions_per_wi, reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, tmp] { sycl_free_noexcept(tmp, ctx); });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
             return cleanup_host_task_event;
         }
         else {
             assert(reduction_groups > 1);
 
-            resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
+            const std::size_t tmp_alloc_size =
                 iter_nelems * (/* temp */ reduction_nelems +
-                               /* first reduction temp */ reduction_groups),
-                exec_q);
-            resTy *partially_reduced_tmp2 = nullptr;
+                               /* first reduction temp */ reduction_groups);
 
-            if (partially_reduced_tmp == nullptr) {
-                throw std::runtime_error("Unable to allocate device_memory");
-            }
-            else {
-                partially_reduced_tmp2 =
-                    partially_reduced_tmp + reduction_nelems * iter_nelems;
-            }
+            auto tmp_owner =
+                dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                    tmp_alloc_size, exec_q);
+            resTy *partially_reduced_tmp = tmp_owner.get();
+            resTy *partially_reduced_tmp2 =
+                partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -4261,15 +4149,8 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                     reductions_per_wi, {gemm_ev});
 
             sycl::event cleanup_host_task_event =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(red_ev);
-                    const sycl::context &ctx = exec_q.get_context();
-
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, partially_reduced_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(exec_q, {red_ev},
+                                                             tmp_owner);
 
             return cleanup_host_task_event;
         }

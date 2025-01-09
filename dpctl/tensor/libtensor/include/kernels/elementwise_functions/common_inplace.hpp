@@ -423,11 +423,11 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
         *(std::max_element(std::begin(sg_sizes), std::end(sg_sizes)));
 
     std::size_t n1_padded = n1 + max_sgSize;
-    argT *padded_vec = sycl::malloc_device<argT>(n1_padded, exec_q);
+    auto padded_vec_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<argT>(n1_padded,
+                                                              exec_q);
+    argT *padded_vec = padded_vec_owner.get();
 
-    if (padded_vec == nullptr) {
-        throw std::runtime_error("Could not allocate memory on the device");
-    }
     sycl::event make_padded_vec_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends); // ensure vec contains actual data
         cgh.parallel_for({n1_padded}, [=](sycl::id<1> id) {
@@ -459,13 +459,8 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
                                                                 n_elems, n1));
     });
 
-    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(comp_ev);
-        const sycl::context &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, padded_vec]() { sycl_free_noexcept(padded_vec, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {comp_ev}, padded_vec_owner);
     host_tasks.push_back(tmp_cleanup_ev);
 
     return comp_ev;
