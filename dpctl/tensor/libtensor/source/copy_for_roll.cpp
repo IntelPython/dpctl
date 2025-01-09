@@ -218,15 +218,12 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
 
     // shape_strides = [src_shape, src_strides, dst_strides]
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
-
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     std::vector<sycl::event> all_deps(depends.size() + 1);
     all_deps.push_back(copy_shape_ev);
@@ -236,14 +233,9 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
         fn(exec_q, offset, src_nelems, src_nd, shape_strides, src_data,
            src_offset, dst_data, dst_offset, all_deps);
 
-    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_for_roll_event);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [shape_strides, ctx]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
-
+    sycl::event temporaries_cleanup_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {copy_for_roll_event}, shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),
@@ -349,15 +341,13 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
 
     // shape_strides = [src_shape, src_strides, dst_strides]
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, common_shape, src_strides, dst_strides,
         normalized_shifts);
-
-    py::ssize_t *shape_strides_shifts = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides_shifts == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
+    auto shape_strides_shifts_owner =
+        std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *shape_strides_shifts = shape_strides_shifts_owner.get();
 
     std::vector<sycl::event> all_deps(depends.size() + 1);
     all_deps.push_back(copy_shape_ev);
@@ -367,15 +357,8 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
         fn(exec_q, src_nelems, src_nd, shape_strides_shifts, src_data,
            src_offset, dst_data, dst_offset, all_deps);
 
-    auto temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(copy_for_roll_event);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([shape_strides_shifts, ctx]() {
-            sycl_free_noexcept(shape_strides_shifts, ctx);
-        });
-    });
-
+    auto temporaries_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {copy_for_roll_event}, shape_strides_shifts_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     return std::make_pair(keep_args_alive(exec_q, {src, dst}, host_task_events),

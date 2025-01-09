@@ -477,7 +477,7 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
         }
 
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        const auto &arrays_metainfo_packing_triple_ =
+        auto arrays_metainfo_packing_triple_ =
             device_allocate_and_pack<py::ssize_t>(
                 exec_q, host_task_events,
                 // iteration metadata
@@ -486,16 +486,14 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 // reduction metadata
                 simplified_inner_shape, simplified_inner_x1_strides,
                 simplified_inner_x2_strides);
-        py::ssize_t *temp_allocation_ptr =
-            std::get<0>(arrays_metainfo_packing_triple_);
-        if (temp_allocation_ptr == nullptr) {
-            throw std::runtime_error("Unable to allocate memory on device");
-        }
+        auto tmp_alloc_owner =
+            std::move(std::get<0>(arrays_metainfo_packing_triple_));
         const auto &copy_metadata_ev =
             std::get<2>(arrays_metainfo_packing_triple_);
+        const py::ssize_t *temp_allocation_ptr = tmp_alloc_owner.get();
 
-        py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
-        py::ssize_t *inner_shape_stride =
+        const py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+        const py::ssize_t *inner_shape_stride =
             temp_allocation_ptr + 4 * simplified_batch_shape.size();
 
         std::vector<sycl::event> all_deps;
@@ -511,14 +509,9 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                inner_nd, // number dimensions being reduced
                inner_shape_stride, inner_x1_offset, inner_x2_offset, all_deps);
 
-        sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-            cgh.depends_on(dot_ev);
-            const auto &ctx = exec_q.get_context();
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            cgh.host_task([ctx, temp_allocation_ptr] {
-                sycl_free_noexcept(temp_allocation_ptr, ctx);
-            });
-        });
+        sycl::event temp_cleanup_ev =
+            dpctl::tensor::alloc_utils::async_smart_free(exec_q, {dot_ev},
+                                                         tmp_alloc_owner);
         host_task_events.push_back(temp_cleanup_ev);
     }
     else { // if (!call_vecdot)
@@ -557,18 +550,16 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 }
             }
             using dpctl::tensor::offset_utils::device_allocate_and_pack;
-            const auto &ptr_size_event_tuple1 =
-                device_allocate_and_pack<py::ssize_t>(
-                    exec_q, host_task_events, x1_shape_vec, x1_strides_vec,
-                    x2_shape_vec, x2_strides_vec, dst_shape_vec,
-                    dst_strides_vec);
-            py::ssize_t *packed_shapes_strides =
-                std::get<0>(ptr_size_event_tuple1);
-            if (packed_shapes_strides == nullptr) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, x1_shape_vec, x1_strides_vec,
+                x2_shape_vec, x2_strides_vec, dst_shape_vec, dst_strides_vec);
+            auto packed_shapes_strides_owner =
+                std::move(std::get<0>(ptr_size_event_tuple1));
             sycl::event copy_shapes_strides_ev =
                 std::get<2>(ptr_size_event_tuple1);
+            const py::ssize_t *packed_shapes_strides =
+                packed_shapes_strides_owner.get();
+
             const py::ssize_t *x1_shape_strides = packed_shapes_strides;
             const py::ssize_t *x2_shape_strides =
                 packed_shapes_strides + 2 * (x1_nd);
@@ -588,14 +579,8 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                    x1_outer_dims + x2_outer_dims, dst_shape_strides, all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(dot_ev);
-                    const auto &ctx = exec_q.get_context();
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, packed_shapes_strides] {
-                        sycl_free_noexcept(packed_shapes_strides, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(
+                    exec_q, {dot_ev}, packed_shapes_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
         }
         else { // if (call_batched)
@@ -751,25 +736,23 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 }
             }
             using dpctl::tensor::offset_utils::device_allocate_and_pack;
-            const auto &ptr_size_event_tuple1 =
-                device_allocate_and_pack<py::ssize_t>(
-                    exec_q, host_task_events, simplified_batch_shape,
-                    simplified_batch_x1_strides, simplified_batch_x2_strides,
-                    simplified_batch_dst_strides, outer_inner_x1_shape,
-                    outer_inner_x1_strides, outer_inner_x2_shape,
-                    outer_inner_x2_strides, outer_inner_dst_shape,
-                    outer_inner_dst_strides,
-                    // full shape and strides of the result array
-                    // necessary for reduction and initialization
-                    simplified_batch_shape, outer_inner_dst_shape,
-                    simplified_batch_dst_strides, outer_inner_dst_strides);
-            py::ssize_t *packed_shapes_strides =
-                std::get<0>(ptr_size_event_tuple1);
-            if (packed_shapes_strides == nullptr) {
-                throw std::runtime_error("Unable to allocate device memory");
-            }
+            auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+                exec_q, host_task_events, simplified_batch_shape,
+                simplified_batch_x1_strides, simplified_batch_x2_strides,
+                simplified_batch_dst_strides, outer_inner_x1_shape,
+                outer_inner_x1_strides, outer_inner_x2_shape,
+                outer_inner_x2_strides, outer_inner_dst_shape,
+                outer_inner_dst_strides,
+                // full shape and strides of the result array
+                // necessary for reduction and initialization
+                simplified_batch_shape, outer_inner_dst_shape,
+                simplified_batch_dst_strides, outer_inner_dst_strides);
+            auto packed_shapes_strides_owner =
+                std::move(std::get<0>(ptr_size_event_tuple1));
             sycl::event copy_shapes_strides_ev =
                 std::get<2>(ptr_size_event_tuple1);
+            const py::ssize_t *packed_shapes_strides =
+                packed_shapes_strides_owner.get();
 
             const auto batch_shape_strides = packed_shapes_strides;
             const auto x1_outer_inner_shapes_strides =
@@ -799,14 +782,8 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                 dst_outer_shapes_strides, dst_full_shape_strides, all_deps);
 
             sycl::event cleanup_tmp_allocations_ev =
-                exec_q.submit([&](sycl::handler &cgh) {
-                    cgh.depends_on(dot_ev);
-                    const auto &ctx = exec_q.get_context();
-                    using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                    cgh.host_task([ctx, packed_shapes_strides] {
-                        sycl_free_noexcept(packed_shapes_strides, ctx);
-                    });
-                });
+                dpctl::tensor::alloc_utils::async_smart_free(
+                    exec_q, {dot_ev}, packed_shapes_strides_owner);
             host_task_events.push_back(cleanup_tmp_allocations_ev);
         }
     }

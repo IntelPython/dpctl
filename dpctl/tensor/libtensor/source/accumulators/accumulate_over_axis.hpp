@@ -200,18 +200,18 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_iter_shape,
         simplified_iter_src_strides, simplified_iter_dst_strides, acc_shape,
         acc_src_strides, acc_dst_strides);
-    py::ssize_t *packed_shapes_and_strides = std::get<0>(ptr_size_event_tuple);
-    if (packed_shapes_and_strides == nullptr) {
-        throw std::runtime_error("Unexpected error");
-    }
+    auto packed_shapes_and_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple));
     const auto &copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *packed_shapes_and_strides =
+        packed_shapes_and_strides_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
-    py::ssize_t *acc_shapes_and_strides =
+    const py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
+    const py::ssize_t *acc_shapes_and_strides =
         packed_shapes_and_strides + 3 * simplified_iter_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -224,14 +224,8 @@ py_accumulate_over_axis(const dpctl::tensor::usm_ndarray &src,
         iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
         acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(acc_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl_free_noexcept(packed_shapes_and_strides, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {acc_ev}, packed_shapes_and_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     return std::make_pair(
@@ -384,18 +378,18 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_iter_shape,
         simplified_iter_src_strides, simplified_iter_dst_strides, acc_shape,
         acc_src_strides, acc_dst_strides);
-    py::ssize_t *packed_shapes_and_strides = std::get<0>(ptr_size_event_tuple);
-    if (packed_shapes_and_strides == nullptr) {
-        throw std::runtime_error("Unexpected error");
-    }
+    auto packed_shapes_and_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple));
     const auto &copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *packed_shapes_and_strides =
+        packed_shapes_and_strides_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
-    py::ssize_t *acc_shapes_and_strides =
+    const py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
+    const py::ssize_t *acc_shapes_and_strides =
         packed_shapes_and_strides + 3 * simplified_iter_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -408,14 +402,8 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
         iter_shape_and_strides, iter_src_offset, iter_dst_offset, acc_nd,
         acc_shapes_and_strides, dst_data, host_task_events, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(acc_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl_free_noexcept(packed_shapes_and_strides, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {acc_ev}, packed_shapes_and_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     return std::make_pair(

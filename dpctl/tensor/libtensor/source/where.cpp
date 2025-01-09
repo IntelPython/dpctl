@@ -27,8 +27,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-#include <sycl/sycl.hpp>
 #include <utility>
+
+#include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
 #include <pybind11/complex.h>
@@ -36,12 +37,13 @@
 #include <pybind11/stl.h>
 
 #include "kernels/where.hpp"
-#include "simplify_iteration_space.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
+
+#include "simplify_iteration_space.hpp"
 #include "where.hpp"
 
 namespace dpctl
@@ -211,11 +213,10 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
         // common shape and strides
         simplified_shape, simplified_cond_strides, simplified_x1_strides,
         simplified_x2_strides, simplified_dst_strides);
-    py::ssize_t *packed_shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (!packed_shape_strides) {
-        throw std::runtime_error("USM-host memory allocation failure");
-    }
+    auto packed_shape_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_strides_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *packed_shape_strides = packed_shape_strides_owner.get();
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -229,15 +230,9 @@ py_where(const dpctl::tensor::usm_ndarray &condition,
                               x1_offset, x2_offset, dst_offset, all_deps);
 
     // free packed temporaries
-    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(where_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([packed_shape_strides, ctx]() {
-            sycl_free_noexcept(packed_shape_strides, ctx);
-        });
-    });
-
+    sycl::event temporaries_cleanup_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {where_ev}, packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =

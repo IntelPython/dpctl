@@ -303,14 +303,12 @@ void copy_numpy_ndarray_into_usm_ndarray(
 
     // Copy shape strides into device memory
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
     const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     {
         // release GIL for the blocking call
@@ -326,8 +324,8 @@ void copy_numpy_ndarray_into_usm_ndarray(
             npy_src_min_nelem_offset, npy_src_max_nelem_offset, dst_data,
             dst_offset, depends, {copy_shape_ev});
 
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(shape_strides, exec_q);
+        // invoke USM deleter in smart pointer while GIL is held
+        shape_strides_owner.release();
     }
 
     return;

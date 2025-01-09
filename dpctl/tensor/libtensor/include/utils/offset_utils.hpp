@@ -28,9 +28,12 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <sycl/sycl.hpp>
+#include <memory> // for std::make_shared, std::unique_ptr
 #include <tuple>
+#include <utility> // for std::move, std::forward
 #include <vector>
+
+#include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/strided_iters.hpp"
@@ -84,7 +87,9 @@ std::vector<T, A> concat(std::vector<T, A> lhs, Vs &&...vs)
 } // namespace detail
 
 template <typename indT, typename... Vs>
-std::tuple<indT *, std::size_t, sycl::event>
+std::tuple<std::unique_ptr<indT, dpctl::tensor::alloc_utils::USMDeleter>,
+           std::size_t,
+           sycl::event>
 device_allocate_and_pack(sycl::queue &q,
                          std::vector<sycl::event> &host_task_events,
                          Vs &&...vs)
@@ -105,25 +110,24 @@ device_allocate_and_pack(sycl::queue &q,
         std::make_shared<shT>(std::move(packed_shape_strides));
 
     auto sz = packed_shape_strides_owner->size();
-    indT *shape_strides = sycl::malloc_device<indT>(sz, q);
-
-    if (shape_strides == nullptr) {
-        return std::make_tuple(shape_strides, 0, sycl::event());
-    }
+    auto shape_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<indT>(sz, q);
+    indT *shape_strides = shape_strides_owner.get();
 
     sycl::event copy_ev =
         q.copy<indT>(packed_shape_strides_owner->data(), shape_strides, sz);
 
     sycl::event cleanup_host_task_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(copy_ev);
-        cgh.host_task([packed_shape_strides_owner] {
+        cgh.host_task([packed_shape_strides_owner =
+                           std::move(packed_shape_strides_owner)] {
             // increment shared pointer ref-count to keep it alive
             // till copy operation completes;
         });
     });
     host_task_events.push_back(cleanup_host_task_ev);
 
-    return std::make_tuple(shape_strides, sz, copy_ev);
+    return std::make_tuple(std::move(shape_strides_owner), sz, copy_ev);
 }
 
 struct NoOpIndexer

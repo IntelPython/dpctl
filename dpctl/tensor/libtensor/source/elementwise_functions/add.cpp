@@ -30,13 +30,13 @@
 #include <sycl/sycl.hpp>
 #include <vector>
 
-#include "add.hpp"
-#include "elementwise_functions.hpp"
-#include "utils/type_dispatch.hpp"
-
 #include "kernels/elementwise_functions/add.hpp"
 #include "kernels/elementwise_functions/common.hpp"
 #include "kernels/elementwise_functions/common_inplace.hpp"
+#include "utils/type_dispatch.hpp"
+
+#include "add.hpp"
+#include "elementwise_functions.hpp"
 
 namespace py = pybind11;
 

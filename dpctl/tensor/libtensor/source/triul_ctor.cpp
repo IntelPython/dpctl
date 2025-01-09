@@ -176,11 +176,11 @@ usm_ndarray_triul(sycl::queue &exec_q,
     (*shp_host_shape_and_strides)[3 * nd - 2] = dst_strides[src_nd - 2];
     (*shp_host_shape_and_strides)[3 * nd - 1] = dst_strides[src_nd - 1];
 
-    py::ssize_t *dev_shape_and_strides =
-        sycl::malloc_device<py::ssize_t>(3 * nd, exec_q);
-    if (dev_shape_and_strides == nullptr) {
-        throw std::runtime_error("Unabled to allocate device memory");
-    }
+    auto dev_shape_and_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(3 * nd,
+                                                                     exec_q);
+    py::ssize_t *dev_shape_and_strides = dev_shape_and_strides_owner.get();
+
     const sycl::event &copy_shape_and_strides = exec_q.copy<py::ssize_t>(
         shp_host_shape_and_strides->data(), dev_shape_and_strides, 3 * nd);
 
@@ -212,6 +212,9 @@ usm_ndarray_triul(sycl::queue &exec_q,
                 sycl_free_noexcept(dev_shape_and_strides, ctx);
             });
     });
+    // since host_task now owns USM allocation, release ownership by smart
+    // pointer
+    dev_shape_and_strides_owner.release();
 
     return std::make_pair(
         keep_args_alive(exec_q, {src, dst}, {temporaries_cleanup_ev}), tri_ev);

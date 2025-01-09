@@ -228,11 +228,10 @@ py_clip(const dpctl::tensor::usm_ndarray &src,
         // common shape and strides
         simplified_shape, simplified_src_strides, simplified_min_strides,
         simplified_max_strides, simplified_dst_strides);
-    py::ssize_t *packed_shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (!packed_shape_strides) {
-        throw std::runtime_error("USM-host memory allocation failure");
-    }
+    auto packed_shape_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_strides_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *packed_shape_strides = packed_shape_strides_owner.get();
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -246,15 +245,9 @@ py_clip(const dpctl::tensor::usm_ndarray &src,
                              min_offset, max_offset, dst_offset, all_deps);
 
     // free packed temporaries
-    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(clip_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([packed_shape_strides, ctx]() {
-            sycl_free_noexcept(packed_shape_strides, ctx);
-        });
-    });
-
+    sycl::event temporaries_cleanup_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {clip_ev}, packed_shape_strides_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =

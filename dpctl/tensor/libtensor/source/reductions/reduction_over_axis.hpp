@@ -459,7 +459,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
 
     std::vector<sycl::event> host_task_events{};
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &arrays_metainfo_packing_triple_ =
+    auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events,
             // iteration metadata
@@ -467,15 +467,13 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
             simplified_iteration_dst_strides,
             // reduction metadata
             simplified_reduction_shape, simplified_reduction_src_strides);
-    py::ssize_t *temp_allocation_ptr =
-        std::get<0>(arrays_metainfo_packing_triple_);
-    if (temp_allocation_ptr == nullptr) {
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
+    auto tmp_alloc_owner =
+        std::move(std::get<0>(arrays_metainfo_packing_triple_));
     const auto &copy_metadata_ev = std::get<2>(arrays_metainfo_packing_triple_);
+    const py::ssize_t *temp_allocation_ptr = tmp_alloc_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
-    py::ssize_t *reduction_shape_stride =
+    const py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+    const py::ssize_t *reduction_shape_stride =
         temp_allocation_ptr + 3 * simplified_iteration_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -491,14 +489,8 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
            reduction_nd, // number dimensions being reduced
            reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(reduction_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl_free_noexcept(temp_allocation_ptr, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {reduction_ev}, tmp_alloc_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
@@ -750,7 +742,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
 
     std::vector<sycl::event> host_task_events{};
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &arrays_metainfo_packing_triple_ =
+    auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events,
             // iteration metadata
@@ -758,15 +750,12 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
             simplified_iteration_dst_strides,
             // reduction metadata
             simplified_reduction_shape, simplified_reduction_src_strides);
-    py::ssize_t *temp_allocation_ptr =
-        std::get<0>(arrays_metainfo_packing_triple_);
-    if (temp_allocation_ptr == nullptr) {
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
+    auto tmp_owner = std::move(std::get<0>(arrays_metainfo_packing_triple_));
     const auto &copy_metadata_ev = std::get<2>(arrays_metainfo_packing_triple_);
+    const py::ssize_t *temp_allocation_ptr = tmp_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
-    py::ssize_t *reduction_shape_stride =
+    const py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+    const py::ssize_t *reduction_shape_stride =
         temp_allocation_ptr + 3 * simplified_iteration_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -782,14 +771,8 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
            reduction_nd, // number dimensions being reduced
            reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(reduction_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl_free_noexcept(temp_allocation_ptr, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {reduction_ev}, tmp_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
@@ -1032,7 +1015,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
 
-    const auto &arrays_metainfo_packing_triple_ =
+    auto arrays_metainfo_packing_triple_ =
         device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events,
             // iteration metadata
@@ -1040,15 +1023,12 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
             simplified_iteration_dst_strides,
             // reduction metadata
             compact_reduction_shape, compact_reduction_src_strides);
-    py::ssize_t *temp_allocation_ptr =
-        std::get<0>(arrays_metainfo_packing_triple_);
-    if (temp_allocation_ptr == nullptr) {
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
+    auto tmp_owner = std::move(std::get<0>(arrays_metainfo_packing_triple_));
     const auto &copy_metadata_ev = std::get<2>(arrays_metainfo_packing_triple_);
+    const py::ssize_t *temp_allocation_ptr = tmp_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
-    py::ssize_t *reduction_shape_stride =
+    const py::ssize_t *iter_shape_and_strides = temp_allocation_ptr;
+    const py::ssize_t *reduction_shape_stride =
         temp_allocation_ptr + 3 * simplified_iteration_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -1063,14 +1043,8 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
                       reduction_nd, // number dimensions being reduced
                       reduction_shape_stride, reduction_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(comp_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, temp_allocation_ptr] {
-            sycl_free_noexcept(temp_allocation_ptr, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {comp_ev}, tmp_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
@@ -1301,21 +1275,20 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
     auto fn = strided_dispatch_vector[src_typeid];
 
     std::vector<sycl::event> host_task_events{};
-    const auto &iter_red_metadata_packing_triple_ =
+    auto iter_red_metadata_packing_triple_ =
         dpctl::tensor::offset_utils::device_allocate_and_pack<py::ssize_t>(
             exec_q, host_task_events, simplified_iter_shape,
             simplified_iter_src_strides, simplified_iter_dst_strides,
             simplified_red_shape, simplified_red_src_strides);
-    py::ssize_t *packed_shapes_and_strides =
-        std::get<0>(iter_red_metadata_packing_triple_);
-    if (packed_shapes_and_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate memory on device");
-    }
+    auto packed_shapes_strides_owner =
+        std::move(std::get<0>(iter_red_metadata_packing_triple_));
     const auto &copy_metadata_ev =
         std::get<2>(iter_red_metadata_packing_triple_);
+    const py::ssize_t *packed_shapes_and_strides =
+        packed_shapes_strides_owner.get();
 
-    py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
-    py::ssize_t *red_shape_stride =
+    const py::ssize_t *iter_shape_and_strides = packed_shapes_and_strides;
+    const py::ssize_t *red_shape_stride =
         packed_shapes_and_strides + 3 * simplified_iter_shape.size();
 
     std::vector<sycl::event> all_deps;
@@ -1329,14 +1302,8 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
            iter_shape_and_strides, iter_src_offset, iter_dst_offset,
            simplified_red_nd, red_shape_stride, red_src_offset, all_deps);
 
-    sycl::event temp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(red_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([ctx, packed_shapes_and_strides] {
-            sycl_free_noexcept(packed_shapes_and_strides, ctx);
-        });
-    });
+    sycl::event temp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {red_ev}, packed_shapes_strides_owner);
     host_task_events.push_back(temp_cleanup_ev);
 
     sycl::event keep_args_event =
