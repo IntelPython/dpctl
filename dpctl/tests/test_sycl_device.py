@@ -265,3 +265,35 @@ def test_cpython_api_SyclDevice_Make():
 
     d2 = make_d_fn(d.addressof_ref())
     assert d == d2
+
+
+def test_get_device_id_method():
+    """
+    Test that the get_device_id method reconstructs the same device.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        dev_id = d.get_device_id()
+        d_r = dpctl.SyclDevice(str(dev_id))
+        assert dev_id == devices.index(d)
+        assert d == d_r
+        assert hash(d) == hash(d_r)
+
+
+def test_sub_devices_disallow_device_id():
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    try:
+        sdevs = dev.create_sub_devices(partition="next_partitionable")
+    except dpctl.SyclSubDeviceCreationError:
+        sdevs = None
+    try:
+        if sdevs is None:
+            sdevs = dev.create_sub_devices(partition=[1, 1])
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip("Default device can not be partitioned")
+    assert isinstance(sdevs, list) and len(sdevs) > 0
+    with pytest.raises(TypeError):
+        sdevs[0].get_device_id()
