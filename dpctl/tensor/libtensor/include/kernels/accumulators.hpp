@@ -1233,7 +1233,8 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     copy_e.wait();
     std::size_t return_val = static_cast<std::size_t>(*last_elem_host_usm);
 
-    // free USM host allocation
+    // explicitly free USM host allocation, by envoking deleter of
+    // the unique_ptr
     host_usm_owner.reset(nullptr);
 
     return return_val;
@@ -1347,7 +1348,8 @@ cumsum_val_strided_impl(sycl::queue &q,
     copy_e.wait();
     std::size_t return_val = static_cast<std::size_t>(*last_elem_host_usm);
 
-    // free USM-host temporary
+    // explicitly free USM-host temporary, by envoking deleter of
+    // the unique_ptr
     host_usm_owner.reset(nullptr);
 
     return return_val;
