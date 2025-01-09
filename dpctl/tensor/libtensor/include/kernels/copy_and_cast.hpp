@@ -551,7 +551,7 @@ typedef void (*copy_and_cast_from_host_blocking_fn_ptr_t)(
     sycl::queue &,
     std::size_t,
     int,
-    ssize_t *,
+    const ssize_t *,
     const char *,
     ssize_t,
     ssize_t,
@@ -604,7 +604,7 @@ void copy_and_cast_from_host_impl(
     sycl::queue &q,
     std::size_t nelems,
     int nd,
-    ssize_t *shape_and_strides,
+    const ssize_t *shape_and_strides,
     const char *host_src_p,
     ssize_t src_offset,
     ssize_t src_min_nelem_offset,
@@ -797,12 +797,12 @@ public:
 // define function type
 typedef sycl::event (*copy_for_reshape_fn_ptr_t)(
     sycl::queue &,
-    std::size_t,  // num_elements
-    int,          // src_nd
-    int,          // dst_nd
-    ssize_t *,    // packed shapes and strides
-    const char *, // src_data_ptr
-    char *,       // dst_data_ptr
+    std::size_t,     // num_elements
+    int,             // src_nd
+    int,             // dst_nd
+    const ssize_t *, // packed shapes and strides
+    const char *,    // src_data_ptr
+    char *,          // dst_data_ptr
     const std::vector<sycl::event> &);
 
 /*!
@@ -832,7 +832,7 @@ copy_for_reshape_generic_impl(sycl::queue &q,
                               std::size_t nelems,
                               int src_nd,
                               int dst_nd,
-                              ssize_t *packed_shapes_and_strides,
+                              const ssize_t *packed_shapes_and_strides,
                               const char *src_p,
                               char *dst_p,
                               const std::vector<sycl::event> &depends)
