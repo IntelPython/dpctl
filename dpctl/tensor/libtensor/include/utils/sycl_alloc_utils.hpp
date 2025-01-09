@@ -206,6 +206,10 @@ sycl::event async_smart_free(sycl::queue &exec_q,
             }
         });
     });
+
+    // Upon successful submission of host_task, USM allocations are owned
+    // by the host_task. Release smart pointer ownership to avoid double
+    // deallocation
     (unique_pointers.release(), ...);
 
     return ht_e;
