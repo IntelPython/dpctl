@@ -27,6 +27,8 @@
 
 #include "sorting/merge_argsort.hpp"
 #include "sorting/merge_sort.hpp"
+#include "sorting/radix_argsort.hpp"
+#include "sorting/radix_sort.hpp"
 #include "sorting/searchsorted.hpp"
 #include "sorting/topk.hpp"
 
@@ -37,5 +39,7 @@ PYBIND11_MODULE(_tensor_sorting_impl, m)
     dpctl::tensor::py_internal::init_merge_sort_functions(m);
     dpctl::tensor::py_internal::init_merge_argsort_functions(m);
     dpctl::tensor::py_internal::init_searchsorted_functions(m);
+    dpctl::tensor::py_internal::init_radix_sort_functions(m);
+    dpctl::tensor::py_internal::init_radix_argsort_functions(m);
     dpctl::tensor::py_internal::init_topk_functions(m);
 }

@@ -31,18 +31,19 @@
 #include <utility>
 #include <vector>
 
+#include <sycl/sycl.hpp>
+
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <sycl/sycl.hpp>
 
+#include "kernels/sorting/topk.hpp"
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
-#include "kernels/sorting/topk.hpp"
 #include "rich_comparisons.hpp"
 #include "topk.hpp"
 
