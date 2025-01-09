@@ -316,3 +316,17 @@ def test_gh_1468():
     a = dpt.full((2, 3, 4), 123456789, dtype=dpt.int32)
     t = dpt.sum(a, dtype="f4")
     assert t > 0
+
+
+@pytest.mark.parametrize(
+    "dt", ["i1", "i2", "i4", "i8", "f2", "f4", "f8", "c8", "c16"]
+)
+def test_gh_1944(dt):
+    "See https://github.com/IntelPython/dpctl/issues/1944"
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+    x = dpt.asarray([-1, 1], dtype=dpt.dtype(dt), sycl_queue=q)
+    r = dpt.sum(x, dtype="?")
+    # reduction must be performed in the requested dtype
+    # if performed in the input type, result is False
+    assert r
