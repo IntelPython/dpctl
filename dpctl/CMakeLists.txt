@@ -111,6 +111,8 @@ function(build_dpctl_ext _trgt _src _dest)
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
+        target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
+        target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel --offload-compress)
         if(_dpctl_sycl_targets)
             # make fat binary
             target_compile_options(
