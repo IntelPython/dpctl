@@ -206,7 +206,8 @@ usm_ndarray_triul(sycl::queue &exec_q,
         const auto &ctx = exec_q.get_context();
         using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [shp_host_shape_and_strides, dev_shape_and_strides, ctx]() {
+            [shp_host_shape_and_strides = std::move(shp_host_shape_and_strides),
+             dev_shape_and_strides, ctx]() {
                 // capture of shp_host_shape_and_strides ensure the underlying
                 // vector exists for the entire execution of copying kernel
                 sycl_free_noexcept(dev_shape_and_strides, ctx);
