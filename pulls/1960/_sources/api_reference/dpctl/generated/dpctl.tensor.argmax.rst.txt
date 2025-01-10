@@ -1,0 +1,6 @@
+﻿dpctl.tensor.argmax
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: argmax
