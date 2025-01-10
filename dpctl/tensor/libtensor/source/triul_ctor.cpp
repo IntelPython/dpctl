@@ -22,11 +22,14 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
-#include <cstddef>
-#include <stdexcept>
+#include <algorithm> // for std::copy
+#include <cstddef>   // for std::size_t
+#include <memory>    // for std::make_shared
+#include <stdexcept> // for std::runtime_error
+#include <utility>   // for std::pair, std::move
+#include <vector>    // for std::vector, std::begin, std::end
+
 #include <sycl/sycl.hpp>
-#include <utility>
-#include <vector>
 
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
