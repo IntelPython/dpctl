@@ -1759,6 +1759,8 @@ template <typename ValueT, typename IndexT> struct ValueProj
 
 template <typename IndexT, typename ValueT, typename ProjT> struct IndexedProj
 {
+    IndexedProj(const ValueT *arg_ptr) : ptr(arg_ptr), value_projector{} {}
+
     IndexedProj(const ValueT *arg_ptr, const ProjT &proj_op)
         : ptr(arg_ptr), value_projector(proj_op)
     {
@@ -1848,7 +1850,7 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
     using IdentityProjT = radix_sort_details::IdentityProj;
     using IndexedProjT =
         radix_sort_details::IndexedProj<IndexTy, argTy, IdentityProjT>;
-    const IndexedProjT proj_op{arg_tp, IdentityProjT{}};
+    const IndexedProjT proj_op{arg_tp};
 
     using IotaKernelName = radix_argsort_iota_krn<argTy, IndexTy>;
 

@@ -193,9 +193,12 @@ _populate_kernel_params(sycl::queue &exec_q,
                             device_orthog_sh_st_copy_ev,
                             device_ind_offsets_copy_ev,
                             device_ind_sh_st_copy_ev, device_ind_ptrs_copy_ev});
-            cgh.host_task([host_ind_offsets_shp, host_ind_sh_st_shp,
-                           host_ind_ptrs_shp, host_orthog_sh_st_shp,
-                           host_along_sh_st_shp]() {});
+            cgh.host_task(
+                [host_ind_offsets_shp = std::move(host_ind_offsets_shp),
+                 host_ind_sh_st_shp = std::move(host_ind_sh_st_shp),
+                 host_ind_ptrs_shp = std::move(host_ind_ptrs_shp),
+                 host_orthog_sh_st_shp = std::move(host_orthog_sh_st_shp),
+                 host_along_sh_st_shp = std::move(host_along_sh_st_shp)] {});
         });
     host_task_events.push_back(shared_ptr_cleanup_ev);
 
@@ -424,38 +427,24 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
-
-    if (packed_ind_ptrs == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_ptrs device memory");
-    }
+    auto packed_ind_ptrs_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<char *>(k, exec_q);
+    char **packed_ind_ptrs = packed_ind_ptrs_owner.get();
 
     // rearrange to past where indices shapes are checked
     // packed_ind_shapes_strides = [ind_shape,
     //                              ind[0] strides,
     //                              ...,
     //                              ind[k] strides]
+    auto packed_ind_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            (k + 1) * ind_sh_elems, exec_q);
     py::ssize_t *packed_ind_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
+        packed_ind_shapes_strides_owner.get();
 
-    if (packed_ind_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_shapes_strides device memory");
-    }
-
-    py::ssize_t *packed_ind_offsets =
-        sycl::malloc_device<py::ssize_t>(k, exec_q);
-
-    if (packed_ind_offsets == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_offsets device memory");
-    }
+    auto packed_ind_offsets_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(k, exec_q);
+    py::ssize_t *packed_ind_offsets = packed_ind_offsets_owner.get();
 
     int orthog_sh_elems = std::max<int>(src_nd - k, 1);
 
@@ -463,34 +452,20 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
     //                          src_strides[:axis] + src_strides[axis+k:],
     //                          dst_strides[:axis] +
     //                          dst_strides[axis+ind.ndim:]]
-    py::ssize_t *packed_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
-
-    if (packed_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_shapes_strides device memory");
-    }
+    auto packed_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            3 * orthog_sh_elems, exec_q);
+    py::ssize_t *packed_shapes_strides = packed_shapes_strides_owner.get();
 
     // packed_axes_shapes_strides = [src_shape[axis:axis+k],
     //                               src_strides[axis:axis+k],
     //                               dst_shape[axis:axis+ind.ndim],
     //                               dst_strides[axis:axis+ind.ndim]]
+    auto packed_axes_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            2 * (k + ind_sh_elems), exec_q);
     py::ssize_t *packed_axes_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(2 * (k + ind_sh_elems), exec_q);
-
-    if (packed_axes_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        sycl_free_noexcept(packed_shapes_strides, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_axes_shapes_strides device memory");
-    }
+        packed_axes_shapes_strides_owner.get();
 
     auto src_strides = src.get_strides_vector();
     auto dst_strides = dst.get_strides_vector();
@@ -515,12 +490,6 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
 
     if (fn == nullptr) {
         sycl::event::wait(host_task_events);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        sycl_free_noexcept(packed_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_axes_shapes_strides, exec_q);
         throw std::runtime_error("Indices must be integer type, got " +
                                  std::to_string(ind_type_id));
     }
@@ -532,21 +501,11 @@ usm_ndarray_take(const dpctl::tensor::usm_ndarray &src,
            src_offset, dst_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(take_generic_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
-                       packed_ind_shapes_strides, packed_ind_ptrs,
-                       packed_ind_offsets, ctx]() {
-            sycl_free_noexcept(packed_shapes_strides, ctx);
-            sycl_free_noexcept(packed_axes_shapes_strides, ctx);
-            sycl_free_noexcept(packed_ind_shapes_strides, ctx);
-            sycl_free_noexcept(packed_ind_ptrs, ctx);
-            sycl_free_noexcept(packed_ind_offsets, ctx);
-        });
-    });
-
+    sycl::event temporaries_cleanup_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {take_generic_ev}, packed_shapes_strides_owner,
+            packed_axes_shapes_strides_owner, packed_ind_shapes_strides_owner,
+            packed_ind_ptrs_owner, packed_ind_offsets_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =
@@ -738,37 +697,23 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    char **packed_ind_ptrs = sycl::malloc_device<char *>(k, exec_q);
-
-    if (packed_ind_ptrs == nullptr) {
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_ptrs device memory");
-    }
+    auto packed_ind_ptrs_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<char *>(k, exec_q);
+    char **packed_ind_ptrs = packed_ind_ptrs_owner.get();
 
     // packed_ind_shapes_strides = [ind_shape,
     //                              ind[0] strides,
     //                              ...,
     //                              ind[k] strides]
+    auto packed_ind_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            (k + 1) * ind_sh_elems, exec_q);
     py::ssize_t *packed_ind_shapes_strides =
-        sycl::malloc_device<py::ssize_t>((k + 1) * ind_sh_elems, exec_q);
+        packed_ind_shapes_strides_owner.get();
 
-    if (packed_ind_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_shapes_strides device memory");
-    }
-
-    py::ssize_t *packed_ind_offsets =
-        sycl::malloc_device<py::ssize_t>(k, exec_q);
-
-    if (packed_ind_offsets == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_ind_offsets device memory");
-    }
+    auto packed_ind_offsets_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(k, exec_q);
+    py::ssize_t *packed_ind_offsets = packed_ind_offsets_owner.get();
 
     int orthog_sh_elems = std::max<int>(dst_nd - k, 1);
 
@@ -776,34 +721,20 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
     //                          dst_strides[:axis] + dst_strides[axis+k:],
     //                          val_strides[:axis] +
     //                          val_strides[axis+ind.ndim:]]
-    py::ssize_t *packed_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(3 * orthog_sh_elems, exec_q);
-
-    if (packed_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_shapes_strides device memory");
-    }
+    auto packed_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            3 * orthog_sh_elems, exec_q);
+    py::ssize_t *packed_shapes_strides = packed_shapes_strides_owner.get();
 
     // packed_axes_shapes_strides = [dst_shape[axis:axis+k],
     //                               dst_strides[axis:axis+k],
     //                               val_shape[axis:axis+ind.ndim],
     //                               val_strides[axis:axis+ind.ndim]]
+    auto packed_axes_shapes_strides_owner =
+        dpctl::tensor::alloc_utils::smart_malloc_device<py::ssize_t>(
+            2 * (k + ind_sh_elems), exec_q);
     py::ssize_t *packed_axes_shapes_strides =
-        sycl::malloc_device<py::ssize_t>(2 * (k + ind_sh_elems), exec_q);
-
-    if (packed_axes_shapes_strides == nullptr) {
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        sycl_free_noexcept(packed_shapes_strides, exec_q);
-        throw std::runtime_error(
-            "Unable to allocate packed_axes_shapes_strides device memory");
-    }
+        packed_axes_shapes_strides_owner.get();
 
     auto dst_strides = dst.get_strides_vector();
     auto val_strides = val.get_strides_vector();
@@ -828,12 +759,6 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
 
     if (fn == nullptr) {
         sycl::event::wait(host_task_events);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(packed_ind_ptrs, exec_q);
-        sycl_free_noexcept(packed_ind_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_ind_offsets, exec_q);
-        sycl_free_noexcept(packed_shapes_strides, exec_q);
-        sycl_free_noexcept(packed_axes_shapes_strides, exec_q);
         throw std::runtime_error("Indices must be integer type, got " +
                                  std::to_string(ind_type_id));
     }
@@ -845,21 +770,11 @@ usm_ndarray_put(const dpctl::tensor::usm_ndarray &dst,
            dst_offset, val_offset, packed_ind_offsets, all_deps);
 
     // free packed temporaries
-    sycl::event temporaries_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(put_generic_ev);
-        const auto &ctx = exec_q.get_context();
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task([packed_shapes_strides, packed_axes_shapes_strides,
-                       packed_ind_shapes_strides, packed_ind_ptrs,
-                       packed_ind_offsets, ctx]() {
-            sycl_free_noexcept(packed_shapes_strides, ctx);
-            sycl_free_noexcept(packed_axes_shapes_strides, ctx);
-            sycl_free_noexcept(packed_ind_shapes_strides, ctx);
-            sycl_free_noexcept(packed_ind_ptrs, ctx);
-            sycl_free_noexcept(packed_ind_offsets, ctx);
-        });
-    });
-
+    sycl::event temporaries_cleanup_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {put_generic_ev}, packed_shapes_strides_owner,
+            packed_axes_shapes_strides_owner, packed_ind_shapes_strides_owner,
+            packed_ind_ptrs_owner, packed_ind_offsets_owner);
     host_task_events.push_back(temporaries_cleanup_ev);
 
     sycl::event arg_cleanup_ev =

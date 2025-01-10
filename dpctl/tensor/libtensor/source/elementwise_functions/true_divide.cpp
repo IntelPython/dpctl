@@ -28,7 +28,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
-#include <utility>
+#include <utility> // for std::ignore
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
@@ -379,12 +379,13 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_sz_event_triple_));
+    auto &copy_metadata_ev = std::get<2>(ptr_sz_event_triple_);
 
-    py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
-    const sycl::event &copy_metadata_ev = std::get<2>(ptr_sz_event_triple_);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -392,23 +393,13 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     std::copy(depends.begin(), depends.end(), all_deps.begin());
     all_deps.push_back(copy_metadata_ev);
 
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
-
     sycl::event div_ev =
         fn(exec_q, src_nelems, nd, shape_strides, src_data, src_offset,
            scalar_alloc, dst_data, dst_offset, all_deps);
 
     // async free of shape_strides temporary
-    auto ctx = exec_q.get_context();
-
-    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(div_ev);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {div_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 

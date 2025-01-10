@@ -261,29 +261,20 @@ usm_ndarray_full(const py::object &py_value,
         std::vector<sycl::event> host_task_events;
         host_task_events.reserve(2);
         using dpctl::tensor::offset_utils::device_allocate_and_pack;
-        const auto &ptr_size_event_tuple =
-            device_allocate_and_pack<py::ssize_t>(exec_q, host_task_events,
-                                                  dst_shape, dst_strides);
-        py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-        if (shape_strides == nullptr) {
-            throw std::runtime_error("Unable to allocate device memory");
-        }
+        auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+            exec_q, host_task_events, dst_shape, dst_strides);
+        auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
         const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+        py::ssize_t *shape_strides = shape_strides_owner.get();
 
         const sycl::event &full_strided_ev =
             fn(exec_q, nd, dst_nelems, shape_strides, py_value, dst_data,
                {copy_shape_ev});
 
         // free shape_strides
-        const auto &ctx = exec_q.get_context();
         const auto &temporaries_cleanup_ev =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(full_strided_ev);
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, shape_strides]() {
-                    sycl_free_noexcept(shape_strides, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {full_strided_ev}, shape_strides_owner);
         host_task_events.push_back(temporaries_cleanup_ev);
 
         return std::make_pair(keep_args_alive(exec_q, {dst}, host_task_events),

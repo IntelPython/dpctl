@@ -26,12 +26,13 @@
 
 #pragma once
 
-#include <cstddef>
-#include <exception>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <type_traits>
+#include <cstddef>     // for std::size_t
+#include <exception>   // for std::exception
+#include <iostream>    // for std::cerr
+#include <memory>      // for std::unique_ptr
+#include <stdexcept>   // for std::runtime_error
+#include <type_traits> // for std::true_type, std::false_type
+#include <utility>     // for std::move
 #include <vector>
 
 #include "sycl/sycl.hpp"
@@ -142,7 +143,7 @@ smart_malloc_host(std::size_t count,
     return smart_malloc<T>(count, q, sycl::usm::alloc::host, propList);
 }
 
-namespace
+namespace detail
 {
 template <typename T> struct valid_smart_ptr : public std::false_type
 {
@@ -172,39 +173,44 @@ struct all_valid_smart_ptrs<Arg, RestArgs...>
     static constexpr bool value = valid_smart_ptr<Arg>::value &&
                                   (all_valid_smart_ptrs<RestArgs...>::value);
 };
-} // namespace
+} // end of namespace detail
 
-template <typename... Args>
+/*! @brief Submit host_task and transfer ownership from smart pointers to it */
+template <typename... UniquePtrTs>
 sycl::event async_smart_free(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends,
-                             Args &&...args)
+                             UniquePtrTs &&...unique_pointers)
 {
-    constexpr std::size_t n = sizeof...(Args);
+    constexpr std::size_t n = sizeof...(UniquePtrTs);
     static_assert(
         n > 0, "async_smart_free requires at least one smart pointer argument");
 
     static_assert(
-        all_valid_smart_ptrs<Args...>::value,
+        detail::all_valid_smart_ptrs<UniquePtrTs...>::value,
         "async_smart_free requires unique_ptr created with smart_malloc");
 
     std::vector<void *> ptrs;
     ptrs.reserve(n);
-    (ptrs.push_back(reinterpret_cast<void *>(args.get())), ...);
+    (ptrs.push_back(reinterpret_cast<void *>(unique_pointers.get())), ...);
 
     std::vector<USMDeleter> dels;
     dels.reserve(n);
-    (dels.push_back(args.get_deleter()), ...);
+    (dels.emplace_back(unique_pointers.get_deleter()), ...);
 
     sycl::event ht_e = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.host_task([ptrs, dels]() {
+        cgh.host_task([ptrs = std::move(ptrs), dels = std::move(dels)]() {
             for (std::size_t i = 0; i < ptrs.size(); ++i) {
                 dels[i](ptrs[i]);
             }
         });
     });
-    (args.release(), ...);
+
+    // Upon successful submission of host_task, USM allocations are owned
+    // by the host_task. Release smart pointer ownership to avoid double
+    // deallocation
+    (unique_pointers.release(), ...);
 
     return ht_e;
 }

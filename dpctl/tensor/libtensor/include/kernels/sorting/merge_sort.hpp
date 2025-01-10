@@ -211,8 +211,6 @@ void merge_impl(const std::size_t offset,
     }
 }
 
-namespace
-{
 template <typename Iter, typename Compare>
 void insertion_sort_impl(Iter first,
                          const std::size_t begin,
@@ -259,7 +257,6 @@ void leaf_sort_impl(Iter first,
     return insertion_sort_impl<Iter, Compare>(
         std::move(first), std::move(begin), std::move(end), std::move(comp));
 }
-} // namespace
 
 template <typename Iter> struct GetValueType
 {
@@ -768,9 +765,9 @@ sycl::event stable_sort_axis1_contig_impl(
     }
 }
 
-template <typename T1, typename T2, typename T3> class populate_index_data_krn;
+template <typename T1, typename T2> class populate_index_data_krn;
 
-template <typename T1, typename T2, typename T3> class index_map_to_rows_krn;
+template <typename T1, typename T2> class index_map_to_rows_krn;
 
 template <typename IndexT, typename ValueT, typename ValueComp> struct IndexComp
 {
@@ -820,7 +817,7 @@ sycl::event stable_argsort_axis1_contig_impl(
 
     using dpctl::tensor::kernels::sort_utils_detail::iota_impl;
 
-    using IotaKernelName = populate_index_data_krn<argTy, IndexTy, ValueComp>;
+    using IotaKernelName = populate_index_data_krn<argTy, IndexTy>;
 
     sycl::event populate_indexed_data_ev = iota_impl<IotaKernelName, IndexTy>(
         exec_q, res_tp, total_nelems, depends);
@@ -838,7 +835,7 @@ sycl::event stable_argsort_axis1_contig_impl(
         exec_q, iter_nelems, sort_nelems, res_tp, index_comp, sorted_block_size,
         {base_sort_ev});
 
-    using MapBackKernelName = index_map_to_rows_krn<argTy, IndexTy, ValueComp>;
+    using MapBackKernelName = index_map_to_rows_krn<argTy, IndexTy>;
     using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
 
     sycl::event write_out_ev = map_back_impl<MapBackKernelName, IndexTy>(

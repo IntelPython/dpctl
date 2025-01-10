@@ -222,7 +222,7 @@ template <typename T1, typename T2> struct RemainderOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -240,7 +240,7 @@ struct RemainderContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -260,10 +260,10 @@ sycl::event remainder_contig_impl(sycl::queue &exec_q,
                                   ssize_t res_offset,
                                   const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        RemainderContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        RemainderContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using RemHS =
+        hyperparam_detail::RemainderContigHyperparameterSet<argTy1, argTy2>;
+    constexpr std::uint8_t vec_sz = RemHS::vec_sz;
+    constexpr std::uint8_t n_vecs = RemHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, RemainderOutputType, RemainderContigFunctor,
@@ -493,10 +493,10 @@ remainder_inplace_contig_impl(sycl::queue &exec_q,
                               ssize_t res_offset,
                               const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        RemainderContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        RemainderContigHyperparameterSet<resTy, argTy>::n_vecs;
+    using RemHS =
+        hyperparam_detail::RemainderContigHyperparameterSet<resTy, argTy>;
+    constexpr std::uint8_t vec_sz = RemHS::vec_sz;
+    constexpr std::uint8_t n_vecs = RemHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, RemainderInplaceContigFunctor,

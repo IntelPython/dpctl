@@ -102,7 +102,7 @@ template <typename T> struct AngleOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -119,7 +119,7 @@ template <typename argTy> struct AngleContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class angle_contig_kernel;
@@ -131,8 +131,9 @@ sycl::event angle_contig_impl(sycl::queue &exec_q,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = AngleContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vec = AngleContigHyperparameterSet<argTy>::n_vecs;
+    using AngleHS = hyperparam_detail::AngleContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = AngleHS::vec_sz;
+    constexpr std::uint8_t n_vec = AngleHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AngleOutputType, AngleContigFunctor, angle_contig_kernel, vec_sz,

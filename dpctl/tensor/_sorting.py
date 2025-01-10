@@ -25,16 +25,14 @@ from ._numpy_helper import normalize_axis_index
 from ._tensor_sorting_impl import (
     _argsort_ascending,
     _argsort_descending,
-    _sort_ascending,
-    _sort_descending,
-    _topk,
-)
-from ._tensor_sorting_radix_impl import (
     _radix_argsort_ascending,
     _radix_argsort_descending,
     _radix_sort_ascending,
     _radix_sort_descending,
     _radix_sort_dtype_supported,
+    _sort_ascending,
+    _sort_descending,
+    _topk,
 )
 
 __all__ = ["sort", "argsort"]

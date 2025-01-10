@@ -120,7 +120,7 @@ template <typename argTy> struct IsFiniteOutputType
     using value_type = bool;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -137,7 +137,7 @@ template <typename argTy> struct IsFiniteContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class isfinite_contig_kernel;
@@ -149,10 +149,10 @@ sycl::event isfinite_contig_impl(sycl::queue &exec_q,
                                  char *res_p,
                                  const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz =
-        IsFiniteContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs =
-        IsFiniteContigHyperparameterSet<argTy>::n_vecs;
+    using IsFiniteHS =
+        hyperparam_detail::IsFiniteContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = IsFiniteHS::vec_sz;
+    constexpr std::uint8_t n_vecs = IsFiniteHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, IsFiniteOutputType, IsFiniteContigFunctor,

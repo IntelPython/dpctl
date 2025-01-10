@@ -115,7 +115,7 @@ template <typename T> struct FloorOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -132,7 +132,7 @@ template <typename argTy> struct FloorContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename T1, typename T2, std::uint8_t vec_sz, std::uint8_t n_vecs>
 class floor_contig_kernel;
@@ -144,8 +144,9 @@ sycl::event floor_contig_impl(sycl::queue &exec_q,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t vec_sz = FloorContigHyperparameterSet<argTy>::vec_sz;
-    constexpr std::uint8_t n_vecs = FloorContigHyperparameterSet<argTy>::n_vecs;
+    using FloorHS = hyperparam_detail::FloorContigHyperparameterSet<argTy>;
+    constexpr std::uint8_t vec_sz = FloorHS::vec_sz;
+    constexpr std::uint8_t n_vecs = FloorHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, FloorOutputType, FloorContigFunctor, floor_contig_kernel, vec_sz,

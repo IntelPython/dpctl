@@ -1026,18 +1026,15 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            batches * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        // returns unique_ptr
+        auto partially_reduced_tmp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                batches * (reduction_groups + second_iter_reduction_groups_),
+                exec_q);
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * batches;
-        }
+        resTy *partially_reduced_tmp = partially_reduced_tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * batches;
 
         sycl::event first_reduction_ev;
         {
@@ -1152,16 +1149,10 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
                 remaining_reduction_nelems, reductions_per_wi, reduction_groups,
                 in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
+        // transfer ownership of USM allocation to host_task
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl_free_noexcept(partially_reduced_tmp, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, partially_reduced_tmp_owner);
 
         return cleanup_host_task_event;
     }
@@ -1282,18 +1273,15 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            batches * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
-
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * batches;
-        }
+        // unique_ptr that owns temporary allocation for partial reductions
+        auto partially_reduced_tmp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+                batches * (reduction_groups + second_iter_reduction_groups_),
+                exec_q);
+        // get raw pointers
+        resTy *partially_reduced_tmp = partially_reduced_tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * batches;
 
         sycl::event first_reduction_ev;
         {
@@ -1401,15 +1389,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl_free_noexcept(partially_reduced_tmp, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, partially_reduced_tmp_owner);
 
         return cleanup_host_task_event;
     }

@@ -196,14 +196,11 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                   : mask_positions_strided_i64_dispatch_vector[mask_typeid];
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, compact_shape, compact_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides == nullptr) {
-        sycl::event::wait(host_task_events);
-        throw std::runtime_error("Unexpected error");
-    }
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     if (2 * static_cast<std::size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         {
@@ -212,8 +209,8 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
             copy_shape_ev.wait();
             sycl::event::wait(host_task_events);
 
-            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-            sycl_free_noexcept(shape_strides, exec_q);
+            // ensure deleter of smart pointer is invoked with GIL released
+            shape_strides_owner.release();
         }
         throw std::runtime_error("Unexpected error");
     }
@@ -233,8 +230,8 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
                                cumsum_data, host_task_events, dependent_events);
 
         sycl::event::wait(host_task_events);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(shape_strides, exec_q);
+        // ensure deleter of smart pointer is invoked with GIL released
+        shape_strides_owner.release();
     }
 
     return total_set;
@@ -356,14 +353,11 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_tuple = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_task_events, compact_shape, compact_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_tuple);
-    if (shape_strides == nullptr) {
-        sycl::event::wait(host_task_events);
-        throw std::runtime_error("Unexpected error");
-    }
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_tuple));
     sycl::event copy_shape_ev = std::get<2>(ptr_size_event_tuple);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     if (2 * static_cast<std::size_t>(nd) != std::get<1>(ptr_size_event_tuple)) {
         {
@@ -371,9 +365,10 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
 
             copy_shape_ev.wait();
             sycl::event::wait(host_task_events);
+
+            // ensure USM deleter is called with GIL released
+            shape_strides_owner.release();
         }
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(shape_strides, exec_q);
         throw std::runtime_error("Unexpected error");
     }
 
@@ -391,8 +386,8 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
         py::gil_scoped_release release;
         sycl::event::wait(host_task_events);
 
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        sycl_free_noexcept(shape_strides, exec_q);
+        // ensure USM deleter is called with GIL released
+        shape_strides_owner.release();
     }
 
     return total;

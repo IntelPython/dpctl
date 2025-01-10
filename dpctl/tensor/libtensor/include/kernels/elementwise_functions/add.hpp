@@ -199,7 +199,7 @@ template <typename T1, typename T2> struct AddOutputType
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
 };
 
-namespace
+namespace hyperparam_detail
 {
 
 namespace vsu_ns = dpctl::tensor::kernels::vec_size_utils;
@@ -252,7 +252,7 @@ template <typename argTy1, typename argTy2> struct AddContigHyperparameterSet
     constexpr static auto n_vecs = value_type::n_vecs;
 };
 
-} // end of anonymous namespace
+} // end of namespace hyperparam_detail
 
 template <typename argT1,
           typename argT2,
@@ -272,8 +272,9 @@ sycl::event add_contig_impl(sycl::queue &exec_q,
                             ssize_t res_offset,
                             const std::vector<sycl::event> &depends = {})
 {
-    constexpr auto vec_sz = AddContigHyperparameterSet<argTy1, argTy2>::vec_sz;
-    constexpr auto n_vecs = AddContigHyperparameterSet<argTy1, argTy2>::n_vecs;
+    using AddHS = hyperparam_detail::AddContigHyperparameterSet<argTy1, argTy2>;
+    constexpr auto vec_sz = AddHS::vec_sz;
+    constexpr auto n_vecs = AddHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, AddOutputType, AddContigFunctor, add_contig_kernel,
@@ -550,8 +551,10 @@ add_inplace_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr auto vec_sz = AddContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr auto n_vecs = AddContigHyperparameterSet<resTy, argTy>::n_vecs;
+    constexpr auto vec_sz =
+        hyperparam_detail::AddContigHyperparameterSet<resTy, argTy>::vec_sz;
+    constexpr auto n_vecs =
+        hyperparam_detail::AddContigHyperparameterSet<resTy, argTy>::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, AddInplaceContigFunctor, add_inplace_contig_kernel,

@@ -1246,18 +1246,15 @@ sycl::event reduction_over_group_temps_strided_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
+        ;
 
         sycl::event first_reduction_ev;
         {
@@ -1376,15 +1373,8 @@ sycl::event reduction_over_group_temps_strided_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl_free_noexcept(partially_reduced_tmp, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
@@ -1503,18 +1493,13 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
-
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
 
         sycl::event first_reduction_ev;
         {
@@ -1618,15 +1603,8 @@ sycl::event reduction_axis1_over_group_temps_contig_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl_free_noexcept(partially_reduced_tmp, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
@@ -1744,18 +1722,15 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
+
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
 
         sycl::event first_reduction_ev;
         {
@@ -1860,15 +1835,8 @@ sycl::event reduction_axis0_over_group_temps_contig_impl(
             in_out_iter_indexer, reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                const sycl::context &ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task([ctx, partially_reduced_tmp] {
-                    sycl_free_noexcept(partially_reduced_tmp, ctx);
-                });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
@@ -2651,31 +2619,22 @@ sycl::event search_over_group_temps_strided_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
 
-        argTy *partially_reduced_vals_tmp = sycl::malloc_device<argTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        argTy *partially_reduced_vals_tmp2 = nullptr;
+        auto val_tmp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+                tmp_alloc_size, exec_q);
 
-        if (partially_reduced_vals_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_vals_tmp2 =
-                partially_reduced_vals_tmp + reduction_groups * iter_nelems;
-        }
+        argTy *partially_reduced_vals_tmp = val_tmp_owner.get();
+        argTy *partially_reduced_vals_tmp2 =
+            partially_reduced_vals_tmp + reduction_groups * iter_nelems;
 
         sycl::event first_reduction_ev;
         {
@@ -2799,17 +2758,8 @@ sycl::event search_over_group_temps_strided_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                sycl::context ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
-                    });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner, val_tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
@@ -2951,31 +2901,20 @@ sycl::event search_axis1_over_group_temps_contig_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
-
-        argTy *partially_reduced_vals_tmp = sycl::malloc_device<argTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        argTy *partially_reduced_vals_tmp2 = nullptr;
-
-        if (partially_reduced_vals_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_vals_tmp2 =
-                partially_reduced_vals_tmp + reduction_groups * iter_nelems;
-        }
+        auto val_tmp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+                tmp_alloc_size, exec_q);
+        argTy *partially_reduced_vals_tmp = val_tmp_owner.get();
+        argTy *partially_reduced_vals_tmp2 =
+            partially_reduced_vals_tmp + reduction_groups * iter_nelems;
 
         sycl::event first_reduction_ev;
         {
@@ -3090,17 +3029,8 @@ sycl::event search_axis1_over_group_temps_contig_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                sycl::context ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
-                    });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner, val_tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
@@ -3235,31 +3165,21 @@ sycl::event search_axis0_over_group_temps_contig_impl(
             (reduction_groups + preferred_reductions_per_wi * wg - 1) /
             (preferred_reductions_per_wi * wg);
 
-        resTy *partially_reduced_tmp = sycl::malloc_device<resTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        resTy *partially_reduced_tmp2 = nullptr;
+        const std::size_t tmp_alloc_size =
+            iter_nelems * (reduction_groups + second_iter_reduction_groups_);
+        auto tmp_owner = dpctl::tensor::alloc_utils::smart_malloc_device<resTy>(
+            tmp_alloc_size, exec_q);
 
-        if (partially_reduced_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_tmp2 =
-                partially_reduced_tmp + reduction_groups * iter_nelems;
-        }
+        resTy *partially_reduced_tmp = tmp_owner.get();
+        resTy *partially_reduced_tmp2 =
+            partially_reduced_tmp + reduction_groups * iter_nelems;
 
-        argTy *partially_reduced_vals_tmp = sycl::malloc_device<argTy>(
-            iter_nelems * (reduction_groups + second_iter_reduction_groups_),
-            exec_q);
-        argTy *partially_reduced_vals_tmp2 = nullptr;
-
-        if (partially_reduced_vals_tmp == nullptr) {
-            throw std::runtime_error("Unable to allocate device_memory");
-        }
-        else {
-            partially_reduced_vals_tmp2 =
-                partially_reduced_vals_tmp + reduction_groups * iter_nelems;
-        }
+        auto vals_tmp_owner =
+            dpctl::tensor::alloc_utils::smart_malloc_device<argTy>(
+                tmp_alloc_size, exec_q);
+        argTy *partially_reduced_vals_tmp = vals_tmp_owner.get();
+        argTy *partially_reduced_vals_tmp2 =
+            partially_reduced_vals_tmp + reduction_groups * iter_nelems;
 
         sycl::event first_reduction_ev;
         {
@@ -3375,17 +3295,8 @@ sycl::event search_axis0_over_group_temps_contig_impl(
                 reduction_indexer, {dependent_ev});
 
         sycl::event cleanup_host_task_event =
-            exec_q.submit([&](sycl::handler &cgh) {
-                cgh.depends_on(final_reduction_ev);
-                sycl::context ctx = exec_q.get_context();
-
-                using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-                cgh.host_task(
-                    [ctx, partially_reduced_tmp, partially_reduced_vals_tmp] {
-                        sycl_free_noexcept(partially_reduced_tmp, ctx);
-                        sycl_free_noexcept(partially_reduced_vals_tmp, ctx);
-                    });
-            });
+            dpctl::tensor::alloc_utils::async_smart_free(
+                exec_q, {final_reduction_ev}, tmp_owner, vals_tmp_owner);
 
         // FIXME: do not return host-task event
         //   Instead collect all host-tasks to a list
