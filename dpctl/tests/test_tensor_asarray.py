@@ -556,3 +556,70 @@ def test_as_f_contig_square(dt):
     x3 = dpt.flip(x, axis=1)
     y3 = dpt.asarray(x3, order="F")
     assert dpt.all(x3 == y3)
+
+
+class MockArrayWithBothProtocols:
+    """
+    Object that implements both __sycl_usm_array_interface__
+    and __usm_ndarray__ properties.
+    """
+
+    def __init__(self, usm_ar):
+        if not isinstance(usm_ar, dpt.usm_ndarray):
+            raise TypeError
+        self._arr = usm_ar
+
+    @property
+    def __usm_ndarray__(self):
+        return self._arr
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        return self._arr.__sycl_usm_array_interface__
+
+
+class MockArrayWithSUAIOnly:
+    """
+    Object that implements only the
+    __sycl_usm_array_interface__ property.
+    """
+
+    def __init__(self, usm_ar):
+        if not isinstance(usm_ar, dpt.usm_ndarray):
+            raise TypeError
+        self._arr = usm_ar
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        return self._arr.__sycl_usm_array_interface__
+
+
+@pytest.mark.parametrize("usm_type", ["shared", "device", "host"])
+def test_asarray_support_for_usm_ndarray_protocol(usm_type):
+    get_queue_or_skip()
+
+    x = dpt.arange(256, dtype="i4", usm_type=usm_type)
+
+    o1 = MockArrayWithBothProtocols(x)
+    o2 = MockArrayWithSUAIOnly(x)
+
+    y1 = dpt.asarray(o1)
+    assert x.sycl_queue == y1.sycl_queue
+    assert x.usm_type == y1.usm_type
+    assert x.dtype == y1.dtype
+    assert y1.usm_data.reference_obj is None
+    assert dpt.all(x == y1)
+
+    y2 = dpt.asarray(o2)
+    assert x.sycl_queue == y2.sycl_queue
+    assert x.usm_type == y2.usm_type
+    assert x.dtype == y2.dtype
+    assert not (y2.usm_data.reference_obj is None)
+    assert dpt.all(x == y2)
+
+    y3 = dpt.asarray([o1, o2])
+    assert x.sycl_queue == y3.sycl_queue
+    assert x.usm_type == y3.usm_type
+    assert x.dtype == y3.dtype
+    assert y3.usm_data.reference_obj is None
+    assert dpt.all(x[dpt.newaxis, :] == y3)
