@@ -22,11 +22,14 @@
 /// This file defines functions of dpctl.tensor._tensor_impl extensions
 //===--------------------------------------------------------------------===//
 
-#include <cstddef>
-#include <stdexcept>
+#include <algorithm> // for std::copy
+#include <cstddef>   // for std::size_t
+#include <memory>    // for std::make_shared
+#include <stdexcept> // for std::runtime_error
+#include <utility>   // for std::pair, std::move
+#include <vector>    // for std::vector, std::begin, std::end
+
 #include <sycl/sycl.hpp>
-#include <utility>
-#include <vector>
 
 #include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
@@ -206,7 +209,8 @@ usm_ndarray_triul(sycl::queue &exec_q,
         const auto &ctx = exec_q.get_context();
         using dpctl::tensor::alloc_utils::sycl_free_noexcept;
         cgh.host_task(
-            [shp_host_shape_and_strides, dev_shape_and_strides, ctx]() {
+            [shp_host_shape_and_strides = std::move(shp_host_shape_and_strides),
+             dev_shape_and_strides, ctx]() {
                 // capture of shp_host_shape_and_strides ensure the underlying
                 // vector exists for the entire execution of copying kernel
                 sycl_free_noexcept(dev_shape_and_strides, ctx);
