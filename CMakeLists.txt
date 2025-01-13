@@ -35,6 +35,7 @@ set(DPCTL_TARGET_HIP
     "Build DPCTL to target a HIP device architecture"
 )
 option(DPCTL_WITH_REDIST "Build DPCTL assuming DPC++ redistributable is installed into Python prefix" OFF)
+option(DPCTL_OFFLOAD_COMPRESS "Build using offload section compression feature of DPC++" OFF)
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 

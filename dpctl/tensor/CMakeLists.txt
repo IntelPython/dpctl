@@ -267,7 +267,11 @@ endforeach()
 set(_linker_options "LINKER:${DPCTL_LDFLAGS}")
 foreach(python_module_name ${_py_trgts})
     target_compile_options(${python_module_name} PRIVATE -fno-sycl-id-queries-fit-in-int)
-    target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel --offload-compress)
+    target_link_options(${python_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
+    if (DPCTL_OFFLOAD_COMPRESS)
+        target_link_options(${python_module_name} PRIVATE --offload-compress)
+    endif()
+
     target_include_directories(${python_module_name}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
