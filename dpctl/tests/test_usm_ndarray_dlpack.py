@@ -828,19 +828,19 @@ def test_generic_container():
     assert Z.device == X.device
 
 
-def test_sycldevice_to_dldevice(all_root_devices):
+def test_sycl_device_to_dldevice(all_root_devices):
     for sycl_dev in all_root_devices:
-        dev = dpt.sycldevice_to_dldevice(sycl_dev)
+        dev = dpt.sycl_device_to_dldevice(sycl_dev)
         assert type(dev) is tuple
         assert len(dev) == 2
         assert dev[0] == device_oneAPI
         assert dev[1] == all_root_devices.index(sycl_dev)
 
 
-def test_dldevice_to_sycldevice(all_root_devices):
+def test_dldevice_to_sycl_device(all_root_devices):
     for sycl_dev in all_root_devices:
         dldev = dpt.empty(0, device=sycl_dev).__dlpack_device__()
-        dev = dpt.dldevice_to_sycldevice(dldev)
+        dev = dpt.dldevice_to_sycl_device(dldev)
         assert type(dev) is dpctl.SyclDevice
         assert dev == all_root_devices[dldev[1]]
 
@@ -848,16 +848,16 @@ def test_dldevice_to_sycldevice(all_root_devices):
 def test_dldevice_conversion_arg_validation():
     bad_dldevice_type = (dpt.DLDeviceType.kDLCPU, 0)
     with pytest.raises(ValueError):
-        dpt.dldevice_to_sycldevice(bad_dldevice_type)
+        dpt.dldevice_to_sycl_device(bad_dldevice_type)
 
     bad_dldevice_len = bad_dldevice_type + (0,)
     with pytest.raises(ValueError):
-        dpt.dldevice_to_sycldevice(bad_dldevice_len)
+        dpt.dldevice_to_sycl_device(bad_dldevice_len)
 
     bad_dldevice = dict()
     with pytest.raises(TypeError):
-        dpt.dldevice_to_sycldevice(bad_dldevice)
+        dpt.dldevice_to_sycl_device(bad_dldevice)
 
     bad_sycldevice = dict()
     with pytest.raises(TypeError):
-        dpt.sycldevice_to_dldevice(bad_sycldevice)
+        dpt.sycl_device_to_dldevice(bad_sycldevice)

@@ -18,7 +18,7 @@ from .._sycl_device import SyclDevice
 from ._usmarray import DLDeviceType
 
 
-def dldevice_to_sycldevice(dl_dev: tuple):
+def dldevice_to_sycl_device(dl_dev: tuple):
     if isinstance(dl_dev, tuple):
         if len(dl_dev) != 2:
             raise ValueError("dldevice tuple must have length 2")
@@ -31,7 +31,7 @@ def dldevice_to_sycldevice(dl_dev: tuple):
     return SyclDevice(str(dl_dev[1]))
 
 
-def sycldevice_to_dldevice(dev: SyclDevice):
+def sycl_device_to_dldevice(dev: SyclDevice):
     if not isinstance(dev, SyclDevice):
         raise TypeError(
             "dev is expected to be a SyclDevice, got " f"{type(dev)}"
