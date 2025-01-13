@@ -1552,6 +1552,14 @@ cdef class usm_ndarray:
     def __repr__(self):
         return usm_ndarray_repr(self)
 
+    def __array__(self, dtype=None, copy=None):
+        "NumPy array protocol"
+        raise TypeError(
+            "Implicit conversion to a NumPy array is not allowed. "
+	    "Use `dpctl.tensor.asnumpy` to copy data from this "
+	    "`dpctl.tensor.usm_ndarray` instance to NumPy array"
+	)
+
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
     """
