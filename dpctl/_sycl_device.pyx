@@ -2044,6 +2044,23 @@ cdef class SyclDevice(_SyclDevice):
                     return str(relId)
 
     def get_device_id(self):
+        """ get_device_id()
+        For a parent device, returns the canonical index of this device in the
+        list of devices visible to dpctl.
+        Returns:
+            int:
+                The index of the device.
+        Raises:
+            ValueError:
+                If the device is a sub-device.
+        :Example:
+            .. code-block:: python
+                import dpctl
+                gpu_dev = dpctl.SyclDevice("gpu")
+                i = gpu_dev.get_device_id
+                devs = dpctl.get_devices()
+                assert devs[i] == gpu_dev
+        """
         cdef int dev_id = -1
 
         if self.parent_device:
