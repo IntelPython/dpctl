@@ -22,6 +22,8 @@ import pytest
 import dpctl
 import dpctl.memory
 
+import numpy as np
+
 
 def _create_memory(q):
     nbytes = 1024
@@ -95,6 +97,44 @@ def test_memcpy_copy_host_to_host():
     q.memcpy(dst_buf, src_buf, len(src_buf))
 
     assert dst_buf == src_buf
+
+
+def test_2D_memcpy_copy_host_to_usm():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    usm_obj = _create_memory(q)
+
+    n = 12
+    canary = bytearray([i for i in range(n)])
+    host_obj = np.frombuffer(canary, dtype=np.uint8).reshape(3, 4)
+
+    q.memcpy(usm_obj, host_obj, len(canary))
+
+    mv2 = memoryview(usm_obj)
+
+    assert mv2[: len(canary)] == canary
+
+
+def test_2D_memcpy_copy_usm_to_host():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    usm_obj = _create_memory(q)
+    mv2 = memoryview(usm_obj)
+
+    n = 12
+    shape = (3, 4)
+    for id in range(n):
+        mv2[id] = id
+
+    host_obj = np.ones(shape, dtype=np.uint8)
+
+    q.memcpy(host_obj, usm_obj, n)
+
+    assert np.array_equal(host_obj, np.arange(n, dtype=np.uint8).reshape(shape))
 
 
 def test_memcpy_async():
