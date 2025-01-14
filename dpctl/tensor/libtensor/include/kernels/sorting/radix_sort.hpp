@@ -1867,11 +1867,17 @@ radix_argsort_axis1_contig_impl(sycl::queue &exec_q,
     using MapBackKernelName = radix_argsort_index_write_out_krn<argTy, IndexTy>;
     using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
 
-    sycl::event map_back_ev = map_back_impl<MapBackKernelName, IndexTy>(
-        exec_q, total_nelems, res_tp, res_tp, sort_nelems, {radix_sort_ev});
+    sycl::event dep = radix_sort_ev;
+
+    // no need to perform map_back ( id % sort_nelems)
+    //   if total_nelems == sort_nelems
+    if (iter_nelems > 1u) {
+        dep = map_back_impl<MapBackKernelName, IndexTy>(
+            exec_q, total_nelems, res_tp, res_tp, sort_nelems, {dep});
+    }
 
     sycl::event cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
-        exec_q, {map_back_ev}, workspace_owner);
+        exec_q, {dep}, workspace_owner);
 
     return cleanup_ev;
 }
