@@ -2057,6 +2057,7 @@ cdef class SyclDevice(_SyclDevice):
 
         :Example:
             .. code-block:: python
+
                 import dpctl
                 gpu_dev = dpctl.SyclDevice("gpu")
                 i = gpu_dev.get_device_id
