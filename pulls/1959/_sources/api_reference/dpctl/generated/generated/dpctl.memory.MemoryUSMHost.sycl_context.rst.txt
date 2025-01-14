@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.sycl\_context
-========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMHost.sycl_context
