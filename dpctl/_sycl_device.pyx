@@ -283,7 +283,8 @@ cdef class SyclDevice(_SyclDevice):
 
     Args:
         arg (str, optional):
-            The argument can be a selector string or ``None``.
+            The argument can be a selector string, another
+            :class:`dpctl.SyclDevice`, or ``None``.
             Defaults to ``None``.
 
     Raises:
@@ -292,10 +293,8 @@ cdef class SyclDevice(_SyclDevice):
             temporary memory.
         SyclDeviceCreationError:
             If the :class:`dpctl.SyclDevice` object creation failed.
-        ValueError:
-            If the list of :class:`dpctl.SyclDevice` objects was empty,
-            or the input capsule contained a null pointer or could not
-            be renamed.
+        TypeError:
+            If the argument is not a :class:`dpctl.SyclDevice` or string.
     """
     @staticmethod
     cdef SyclDevice _create(DPCTLSyclDeviceRef dref):
@@ -365,7 +364,7 @@ cdef class SyclDevice(_SyclDevice):
         else:
             raise TypeError(
                 "Invalid argument. Argument should be a str object specifying "
-                "a SYCL filter selector string."
+                "a SYCL filter selector string or another SyclDevice."
             )
 
     def print_device_info(self):
