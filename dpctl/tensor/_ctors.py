@@ -61,6 +61,10 @@ def _array_info_dispatch(obj):
     if _is_object_with_buffer_protocol(obj):
         np_obj = np.array(obj)
         return np_obj.shape, np_obj.dtype, _host_set
+    if hasattr(obj, "__usm_ndarray__"):
+        usm_ar = getattr(obj, "__usm_ndarray__")
+        if isinstance(usm_ar, dpt.usm_ndarray):
+            return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
     if hasattr(obj, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(obj)
         return usm_ar.shape, usm_ar.dtype, frozenset([usm_ar.sycl_queue])
@@ -306,6 +310,11 @@ def _usm_types_walker(o, usm_types_list):
     if isinstance(o, dpt.usm_ndarray):
         usm_types_list.append(o.usm_type)
         return
+    if hasattr(o, "__usm_ndarray__"):
+        usm_arr = getattr(o, "__usm_ndarray__")
+        if isinstance(usm_arr, dpt.usm_ndarray):
+            usm_types_list.append(usm_arr.usm_type)
+            return
     if hasattr(o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(o)
         usm_types_list.append(usm_ar.usm_type)
@@ -330,6 +339,11 @@ def _device_copy_walker(seq_o, res, _manager):
         )
         _manager.add_event_pair(ht_ev, cpy_ev)
         return
+    if hasattr(seq_o, "__usm_ndarray__"):
+        usm_arr = getattr(seq_o, "__usm_ndarray__")
+        if isinstance(usm_arr, dpt.usm_ndarray):
+            _device_copy_walker(usm_arr, res, _manager)
+            return
     if hasattr(seq_o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(seq_o)
         exec_q = res.sycl_queue
@@ -361,6 +375,11 @@ def _copy_through_host_walker(seq_o, usm_res):
             return
         else:
             usm_res[...] = seq_o
+    if hasattr(seq_o, "__usm_ndarray__"):
+        usm_arr = getattr(seq_o, "__usm_ndarray__")
+        if isinstance(usm_arr, dpt.usm_ndarray):
+            _copy_through_host_walker(usm_arr, usm_res)
+            return
     if hasattr(seq_o, "__sycl_usm_array_interface__"):
         usm_ar = _usm_ndarray_from_suai(seq_o)
         if (
@@ -564,6 +583,17 @@ def asarray(
             sycl_queue=sycl_queue,
             order=order,
         )
+    if hasattr(obj, "__usm_ndarray__"):
+        usm_arr = getattr(obj, "__usm_ndarray__")
+        if isinstance(usm_arr, dpt.usm_ndarray):
+            return _asarray_from_usm_ndarray(
+                usm_arr,
+                dtype=dtype,
+                copy=copy,
+                usm_type=usm_type,
+                sycl_queue=sycl_queue,
+                order=order,
+            )
     if hasattr(obj, "__sycl_usm_array_interface__"):
         ary = _usm_ndarray_from_suai(obj)
         return _asarray_from_usm_ndarray(
