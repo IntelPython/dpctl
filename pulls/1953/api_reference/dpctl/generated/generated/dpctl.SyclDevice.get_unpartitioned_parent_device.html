@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.global_mem_cache_line_size" href="dpctl.SyclDevice.global_mem_cache_line_size.html" /><link rel="prev" title="dpctl.SyclDevice.driver_version" href="dpctl.SyclDevice.driver_version.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.print_device_info" href="dpctl.SyclDevice.print_device_info.html" /><link rel="prev" title="dpctl.SyclDevice.get_filter_string" href="dpctl.SyclDevice.get_filter_string.html" />
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.SyclDevice.filter_string - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
+        <title>dpctl.SyclDevice.get_unpartitioned_parent_device - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -236,13 +236,13 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_device_id.html">dpctl.SyclDevice.get_device_id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_filter_string.html">dpctl.SyclDevice.get_filter_string</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_unpartitioned_parent_device.html">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.print_device_info.html">dpctl.SyclDevice.print_device_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.backend.html">dpctl.SyclDevice.backend</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.default_selector_score.html">dpctl.SyclDevice.default_selector_score</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.device_type.html">dpctl.SyclDevice.device_type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.driver_version.html">dpctl.SyclDevice.driver_version</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.filter_string</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.filter_string.html">dpctl.SyclDevice.filter_string</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.global_mem_cache_line_size.html">dpctl.SyclDevice.global_mem_cache_line_size</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.global_mem_cache_size.html">dpctl.SyclDevice.global_mem_cache_size</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.global_mem_cache_type.html">dpctl.SyclDevice.global_mem_cache_type</a></li>
@@ -763,7 +763,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.filter_string.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_unpartitioned_parent_device.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -783,34 +783,20 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-sycldevice-filter-string">
-<h1>dpctl.SyclDevice.filter_string<a class="headerlink" href="#dpctl-sycldevice-filter-string" title="Permalink to this heading">¶</a></h1>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.filter_string">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">filter_string</span></span><a class="headerlink" href="#dpctl.SyclDevice.filter_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>For a root device, returns a fully specified filter selector
-string <code class="docutils literal notranslate"><span class="pre">&quot;backend:device_type:relative_id&quot;</span></code> selecting the device.</p>
-<dl class="field-list">
+          <section id="dpctl-sycldevice-get-unpartitioned-parent-device">
+<h1>dpctl.SyclDevice.get_unpartitioned_parent_device<a class="headerlink" href="#dpctl-sycldevice-get-unpartitioned-parent-device" title="Permalink to this heading">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.get_unpartitioned_parent_device">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_unpartitioned_parent_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_unpartitioned_parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the unpartitioned parent device of this device, or None for a
+root device.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A Python string representing a filter selector string.</p>
+<dd class="field-odd"><p>A parent, unpartitioned <a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance if
+the device is a sub-device, <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the device is a sub-device.</p>
-</dd>
-<dt class="field-even">Example<span class="colon">:</span></dt>
-<dd class="field-even"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
-
-<span class="c1"># Create a SyclDevice with an explicit filter string,</span>
-<span class="c1"># in this case the first level_zero gpu device.</span>
-<span class="n">level_zero_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;level_zero:gpu:0&quot;</span><span class="p">)</span>
-<span class="c1"># filter_string property should be &quot;level_zero:gpu:0&quot;</span>
-<span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">level_zero_gpu</span><span class="o">.</span><span class="n">filter_string</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">level_zero_gpu</span> <span class="o">==</span> <span class="n">dev</span>
-</pre></div>
-</div>
+<dd class="field-even"><p><a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -822,23 +808,23 @@ string <code class="docutils literal notranslate"><span class="pre">&quot;backen
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclDevice.global_mem_cache_line_size.html">
+          <a class="next-page" href="dpctl.SyclDevice.print_device_info.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclDevice.global_mem_cache_line_size</div>
+                <div class="title">dpctl.SyclDevice.print_device_info</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.SyclDevice.driver_version.html">
+          <a class="prev-page" href="dpctl.SyclDevice.get_filter_string.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.SyclDevice.driver_version</div>
+                <div class="title">dpctl.SyclDevice.get_filter_string</div>
                 
               </div>
             </a>
@@ -872,8 +858,8 @@ string <code class="docutils literal notranslate"><span class="pre">&quot;backen
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.SyclDevice.filter_string</a><ul>
-<li><a class="reference internal" href="#dpctl.SyclDevice.filter_string"><code class="docutils literal notranslate"><span class="pre">SyclDevice.filter_string</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.SyclDevice.get_unpartitioned_parent_device</a><ul>
+<li><a class="reference internal" href="#dpctl.SyclDevice.get_unpartitioned_parent_device"><code class="docutils literal notranslate"><span class="pre">SyclDevice.get_unpartitioned_parent_device()</span></code></a></li>
 </ul>
 </li>
 </ul>
