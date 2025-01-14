@@ -2042,6 +2042,30 @@ cdef class SyclDevice(_SyclDevice):
                 else:
                     return str(relId)
 
+    def get_unpartitioned_parent_device(self):
+        """ get_unpartitioned_parent_device(self)
+
+        Returns the unpartitioned parent device of this device, or None for a
+        root device.
+
+        Returns:
+            dpctl.SyclDevice:
+                A parent, unpartitioned :class:`dpctl.SyclDevice` instance if
+                the device is a sub-device, ``None`` otherwise.
+        """
+        cdef DPCTLSyclDeviceRef pDRef = NULL
+        cdef DPCTLSyclDeviceRef tDRef = NULL
+        pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
+        if pDRef is NULL:
+            return None
+        else:
+            tDRef = DPCTLDevice_GetParentDevice(pDRef)
+            while tDRef is not NULL:
+                DPCTLDevice_Delete(pDRef)
+                pDRef = tDRef
+                tDRef = DPCTLDevice_GetParentDevice(pDRef)
+            return SyclDevice._create(pDRef)
+
     def get_device_id(self):
         """ get_device_id()
         For an unpartitioned device, returns the canonical index of this device
