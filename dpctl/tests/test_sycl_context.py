@@ -263,7 +263,7 @@ def test_cpython_api_SyclContext_Make():
 
 def test_invalid_capsule():
     cap = create_invalid_capsule()
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         dpctl.SyclContext(cap)
 
 

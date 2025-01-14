@@ -61,12 +61,12 @@ def test_valid_filter_selectors(valid_filter, check):
 
 def test_invalid_filter_selectors(invalid_filter):
     """
-    An invalid filter string should always be caught and a ValueError raised.
+    An invalid filter string should always be caught and a TypeError raised.
     """
     exc = (
         SyclDeviceCreationError
         if isinstance(invalid_filter, str)
-        else ValueError
+        else TypeError
     )
     with pytest.raises(exc):
         dpctl.SyclDevice(invalid_filter)
@@ -295,5 +295,5 @@ def test_sub_devices_disallow_device_id():
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         sdevs[0].get_device_id()

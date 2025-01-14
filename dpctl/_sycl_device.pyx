@@ -292,7 +292,7 @@ cdef class SyclDevice(_SyclDevice):
             temporary memory.
         SyclDeviceCreationError:
             If the :class:`dpctl.SyclDevice` object creation failed.
-        TypeError:
+        ValueError:
             If the list of :class:`dpctl.SyclDevice` objects was empty,
             or the input capsule contained a null pointer or could not
             be renamed.
@@ -363,7 +363,7 @@ cdef class SyclDevice(_SyclDevice):
                     "Could not create a SyclDevice from default selector"
                 )
         else:
-            raise ValueError(
+            raise TypeError(
                 "Invalid argument. Argument should be a str object specifying "
                 "a SYCL filter selector string."
             )
@@ -1557,7 +1557,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int i
 
         if ncounts == 0:
-            raise TypeError(
+            raise ValueError(
                 "Non-empty object representing list of counts is expected."
             )
         counts_buff = <size_t *> malloc((<size_t> ncounts) * sizeof(size_t))
@@ -1659,7 +1659,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            TypeError:
+            ValueError:
                 If the ``partition`` keyword argument is not specified or
                 the affinity domain string is not legal or is not one of the
                 three supported options.
@@ -1695,7 +1695,7 @@ cdef class SyclDevice(_SyclDevice):
                     _partition_affinity_domain_type._next_partitionable
                 )
             else:
-                raise TypeError(
+                raise ValueError(
                     "Partition affinity domain {} is not understood.".format(
                         partition
                     )
@@ -1708,11 +1708,11 @@ cdef class SyclDevice(_SyclDevice):
         else:
             try:
                 partition = int(partition)
-                return self.create_sub_devices_equally(partition)
             except Exception as e:
                 raise TypeError(
                     "Unsupported type of sub-device argument"
                 ) from e
+            return self.create_sub_devices_equally(partition)
 
     @property
     def parent_device(self):
@@ -1877,7 +1877,7 @@ cdef class SyclDevice(_SyclDevice):
                 A Python string representing a filter selector string.
 
         Raises:
-            TypeError:
+            ValueError:
                 If the device is a sub-device.
 
         :Example:
@@ -1902,7 +1902,7 @@ cdef class SyclDevice(_SyclDevice):
         else:
             # this a sub-device, free it, and raise an exception
             DPCTLDevice_Delete(pDRef)
-            raise TypeError("This SyclDevice is not a root device")
+            raise ValueError("This SyclDevice is not a root device")
 
     cdef int get_backend_and_device_type_ordinal(self):
         """ If this device is a root ``sycl::device``, returns the ordinal
@@ -1983,9 +1983,9 @@ cdef class SyclDevice(_SyclDevice):
                 A Python string representing a filter selector string.
 
         Raises:
-            TypeError:
-                If the device is a sub-device.
             ValueError:
+                If the device is a sub-device.
+
                 If no match for the device was found in the vector
                 returned by ``sycl::device::get_devices()``
 
@@ -2024,7 +2024,7 @@ cdef class SyclDevice(_SyclDevice):
             else:
                 # this a sub-device, free it, and raise an exception
                 DPCTLDevice_Delete(pDRef)
-                raise TypeError("This SyclDevice is not a root device")
+                raise ValueError("This SyclDevice is not a root device")
         else:
             if include_backend:
                 BTy = DPCTLDevice_GetBackend(self._device_ref)
@@ -2047,7 +2047,7 @@ cdef class SyclDevice(_SyclDevice):
         cdef int dev_id = -1
 
         if self.parent_device:
-            raise TypeError("This SyclDevice is not a root device")
+            raise ValueError("This SyclDevice is not a root device")
 
         dev_id = self.get_overall_ordinal()
         if dev_id < 0:
