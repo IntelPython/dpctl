@@ -2044,14 +2044,17 @@ cdef class SyclDevice(_SyclDevice):
 
     def get_device_id(self):
         """ get_device_id()
-        For a parent device, returns the canonical index of this device in the
-        list of devices visible to dpctl.
+        For an unpartitioned device, returns the canonical index of this device
+        in the list of devices visible to dpctl.
+
         Returns:
             int:
                 The index of the device.
+
         Raises:
             ValueError:
                 If the device is a sub-device.
+
         :Example:
             .. code-block:: python
                 import dpctl
