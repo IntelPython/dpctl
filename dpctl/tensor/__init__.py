@@ -59,6 +59,10 @@ from dpctl.tensor._data_types import (
     uint64,
 )
 from dpctl.tensor._device import Device
+from dpctl.tensor._dldevice_conversions import (
+    dldevice_to_sycl_device,
+    sycl_device_to_dldevice,
+)
 from dpctl.tensor._dlpack import from_dlpack
 from dpctl.tensor._indexing_functions import (
     extract,
@@ -388,4 +392,6 @@ __all__ = [
     "take_along_axis",
     "put_along_axis",
     "top_k",
+    "dldevice_to_sycl_device",
+    "sycl_device_to_dldevice",
 ]

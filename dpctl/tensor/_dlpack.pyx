@@ -177,28 +177,6 @@ cdef object _get_default_context(c_dpctl.SyclDevice dev):
 
     return default_context
 
-
-cdef int get_parent_device_ordinal_id(c_dpctl.SyclDevice dev) except -1:
-    cdef DPCTLSyclDeviceRef pDRef = NULL
-    cdef DPCTLSyclDeviceRef tDRef = NULL
-    cdef c_dpctl.SyclDevice p_dev
-
-    pDRef = DPCTLDevice_GetParentDevice(dev.get_device_ref())
-    if pDRef is not NULL:
-        # if dev is a sub-device, find its parent
-        # and return its overall ordinal id
-        tDRef = DPCTLDevice_GetParentDevice(pDRef)
-        while tDRef is not NULL:
-            DPCTLDevice_Delete(pDRef)
-            pDRef = tDRef
-            tDRef = DPCTLDevice_GetParentDevice(pDRef)
-        p_dev = c_dpctl.SyclDevice._create(pDRef)
-        return p_dev.get_overall_ordinal()
-
-    # return overall ordinal id of argument device
-    return dev.get_overall_ordinal()
-
-
 cdef int get_array_dlpack_device_id(
     usm_ndarray usm_ary
 ) except -1:
@@ -224,14 +202,13 @@ cdef int get_array_dlpack_device_id(
                 "on non-partitioned SYCL devices on platforms where "
                 "default_context oneAPI extension is not supported."
             )
-        device_id = ary_sycl_device.get_overall_ordinal()
     else:
         if not usm_ary.sycl_context == default_context:
             raise DLPackCreationError(
                 "to_dlpack_capsule: DLPack can only export arrays based on USM "
                 "allocations bound to a default platform SYCL context"
             )
-        device_id = get_parent_device_ordinal_id(ary_sycl_device)
+    device_id = ary_sycl_device.get_device_id()
 
     if device_id < 0:
         raise DLPackCreationError(
@@ -1086,7 +1063,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
                 d = device.sycl_device
             else:
                 d = device
-            dl_device = (device_OneAPI, get_parent_device_ordinal_id(<c_dpctl.SyclDevice>d))
+            dl_device = (device_OneAPI, d.get_device_id())
     if dl_device is not None:
         if (dl_device[0] not in [device_OneAPI, device_CPU]):
             raise ValueError(

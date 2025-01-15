@@ -61,12 +61,12 @@ def test_valid_filter_selectors(valid_filter, check):
 
 def test_invalid_filter_selectors(invalid_filter):
     """
-    An invalid filter string should always be caught and a ValueError raised.
+    An invalid filter string should always be caught and a TypeError raised.
     """
     exc = (
         SyclDeviceCreationError
         if isinstance(invalid_filter, str)
-        else ValueError
+        else TypeError
     )
     with pytest.raises(exc):
         dpctl.SyclDevice(invalid_filter)
@@ -265,3 +265,48 @@ def test_cpython_api_SyclDevice_Make():
 
     d2 = make_d_fn(d.addressof_ref())
     assert d == d2
+
+
+def test_get_device_id_method():
+    """
+    Test that the get_device_id method reconstructs the same device.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        dev_id = d.get_device_id()
+        d_r = dpctl.SyclDevice(str(dev_id))
+        assert dev_id == devices.index(d)
+        assert d == d_r
+        assert hash(d) == hash(d_r)
+
+
+def test_get_unpartitioned_parent_device_method():
+    """
+    Test that the get_unpartitioned_parent method returns self for root
+    devices.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        assert d == d.get_unpartitioned_parent_device()
+
+
+def test_get_unpartitioned_parent_device_from_sub_device():
+    """
+    Test that the get_unpartitioned_parent method returns the parent device
+    from the sub-device.
+    """
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    try:
+        sdevs = dev.create_sub_devices(partition="next_partitionable")
+    except dpctl.SyclSubDeviceCreationError:
+        sdevs = None
+    try:
+        if sdevs is None:
+            sdevs = dev.create_sub_devices(partition=[1, 1])
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip("Default device can not be partitioned")
+    assert isinstance(sdevs, list) and len(sdevs) > 0
+    assert dev == sdevs[0].get_unpartitioned_parent_device()
