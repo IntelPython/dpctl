@@ -815,8 +815,9 @@ sycl::event stable_argsort_axis1_contig_impl(
         {base_sort_ev});
 
     // no need to map back if iter_nelems == 1
-    if (iter_nelems == 1u)
+    if (iter_nelems == 1u) {
         return merges_ev;
+    }
 
     using MapBackKernelName = index_map_to_rows_krn<argTy, IndexTy>;
     using dpctl::tensor::kernels::sort_utils_detail::map_back_impl;
