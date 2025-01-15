@@ -38,6 +38,7 @@
 #include "dot.hpp"
 #include "dot_atomic_support.hpp"
 #include "dot_dispatch.hpp"
+
 #include "elementwise_functions/elementwise_functions_type_utils.hpp"
 #include "kernels/linalg_functions/dot_product.hpp"
 #include "kernels/linalg_functions/gemm.hpp"
@@ -832,6 +833,512 @@ py::object py_dot_result_type(const py::dtype &input1_dtype,
     }
 }
 
+std::pair<sycl::event, sycl::event>
+py_dot_gemm_temps_impl(const dpctl::tensor::usm_ndarray &x1,
+                       const dpctl::tensor::usm_ndarray &x2,
+                       int batch_dims,
+                       int x1_outer_dims,
+                       int x2_outer_dims,
+                       int inner_dims,
+                       const dpctl::tensor::usm_ndarray &dst,
+                       sycl::queue &exec_q,
+                       const std::vector<sycl::event> &depends)
+{
+    if (!dpctl::utils::queues_are_compatible(exec_q, {x1, x2, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
+    if (inner_dims == 0) {
+        throw py::value_error("No inner dimension for dot");
+    }
+
+    int x1_nd = x1.get_ndim();
+    int x2_nd = x2.get_ndim();
+    if (x1_nd != (batch_dims + x1_outer_dims + inner_dims) ||
+        x2_nd != (batch_dims + x2_outer_dims + inner_dims))
+    {
+        throw py::value_error("Input arrays do not have dimensions consistent "
+                              "with input dimensions");
+    }
+
+    int dst_nd = dst.get_ndim();
+    if (dst_nd != (batch_dims + x1_outer_dims + x2_outer_dims)) {
+        throw py::value_error("Destination array rank does not match input "
+                              "array rank and number of input dimensions");
+    }
+
+    const py::ssize_t *x1_shape_ptr = x1.get_shape_raw();
+    const py::ssize_t *x2_shape_ptr = x2.get_shape_raw();
+    const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
+
+    bool same_shapes = true;
+    size_t batches(1);
+    for (int i = 0; same_shapes && (i < batch_dims); ++i) {
+        same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]) &&
+                      (x2_shape_ptr[i] == dst_shape_ptr[i]);
+        batches *= x1_shape_ptr[i];
+    }
+    size_t x1_outer_nelems(1);
+    for (int i = batch_dims; same_shapes && (i < (batch_dims + x1_outer_dims));
+         ++i)
+    {
+        same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]);
+        x1_outer_nelems *= x1_shape_ptr[i];
+    }
+    size_t inner_nelems(1);
+    for (int i = batch_dims; i < (batch_dims + inner_dims); ++i) {
+        auto x1_shape_idx = x1_outer_dims + i;
+        same_shapes =
+            same_shapes && (x1_shape_ptr[x1_shape_idx] == x2_shape_ptr[i]);
+        inner_nelems *= x1_shape_ptr[x1_shape_idx];
+    }
+    size_t x2_outer_nelems(1);
+    for (int i = 0; same_shapes && (i < x2_outer_dims); ++i) {
+        auto x2_shape_idx = batch_dims + inner_dims + i;
+        same_shapes =
+            same_shapes && (x2_shape_ptr[x2_shape_idx] ==
+                            dst_shape_ptr[batch_dims + x1_outer_dims + i]);
+        x2_outer_nelems *= x2_shape_ptr[x2_shape_idx];
+    }
+    if (!same_shapes) {
+        throw py::value_error("Input arrays to tensor dot product do not have "
+                              "appropriate shapes");
+    }
+
+    size_t dst_nelems = batches * x1_outer_nelems * x2_outer_nelems;
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    if (static_cast<size_t>(dst.get_size()) != dst_nelems) {
+        throw py::value_error("dst shape and size mismatch");
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    // check that dst does not intersect with x1 or x2
+    if (overlap(dst, x1) || overlap(dst, x2)) {
+        throw py::value_error("Result array overlaps with inputs");
+    }
+
+    int x1_typenum = x1.get_typenum();
+    int x2_typenum = x2.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    auto const &array_types = td_ns::usm_ndarray_types();
+    int x1_typeid = array_types.typenum_to_lookup_id(x1_typenum);
+    int x2_typeid = array_types.typenum_to_lookup_id(x2_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    int output_typeid = dot_output_id_table[x1_typeid][x2_typeid];
+
+    if (output_typeid != dst_typeid) {
+        throw py::value_error(
+            "Result array has unexpected elemental data type.");
+    }
+
+    void *data_ptr = dst.get_data();
+    const auto &ctx = exec_q.get_context();
+    auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
+    bool supports_atomics =
+        dot_atomic_support_vector[output_typeid](exec_q, usm_type);
+
+    const char *x1_data = x1.get_data();
+    const char *x2_data = x2.get_data();
+    char *dst_data = dst.get_data();
+
+    const auto &x1_shape_vec = x1.get_shape_vector();
+    const auto &x1_strides_vec = x1.get_strides_vector();
+
+    const auto &x2_shape_vec = x2.get_shape_vector();
+    const auto &x2_strides_vec = x2.get_strides_vector();
+
+    const auto &dst_shape_vec = dst.get_shape_vector();
+    const auto &dst_strides_vec = dst.get_strides_vector();
+
+    std::vector<sycl::event> host_task_events{};
+    sycl::event dot_ev;
+
+    using shT = std::vector<py::ssize_t>;
+    // temporary asserts for matmul
+    assert(x1_outer_dims == 1);
+    assert(x2_outer_dims == 1);
+    assert(inner_dims == 1);
+
+    auto x1_outer_inner_dims = x1_nd - batch_dims;
+    auto x2_outer_inner_dims = x2_nd - batch_dims;
+    auto dst_outer_inner_dims = dst_nd - batch_dims;
+
+    shT batch_x1_shape;
+    shT outer_inner_x1_shape;
+    shT batch_x1_strides;
+    shT outer_inner_x1_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        x1_shape_vec, x1_strides_vec, batch_dims,
+        batch_dims + x1_outer_inner_dims,
+        // 4 vectors modified
+        batch_x1_shape, outer_inner_x1_shape, batch_x1_strides,
+        outer_inner_x1_strides);
+
+    shT batch_x2_shape;
+    shT outer_inner_x2_shape;
+    shT batch_x2_strides;
+    shT outer_inner_x2_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        x2_shape_vec, x2_strides_vec, batch_dims,
+        batch_dims + x2_outer_inner_dims,
+        // 4 vectors modified
+        batch_x2_shape, outer_inner_x2_shape, batch_x2_strides,
+        outer_inner_x2_strides);
+
+    shT batch_dst_shape;
+    shT outer_inner_dst_shape;
+    shT batch_dst_strides;
+    shT outer_inner_dst_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        dst_shape_vec, dst_strides_vec, batch_dims,
+        batch_dims + dst_outer_inner_dims,
+        // 4 vectors modified
+        batch_dst_shape, outer_inner_dst_shape, batch_dst_strides,
+        outer_inner_dst_strides);
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_batch_shape;
+    shT simplified_batch_x1_strides;
+    shT simplified_batch_x2_strides;
+    shT simplified_batch_dst_strides;
+    py::ssize_t x1_batch_offset(0);
+    py::ssize_t x2_batch_offset(0);
+    py::ssize_t dst_batch_offset(0);
+
+    const py::ssize_t *shape = x1_shape_ptr;
+
+    using dpctl::tensor::py_internal::simplify_iteration_space_3;
+    simplify_iteration_space_3(
+        batch_dims, shape, batch_x1_strides, batch_x2_strides,
+        batch_dst_strides,
+        // outputs
+        simplified_batch_shape, simplified_batch_x1_strides,
+        simplified_batch_x2_strides, simplified_batch_dst_strides,
+        x1_batch_offset, x2_batch_offset, dst_batch_offset);
+
+    gemm_batch_impl_fn_ptr_t fn = nullptr;
+
+    fn = gemm_batch_temps_dispatch_table[x1_typeid][x2_typeid];
+    if (fn == nullptr) {
+        throw std::runtime_error("Implementation is missing for x1_typeid=" +
+                                 std::to_string(x1_typeid) +
+                                 " and x2_typeid=" + std::to_string(x2_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, simplified_batch_shape,
+        simplified_batch_x1_strides, simplified_batch_x2_strides,
+        simplified_batch_dst_strides, outer_inner_x1_shape,
+        outer_inner_x1_strides, outer_inner_x2_shape, outer_inner_x2_strides,
+        outer_inner_dst_shape, outer_inner_dst_strides,
+        // full shape and strides of the result array
+        // necessary for reduction and initialization
+        simplified_batch_shape, outer_inner_dst_shape,
+        simplified_batch_dst_strides, outer_inner_dst_strides);
+    auto packed_shape_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple1));
+    sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+    const py::ssize_t *packed_shapes_strides = packed_shape_strides_owner.get();
+
+    const auto batch_shape_strides = packed_shapes_strides;
+    const auto x1_outer_inner_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims;
+    const auto x2_outer_inner_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims);
+    const auto dst_outer_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims) +
+        2 * (x2_outer_inner_dims);
+    const auto dst_full_shape_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims) +
+        2 * (x2_outer_inner_dims) + 2 * (dst_outer_inner_dims);
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shapes_strides_ev);
+
+    dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches, x1_outer_nelems,
+                inner_nelems, x2_outer_nelems, batch_dims, batch_shape_strides,
+                x1_batch_offset, x2_batch_offset, dst_batch_offset, inner_dims,
+                x1_outer_dims, x1_outer_inner_shapes_strides, x2_outer_dims,
+                x2_outer_inner_shapes_strides, x1_outer_dims + x2_outer_dims,
+                dst_outer_shapes_strides, dst_full_shape_strides, all_deps);
+
+    sycl::event cleanup_tmp_allocations_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {dot_ev}, packed_shape_strides_owner);
+    host_task_events.push_back(cleanup_tmp_allocations_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(exec_q, {x1, x2, dst}, host_task_events),
+        dot_ev);
+}
+
+std::pair<sycl::event, sycl::event>
+py_dot_gemm_atomic_impl(const dpctl::tensor::usm_ndarray &x1,
+                        const dpctl::tensor::usm_ndarray &x2,
+                        int batch_dims,
+                        int x1_outer_dims,
+                        int x2_outer_dims,
+                        int inner_dims,
+                        const dpctl::tensor::usm_ndarray &dst,
+                        sycl::queue &exec_q,
+                        const std::vector<sycl::event> &depends)
+{
+    if (!dpctl::utils::queues_are_compatible(exec_q, {x1, x2, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
+    if (inner_dims == 0) {
+        throw py::value_error("No inner dimension for dot");
+    }
+
+    int x1_nd = x1.get_ndim();
+    int x2_nd = x2.get_ndim();
+    if (x1_nd != (batch_dims + x1_outer_dims + inner_dims) ||
+        x2_nd != (batch_dims + x2_outer_dims + inner_dims))
+    {
+        throw py::value_error("Input arrays do not have dimensions consistent "
+                              "with input dimensions");
+    }
+
+    int dst_nd = dst.get_ndim();
+    if (dst_nd != (batch_dims + x1_outer_dims + x2_outer_dims)) {
+        throw py::value_error("Destination array rank does not match input "
+                              "array rank and number of input dimensions");
+    }
+
+    const py::ssize_t *x1_shape_ptr = x1.get_shape_raw();
+    const py::ssize_t *x2_shape_ptr = x2.get_shape_raw();
+    const py::ssize_t *dst_shape_ptr = dst.get_shape_raw();
+
+    bool same_shapes = true;
+    size_t batches(1);
+    for (int i = 0; same_shapes && (i < batch_dims); ++i) {
+        same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]) &&
+                      (x2_shape_ptr[i] == dst_shape_ptr[i]);
+        batches *= x1_shape_ptr[i];
+    }
+    size_t x1_outer_nelems(1);
+    for (int i = batch_dims; same_shapes && (i < (batch_dims + x1_outer_dims));
+         ++i)
+    {
+        same_shapes = same_shapes && (x1_shape_ptr[i] == dst_shape_ptr[i]);
+        x1_outer_nelems *= x1_shape_ptr[i];
+    }
+    size_t inner_nelems(1);
+    for (int i = batch_dims; i < (batch_dims + inner_dims); ++i) {
+        auto x1_shape_idx = x1_outer_dims + i;
+        same_shapes =
+            same_shapes && (x1_shape_ptr[x1_shape_idx] == x2_shape_ptr[i]);
+        inner_nelems *= x1_shape_ptr[x1_shape_idx];
+    }
+    size_t x2_outer_nelems(1);
+    for (int i = 0; same_shapes && (i < x2_outer_dims); ++i) {
+        auto x2_shape_idx = batch_dims + inner_dims + i;
+        same_shapes =
+            same_shapes && (x2_shape_ptr[x2_shape_idx] ==
+                            dst_shape_ptr[batch_dims + x1_outer_dims + i]);
+        x2_outer_nelems *= x2_shape_ptr[x2_shape_idx];
+    }
+    if (!same_shapes) {
+        throw py::value_error("Input arrays to tensor dot product do not have "
+                              "appropriate shapes");
+    }
+
+    size_t dst_nelems = batches * x1_outer_nelems * x2_outer_nelems;
+    if (dst_nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    if (static_cast<size_t>(dst.get_size()) != dst_nelems) {
+        throw py::value_error("dst shape and size mismatch");
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, dst_nelems);
+
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    // check that dst does not intersect with x1 or x2
+    if (overlap(dst, x1) || overlap(dst, x2)) {
+        throw py::value_error("Result array overlaps with inputs");
+    }
+
+    int x1_typenum = x1.get_typenum();
+    int x2_typenum = x2.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    auto const &array_types = td_ns::usm_ndarray_types();
+    int x1_typeid = array_types.typenum_to_lookup_id(x1_typenum);
+    int x2_typeid = array_types.typenum_to_lookup_id(x2_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    int output_typeid = dot_output_id_table[x1_typeid][x2_typeid];
+
+    if (output_typeid != dst_typeid) {
+        throw py::value_error(
+            "Result array has unexpected elemental data type.");
+    }
+
+    void *data_ptr = dst.get_data();
+    const auto &ctx = exec_q.get_context();
+    auto usm_type = sycl::get_pointer_type(data_ptr, ctx);
+    bool supports_atomics =
+        dot_atomic_support_vector[output_typeid](exec_q, usm_type);
+
+    const char *x1_data = x1.get_data();
+    const char *x2_data = x2.get_data();
+    char *dst_data = dst.get_data();
+
+    const auto &x1_shape_vec = x1.get_shape_vector();
+    const auto &x1_strides_vec = x1.get_strides_vector();
+
+    const auto &x2_shape_vec = x2.get_shape_vector();
+    const auto &x2_strides_vec = x2.get_strides_vector();
+
+    const auto &dst_shape_vec = dst.get_shape_vector();
+    const auto &dst_strides_vec = dst.get_strides_vector();
+
+    std::vector<sycl::event> host_task_events{};
+    sycl::event dot_ev;
+
+    using shT = std::vector<py::ssize_t>;
+    // temporary asserts for matmul
+    assert(x1_outer_dims == 1);
+    assert(x2_outer_dims == 1);
+    assert(inner_dims == 1);
+
+    auto x1_outer_inner_dims = x1_nd - batch_dims;
+    auto x2_outer_inner_dims = x2_nd - batch_dims;
+    auto dst_outer_inner_dims = dst_nd - batch_dims;
+
+    shT batch_x1_shape;
+    shT outer_inner_x1_shape;
+    shT batch_x1_strides;
+    shT outer_inner_x1_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        x1_shape_vec, x1_strides_vec, batch_dims,
+        batch_dims + x1_outer_inner_dims,
+        // 4 vectors modified
+        batch_x1_shape, outer_inner_x1_shape, batch_x1_strides,
+        outer_inner_x1_strides);
+
+    shT batch_x2_shape;
+    shT outer_inner_x2_shape;
+    shT batch_x2_strides;
+    shT outer_inner_x2_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        x2_shape_vec, x2_strides_vec, batch_dims,
+        batch_dims + x2_outer_inner_dims,
+        // 4 vectors modified
+        batch_x2_shape, outer_inner_x2_shape, batch_x2_strides,
+        outer_inner_x2_strides);
+
+    shT batch_dst_shape;
+    shT outer_inner_dst_shape;
+    shT batch_dst_strides;
+    shT outer_inner_dst_strides;
+    dpctl::tensor::py_internal::split_iteration_space(
+        dst_shape_vec, dst_strides_vec, batch_dims,
+        batch_dims + dst_outer_inner_dims,
+        // 4 vectors modified
+        batch_dst_shape, outer_inner_dst_shape, batch_dst_strides,
+        outer_inner_dst_strides);
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_batch_shape;
+    shT simplified_batch_x1_strides;
+    shT simplified_batch_x2_strides;
+    shT simplified_batch_dst_strides;
+    py::ssize_t x1_batch_offset(0);
+    py::ssize_t x2_batch_offset(0);
+    py::ssize_t dst_batch_offset(0);
+
+    const py::ssize_t *shape = x1_shape_ptr;
+
+    using dpctl::tensor::py_internal::simplify_iteration_space_3;
+    simplify_iteration_space_3(
+        batch_dims, shape, batch_x1_strides, batch_x2_strides,
+        batch_dst_strides,
+        // outputs
+        simplified_batch_shape, simplified_batch_x1_strides,
+        simplified_batch_x2_strides, simplified_batch_dst_strides,
+        x1_batch_offset, x2_batch_offset, dst_batch_offset);
+
+    gemm_batch_impl_fn_ptr_t fn = nullptr;
+    if (supports_atomics) {
+        fn = gemm_batch_atomic_dispatch_table[x1_typeid][x2_typeid];
+    }
+    if (fn == nullptr) {
+        throw std::runtime_error("Implementation is missing for x1_typeid=" +
+                                 std::to_string(x1_typeid) +
+                                 " and x2_typeid=" + std::to_string(x2_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+    auto ptr_size_event_tuple1 = device_allocate_and_pack<py::ssize_t>(
+        exec_q, host_task_events, simplified_batch_shape,
+        simplified_batch_x1_strides, simplified_batch_x2_strides,
+        simplified_batch_dst_strides, outer_inner_x1_shape,
+        outer_inner_x1_strides, outer_inner_x2_shape, outer_inner_x2_strides,
+        outer_inner_dst_shape, outer_inner_dst_strides,
+        // full shape and strides of the result array
+        // necessary for reduction and initialization
+        simplified_batch_shape, outer_inner_dst_shape,
+        simplified_batch_dst_strides, outer_inner_dst_strides);
+    auto packed_shapes_strides_owner =
+        std::move(std::get<0>(ptr_size_event_tuple1));
+    sycl::event copy_shapes_strides_ev = std::get<2>(ptr_size_event_tuple1);
+    const py::ssize_t *packed_shapes_strides =
+        packed_shapes_strides_owner.get();
+
+    const auto batch_shape_strides = packed_shapes_strides;
+    const auto x1_outer_inner_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims;
+    const auto x2_outer_inner_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims);
+    const auto dst_outer_shapes_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims) +
+        2 * (x2_outer_inner_dims);
+    const auto dst_full_shape_strides =
+        packed_shapes_strides + 4 * batch_dims + 2 * (x1_outer_inner_dims) +
+        2 * (x2_outer_inner_dims) + 2 * (dst_outer_inner_dims);
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shapes_strides_ev);
+
+    dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches, x1_outer_nelems,
+                inner_nelems, x2_outer_nelems, batch_dims, batch_shape_strides,
+                x1_batch_offset, x2_batch_offset, dst_batch_offset, inner_dims,
+                x1_outer_dims, x1_outer_inner_shapes_strides, x2_outer_dims,
+                x2_outer_inner_shapes_strides, x1_outer_dims + x2_outer_dims,
+                dst_outer_shapes_strides, dst_full_shape_strides, all_deps);
+
+    sycl::event cleanup_tmp_allocations_ev =
+        dpctl::tensor::alloc_utils::async_smart_free(
+            exec_q, {dot_ev}, packed_shapes_strides_owner);
+    host_task_events.push_back(cleanup_tmp_allocations_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(exec_q, {x1, x2, dst}, host_task_events),
+        dot_ev);
+}
+
 void init_dot(py::module_ m)
 {
     using dpctl::tensor::py_internal::init_dot_atomic_support_vector;
@@ -842,6 +1349,18 @@ void init_dot(py::module_ m)
     using dpctl::tensor::py_internal::py_dot;
     m.def("_dot", &py_dot, "", py::arg("x1"), py::arg("x2"),
           py::arg("batch_dims"), py::arg("x1_outer_dims"),
+          py::arg("x2_outer_dims"), py::arg("inner_dims"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    using dpctl::tensor::py_internal::py_dot_gemm_atomic_impl;
+    m.def("_dot_gemm_atomic_impl", &py_dot_gemm_atomic_impl, "", py::arg("x1"),
+          py::arg("x2"), py::arg("batch_dims"), py::arg("x1_outer_dims"),
+          py::arg("x2_outer_dims"), py::arg("inner_dims"), py::arg("dst"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
+
+    using dpctl::tensor::py_internal::py_dot_gemm_temps_impl;
+    m.def("_dot_gemm_temps_impl", &py_dot_gemm_temps_impl, "", py::arg("x1"),
+          py::arg("x2"), py::arg("batch_dims"), py::arg("x1_outer_dims"),
           py::arg("x2_outer_dims"), py::arg("inner_dims"), py::arg("dst"),
           py::arg("sycl_queue"), py::arg("depends") = py::list());
 
