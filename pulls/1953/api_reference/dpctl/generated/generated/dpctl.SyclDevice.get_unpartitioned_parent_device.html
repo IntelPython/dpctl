@@ -787,13 +787,14 @@
 <h1>dpctl.SyclDevice.get_unpartitioned_parent_device<a class="headerlink" href="#dpctl-sycldevice-get-unpartitioned-parent-device" title="Permalink to this heading">¶</a></h1>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpctl.SyclDevice.get_unpartitioned_parent_device">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_unpartitioned_parent_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_unpartitioned_parent_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the unpartitioned parent device of this device, or None for a
-root device.</p>
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">get_unpartitioned_parent_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.get_unpartitioned_parent_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the unpartitioned parent device of this device.</p>
+<p>If this device is already an unpartitioned, root device,
+the same device is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A parent, unpartitioned <a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance if
-the device is a sub-device, <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p>
+<dd class="field-odd"><p>A parent, unpartitioned <a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance, or
+<code class="docutils literal notranslate"><span class="pre">self</span></code> if already a root device.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice">dpctl.SyclDevice</a></p>
