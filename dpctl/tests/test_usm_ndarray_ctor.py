@@ -2659,3 +2659,12 @@ def test_setitem_copy_as_contig_alignment(dt):
     x[1:, ...] = vals
     assert dpt.all(x[0] == 0)
     assert dpt.all(x[1:, :] == vals)
+
+
+def test_asarray_property():
+    get_queue_or_skip()
+
+    x = dpt.ones(11, dtype="i4")
+
+    with pytest.raises(TypeError):
+        np.asarray(x)

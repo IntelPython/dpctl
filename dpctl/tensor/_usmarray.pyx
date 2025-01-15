@@ -1552,6 +1552,21 @@ cdef class usm_ndarray:
     def __repr__(self):
         return usm_ndarray_repr(self)
 
+    def __array__(self, dtype=None, /, *, copy=None):
+        """NumPy's array protocol method to disallow implicit conversion.
+
+	Without this definition, `numpy.asarray(usm_ar)` converts
+	usm_ndarray instance into NumPy array with data type `object`
+	and every element being 0d usm_ndarray.
+
+        https://github.com/IntelPython/dpctl/pull/1384#issuecomment-1707212972
+	"""
+        raise TypeError(
+            "Implicit conversion to a NumPy array is not allowed. "
+	    "Use `dpctl.tensor.asnumpy` to copy data from this "
+	    "`dpctl.tensor.usm_ndarray` instance to NumPy array"
+	)
+
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
     """

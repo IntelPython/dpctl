@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improved performance of `tensor.cumulative_sum`, `tensor.cumulative_prod`, `tensor.cumulative_logsumexp` as well as performance of boolean indexing [gh-1923](https://github.com/IntelPython/dpctl/pull/1923)
 * Improved performance of `tensor.min`, `tensor.max`, `tensor.logsumexp`, `tensor.reduce_hypot` for floating point type arrays by at least 2x [gh-1932](https://github.com/IntelPython/dpctl/pull/1932)
 * Extended `tensor.asarray` to support objects that implement `__usm_ndarray__` property to be interpreted as `usm_ndarray` objects [gh-1959](https://github.com/IntelPython/dpctl/pull/1959)
+* `dpctl.tensor.usm_ndarray` object disallows implicit conversions to NumPy array [gh-1964](https://github.com/IntelPython/dpctl/pull/1964)
 
 ### Fixed
 
