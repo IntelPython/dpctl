@@ -47,8 +47,6 @@ cpdef object to_dlpack_versioned_capsule(usm_ndarray array, bint copied) except 
 cpdef object numpy_to_dlpack_versioned_capsule(ndarray array, bint copied) except +
 cpdef object from_dlpack_capsule(object dltensor) except +
 
-cdef int get_parent_device_ordinal_id(SyclDevice dev) except *
-
 cdef class DLPackCreationError(Exception):
     """
     A DLPackCreateError exception is raised when constructing

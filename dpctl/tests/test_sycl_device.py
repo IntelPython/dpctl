@@ -280,7 +280,21 @@ def test_get_device_id_method():
         assert hash(d) == hash(d_r)
 
 
-def test_sub_devices_disallow_device_id():
+def test_get_unpartitioned_parent_device_method():
+    """
+    Test that the get_unpartitioned_parent method returns self for root
+    devices.
+    """
+    devices = dpctl.get_devices()
+    for d in devices:
+        assert d == d.get_unpartitioned_parent_device()
+
+
+def test_get_unpartitioned_parent_device_from_sub_device():
+    """
+    Test that the get_unpartitioned_parent method returns the parent device
+    from the sub-device.
+    """
     try:
         dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
@@ -295,5 +309,4 @@ def test_sub_devices_disallow_device_id():
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
-    with pytest.raises(ValueError):
-        sdevs[0].get_device_id()
+    assert dev == sdevs[0].get_unpartitioned_parent_device()

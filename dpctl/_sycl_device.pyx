@@ -2043,21 +2043,23 @@ cdef class SyclDevice(_SyclDevice):
                     return str(relId)
 
     def get_unpartitioned_parent_device(self):
-        """ get_unpartitioned_parent_device(self)
+        """ get_unpartitioned_parent_device()
 
-        Returns the unpartitioned parent device of this device, or None for a
-        root device.
+        Returns the unpartitioned parent device of this device.
+
+        If this device is already an unpartitioned, root device,
+        the same device is returned.
 
         Returns:
             dpctl.SyclDevice:
-                A parent, unpartitioned :class:`dpctl.SyclDevice` instance if
-                the device is a sub-device, ``None`` otherwise.
+                A parent, unpartitioned :class:`dpctl.SyclDevice` instance, or
+                ``self`` if already a root device.
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
         cdef DPCTLSyclDeviceRef tDRef = NULL
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
         if pDRef is NULL:
-            return None
+            return self
         else:
             tDRef = DPCTLDevice_GetParentDevice(pDRef)
             while tDRef is not NULL:
@@ -2077,7 +2079,7 @@ cdef class SyclDevice(_SyclDevice):
 
         Raises:
             ValueError:
-                If the device is a sub-device.
+                If the device could not be found.
 
         :Example:
             .. code-block:: python
@@ -2089,13 +2091,12 @@ cdef class SyclDevice(_SyclDevice):
                 assert devs[i] == gpu_dev
         """
         cdef int dev_id = -1
+        cdef SyclDevice dev
 
-        if self.parent_device:
-            raise ValueError("This SyclDevice is not a root device")
-
-        dev_id = self.get_overall_ordinal()
+        dev = self.get_unpartitioned_parent_device()
+        dev_id = dev.get_overall_ordinal()
         if dev_id < 0:
-            raise ValueError
+            raise ValueError("device could not be found")
         return dev_id
 
 

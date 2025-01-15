@@ -1304,16 +1304,16 @@ cdef class usm_ndarray:
             DLPackCreationError:
                 when the ``device_id`` could not be determined.
         """
-        cdef int dev_id = c_dlpack.get_parent_device_ordinal_id(<c_dpctl.SyclDevice>self.sycl_device)
-        if dev_id < 0:
+        try:
+            dev_id = self.sycl_device.get_device_id()
+        except ValueError as e:
             raise c_dlpack.DLPackCreationError(
                 "Could not determine id of the device where array was allocated."
             )
-        else:
-            return (
-                DLDeviceType.kDLOneAPI,
-                dev_id,
-            )
+        return (
+            DLDeviceType.kDLOneAPI,
+            dev_id,
+        )
 
     def __eq__(self, other):
         return dpctl.tensor.equal(self, other)
