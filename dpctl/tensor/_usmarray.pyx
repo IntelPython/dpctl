@@ -981,8 +981,8 @@ cdef class usm_ndarray:
         res.flags_ = _copy_writable(res.flags_, self.flags_)
         return res
 
-    def to_device(self, target_device, stream=None):
-        """ to_device(target_device)
+    def to_device(self, target_device, /, *, stream=None):
+        """ to_device(target_device, /, *, stream=None)
 
         Transfers this array to specified target device.
 
