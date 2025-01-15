@@ -544,7 +544,7 @@ def test_clip_errors():
     ar1 = dpt.ones(2, dtype="i4")
     ar2 = dpt.ones_like(ar1, dtype="i4")
     ar3 = dpt.ones_like(ar1, dtype="i4")
-    ar4 = np.empty_like(ar1)
+    ar4 = np.empty(ar1.shape, dtype=ar1.dtype)
     assert_raises_regex(
         TypeError,
         "output array must be of usm_ndarray type",

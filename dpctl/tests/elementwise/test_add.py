@@ -306,7 +306,7 @@ def test_add_errors():
 
     ar1 = dpt.ones(2, dtype="float32")
     ar2 = dpt.ones_like(ar1, dtype="int32")
-    y = np.empty_like(ar1)
+    y = np.empty(ar1.shape, dtype=ar1.dtype)
     with pytest.raises(TypeError) as excinfo:
         dpt.add(ar1, ar2, out=y)
     assert "output array must be of usm_ndarray type" in str(excinfo.value)
