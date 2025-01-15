@@ -1025,10 +1025,14 @@ cdef class usm_ndarray:
         cdef c_dpmem._Memory arr_buf
         d = Device.create_device(target_device)
 
-        if (stream is None or not isinstance(stream, dpctl.SyclQueue) or
-            stream == self.sycl_queue):
+        if (stream is None or stream == self.sycl_queue):
             pass
         else:
+            if not isinstance(stream, dpctl.SyclQueue):
+                raise TypeError(
+                    "stream argument type was expected to be dpctl.SyclQueue,"
+                    f" got {type(stream)} instead"
+                )
             ev = self.sycl_queue.submit_barrier()
             stream.submit_barrier(dependent_events=[ev])
 
@@ -1203,10 +1207,15 @@ cdef class usm_ndarray:
             # legacy path for DLManagedTensor
             # copy kwarg ignored because copy flag can't be set
             _caps = c_dlpack.to_dlpack_capsule(self)
-            if (stream is None or type(stream) is not dpctl.SyclQueue or
-                stream == self.sycl_queue):
+            if (stream is None or stream == self.sycl_queue):
                 pass
             else:
+                if not isinstance(stream, dpctl.SyclQueue):
+                    raise TypeError(
+                        "stream keyword argument type is expected to "
+                        "be dpctl.SyclQueue, "
+                        f" got {type(stream)} instead"
+                    )
                 ev = self.sycl_queue.submit_barrier()
                 stream.submit_barrier(dependent_events=[ev])
             return _caps
@@ -1555,17 +1564,17 @@ cdef class usm_ndarray:
     def __array__(self, dtype=None, /, *, copy=None):
         """NumPy's array protocol method to disallow implicit conversion.
 
-	Without this definition, `numpy.asarray(usm_ar)` converts
-	usm_ndarray instance into NumPy array with data type `object`
-	and every element being 0d usm_ndarray.
+        Without this definition, `numpy.asarray(usm_ar)` converts
+        usm_ndarray instance into NumPy array with data type `object`
+        and every element being 0d usm_ndarray.
 
         https://github.com/IntelPython/dpctl/pull/1384#issuecomment-1707212972
-	"""
+        """
         raise TypeError(
             "Implicit conversion to a NumPy array is not allowed. "
-	    "Use `dpctl.tensor.asnumpy` to copy data from this "
-	    "`dpctl.tensor.usm_ndarray` instance to NumPy array"
-	)
+            "Use `dpctl.tensor.asnumpy` to copy data from this "
+            "`dpctl.tensor.usm_ndarray` instance to NumPy array"
+        )
 
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
