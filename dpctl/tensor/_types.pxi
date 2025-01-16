@@ -14,27 +14,25 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import numpy as np
-
-
 # these typenum values are aligned to values in NumPy
-cdef int UAR_BOOL = 0
-cdef int UAR_BYTE = 1
-cdef int UAR_UBYTE = 2
-cdef int UAR_SHORT = 3
-cdef int UAR_USHORT = 4
-cdef int UAR_INT = 5
-cdef int UAR_UINT = 6
-cdef int UAR_LONG = 7
-cdef int UAR_ULONG = 8
-cdef int UAR_LONGLONG = 9
-cdef int UAR_ULONGLONG = 10
-cdef int UAR_FLOAT = 11
-cdef int UAR_DOUBLE = 12
-cdef int UAR_CFLOAT = 14
-cdef int UAR_CDOUBLE = 15
-cdef int UAR_TYPE_SENTINEL = 17
-cdef int UAR_HALF = 23
+cdef:
+    int UAR_BOOL = 0     # pragma: no cover
+    int UAR_BYTE = 1     # pragma: no cover
+    int UAR_UBYTE = 2    # pragma: no cover
+    int UAR_SHORT = 3    # pragma: no cover
+    int UAR_USHORT = 4   # pragma: no cover
+    int UAR_INT = 5      # pragma: no cover
+    int UAR_UINT = 6     # pragma: no cover
+    int UAR_LONG = 7     # pragma: no cover
+    int UAR_ULONG = 8    # pragma: no cover
+    int UAR_LONGLONG = 9 # pragma: no cover
+    int UAR_ULONGLONG = 10 # pragma: no cover
+    int UAR_FLOAT = 11   # pragma: no cover
+    int UAR_DOUBLE = 12  # pragma: no cover
+    int UAR_CFLOAT = 14  # pragma: no cover
+    int UAR_CDOUBLE = 15 # pragma: no cover
+    int UAR_TYPE_SENTINEL = 17 # pragma: no cover
+    int UAR_HALF = 23    # pragma: no cover
 
 cdef int type_bytesize(int typenum):
     """
@@ -74,7 +72,7 @@ cdef int type_bytesize(int typenum):
         sizeof(float complex),
         sizeof(double complex), -1]
 
-    if typenum < 0:
+    if typenum < 0: # pragma: no cover
         return -1
     if typenum > 16:
         if typenum == 23:
@@ -92,12 +90,12 @@ cdef str _make_typestr(int typenum):
                         "|i", "|u", "|i", "|u", "|i", "|u",
                         "|f", "|f", "", "|c", "|c", ""]
 
-    if (typenum < 0):
+    if (typenum < 0): # pragma: no cover
         return ""
     if (typenum > 16):
         if (typenum == 23):
             return "|f2"
-        return ""
+        return ""  # pragma: no cover
 
     return type_to_str[typenum] + str(type_bytesize(typenum))
 
@@ -126,10 +124,10 @@ cdef int descr_to_typenum(object dtype):
     if (not isinstance(obj, list) or len(obj) != 1):
         return -1    # token for ValueError
     obj = obj[0]
-    if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]):
+    if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]): # pragma: no cover
         return -1
     obj = obj[1]
-    if not isinstance(obj, str):
+    if not isinstance(obj, str): # pragma: no cover
         return -1
     return typenum_from_format(obj)
 
@@ -146,9 +144,9 @@ cdef int dtype_to_typenum(dtype):
             dt = np.dtype(dtype)
         except TypeError:
             return -3
-        except Exception:
+        except Exception: # pragma: no cover
             return -1
         if hasattr(dt, 'descr'):
             return descr_to_typenum(dt)
-        else:
+        else:          # pragma: no cover
             return -3  # token for TypeError
