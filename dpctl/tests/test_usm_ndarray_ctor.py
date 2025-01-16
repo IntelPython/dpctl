@@ -1380,6 +1380,30 @@ def test_to_device():
             assert Y.sycl_device == dev
 
 
+def test_to_device_stream_validation():
+    try:
+        X = dpt.usm_ndarray(1, "f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    # invalid type of stream keyword
+    with pytest.raises(TypeError):
+        X.to_device(X.sycl_queue, stream=dict())
+    # stream is keyword-only arg
+    with pytest.raises(TypeError):
+        X.to_device(X.sycl_queue, X.sycl_queue)
+
+
+def test_to_device_stream_use():
+    try:
+        X = dpt.usm_ndarray(1, "f4")
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    q1 = dpctl.SyclQueue(
+        X.sycl_context, X.sycl_device, property="enable_profiling"
+    )
+    X.to_device(q1, stream=q1)
+
+
 def test_to_device_migration():
     q1 = get_queue_or_skip()  # two distinct copies of default-constructed queue
     q2 = get_queue_or_skip()
