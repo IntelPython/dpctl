@@ -151,6 +151,12 @@ def test_intel_device_info():
         assert test, err_msg
 
 
+def test_intel_device_info_validation():
+    invalid_device = dict()
+    with pytest.raises(TypeError):
+        dpctl.utils.intel_device_info(invalid_device)
+
+
 def test_order_manager():
     try:
         q = dpctl.SyclQueue()
