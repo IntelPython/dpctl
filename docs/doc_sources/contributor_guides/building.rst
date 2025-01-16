@@ -94,6 +94,7 @@ To build using Python ``setuptools`` and ``scikit-build``, install the following
 - ``cmake``
 - ``scikit-build``
 - ``ninja``
+- ``versioneer``
 - ``gtest`` (optional to run C API tests)
 - ``gmock`` (optional to run C API tests)
 - ``pytest`` (optional to run Python API tests)
