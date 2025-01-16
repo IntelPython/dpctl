@@ -18,14 +18,14 @@ import numpy as np
 
 _npver = np.lib.NumpyVersion(np.__version__)
 
-if _npver < "1.25.0":
+if _npver < "1.25.0":  # pragma: no cover
     from numpy import AxisError
 else:
     from numpy.exceptions import AxisError
 
 if _npver >= "2.0.0":
     from numpy._core.numeric import normalize_axis_index, normalize_axis_tuple
-else:
+else:  # pragma: no cover
     from numpy.core.numeric import normalize_axis_index, normalize_axis_tuple
 
 
