@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.get_filter_string" href="dpctl.SyclDevice.get_filter_string.html" /><link rel="prev" title="dpctl.SyclDevice.addressof_ref" href="dpctl.SyclDevice.addressof_ref.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.get_device_id" href="dpctl.SyclDevice.get_device_id.html" /><link rel="prev" title="dpctl.SyclDevice.addressof_ref" href="dpctl.SyclDevice.addressof_ref.html" />
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>dpctl.SyclDevice.create_sub_devices - Data Parallel Control (dpctl) 0.19.0dev0 documentation</title>
@@ -234,7 +234,9 @@
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.SyclDevice.html">dpctl.SyclDevice</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of dpctl.SyclDevice</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.create_sub_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_device_id.html">dpctl.SyclDevice.get_device_id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_filter_string.html">dpctl.SyclDevice.get_filter_string</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.get_unpartitioned_parent_device.html">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.print_device_info.html">dpctl.SyclDevice.print_device_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.backend.html">dpctl.SyclDevice.backend</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.default_selector_score.html">dpctl.SyclDevice.default_selector_score</a></li>
@@ -851,7 +853,7 @@ compute units is created.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">partition</span></code> keyword argument is not specified or
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">partition</span></code> keyword argument is not specified or
     the affinity domain string is not legal or is not one of the
     three supported options.</p></li>
 <li><p><strong>dpctl.SyclSubdeviceCreationError</strong> – If sub-devices can not be created.</p></li>
@@ -867,12 +869,12 @@ compute units is created.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclDevice.get_filter_string.html">
+          <a class="next-page" href="dpctl.SyclDevice.get_device_id.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclDevice.get_filter_string</div>
+                <div class="title">dpctl.SyclDevice.get_device_id</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
