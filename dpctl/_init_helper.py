@@ -24,7 +24,7 @@ is_venv_win32 = (
     and os.path.isfile(os.path.join(sys.exec_prefix, "pyvenv.cfg"))
 )
 
-if is_venv_win32:
+if is_venv_win32:  # pragma: no cover
     # For virtual environments on Windows, add folder
     # with DPC++ libraries to the DLL search path gh-1745
     dll_dir = os.path.join(sys.exec_prefix, "Library", "bin")

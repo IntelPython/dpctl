@@ -69,11 +69,11 @@ def intel_device_info(dev, /):
     if not isinstance(dev, SyclDevice):
         raise TypeError(f"Expected dpctl.SyclDevice, got {type(dev)}")
     dev_id = intel_device_info_device_id(dev)
-    if dev_id:
+    if dev_id:  # pragma: no cover
         res = {
             "device_id": dev_id,
         }
-        if dev.has_aspect_gpu:
+        if dev.has_aspect_gpu:  # pragma: no cover
             eu_count = intel_device_info_gpu_eu_count(dev)
             if eu_count:
                 res["gpu_eu_count"] = eu_count
