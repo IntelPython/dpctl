@@ -1,6 +1,0 @@
-﻿dpctl.tensor.stack
-==================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: stack
