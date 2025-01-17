@@ -848,11 +848,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">SyclDevice</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclDevice, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">dev_id</span> <span class="o">=</span> <span class="n">intel_device_info_device_id</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dev_id</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">dev_id</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;device_id&quot;</span><span class="p">:</span> <span class="n">dev_id</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_gpu</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_gpu</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">eu_count</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_count</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eu_count</span><span class="p">:</span>
                 <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eu_count</span>
