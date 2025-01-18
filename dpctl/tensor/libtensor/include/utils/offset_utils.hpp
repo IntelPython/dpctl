@@ -617,8 +617,8 @@ private:
 
 template <int nd> struct FixedDimStridedIndexer
 {
-    FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
-                           const std::array<ssize_t, nd> _strides,
+    FixedDimStridedIndexer(const std::array<ssize_t, nd> &_shape,
+                           const std::array<ssize_t, nd> &_strides,
                            ssize_t _offset)
         : _ind(_shape), strides(_strides), starting_offset(_offset)
     {
@@ -642,15 +642,15 @@ template <int nd> struct FixedDimStridedIndexer
 private:
     dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<ssize_t, nd> strides;
+    std::array<ssize_t, nd> strides;
     ssize_t starting_offset;
 };
 
 template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 {
-    TwoOffsets_FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
-                                      const std::array<ssize_t, nd> _strides1,
-                                      const std::array<ssize_t, nd> _strides2,
+    TwoOffsets_FixedDimStridedIndexer(const std::array<ssize_t, nd> &_shape,
+                                      const std::array<ssize_t, nd> &_strides1,
+                                      const std::array<ssize_t, nd> &_strides2,
                                       ssize_t _offset1,
                                       ssize_t _offset2)
         : _ind(_shape), strides1(_strides1), strides2(_strides2),
@@ -684,21 +684,22 @@ template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 private:
     dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<ssize_t, nd> strides1;
-    const std::array<ssize_t, nd> strides2;
+    std::array<ssize_t, nd> strides1;
+    std::array<ssize_t, nd> strides2;
     ssize_t starting_offset1;
     ssize_t starting_offset2;
 };
 
 template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
 {
-    ThreeOffsets_FixedDimStridedIndexer(const std::array<ssize_t, nd> _shape,
-                                        const std::array<ssize_t, nd> _strides1,
-                                        const std::array<ssize_t, nd> _strides2,
-                                        const std::array<ssize_t, nd> _strides3,
-                                        ssize_t _offset1,
-                                        ssize_t _offset2,
-                                        ssize_t _offset3)
+    ThreeOffsets_FixedDimStridedIndexer(
+        const std::array<ssize_t, nd> &_shape,
+        const std::array<ssize_t, nd> &_strides1,
+        const std::array<ssize_t, nd> &_strides2,
+        const std::array<ssize_t, nd> &_strides3,
+        ssize_t _offset1,
+        ssize_t _offset2,
+        ssize_t _offset3)
         : _ind(_shape), strides1(_strides1), strides2(_strides2),
           strides3(_strides3), starting_offset1(_offset1),
           starting_offset2(_offset2), starting_offset3(_offset3)
@@ -738,9 +739,9 @@ template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
 private:
     dpctl::tensor::strides::CIndexer_array<nd, ssize_t> _ind;
 
-    const std::array<ssize_t, nd> strides1;
-    const std::array<ssize_t, nd> strides2;
-    const std::array<ssize_t, nd> strides3;
+    std::array<ssize_t, nd> strides1;
+    std::array<ssize_t, nd> strides2;
+    std::array<ssize_t, nd> strides3;
     ssize_t starting_offset1;
     ssize_t starting_offset2;
     ssize_t starting_offset3;
