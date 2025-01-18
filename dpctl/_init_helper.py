@@ -32,3 +32,20 @@ if is_venv_win32:  # pragma: no cover
         os.add_dll_directory(dll_dir)
 
 del is_venv_win32
+
+is_linux = sys.platform.startswith("linux")
+
+if is_linux:
+    # forking is not supported by device drivers
+    # Configure subprocess (used by versioneer) to
+    # use SPAWN method over FORK method to enable
+    # use of gdb-oneapi to debug code launched by
+    # native extensions that used dpctl C/C++ API
+    import subprocess
+
+    subprocess._USE_VFORK = False
+    subprocess._USE_POSIX_SPAWN = True
+    # remove qualifier from this namespace
+    del subprocess
+
+del is_linux
