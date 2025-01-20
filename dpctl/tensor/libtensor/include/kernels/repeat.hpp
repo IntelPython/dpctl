@@ -68,10 +68,10 @@ private:
     const repT *reps = nullptr;
     const repT *cumsum = nullptr;
     std::size_t src_axis_nelems = 1;
-    const OrthogIndexer orthog_strider;
-    const SrcAxisIndexer src_axis_strider;
-    const DstAxisIndexer dst_axis_strider;
-    const RepIndexer reps_strider;
+    OrthogIndexer orthog_strider;
+    SrcAxisIndexer src_axis_strider;
+    DstAxisIndexer dst_axis_strider;
+    RepIndexer reps_strider;
 
 public:
     RepeatSequenceFunctor(const T *src_,
@@ -283,11 +283,11 @@ class RepeatScalarFunctor
 private:
     const T *src = nullptr;
     T *dst = nullptr;
-    const ssize_t reps = 1;
+    ssize_t reps = 1;
     std::size_t dst_axis_nelems = 0;
-    const OrthogIndexer orthog_strider;
-    const SrcAxisIndexer src_axis_strider;
-    const DstAxisIndexer dst_axis_strider;
+    OrthogIndexer orthog_strider;
+    SrcAxisIndexer src_axis_strider;
+    DstAxisIndexer dst_axis_strider;
 
 public:
     RepeatScalarFunctor(const T *src_,

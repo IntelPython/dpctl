@@ -260,8 +260,8 @@ template <typename Ty, typename IndexerT> class FullStridedFunctor
 {
 private:
     Ty *p = nullptr;
-    const Ty fill_v;
-    const IndexerT indexer;
+    Ty fill_v;
+    IndexerT indexer;
 
 public:
     FullStridedFunctor(Ty *p_, const Ty &fill_v_, const IndexerT &indexer_)

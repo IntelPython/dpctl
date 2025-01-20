@@ -116,15 +116,15 @@ private:
     const dataT *src = nullptr;
     const indT *cumsum = nullptr;
     dataT *dst = nullptr;
-    const std::size_t masked_nelems = 0;
+    std::size_t masked_nelems = 0;
     // has nd, shape, src_strides, dst_strides for
     // dimensions that ARE NOT masked
-    const OrthogIndexerT orthog_src_dst_indexer;
+    OrthogIndexerT orthog_src_dst_indexer;
     // has nd, shape, src_strides for
     // dimensions that ARE masked
-    const MaskedSrcIndexerT masked_src_indexer;
+    MaskedSrcIndexerT masked_src_indexer;
     // has 1, dst_strides for dimensions that ARE masked
-    const MaskedDstIndexerT masked_dst_indexer;
+    MaskedDstIndexerT masked_dst_indexer;
     LocalAccessorT lacc;
 };
 
@@ -198,15 +198,15 @@ private:
     dataT *dst = nullptr;
     const indT *cumsum = nullptr;
     const dataT *rhs = nullptr;
-    const std::size_t masked_nelems = 0;
+    std::size_t masked_nelems = 0;
     // has nd, shape, dst_strides, rhs_strides for
     // dimensions that ARE NOT masked
-    const OrthogIndexerT orthog_dst_rhs_indexer;
+    OrthogIndexerT orthog_dst_rhs_indexer;
     // has nd, shape, dst_strides for
     // dimensions that ARE masked
-    const MaskedDstIndexerT masked_dst_indexer;
+    MaskedDstIndexerT masked_dst_indexer;
     // has 1, rhs_strides for dimensions that ARE masked
-    const MaskedRhsIndexerT masked_rhs_indexer;
+    MaskedRhsIndexerT masked_rhs_indexer;
     LocalAccessorT lacc;
 };
 

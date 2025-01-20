@@ -57,10 +57,10 @@ private:
     const argTy *hay_tp;
     const argTy *needles_tp;
     indTy *positions_tp;
-    const std::size_t hay_nelems;
-    const HayIndexerT hay_indexer;
-    const NeedlesIndexerT needles_indexer;
-    const PositionsIndexerT positions_indexer;
+    std::size_t hay_nelems;
+    HayIndexerT hay_indexer;
+    NeedlesIndexerT needles_indexer;
+    PositionsIndexerT positions_indexer;
 
 public:
     SearchSortedFunctor(const argTy *hay_,
