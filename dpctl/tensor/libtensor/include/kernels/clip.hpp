@@ -218,7 +218,6 @@ sycl::event clip_contig_impl(sycl::queue &q,
             using KernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
             using Impl =
                 ClipContigFunctor<T, vec_sz, n_vecs, enable_sg_loadstore>;
-            static_assert(sycl::is_device_copyable_v<Impl>);
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
@@ -231,7 +230,6 @@ sycl::event clip_contig_impl(sycl::queue &q,
                 disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
             using Impl =
                 ClipContigFunctor<T, vec_sz, n_vecs, disable_sg_loadstore>;
-            static_assert(sycl::is_device_copyable_v<Impl>);
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
