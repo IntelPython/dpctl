@@ -61,9 +61,9 @@ private:
     int k_ = 0;
     std::size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
-    const OrthogIndexer orthog_strider;
-    const IndicesIndexer ind_strider;
-    const AxesIndexer axes_strider;
+    OrthogIndexer orthog_strider;
+    IndicesIndexer ind_strider;
+    AxesIndexer axes_strider;
 
 public:
     TakeFunctor(const char *src_cp,
@@ -207,9 +207,9 @@ private:
     int k_ = 0;
     std::size_t ind_nelems_ = 0;
     const ssize_t *axes_shape_and_strides_ = nullptr;
-    const OrthogIndexer orthog_strider;
-    const IndicesIndexer ind_strider;
-    const AxesIndexer axes_strider;
+    OrthogIndexer orthog_strider;
+    IndicesIndexer ind_strider;
+    AxesIndexer axes_strider;
 
 public:
     PutFunctor(char *dst_cp,

@@ -273,13 +273,13 @@ struct GetValueType<sycl::buffer<ElementType, Dim, AllocatorT>>
 
 template <typename Iter> struct GetReadOnlyAccess
 {
-    Iter operator()(Iter it, sycl::handler &) { return it; }
+    Iter operator()(const Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
 struct GetReadOnlyAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 {
-    auto operator()(sycl::buffer<ElementType, Dim, AllocatorT> buf,
+    auto operator()(const sycl::buffer<ElementType, Dim, AllocatorT> &buf,
                     sycl::handler &cgh)
     {
         sycl::accessor acc(buf, cgh, sycl::read_only);
@@ -295,7 +295,7 @@ template <typename Iter> struct GetWriteDiscardAccess
 template <typename ElementType, int Dim, typename AllocatorT>
 struct GetWriteDiscardAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 {
-    auto operator()(sycl::buffer<ElementType, Dim, AllocatorT> buf,
+    auto operator()(sycl::buffer<ElementType, Dim, AllocatorT> &buf,
                     sycl::handler &cgh)
     {
         sycl::accessor acc(buf, cgh, sycl::write_only, sycl::no_init);
@@ -305,13 +305,13 @@ struct GetWriteDiscardAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 
 template <typename Iter> struct GetReadWriteAccess
 {
-    Iter operator()(Iter it, sycl::handler &) { return it; }
+    Iter operator()(Iter &it, sycl::handler &) { return it; }
 };
 
 template <typename ElementType, int Dim, typename AllocatorT>
 struct GetReadWriteAccess<sycl::buffer<ElementType, Dim, AllocatorT>>
 {
-    auto operator()(sycl::buffer<ElementType, Dim, AllocatorT> buf,
+    auto operator()(sycl::buffer<ElementType, Dim, AllocatorT> &buf,
                     sycl::handler &cgh)
     {
         sycl::accessor acc(buf, cgh, sycl::read_write);

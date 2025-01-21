@@ -87,7 +87,7 @@ class GenericCopyFunctor
 private:
     const srcT *src_ = nullptr;
     dstT *dst_ = nullptr;
-    const IndexerT indexer_;
+    IndexerT indexer_;
 
 public:
     GenericCopyFunctor(const srcT *src_p, dstT *dst_p, const IndexerT &indexer)
@@ -219,7 +219,7 @@ template <typename srcT,
 class ContigCopyFunctor
 {
 private:
-    const std::size_t nelems;
+    std::size_t nelems;
     const srcT *src_p = nullptr;
     dstT *dst_p = nullptr;
 
@@ -524,9 +524,9 @@ template <typename AccessorT,
 class GenericCopyFromHostFunctor
 {
 private:
-    const AccessorT src_acc_;
+    AccessorT src_acc_;
     dstTy *dst_ = nullptr;
-    const IndexerT indexer_;
+    IndexerT indexer_;
 
 public:
     GenericCopyFromHostFunctor(const AccessorT &src_acc,
@@ -771,8 +771,8 @@ class GenericCopyForReshapeFunctor
 private:
     const Ty *src_p = nullptr;
     Ty *dst_p = nullptr;
-    const SrcIndexerT src_indexer_;
-    const DstIndexerT dst_indexer_;
+    SrcIndexerT src_indexer_;
+    DstIndexerT dst_indexer_;
 
 public:
     GenericCopyForReshapeFunctor(const char *src_ptr,
@@ -963,8 +963,8 @@ class StridedCopyForRollFunctor
 private:
     const Ty *src_p = nullptr;
     Ty *dst_p = nullptr;
-    const SrcIndexerT src_indexer_;
-    const DstIndexerT dst_indexer_;
+    SrcIndexerT src_indexer_;
+    DstIndexerT dst_indexer_;
 
 public:
     StridedCopyForRollFunctor(const Ty *src_ptr,

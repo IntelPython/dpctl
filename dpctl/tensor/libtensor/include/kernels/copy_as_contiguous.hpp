@@ -55,7 +55,7 @@ template <typename T,
 class CopyAsCContigFunctor
 {
 private:
-    const std::size_t nelems;
+    std::size_t nelems;
     const T *src_p = nullptr;
     T *dst_p = nullptr;
     IndexerT src_indexer;

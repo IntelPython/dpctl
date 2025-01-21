@@ -538,10 +538,10 @@ private:
     std::size_t n_wi = 0;
     std::size_t m = 0;
     std::size_t batch_nelems = 0;
-    const BatchDimsIndexerT batch_indexer;
-    const OuterInnerDimsIndexerT lhs_indexer;
-    const OuterInnerDimsIndexerT rhs_indexer;
-    const OuterInnerDimsIndexerT res_indexer;
+    BatchDimsIndexerT batch_indexer;
+    OuterInnerDimsIndexerT lhs_indexer;
+    OuterInnerDimsIndexerT rhs_indexer;
+    OuterInnerDimsIndexerT res_indexer;
 
 public:
     GemmBatchFunctorThreadK(const lhsT *lhs_,
@@ -907,10 +907,10 @@ private:
     std::uint32_t wg_delta_n = 0;
     std::uint32_t wg_delta_m = 0;
     std::uint32_t wi_delta_k = 0;
-    const BatchDimsIndexerT batch_indexer;
-    const LhsIndexerT lhs_indexer;
-    const RhsIndexerT rhs_indexer;
-    const ResIndexerT res_indexer;
+    BatchDimsIndexerT batch_indexer;
+    LhsIndexerT lhs_indexer;
+    RhsIndexerT rhs_indexer;
+    ResIndexerT res_indexer;
 
 public:
     /*! @brief */
@@ -1803,10 +1803,10 @@ private:
     std::size_t m_blocks = 0;
     std::size_t wg_delta_m = 0;
     std::size_t batch_nelems;
-    const BatchDimsIndexerT batch_indexer;
-    const OuterInnerDimsIndexerT lhs_indexer;
-    const OuterInnerDimsIndexerT rhs_indexer;
-    const ResIndexerT res_indexer;
+    BatchDimsIndexerT batch_indexer;
+    OuterInnerDimsIndexerT lhs_indexer;
+    OuterInnerDimsIndexerT rhs_indexer;
+    ResIndexerT res_indexer;
 
 public:
     GemmBatchNoAtomicFunctorThreadNM(const lhsT *lhs_,
@@ -2006,10 +2006,10 @@ private:
     std::size_t n_wi = 0;
     std::size_t m = 0;
     std::size_t batch_nelems = 0;
-    const BatchDimsIndexerT batch_indexer;
-    const OuterInnerDimsIndexerT lhs_indexer;
-    const OuterInnerDimsIndexerT rhs_indexer;
-    const ResIndexerT res_indexer;
+    BatchDimsIndexerT batch_indexer;
+    OuterInnerDimsIndexerT lhs_indexer;
+    OuterInnerDimsIndexerT rhs_indexer;
+    ResIndexerT res_indexer;
 
 public:
     GemmBatchNoAtomicFunctorThreadK(const lhsT *lhs_,

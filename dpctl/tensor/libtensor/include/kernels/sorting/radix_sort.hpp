@@ -526,11 +526,13 @@ struct peer_prefix_helper<OffsetT, peer_prefix_algo::atomic_fetch_or>
                                      sycl::access::address_space::local_space>;
     using TempStorageT = sycl::local_accessor<std::uint32_t, 1>;
 
-    const sycl::sub_group sgroup;
-    const std::uint32_t lid;
-    const std::uint32_t item_mask;
-    const AtomicT atomic_peer_mask;
+private:
+    sycl::sub_group sgroup;
+    std::uint32_t lid;
+    std::uint32_t item_mask;
+    AtomicT atomic_peer_mask;
 
+public:
     peer_prefix_helper(sycl::nd_item<1> ndit, TempStorageT lacc)
         : sgroup(ndit.get_sub_group()), lid(ndit.get_local_linear_id()),
           item_mask(n_ls_bits_set(lid)), atomic_peer_mask(lacc[0])
@@ -572,9 +574,11 @@ struct peer_prefix_helper<OffsetT, peer_prefix_algo::scan_then_broadcast>
     using ItemType = sycl::nd_item<1>;
     using SubGroupType = sycl::sub_group;
 
-    const SubGroupType sgroup;
-    const std::uint32_t sg_size;
+private:
+    SubGroupType sgroup;
+    std::uint32_t sg_size;
 
+public:
     peer_prefix_helper(sycl::nd_item<1> ndit, TempStorageT)
         : sgroup(ndit.get_sub_group()), sg_size(sgroup.get_local_range()[0])
     {
@@ -606,6 +610,10 @@ template <typename OffsetT>
 struct peer_prefix_helper<OffsetT, peer_prefix_algo::subgroup_ballot>
 {
 private:
+    sycl::sub_group sgroup;
+    std::uint32_t lid;
+    sycl::ext::oneapi::sub_group_mask item_sg_mask;
+
     sycl::ext::oneapi::sub_group_mask mask_builder(std::uint32_t mask,
                                                    std::uint32_t sg_size)
     {
@@ -615,10 +623,6 @@ private:
 
 public:
     using TempStorageT = empty_storage;
-
-    const sycl::sub_group sgroup;
-    const std::uint32_t lid;
-    const sycl::ext::oneapi::sub_group_mask item_sg_mask;
 
     peer_prefix_helper(sycl::nd_item<1> ndit, TempStorageT)
         : sgroup(ndit.get_sub_group()), lid(ndit.get_local_linear_id()),
@@ -1136,7 +1140,7 @@ private:
 
     template <typename KeyT> class TempBuf<KeyT, use_slm_tag>
     {
-        const std::size_t buf_size;
+        std::size_t buf_size;
 
     public:
         TempBuf(std::size_t, std::size_t n) : buf_size(n) {}
@@ -1151,7 +1155,7 @@ private:
     template <typename KeyT> class TempBuf<KeyT, use_global_mem_tag>
     {
         sycl::buffer<KeyT> buf;
-        const std::size_t iter_stride;
+        std::size_t iter_stride;
 
     public:
         TempBuf(std::size_t n_iters, std::size_t n)

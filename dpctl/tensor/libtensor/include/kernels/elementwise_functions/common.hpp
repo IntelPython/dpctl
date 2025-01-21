@@ -65,7 +65,7 @@ struct UnaryContigFunctor
 private:
     const argT *in = nullptr;
     resT *out = nullptr;
-    const std::size_t nelems_;
+    std::size_t nelems_;
 
 public:
     UnaryContigFunctor(const argT *inp, resT *res, const std::size_t n_elems)
@@ -245,7 +245,7 @@ struct UnaryStridedFunctor
 private:
     const argT *inp_ = nullptr;
     resT *res_ = nullptr;
-    const IndexerT inp_out_indexer_;
+    IndexerT inp_out_indexer_;
 
 public:
     UnaryStridedFunctor(const argT *inp_p,
@@ -397,7 +397,7 @@ private:
     const argT1 *in1 = nullptr;
     const argT2 *in2 = nullptr;
     resT *out = nullptr;
-    const std::size_t nelems_;
+    std::size_t nelems_;
 
 public:
     BinaryContigFunctor(const argT1 *inp1,
@@ -529,7 +529,7 @@ private:
     const argT1 *in1 = nullptr;
     const argT2 *in2 = nullptr;
     resT *out = nullptr;
-    const ThreeOffsets_IndexerT three_offsets_indexer_;
+    ThreeOffsets_IndexerT three_offsets_indexer_;
 
 public:
     BinaryStridedFunctor(const argT1 *inp1_tp,

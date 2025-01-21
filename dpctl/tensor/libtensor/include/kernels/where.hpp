@@ -232,7 +232,7 @@ private:
     const T *x2_p = nullptr;
     T *dst_p = nullptr;
     const condT *cond_p = nullptr;
-    const IndexerT indexer;
+    IndexerT indexer;
 
 public:
     WhereStridedFunctor(const condT *cond_p_,

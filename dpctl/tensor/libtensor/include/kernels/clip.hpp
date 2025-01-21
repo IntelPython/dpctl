@@ -245,7 +245,7 @@ private:
     const T *min_p = nullptr;
     const T *max_p = nullptr;
     T *dst_p = nullptr;
-    const IndexerT indexer;
+    IndexerT indexer;
 
 public:
     ClipStridedFunctor(const T *x_p_,

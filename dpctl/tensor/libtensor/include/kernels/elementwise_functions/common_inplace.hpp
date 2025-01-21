@@ -64,7 +64,7 @@ struct BinaryInplaceContigFunctor
 private:
     const argT *rhs = nullptr;
     resT *lhs = nullptr;
-    const std::size_t nelems_;
+    std::size_t nelems_;
 
 public:
     BinaryInplaceContigFunctor(const argT *rhs_tp,
@@ -185,7 +185,7 @@ struct BinaryInplaceStridedFunctor
 private:
     const argT *rhs = nullptr;
     resT *lhs = nullptr;
-    const TwoOffsets_IndexerT two_offsets_indexer_;
+    TwoOffsets_IndexerT two_offsets_indexer_;
 
 public:
     BinaryInplaceStridedFunctor(const argT *rhs_tp,

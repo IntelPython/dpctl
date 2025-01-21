@@ -90,10 +90,10 @@ struct SequentialReduction
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
+    ReductionOp reduction_op_;
     outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     std::size_t reduction_max_gid_ = 0;
 
 public:
@@ -159,10 +159,10 @@ struct ReductionOverGroupWithAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    const outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    ReductionOp reduction_op_;
+    outT identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
     std::size_t reductions_per_wi = 16;
@@ -292,10 +292,10 @@ struct CustomReductionOverGroupWithAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
+    ReductionOp reduction_op_;
     outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
@@ -417,10 +417,10 @@ struct ReductionOverGroupNoAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    const outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    ReductionOp reduction_op_;
+    outT identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
     std::size_t reductions_per_wi = 16;
@@ -526,10 +526,10 @@ struct CustomReductionOverGroupNoAtomicFunctor
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
+    ReductionOp reduction_op_;
     outT identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
@@ -1860,12 +1860,12 @@ struct SequentialSearchReduction
 private:
     const argT *inp_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
+    ReductionOp reduction_op_;
     argT identity_;
-    const IdxReductionOp idx_reduction_op_;
+    IdxReductionOp idx_reduction_op_;
     outT idx_identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     std::size_t reduction_max_gid_ = 0;
 
 public:
@@ -1986,12 +1986,12 @@ private:
     argT *vals_ = nullptr;
     const outT *inds_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    const argT identity_;
-    const IdxReductionOp idx_reduction_op_;
-    const outT idx_identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    ReductionOp reduction_op_;
+    argT identity_;
+    IdxReductionOp idx_reduction_op_;
+    outT idx_identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
     std::size_t reductions_per_wi = 16;
@@ -2143,12 +2143,12 @@ private:
     argT *vals_ = nullptr;
     const outT *inds_ = nullptr;
     outT *out_ = nullptr;
-    const ReductionOp reduction_op_;
-    const argT identity_;
-    const IdxReductionOp idx_reduction_op_;
-    const outT idx_identity_;
-    const InputOutputIterIndexerT inp_out_iter_indexer_;
-    const InputRedIndexerT inp_reduced_dims_indexer_;
+    ReductionOp reduction_op_;
+    argT identity_;
+    IdxReductionOp idx_reduction_op_;
+    outT idx_identity_;
+    InputOutputIterIndexerT inp_out_iter_indexer_;
+    InputRedIndexerT inp_reduced_dims_indexer_;
     SlmT local_mem_;
     std::size_t reduction_max_gid_ = 0;
     std::size_t iter_gws_ = 1;
