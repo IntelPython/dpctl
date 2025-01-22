@@ -26,9 +26,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <sycl/sycl.hpp>
 #include <utility>
 #include <vector>
+
+#include <sycl/sycl.hpp>
 
 #include "dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
@@ -599,6 +600,10 @@ sycl::event masked_place_all_slices_strided_impl(
     sycl::nd_range<2> ndRange{gRange, lRange};
 
     using LocalAccessorT = sycl::local_accessor<indT, 1>;
+    using Impl =
+        MaskedPlaceStridedFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
+                                  Strided1DCyclicIndexer, dataT, indT,
+                                  LocalAccessorT>;
 
     dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
     const dataT *rhs_tp = reinterpret_cast<const dataT *>(rhs_p);
@@ -611,13 +616,9 @@ sycl::event masked_place_all_slices_strided_impl(
         LocalAccessorT lacc(lacc_size, cgh);
 
         cgh.parallel_for<KernelName>(
-            ndRange,
-            MaskedPlaceStridedFunctor<TwoZeroOffsets_Indexer, StridedIndexer,
-                                      Strided1DCyclicIndexer, dataT, indT,
-                                      LocalAccessorT>(
-                dst_tp, cumsum_tp, rhs_tp, iteration_size,
-                orthog_dst_rhs_indexer, masked_dst_indexer, masked_rhs_indexer,
-                lacc));
+            ndRange, Impl(dst_tp, cumsum_tp, rhs_tp, iteration_size,
+                          orthog_dst_rhs_indexer, masked_dst_indexer,
+                          masked_rhs_indexer, lacc));
     });
 
     return comp_ev;
@@ -696,6 +697,10 @@ sycl::event masked_place_some_slices_strided_impl(
     sycl::nd_range<2> ndRange{gRange, lRange};
 
     using LocalAccessorT = sycl::local_accessor<indT, 1>;
+    using Impl =
+        MaskedPlaceStridedFunctor<TwoOffsets_StridedIndexer, StridedIndexer,
+                                  Strided1DCyclicIndexer, dataT, indT,
+                                  LocalAccessorT>;
 
     dataT *dst_tp = reinterpret_cast<dataT *>(dst_p);
     const dataT *rhs_tp = reinterpret_cast<const dataT *>(rhs_p);
@@ -708,13 +713,9 @@ sycl::event masked_place_some_slices_strided_impl(
         LocalAccessorT lacc(lacc_size, cgh);
 
         cgh.parallel_for<KernelName>(
-            ndRange,
-            MaskedPlaceStridedFunctor<TwoOffsets_StridedIndexer, StridedIndexer,
-                                      Strided1DCyclicIndexer, dataT, indT,
-                                      LocalAccessorT>(
-                dst_tp, cumsum_tp, rhs_tp, masked_nelems,
-                orthog_dst_rhs_indexer, masked_dst_indexer, masked_rhs_indexer,
-                lacc));
+            ndRange, Impl(dst_tp, cumsum_tp, rhs_tp, masked_nelems,
+                          orthog_dst_rhs_indexer, masked_dst_indexer,
+                          masked_rhs_indexer, lacc));
     });
 
     return comp_ev;

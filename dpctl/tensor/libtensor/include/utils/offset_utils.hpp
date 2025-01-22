@@ -176,6 +176,9 @@ private:
     }
 };
 
+// ensure that indexer is device copyable
+static_assert(sycl::is_device_copyable_v<StridedIndexer>);
+
 /* @brief Indexer with shape, strides provided separately */
 struct UnpackedStridedIndexer
 {
@@ -214,6 +217,9 @@ private:
         return starting_offset + relative_offset;
     }
 };
+
+// ensure that indexer is device copyable
+static_assert(sycl::is_device_copyable_v<UnpackedStridedIndexer>);
 
 struct Strided1DIndexer
 {
@@ -259,6 +265,8 @@ private:
     ssize_t step = 1;
 };
 
+static_assert(sycl::is_device_copyable_v<Strided1DIndexer>);
+
 struct Strided1DCyclicIndexer
 {
     Strided1DCyclicIndexer(ssize_t _offset, ssize_t _size, ssize_t _step)
@@ -276,6 +284,8 @@ private:
     std::size_t size = 1;
     ssize_t step = 1;
 };
+
+static_assert(sycl::is_device_copyable_v<Strided1DCyclicIndexer>);
 
 template <typename displacementT> struct TwoOffsets
 {
@@ -350,6 +360,8 @@ struct TwoZeroOffsets_Indexer
         return TwoOffsets<ssize_t>();
     }
 };
+
+static_assert(sycl::is_device_copyable_v<TwoZeroOffsets_Indexer>);
 
 template <typename FirstIndexerT, typename SecondIndexerT>
 struct TwoOffsets_CombinedIndexer
@@ -449,6 +461,8 @@ private:
     }
 };
 
+static_assert(sycl::is_device_copyable_v<ThreeOffsets_StridedIndexer>);
+
 struct ThreeZeroOffsets_Indexer
 {
     constexpr ThreeZeroOffsets_Indexer() {}
@@ -463,6 +477,8 @@ struct ThreeZeroOffsets_Indexer
         return ThreeOffsets<ssize_t>();
     }
 };
+
+static_assert(sycl::is_device_copyable_v<ThreeZeroOffsets_Indexer>);
 
 template <typename FirstIndexerT,
           typename SecondIndexerT,
@@ -577,6 +593,8 @@ private:
     }
 };
 
+static_assert(sycl::is_device_copyable_v<FourOffsets_StridedIndexer>);
+
 struct FourZeroOffsets_Indexer
 {
     constexpr FourZeroOffsets_Indexer() {}
@@ -586,6 +604,8 @@ struct FourZeroOffsets_Indexer
         return FourOffsets<ssize_t>();
     }
 };
+
+static_assert(sycl::is_device_copyable_v<FourZeroOffsets_Indexer>);
 
 struct NthStrideOffset
 {
@@ -614,6 +634,8 @@ private:
     ssize_t const *offsets;
     ssize_t const *shape_strides;
 };
+
+static_assert(sycl::is_device_copyable_v<NthStrideOffset>);
 
 template <int nd> struct FixedDimStridedIndexer
 {
@@ -645,6 +667,8 @@ private:
     std::array<ssize_t, nd> strides;
     ssize_t starting_offset;
 };
+
+static_assert(sycl::is_device_copyable_v<FixedDimStridedIndexer<1>>);
 
 template <int nd> struct TwoOffsets_FixedDimStridedIndexer
 {
@@ -689,6 +713,8 @@ private:
     ssize_t starting_offset1;
     ssize_t starting_offset2;
 };
+
+static_assert(sycl::is_device_copyable_v<TwoOffsets_FixedDimStridedIndexer<1>>);
 
 template <int nd> struct ThreeOffsets_FixedDimStridedIndexer
 {
@@ -746,6 +772,9 @@ private:
     ssize_t starting_offset2;
     ssize_t starting_offset3;
 };
+
+static_assert(
+    sycl::is_device_copyable_v<ThreeOffsets_FixedDimStridedIndexer<1>>);
 
 } // namespace offset_utils
 } // namespace tensor

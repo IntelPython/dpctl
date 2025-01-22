@@ -27,10 +27,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
+
 #include <sycl/sycl.hpp>
 
 #include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
+#include "kernels/elementwise_functions/common_detail.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/sycl_utils.hpp"
@@ -337,23 +339,26 @@ binary_inplace_contig_impl(sycl::queue &exec_q,
         {
             constexpr bool enable_sg_loadstore = true;
             using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
+            using Impl =
+                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                                            enable_sg_loadstore>;
+
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
-                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
-                                            enable_sg_loadstore>(arg_tp, res_tp,
-                                                                 nelems));
+                Impl(arg_tp, res_tp, nelems));
         }
         else {
             constexpr bool disable_sg_loadstore = true;
             using InnerKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+            using Impl =
+                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
+                                            disable_sg_loadstore>;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
-                BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
-                                            disable_sg_loadstore>(
-                    arg_tp, res_tp, nelems));
+                Impl(arg_tp, res_tp, nelems));
         }
     });
     return comp_ev;
@@ -389,9 +394,10 @@ binary_inplace_strided_impl(sycl::queue &exec_q,
         const argTy *arg_tp = reinterpret_cast<const argTy *>(rhs_p);
         resTy *res_tp = reinterpret_cast<resTy *>(lhs_p);
 
+        using Impl = BinaryInplaceStridedFunctorT<argTy, resTy, IndexerT>;
+
         cgh.parallel_for<kernel_name<argTy, resTy, IndexerT>>(
-            {nelems}, BinaryInplaceStridedFunctorT<argTy, resTy, IndexerT>(
-                          arg_tp, res_tp, indexer));
+            {nelems}, Impl(arg_tp, res_tp, indexer));
     });
     return comp_ev;
 }
@@ -428,13 +434,9 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
                                                               exec_q);
     argT *padded_vec = padded_vec_owner.get();
 
-    sycl::event make_padded_vec_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends); // ensure vec contains actual data
-        cgh.parallel_for({n1_padded}, [=](sycl::id<1> id) {
-            auto i = id[0];
-            padded_vec[i] = vec[i % n1];
-        });
-    });
+    sycl::event make_padded_vec_ev =
+        dpctl::tensor::kernels::elementwise_detail::populate_padded_vector<
+            argT>(exec_q, vec, n1, padded_vec, n1_padded, depends);
 
     // sub-group spans work-items [I, I + sgSize)
     // base = ndit.get_global_linear_id() - sg.get_local_id()[0]
@@ -453,10 +455,11 @@ sycl::event binary_inplace_row_matrix_broadcast_impl(
         std::size_t n_groups = (n_elems + lws - 1) / lws;
         auto gwsRange = sycl::range<1>(n_groups * lws);
 
+        using Impl = BinaryInplaceRowMatrixBroadcastFunctorT<argT, resT>;
+
         cgh.parallel_for<class kernel_name<argT, resT>>(
             sycl::nd_range<1>(gwsRange, lwsRange),
-            BinaryInplaceRowMatrixBroadcastFunctorT<argT, resT>(padded_vec, mat,
-                                                                n_elems, n1));
+            Impl(padded_vec, mat, n_elems, n1));
     });
 
     sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(

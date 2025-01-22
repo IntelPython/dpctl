@@ -216,22 +216,24 @@ sycl::event clip_contig_impl(sycl::queue &q,
         {
             constexpr bool enable_sg_loadstore = true;
             using KernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
+            using Impl =
+                ClipContigFunctor<T, vec_sz, n_vecs, enable_sg_loadstore>;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
-                ClipContigFunctor<T, vec_sz, n_vecs, enable_sg_loadstore>(
-                    nelems, x_tp, min_tp, max_tp, dst_tp));
+                Impl(nelems, x_tp, min_tp, max_tp, dst_tp));
         }
         else {
             constexpr bool disable_sg_loadstore = false;
             using InnerKernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
+            using Impl =
+                ClipContigFunctor<T, vec_sz, n_vecs, disable_sg_loadstore>;
 
             cgh.parallel_for<KernelName>(
                 sycl::nd_range<1>(gws_range, lws_range),
-                ClipContigFunctor<T, vec_sz, n_vecs, disable_sg_loadstore>(
-                    nelems, x_tp, min_tp, max_tp, dst_tp));
+                Impl(nelems, x_tp, min_tp, max_tp, dst_tp));
         }
     });
 
@@ -311,10 +313,12 @@ sycl::event clip_strided_impl(sycl::queue &q,
         const FourOffsets_StridedIndexer indexer{
             nd, x_offset, min_offset, max_offset, dst_offset, shape_strides};
 
-        cgh.parallel_for<clip_strided_kernel<T, FourOffsets_StridedIndexer>>(
+        using KernelName = clip_strided_kernel<T, FourOffsets_StridedIndexer>;
+        using Impl = ClipStridedFunctor<T, FourOffsets_StridedIndexer>;
+
+        cgh.parallel_for<KernelName>(
             sycl::range<1>(nelems),
-            ClipStridedFunctor<T, FourOffsets_StridedIndexer>(
-                x_tp, min_tp, max_tp, dst_tp, indexer));
+            Impl(x_tp, min_tp, max_tp, dst_tp, indexer));
     });
 
     return clip_ev;
