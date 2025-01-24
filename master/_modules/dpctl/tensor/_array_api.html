@@ -825,7 +825,21 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">_isdtype_impl</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kind</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported data type kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type for dtype kind: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_device_impl</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">d</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">Device</span><span class="p">,</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">sycl_device</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type for device argument: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <span class="n">__array_api_version__</span> <span class="o">=</span> <span class="s2">&quot;2023.12&quot;</span>
@@ -896,13 +910,13 @@
 <span class="sd">        Returns a dictionary of default data types for ``device``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):</span>
+<span class="sd">            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):</span>
 <span class="sd">                array API concept of device used in getting default data types.</span>
 <span class="sd">                ``device`` can be ``None`` (in which case the default device</span>
-<span class="sd">                is used), an instance of :class:`dpctl.SyclDevice` corresponding</span>
-<span class="sd">                to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`</span>
-<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">                is used), an instance of :class:`dpctl.SyclDevice`, an instance</span>
+<span class="sd">                of :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`</span>
+<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or</span>
+<span class="sd">                a filter selector string.</span>
 <span class="sd">                Default: ``None``.</span>
 
 <span class="sd">        Returns:</span>
@@ -914,10 +928,7 @@
 <span class="sd">                    - ``&quot;integral&quot;``: dtype</span>
 <span class="sd">                    - ``&quot;indexing&quot;``: dtype</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">_get_device_impl</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;real floating&quot;</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">default_device_fp_type</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span>
             <span class="s2">&quot;complex floating&quot;</span><span class="p">:</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">default_device_complex_type</span><span class="p">(</span><span class="n">device</span><span class="p">)),</span>
@@ -940,10 +951,10 @@
 <span class="sd">            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):</span>
 <span class="sd">                array API concept of device used in getting default data types.</span>
 <span class="sd">                ``device`` can be ``None`` (in which case the default device is</span>
-<span class="sd">                used), an instance of :class:`dpctl.SyclDevice` corresponding</span>
-<span class="sd">                to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`</span>
-<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">                used), an instance of :class:`dpctl.SyclDevice`, an instance of</span>
+<span class="sd">                :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`</span>
+<span class="sd">                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or</span>
+<span class="sd">                a filter selector string.</span>
 <span class="sd">                Default: ``None``.</span>
 
 <span class="sd">            kind (Optional[str, Tuple[str, ...]]):</span>
@@ -975,22 +986,20 @@
 <span class="sd">                a dictionary of the supported data types of the specified</span>
 <span class="sd">                ``kind``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
-            <span class="n">device</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">sycl_device</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">_get_device_impl</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="n">_fp64</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="n">val</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">_fp64</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">_fp64</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;complex128&quot;</span><span class="p">)</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="n">val</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">or</span> <span class="n">_fp64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_isdtype_impl</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">_fp64</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;float64&quot;</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;complex128&quot;</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="n">_isdtype_impl</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
             <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Info.devices"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.devices.html#dpctl.tensor.Info.devices">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
