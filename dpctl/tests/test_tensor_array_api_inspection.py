@@ -176,3 +176,51 @@ def test_array_api_inspection_dtype_kind():
         )
         == info.dtypes()
     )
+    assert info.dtypes(
+        kind=("integral", "real floating", "complex floating")
+    ) == info.dtypes(kind="numeric")
+
+
+def test_array_api_inspection_dtype_kind_errors():
+    info = dpt.__array_namespace_info__()
+    try:
+        info.default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    with pytest.raises(ValueError):
+        info.dtypes(kind="error")
+
+    with pytest.raises(TypeError):
+        info.dtypes(kind={0: "real floating"})
+
+
+def test_array_api_inspection_device_types():
+    info = dpt.__array_namespace_info__()
+    try:
+        dev = info.default_device()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    q = dpctl.SyclQueue(dev)
+    assert info.default_dtypes(device=q)
+    assert info.dtypes(device=q)
+
+    dev_dpt = dpt.Device.create_device(dev)
+    assert info.default_dtypes(device=dev_dpt)
+    assert info.dtypes(device=dev_dpt)
+
+    filter = dev.get_filter_string()
+    assert info.default_dtypes(device=filter)
+    assert info.dtypes(device=filter)
+
+
+def test_array_api_inspection_device_errors():
+    info = dpt.__array_namespace_info__()
+
+    bad_dev = dict()
+    with pytest.raises(TypeError):
+        info.dtypes(device=bad_dev)
+
+    with pytest.raises(TypeError):
+        info.default_dtypes(device=bad_dev)
