@@ -46,7 +46,21 @@ def _isdtype_impl(dtype, kind):
     elif isinstance(kind, tuple):
         return any(_isdtype_impl(dtype, k) for k in kind)
     else:
-        raise TypeError(f"Unsupported data type kind: {kind}")
+        raise TypeError(f"Unsupported type for dtype kind: {type(kind)}")
+
+
+def _get_device_impl(d):
+    if d is None:
+        return dpctl.select_default_device()
+    elif isinstance(d, dpctl.SyclDevice):
+        return d
+    elif isinstance(d, (dpt.Device, dpctl.SyclQueue)):
+        return d.sycl_device
+    else:
+        try:
+            return dpctl.SyclDevice(d)
+        except TypeError:
+            raise TypeError(f"Unsupported type for device argument: {type(d)}")
 
 
 __array_api_version__ = "2023.12"
@@ -117,13 +131,13 @@ class Info:
         Returns a dictionary of default data types for ``device``.
 
         Args:
-            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`]):
+            device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device
-                is used), an instance of :class:`dpctl.SyclDevice` corresponding
-                to a non-partitioned SYCL device, an instance of
-                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+                is used), an instance of :class:`dpctl.SyclDevice`, an instance
+                of :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
+                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
+                a filter selector string.
                 Default: ``None``.
 
         Returns:
@@ -135,10 +149,7 @@ class Info:
                     - ``"integral"``: dtype
                     - ``"indexing"``: dtype
         """
-        if device is None:
-            device = dpctl.select_default_device()
-        elif isinstance(device, dpt.Device):
-            device = device.sycl_device
+        device = _get_device_impl(device)
         return {
             "real floating": dpt.dtype(default_device_fp_type(device)),
             "complex floating": dpt.dtype(default_device_complex_type(device)),
@@ -161,10 +172,10 @@ class Info:
             device (Optional[:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`, :class:`dpctl.tensor.Device`, str]):
                 array API concept of device used in getting default data types.
                 ``device`` can be ``None`` (in which case the default device is
-                used), an instance of :class:`dpctl.SyclDevice` corresponding
-                to a non-partitioned SYCL device, an instance of
-                :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device`
-                object returned by :attr:`dpctl.tensor.usm_ndarray.device`.
+                used), an instance of :class:`dpctl.SyclDevice`, an instance of
+                :class:`dpctl.SyclQueue`, a :class:`dpctl.tensor.Device`
+                object returned by :attr:`dpctl.tensor.usm_ndarray.device`, or
+                a filter selector string.
                 Default: ``None``.
 
             kind (Optional[str, Tuple[str, ...]]):
@@ -196,22 +207,20 @@ class Info:
                 a dictionary of the supported data types of the specified
                 ``kind``
         """
-        if device is None:
-            device = dpctl.select_default_device()
-        elif isinstance(device, dpt.Device):
-            device = device.sycl_device
+        device = _get_device_impl(device)
         _fp64 = device.has_aspect_fp64
         if kind is None:
             return {
                 key: val
                 for key, val in self._all_dtypes.items()
-                if (key != "float64" or _fp64)
+                if _fp64 or (key != "float64" and key != "complex128")
             }
         else:
             return {
                 key: val
                 for key, val in self._all_dtypes.items()
-                if (key != "float64" or _fp64) and _isdtype_impl(val, kind)
+                if (_fp64 or (key != "float64" and key != "complex128"))
+                and _isdtype_impl(val, kind)
             }
 
     def devices(self):
