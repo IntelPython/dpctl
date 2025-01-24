@@ -46,7 +46,7 @@ def _isdtype_impl(dtype, kind):
     elif isinstance(kind, tuple):
         return any(_isdtype_impl(dtype, k) for k in kind)
     else:
-        raise TypeError(f"Unsupported data type kind: {kind}")
+        raise TypeError(f"Unsupported type for dtype kind: {type(kind)}")
 
 
 def _get_device_impl(d):
