@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.conda
       - name: Upload wheels artifact
         uses: actions/upload-artifact@v4.6.0
         with:
@@ -132,7 +132,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.conda
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@v4.6.0
@@ -172,7 +172,7 @@ jobs:
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
           conda index $GITHUB_WORKSPACE/channel || exit 1
-          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          mv ${PACKAGE_NAME}-*.conda $GITHUB_WORKSPACE/channel/linux-64 || exit 1
           conda index $GITHUB_WORKSPACE/channel || exit 1
           # Test channel
           conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
@@ -282,7 +282,7 @@ jobs:
           echo ${{ env.workdir }}
           mkdir ${{ env.workdir }}\channel
           mkdir ${{ env.workdir }}\channel\win-64
-          move ${{ env.PACKAGE_NAME }}-*.tar.bz2 ${{ env.workdir }}\channel\win-64
+          move ${{ env.PACKAGE_NAME }}-*.conda ${{ env.workdir }}\channel\win-64
           dir ${{ env.workdir }}\channel\win-64\
 
       - name: Index the channel
@@ -427,13 +427,13 @@ jobs:
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Package version
-        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.tar.bz2
+          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
 
       - name: Upload Wheels
         env:
@@ -472,13 +472,13 @@ jobs:
 
       - name: Package version
         shell: bash -el {0}
-        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.conda
 
       - name: Upload Wheels
         env:
@@ -523,7 +523,7 @@ jobs:
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
           conda index $GITHUB_WORKSPACE/channel || exit 1
-          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          mv ${PACKAGE_NAME}-*.conda $GITHUB_WORKSPACE/channel/linux-64 || exit 1
           conda index $GITHUB_WORKSPACE/channel || exit 1
           # Test channel
           conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
@@ -701,7 +701,7 @@ jobs:
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
           conda index $GITHUB_WORKSPACE/channel || exit 1
-          mv ${PACKAGE_NAME}-*.tar.bz2 $GITHUB_WORKSPACE/channel/linux-64 || exit 1
+          mv ${PACKAGE_NAME}-*.conda $GITHUB_WORKSPACE/channel/linux-64 || exit 1
           conda index $GITHUB_WORKSPACE/channel || exit 1
           # Test channel
           conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
