@@ -1,0 +1,6 @@
+﻿dpctl.tensor.nonzero
+====================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: nonzero
