@@ -66,13 +66,13 @@ from .enum_types import backend_type
 
 from cpython cimport pycapsule
 from cpython.buffer cimport (
-    PyObject_CheckBuffer,
     Py_buffer,
-    PyObject_GetBuffer,
-    PyBUF_SIMPLE,
     PyBUF_ANY_CONTIGUOUS,
+    PyBUF_SIMPLE,
     PyBUF_WRITABLE,
-    PyBuffer_Release
+    PyBuffer_Release,
+    PyObject_CheckBuffer,
+    PyObject_GetBuffer,
 )
 from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc

@@ -17,12 +17,11 @@
 """Defines unit test cases for the SyclQueue.memcpy.
 """
 
+import numpy as np
 import pytest
 
 import dpctl
 import dpctl.memory
-
-import numpy as np
 
 
 def _create_memory(q):
