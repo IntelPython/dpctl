@@ -20,9 +20,7 @@
     SYCL implementation.
 """
 
-from ._work_group_memory import (
-    WorkGroupMemory,
-)
+from ._work_group_memory import WorkGroupMemory
 
 __all__ = [
     "WorkGroupMemory",

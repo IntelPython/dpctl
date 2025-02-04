@@ -58,8 +58,8 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
     _queue_property_type,
 )
-from .memory._memory cimport _Memory
 from .experimental._work_group_memory cimport WorkGroupMemory
+from .memory._memory cimport _Memory
 
 import ctypes
 
