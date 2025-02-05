@@ -356,7 +356,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         c_src_ptr = <void*>(<_Memory>src).get_data_ptr()
     elif _is_buffer(src):
         ret_code = PyObject_GetBuffer(src, &src_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
-        if ret_code != 0:
+        if ret_code != 0: # pragma: no cover
             raise RuntimeError("Could not access buffer")
         c_src_ptr = src_buf_view.buf
         src_is_buf = True
@@ -371,7 +371,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
     elif _is_buffer(dst):
         ret_code = PyObject_GetBuffer(dst, &dst_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS | PyBUF_WRITABLE)
-        if ret_code != 0:
+        if ret_code != 0: # pragma: no cover
             raise RuntimeError("Could not access buffer")
         c_dst_ptr = dst_buf_view.buf
         dst_is_buf = True
