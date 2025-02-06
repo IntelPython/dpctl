@@ -372,6 +372,8 @@ cdef DPCTLSyclEventRef _memcpy_impl(
     elif _is_buffer(dst):
         ret_code = PyObject_GetBuffer(dst, &dst_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS | PyBUF_WRITABLE)
         if ret_code != 0: # pragma: no cover
+            if src_is_buf:
+                PyBuffer_Release(&src_buf_view)
             raise RuntimeError("Could not access buffer")
         c_dst_ptr = dst_buf_view.buf
         dst_is_buf = True
