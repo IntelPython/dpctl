@@ -360,6 +360,12 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
+    ctypedef struct _md_local_accessor 'MDLocalAccessor':
+        size_t ndim
+        _arg_data_type dpctl_type_id
+        size_t dim0
+        size_t dim1
+        size_t dim2
     cdef bool DPCTLQueue_AreEq(const DPCTLSyclQueueRef QRef1,
                                const DPCTLSyclQueueRef QRef2)
     cdef DPCTLSyclQueueRef DPCTLQueue_Create(
