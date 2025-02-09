@@ -216,6 +216,7 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_LOCAL_ACCESSOR:
         arg_set = set_local_accessor_arg(cgh, idx, (MDLocalAccessor *)Arg);
         break;
+#if SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY
     case DPCTL_WORK_GROUP_MEMORY:
     {
         size_t num_bytes = reinterpret_cast<std::uintptr_t>(Arg);
@@ -224,6 +225,7 @@ bool set_kernel_arg(handler &cgh,
         cgh.set_arg(idx, mem);
         break;
     }
+#endif
     default:
         arg_set = false;
         break;
