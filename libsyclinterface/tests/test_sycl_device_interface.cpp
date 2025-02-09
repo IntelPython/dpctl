@@ -208,7 +208,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupSizes)
     else
         EXPECT_TRUE(sg_sizes_len > 0);
     for (size_t i = 0; i < sg_sizes_len; ++i) {
-        EXPECT_TRUE(sg_sizes > 0);
+        EXPECT_TRUE(sg_sizes[i] > 0);
     }
     EXPECT_NO_FATAL_FAILURE(DPCTLSize_t_Array_Delete(sg_sizes));
 }
