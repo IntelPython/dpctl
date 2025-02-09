@@ -56,6 +56,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclEventRef,
     _arg_data_type,
     _backend_type,
+    _md_local_accessor,
     _queue_property_type,
 )
 from .experimental._work_group_memory cimport WorkGroupMemory
@@ -112,6 +113,47 @@ cdef class kernel_arg_type_attribute:
     @property
     def value(self):
         return self.attr_value
+
+
+cdef class LocalAccessor:
+    cdef _md_local_accessor lacc
+
+    def __cinit__(self, size_t ndim, str type, size_t dim0, size_t dim1, size_t dim2):
+       self.lacc.ndim = ndim
+       self.lacc.dim0 = dim0
+       self.lacc.dim1 = dim1
+       self.lacc.dim2 = dim2
+
+       if ndim < 1 or ndim > 3:
+           raise ValueError
+       if type == 'i1':
+           self.lacc.dpctl_type_id = _arg_data_type._INT8_T
+       elif type == 'u1':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
+       elif type == 'i2':
+           self.lacc.dpctl_type_id = _arg_data_type._INT16_T
+       elif type == 'u2':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
+       elif type == 'i4':
+           self.lacc.dpctl_type_id = _arg_data_type._INT32_T
+       elif type == 'u4':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
+       elif type == 'i8':
+           self.lacc.dpctl_type_id = _arg_data_type._INT64_T
+       elif type == 'u8':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
+       elif type == 'f4':
+           self.lacc.dpctl_type_id = _arg_data_type._FLOAT
+       elif type == 'f8':
+           self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
+       else:
+           raise ValueError(f"Unrecornigzed type value: '{type}'")
+
+    def __repr__(self):
+        return "LocalAccessor(" + self.ndim + ")"
+
+    cdef size_t addressof(self):
+        return <size_t>&self.lacc
 
 
 cdef class _kernel_arg_type:
@@ -834,6 +876,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
+            elif isinstance(arg, LocalAccessor):
+                kargs[idx] = <void*>((<LocalAccessor>arg).addressof())
+                kargty[idx] = _arg_data_type._LOCAL_ACCESSOR
             elif isinstance(arg, WorkGroupMemory):
                 kargs[idx] = <void*>(<size_t>arg.nbytes)
                 kargty[idx] = _arg_data_type._WORK_GROUP_MEMORY
