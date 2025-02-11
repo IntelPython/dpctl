@@ -294,7 +294,7 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
     }
 
     // handle unknown device
-    if (!DTy) {
+    if (DTy == DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE) {
         return wrap<vecTy>(DevicesVectorPtr);
     }
 
