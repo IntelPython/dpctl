@@ -173,6 +173,17 @@ DPCTL_API
 int64_t
 DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
+/*!
+ * @brief Returns a pointer to a std::vector<sycl::DPCTLSyclDeviceRef>
+ * containing the set of ::DPCTLSyclDeviceRef pointers to the
+ * available composite devices.
+ *
+ * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
+ * that are composite devices.
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices();
+
 /*! @} */
 
 DPCTL_C_EXTERN_C_END

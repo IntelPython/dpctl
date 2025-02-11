@@ -238,6 +238,7 @@ cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
     cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices()
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
