@@ -316,6 +316,8 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
         const DPCTLSyclPlatformRef)
     cdef DPCTLDeviceVectorRef DPCTLPlatform_GetDevices(
         const DPCTLSyclPlatformRef PRef, _device_type DTy)
+    cdef DPCTLDeviceVectorRef DPCTLPlatform_GetCompositeDevices(
+        const DPCTLSyclPlatformRef PRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
