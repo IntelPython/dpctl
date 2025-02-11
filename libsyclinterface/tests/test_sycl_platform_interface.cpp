@@ -25,6 +25,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_sycl_context_interface.h"
+#include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_platform_manager.h"
@@ -90,6 +91,26 @@ void check_platform_default_context(
     EXPECT_TRUE(CRef != nullptr);
 
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+void check_platform_get_devices(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    size_t nDevices = 0;
+
+    DPCTLSyclDeviceType defDTy = DPCTLSyclDeviceType::DPCTL_ALL;
+    EXPECT_NO_FATAL_FAILURE(DVRef = DPCTLPlatform_GetDevices(PRef, defDTy));
+    EXPECT_TRUE(DVRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(nDevices = DPCTLDeviceVector_Size(DVRef));
+    for (auto i = 0ul; i < nDevices; ++i) {
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDeviceVector_GetAt(DVRef, i));
+        ASSERT_TRUE(DRef != nullptr);
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Clear(DVRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
 }
 
 } // namespace
@@ -280,6 +301,11 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkAreEqNullArg)
     DPCTLSyclPlatformRef Null_PRef = nullptr;
     ASSERT_FALSE(DPCTLPlatform_AreEq(PRef, Null_PRef));
     ASSERT_TRUE(DPCTLPlatform_Hash(Null_PRef) == 0);
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetDevices)
+{
+    check_platform_get_devices(PRef);
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName) { check_platform_name(PRef); }
