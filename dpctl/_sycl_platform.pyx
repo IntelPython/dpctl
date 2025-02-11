@@ -398,8 +398,6 @@ cdef class SyclPlatform(_SyclPlatform):
                 If `device_type` is not a str or :class:`dpctl.device_type`
                 enum.
             ValueError:
-                If the value of `device_type` is not supported.
-
                 If the ``DPCTLPlatform_GetDevices`` call returned
                 ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
         """
@@ -424,9 +422,7 @@ cdef class SyclPlatform(_SyclPlatform):
             elif dty_str == "gpu":
                 DTy = _device_type._GPU
             else:
-                raise ValueError(
-                    "Unexpected value of `device_type`."
-                )
+                DTy = _device_type._UNKNOWN_DEVICE
         elif isinstance(device_type, device_type_t):
             if device_type == device_type_t.all:
                 DTy = _device_type._ALL_DEVICES
@@ -441,9 +437,7 @@ cdef class SyclPlatform(_SyclPlatform):
             elif device_type == device_type_t.gpu:
                 DTy = _device_type._GPU
             else:
-                raise ValueError(
-                    "Unexpected value of `device_type`."
-                )
+                DTy = _device_type._UNKNOWN_DEVICE
         else:
             raise TypeError(
                 "device type should be specified as a str or an "
