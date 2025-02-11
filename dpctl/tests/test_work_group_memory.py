@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Defines unit test cases for the SyclProgram and SyclKernel classes"""
+"""Defines unit test cases for the work_group_memory in a SYCL kernel"""
 
 import os
 
