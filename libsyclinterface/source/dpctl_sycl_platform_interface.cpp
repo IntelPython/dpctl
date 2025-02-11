@@ -316,3 +316,39 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
         return nullptr;
     }
 }
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    auto P = unwrap<platform>(PRef);
+    if (!P) {
+        error_handler("Cannot retrieve composite devices from "
+                      "DPCTLSyclPlatformRef as input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *DevicesVectorPtr = nullptr;
+    try {
+        DevicesVectorPtr = new vecTy();
+    } catch (std::exception const &e) {
+        delete DevicesVectorPtr;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    try {
+        auto composite_devices = P->ext_oneapi_get_composite_devices();
+        DevicesVectorPtr->reserve(composite_devices.size());
+        for (const auto &Dev : composite_devices) {
+            DevicesVectorPtr->emplace_back(
+                wrap<device>(new device(std::move(Dev))));
+        }
+        return wrap<vecTy>(DevicesVectorPtr);
+    } catch (std::exception const &e) {
+        delete DevicesVectorPtr;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
