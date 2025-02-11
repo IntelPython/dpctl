@@ -282,6 +282,7 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
+
     using vecTy = std::vector<DPCTLSyclDeviceRef>;
     vecTy *DevicesVectorPtr = nullptr;
     try {
@@ -291,6 +292,12 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
+
+    // handle unknown device
+    if (!DTy) {
+        return wrap<vecTy>(DevicesVectorPtr);
+    }
+
     try {
         auto SyclDTy = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DTy);
         auto Devices = P->get_devices(SyclDTy);
