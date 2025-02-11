@@ -1,6 +1,0 @@
-dpctl.SyclDevice.max\_work\_group\_size
-=======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.max_work_group_size
