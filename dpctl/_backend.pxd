@@ -313,6 +313,8 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
     cdef DPCTLPlatformVectorRef DPCTLPlatform_GetPlatforms()
     cdef DPCTLSyclContextRef DPCTLPlatform_GetDefaultContext(
         const DPCTLSyclPlatformRef)
+    cdef DPCTLDeviceVectorRef DPCTLPlatform_GetDevices(
+        const DPCTLSyclPlatformRef PRef, _device_type DTy)
 
 
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":

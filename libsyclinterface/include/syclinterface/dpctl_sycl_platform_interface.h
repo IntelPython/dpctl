@@ -29,6 +29,7 @@
 #include "Support/ExternC.h"
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
+#include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_platform_manager.h"
 #include "dpctl_sycl_types.h"
@@ -176,6 +177,20 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @ingroup PlatformInterface
  */
 DPCTL_API
-size_t DPCTLPlatform_Hash(__dpctl_keep DPCTLSyclPlatformRef PRef);
+size_t DPCTLPlatform_Hash(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+
+/*!
+ * @brief Returns a vector of devices associated with sycl::platform referenced
+ * by DPCTLSyclPlatformRef object.
+ *
+ * @param    PRef           The DPCTLSyclPlatformRef pointer.
+ * @param    DTy            A DPCTLSyclDeviceType enum value.
+ * @return   A DPCTLDeviceVectorRef with devices associated with given PRef.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                         DPCTLSyclDeviceType DTy);
 
 DPCTL_C_EXTERN_C_END
