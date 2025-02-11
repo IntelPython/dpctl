@@ -31,6 +31,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLCPUSelector_Create,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_CreateFromSelector,
+    DPCTLDeviceMgr_GetCompositeDevices,
     DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetNumDevices,
     DPCTLDeviceSelector_Delete,
@@ -62,6 +63,7 @@ __all__ = [
     "has_gpu_devices",
     "has_accelerator_devices",
     "_cached_default_device",
+    "get_composite_devices",
 ]
 
 
@@ -200,6 +202,32 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     DPCTLDeviceVector_Delete(DVRef)
 
     return devices
+
+
+cpdef list get_composite_devices():
+    """
+    Returns a list of the available composite :class:`dpctl.SyclDevice`
+    instances.
+
+    Only available when `ZE_FLAT_DEVICE_HIERARCHY=COMBINED` is set in
+    the environment, and only for specific Level Zero devices
+    (i.e., those which expose multiple tiles as root devices).
+
+    For more information, see:
+    https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_composite_device.asciidoc
+
+    Returns:
+        list:
+            A list of available composite :class:`dpctl.SyclDevice` instances.
+    """
+    cdef DPCTLDeviceVectorRef DVRef = NULL
+    cdef list composite_devices
+
+    DVRef = DPCTLDeviceMgr_GetCompositeDevices()
+    composite_devices = _get_devices(DVRef)
+    DPCTLDeviceVector_Delete(DVRef)
+
+    return composite_devices
 
 
 cpdef int get_num_devices(
