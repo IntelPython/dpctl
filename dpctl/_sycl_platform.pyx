@@ -385,7 +385,7 @@ cdef class SyclPlatform(_SyclPlatform):
             device_type (optional):
                 A :class:`dpctl.device_type` enum value or a string that
                 specifies a SYCL device type. Currently, accepted values are:
-                "gpu", "cpu", "accelerator", "host", or "all".
+                "gpu", "cpu", "accelerator", or "all".
                 Default: ``dpctl.device_type.all``.
 
         Returns:

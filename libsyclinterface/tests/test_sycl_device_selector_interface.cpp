@@ -220,8 +220,7 @@ INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                                            "gpu:0",
                                            "gpu:1",
                                            "1",
-                                           "0",
-                                           "host"));
+                                           "0"));
 
 INSTANTIATE_TEST_SUITE_P(NegativeFilterSelectorCreation,
                          TestUnsupportedFilters,
