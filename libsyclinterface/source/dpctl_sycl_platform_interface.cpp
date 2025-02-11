@@ -29,6 +29,7 @@
 #include "dpctl_device_selection.hpp"
 #include "dpctl_error_handlers.h"
 #include "dpctl_string_utils.hpp"
+#include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <iomanip>
@@ -267,5 +268,41 @@ size_t DPCTLPlatform_Hash(__dpctl_keep const DPCTLSyclPlatformRef PRef)
     else {
         error_handler("Argument PRef is null.", __FILE__, __func__, __LINE__);
         return 0;
+    }
+}
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                         DPCTLSyclDeviceType DTy)
+{
+    auto P = unwrap<platform>(PRef);
+    if (!P) {
+        error_handler("Cannot retrieve devices from DPCTLSyclPlatformRef as "
+                      "input is a nullptr.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *DevicesVectorPtr = nullptr;
+    try {
+        DevicesVectorPtr = new vecTy();
+    } catch (std::exception const &e) {
+        delete DevicesVectorPtr;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    try {
+        auto SyclDTy = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DTy);
+        auto Devices = P->get_devices(SyclDTy);
+        DevicesVectorPtr->reserve(Devices.size());
+        for (const auto &Dev : Devices) {
+            DevicesVectorPtr->emplace_back(
+                wrap<device>(new device(std::move(Dev))));
+        }
+        return wrap<vecTy>(DevicesVectorPtr);
+    } catch (std::exception const &e) {
+        delete DevicesVectorPtr;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
     }
 }

@@ -26,6 +26,10 @@ from libcpp cimport bool
 from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDeviceSelector_Delete,
+    DPCTLDeviceVector_Delete,
+    DPCTLDeviceVector_GetAt,
+    DPCTLDeviceVector_Size,
+    DPCTLDeviceVectorRef,
     DPCTLFilterSelector_Create,
     DPCTLPlatform_AreEq,
     DPCTLPlatform_Copy,
@@ -34,6 +38,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_Delete,
     DPCTLPlatform_GetBackend,
     DPCTLPlatform_GetDefaultContext,
+    DPCTLPlatform_GetDevices,
     DPCTLPlatform_GetName,
     DPCTLPlatform_GetPlatforms,
     DPCTLPlatform_GetVendor,
@@ -46,17 +51,21 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatformVector_Size,
     DPCTLPlatformVectorRef,
     DPCTLSyclContextRef,
+    DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclPlatformRef,
     _backend_type,
+    _device_type,
 )
 
 import warnings
 
 from ._sycl_context import SyclContextCreationError
 from .enum_types import backend_type
+from .enum_types import device_type as device_type_t
 
 from ._sycl_context cimport SyclContext
+from ._sycl_device cimport SyclDevice
 
 __all__ = [
     "get_platforms",
@@ -365,6 +374,92 @@ cdef class SyclPlatform(_SyclPlatform):
                 Hash value
         """
         return DPCTLPlatform_Hash(self._platform_ref)
+
+    def get_devices(self, device_type=device_type_t.all):
+        """
+        Returns the list of :class:`dpctl.SyclDevice` objects associated with
+        :class:`dpctl.SyclPlatform` instance selected based on
+        the given :class:`dpctl.device_type`.
+
+        Args:
+            device_type (optional):
+                A :class:`dpctl.device_type` enum value or a string that
+                specifies a SYCL device type. Currently, accepted values are:
+                "gpu", "cpu", "accelerator", "host", or "all".
+                Default: ``dpctl.device_type.all``.
+
+        Returns:
+            list:
+                A :obj:`list` of :class:`dpctl.SyclDevice` objects
+                that belong to this platform.
+
+        Raises:
+            TypeError:
+                If `device_type` is not a str or :class:`dpctl.device_type`
+                enum.
+            ValueError:
+                If the value of `device_type` is not supported.
+
+                If the ``DPCTLPlatform_GetDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
+        """
+        cdef _device_type DTy = _device_type._ALL_DEVICES
+        cdef DPCTLDeviceVectorRef DVRef = NULL
+        cdef size_t num_devs
+        cdef size_t i
+        cdef DPCTLSyclDeviceRef DRef
+
+        if isinstance(device_type, str):
+            dty_str = device_type.strip().lower()
+            if dty_str == "accelerator":
+                DTy = _device_type._ACCELERATOR
+            elif dty_str == "all":
+                DTy = _device_type._ALL_DEVICES
+            elif dty_str == "automatic":
+                DTy = _device_type._AUTOMATIC
+            elif dty_str == "cpu":
+                DTy = _device_type._CPU
+            elif dty_str == "custom":
+                DTy = _device_type._CUSTOM
+            elif dty_str == "gpu":
+                DTy = _device_type._GPU
+            else:
+                raise ValueError(
+                    "Unexpected value of `device_type`."
+                )
+        elif isinstance(device_type, device_type_t):
+            if device_type == device_type_t.all:
+                DTy = _device_type._ALL_DEVICES
+            elif device_type == device_type_t.accelerator:
+                DTy = _device_type._ACCELERATOR
+            elif device_type == device_type_t.automatic:
+                DTy = _device_type._AUTOMATIC
+            elif device_type == device_type_t.cpu:
+                DTy = _device_type._CPU
+            elif device_type == device_type_t.custom:
+                DTy = _device_type._CUSTOM
+            elif device_type == device_type_t.gpu:
+                DTy = _device_type._GPU
+            else:
+                raise ValueError(
+                    "Unexpected value of `device_type`."
+                )
+        else:
+            raise TypeError(
+                "device type should be specified as a str or an "
+                "``enum_types.device_type``."
+            )
+        DVRef = DPCTLPlatform_GetDevices(self.get_platform_ref(), DTy)
+        if (DVRef is NULL):
+            raise ValueError("Internal error: NULL device vector encountered")
+        num_devs = DPCTLDeviceVector_Size(DVRef)
+        devices = []
+        for i in range(num_devs):
+            DRef = DPCTLDeviceVector_GetAt(DVRef, i)
+            devices.append(SyclDevice._create(DRef))
+        DPCTLDeviceVector_Delete(DVRef)
+
+        return devices
 
 
 def lsplatform(verbosity=0):
