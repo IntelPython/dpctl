@@ -35,6 +35,7 @@ from ._sycl_device import (
     SyclSubDeviceCreationError,
 )
 from ._sycl_device_factory import (
+    get_composite_devices,
     get_devices,
     get_num_devices,
     has_accelerator_devices,
@@ -87,6 +88,7 @@ __all__ += [
     "has_gpu_devices",
     "has_accelerator_devices",
     "has_host_device",
+    "get_composite_devices",
 ]
 __all__ += [
     "SyclEvent",
