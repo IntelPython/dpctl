@@ -474,7 +474,6 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
     cdef struct RawWorkGroupMemoryTy
     ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
 
-
     cdef struct DPCTLOpaqueWorkGroupMemory
     ctypedef DPCTLOpaqueWorkGroupMemory *DPCTLSyclWorkGroupMemoryRef;
 

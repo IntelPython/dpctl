@@ -38,7 +38,7 @@ __kernel void local_mem_kernel(__global float *input, __global float *output,
 
 
 def test_submit_work_group_memory_opencl():
-    if not dpctl.experimental.WorkGroupMemory.is_available():
+    if not dpctl.WorkGroupMemory.is_available():
         pytest.skip("Work group memory extension not supported")
 
     try:
@@ -65,7 +65,7 @@ def test_submit_work_group_memory_opencl():
             [
                 x_dev,
                 y_dev,
-                dpctl.experimental.WorkGroupMemory(local_size * x.itemsize),
+                dpctl.WorkGroupMemory(local_size * x.itemsize),
             ],
             [global_size],
             [local_size],

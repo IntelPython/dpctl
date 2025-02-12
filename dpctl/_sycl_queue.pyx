@@ -54,11 +54,13 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
+    DPCTLWorkGroupMemory_Available,
+    DPCTLWorkGroupMemory_Create,
+    DPCTLWorkGroupMemory_Delete,
     _arg_data_type,
     _backend_type,
     _queue_property_type,
 )
-from .experimental._work_group_memory cimport WorkGroupMemory
 from .memory._memory cimport _Memory
 
 import ctypes
@@ -1537,3 +1539,41 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
+
+cdef class _WorkGroupMemory:
+    def __dealloc__(self):
+        if(self._mem_ref):
+            DPCTLWorkGroupMemory_Delete(self._mem_ref)
+
+cdef class WorkGroupMemory:
+    """
+    WorkGroupMemory(nbytes)
+    Python class representing the ``work_group_memory`` class from the
+    Workgroup Memory oneAPI SYCL extension for low-overhead allocation of local
+    memory shared by the workitems in a workgroup.
+
+    This is based on a DPC++ SYCL extension and only available in newer
+    versions. Use ``is_available()`` to check availability in your build.
+
+    Args:
+        nbytes (int)
+            number of bytes to allocate in local memory.
+            Expected to be positive.
+    """
+    def __cinit__(self, Py_ssize_t nbytes):
+        if not DPCTLWorkGroupMemory_Available():
+            raise RuntimeError("Workgroup memory extension not available")
+
+        self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
+
+    """Check whether the work_group_memory extension is available"""
+    @staticmethod
+    def is_available():
+        return DPCTLWorkGroupMemory_Available()
+
+    property _ref:
+        """Returns the address of the C API ``DPCTLWorkGroupMemoryRef``
+        pointer as a ``size_t``.
+        """
+        def __get__(self):
+            return <size_t>self._mem_ref
