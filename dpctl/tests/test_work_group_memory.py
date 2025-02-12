@@ -52,7 +52,7 @@ def get_spirv_abspath(fn):
 
 
 def test_submit_work_group_memory():
-    if not dpctl.experimental.WorkGroupMemory.is_available():
+    if not dpctl.WorkGroupMemory.is_available():
         pytest.skip("Work group memory extension not supported")
 
     try:
@@ -78,7 +78,7 @@ def test_submit_work_group_memory():
             [
                 x.usm_data,
                 y.usm_data,
-                dpctl.experimental.WorkGroupMemory(local_size * x.itemsize),
+                dpctl.WorkGroupMemory(local_size * x.itemsize),
             ],
             [global_size],
             [local_size],
