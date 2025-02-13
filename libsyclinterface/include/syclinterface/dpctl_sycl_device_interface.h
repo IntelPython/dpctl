@@ -766,4 +766,30 @@ __dpctl_keep size_t *
 DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                              size_t *res_len);
 
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::parent_device>
+ *
+ * @param    DRef           Opaque pointer to a sycl::device
+ * @return   Returns an opaque pointer to the composite device for a
+ * component device, or nullptr if the device is not a component device.
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Returns a vector of component devices that are contained by the
+ * provided composite device. If the device is not a composite device,
+ * returns an empty vector.
+ *
+ * @param    DRef         Opaque pointer to a ``sycl::device``
+ * @return   A #DPCTLDeviceVectorRef containing component
+ * #DPCTLSyclDeviceRef objects
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END
