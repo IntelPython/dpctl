@@ -32,6 +32,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_Delete,
     DPCTLDevice_GetBackend,
+    DPCTLDevice_GetComponentDevices,
+    DPCTLDevice_GetCompositeDevice,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
     DPCTLDevice_GetGlobalMemCacheLineSize,
@@ -793,6 +795,32 @@ cdef class SyclDevice(_SyclDevice):
                 Indicates if device is somehow emulated.
         """
         cdef _aspect_type AT = _aspect_type._emulated
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def is_component(self):
+        """ Returns ``True`` if this device is a component device, ``False``
+        otherwise. A device with this aspect will have a composite device
+        from which it is descended.
+
+        Returns:
+            bool:
+                Indicates if device is a component device.
+        """
+        cdef _aspect_type AT = _aspect_type._is_component
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+
+    @property
+    def is_composite(self):
+        """ Returns ``True`` if this device is a composite device, ``False``
+        otherwise. A device with this aspect contains component devices.
+
+        Returns:
+            bool:
+                Indicates if device is a composite device.
+        """
+        cdef _aspect_type AT = _aspect_type._is_composite
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
@@ -1727,6 +1755,41 @@ cdef class SyclDevice(_SyclDevice):
         if (pDRef is NULL):
             return None
         return SyclDevice._create(pDRef)
+
+    @property
+    def composite_device(self):
+        """ The composite device for a component device, or None for a non-component device.
+
+        Returns:
+            dpctl.SyclDevice:
+                The composite :class:`dpctl.SyclDevice` instance for a
+                component device, or ``None`` for a non-component device.
+        """
+        cdef DPCTLSyclDeviceRef cDRef = NULL
+        cDRef = DPCTLDevice_GetCompositeDevice(self._device_ref)
+        if (cDRef is NULL):
+            return None
+        return SyclDevice._create(cDRef)
+
+    def component_devices(self):
+        """ Returns a list of component devices contained in this SYCL device.
+
+        The returned list will be empty if this SYCL device is not a composite
+        device, i.e., if `is_composite` is ``False``.
+
+        Returns:
+            List[:class:`dpctl.SyclDevice`]:
+                List of component devices.
+
+        Raises:
+            dpctl.SyclSubdeviceCreationError:
+                if sub-devices can not be created.
+        """
+        cdef DPCTLDeviceVectorRef cDVRef = NULL
+        cDVRef = DPCTLDevice_GetComponentDevices(self._device_ref)
+        if cDVRef is NULL:
+            raise ValueError("Internal error: NULL device vector encountered")
+        return _get_devices(cDVRef)
 
     @property
     def profiling_timer_resolution(self):
