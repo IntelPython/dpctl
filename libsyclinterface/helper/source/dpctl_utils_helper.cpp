@@ -335,6 +335,10 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::host_debuggable;
     case DPCTLSyclAspectType::emulated:
         return aspect::emulated;
+    case DPCTLSyclAspectType::is_component:
+        return aspect::ext_oneapi_is_component;
+    case DPCTLSyclAspectType::is_composite:
+        return aspect::ext_oneapi_is_composite;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -381,6 +385,10 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::host_debuggable;
     case aspect::emulated:
         return DPCTLSyclAspectType::emulated;
+    case aspect::ext_oneapi_is_composite:
+        return DPCTLSyclAspectType::is_composite;
+    case aspect::ext_oneapi_is_component:
+        return DPCTLSyclAspectType::is_component;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
