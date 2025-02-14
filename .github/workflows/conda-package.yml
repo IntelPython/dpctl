@@ -167,7 +167,9 @@ jobs:
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-index -c conda-forge --override-channels
+        run: |
+          conda update -n base --all
+          conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
@@ -508,7 +510,9 @@ jobs:
           echo ${{ env.CHANNELS }}
       - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-index -c conda-forge --override-channels
+        run: |
+          conda update -n base --all
+          conda install conda-index -c conda-forge --override-channels
       - name: Checkout dpctl repo
         uses: actions/checkout@v4.2.2
         with:
@@ -696,7 +700,9 @@ jobs:
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-index
         # Needed to be able to run conda index
-        run: conda install conda-index -c conda-forge --override-channels
+        run: |
+          conda update -n base --all
+          conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
           mkdir -p $GITHUB_WORKSPACE/channel/linux-64
