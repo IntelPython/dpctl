@@ -1,0 +1,6 @@
+dpctl.SyclDevice.is\_component
+==============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.is_component
