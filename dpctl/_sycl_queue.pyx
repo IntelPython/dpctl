@@ -158,7 +158,7 @@ cdef class LocalAccessor:
        elif type == 'f8':
            self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
        else:
-           raise ValueError(f"Unrecornigzed type value: '{type}'")
+           raise ValueError(f"Unrecognized type value: '{type}'")
 
     def __repr__(self):
         return "LocalAccessor(" + self.ndim + ")"
