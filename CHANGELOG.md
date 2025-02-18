@@ -12,8 +12,8 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 
 ### Added
 
-* Support for compiling `dpctl` for specified AMD GPU architecture with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [#1731](https://github.com/IntelPython/dpctl/pull/1731)
-* Added `tensor.top_k` per Python Array API specification [#1921](https://github.com/IntelPython/dpctl/pull/1921)
+* Support for compiling `dpctl` for specified AMD GPU architecture with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [gh-1731](https://github.com/IntelPython/dpctl/pull/1731)
+* Added `tensor.top_k` per Python Array API specification [gh-1921](https://github.com/IntelPython/dpctl/pull/1921)
 * Added functions `tensor.dldevice_to_sycl_device` and `tensor.sycl_device_to_dldevice` for converting between DLPack and sycl devices, and a method `get_device_id` to `dpctl.SyclDevice` to improve interoperability with DLPack protocol [gh-1953](https://github.com/IntelPython/dpctl/pull/1953)
 * Added `DPCTL_OFFLOAD_COMPRESS` cmake option (set to `OFF` by default) to toggle [--offload-compress](https://www.intel.com/content/www/us/en/developer/articles/technical/sycl-compilation-device-image-compression.html) linker option when building `dpctl` [gh-1961](https://github.com/IntelPython/dpctl/pull/1961)
 
@@ -24,7 +24,7 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 * Improved performance of copying operation to C-/F-contig array, with optimization for batch of square matrices [gh-1850](https://github.com/IntelPython/dpctl/pull/1850)
 * Improved performance of `tensor.argsort` function for all types [gh-1859](https://github.com/IntelPython/dpctl/pull/1859)
 * Improved performance of `tensor.sort` and `tensor.argsort` for short arrays in the range [16, 64] elements [gh-1866](https://github.com/IntelPython/dpctl/pull/1866)
-* Implement radix sort algorithm to be used in `dpt.sort` and `dpt.argsort` [gh-1867](https://github.com/IntelPython/dpctl/pull/1867), [gh-1883](https://github.com/IntelPython/dpctl/pull/1883)
+* Implemented radix sort algorithm to be used in `dpt.sort` and `dpt.argsort` [gh-1867](https://github.com/IntelPython/dpctl/pull/1867), [gh-1883](https://github.com/IntelPython/dpctl/pull/1883)
 * Extended `dpctl.SyclTimer` with `device_timer` keyword, implementing different methods of collecting device times [gh-1872](https://github.com/IntelPython/dpctl/pull/1872)
 * `dpctl` changed to see GPU devices out of the box in virtual environment on Windows [gh-1922](https://github.com/IntelPython/dpctl/pull/1922)
 * Improved performance of `tensor.cumulative_sum`, `tensor.cumulative_prod`, `tensor.cumulative_logsumexp` as well as performance of boolean indexing [gh-1923](https://github.com/IntelPython/dpctl/pull/1923), [gh-1942](https://github.com/IntelPython/dpctl/pull/1942)
@@ -35,7 +35,7 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 * `tensor.usm_ndarray` object disallows implicit conversions to NumPy array [gh-1964](https://github.com/IntelPython/dpctl/pull/1964)
 * `stream` arguments in `tensor.usm_ndarray` methods now raise an error if `stream` is not a `tensor.SyclQueue` [gh-1969](https://github.com/IntelPython/dpctl/pull/1969)
 * `dpctl` initialization sets subprocess to use SPAWN method on Linux to enable `gdb-oneapi` to debug kernels submitted from Python applications [gh-1971](https://github.com/IntelPython/dpctl/pull/1971)
-* Reduce binary size of `_tensor_elementwise_impl` [gh-1976](https://github.com/IntelPython/dpctl/pull/1976)
+* Reduced binary size of `_tensor_elementwise_impl` [gh-1976](https://github.com/IntelPython/dpctl/pull/1976)
 * Allow `dpctl.SyclQueue.memcpy` to and from multi-dimensional buffers [gh-1985](https://github.com/IntelPython/dpctl/pull/1985)
 
 ### Fixed
@@ -98,7 +98,7 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 [gh-1881](https://github.com/IntelPython/dpctl/pull/1881),
 [gh-1882](https://github.com/IntelPython/dpctl/pull/1882),
 [gh-1884](https://github.com/IntelPython/dpctl/pull/1884),
-[gh-1884](https://github.com/IntelPython/dpctl/pull/1886),
+[gh-1886](https://github.com/IntelPython/dpctl/pull/1886),
 [gh-1888](https://github.com/IntelPython/dpctl/pull/1888),
 [gh-1897](https://github.com/IntelPython/dpctl/pull/1897),
 [gh-1898](https://github.com/IntelPython/dpctl/pull/1898),
@@ -106,8 +106,8 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 [gh-1916](https://github.com/IntelPython/dpctl/pull/1916),
 [gh-1927](https://github.com/IntelPython/dpctl/pull/1927),
 [gh-1940](https://github.com/IntelPython/dpctl/pull/1940),
-[gh-1940](https://github.com/IntelPython/dpctl/pull/1948),
-[gh-1940](https://github.com/IntelPython/dpctl/pull/1949),
+[gh-1948](https://github.com/IntelPython/dpctl/pull/1948),
+[gh-1949](https://github.com/IntelPython/dpctl/pull/1949),
 [gh-1952](https://github.com/IntelPython/dpctl/pull/1952),
 [gh-1962](https://github.com/IntelPython/dpctl/pull/1962),
 [gh-1963](https://github.com/IntelPython/dpctl/pull/1963),
