@@ -48,7 +48,7 @@ jobs:
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-build
         # FIXME: unpin when conda-build fixes issues with lief
-        run: conda install conda-build -c conda-forge --override-channels
+        run: conda install conda-build"<25.1.2" -c conda-forge --override-channels
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -100,7 +100,7 @@ jobs:
         # FIXME: unpin when conda-build fixes issues with lief
         run: |
           conda activate
-          conda install -y conda-build
+          conda install -y conda-build"<25.1.2"
           conda list -n base
 
       - name: Cache conda packages
