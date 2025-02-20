@@ -325,7 +325,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
             dst_offset, depends, {copy_shape_ev});
 
         // invoke USM deleter in smart pointer while GIL is held
-        shape_strides_owner.release();
+        shape_strides_owner.reset(nullptr);
     }
 
     return;
