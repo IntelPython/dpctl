@@ -61,6 +61,7 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 * Fixed a bug in `test_sycl_device_interface.cpp` which would cause compilation to fail with Clang version 20.0 [gh-1989](https://github.com/IntelPython/dpctl/pull/1989)
 * Fixed memory leaks in smart-pointer-managed USM temporaries in synchronizing kernel calls [gh-2002](https://github.com/IntelPython/dpctl/pull/2002)
 * `UsmNDArray_MakeSimpleFromPtr` and `UsmNDArray_MakeFromPtr` now raise an error when provided an invalid `typenum` before attempting to create the array [gh-2003](https://github.com/IntelPython/dpctl/pull/2003)
+* Fixed typos in `tensor.from_numpy` and `tensor.astype` [gh-2006](https://github.com/IntelPython/dpctl/pull/2006)
 
 ### Maintenance
 
