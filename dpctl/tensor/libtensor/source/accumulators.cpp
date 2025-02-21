@@ -210,7 +210,7 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
             sycl::event::wait(host_task_events);
 
             // ensure deleter of smart pointer is invoked with GIL released
-            shape_strides_owner.release();
+            shape_strides_owner.reset(nullptr);
         }
         throw std::runtime_error("Unexpected error");
     }
@@ -231,7 +231,7 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
 
         sycl::event::wait(host_task_events);
         // ensure deleter of smart pointer is invoked with GIL released
-        shape_strides_owner.release();
+        shape_strides_owner.reset(nullptr);
     }
 
     return total_set;
@@ -367,7 +367,7 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
             sycl::event::wait(host_task_events);
 
             // ensure USM deleter is called with GIL released
-            shape_strides_owner.release();
+            shape_strides_owner.reset(nullptr);
         }
         throw std::runtime_error("Unexpected error");
     }
@@ -387,7 +387,7 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
         sycl::event::wait(host_task_events);
 
         // ensure USM deleter is called with GIL released
-        shape_strides_owner.release();
+        shape_strides_owner.reset(nullptr);
     }
 
     return total;

@@ -37,13 +37,16 @@
 
 #include <filesystem>
 #include <fstream>
+#include <utility>
+
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
-#include <utility>
 
 namespace
 {
-constexpr std::size_t SIZE = 100;
+constexpr std::size_t SIZE = 320;
+
+static_assert(SIZE % 10 == 0);
 
 using namespace dpctl::syclinterface;
 
@@ -69,11 +72,13 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         a_ptr[i] = 0;
     }
 
-    auto la1 = MDLocalAccessor{1, kernelArgTy, SIZE / 10, 1, 1};
+    std::size_t lws = SIZE / 10;
+
+    auto la1 = MDLocalAccessor{1, kernelArgTy, lws, 1, 1};
 
     // Create kernel args for vector_add
     std::size_t gRange[] = {SIZE};
-    std::size_t lRange[] = {SIZE / 10};
+    std::size_t lRange[] = {lws};
     void *args_1d[NARGS] = {unwrap<void>(a), (void *)&la1};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR,
                                               DPCTL_LOCAL_ACCESSOR};
@@ -84,7 +89,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     ASSERT_TRUE(E1Ref != nullptr);
 
     DPCTLSyclEventRef DepEv1[] = {E1Ref};
-    auto la2 = MDLocalAccessor{2, kernelArgTy, SIZE / 10, 1, 1};
+    auto la2 = MDLocalAccessor{2, kernelArgTy, lws, 1, 1};
     void *args_2d[NARGS] = {unwrap<void>(a), (void *)&la2};
 
     DPCTLSyclEventRef E2Ref =
@@ -93,7 +98,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     ASSERT_TRUE(E2Ref != nullptr);
 
     DPCTLSyclEventRef DepEv2[] = {E1Ref, E2Ref};
-    auto la3 = MDLocalAccessor{3, kernelArgTy, SIZE / 10, 1, 1};
+    auto la3 = MDLocalAccessor{3, kernelArgTy, lws, 1, 1};
     void *args_3d[NARGS] = {unwrap<void>(a), (void *)&la3};
 
     DPCTLSyclEventRef E3Ref =
@@ -103,10 +108,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
 
     DPCTLEvent_Wait(E3Ref);
 
-    if (kernelArgTy != DPCTL_FLOAT32_T && kernelArgTy != DPCTL_FLOAT64_T)
-        ASSERT_TRUE(a_ptr[0] == 20);
-    else
-        ASSERT_TRUE(a_ptr[0] == 20.0);
+    ASSERT_TRUE(a_ptr[0] == T(lws * 2));
 
     // clean ups
     DPCTLEvent_Delete(E1Ref);
@@ -133,9 +135,9 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
 // figure which SPV file contains the kernels, use `spirv-dis` from the
 // spirv-tools package to translate the SPV binary format to a human-readable
 // textual format.
-#include <CL/sycl.hpp>
 #include <iostream>
 #include <sstream>
+#include <sycl/sycl.hpp>
 
 template <typename T>
 class SyclKernel_SLM
@@ -195,7 +197,7 @@ int main(int argc, const char **argv)
     driver<int8_t>(N);
     driver<uint8_t>(N);
     driver<int16_t>(N);
-    driver<int32_t>(N);
+    driver<uint16_t>(N);
     driver<int32_t>(N);
     driver<uint32_t>(N);
     driver<int64_t>(N);
@@ -220,11 +222,10 @@ struct TestQueueSubmitWithLocalAccessor : public ::testing::Test
     {
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
         DPCTLSyclDeviceRef DRef = nullptr;
+        const char *test_spv_fn = "./local_accessor_kernel_inttys_fp32.spv";
 
-        spirvFile.open("./local_accessor_kernel_inttys_fp32.spv",
-                       std::ios::binary | std::ios::ate);
-        spirvFileSize_ = std::filesystem::file_size(
-            "./local_accessor_kernel_inttys_fp32.spv");
+        spirvFile.open(test_spv_fn, std::ios::binary | std::ios::ate);
+        spirvFileSize_ = std::filesystem::file_size(test_spv_fn);
         spirvBuffer_.reserve(spirvFileSize_);
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer_.data(), spirvFileSize_);
@@ -261,11 +262,10 @@ struct TestQueueSubmitWithLocalAccessorFP64 : public ::testing::Test
     TestQueueSubmitWithLocalAccessorFP64()
     {
         DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        const char *test_spv_fn = "./local_accessor_kernel_fp64.spv";
 
-        spirvFile.open("./local_accessor_kernel_fp64.spv",
-                       std::ios::binary | std::ios::ate);
-        spirvFileSize_ =
-            std::filesystem::file_size("./local_accessor_kernel_fp64.spv");
+        spirvFile.open(test_spv_fn, std::ios::binary | std::ios::ate);
+        spirvFileSize_ = std::filesystem::file_size(test_spv_fn);
         spirvBuffer_.reserve(spirvFileSize_);
         spirvFile.seekg(0, std::ios::beg);
         spirvFile.read(spirvBuffer_.data(), spirvFileSize_);

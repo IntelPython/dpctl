@@ -1777,8 +1777,10 @@ cdef api object UsmNDArray_MakeSimpleFromPtr(
     Returns:
         Created usm_ndarray instance
     """
-    cdef size_t itemsize = type_bytesize(typenum)
-    cdef size_t nbytes = itemsize * nelems
+    cdef int itemsize = type_bytesize(typenum)
+    if (itemsize < 1):
+        raise ValueError("dtype with typenum=" + str(typenum) + " is not supported.")
+    cdef size_t nbytes = (<size_t> itemsize) * nelems
     cdef c_dpmem._Memory mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
         ptr, nbytes, QRef, memory_owner=owner
     )
@@ -1817,7 +1819,7 @@ cdef api object UsmNDArray_MakeFromPtr(
     Returns:
         Created usm_ndarray instance
     """
-    cdef size_t itemsize = type_bytesize(typenum)
+    cdef int itemsize = type_bytesize(typenum)
     cdef int err = 0
     cdef size_t nelems = 1
     cdef Py_ssize_t min_disp = 0
@@ -1830,6 +1832,8 @@ cdef api object UsmNDArray_MakeFromPtr(
     cdef object obj_shape
     cdef object obj_strides
 
+    if (itemsize < 1):
+        raise ValueError("dtype with typenum=" + str(typenum) + " is not supported.")
     if (nd < 0):
         raise ValueError("Dimensionality must be non-negative")
     if (ptr is NULL or QRef is NULL):
@@ -1881,7 +1885,7 @@ cdef api object UsmNDArray_MakeFromPtr(
         raise ValueError(
             "Given shape, strides and offset reference out-of-bound memory"
         )
-    nbytes = itemsize * (offset + max_disp + 1)
+    nbytes = (<size_t> itemsize) * (offset + max_disp + 1)
     mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
         ptr, nbytes, QRef, memory_owner=owner
     )
