@@ -86,6 +86,7 @@ A number of adjustments were also made to improve performance of `dpctl` reducti
 * Add versioneer as a build requirement in documentation on building `dpctl` from source [gh-1972](https://github.com/IntelPython/dpctl/pull/1972)
 * Remove const qualifiers for class and struct members [gh-1974](https://github.com/IntelPython/dpctl/pull/1974), [gh-1975](https://github.com/IntelPython/dpctl/pull/1975)
 * Various code quality improvements to `test_sycl_queue_submit_local_accessor_arg.cpp` [gh-1990](https://github.com/IntelPython/dpctl/pull/1990)
+* Added Python 3.12 to package metadata [gh-2005](https://github.com/IntelPython/dpctl/pull/2005)
 * Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
 [gh-1837](https://github.com/IntelPython/dpctl/pull/1837),
 [gh-1839](https://github.com/IntelPython/dpctl/pull/1839),
