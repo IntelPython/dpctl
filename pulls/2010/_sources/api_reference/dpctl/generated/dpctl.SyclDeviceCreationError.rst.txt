@@ -1,0 +1,6 @@
+﻿dpctl.SyclDeviceCreationError
+=============================
+
+.. currentmodule:: dpctl
+
+.. autoexception:: SyclDeviceCreationError
