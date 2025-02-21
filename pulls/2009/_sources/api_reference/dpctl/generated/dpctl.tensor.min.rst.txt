@@ -1,0 +1,6 @@
+﻿dpctl.tensor.min
+================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: min
