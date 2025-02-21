@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.nbytes
+================================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.nbytes
