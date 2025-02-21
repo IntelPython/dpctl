@@ -1,6 +1,0 @@
-﻿dpctl.tensor.roll
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: roll
