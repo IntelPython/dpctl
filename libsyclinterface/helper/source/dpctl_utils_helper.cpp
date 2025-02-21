@@ -73,9 +73,6 @@ info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr)
     else if (devTyStr == "custom") {
         devTy = info::device_type::custom;
     }
-    else if (devTyStr == "host") {
-        devTy = info::device_type::host;
-    }
     else {
         // \todo handle the error
         throw std::runtime_error("Unknown device type.");

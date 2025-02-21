@@ -22,6 +22,7 @@ import sys
 import pytest
 
 import dpctl
+from dpctl import device_type
 
 from .helper import has_sycl_platforms
 
@@ -212,3 +213,49 @@ def test_get_platforms():
             assert has_sycl_platforms()
     except Exception:
         pytest.fail("Encountered an exception inside get_platforms().")
+
+
+def test_platform_get_devices():
+    platforms = dpctl.get_platforms()
+    if platforms:
+        for p in platforms:
+            assert len(p.get_devices())
+    else:
+        pytest.skip("No platforms available")
+
+
+def _str_device_type_to_enum(dty):
+    if dty == "accelerator":
+        return device_type.accelerator
+    elif dty == "cpu":
+        return device_type.cpu
+    elif dty == "gpu":
+        return device_type.gpu
+
+
+def test_platform_get_devices_str_device_type():
+    platforms = dpctl.get_platforms()
+    dtys = ["accelerator", "all", "cpu", "gpu"]
+    if platforms:
+        for p in platforms:
+            for dty in dtys:
+                devices = p.get_devices(device_type=dty)
+                if len(devices):
+                    dty_enum = _str_device_type_to_enum(dty)
+                    assert (d.device_type == dty_enum for d in devices)
+
+
+def test_platform_get_devices_enum_device_type():
+    platforms = dpctl.get_platforms()
+    dtys = [
+        device_type.accelerator,
+        device_type.all,
+        device_type.cpu,
+        device_type.gpu,
+    ]
+    if platforms:
+        for p in platforms:
+            for dty in dtys:
+                devices = p.get_devices(device_type=dty)
+                if len(devices):
+                    assert (d.device_type == dty for d in devices)
