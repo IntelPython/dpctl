@@ -963,6 +963,75 @@ def test_pyx_capi_make_general():
     assert zd_arr._pointer == mat._pointer
 
 
+def test_pyx_capi_make_fns_invalid_typenum():
+    q = get_queue_or_skip()
+    usm_ndarray = dpt.empty(tuple(), dtype="i4", sycl_queue=q)
+
+    make_simple_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeSimpleFromPtr",
+        b"PyObject *(size_t, int, DPCTLSyclUSMRef, "
+        b"DPCTLSyclQueueRef, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_size_t,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.py_object,
+        ),
+    )
+
+    nelems = 10
+    dtype = dpt.int64
+    arr = dpt.arange(nelems, dtype=dtype, sycl_queue=q)
+
+    with pytest.raises(ValueError):
+        make_simple_from_ptr(
+            ctypes.c_size_t(nelems),
+            -1,
+            arr._pointer,
+            arr.sycl_queue.addressof_ref(),
+            arr,
+        )
+
+    make_from_ptr = _pyx_capi_fnptr_to_callable(
+        usm_ndarray,
+        "UsmNDArray_MakeFromPtr",
+        b"PyObject *(int, Py_ssize_t const *, int, Py_ssize_t const *, "
+        b"DPCTLSyclUSMRef, DPCTLSyclQueueRef, Py_ssize_t, PyObject *)",
+        fn_restype=ctypes.py_object,
+        fn_argtypes=(
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_ssize_t),
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_ssize_t,
+            ctypes.py_object,
+        ),
+    )
+    c_shape = (ctypes.c_ssize_t * 1)(
+        nelems,
+    )
+    c_strides = (ctypes.c_ssize_t * 1)(
+        1,
+    )
+    with pytest.raises(ValueError):
+        make_from_ptr(
+            ctypes.c_int(1),
+            c_shape,
+            -1,
+            c_strides,
+            arr._pointer,
+            arr.sycl_queue.addressof_ref(),
+            ctypes.c_ssize_t(0),
+            arr,
+        )
+    del arr
+
+
 def _pyx_capi_int(X, pyx_capi_name, caps_name=b"int", val_restype=ctypes.c_int):
     import sys
 
