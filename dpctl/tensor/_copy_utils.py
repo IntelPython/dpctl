@@ -126,7 +126,7 @@ def from_numpy(np_ary, /, *, device=None, usm_type="device", sycl_queue=None):
         arg:
             Input convertible to :class:`numpy.ndarray`
         device (object): array API specification of device where the
-            output array is created. Device can be specified by a
+            output array is created. Device can be specified by
             a filter selector string, an instance of
             :class:`dpctl.SyclDevice`, an instance of
             :class:`dpctl.SyclQueue`, or an instance of
@@ -620,7 +620,7 @@ def astype(
             If this keyword is set to `False`, a view of the input array
             may be returned when possible.
         device (object): array API specification of device where the
-            output array is created. Device can be specified by a
+            output array is created. Device can be specified by
             a filter selector string, an instance of
             :class:`dpctl.SyclDevice`, an instance of
             :class:`dpctl.SyclQueue`, or an instance of
