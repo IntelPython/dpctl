@@ -145,7 +145,7 @@ DPCTL_API
 size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
 
 /*!
- * @brief Prints out the info::deivice attributes for the device that are
+ * @brief Prints out the info::device attributes for the device that are
  * currently supported by dpctl.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
@@ -172,6 +172,17 @@ void DPCTLDeviceMgr_PrintDeviceInfo(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 DPCTL_API
 int64_t
 DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Returns a pointer to a std::vector<sycl::DPCTLSyclDeviceRef>
+ * containing the set of ::DPCTLSyclDeviceRef pointers to the
+ * available composite devices.
+ *
+ * @return   A #DPCTLDeviceVectorRef containing #DPCTLSyclDeviceRef objects
+ * that are composite devices.
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices();
 
 /*! @} */
 
