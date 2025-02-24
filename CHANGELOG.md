@@ -4,47 +4,122 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev] - XXX. XX, 2025
+## [0.19.0] - Feb. XX, 2025
+
+This release features official, out-of-the-box support for compiling `dpctl` for specified AMD GPU architectures, the addition of new function `tensor.top_k`, a radix-sort-based implementation of sorting functions, and improvements to interoperability with DLPack through `tensor.dldevice_to_sycl_device` and `tensor.sycl_device_to_dldevice`.
+
+A number of adjustments were also made to improve performance of `dpctl` reductions (i.e., `sum`, `min`, `max`, etc.), accumulators (i.e., `cumulative_sum`, `cumulative_logsumexp`), and copy-and-cast operations.
 
 ### Added
 
-* Added `dpctl.tensor.top_k` per Python Array API specification: [#1921](https://github.com/IntelPython/dpctl/pull/1921)
+* Support for compiling `dpctl` for specified AMD GPU architecture with use of [CodePlay oneAPI plug-in](https://developer.codeplay.com/products/oneapi/amd/home/) [gh-1731](https://github.com/IntelPython/dpctl/pull/1731)
+* Added `tensor.top_k` per Python Array API specification [gh-1921](https://github.com/IntelPython/dpctl/pull/1921)
+* Added functions `tensor.dldevice_to_sycl_device` and `tensor.sycl_device_to_dldevice` for converting between DLPack and sycl devices, and a method `get_device_id` to `dpctl.SyclDevice` to improve interoperability with DLPack protocol [gh-1953](https://github.com/IntelPython/dpctl/pull/1953)
+* Added `DPCTL_OFFLOAD_COMPRESS` cmake option (set to `OFF` by default) to toggle [--offload-compress](https://www.intel.com/content/www/us/en/developer/articles/technical/sycl-compilation-device-image-compression.html) linker option when building `dpctl` [gh-1961](https://github.com/IntelPython/dpctl/pull/1961)
 
 ### Changed
 
 * Improved performance of copy-and-cast operations from `numpy.ndarray` to `tensor.usm_ndarray` for contiguous inputs [gh-1829](https://github.com/IntelPython/dpctl/pull/1829)
+* `py_sort` and `py_argsort` now throw `py::value_error` if inputs are not C-contiguous [gh-1838](https://github.com/IntelPython/dpctl/pull/1838)
 * Improved performance of copying operation to C-/F-contig array, with optimization for batch of square matrices [gh-1850](https://github.com/IntelPython/dpctl/pull/1850)
 * Improved performance of `tensor.argsort` function for all types [gh-1859](https://github.com/IntelPython/dpctl/pull/1859)
 * Improved performance of `tensor.sort` and `tensor.argsort` for short arrays in the range [16, 64] elements [gh-1866](https://github.com/IntelPython/dpctl/pull/1866)
-* Implement radix sort algorithm to be used in `dpt.sort` and `dpt.argsort` [gh-1867](https://github.com/IntelPython/dpctl/pull/1867)
+* Implemented radix sort algorithm to be used in `dpt.sort` and `dpt.argsort` [gh-1867](https://github.com/IntelPython/dpctl/pull/1867), [gh-1883](https://github.com/IntelPython/dpctl/pull/1883)
 * Extended `dpctl.SyclTimer` with `device_timer` keyword, implementing different methods of collecting device times [gh-1872](https://github.com/IntelPython/dpctl/pull/1872)
-* Improved performance of `tensor.cumulative_sum`, `tensor.cumulative_prod`, `tensor.cumulative_logsumexp` as well as performance of boolean indexing [gh-1923](https://github.com/IntelPython/dpctl/pull/1923)
-* Improved performance of `tensor.min`, `tensor.max`, `tensor.logsumexp`, `tensor.reduce_hypot` for floating point type arrays by at least 2x [gh-1932](https://github.com/IntelPython/dpctl/pull/1932)
+* `dpctl` changed to see GPU devices out of the box in virtual environment on Windows [gh-1922](https://github.com/IntelPython/dpctl/pull/1922)
+* Improved performance of `tensor.cumulative_sum`, `tensor.cumulative_prod`, `tensor.cumulative_logsumexp` as well as performance of boolean indexing [gh-1923](https://github.com/IntelPython/dpctl/pull/1923), [gh-1942](https://github.com/IntelPython/dpctl/pull/1942)
+* Improved performance of `tensor.min`, `tensor.max`, `tensor.logsumexp`, `tensor.reduce_hypot` for floating point type arrays by at least 2x [gh-1932](https://github.com/IntelPython/dpctl/pull/1932), [gh-1937](https://github.com/IntelPython/dpctl/pull/1937)
+* Updated Cython examples to use scikit-build [gh-1935](https://github.com/IntelPython/dpctl/pull/1935)
+* Reduced binary size of `_tensor_accumulation_impl` by 13 MB [gh-1957](https://github.com/IntelPython/dpctl/pull/1957)
 * Extended `tensor.asarray` to support objects that implement `__usm_ndarray__` property to be interpreted as `usm_ndarray` objects [gh-1959](https://github.com/IntelPython/dpctl/pull/1959)
-* `dpctl.tensor.usm_ndarray` object disallows implicit conversions to NumPy array [gh-1964](https://github.com/IntelPython/dpctl/pull/1964)
+* `tensor.usm_ndarray` object disallows implicit conversions to NumPy array [gh-1964](https://github.com/IntelPython/dpctl/pull/1964)
+* `stream` arguments in `tensor.usm_ndarray` methods now raise an error if `stream` is not a `tensor.SyclQueue` [gh-1969](https://github.com/IntelPython/dpctl/pull/1969)
+* `dpctl` initialization sets subprocess to use SPAWN method on Linux to enable `gdb-oneapi` to debug kernels submitted from Python applications [gh-1971](https://github.com/IntelPython/dpctl/pull/1971)
+* Reduced binary size of `_tensor_elementwise_impl` [gh-1976](https://github.com/IntelPython/dpctl/pull/1976)
+* Allow `dpctl.SyclQueue.memcpy` to and from multi-dimensional buffers [gh-1985](https://github.com/IntelPython/dpctl/pull/1985)
 
 ### Fixed
 
+* Fixed a bug in `tensor.roll` for very large values of `shift` [gh-1869](https://github.com/IntelPython/dpctl/pull/1869)
 * Fix for `tensor.result_type` when all inputs are Python built-in scalars [gh-1877](https://github.com/IntelPython/dpctl/pull/1877)
 * Improved error in constructors `tensor.full` and `tensor.full_like` when provided a non-numeric fill value [gh-1878](https://github.com/IntelPython/dpctl/pull/1878)
-* Added a check for pointer alignment when copying to C-contiguous memory [gh-1890](https://github.com/IntelPython/dpctl/pull/1890)
+* Added a check for pointer alignment when copying to C-contiguous memory [gh-1890](https://github.com/IntelPython/dpctl/pull/1890), [gh-1891](https://github.com/IntelPython/dpctl/pull/1891)
+* Fixed `dpctl` installed into virtual environment not finding DPC++ runtime libraries by adding `DPCTL_WITH_REDIST` cmake option (set to `OFF` by default) [gh-1893](https://github.com/IntelPython/dpctl/pull/1893)
 * Fixed incorrect result (issue [gh-1901](https://github.com/IntelPython/dpctl/issues/1901)) in `tensor.cumulative_sum` and in advanced indexing [gh-1902](https://github.com/IntelPython/dpctl/pull/1902)
+* Fixed `__setitem__()` for `tensor.usm_ndarray` when passed an empty boolean mask [gh-1915](https://github.com/IntelPython/dpctl/pull/1915)
+* `tensor.from_dlpack` docstring now shows that return type can be NumPy array and stipulates when this will be the case [gh-1919](https://github.com/IntelPython/dpctl/pull/1919)
+* Fixed docstring in helper class in DLPack tests [gh-1920](https://github.com/IntelPython/dpctl/pull/1920)
+* Fixed a bug in `tensor.astype` where `copy=False` would not be respected for 1d arrays when order keyword is specified [gh-1928](https://github.com/IntelPython/dpctl/pull/1928)
+* Replaced deprecated `CL/sycl.hpp` with recommended `sycl/sycl.hpp` in examples [gh-1933](https://github.com/IntelPython/dpctl/pull/1933)
+* Fixed `tensor.take_along_axis` and `tensor.put_along_axis` raising an error for `tensor.uint64` indices when given an array of dimension greater than 1 [gh-1934](https://github.com/IntelPython/dpctl/pull/1934)
+* Fixed unexpected results of `tensor.sum` with a requested output type of `bool` [gh-1958](https://github.com/IntelPython/dpctl/pull/1958)
+* Use `std::move` to avoid unnecessary copying of temporary in `triul_ctor.cpp` [gh-1960](https://github.com/IntelPython/dpctl/pull/1960)
+* Make `stream` a keyword-only argument in `tensor.usm_ndarray.to_device` per requirement by array API specification [gh-1966](https://github.com/IntelPython/dpctl/pull/1966)
+* Improve efficiency of copy implementation and avoid an unnecessary kernel invocation in `tensor.argsort` for 1d input [gh-1967](https://github.com/IntelPython/dpctl/pull/1967)
+* Corrected uses of NumPy constructors with `tensor.usm_ndarray` inputs in test suite [gh-1968](https://github.com/IntelPython/dpctl/pull/1968)
+* Fixed array API namespace inspection utilities showing `complex128` as a valid dtype on devices without double precision and `device` keywords not working with `dpctl.SyclQueue` or filter strings [gh-1979](https://github.com/IntelPython/dpctl/pull/1979)
+* Fixed a bug in `test_sycl_device_interface.cpp` which would cause compilation to fail with Clang version 20.0 [gh-1989](https://github.com/IntelPython/dpctl/pull/1989)
+* Fixed memory leaks in smart-pointer-managed USM temporaries in synchronizing kernel calls [gh-2002](https://github.com/IntelPython/dpctl/pull/2002)
+* `UsmNDArray_MakeSimpleFromPtr` and `UsmNDArray_MakeFromPtr` now raise an error when provided an invalid `typenum` before attempting to create the array [gh-2003](https://github.com/IntelPython/dpctl/pull/2003)
+* Fixed typos in `tensor.from_numpy` and `tensor.astype` [gh-2006](https://github.com/IntelPython/dpctl/pull/2006)
 
 ### Maintenance
 
+* Revert pinning of cmake to 3.26 on Windows [gh-1823](https://github.com/IntelPython/dpctl/pull/1823)
 * Update black version used in Python code style workflow [gh-1828](https://github.com/IntelPython/dpctl/pull/1828)
 * Fixed CI/CD workflow for building conda packages on Windows [gh-1831](https://github.com/IntelPython/dpctl/pull/1831)
+* Revert work-around in `test_sycl_kernel_submit.py` for problem in MKL 2024.2.0 [gh-1836](https://github.com/IntelPython/dpctl/pull/1836)
 * Do not use Mambaforge variant of miniforge as deprecated [gh-1844](https://github.com/IntelPython/dpctl/pull/1844)
 * Use pybind11=2.13.6 [gh-1845](https://github.com/IntelPython/dpctl/pull/1845)
 * Remove unnecessary include in C++ header file [gh-1846](https://github.com/IntelPython/dpctl/pull/1846)
 * Build translation unit "simplify_iteration_space.cpp" compiled multiple times as a static library [gh-1847](https://github.com/IntelPython/dpctl/pull/1847)
-* Fix warning in documentation generation caused by `diff` docstring [gh-1855](https://github.com/IntelPython/dpctl/pull/1855)
-* Fix additional warnings when generating docs [gh-1861](https://github.com/IntelPython/dpctl/pull/1861)
+* Add instructions for installing `dpctl` from Intel PyPi channel [gh-1860](https://github.com/IntelPython/dpctl/pull/1860)
+* Fix warnings when generating docs [gh-1855](https://github.com/IntelPython/dpctl/pull/1855), [gh-1861](https://github.com/IntelPython/dpctl/pull/1861)
+* Align conda recipe with conda-forge's `{{ stdlib("c") }}` migration [gh-1868](https://github.com/IntelPython/dpctl/pull/1868)
 * Add missing include of SYCL header to "math_utils.hpp" [gh-1899](https://github.com/IntelPython/dpctl/pull/1899)
 * Add support of CV-qualifiers in `is_complex<T>` helper [gh-1900](https://github.com/IntelPython/dpctl/pull/1900)
 * Tuning work for elementwise functions with modest performance gains (under 10%) [gh-1889](https://github.com/IntelPython/dpctl/pull/1889)
-* Support for Python 3.13 for `dpctl` [gh-1941](https://github.com/IntelPython/dpctl/pull/1941)
+* Reduce binary size of accumulators by saving repeated expressions to a temporary [gh-1896](https://github.com/IntelPython/dpctl/pull/1896)
+* Added workflow to run nightly tests of `dpctl` [gh-1903](https://github.com/IntelPython/dpctl/pull/1903), [gh-1905](https://github.com/IntelPython/dpctl/pull/1905)
+* Support and testing for Python 3.13 for `dpctl` [gh-1941](https://github.com/IntelPython/dpctl/pull/1941), [gh-1943](https://github.com/IntelPython/dpctl/pull/1943)
 * Change libtensor to use `std::size_t` and `dpctl::tensor::ssize_t` throughout and fix missing includes for `std::size_t` and `size_t` [gh-1950](https://github.com/IntelPython/dpctl/pull/1950)
+* Fixed some unqualified `size_t` and fixed-width integral types in `libtensor` [gh-1955](https://github.com/IntelPython/dpctl/pull/1955)
+* Add versioneer as a build requirement in documentation on building `dpctl` from source [gh-1972](https://github.com/IntelPython/dpctl/pull/1972)
+* Remove const qualifiers for class and struct members [gh-1974](https://github.com/IntelPython/dpctl/pull/1974), [gh-1975](https://github.com/IntelPython/dpctl/pull/1975)
+* Various code quality improvements to `test_sycl_queue_submit_local_accessor_arg.cpp` [gh-1990](https://github.com/IntelPython/dpctl/pull/1990)
+* Added Python 3.12 to package metadata [gh-2005](https://github.com/IntelPython/dpctl/pull/2005)
+* Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
+[gh-1837](https://github.com/IntelPython/dpctl/pull/1837),
+[gh-1839](https://github.com/IntelPython/dpctl/pull/1839),
+[gh-1848](https://github.com/IntelPython/dpctl/pull/1848),
+[gh-1853](https://github.com/IntelPython/dpctl/pull/1853),
+[gh-1854](https://github.com/IntelPython/dpctl/pull/1854),
+[gh-1856](https://github.com/IntelPython/dpctl/pull/1856),
+[gh-1858](https://github.com/IntelPython/dpctl/pull/1858),
+[gh-1863](https://github.com/IntelPython/dpctl/pull/1863),
+[gh-1864](https://github.com/IntelPython/dpctl/pull/1864),
+[gh-1865](https://github.com/IntelPython/dpctl/pull/1865),
+[gh-1881](https://github.com/IntelPython/dpctl/pull/1881),
+[gh-1882](https://github.com/IntelPython/dpctl/pull/1882),
+[gh-1884](https://github.com/IntelPython/dpctl/pull/1884),
+[gh-1886](https://github.com/IntelPython/dpctl/pull/1886),
+[gh-1888](https://github.com/IntelPython/dpctl/pull/1888),
+[gh-1897](https://github.com/IntelPython/dpctl/pull/1897),
+[gh-1898](https://github.com/IntelPython/dpctl/pull/1898),
+[gh-1909](https://github.com/IntelPython/dpctl/pull/1909),
+[gh-1916](https://github.com/IntelPython/dpctl/pull/1916),
+[gh-1927](https://github.com/IntelPython/dpctl/pull/1927),
+[gh-1940](https://github.com/IntelPython/dpctl/pull/1940),
+[gh-1948](https://github.com/IntelPython/dpctl/pull/1948),
+[gh-1949](https://github.com/IntelPython/dpctl/pull/1949),
+[gh-1952](https://github.com/IntelPython/dpctl/pull/1952),
+[gh-1962](https://github.com/IntelPython/dpctl/pull/1962),
+[gh-1963](https://github.com/IntelPython/dpctl/pull/1963),
+[gh-1973](https://github.com/IntelPython/dpctl/pull/1973),
+[gh-1980](https://github.com/IntelPython/dpctl/pull/1980),
+[gh-1981](https://github.com/IntelPython/dpctl/pull/1981),
+[gh-1983](https://github.com/IntelPython/dpctl/pull/1983),
+[gh-1988](https://github.com/IntelPython/dpctl/pull/1988),
 
 ## [0.18.3] - Dec. 07, 2024
 
