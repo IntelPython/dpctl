@@ -54,6 +54,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
+    DPCTLWorkGroupMemory_Available,
+    DPCTLWorkGroupMemory_Create,
+    DPCTLWorkGroupMemory_Delete,
     _arg_data_type,
     _backend_type,
     _queue_property_type,
@@ -248,6 +251,15 @@ cdef class _kernel_arg_type:
             self._name,
             p_name,
             _arg_data_type._LOCAL_ACCESSOR
+        )
+
+    @property
+    def dpctl_work_group_memory(self):
+        cdef str p_name = "dpctl_work_group_memory"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._WORK_GROUP_MEMORY
         )
 
 
@@ -849,6 +861,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
+            elif isinstance(arg, WorkGroupMemory):
+                kargs[idx] = <void*>(<size_t>arg._ref)
+                kargty[idx] = _arg_data_type._WORK_GROUP_MEMORY
             else:
                 ret = -1
         return ret
@@ -1524,3 +1539,41 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
+
+cdef class _WorkGroupMemory:
+    def __dealloc__(self):
+        if(self._mem_ref):
+            DPCTLWorkGroupMemory_Delete(self._mem_ref)
+
+cdef class WorkGroupMemory:
+    """
+    WorkGroupMemory(nbytes)
+    Python class representing the ``work_group_memory`` class from the
+    Workgroup Memory oneAPI SYCL extension for low-overhead allocation of local
+    memory shared by the workitems in a workgroup.
+
+    This is based on a DPC++ SYCL extension and only available in newer
+    versions. Use ``is_available()`` to check availability in your build.
+
+    Args:
+        nbytes (int)
+            number of bytes to allocate in local memory.
+            Expected to be positive.
+    """
+    def __cinit__(self, Py_ssize_t nbytes):
+        if not DPCTLWorkGroupMemory_Available():
+            raise RuntimeError("Workgroup memory extension not available")
+
+        self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
+
+    """Check whether the work_group_memory extension is available"""
+    @staticmethod
+    def is_available():
+        return DPCTLWorkGroupMemory_Available()
+
+    property _ref:
+        """Returns the address of the C API ``DPCTLWorkGroupMemoryRef``
+        pointer as a ``size_t``.
+        """
+        def __get__(self):
+            return <size_t>self._mem_ref
