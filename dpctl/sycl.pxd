@@ -42,6 +42,10 @@ cdef extern from "sycl/sycl.hpp" namespace "sycl":
         "sycl::kernel_bundle<sycl::bundle_state::executable>":
         pass
 
+cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
+    cdef struct RawWorkGroupMemoryTy
+    ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
+
 cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
     namespace "dpctl::syclinterface":
     # queue
@@ -68,7 +72,7 @@ cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
     cdef event * unwrap_event "dpctl::syclinterface::unwrap<sycl::event>" (
         dpctl_backend.DPCTLSyclEventRef)
 
-    # work group memory extension[
+    # work group memory extension
     cdef dpctl_backend.DPCTLSyclWorkGroupMemoryRef wrap_work_group_memory \
             "dpctl::syclinterface::wrap<RawWorkGroupMemory>" \
             (const RawWorkGroupMemory *)
