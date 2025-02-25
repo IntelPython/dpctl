@@ -84,9 +84,17 @@ template <typename srcTy, typename dstTy> struct CastTransformer
     }
 };
 
+template <typename ScanOpT, typename T> struct needs_workaround
+{
+    static constexpr bool value =
+        std::is_same_v<ScanOpT, sycl::logical_or<T>> ||
+        std::is_same_v<ScanOpT, sycl::logical_and<T>>;
+};
+
 template <typename BinOpT, typename T> struct can_use_inclusive_scan_over_group
 {
-    static constexpr bool value = sycl::has_known_identity<BinOpT, T>::value;
+    static constexpr bool value = sycl::has_known_identity<BinOpT, T>::value &&
+                                  !needs_workaround<BinOpT, T>::value;
 };
 
 namespace detail
