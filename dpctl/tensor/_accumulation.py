@@ -143,10 +143,10 @@ def _accumulate_common(
         _manager.add_event_pair(ht_e, acc_ev)
         if not (orig_out is None or out is orig_out):
             # Copy the out data from temporary buffer to original memory
-            ht_e_cpy, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy, cpy_e = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=out, dst=orig_out, sycl_queue=q, depends=[acc_ev]
             )
-            _manager.add_event_pair(ht_e_cpy, cpy_ev)
+            _manager.add_event_pair(ht_e_cpy, cpy_e)
             out = orig_out
     else:
         if _dtype_supported(res_dt, res_dt):
@@ -203,10 +203,10 @@ def _accumulate_common(
                     depends=[cpy_e],
                 )
             _manager.add_event_pair(ht_e, acc_ev)
-            ht_e_cpy2, cpy_ev2 = ti._copy_usm_ndarray_into_usm_ndarray(
+            ht_e_cpy2, cpy_e2 = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=tmp_res, dst=out, sycl_queue=q, depends=[acc_ev]
             )
-            _manager.add_event_pair(ht_e_cpy2, cpy_ev2)
+            _manager.add_event_pair(ht_e_cpy2, cpy_e2)
 
     if appended_axis:
         out = dpt.squeeze(out)
