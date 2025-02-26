@@ -129,7 +129,7 @@ cdef class kernel_arg_type_attribute:
 cdef class LocalAccessor:
     cdef _md_local_accessor lacc
 
-    def __cinit__(self, size_t ndim, str type, size_t dim0, size_t dim1, size_t dim2):
+    def __cinit__(self, size_t ndim, str dtype, size_t dim0, size_t dim1, size_t dim2):
        self.lacc.ndim = ndim
        self.lacc.dim0 = dim0
        self.lacc.dim1 = dim1
@@ -137,28 +137,28 @@ cdef class LocalAccessor:
 
        if ndim < 1 or ndim > 3:
            raise ValueError
-       if type == 'i1':
+       if dtype == 'i1':
            self.lacc.dpctl_type_id = _arg_data_type._INT8_T
-       elif type == 'u1':
+       elif dtype == 'u1':
            self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
-       elif type == 'i2':
+       elif dtype == 'i2':
            self.lacc.dpctl_type_id = _arg_data_type._INT16_T
-       elif type == 'u2':
+       elif dtype == 'u2':
            self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
-       elif type == 'i4':
+       elif dtype == 'i4':
            self.lacc.dpctl_type_id = _arg_data_type._INT32_T
-       elif type == 'u4':
+       elif dtype == 'u4':
            self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
-       elif type == 'i8':
+       elif dtype == 'i8':
            self.lacc.dpctl_type_id = _arg_data_type._INT64_T
-       elif type == 'u8':
+       elif dtype == 'u8':
            self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
-       elif type == 'f4':
+       elif dtype == 'f4':
            self.lacc.dpctl_type_id = _arg_data_type._FLOAT
-       elif type == 'f8':
+       elif dtype == 'f8':
            self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
        else:
-           raise ValueError(f"Unrecognized type value: '{type}'")
+           raise ValueError(f"Unrecognized type value: '{dtype}'")
 
     def __repr__(self):
         return "LocalAccessor(" + self.ndim + ")"
