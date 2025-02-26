@@ -132,6 +132,10 @@ struct TypePairSupportDataForSumAccumulation
         td_ns::NotDefinedEntry>::is_defined;
 };
 
+template <typename T>
+using CumSumScanOpT = std::
+    conditional_t<std::is_same_v<T, bool>, sycl::logical_or<T>, sycl::plus<T>>;
+
 template <typename fnT, typename srcTy, typename dstTy>
 struct CumSum1DContigFactory
 {
@@ -140,9 +144,7 @@ struct CumSum1DContigFactory
         if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
                                                             dstTy>::is_defined)
         {
-            using ScanOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ScanOpT = CumSumScanOpT<dstTy>;
             constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
@@ -175,9 +177,7 @@ struct CumSum1DIncludeInitialContigFactory
         if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
                                                             dstTy>::is_defined)
         {
-            using ScanOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ScanOpT = CumSumScanOpT<dstTy>;
             constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
@@ -210,9 +210,7 @@ struct CumSumStridedFactory
         if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
                                                             dstTy>::is_defined)
         {
-            using ScanOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ScanOpT = CumSumScanOpT<dstTy>;
             constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
@@ -245,9 +243,7 @@ struct CumSumIncludeInitialStridedFactory
         if constexpr (TypePairSupportDataForSumAccumulation<srcTy,
                                                             dstTy>::is_defined)
         {
-            using ScanOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ScanOpT = CumSumScanOpT<dstTy>;
             constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
