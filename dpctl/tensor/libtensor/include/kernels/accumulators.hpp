@@ -86,6 +86,7 @@ template <typename srcTy, typename dstTy> struct CastTransformer
 
 template <typename ScanOpT, typename T> struct needs_workaround
 {
+    // work-around needed due to crash in JITing on CPU
     static constexpr bool value =
         std::is_same_v<ScanOpT, sycl::logical_or<T>> ||
         std::is_same_v<ScanOpT, sycl::logical_and<T>>;
