@@ -395,7 +395,7 @@ cdef class SyclPlatform(_SyclPlatform):
 
         Raises:
             TypeError:
-                If `device_type` is not a str or :class:`dpctl.device_type`
+                If `device_type` is not a string or :class:`dpctl.device_type`
                 enum.
             ValueError:
                 If the ``DPCTLPlatform_GetDevices`` call returned
