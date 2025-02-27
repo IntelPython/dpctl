@@ -288,6 +288,9 @@ def get_spirv_abspath(fn):
     return spirv_file
 
 
+# the process for generating the .spv files in this test is documented in
+# libsyclinterface/tests/test_sycl_queue_submit_local_accessor_arg.cpp
+# in a comment starting on line 123
 def test_submit_local_accessor_arg():
     try:
         q = dpctl.SyclQueue("level_zero")
