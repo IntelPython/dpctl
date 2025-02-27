@@ -1,0 +1,26 @@
+﻿dpctl.event\_status\_type
+=========================
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: event_status_type
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~event_status_type.unknown_status
+      ~event_status_type.submitted
+      ~event_status_type.running
+      ~event_status_type.complete
+   
+   
