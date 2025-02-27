@@ -62,6 +62,17 @@
     has_cpu_devices
     has_accelerator_devices
 
+.. rubric:: Enums
+
+.. autosummary::
+    :toctree: generated
+    :nosignatures:
+
+    device_type
+    backend_type
+    event_status_type
+    global_mem_cache_type
+
 .. rubric:: Exceptions
 
 .. autosummary::
