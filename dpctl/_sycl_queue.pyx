@@ -127,6 +127,41 @@ cdef class kernel_arg_type_attribute:
 
 
 cdef class LocalAccessor:
+    """
+    LocalAccessor(ndim, dtype, dim0, dim1, dim2)
+
+    Python class for specifying the dimensionality and type of a
+    ``sycl::local_accessor``, to be used as a kernel argument type.
+
+    Args:
+        ndim (size_t):
+            number of dimensions.
+            Can be between one and three.
+        dtype (str):
+            the data type of the local memory.
+            The permitted values are
+
+                `'i1'`, `'i2'`, `'i4'`, `'i8'`:
+                    signed integral types int8_t, int16_t, int32_t, int64_t
+                `'u1'`, `'u2'`, `'u4'`, `'u8'`
+                    unsigned integral types uint8_t, uint16_t, uint32_t,
+                    uint64_t
+                `'f4'`, `'f8'`,
+                    single- and double-precision floating-point types float and
+                    double
+        dim0 (size_t):
+            Size of the first dimension.
+        dim1 (size_t):
+            Size of the second dimension.
+        dim2 (size_t):
+            Size of the third dimension.
+
+    Raises:
+        ValueError:
+            If the given dimension is not between one and three.
+        ValueError:
+            If the dtype string is unrecognized.
+    """
     cdef _md_local_accessor lacc
 
     def __cinit__(self, size_t ndim, str dtype, size_t dim0, size_t dim1, size_t dim2):
@@ -136,7 +171,7 @@ cdef class LocalAccessor:
        self.lacc.dim2 = dim2
 
        if ndim < 1 or ndim > 3:
-           raise ValueError
+           raise ValueError("LocalAccessor must have dimension between one and three")
        if dtype == 'i1':
            self.lacc.dpctl_type_id = _arg_data_type._INT8_T
        elif dtype == 'u1':
@@ -164,6 +199,10 @@ cdef class LocalAccessor:
         return "LocalAccessor(" + self.ndim + ")"
 
     cdef size_t addressof(self):
+        """
+        Returns the address of the _md_local_accessor for this LocalAccessor
+        cast to ``size_t``.
+        """
         return <size_t>&self.lacc
 
 
