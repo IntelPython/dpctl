@@ -47,6 +47,8 @@ namespace kernels
 namespace accumulators
 {
 
+namespace su_ns = dpctl::tensor::sycl_utils;
+
 using dpctl::tensor::ssize_t;
 using namespace dpctl::tensor::offset_utils;
 
@@ -84,9 +86,18 @@ template <typename srcTy, typename dstTy> struct CastTransformer
     }
 };
 
+template <typename ScanOpT, typename T> struct needs_workaround
+{
+    // workaround needed due to crash in JITing on CPU
+    // remove when CMPLRLLVM-65813 is resolved
+    static constexpr bool value = su_ns::IsSyclLogicalAnd<T, ScanOpT>::value ||
+                                  su_ns::IsSyclLogicalOr<T, ScanOpT>::value;
+};
+
 template <typename BinOpT, typename T> struct can_use_inclusive_scan_over_group
 {
-    static constexpr bool value = sycl::has_known_identity<BinOpT, T>::value;
+    static constexpr bool value = sycl::has_known_identity<BinOpT, T>::value &&
+                                  !needs_workaround<BinOpT, T>::value;
 };
 
 namespace detail
@@ -143,8 +154,6 @@ public:
 } // end of namespace detail
 
 // Iterative cumulative summation
-
-namespace su_ns = dpctl::tensor::sycl_utils;
 
 using nwiT = std::uint32_t;
 

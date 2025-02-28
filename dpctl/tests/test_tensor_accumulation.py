@@ -421,3 +421,15 @@ def test_cumulative_sum_gh_1901(p):
     inp = dpt.ones(n, dtype=dt)
     r = dpt.cumulative_sum(inp, dtype=dt)
     assert dpt.all(r == dpt.arange(1, n + 1, dtype=dt))
+
+
+@pytest.mark.parametrize(
+    "dt", ["i1", "i2", "i4", "i8", "f2", "f4", "f8", "c8", "c16"]
+)
+def test_gh_2017(dt):
+    "See https://github.com/IntelPython/dpctl/issues/2017"
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+    x = dpt.asarray([-1, 1], dtype=dpt.dtype(dt), sycl_queue=q)
+    r = dpt.cumulative_sum(x, dtype="?")
+    assert dpt.all(r)
