@@ -88,7 +88,8 @@ template <typename srcTy, typename dstTy> struct CastTransformer
 
 template <typename ScanOpT, typename T> struct needs_workaround
 {
-    // work-around needed due to crash in JITing on CPU
+    // workaround needed due to crash in JITing on CPU
+    // remove when CMPLRLLVM-65813 is resolved
     static constexpr bool value = su_ns::IsSyclLogicalAnd<T, ScanOpT>::value ||
                                   su_ns::IsSyclLogicalOr<T, ScanOpT>::value;
 };
