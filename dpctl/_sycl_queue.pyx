@@ -1555,14 +1555,46 @@ cdef class WorkGroupMemory:
     This is based on a DPC++ SYCL extension and only available in newer
     versions. Use ``is_available()`` to check availability in your build.
 
+    There are multiple ways to create a `WorkGroupMemory`.
+
+    - If the constructor is invoked with just a single argument, this argument
+      is interpreted as the number of bytes to allocated in the shared local
+      memory.
+
+    - If the constructor is invoked with two arguments, the first argument is
+      interpreted as the datatype of the local memory, using the numpy type
+      naming scheme.
+      The second argument is interpreted as the number of elements to allocate.
+      The number of bytes to allocate is then computed from the byte size of
+      the data type and the element count.
+
     Args:
-        nbytes (int)
-            number of bytes to allocate in local memory.
-            Expected to be positive.
+        args:
+            Variadic argument, see class documentation.
+
+    Raises:
+        TypeError: In case of incorrect arguments given to constructors,
+                   unexpected types of input arguments.
     """
-    def __cinit__(self, Py_ssize_t nbytes):
+    def __cinit__(self, *args):
+        cdef size_t nbytes
         if not DPCTLWorkGroupMemory_Available():
             raise RuntimeError("Workgroup memory extension not available")
+
+        if not (0 < len(args) < 3):
+            raise TypeError("WorkGroupMemory constructor takes 1 or 2 "
+                            f"arguments, but {len(args)} were given")
+
+        if len(args) == 1:
+            nbytes = <size_t>(args[0])
+        else:
+            dtype = <str>(args[0])
+            count = <size_t>(args[1])
+            ty = dtype[0]
+            if not ty in ["i", "u", "f"]:
+                raise TypeError(f"Unrecognized type value: '{dtype}'")
+            byte_size = <size_t>(int(dtype[1:]))
+            nbytes = count * byte_size
 
         self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
 

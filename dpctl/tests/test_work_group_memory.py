@@ -78,7 +78,7 @@ def test_submit_work_group_memory():
             [
                 x.usm_data,
                 y.usm_data,
-                dpctl.WorkGroupMemory(local_size * x.itemsize),
+                dpctl.WorkGroupMemory("i4", local_size),
             ],
             [global_size],
             [local_size],
