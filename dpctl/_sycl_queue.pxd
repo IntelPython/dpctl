@@ -22,7 +22,12 @@
 
 from libcpp cimport bool as cpp_bool
 
-from ._backend cimport DPCTLSyclDeviceRef, DPCTLSyclQueueRef, _arg_data_type
+from ._backend cimport (
+    DPCTLSyclDeviceRef,
+    DPCTLSyclQueueRef,
+    DPCTLSyclWorkGroupMemoryRef,
+    _arg_data_type,
+)
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 from ._sycl_event cimport SyclEvent
@@ -98,3 +103,13 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)
+
+cdef public api class _WorkGroupMemory [
+    object Py_WorkGroupMemoryObject, type Py_WorkGroupMemoryType
+]:
+    cdef DPCTLSyclWorkGroupMemoryRef _mem_ref
+
+cdef public api class WorkGroupMemory(_WorkGroupMemory) [
+    object PyWorkGroupMemoryObject, type PyWorkGroupMemoryType
+]:
+    pass

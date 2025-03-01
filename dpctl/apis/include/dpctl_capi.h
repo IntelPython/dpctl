@@ -25,9 +25,11 @@
 #pragma once
 
 // clang-format off
-// Ordering of includes is important here. dpctl_sycl_types defines types
-// used by dpctl's Python C-API headers.
+// Ordering of includes is important here. dpctl_sycl_types and
+// dpctl_sycl_extension_interface define types used by dpctl's Python
+// C-API headers.
 #include "syclinterface/dpctl_sycl_types.h"
+#include "syclinterface/dpctl_sycl_extension_interface.h"
 #ifdef __cplusplus
 #define CYTHON_EXTERN_C extern "C"
 #else
