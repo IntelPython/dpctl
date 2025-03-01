@@ -56,6 +56,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclEventRef,
     _arg_data_type,
     _backend_type,
+    _md_local_accessor,
     _queue_property_type,
 )
 from .memory._memory cimport _Memory
@@ -119,6 +120,86 @@ cdef class kernel_arg_type_attribute:
     @property
     def value(self):
         return self.attr_value
+
+
+cdef class LocalAccessor:
+    """
+    LocalAccessor(ndim, dtype, dim0, dim1, dim2)
+
+    Python class for specifying the dimensionality and type of a
+    ``sycl::local_accessor``, to be used as a kernel argument type.
+
+    Args:
+        ndim (size_t):
+            number of dimensions.
+            Can be between one and three.
+        dtype (str):
+            the data type of the local memory.
+            The permitted values are
+
+                `'i1'`, `'i2'`, `'i4'`, `'i8'`:
+                    signed integral types int8_t, int16_t, int32_t, int64_t
+                `'u1'`, `'u2'`, `'u4'`, `'u8'`
+                    unsigned integral types uint8_t, uint16_t, uint32_t,
+                    uint64_t
+                `'f4'`, `'f8'`,
+                    single- and double-precision floating-point types float and
+                    double
+        dim0 (size_t):
+            Size of the first dimension.
+        dim1 (size_t):
+            Size of the second dimension.
+        dim2 (size_t):
+            Size of the third dimension.
+
+    Raises:
+        ValueError:
+            If the given dimension is not between one and three.
+        ValueError:
+            If the dtype string is unrecognized.
+    """
+    cdef _md_local_accessor lacc
+
+    def __cinit__(self, size_t ndim, str dtype, size_t dim0, size_t dim1, size_t dim2):
+       self.lacc.ndim = ndim
+       self.lacc.dim0 = dim0
+       self.lacc.dim1 = dim1
+       self.lacc.dim2 = dim2
+
+       if ndim < 1 or ndim > 3:
+           raise ValueError("LocalAccessor must have dimension between one and three")
+       if dtype == 'i1':
+           self.lacc.dpctl_type_id = _arg_data_type._INT8_T
+       elif dtype == 'u1':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
+       elif dtype == 'i2':
+           self.lacc.dpctl_type_id = _arg_data_type._INT16_T
+       elif dtype == 'u2':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
+       elif dtype == 'i4':
+           self.lacc.dpctl_type_id = _arg_data_type._INT32_T
+       elif dtype == 'u4':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
+       elif dtype == 'i8':
+           self.lacc.dpctl_type_id = _arg_data_type._INT64_T
+       elif dtype == 'u8':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
+       elif dtype == 'f4':
+           self.lacc.dpctl_type_id = _arg_data_type._FLOAT
+       elif dtype == 'f8':
+           self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
+       else:
+           raise ValueError(f"Unrecognized type value: '{dtype}'")
+
+    def __repr__(self):
+        return "LocalAccessor(" + self.ndim + ")"
+
+    cdef size_t addressof(self):
+        """
+        Returns the address of the _md_local_accessor for this LocalAccessor
+        cast to ``size_t``.
+        """
+        return <size_t>&self.lacc
 
 
 cdef class _kernel_arg_type:
@@ -849,6 +930,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
+            elif isinstance(arg, LocalAccessor):
+                kargs[idx] = <void*>((<LocalAccessor>arg).addressof())
+                kargty[idx] = _arg_data_type._LOCAL_ACCESSOR
             else:
                 ret = -1
         return ret
