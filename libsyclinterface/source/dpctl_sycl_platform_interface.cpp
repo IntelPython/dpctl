@@ -294,6 +294,9 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
     }
 
     // handle unknown device
+    // custom and automatic are also treated as unknown
+    // as DPC++ would normally treat as `all`
+    // see CMPLRLLVM-65826
     if (DTy == DPCTLSyclDeviceType::DPCTL_UNKNOWN_DEVICE) {
         return wrap<vecTy>(DevicesVectorPtr);
     }
