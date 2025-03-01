@@ -51,8 +51,6 @@ def string_to_device_type(dty_str):
         return dty.accelerator
     elif dty_str == "cpu":
         return dty.cpu
-    elif dty_str == "host":
-        return dty.host
     elif dty_str == "gpu":
         return dty.gpu
 
@@ -62,8 +60,6 @@ def string_to_backend_type(bty_str):
         return bty.cuda
     elif bty_str == "hip":
         return bty.hip
-    elif bty_str == "host":
-        return bty.host
     elif bty_str == "level_zero":
         return bty.level_zero
     elif bty_str == "opencl":

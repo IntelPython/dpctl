@@ -849,3 +849,56 @@ DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return sizes;
 }
+
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *ComponentDevicesVectorPtr = nullptr;
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        try {
+            auto componentDevices =
+                D->get_info<sycl::ext::oneapi::experimental::info::device::
+                                component_devices>();
+            ComponentDevicesVectorPtr = new vecTy();
+            for (const auto &cd : componentDevices) {
+                ComponentDevicesVectorPtr->emplace_back(
+                    wrap<device>(new device(cd)));
+            }
+        } catch (std::exception const &e) {
+            delete ComponentDevicesVectorPtr;
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    return wrap<vecTy>(ComponentDevicesVectorPtr);
+}
+
+__dpctl_give DPCTLSyclDeviceRef
+DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        bool is_component = false;
+        try {
+            is_component = D->has(sycl::aspect::ext_oneapi_is_component);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        if (!is_component)
+            return nullptr;
+        try {
+            const auto &compositeDevice =
+                D->get_info<sycl::ext::oneapi::experimental::info::device::
+                                composite_device>();
+            return wrap<device>(new device(compositeDevice));
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    else
+        return nullptr;
+}
