@@ -154,12 +154,12 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     ``backend`` in addition to only ``device_type``.
 
     Args:
-        backend (optional):
+        backend (str, :class:`dpctl.backend_type`, optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
             "hip", "opencl", "level_zero", or "all".
             Default: ``dpctl.backend_type.all``.
-        device_type (optional):
+        device_type (str, :class:`dpctl.device_type`, optional):
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
             "gpu", "cpu", "accelerator", or "all".
@@ -210,12 +210,12 @@ cpdef int get_num_devices(
     :class:`dpctl.device_type` and :class:`dpctl.backend_type`.
 
     Args:
-        backend (optional):
+        backend (str, :class:`dpctl.backend_type`, optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
             "hip", "opencl", "level_zero", or "all".
             Default: ``dpctl.backend_type.all``.
-        device_type (optional):
+        device_type (str, :class:`dpctl.device_type`, optional):
             A :class:`dpctl.device_type` enum value or a string that
             specifies a SYCL device type. Currently, accepted values are:
             "gpu", "cpu", "accelerator", or "all".
