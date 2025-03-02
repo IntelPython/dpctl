@@ -794,11 +794,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>backend</strong> (<em>optional</em>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> enum value or a string that
+<li><p><strong>backend</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> enum value or a string that
 specifies a SYCL backend. Currently, accepted values are: “cuda”,
 “hip”, “opencl”, “level_zero”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.</p></li>
-<li><p><strong>device_type</strong> (<em>optional</em>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
+<li><p><strong>device_type</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
 specifies a SYCL device type. Currently, accepted values are:
 “gpu”, “cpu”, “accelerator”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.</p></li>
