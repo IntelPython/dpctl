@@ -165,6 +165,8 @@ list_of_supported_aspects = [
     "usm_atomic_host_allocations",
     "usm_atomic_shared_allocations",
     "emulated",
+    "is_component",
+    "is_composite",
 ]
 
 # SYCL 2020 spec aspects not presently
