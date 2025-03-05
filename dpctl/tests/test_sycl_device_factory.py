@@ -192,6 +192,6 @@ def test_get_composite_devices():
     if devices:
         num_devices = len(devices)
         for i in range(num_devices):
-            assert devices[i].is_composite
+            assert devices[i].has_aspect_is_composite
     else:
         pytest.skip()

@@ -798,7 +798,7 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
-    def is_component(self):
+    def has_aspect_is_component(self):
         """ Returns ``True`` if this device is a component device, ``False``
         otherwise. A device with this aspect will have a composite device
         from which it is descended.
@@ -812,7 +812,7 @@ cdef class SyclDevice(_SyclDevice):
 
 
     @property
-    def is_composite(self):
+    def has_aspect_is_composite(self):
         """ Returns ``True`` if this device is a composite device, ``False``
         otherwise. A device with this aspect contains component devices.
 
