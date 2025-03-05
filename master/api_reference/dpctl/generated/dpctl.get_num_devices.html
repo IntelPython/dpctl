@@ -352,6 +352,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl.SyclPlatform.html">dpctl.SyclPlatform</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of dpctl.SyclPlatform</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclPlatform.get_devices.html">dpctl.SyclPlatform.get_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclPlatform.print_platform_info.html">dpctl.SyclPlatform.print_platform_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclPlatform.backend.html">dpctl.SyclPlatform.backend</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclPlatform.default_context.html">dpctl.SyclPlatform.default_context</a></li>
@@ -793,13 +794,13 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>backend</strong> (<em>optional</em>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> enum value or a string that
+<li><p><strong>backend</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> enum value or a string that
 specifies a SYCL backend. Currently, accepted values are: “cuda”,
 “hip”, “opencl”, “level_zero”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.</p></li>
-<li><p><strong>device_type</strong> (<em>optional</em>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
+<li><p><strong>device_type</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
 specifies a SYCL device type. Currently, accepted values are:
-“gpu”, “cpu”, “accelerator”, “host”, or “all”.
+“gpu”, “cpu”, “accelerator”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.</p></li>
 </ul>
 </dd>
