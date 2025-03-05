@@ -185,3 +185,13 @@ def test_get_devices_with_device_type_str(device_type_str):
             assert dev == devices[i]
     else:
         pytest.skip()
+
+
+def test_get_composite_devices():
+    devices = dpctl.get_composite_devices()
+    if devices:
+        num_devices = len(devices)
+        for i in range(num_devices):
+            assert devices[i].is_composite
+    else:
+        pytest.skip()
