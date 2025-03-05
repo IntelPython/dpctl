@@ -218,6 +218,12 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::emulated:
         ss << "emulated";
         break;
+    case aspect::ext_oneapi_is_component:
+        ss << "is_component";
+        break;
+    case aspect::ext_oneapi_is_composite:
+        ss << "is_composite";
+        break;
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -286,6 +292,12 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     }
     else if (aspectTyStr == "emulated") {
         aspectTy = aspect::emulated;
+    }
+    else if (aspectTyStr == "is_component") {
+        aspectTy = aspect::ext_oneapi_is_component;
+    }
+    else if (aspectTyStr == "is_composite") {
+        aspectTy = aspect::ext_oneapi_is_composite;
     }
     else {
         // \todo handle the error
