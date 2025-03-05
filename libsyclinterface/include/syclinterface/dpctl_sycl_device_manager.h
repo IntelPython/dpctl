@@ -145,7 +145,7 @@ DPCTL_API
 size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier);
 
 /*!
- * @brief Prints out the info::deivice attributes for the device that are
+ * @brief Prints out the info::device attributes for the device that are
  * currently supported by dpctl.
  *
  * @param    DRef           A #DPCTLSyclDeviceRef opaque pointer.
