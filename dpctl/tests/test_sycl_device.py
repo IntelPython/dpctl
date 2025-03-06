@@ -335,6 +335,7 @@ def test_get_component_devices_from_composite():
     devices = dpctl.get_devices()
     composite_devices = dpctl.get_composite_devices()
     for Cd in composite_devices:
-        component_devices = Cd.component_devices
+        component_devices = Cd.component_devices()
         for d in component_devices:
+            # component devices are root devices
             assert d in devices
