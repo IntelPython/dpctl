@@ -316,3 +316,49 @@ TEST_F(TestDPCTLDeviceMgrNullReference, ChkGetPositionInDevices)
     EXPECT_NO_FATAL_FAILURE(
         DPCTLDeviceMgr_GetPositionInDevices(nullDRef, mask));
 }
+
+struct TestDPCTLGetCompositeDevices : public ::testing::Test
+{
+    DPCTLDeviceVectorRef DV = nullptr;
+    size_t nDevices = 0;
+
+    TestDPCTLGetCompositeDevices()
+    {
+        EXPECT_NO_FATAL_FAILURE(DV = DPCTLDeviceMgr_GetCompositeDevices());
+        EXPECT_TRUE(DV != nullptr);
+        EXPECT_NO_FATAL_FAILURE(nDevices = DPCTLDeviceVector_Size(DV));
+    }
+
+    void SetUp()
+    {
+        if (!nDevices) {
+            GTEST_SKIP_("Skipping as no composite devices available");
+        }
+    }
+
+    ~TestDPCTLGetCompositeDevices()
+    {
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Clear(DV));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DV));
+    }
+};
+
+TEST_F(TestDPCTLGetCompositeDevices, ChkGetAt)
+{
+    for (auto i = 0ul; i < nDevices; ++i) {
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDeviceVector_GetAt(DV, i));
+        ASSERT_TRUE(DRef != nullptr);
+    }
+}
+
+TEST_F(TestDPCTLGetCompositeDevices, ChkCompositeAspect)
+{
+    for (auto i = 0ul; i < nDevices; ++i) {
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDeviceVector_GetAt(DV, i));
+        ASSERT_TRUE(DRef != nullptr);
+        ASSERT_TRUE(
+            DPCTLDevice_HasAspect(DRef, DPCTLSyclAspectType::is_composite));
+    }
+}
