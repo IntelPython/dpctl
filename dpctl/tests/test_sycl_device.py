@@ -312,3 +312,29 @@ def test_get_unpartitioned_parent_device_from_sub_device():
         pytest.skip("Default device can not be partitioned")
     assert isinstance(sdevs, list) and len(sdevs) > 0
     assert dev == sdevs[0].get_unpartitioned_parent_device()
+
+
+def test_composite_device_method():
+    """
+    Test that the composite_device method returns a composite
+    device found in ``dpctl.get_composite_devices()``
+    """
+    devices = dpctl.get_devices()
+    composite_devices = dpctl.get_composite_devices()
+    for d in devices:
+        if d.has_aspect_is_component:
+            Cd = d.composite_device
+            assert Cd in composite_devices
+
+
+def test_get_component_devices_from_composite():
+    """
+    Test that the component_devices method returns component
+    root devices.
+    """
+    devices = dpctl.get_devices()
+    composite_devices = dpctl.get_composite_devices()
+    for Cd in composite_devices:
+        component_devices = Cd.component_devices
+        for d in component_devices:
+            assert d in devices
