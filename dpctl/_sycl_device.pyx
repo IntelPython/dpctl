@@ -1765,11 +1765,11 @@ cdef class SyclDevice(_SyclDevice):
                 The composite :class:`dpctl.SyclDevice` instance for a
                 component device, or ``None`` for a non-component device.
         """
-        cdef DPCTLSyclDeviceRef cDRef = NULL
-        cDRef = DPCTLDevice_GetCompositeDevice(self._device_ref)
-        if (cDRef is NULL):
+        cdef DPCTLSyclDeviceRef CDRef = NULL
+        CDRef = DPCTLDevice_GetCompositeDevice(self._device_ref)
+        if (CDRef is NULL):
             return None
-        return SyclDevice._create(cDRef)
+        return SyclDevice._create(CDRef)
 
     def component_devices(self):
         """ Returns a list of component devices contained in this SYCL device.
