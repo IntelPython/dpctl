@@ -64,6 +64,7 @@ from ._backend cimport (  # noqa: E211
 from .memory._memory cimport _Memory
 
 import ctypes
+import numbers
 
 from .enum_types import backend_type
 
@@ -1586,14 +1587,24 @@ cdef class WorkGroupMemory:
                             f"arguments, but {len(args)} were given")
 
         if len(args) == 1:
+            if not isinstance(args[0], numbers.Integral):
+                raise TypeError("WorkGroupMemory single argument constructor"
+                                "expects number of bytes as integer value")
             nbytes = <size_t>(args[0])
         else:
+            if not isinstance(args[0], str) or not isinstance(args[1], numbers.Integral):
+                raise TypeError("WorkGroupMemory constructor expects type as"
+                                "string and number of bytes as integer value.")
             dtype = <str>(args[0])
             count = <size_t>(args[1])
-            ty = dtype[0]
-            if not ty in ["i", "u", "f"]:
+            if not dtype[0] in ["i", "u", "f"]:
                 raise TypeError(f"Unrecognized type value: '{dtype}'")
-            byte_size = <size_t>(int(dtype[1:]))
+            try:
+                bit_width = int(dtype[1:])
+            except ValueError:
+                raise TypeError(f"Unrecognized type value: '{dtype}'")
+
+            byte_size = <size_t>bit_width
             nbytes = count * byte_size
 
         self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
