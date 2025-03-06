@@ -49,6 +49,8 @@
       ~SyclDevice.has_aspect_gpu
       ~SyclDevice.has_aspect_host_debuggable
       ~SyclDevice.has_aspect_image
+      ~SyclDevice.has_aspect_is_component
+      ~SyclDevice.has_aspect_is_composite
       ~SyclDevice.has_aspect_online_compiler
       ~SyclDevice.has_aspect_online_linker
       ~SyclDevice.has_aspect_queue_profiling
@@ -64,8 +66,6 @@
       ~SyclDevice.image_3d_max_height
       ~SyclDevice.image_3d_max_width
       ~SyclDevice.is_accelerator
-      ~SyclDevice.is_component
-      ~SyclDevice.is_composite
       ~SyclDevice.is_cpu
       ~SyclDevice.is_gpu
       ~SyclDevice.local_mem_size

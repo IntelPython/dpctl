@@ -259,6 +259,8 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_gpu.html">dpctl.SyclDevice.has_aspect_gpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_host_debuggable.html">dpctl.SyclDevice.has_aspect_host_debuggable</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_image.html">dpctl.SyclDevice.has_aspect_image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_is_component.html">dpctl.SyclDevice.has_aspect_is_component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_is_composite.html">dpctl.SyclDevice.has_aspect_is_composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_online_compiler.html">dpctl.SyclDevice.has_aspect_online_compiler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_online_linker.html">dpctl.SyclDevice.has_aspect_online_linker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_queue_profiling.html">dpctl.SyclDevice.has_aspect_queue_profiling</a></li>
@@ -274,8 +276,6 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.image_3d_max_height.html">dpctl.SyclDevice.image_3d_max_height</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.image_3d_max_width.html">dpctl.SyclDevice.image_3d_max_width</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.is_accelerator.html">dpctl.SyclDevice.is_accelerator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.is_component.html">dpctl.SyclDevice.is_component</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.is_composite.html">dpctl.SyclDevice.is_composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.is_cpu.html">dpctl.SyclDevice.is_cpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.is_gpu.html">dpctl.SyclDevice.is_gpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.local_mem_size.html">dpctl.SyclDevice.local_mem_size</a></li>
@@ -937,6 +937,12 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_image.html#dpctl.SyclDevice.has_aspect_image" title="dpctl.SyclDevice.has_aspect_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_image</span></code></a></p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports images, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (refer Sec 4.15.3 of SYCL 2020 spec).</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_is_component.html#dpctl.SyclDevice.has_aspect_is_component" title="dpctl.SyclDevice.has_aspect_is_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_is_component</span></code></a></p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a component device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_is_composite.html#dpctl.SyclDevice.has_aspect_is_composite" title="dpctl.SyclDevice.has_aspect_is_composite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_is_composite</span></code></a></p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a composite device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.has_aspect_online_compiler.html#dpctl.SyclDevice.has_aspect_online_compiler" title="dpctl.SyclDevice.has_aspect_online_compiler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_aspect_online_compiler</span></code></a></p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device supports online compilation of device code, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
@@ -981,12 +987,6 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_accelerator.html#dpctl.SyclDevice.is_accelerator" title="dpctl.SyclDevice.is_accelerator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_accelerator</span></code></a></p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this instance is a SYCL accelerator device.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_component.html#dpctl.SyclDevice.is_component" title="dpctl.SyclDevice.is_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_component</span></code></a></p></td>
-<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a component device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_composite.html#dpctl.SyclDevice.is_composite" title="dpctl.SyclDevice.is_composite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_composite</span></code></a></p></td>
-<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a composite device, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.is_cpu.html#dpctl.SyclDevice.is_cpu" title="dpctl.SyclDevice.is_cpu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_cpu</span></code></a></p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this instance is a SYCL CPU device.</p></td>

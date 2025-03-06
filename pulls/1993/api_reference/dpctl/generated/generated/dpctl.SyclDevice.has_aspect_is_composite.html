@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.is_composite" href="dpctl.SyclDevice.is_composite.html" /><link rel="prev" title="dpctl.SyclDevice.is_accelerator" href="dpctl.SyclDevice.is_accelerator.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="dpctl.SyclDevice.has_aspect_online_compiler" href="dpctl.SyclDevice.has_aspect_online_compiler.html" /><link rel="prev" title="dpctl.SyclDevice.has_aspect_is_component" href="dpctl.SyclDevice.has_aspect_is_component.html" />
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.SyclDevice.is_component - Data Parallel Control (dpctl) 0.20.0dev0 documentation</title>
+        <title>dpctl.SyclDevice.has_aspect_is_composite - Data Parallel Control (dpctl) 0.20.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -259,6 +259,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_gpu.html">dpctl.SyclDevice.has_aspect_gpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_host_debuggable.html">dpctl.SyclDevice.has_aspect_host_debuggable</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_image.html">dpctl.SyclDevice.has_aspect_image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_is_component.html">dpctl.SyclDevice.has_aspect_is_component</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.has_aspect_is_composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_online_compiler.html">dpctl.SyclDevice.has_aspect_online_compiler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_online_linker.html">dpctl.SyclDevice.has_aspect_online_linker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.has_aspect_queue_profiling.html">dpctl.SyclDevice.has_aspect_queue_profiling</a></li>
@@ -274,8 +276,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.image_3d_max_height.html">dpctl.SyclDevice.image_3d_max_height</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.image_3d_max_width.html">dpctl.SyclDevice.image_3d_max_width</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.is_accelerator.html">dpctl.SyclDevice.is_accelerator</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.is_component</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.is_composite.html">dpctl.SyclDevice.is_composite</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.is_cpu.html">dpctl.SyclDevice.is_cpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.is_gpu.html">dpctl.SyclDevice.is_gpu</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.local_mem_size.html">dpctl.SyclDevice.local_mem_size</a></li>
@@ -769,7 +769,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_component.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_is_composite.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -789,17 +789,16 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-sycldevice-is-component">
-<h1>dpctl.SyclDevice.is_component<a class="headerlink" href="#dpctl-sycldevice-is-component" title="Permalink to this heading">¶</a></h1>
+          <section id="dpctl-sycldevice-has-aspect-is-composite">
+<h1>dpctl.SyclDevice.has_aspect_is_composite<a class="headerlink" href="#dpctl-sycldevice-has-aspect-is-composite" title="Permalink to this heading">¶</a></h1>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.is_component">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">is_component</span></span><a class="headerlink" href="#dpctl.SyclDevice.is_component" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a component device, <code class="docutils literal notranslate"><span class="pre">False</span></code>
-otherwise. A device with this aspect will have a composite device
-from which it is descended.</p>
+<dt class="sig sig-object py" id="dpctl.SyclDevice.has_aspect_is_composite">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">has_aspect_is_composite</span></span><a class="headerlink" href="#dpctl.SyclDevice.has_aspect_is_composite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device is a composite device, <code class="docutils literal notranslate"><span class="pre">False</span></code>
+otherwise. A device with this aspect contains component devices.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indicates if device is a component device.</p>
+<dd class="field-odd"><p>Indicates if device is a composite device.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
@@ -814,23 +813,23 @@ from which it is descended.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclDevice.is_composite.html">
+          <a class="next-page" href="dpctl.SyclDevice.has_aspect_online_compiler.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclDevice.is_composite</div>
+                <div class="title">dpctl.SyclDevice.has_aspect_online_compiler</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.SyclDevice.is_accelerator.html">
+          <a class="prev-page" href="dpctl.SyclDevice.has_aspect_is_component.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.SyclDevice.is_accelerator</div>
+                <div class="title">dpctl.SyclDevice.has_aspect_is_component</div>
                 
               </div>
             </a>
@@ -864,8 +863,8 @@ from which it is descended.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.SyclDevice.is_component</a><ul>
-<li><a class="reference internal" href="#dpctl.SyclDevice.is_component"><code class="docutils literal notranslate"><span class="pre">SyclDevice.is_component</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.SyclDevice.has_aspect_is_composite</a><ul>
+<li><a class="reference internal" href="#dpctl.SyclDevice.has_aspect_is_composite"><code class="docutils literal notranslate"><span class="pre">SyclDevice.has_aspect_is_composite</span></code></a></li>
 </ul>
 </li>
 </ul>
