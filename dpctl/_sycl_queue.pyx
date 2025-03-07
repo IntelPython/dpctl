@@ -196,7 +196,7 @@ cdef class LocalAccessor:
            raise ValueError(f"Unrecognized type value: '{dtype}'")
 
     def __repr__(self):
-        return "LocalAccessor(" + self.ndim + ")"
+        return f"LocalAccessor({self.lacc.ndim})"
 
     cdef size_t addressof(self):
         """
