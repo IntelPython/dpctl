@@ -1553,6 +1553,8 @@ cdef class WorkGroupMemory:
     Workgroup Memory oneAPI SYCL extension for low-overhead allocation of local
     memory shared by the workitems in a workgroup.
 
+    This class is intended be used as kernel argument when launching kernels.
+
     This is based on a DPC++ SYCL extension and only available in newer
     versions. Use ``is_available()`` to check availability in your build.
 
@@ -1589,12 +1591,16 @@ cdef class WorkGroupMemory:
         if len(args) == 1:
             if not isinstance(args[0], numbers.Integral):
                 raise TypeError("WorkGroupMemory single argument constructor"
-                                "expects number of bytes as integer value")
+                                "expects first argument to be `int`",
+                                f"but got {type(args[0])}")
             nbytes = <size_t>(args[0])
         else:
-            if not isinstance(args[0], str) or not isinstance(args[1], numbers.Integral):
-                raise TypeError("WorkGroupMemory constructor expects type as"
-                                "string and number of bytes as integer value.")
+            if not isinstance(args[0], str):
+                raise TypeError("WorkGroupMemory constructor expects first"
+                                f"argument to be `str`, but got {type(args[0])}")
+            if not isinstance(args[1], numbers.Integral):
+                raise TypeError("WorkGroupMemory constructor expects second"
+                                f"argument to be `int`, but got {type(args[1])}")
             dtype = <str>(args[0])
             count = <size_t>(args[1])
             if not dtype[0] in ["i", "u", "f"]:
