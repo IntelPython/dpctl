@@ -54,6 +54,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
+    DPCTLWorkGroupMemory_Available,
+    DPCTLWorkGroupMemory_Create,
+    DPCTLWorkGroupMemory_Delete,
     _arg_data_type,
     _backend_type,
     _queue_property_type,
@@ -61,6 +64,7 @@ from ._backend cimport (  # noqa: E211
 from .memory._memory cimport _Memory
 
 import ctypes
+import numbers
 
 from .enum_types import backend_type
 
@@ -248,6 +252,15 @@ cdef class _kernel_arg_type:
             self._name,
             p_name,
             _arg_data_type._LOCAL_ACCESSOR
+        )
+
+    @property
+    def dpctl_work_group_memory(self):
+        cdef str p_name = "dpctl_work_group_memory"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._WORK_GROUP_MEMORY
         )
 
 
@@ -849,6 +862,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, _Memory):
                 kargs[idx]= <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
+            elif isinstance(arg, WorkGroupMemory):
+                kargs[idx] = <void*>(<size_t>arg._ref)
+                kargty[idx] = _arg_data_type._WORK_GROUP_MEMORY
             else:
                 ret = -1
         return ret
@@ -1524,3 +1540,89 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
+
+cdef class _WorkGroupMemory:
+    def __dealloc__(self):
+        if(self._mem_ref):
+            DPCTLWorkGroupMemory_Delete(self._mem_ref)
+
+cdef class WorkGroupMemory:
+    """
+    WorkGroupMemory(nbytes)
+    Python class representing the ``work_group_memory`` class from the
+    Workgroup Memory oneAPI SYCL extension for low-overhead allocation of local
+    memory shared by the workitems in a workgroup.
+
+    This class is intended be used as kernel argument when launching kernels.
+
+    This is based on a DPC++ SYCL extension and only available in newer
+    versions. Use ``is_available()`` to check availability in your build.
+
+    There are multiple ways to create a `WorkGroupMemory`.
+
+    - If the constructor is invoked with just a single argument, this argument
+      is interpreted as the number of bytes to allocated in the shared local
+      memory.
+
+    - If the constructor is invoked with two arguments, the first argument is
+      interpreted as the datatype of the local memory, using the numpy type
+      naming scheme.
+      The second argument is interpreted as the number of elements to allocate.
+      The number of bytes to allocate is then computed from the byte size of
+      the data type and the element count.
+
+    Args:
+        args:
+            Variadic argument, see class documentation.
+
+    Raises:
+        TypeError: In case of incorrect arguments given to constructors,
+                   unexpected types of input arguments.
+    """
+    def __cinit__(self, *args):
+        cdef size_t nbytes
+        if not DPCTLWorkGroupMemory_Available():
+            raise RuntimeError("Workgroup memory extension not available")
+
+        if not (0 < len(args) < 3):
+            raise TypeError("WorkGroupMemory constructor takes 1 or 2 "
+                            f"arguments, but {len(args)} were given")
+
+        if len(args) == 1:
+            if not isinstance(args[0], numbers.Integral):
+                raise TypeError("WorkGroupMemory single argument constructor"
+                                "expects first argument to be `int`",
+                                f"but got {type(args[0])}")
+            nbytes = <size_t>(args[0])
+        else:
+            if not isinstance(args[0], str):
+                raise TypeError("WorkGroupMemory constructor expects first"
+                                f"argument to be `str`, but got {type(args[0])}")
+            if not isinstance(args[1], numbers.Integral):
+                raise TypeError("WorkGroupMemory constructor expects second"
+                                f"argument to be `int`, but got {type(args[1])}")
+            dtype = <str>(args[0])
+            count = <size_t>(args[1])
+            if not dtype[0] in ["i", "u", "f"]:
+                raise TypeError(f"Unrecognized type value: '{dtype}'")
+            try:
+                bit_width = int(dtype[1:])
+            except ValueError:
+                raise TypeError(f"Unrecognized type value: '{dtype}'")
+
+            byte_size = <size_t>bit_width
+            nbytes = count * byte_size
+
+        self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
+
+    """Check whether the work_group_memory extension is available"""
+    @staticmethod
+    def is_available():
+        return DPCTLWorkGroupMemory_Available()
+
+    property _ref:
+        """Returns the address of the C API ``DPCTLWorkGroupMemoryRef``
+        pointer as a ``size_t``.
+        """
+        def __get__(self):
+            return <size_t>self._mem_ref
