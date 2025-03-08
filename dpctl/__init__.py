@@ -48,6 +48,7 @@ from ._sycl_device_factory import (
 from ._sycl_event import SyclEvent
 from ._sycl_platform import SyclPlatform, get_platforms, lsplatform
 from ._sycl_queue import (
+    LocalAccessor,
     SyclKernelInvalidRangeError,
     SyclKernelSubmitError,
     SyclQueue,
@@ -102,6 +103,7 @@ __all__ += [
     "SyclKernelSubmitError",
     "SyclQueueCreationError",
     "WorkGroupMemory",
+    "LocalAccessor",
 ]
 __all__ += [
     "get_device_cached_queue",
