@@ -128,15 +128,12 @@ cdef class kernel_arg_type_attribute:
 
 cdef class LocalAccessor:
     """
-    LocalAccessor(ndim, dtype, dim0, dim1, dim2)
+    LocalAccessor(dtype, shape)
 
     Python class for specifying the dimensionality and type of a
     ``sycl::local_accessor``, to be used as a kernel argument type.
 
     Args:
-        ndim (size_t):
-            number of dimensions.
-            Can be between one and three.
         dtype (str):
             the data type of the local memory.
             The permitted values are
@@ -149,29 +146,41 @@ cdef class LocalAccessor:
                 `'f4'`, `'f8'`,
                     single- and double-precision floating-point types float and
                     double
-        dim0 (size_t):
-            Size of the first dimension.
-        dim1 (size_t):
-            Size of the second dimension.
-        dim2 (size_t):
-            Size of the third dimension.
+        shape (tuple, list):
+            Size of LocalAccessor dimensions. Dimension of the LocalAccessor is
+            determined by the length of the tuple. Must be of length 1, 2, or 3,
+            and contain only non-negative integers.
 
     Raises:
+        TypeError:
+            If the given shape is not a tuple or list.
         ValueError:
-            If the given dimension is not between one and three.
+            If the given shape sequence is not between one and three elements long.
+        TypeError:
+            If the shape is not a sequence of integers.
+        ValueError:
+            If the shape contains a negative integer.
         ValueError:
             If the dtype string is unrecognized.
     """
     cdef _md_local_accessor lacc
 
-    def __cinit__(self, size_t ndim, str dtype, size_t dim0, size_t dim1, size_t dim2):
-       self.lacc.ndim = ndim
-       self.lacc.dim0 = dim0
-       self.lacc.dim1 = dim1
-       self.lacc.dim2 = dim2
-
+    def __cinit__(self, str dtype, shape):
+       if not isinstance(shape, (list, tuple)):
+            raise TypeError(f"`shape` must be a list or tuple, got {type(shape)}")
+       ndim = len(shape)
        if ndim < 1 or ndim > 3:
-           raise ValueError("LocalAccessor must have dimension between one and three")
+            raise ValueError("LocalAccessor must have dimension between one and three")
+       for s in shape:
+            if not isinstance(s, numbers.Integral):
+                raise TypeError("LocalAccessor shape must be a sequence of integers")
+            if s < 0:
+                raise ValueError("LocalAccessor dimensions must be non-negative")
+       self.lacc.ndim = ndim
+       self.lacc.dim0 = <size_t> shape[0]
+       self.lacc.dim1 = <size_t> shape[1] if ndim > 1 else 1
+       self.lacc.dim2 = <size_t> shape[2] if ndim > 2 else 1
+
        if dtype == 'i1':
            self.lacc.dpctl_type_id = _arg_data_type._INT8_T
        elif dtype == 'u1':
