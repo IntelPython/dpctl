@@ -539,6 +539,18 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheType)
                  res == DPCTL_MEM_CACHE_TYPE_READ_WRITE));
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetCompositeDevice)
+{
+    DPCTLSyclDeviceRef CDRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CDRef = DPCTLDevice_GetCompositeDevice(DRef));
+    if (DPCTLDevice_HasAspect(DRef, DPCTLSyclAspectType::is_component)) {
+        EXPECT_TRUE(CDRef != nullptr);
+    }
+    else {
+        EXPECT_TRUE(CDRef == nullptr);
+    }
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",
@@ -897,4 +909,19 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSubGroupSizes)
         sg_sizes = DPCTLDevice_GetSubGroupSizes(Null_DRef, &sg_sizes_len));
     ASSERT_TRUE(sg_sizes == nullptr);
     ASSERT_TRUE(sg_sizes_len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetComponentDevices)
+{
+    DPCTLDeviceVectorRef cDVRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(cDVRef =
+                                DPCTLDevice_GetComponentDevices(Null_DRef));
+    ASSERT_TRUE(cDVRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetCompositeDevice)
+{
+    DPCTLSyclDeviceRef CDRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CDRef = DPCTLDevice_GetCompositeDevice(Null_DRef));
+    EXPECT_TRUE(CDRef == nullptr);
 }

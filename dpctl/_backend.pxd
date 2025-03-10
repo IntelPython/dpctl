@@ -98,6 +98,8 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _usm_atomic_shared_allocations      'usm_atomic_shared_allocations',
         _host_debuggable                    'host_debuggable',
         _emulated                           'emulated',
+        _is_component                       'is_component',
+        _is_composite                       'is_composite',
 
     ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
         _not_applicable                     'not_applicable',
@@ -217,6 +219,8 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetPartitionMaxSubDevices(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxClockFrequency(const DPCTLSyclDeviceRef DRef)
     cdef uint64_t DPCTLDevice_GetMaxMemAllocSize(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclDeviceRef DPCTLDevice_GetCompositeDevice(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLDeviceVectorRef DPCTLDevice_GetComponentDevices(const DPCTLSyclDeviceRef DRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
@@ -238,6 +242,7 @@ cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
     cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices()
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
@@ -316,6 +321,8 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
         const DPCTLSyclPlatformRef)
     cdef DPCTLDeviceVectorRef DPCTLPlatform_GetDevices(
         const DPCTLSyclPlatformRef PRef, _device_type DTy)
+    cdef DPCTLDeviceVectorRef DPCTLPlatform_GetCompositeDevices(
+        const DPCTLSyclPlatformRef PRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":

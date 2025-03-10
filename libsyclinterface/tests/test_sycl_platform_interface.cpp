@@ -113,6 +113,28 @@ void check_platform_get_devices(__dpctl_keep const DPCTLSyclPlatformRef PRef)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
 }
 
+void check_platform_get_composite_devices(
+    __dpctl_keep const DPCTLSyclPlatformRef PRef)
+{
+    DPCTLDeviceVectorRef CDVRef = nullptr;
+    size_t nCDevices = 0;
+
+    EXPECT_NO_FATAL_FAILURE(CDVRef = DPCTLPlatform_GetCompositeDevices(PRef));
+    EXPECT_TRUE(CDVRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(nCDevices = DPCTLDeviceVector_Size(CDVRef));
+    for (auto i = 0ul; i < nCDevices; ++i) {
+        DPCTLSyclDeviceRef CDRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(CDRef = DPCTLDeviceVector_GetAt(CDVRef, i));
+        ASSERT_TRUE(CDRef != nullptr);
+        ASSERT_TRUE(
+            DPCTLDevice_HasAspect(CDRef, DPCTLSyclAspectType::is_composite));
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(CDRef));
+    }
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Clear(CDVRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(CDVRef));
+}
+
 } // namespace
 
 struct TestDPCTLSyclPlatformInterface
@@ -306,6 +328,11 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkAreEqNullArg)
 TEST_P(TestDPCTLSyclPlatformInterface, ChkGetDevices)
 {
     check_platform_get_devices(PRef);
+}
+
+TEST_P(TestDPCTLSyclPlatformInterface, ChkGetCompositeDevices)
+{
+    check_platform_get_composite_devices(PRef);
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName) { check_platform_name(PRef); }
