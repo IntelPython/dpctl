@@ -59,6 +59,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLWorkGroupMemory_Delete,
     _arg_data_type,
     _backend_type,
+    _md_local_accessor,
     _queue_property_type,
 )
 from .memory._memory cimport _Memory
@@ -123,6 +124,95 @@ cdef class kernel_arg_type_attribute:
     @property
     def value(self):
         return self.attr_value
+
+
+cdef class LocalAccessor:
+    """
+    LocalAccessor(dtype, shape)
+
+    Python class for specifying the dimensionality and type of a
+    ``sycl::local_accessor``, to be used as a kernel argument type.
+
+    Args:
+        dtype (str):
+            the data type of the local memory.
+            The permitted values are
+
+                `'i1'`, `'i2'`, `'i4'`, `'i8'`:
+                    signed integral types int8_t, int16_t, int32_t, int64_t
+                `'u1'`, `'u2'`, `'u4'`, `'u8'`
+                    unsigned integral types uint8_t, uint16_t, uint32_t,
+                    uint64_t
+                `'f4'`, `'f8'`,
+                    single- and double-precision floating-point types float and
+                    double
+        shape (tuple, list):
+            Size of LocalAccessor dimensions. Dimension of the LocalAccessor is
+            determined by the length of the tuple. Must be of length 1, 2, or 3,
+            and contain only non-negative integers.
+
+    Raises:
+        TypeError:
+            If the given shape is not a tuple or list.
+        ValueError:
+            If the given shape sequence is not between one and three elements long.
+        TypeError:
+            If the shape is not a sequence of integers.
+        ValueError:
+            If the shape contains a negative integer.
+        ValueError:
+            If the dtype string is unrecognized.
+    """
+    cdef _md_local_accessor lacc
+
+    def __cinit__(self, str dtype, shape):
+       if not isinstance(shape, (list, tuple)):
+            raise TypeError(f"`shape` must be a list or tuple, got {type(shape)}")
+       ndim = len(shape)
+       if ndim < 1 or ndim > 3:
+            raise ValueError("LocalAccessor must have dimension between one and three")
+       for s in shape:
+            if not isinstance(s, numbers.Integral):
+                raise TypeError("LocalAccessor shape must be a sequence of integers")
+            if s < 0:
+                raise ValueError("LocalAccessor dimensions must be non-negative")
+       self.lacc.ndim = ndim
+       self.lacc.dim0 = <size_t> shape[0]
+       self.lacc.dim1 = <size_t> shape[1] if ndim > 1 else 1
+       self.lacc.dim2 = <size_t> shape[2] if ndim > 2 else 1
+
+       if dtype == 'i1':
+           self.lacc.dpctl_type_id = _arg_data_type._INT8_T
+       elif dtype == 'u1':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
+       elif dtype == 'i2':
+           self.lacc.dpctl_type_id = _arg_data_type._INT16_T
+       elif dtype == 'u2':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
+       elif dtype == 'i4':
+           self.lacc.dpctl_type_id = _arg_data_type._INT32_T
+       elif dtype == 'u4':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
+       elif dtype == 'i8':
+           self.lacc.dpctl_type_id = _arg_data_type._INT64_T
+       elif dtype == 'u8':
+           self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
+       elif dtype == 'f4':
+           self.lacc.dpctl_type_id = _arg_data_type._FLOAT
+       elif dtype == 'f8':
+           self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
+       else:
+           raise ValueError(f"Unrecognized type value: '{dtype}'")
+
+    def __repr__(self):
+        return f"LocalAccessor({self.lacc.ndim})"
+
+    cdef size_t addressof(self):
+        """
+        Returns the address of the _md_local_accessor for this LocalAccessor
+        cast to ``size_t``.
+        """
+        return <size_t>&self.lacc
 
 
 cdef class _kernel_arg_type:
@@ -865,6 +955,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, WorkGroupMemory):
                 kargs[idx] = <void*>(<size_t>arg._ref)
                 kargty[idx] = _arg_data_type._WORK_GROUP_MEMORY
+            elif isinstance(arg, LocalAccessor):
+                kargs[idx] = <void*>((<LocalAccessor>arg).addressof())
+                kargty[idx] = _arg_data_type._LOCAL_ACCESSOR
             else:
                 ret = -1
         return ret
