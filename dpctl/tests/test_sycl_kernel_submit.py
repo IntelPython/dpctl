@@ -308,13 +308,9 @@ def test_submit_local_accessor_arg():
     try:
         e = q.submit(
             krn,
-            [x.usm_data, dpctl.LocalAccessor("i8", (lws, 1, 1))],
-            [
-                gws,
-            ],
-            [
-                lws,
-            ],
+            [x.usm_data, dpctl.LocalAccessor("i8", (lws,))],
+            [gws],
+            [lws],
         )
         e.wait()
     except dpctl._sycl_queue.SyclKernelSubmitError:
