@@ -18,6 +18,7 @@
 """
 
 import ctypes
+import os
 
 import numpy as np
 import pytest
@@ -279,3 +280,42 @@ def test_kernel_arg_type():
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_void_ptr)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_local_accessor)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_work_group_memory)
+
+
+def get_spirv_abspath(fn):
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    spirv_file = os.path.join(curr_dir, "input_files", fn)
+    return spirv_file
+
+
+# the process for generating the .spv files in this test is documented in
+# libsyclinterface/tests/test_sycl_queue_submit_local_accessor_arg.cpp
+# in a comment starting on line 123
+def test_submit_local_accessor_arg():
+    try:
+        q = dpctl.SyclQueue("level_zero")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    fn = get_spirv_abspath("local_accessor_kernel_inttys_fp32.spv")
+    with open(fn, "br") as f:
+        spirv_bytes = f.read()
+    prog = dpctl_prog.create_program_from_spirv(q, spirv_bytes)
+    krn = prog.get_sycl_kernel("_ZTS14SyclKernel_SLMIlE")
+    lws = 32
+    gws = lws * 10
+    x = dpt.ones(gws, dtype="i8")
+    x.sycl_queue.wait()
+    try:
+        e = q.submit(
+            krn,
+            [x.usm_data, dpctl.LocalAccessor("i8", (lws,))],
+            [gws],
+            [lws],
+        )
+        e.wait()
+    except dpctl._sycl_queue.SyclKernelSubmitError:
+        pytest.skip(f"Kernel submission failed for device {q.sycl_device}")
+    expected = dpt.arange(1, x.size + 1, dtype=x.dtype, device=x.device) * (
+        2 * lws
+    )
+    assert dpt.all(x == expected)
