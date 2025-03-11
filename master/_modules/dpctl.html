@@ -831,6 +831,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclEvent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_platform</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclPlatform</span><span class="p">,</span> <span class="n">get_platforms</span><span class="p">,</span> <span class="n">lsplatform</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_queue</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LocalAccessor</span><span class="p">,</span>
     <span class="n">SyclKernelInvalidRangeError</span><span class="p">,</span>
     <span class="n">SyclKernelSubmitError</span><span class="p">,</span>
     <span class="n">SyclQueue</span><span class="p">,</span>
@@ -885,6 +886,7 @@
     <span class="s2">&quot;SyclKernelSubmitError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SyclQueueCreationError&quot;</span><span class="p">,</span>
     <span class="s2">&quot;WorkGroupMemory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LocalAccessor&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>
     <span class="s2">&quot;get_device_cached_queue&quot;</span><span class="p">,</span>
