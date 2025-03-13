@@ -1890,3 +1890,75 @@ def test_put_along_axis_uint64_indices():
     dpt.put_along_axis(x, inds, dpt.asarray(2, dtype=x.dtype), axis=1)
     expected = dpt.tile(dpt.asarray([0, 2], dtype="i4"), (2, 5))
     assert dpt.all(expected == x)
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_take_out(data_dt, order):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    axis = 0
+    x = dpt.reshape(_make_3d(data_dt, q), (9, 3), order=order)
+    ind = dpt.arange(2, dtype="i8", sycl_queue=q)
+    out_sh = x.shape[:axis] + ind.shape + x.shape[axis + 1 :]
+    out = dpt.empty(out_sh, dtype=data_dt, sycl_queue=q)
+
+    expected = dpt.take(x, ind, axis=axis)
+
+    dpt.take(x, ind, axis=axis, out=out)
+
+    assert dpt.all(out == expected)
+
+
+@pytest.mark.parametrize(
+    "data_dt",
+    _all_dtypes,
+)
+@pytest.mark.parametrize("order", ["C", "F"])
+def test_take_out_overlap(data_dt, order):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(data_dt, q)
+
+    axis = 0
+    x = dpt.reshape(_make_3d(data_dt, q), (9, 3), order=order)
+    ind = dpt.arange(2, dtype="i8", sycl_queue=q)
+    out = x[x.shape[axis] - ind.shape[axis] : x.shape[axis], :]
+
+    expected = dpt.take(x, ind, axis=axis)
+
+    dpt.take(x, ind, axis=axis, out=out)
+
+    assert dpt.all(out == expected)
+    assert dpt.all(x[x.shape[0] - ind.shape[0] : x.shape[0], :] == out)
+
+
+def test_take_out_errors():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.arange(10, dtype="i4", sycl_queue=q1)
+    ind = dpt.arange(2, dtype="i4", sycl_queue=q1)
+
+    with pytest.raises(TypeError):
+        dpt.take(x, ind, out=dict())
+
+    out_read_only = dpt.empty(ind.shape, dtype=x.dtype, sycl_queue=q1)
+    out_read_only.flags["W"] = False
+    with pytest.raises(ValueError):
+        dpt.take(x, ind, out=out_read_only)
+
+    out_bad_shape = dpt.empty(0, dtype=x.dtype, sycl_queue=q1)
+    with pytest.raises(ValueError):
+        dpt.take(x, ind, out=out_bad_shape)
+
+    out_bad_dt = dpt.empty(ind.shape, dtype="i8", sycl_queue=q1)
+    with pytest.raises(ValueError):
+        dpt.take(x, ind, out=out_bad_dt)
+
+    out_bad_q = dpt.empty(ind.shape, dtype=x.dtype, sycl_queue=q2)
+    with pytest.raises(dpctl.utils.ExecutionPlacementError):
+        dpt.take(x, ind, out=out_bad_q)
