@@ -142,7 +142,7 @@ def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
             )
         if dt != out.dtype:
             raise ValueError(
-                f"Output array of type {dt} is needed, " f"got {out.dtype}"
+                f"Output array of type {dt} is needed, got {out.dtype}"
             )
         if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
             raise dpctl.utils.ExecutionPlacementError(
