@@ -796,7 +796,7 @@
 <dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of supported SYCL backends.</p>
 <p>Accepted enum values are</p>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">all</span></code>:
+<div><p><code class="docutils literal notranslate"><span class="pre">all</span></code>
 <code class="docutils literal notranslate"><span class="pre">cuda</span></code>
 <code class="docutils literal notranslate"><span class="pre">hip</span></code>
 <code class="docutils literal notranslate"><span class="pre">level_zero</span></code>
@@ -822,7 +822,7 @@
 <dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of supported SYCL device types.</p>
 <p>Accepted enum values are</p>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">all</span></code>:
+<div><p><code class="docutils literal notranslate"><span class="pre">all</span></code>
 <code class="docutils literal notranslate"><span class="pre">accelerator</span></code>
 <code class="docutils literal notranslate"><span class="pre">automatic</span></code>
 <code class="docutils literal notranslate"><span class="pre">cpu</span></code>
@@ -851,6 +851,13 @@
 <dt class="sig sig-object py" id="dpctl.event_status_type">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">event_status_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'event_status_type'&gt;</span></em><a class="reference internal" href="../../_modules/dpctl/enum_types.html#event_status_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.event_status_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of SYCL event states.</p>
+<p>Accepted enum values are</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">unknown_status</span></code>
+<code class="docutils literal notranslate"><span class="pre">submitted</span></code>
+<code class="docutils literal notranslate"><span class="pre">running</span></code>
+<code class="docutils literal notranslate"><span class="pre">complete</span></code></p>
+</div></blockquote>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
@@ -869,7 +876,7 @@
 <dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a>  of global memory cache types for a device.</p>
 <p>Accepted enum values are</p>
 <blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">indeterminate</span></code>:
+<div><p><code class="docutils literal notranslate"><span class="pre">indeterminate</span></code>
 <code class="docutils literal notranslate"><span class="pre">none</span></code>
 <code class="docutils literal notranslate"><span class="pre">read_only</span></code>
 <code class="docutils literal notranslate"><span class="pre">read_write</span></code></p>
