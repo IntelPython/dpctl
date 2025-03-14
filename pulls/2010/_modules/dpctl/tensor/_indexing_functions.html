@@ -824,7 +824,7 @@
 
 
 <div class="viewcode-block" id="take"><a class="viewcode-back" href="../../../api_reference/dpctl/generated/dpctl.tensor.take.html#dpctl.tensor.take">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;take(x, indices, axis=None, mode=&quot;wrap&quot;)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;take(x, indices, axis=None, out=None, mode=&quot;wrap&quot;)</span>
 
 <span class="sd">    Takes elements from an array along a given axis at given indices.</span>
 
@@ -925,7 +925,7 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is needed, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> is needed, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
