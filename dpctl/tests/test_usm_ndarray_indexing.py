@@ -1892,10 +1892,7 @@ def test_put_along_axis_uint64_indices():
     assert dpt.all(expected == x)
 
 
-@pytest.mark.parametrize(
-    "data_dt",
-    _all_dtypes,
-)
+@pytest.mark.parametrize("data_dt", _all_dtypes)
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_take_out(data_dt, order):
     q = get_queue_or_skip()
@@ -1914,10 +1911,7 @@ def test_take_out(data_dt, order):
     assert dpt.all(out == expected)
 
 
-@pytest.mark.parametrize(
-    "data_dt",
-    _all_dtypes,
-)
+@pytest.mark.parametrize("data_dt", _all_dtypes)
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_take_out_overlap(data_dt, order):
     q = get_queue_or_skip()
