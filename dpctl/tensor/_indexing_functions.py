@@ -41,7 +41,7 @@ def _get_indexing_mode(name):
 
 
 def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
-    """take(x, indices, axis=None, mode="wrap")
+    """take(x, indices, axis=None, out=None, mode="wrap")
 
     Takes elements from an array along a given axis at given indices.
 
