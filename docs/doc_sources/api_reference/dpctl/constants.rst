@@ -7,9 +7,9 @@ The following constants are defined in :py:mod:`dpctl`:
 
 .. currentmodule:: dpctl
 
-.. autodata:: backend_type
-
 .. autodata:: device_type
+
+.. autodata:: backend_type
 
 .. autodata:: event_status_type
 
