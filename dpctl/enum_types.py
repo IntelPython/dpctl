@@ -27,7 +27,14 @@ __all__ = ["device_type", "backend_type", "event_status_type"]
 
 class device_type(Enum):
     """
-    An enumeration of supported SYCL device types.
+    An :class:`enum.Enum` of supported SYCL device types.
+
+        |  ``all``
+        |  ``accelerator``
+        |  ``automatic``
+        |  ``cpu``
+        |  ``custom``
+        |  ``gpu``
 
     :Example:
         .. code-block:: python
@@ -54,7 +61,13 @@ class device_type(Enum):
 
 class backend_type(Enum):
     """
-    An enumeration of supported SYCL backends.
+    An :class:`enum.Enum` of supported SYCL backends.
+
+        |  ``all``
+        |  ``cuda``
+        |  ``hip``
+        |  ``level_zero``
+        |  ``opencl``
 
     :Example:
         .. code-block:: python
@@ -76,7 +89,12 @@ class backend_type(Enum):
 
 class event_status_type(Enum):
     """
-    An enumeration of SYCL event states.
+    An :class:`enum.Enum` of SYCL event states.
+
+        |  ``unknown_status``
+        |  ``submitted``
+        |  ``running``
+        |  ``complete``
 
     :Example:
         .. code-block:: python
@@ -95,7 +113,12 @@ class event_status_type(Enum):
 
 class global_mem_cache_type(Enum):
     """
-    An enumeration of global memory cache types for a device.
+    An :class:`enum.Enum`  of global memory cache types for a device.
+
+        |  ``indeterminate``
+        |  ``none``
+        |  ``read_only``
+        |  ``read_write``
 
     :Example:
         .. code-block:: python
