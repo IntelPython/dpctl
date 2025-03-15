@@ -791,33 +791,6 @@
 <span id="dpctl-constants"></span><h1>Constants<a class="headerlink" href="#constants" title="Permalink to this heading">¶</a></h1>
 <p>The following constants are defined in <a class="reference internal" href="index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>:</p>
 <dl class="py data">
-<dt class="sig sig-object py" id="dpctl.backend_type">
-<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'backend_type'&gt;</span></em><a class="reference internal" href="../../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of supported SYCL backends.</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line"><code class="docutils literal notranslate"><span class="pre">all</span></code></div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">cuda</span></code></div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">hip</span></code></div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">level_zero</span></code></div>
-<div class="line"><code class="docutils literal notranslate"><span class="pre">opencl</span></code></div>
-</div>
-</div></blockquote>
-<dl class="field-list">
-<dt class="field-odd">Example<span class="colon">:</span></dt>
-<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
-
-<span class="c1"># create a SYCL device with OpenCL backend using filter selector</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">backend</span><span class="p">)</span>
-<span class="c1"># Possible output: &lt;backend_type.opencl: 5&gt;</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
 <dt class="sig sig-object py" id="dpctl.device_type">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">device_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'device_type'&gt;</span></em><a class="reference internal" href="../../_modules/dpctl/enum_types.html#device_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.device_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of supported SYCL device types.</p>
@@ -843,6 +816,33 @@
 
 <span class="c1"># alternatively, get GPU devices directly</span>
 <span class="n">gpu_devs2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">get_devices</span><span class="p">(</span><span class="n">device_type</span><span class="o">=</span><span class="n">dpctl</span><span class="o">.</span><span class="n">device_type</span><span class="o">.</span><span class="n">gpu</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.backend_type">
+<span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">backend_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;enum</span> <span class="pre">'backend_type'&gt;</span></em><a class="reference internal" href="../../_modules/dpctl/enum_types.html#backend_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.backend_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>An <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a> of supported SYCL backends.</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">all</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">cuda</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">hip</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">level_zero</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">opencl</span></code></div>
+</div>
+</div></blockquote>
+<dl class="field-list">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+
+<span class="c1"># create a SYCL device with OpenCL backend using filter selector</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">backend</span><span class="p">)</span>
+<span class="c1"># Possible output: &lt;backend_type.opencl: 5&gt;</span>
 </pre></div>
 </div>
 </dd>
@@ -937,8 +937,8 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Constants</a><ul>
-<li><a class="reference internal" href="#dpctl.backend_type"><code class="docutils literal notranslate"><span class="pre">backend_type</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.device_type"><code class="docutils literal notranslate"><span class="pre">device_type</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.backend_type"><code class="docutils literal notranslate"><span class="pre">backend_type</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.event_status_type"><code class="docutils literal notranslate"><span class="pre">event_status_type</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.global_mem_cache_type"><code class="docutils literal notranslate"><span class="pre">global_mem_cache_type</span></code></a></li>
 </ul>
