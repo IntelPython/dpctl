@@ -29,14 +29,12 @@ class device_type(Enum):
     """
     An :class:`enum.Enum` of supported SYCL device types.
 
-    Accepted enum values are
-
-        ``all``:
-        ``accelerator``
-        ``automatic``
-        ``cpu``
-        ``custom``
-        ``gpu``
+        |  ``all``
+        |  ``accelerator``
+        |  ``automatic``
+        |  ``cpu``
+        |  ``custom``
+        |  ``gpu``
 
     :Example:
         .. code-block:: python
@@ -65,13 +63,11 @@ class backend_type(Enum):
     """
     An :class:`enum.Enum` of supported SYCL backends.
 
-    Accepted enum values are
-
-        ``all``:
-        ``cuda``
-        ``hip``
-        ``level_zero``
-        ``opencl``
+        |  ``all``
+        |  ``cuda``
+        |  ``hip``
+        |  ``level_zero``
+        |  ``opencl``
 
     :Example:
         .. code-block:: python
@@ -95,6 +91,11 @@ class event_status_type(Enum):
     """
     An :class:`enum.Enum` of SYCL event states.
 
+        |  ``unknown_status``
+        |  ``submitted``
+        |  ``running``
+        |  ``complete``
+
     :Example:
         .. code-block:: python
 
@@ -114,12 +115,10 @@ class global_mem_cache_type(Enum):
     """
     An :class:`enum.Enum`  of global memory cache types for a device.
 
-    Accepted enum values are
-
-        ``indeterminate``:
-        ``none``
-        ``read_only``
-        ``read_write``
+        |  ``indeterminate``
+        |  ``none``
+        |  ``read_only``
+        |  ``read_write``
 
     :Example:
         .. code-block:: python
