@@ -40,8 +40,8 @@ def _get_indexing_mode(name):
         )
 
 
-def take(x, indices, /, *, axis=None, mode="wrap"):
-    """take(x, indices, axis=None, mode="wrap")
+def take(x, indices, /, *, axis=None, out=None, mode="wrap"):
+    """take(x, indices, axis=None, out=None, mode="wrap")
 
     Takes elements from an array along a given axis at given indices.
 
@@ -54,6 +54,9 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
             The axis along which the values will be selected.
             If ``x`` is one-dimensional, this argument is optional.
             Default: ``None``.
+        out (Optional[usm_ndarray]):
+            Output array to populate. Array must have the correct
+            shape and the expected data type.
         mode (str, optional):
             How out-of-bounds indices will be handled. Possible values
             are:
@@ -121,18 +124,53 @@ def take(x, indices, /, *, axis=None, mode="wrap"):
             raise ValueError("`axis` must be 0 for an array of dimension 0.")
         res_shape = indices.shape
 
-    res = dpt.empty(
-        res_shape, dtype=x.dtype, usm_type=res_usm_type, sycl_queue=exec_q
-    )
+    dt = x.dtype
+
+    orig_out = out
+    if out is not None:
+        if not isinstance(out, dpt.usm_ndarray):
+            raise TypeError(
+                f"output array must be of usm_ndarray type, got {type(out)}"
+            )
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_shape:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {res_shape}, got {out.shape}"
+            )
+        if dt != out.dtype:
+            raise ValueError(
+                f"Output array of type {dt} is needed, got {out.dtype}"
+            )
+        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+        if ti._array_overlap(x, out):
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            res_shape, dtype=dt, usm_type=res_usm_type, sycl_queue=exec_q
+        )
 
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
     hev, take_ev = ti._take(
-        x, (indices,), res, axis, mode, sycl_queue=exec_q, depends=deps_ev
+        x, (indices,), out, axis, mode, sycl_queue=exec_q, depends=deps_ev
     )
     _manager.add_event_pair(hev, take_ev)
 
-    return res
+    if not (orig_out is None or out is orig_out):
+        # Copy the out data from temporary buffer to original memory
+        ht_e_cpy, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=out, dst=orig_out, sycl_queue=exec_q, depends=[take_ev]
+        )
+        _manager.add_event_pair(ht_e_cpy, cpy_ev)
+        out = orig_out
+
+    return out
 
 
 def put(x, indices, vals, /, *, axis=None, mode="wrap"):
