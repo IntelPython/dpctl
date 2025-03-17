@@ -76,7 +76,7 @@ class backend_type(Enum):
 
             # create a SYCL device with OpenCL backend using filter selector
             d = dpctl.SyclDevice("opencl")
-            print(d.backend)
+            d.backend
             # Possible output: <backend_type.opencl: 5>
     """
 
@@ -101,7 +101,7 @@ class event_status_type(Enum):
 
             import dpctl
             ev = dpctl.SyclEvent()
-            print(ev.execution_status )
+            ev.execution_status
             # Possible output: <event_status_type.complete: 4>
     """
 
@@ -125,7 +125,7 @@ class global_mem_cache_type(Enum):
 
             import dpctl
             dev = dpctl.SyclDevice()
-            print(dev.global_mem_cache_type)
+            dev.global_mem_cache_type
             # Possible output: <global_mem_cache_type.read_write: 4>
     """
 
