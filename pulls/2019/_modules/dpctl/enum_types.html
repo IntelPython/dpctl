@@ -859,7 +859,7 @@
 
 <span class="sd">            # create a SYCL device with OpenCL backend using filter selector</span>
 <span class="sd">            d = dpctl.SyclDevice(&quot;opencl&quot;)</span>
-<span class="sd">            print(d.backend)</span>
+<span class="sd">            d.backend</span>
 <span class="sd">            # Possible output: &lt;backend_type.opencl: 5&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -884,7 +884,7 @@
 
 <span class="sd">            import dpctl</span>
 <span class="sd">            ev = dpctl.SyclEvent()</span>
-<span class="sd">            print(ev.execution_status )</span>
+<span class="sd">            ev.execution_status</span>
 <span class="sd">            # Possible output: &lt;event_status_type.complete: 4&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -908,7 +908,7 @@
 
 <span class="sd">            import dpctl</span>
 <span class="sd">            dev = dpctl.SyclDevice()</span>
-<span class="sd">            print(dev.global_mem_cache_type)</span>
+<span class="sd">            dev.global_mem_cache_type</span>
 <span class="sd">            # Possible output: &lt;global_mem_cache_type.read_write: 4&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

@@ -841,7 +841,7 @@
 
 <span class="c1"># create a SYCL device with OpenCL backend using filter selector</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">backend</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">backend</span>
 <span class="c1"># Possible output: &lt;backend_type.opencl: 5&gt;</span>
 </pre></div>
 </div>
@@ -865,7 +865,7 @@
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 <span class="n">ev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclEvent</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">execution_status</span> <span class="p">)</span>
+<span class="n">ev</span><span class="o">.</span><span class="n">execution_status</span>
 <span class="c1"># Possible output: &lt;event_status_type.complete: 4&gt;</span>
 </pre></div>
 </div>
@@ -889,7 +889,7 @@
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 <span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">global_mem_cache_type</span><span class="p">)</span>
+<span class="n">dev</span><span class="o">.</span><span class="n">global_mem_cache_type</span>
 <span class="c1"># Possible output: &lt;global_mem_cache_type.read_write: 4&gt;</span>
 </pre></div>
 </div>
