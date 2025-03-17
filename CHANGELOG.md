@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.19.0] - Feb. XX, 2025
+## [dev] - XXX. XX, XXXX
+
+### Added
+
+### Changed
+
+### Fixed
+
+## [0.19.0] - Feb. 26, 2025
 
 This release features official, out-of-the-box support for compiling `dpctl` for specified AMD GPU architectures, the addition of new function `tensor.top_k`, a radix-sort-based implementation of sorting functions, and improvements to interoperability with DLPack through `tensor.dldevice_to_sycl_device` and `tensor.sycl_device_to_dldevice`.
 
