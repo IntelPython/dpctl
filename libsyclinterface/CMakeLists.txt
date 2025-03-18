@@ -44,6 +44,8 @@ option(DPCTL_ENABLE_GLOG
 
 set(DPCTL_LEVEL_ZERO_INCLUDE_DIR "" CACHE STRING "Level zero header path")
 
+set(LIBZE_DEFAULT_LOADER_FILENAME "libze_loader.so.1" CACHE STRING "Default Level Zero Loader filename")
+
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSyclCompiler 2021.3.0 REQUIRED)
@@ -74,6 +76,10 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
         )
+        # if libze_loader is statically linked, LIBZE_LOADER_FILENAME will be an empty string
+        if ("x${LIBZE_LOADER_FILENAME}" STREQUAL "x")
+            set(LIBZE_LOADER_FILENAME ${LIBZE_DEFAULT_LOADER_FILENAME})
+        endif()
         set(LIBZE_LOADER_FILENAME ${LIBZE_LOADER_FILENAME} PARENT_SCOPE)
     endif()
     set(LIBZE_LOADER_FILENAME ${LIBZE_LOADER_FILENAME} PARENT_SCOPE)
