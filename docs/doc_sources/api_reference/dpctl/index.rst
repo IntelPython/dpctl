@@ -74,7 +74,7 @@
     * - :py:class:`dpctl.event_status_type`
       - An :class:`enum.Enum` of SYCL event states.
     * - :py:class:`dpctl.global_mem_cache_type`
-      - An :class:`enum.Enum`  of global memory cache types for a device.
+      - An :class:`enum.Enum` of global memory cache types for a device.
 
 .. rubric:: Exceptions
 

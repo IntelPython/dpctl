@@ -113,7 +113,7 @@ class event_status_type(Enum):
 
 class global_mem_cache_type(Enum):
     """
-    An :class:`enum.Enum`  of global memory cache types for a device.
+    An :class:`enum.Enum` of global memory cache types for a device.
 
         |  ``indeterminate``
         |  ``none``
