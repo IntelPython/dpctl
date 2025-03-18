@@ -1,7 +1,7 @@
 .. _dpctl_tensor_constants:
 
 Constants
-========================
+=========
 
 The following constants are defined in :py:mod:`dpctl.tensor`:
 
