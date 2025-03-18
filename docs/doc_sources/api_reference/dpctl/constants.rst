@@ -1,7 +1,7 @@
 .. _dpctl_constants:
 
 Constants
-========================
+=========
 
 The following constants are defined in :py:mod:`dpctl`:
 
