@@ -794,10 +794,10 @@
 <span class="sig-prename descclassname"><span class="pre">SyclPlatform.</span></span><span class="sig-name descname"><span class="pre">get_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclPlatform.get_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the list of <a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with
 <a class="reference internal" href="../dpctl.SyclPlatform.html#dpctl.SyclPlatform" title="dpctl.SyclPlatform"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclPlatform</span></code></a> instance selected based on
-the given <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>.</p>
+the given <a class="reference internal" href="../../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>device_type</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
+<dd class="field-odd"><p><strong>device_type</strong> (str, <a class="reference internal" href="../../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>, optional) – A <a class="reference internal" href="../../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
 specifies a SYCL device type. Currently, accepted values are:
 “gpu”, “cpu”, “accelerator”, or “all”, and their equivalent
 <code class="docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enumerators.
@@ -812,7 +812,7 @@ that belong to this platform.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If <cite>device_type</cite> is not a string or <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If <cite>device_type</cite> is not a string or <a class="reference internal" href="../../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>
     enum.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLPlatform_GetDevices</span></code> call returned
     <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p></li>

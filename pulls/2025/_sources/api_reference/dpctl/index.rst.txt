@@ -62,6 +62,20 @@
     has_cpu_devices
     has_accelerator_devices
 
+.. rubric:: Enums
+
+.. list-table::
+    :widths: 10 50
+
+    * - :py:class:`dpctl.device_type`
+      - An :class:`enum.Enum` of supported SYCL device types.
+    * - :py:class:`dpctl.backend_type`
+      - An :class:`enum.Enum` of supported SYCL backends.
+    * - :py:class:`dpctl.event_status_type`
+      - An :class:`enum.Enum` of SYCL event states.
+    * - :py:class:`dpctl.global_mem_cache_type`
+      - An :class:`enum.Enum` of global memory cache types for a device.
+
 .. rubric:: Exceptions
 
 .. autosummary::
