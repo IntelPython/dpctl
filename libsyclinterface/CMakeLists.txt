@@ -44,6 +44,8 @@ option(DPCTL_ENABLE_GLOG
 
 set(DPCTL_LEVEL_ZERO_INCLUDE_DIR "" CACHE STRING "Level zero header path")
 
+set(LIBZE_SET_LOADER_FILENAME "" CACHE STRING "User-provided Level Zero Loader filename")
+
 set(LIBZE_DEFAULT_LOADER_FILENAME "libze_loader.so.1" CACHE STRING "Default Level Zero Loader filename")
 
 # Minimum version requirement only when oneAPI dpcpp is used.
@@ -62,23 +64,27 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
         get_level_zero_headers()
     endif()
     if (UNIX)
-        find_library(PI_LEVEL_ZERO_LIB
-            NAMES pi_level_zero ur_adapter_level_zero
-            HINTS ${IntelSyclCompiler_LIBRARY_DIR}
-        )
-        find_program(READELF_PROG readelf)
-        find_program(GREP_PROG grep)
-        execute_process(
-            COMMAND ${READELF_PROG} -d ${PI_LEVEL_ZERO_LIB}
-            COMMAND ${GREP_PROG} libze_loader
-            COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
-            OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_STRIP_TRAILING_WHITESPACE
-        )
-        # if libze_loader is statically linked, LIBZE_LOADER_FILENAME will be an empty string
-        if ("x${LIBZE_LOADER_FILENAME}" STREQUAL "x")
-            set(LIBZE_LOADER_FILENAME ${LIBZE_DEFAULT_LOADER_FILENAME})
+        if ("x${LIBZE_SET_LOADER_FILENAME}" STREQUAL "x")
+            find_library(PI_LEVEL_ZERO_LIB
+                NAMES pi_level_zero ur_adapter_level_zero
+                HINTS ${IntelSyclCompiler_LIBRARY_DIR}
+            )
+            find_program(READELF_PROG readelf)
+            find_program(GREP_PROG grep)
+            execute_process(
+                COMMAND ${READELF_PROG} -d ${PI_LEVEL_ZERO_LIB}
+                COMMAND ${GREP_PROG} libze_loader
+                COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
+                OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_STRIP_TRAILING_WHITESPACE
+            )
+            # if libze_loader is statically linked, LIBZE_LOADER_FILENAME will be an empty string
+            if ("x${LIBZE_LOADER_FILENAME}" STREQUAL "x")
+                set(LIBZE_LOADER_FILENAME ${LIBZE_DEFAULT_LOADER_FILENAME})
+            endif()
+        else ()
+            set(LIBZE_LOADER_FILENAME ${LIBZE_SET_LOADER_FILENAME})
         endif()
         set(LIBZE_LOADER_FILENAME ${LIBZE_LOADER_FILENAME} PARENT_SCOPE)
     endif()
