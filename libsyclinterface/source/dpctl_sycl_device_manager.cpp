@@ -112,7 +112,7 @@ struct DeviceCacheBuilder
      * avoid the performance overhead of context creation for every queue.
      *
      * The singleton pattern implemented here ensures that the map is
-     * created once in a thread-safe manner. Since, the map is ony read
+     * created once in a thread-safe manner. Since, the map is only read
      * post-creation we do not need any further protection to ensure
      * thread-safety.
      */
@@ -136,7 +136,7 @@ struct DeviceCacheBuilder
 
                     try {
                         // Per https://github.com/intel/llvm/blob/sycl/sycl/doc/
-                        // extensions/PlatformContext/PlatformContext.adoc
+                        // extensions/supported/sycl_ext_oneapi_default_context.asciidoc
                         // sycl::queue(D) would create default platform context
                         // for capable compiler, sycl::context(D) otherwise
                         auto Q = queue(D);
@@ -356,4 +356,36 @@ int64_t DPCTLDeviceMgr_GetRelativeId(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return DPCTL_GetRelativeDeviceId(*Device);
 
     return -1;
+}
+
+/*!
+ * Returns a list of the available composite devices, or an empty list if
+ * there are none.
+ */
+__dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices()
+{
+    using vecTy = std::vector<DPCTLSyclDeviceRef>;
+    vecTy *Devices = nullptr;
+
+    try {
+        Devices = new std::vector<DPCTLSyclDeviceRef>();
+    } catch (std::exception const &e) {
+        delete Devices;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+
+    try {
+        auto composite_devices =
+            ext::oneapi::experimental::get_composite_devices();
+        Devices->reserve(composite_devices.size());
+        for (const auto &CDev : composite_devices) {
+            Devices->emplace_back(wrap<device>(new device(std::move(CDev))));
+        }
+        return wrap<vecTy>(Devices);
+    } catch (std::exception const &e) {
+        delete Devices;
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
 }
