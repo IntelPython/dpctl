@@ -1,0 +1,6 @@
+﻿dpctl.tensor.full
+=================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: full
