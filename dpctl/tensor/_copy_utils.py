@@ -15,6 +15,7 @@
 #  limitations under the License.
 import builtins
 import operator
+from numbers import Integral
 
 import numpy as np
 
@@ -819,15 +820,26 @@ def _take_multi_index(ary, inds, p, mode=0):
     ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
+    any_usmarray = False
     for ind in inds:
-        if not isinstance(ind, dpt.usm_ndarray):
-            raise TypeError("all elements of `ind` expected to be usm_ndarrays")
-        queues_.append(ind.sycl_queue)
-        usm_types_.append(ind.usm_type)
-        if ind.dtype.kind not in "ui":
-            raise IndexError(
-                "arrays used as indices must be of integer (or boolean) type"
+        if isinstance(ind, dpt.usm_ndarray):
+            any_usmarray = True
+            if ind.dtype.kind not in "ui":
+                raise IndexError(
+                    "arrays used as indices must be of integer (or boolean) "
+                    "type"
+                )
+            queues_.append(ind.sycl_queue)
+            usm_types_.append(ind.usm_type)
+        elif not isinstance(ind, Integral):
+            raise TypeError(
+                "all elements of `ind` expected to be usm_ndarrays "
+                "or integers"
             )
+    if not any_usmarray:
+        raise TypeError(
+            "at least one element of `ind` expected to be a usm_ndarray"
+        )
     res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is None:
@@ -838,6 +850,18 @@ def _take_multi_index(ary, inds, p, mode=0):
             "be associated with the same queue."
         )
     if len(inds) > 1:
+        inds = tuple(
+            map(
+                lambda ind: (
+                    ind
+                    if isinstance(ind, dpt.usm_ndarray)
+                    else dpt.asarray(
+                        ind, usm_type=res_usm_type, sycl_queue=exec_q
+                    )
+                ),
+                inds,
+            )
+        )
         ind_dt = dpt.result_type(*inds)
         # ind arrays have been checked to be of integer dtype
         if ind_dt.kind not in "ui":
@@ -968,15 +992,26 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
+    any_usmarray = False
     for ind in inds:
-        if not isinstance(ind, dpt.usm_ndarray):
-            raise TypeError("all elements of `ind` expected to be usm_ndarrays")
-        queues_.append(ind.sycl_queue)
-        usm_types_.append(ind.usm_type)
-        if ind.dtype.kind not in "ui":
-            raise IndexError(
-                "arrays used as indices must be of integer (or boolean) type"
+        if isinstance(ind, dpt.usm_ndarray):
+            any_usmarray = True
+            if ind.dtype.kind not in "ui":
+                raise IndexError(
+                    "arrays used as indices must be of integer (or boolean) "
+                    "type"
+                )
+            queues_.append(ind.sycl_queue)
+            usm_types_.append(ind.usm_type)
+        elif not isinstance(ind, Integral):
+            raise TypeError(
+                "all elements of `ind` expected to be usm_ndarrays "
+                "or integers"
             )
+    if not any_usmarray:
+        raise TypeError(
+            "at least one element of `ind` expected to be a usm_ndarray"
+        )
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is not None:
@@ -994,6 +1029,18 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
             "be associated with the same queue."
         )
     if len(inds) > 1:
+        inds = tuple(
+            map(
+                lambda ind: (
+                    ind
+                    if isinstance(ind, dpt.usm_ndarray)
+                    else dpt.asarray(
+                        ind, usm_type=vals_usm_type, sycl_queue=exec_q
+                    )
+                ),
+                inds,
+            )
+        )
         ind_dt = dpt.result_type(*inds)
         # ind arrays have been checked to be of integer dtype
         if ind_dt.kind not in "ui":

@@ -46,11 +46,7 @@ cdef Py_ssize_t _slice_len(
 cdef bint _is_integral(object x) except *:
     """Gives True if x is an integral slice spec"""
     if isinstance(x, usm_ndarray):
-        if x.ndim > 0:
-            return False
-        if x.dtype.kind not in "ui":
-            return False
-        return True
+        return False
     if isinstance(x, bool):
         return False
     if isinstance(x, int):
@@ -179,10 +175,12 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 if array_streak_started:
                     array_streak_interrupted = True
             elif _is_integral(i):
-                explicit_index += 1
                 axes_referenced += 1
                 if array_streak_started:
-                    array_streak_interrupted = True
+                    # integers converted to arrays in this case
+                    array_count += 1
+                else:
+                    explicit_index += 1
             elif isinstance(i, usm_ndarray):
                 if not seen_arrays_yet:
                     seen_arrays_yet = True
@@ -196,7 +194,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 dt_k = i.dtype.kind
                 if dt_k == "b" and i.ndim > 0:
                     axes_referenced += i.ndim
-                elif dt_k in "ui" and i.ndim > 0:
+                elif dt_k in "ui":
                     axes_referenced += 1
                 else:
                     raise IndexError(
@@ -260,20 +258,28 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 new_strides.append(0)
             elif _is_integral(ind_i):
                 ind_i = ind_i.__index__()
-                if 0 <= ind_i < shape[k]:
+                if advanced_start_pos_set:
+                    # integers converted to arrays in this case
+                    new_advanced_ind.append(ind_i)
                     k_new = k + 1
-                    if not is_empty:
-                        new_offset = new_offset + ind_i * strides[k]
-                    k = k_new
-                elif -shape[k] <= ind_i < 0:
-                    k_new = k + 1
-                    if not is_empty:
-                        new_offset = new_offset + (shape[k] + ind_i) * strides[k]
+                    new_shape.extend(shape[k:k_new])
+                    new_strides.extend(strides[k:k_new])
                     k = k_new
                 else:
-                    raise IndexError(
-                        ("Index {0} is out of range for "
-                        "axes {1} with size {2}").format(ind_i, k, shape[k]))
+                    if 0 <= ind_i < shape[k]:
+                        k_new = k + 1
+                        if not is_empty:
+                            new_offset = new_offset + ind_i * strides[k]
+                        k = k_new
+                    elif -shape[k] <= ind_i < 0:
+                        k_new = k + 1
+                        if not is_empty:
+                            new_offset = new_offset + (shape[k] + ind_i) * strides[k]
+                        k = k_new
+                    else:
+                        raise IndexError(
+                            ("Index {0} is out of range for "
+                            "axes {1} with size {2}").format(ind_i, k, shape[k]))
             elif isinstance(ind_i, usm_ndarray):
                 if not advanced_start_pos_set:
                     new_advanced_start_pos = len(new_shape)

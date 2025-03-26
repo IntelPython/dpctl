@@ -252,8 +252,14 @@ def test_advanced_slice5():
     q = get_queue_or_skip()
     ii = dpt.asarray([1, 2], sycl_queue=q)
     x = _make_3d("i4", q)
-    with pytest.raises(IndexError):
-        x[ii, 0, ii]
+    y = x[ii, 0, ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    # 0 broadcast to [0, 0] per array API
+    assert y.shape == ii.shape
+    assert _all_equal(
+        (x[ii[i], 0, ii[i]] for i in range(ii.shape[0])),
+        (y[i] for i in range(ii.shape[0])),
+    )
 
 
 def test_advanced_slice6():
