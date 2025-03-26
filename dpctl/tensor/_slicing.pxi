@@ -268,6 +268,11 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
             elif _is_integral(ind_i):
                 ind_i = ind_i.__index__()
                 if array_streak:
+                    # integer will be converted to an array, still raise if OOB
+                    if not (0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0):
+                        raise IndexError(
+                            ("Index {0} is out of range for "
+                            "axes {1} with size {2}").format(ind_i, k, shape[k]))
                     new_advanced_ind.append(ind_i)
                     k_new = k + 1
                     new_shape.extend(shape[k:k_new])
