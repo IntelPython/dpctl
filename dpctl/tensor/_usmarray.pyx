@@ -161,7 +161,6 @@ cdef void _validate_and_use_stream(object stream, c_dpctl.SyclQueue self_queue) 
         ev = self_queue.submit_barrier()
         stream.submit_barrier(dependent_events=[ev])
 
-
 cdef class usm_ndarray:
     """ usm_ndarray(shape, dtype=None, strides=None, buffer="device", \
            offset=0, order="C", buffer_ctor_kwargs=dict(), \
@@ -962,28 +961,30 @@ cdef class usm_ndarray:
             return res
 
         from ._copy_utils import _extract_impl, _nonzero_impl, _take_multi_index
-        if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-            key_ = adv_ind[0]
-            adv_ind_end_p = key_.ndim + adv_ind_start_p
-            if adv_ind_end_p > res.ndim:
-                raise IndexError("too many indices for the array")
-            key_shape = key_.shape
-            arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
-            for i in range(key_.ndim):
-                if matching:
-                    if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
-                        matching = 0
-            if not matching:
-                raise IndexError("boolean index did not match indexed array in dimensions")
-            res = _extract_impl(res, key_, axis=adv_ind_start_p)
-            res.flags_ = _copy_writable(res.flags_, self.flags_)
-            return res
 
-        if any(ind.dtype == dpt_bool for ind in adv_ind):
+        # if len(adv_ind == 1), the (only) element is always an array
+        if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
+                key_ = adv_ind[0]
+                adv_ind_end_p = key_.ndim + adv_ind_start_p
+                if adv_ind_end_p > res.ndim:
+                    raise IndexError("too many indices for the array")
+                key_shape = key_.shape
+                arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
+                for i in range(key_.ndim):
+                    if matching:
+                        if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
+                            matching = 0
+                if not matching:
+                    raise IndexError("boolean index did not match indexed array in dimensions")
+                res = _extract_impl(res, key_, axis=adv_ind_start_p)
+                res.flags_ = _copy_writable(res.flags_, self.flags_)
+                return res
+
+        if any((isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool) for ind in adv_ind):
             adv_ind_int = list()
             for ind in adv_ind:
-                if ind.dtype == dpt_bool:
-                    adv_ind_int.extend(_nonzero_impl(ind))
+                if isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool:
+                        adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
             res = _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
@@ -1433,10 +1434,10 @@ cdef class usm_ndarray:
             _place_impl(Xv, adv_ind[0], rhs, axis=adv_ind_start_p)
             return
 
-        if any(ind.dtype == dpt_bool for ind in adv_ind):
+        if any((isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool) for ind in adv_ind):
             adv_ind_int = list()
             for ind in adv_ind:
-                if ind.dtype == dpt_bool:
+                if isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool:
                     adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
