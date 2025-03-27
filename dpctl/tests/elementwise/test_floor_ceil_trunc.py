@@ -24,13 +24,13 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _map_to_device_dtype, _real_value_dtypes
+from .utils import _map_to_device_dtype, _no_complex_dtypes, _real_value_dtypes
 
 _all_funcs = [(np.floor, dpt.floor), (np.ceil, dpt.ceil), (np.trunc, dpt.trunc)]
 
 
 @pytest.mark.parametrize("dpt_call", [dpt.floor, dpt.ceil, dpt.trunc])
-@pytest.mark.parametrize("dtype", _real_value_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_floor_ceil_trunc_out_type(dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -69,7 +69,7 @@ def test_floor_ceil_trunc_usm_type(np_call, dpt_call, usm_type):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _real_value_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_floor_ceil_trunc_order(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -102,7 +102,7 @@ def test_floor_ceil_trunc_error_dtype(dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _real_value_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_floor_ceil_trunc_contig(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -123,7 +123,7 @@ def test_floor_ceil_trunc_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _real_value_dtypes)
+@pytest.mark.parametrize("dtype", _no_complex_dtypes)
 def test_floor_ceil_trunc_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
