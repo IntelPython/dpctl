@@ -12,6 +12,7 @@
    .. autosummary::
       :toctree: generated
    
+      ~SyclPlatform.get_devices
       ~SyclPlatform.print_platform_info
    
    
