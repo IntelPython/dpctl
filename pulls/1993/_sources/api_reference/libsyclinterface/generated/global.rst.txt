@@ -18,6 +18,7 @@ Global Namespace
 	enum_DPCTLSyclEventStatusType.rst
 	enum_DPCTLSyclUSMType.rst
 	struct_MDLocalAccessorTy.rst
+	struct_RawWorkGroupMemoryTy.rst
 
 Overview
 ~~~~~~~~
@@ -37,6 +38,8 @@ Overview
 	// typedefs
 
 	typedef void :ref:`error_handler_callback<doxid-de/d75/dpctl__error__handler__type_8h_1aeb0f262687ced57ead8f8b7d0b7dcefe>`(int err_code);
+	typedef struct DPCTLOpaqueSyclWorkGroupMemory* :target:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>`;
+	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>` :target:`RawWorkGroupMemory<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ace3e58dbaa53288d9b7272fe9a6d03b3>`;
 	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` :ref:`MDLocalAccessor<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
@@ -63,6 +66,7 @@ Overview
 	// structs
 
 	struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>`;
+	struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>`;
 
 	// global functions
 
@@ -116,6 +120,15 @@ Overview
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	:ref:`DPCTLDevice_Hash<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
+	:target:`DPCTLWorkGroupMemory_Available<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ae822b8edf0c8c3192819037b4b8af68e>`();
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>`
+	:target:`DPCTLWorkGroupMemory_Create<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1adfba2a6815b16a79dd4d47eea6f0ec18>`(size_t nbytes);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:target:`DPCTLWorkGroupMemory_Delete<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a7a9cad89e434a7becb710176e7be9117>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` :ref:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>` Ref);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_SubmitBarrier<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a2453786e50a7d7e51a0d240b2ce52f53>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);

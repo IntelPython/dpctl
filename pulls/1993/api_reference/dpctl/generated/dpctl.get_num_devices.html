@@ -730,6 +730,9 @@
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle navigation of struct MDLocalAccessorTy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
 </ul>
 </li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle navigation of struct RawWorkGroupMemoryTy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -742,7 +745,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle navigation of Contributing to dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle navigation of Contributing to dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html">Building from the Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
@@ -795,15 +798,15 @@
 <dt class="sig sig-object py" id="dpctl.get_num_devices">
 <span class="sig-prename descclassname"><span class="pre">dpctl.</span></span><span class="sig-name descname"><span class="pre">get_num_devices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">backend_type.all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device_type.all</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.get_num_devices" title="Permalink to this definition">¶</a></dt>
 <dd><p>A helper function to return the number of SYCL devices of a given
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code>.</p>
+<a class="reference internal" href="../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="../constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>backend</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> enum value or a string that
+<li><p><strong>backend</strong> (str, <a class="reference internal" href="../constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a>, optional) – A <a class="reference internal" href="../constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> enum value or a string that
 specifies a SYCL backend. Currently, accepted values are: “cuda”,
 “hip”, “opencl”, “level_zero”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.backend_type.all</span></code>.</p></li>
-<li><p><strong>device_type</strong> (str, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>, optional) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code> enum value or a string that
+<li><p><strong>device_type</strong> (str, <a class="reference internal" href="../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>, optional) – A <a class="reference internal" href="../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> enum value or a string that
 specifies a SYCL device type. Currently, accepted values are:
 “gpu”, “cpu”, “accelerator”, or “all”.
 Default: <code class="docutils literal notranslate"><span class="pre">dpctl.device_type.all</span></code>.</p></li>
@@ -811,7 +814,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">dpctl.devi
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The number of available SYCL devices that satisfy the provided
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code>
+<a class="reference internal" href="../constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> and <a class="reference internal" href="../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>
 values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
