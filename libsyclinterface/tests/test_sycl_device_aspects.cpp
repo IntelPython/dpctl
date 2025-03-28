@@ -34,6 +34,7 @@
 #include <stddef.h>
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <sycl/sycl.hpp>
 #include <utility>
 
@@ -127,7 +128,11 @@ auto build_params()
             std::make_pair("usm_atomic_shared_allocations",
                            sycl::aspect::usm_atomic_shared_allocations),
             std::make_pair("host_debuggable", sycl::aspect::host_debuggable),
-            std::make_pair("emulated", sycl::aspect::emulated));
+            std::make_pair("emulated", sycl::aspect::emulated),
+            std::make_pair("is_component",
+                           sycl::aspect::ext_oneapi_is_component),
+            std::make_pair("is_composite",
+                           sycl::aspect::ext_oneapi_is_composite));
 
     auto pairs =
         build_param_pairs<const char *, std::pair<const char *, sycl::aspect>,
@@ -184,6 +189,7 @@ TEST_P(TestDPCTLSyclDeviceInterfaceAspects, ChkHasAspect)
 {
     bool actual = false;
     auto dpctlAspect = DPCTL_StrToAspectType(GetParam().second.first);
+    std::cout << GetParam().second.first << std::endl;
     auto AspectTy = DPCTL_SyclAspectToDPCTLAspectType(dpctlAspect);
     EXPECT_NO_FATAL_FAILURE(actual = DPCTLDevice_HasAspect(DRef, AspectTy));
     EXPECT_TRUE(hasAspect == actual);

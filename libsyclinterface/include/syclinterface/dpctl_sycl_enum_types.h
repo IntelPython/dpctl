@@ -130,7 +130,9 @@ typedef enum
     usm_atomic_host_allocations,
     usm_atomic_shared_allocations,
     host_debuggable,
-    emulated
+    emulated,
+    is_component,
+    is_composite
 } DPCTLSyclAspectType;
 
 /*!

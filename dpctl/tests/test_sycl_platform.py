@@ -259,3 +259,20 @@ def test_platform_get_devices_enum_device_type():
                 devices = p.get_devices(device_type=dty)
                 if len(devices):
                     assert (d.device_type == dty for d in devices)
+
+
+def test_platform_get_composite_devices():
+    platforms = dpctl.get_platforms()
+    if platforms:
+        for p in platforms:
+            composite_devices = p.get_composite_devices()
+            if not composite_devices:
+                pass
+            devices = p.get_devices()
+            for Cd in composite_devices:
+                assert Cd.has_aspect_is_composite
+                component_devices = Cd.component_devices()
+                # all component devices are root devices
+                assert all(d in devices for d in component_devices)
+    else:
+        pytest.skip("No platforms available")
