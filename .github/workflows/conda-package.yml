@@ -124,7 +124,8 @@ jobs:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
           conda activate
-          conda build --no-test --python ${{ matrix.python }} --numpy 2 -c conda-forge --override-channels conda-recipe
+          # TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
+          conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.6.2
