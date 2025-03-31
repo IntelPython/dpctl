@@ -528,7 +528,7 @@ The ceil of `x_i` is the smallest integer `n`, such that `n >= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a boolean or real-valued data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -767,7 +767,7 @@ The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a boolean or real-valued data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -2017,7 +2017,7 @@ signed number `x` is discarded.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a boolean or real-valued data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
