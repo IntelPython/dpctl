@@ -1758,7 +1758,8 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def composite_device(self):
-        """ The composite device for a component device, or None for a non-component device.
+        """ The composite device for a component device, or ``None`` for a
+        non-component device.
 
         Returns:
             dpctl.SyclDevice:
@@ -1782,8 +1783,9 @@ cdef class SyclDevice(_SyclDevice):
                 List of component devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
-                if sub-devices can not be created.
+            ValueError:
+                If the ``DPCTLDevice_GetComponentDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
         """
         cdef DPCTLDeviceVectorRef cDVRef = NULL
         cDVRef = DPCTLDevice_GetComponentDevices(self._device_ref)
