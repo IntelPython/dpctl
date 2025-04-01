@@ -460,9 +460,6 @@ cdef class SyclPlatform(_SyclPlatform):
                 that belong to this platform.
 
         Raises:
-            TypeError:
-                If `device_type` is not a str or :class:`dpctl.device_type`
-                enum.
             ValueError:
                 If the ``DPCTLPlatform_GetCompositeDevices`` call returned
                 ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
