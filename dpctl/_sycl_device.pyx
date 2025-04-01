@@ -1548,7 +1548,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -1574,7 +1574,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef int ncounts = len(counts)
@@ -1620,7 +1620,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -1690,7 +1690,7 @@ cdef class SyclDevice(_SyclDevice):
                 If the ``partition`` keyword argument is not specified or
                 the affinity domain string is not legal or is not one of the
                 three supported options.
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 If sub-devices can not be created.
         """
         if "partition" not in kwargs:
