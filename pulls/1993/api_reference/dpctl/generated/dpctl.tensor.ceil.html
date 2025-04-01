@@ -382,6 +382,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -803,7 +804,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array, expected to have a real-valued data type.</p></li>
+<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array, expected to have a boolean or real-valued data type.</p></li>
 <li><p><strong>out</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – Output array to populate.
 Array must have the correct shape and the expected data type.</p></li>
 <li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>,</em><em>&quot;F&quot;</em><em>,</em><em>&quot;A&quot;</em><em>,</em><em>&quot;K&quot;</em><em>, </em><em>optional</em>) – Memory layout of the new output array, if parameter

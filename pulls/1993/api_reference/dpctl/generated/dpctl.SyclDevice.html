@@ -382,6 +382,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -884,7 +885,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns the <code class="docutils literal notranslate"><span class="pre">backend_type</span></code> enum value for this device</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.composite_device.html#dpctl.SyclDevice.composite_device" title="dpctl.SyclDevice.composite_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">composite_device</span></code></a></p></td>
-<td><p>The composite device for a component device, or None for a non-component device.</p></td>
+<td><p>The composite device for a component device, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for a non-component device.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.default_selector_score.html#dpctl.SyclDevice.default_selector_score" title="dpctl.SyclDevice.default_selector_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_selector_score</span></code></a></p></td>
 <td><p>Integral score assigned to this device by DPC++ runtime's default selector's scoring function.</p></td>

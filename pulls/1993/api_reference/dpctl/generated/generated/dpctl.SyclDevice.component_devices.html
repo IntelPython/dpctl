@@ -382,6 +382,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -808,7 +809,8 @@ device, i.e., if <cite>is_composite</cite> is <code class="docutils literal notr
 <dd class="field-even"><p>List[<a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dpctl.SyclSubdeviceCreationError</strong> – if sub-devices can not be created.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLDevice_GetComponentDevices</span></code> call returned
+    <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p>
 </dd>
 </dl>
 </dd></dl>

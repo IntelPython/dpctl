@@ -61,6 +61,7 @@
     has_gpu_devices
     has_cpu_devices
     has_accelerator_devices
+    get_composite_devices
 
 .. rubric:: Enums
 

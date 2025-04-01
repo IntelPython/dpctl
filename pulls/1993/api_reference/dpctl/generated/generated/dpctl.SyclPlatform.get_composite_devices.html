@@ -382,6 +382,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -808,12 +809,8 @@ that belong to this platform.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – If <cite>device_type</cite> is not a str or <a class="reference internal" href="../../constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a>
-    enum.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLPlatform_GetCompositeDevices</span></code> call returned
-    <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p></li>
-</ul>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">DPCTLPlatform_GetCompositeDevices</span></code> call returned
+    <code class="docutils literal notranslate"><span class="pre">NULL</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DPCTLDeviceVectorRef</span></code> object.</p>
 </dd>
 </dl>
 </dd></dl>
