@@ -34,7 +34,6 @@
 #include <stddef.h>
 
 #include <gtest/gtest.h>
-#include <iostream>
 #include <sycl/sycl.hpp>
 #include <utility>
 
@@ -189,7 +188,6 @@ TEST_P(TestDPCTLSyclDeviceInterfaceAspects, ChkHasAspect)
 {
     bool actual = false;
     auto dpctlAspect = DPCTL_StrToAspectType(GetParam().second.first);
-    std::cout << GetParam().second.first << std::endl;
     auto AspectTy = DPCTL_SyclAspectToDPCTLAspectType(dpctlAspect);
     EXPECT_NO_FATAL_FAILURE(actual = DPCTLDevice_HasAspect(DRef, AspectTy));
     EXPECT_TRUE(hasAspect == actual);
