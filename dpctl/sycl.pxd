@@ -45,6 +45,8 @@ cdef extern from "sycl/sycl.hpp" namespace "sycl":
 cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
     cdef struct RawWorkGroupMemoryTy
     ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
+    cdef struct RawKernelArgDataTy
+    ctypedef RawKernelArgDataTy RawKernelArgData
 
 cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
         namespace "dpctl::syclinterface":
@@ -85,3 +87,12 @@ cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
         "dpctl::syclinterface::unwrap<RawWorkGroupMemory>" (
             dpctl_backend.DPCTLSyclWorkGroupMemoryRef
         )
+
+    # raw kernel arg extension
+    cdef dpctl_backend.DPCTLSyclRawKernelArgRef wrap_raw_kernel_arg \
+            "dpctl::syclinterface::wrap<RawKernelArgData>" \
+            (const RawKernelArgData *)
+
+    cdef RawKernelArgData * unwrap_raw_kernel_arg \
+            "dpctl::syclinterface::unwrap<RawKernelArgData>" (
+            dpctl_backend.DPCTLSyclRawKernelArgRef)

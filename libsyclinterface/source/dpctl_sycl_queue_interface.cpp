@@ -42,7 +42,8 @@
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 
-#ifdef SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY
+#if defined(SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY) ||                              \
+    defined(SYCL_EXT_ONEAPI_RAW_KERNEL_ARG)
 #include "dpctl_sycl_extension_interface.h"
 #endif
 
@@ -229,6 +230,18 @@ bool set_kernel_arg(handler &cgh,
         sycl::ext::oneapi::experimental::work_group_memory<char[]> mem{
             num_bytes, cgh};
         cgh.set_arg(idx, mem);
+        break;
+    }
+#endif
+#ifdef SYCL_EXT_ONEAPI_RAW_KERNEL_ARG
+    case DPCTL_RAW_KERNEL_ARG:
+    {
+        auto ref = static_cast<DPCTLSyclRawKernelArgRef>(Arg);
+        RawKernelArgData *raw_arg = unwrap<RawKernelArgData>(ref);
+        void *bytes = raw_arg->bytes();
+        size_t count = raw_arg->count();
+        sycl::ext::oneapi::experimental::raw_kernel_arg arg{bytes, count};
+        cgh.set_arg(idx, arg);
         break;
     }
 #endif
