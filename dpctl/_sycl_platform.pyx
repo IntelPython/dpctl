@@ -181,7 +181,6 @@ cdef class SyclPlatform(_SyclPlatform):
             + ", "
             + self.vendor
             + ", "
-            + " "
             + self.version + "] at {}>".format(hex(id(self)))
         )
 
