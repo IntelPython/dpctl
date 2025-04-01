@@ -193,4 +193,17 @@ __dpctl_give DPCTLDeviceVectorRef
 DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
                          DPCTLSyclDeviceType DTy);
 
+/*!
+ * @brief Returns a vector of composite devices associated with sycl::platform
+ * referenced by DPCTLSyclPlatformRef object.
+ *
+ * @param    PRef           The DPCTLSyclPlatformRef pointer.
+ * @return   A DPCTLDeviceVectorRef with composite devices associated with
+ * given PRef.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLDeviceVectorRef
+DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef);
+
 DPCTL_C_EXTERN_C_END

@@ -37,6 +37,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_CreateFromSelector,
     DPCTLPlatform_Delete,
     DPCTLPlatform_GetBackend,
+    DPCTLPlatform_GetCompositeDevices,
     DPCTLPlatform_GetDefaultContext,
     DPCTLPlatform_GetDevices,
     DPCTLPlatform_GetName,
@@ -447,6 +448,38 @@ cdef class SyclPlatform(_SyclPlatform):
         DPCTLDeviceVector_Delete(DVRef)
 
         return devices
+
+    def get_composite_devices(self):
+        """
+        Returns the list of composite :class:`dpctl.SyclDevice` objects
+        associated with :class:`dpctl.SyclPlatform` instance.
+
+        Returns:
+            list:
+                A :obj:`list` of composite :class:`dpctl.SyclDevice` objects
+                that belong to this platform.
+
+        Raises:
+            ValueError:
+                If the ``DPCTLPlatform_GetCompositeDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
+        """
+        cdef DPCTLDeviceVectorRef DVRef = NULL
+        cdef size_t num_devs
+        cdef size_t i
+        cdef DPCTLSyclDeviceRef DRef
+
+        DVRef = DPCTLPlatform_GetCompositeDevices(self.get_platform_ref())
+        if (DVRef is NULL):
+            raise ValueError("Internal error: NULL device vector encountered")
+        num_devs = DPCTLDeviceVector_Size(DVRef)
+        composite_devices = []
+        for i in range(num_devs):
+            DRef = DPCTLDeviceVector_GetAt(DVRef, i)
+            composite_devices.append(SyclDevice._create(DRef))
+        DPCTLDeviceVector_Delete(DVRef)
+
+        return composite_devices
 
 
 def lsplatform(verbosity=0):

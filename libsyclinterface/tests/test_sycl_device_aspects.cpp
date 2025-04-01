@@ -127,7 +127,11 @@ auto build_params()
             std::make_pair("usm_atomic_shared_allocations",
                            sycl::aspect::usm_atomic_shared_allocations),
             std::make_pair("host_debuggable", sycl::aspect::host_debuggable),
-            std::make_pair("emulated", sycl::aspect::emulated));
+            std::make_pair("emulated", sycl::aspect::emulated),
+            std::make_pair("is_component",
+                           sycl::aspect::ext_oneapi_is_component),
+            std::make_pair("is_composite",
+                           sycl::aspect::ext_oneapi_is_composite));
 
     auto pairs =
         build_param_pairs<const char *, std::pair<const char *, sycl::aspect>,

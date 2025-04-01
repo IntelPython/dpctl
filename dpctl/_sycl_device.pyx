@@ -32,6 +32,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_Delete,
     DPCTLDevice_GetBackend,
+    DPCTLDevice_GetComponentDevices,
+    DPCTLDevice_GetCompositeDevice,
     DPCTLDevice_GetDeviceType,
     DPCTLDevice_GetDriverVersion,
     DPCTLDevice_GetGlobalMemCacheLineSize,
@@ -796,6 +798,32 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
+    def has_aspect_is_component(self):
+        """ Returns ``True`` if this device is a component device, ``False``
+        otherwise. A device with this aspect will have a composite device
+        from which it is descended.
+
+        Returns:
+            bool:
+                Indicates if device is a component device.
+        """
+        cdef _aspect_type AT = _aspect_type._is_component
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+
+    @property
+    def has_aspect_is_composite(self):
+        """ Returns ``True`` if this device is a composite device, ``False``
+        otherwise. A device with this aspect contains component devices.
+
+        Returns:
+            bool:
+                Indicates if device is a composite device.
+        """
+        cdef _aspect_type AT = _aspect_type._is_composite
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
     def image_2d_max_width(self):
         """ Returns the maximum width of a 2D image or 1D image in pixels.
             The minimum value is 8192 if the SYCL device has
@@ -1520,7 +1548,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -1546,7 +1574,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef int ncounts = len(counts)
@@ -1592,7 +1620,7 @@ cdef class SyclDevice(_SyclDevice):
                 Created sub-devices.
 
         Raises:
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 if sub-devices can not be created.
         """
         cdef DPCTLDeviceVectorRef DVRef = NULL
@@ -1662,7 +1690,7 @@ cdef class SyclDevice(_SyclDevice):
                 If the ``partition`` keyword argument is not specified or
                 the affinity domain string is not legal or is not one of the
                 three supported options.
-            dpctl.SyclSubdeviceCreationError:
+            dpctl.SyclSubDeviceCreationError:
                 If sub-devices can not be created.
         """
         if "partition" not in kwargs:
@@ -1727,6 +1755,43 @@ cdef class SyclDevice(_SyclDevice):
         if (pDRef is NULL):
             return None
         return SyclDevice._create(pDRef)
+
+    @property
+    def composite_device(self):
+        """ The composite device for a component device, or ``None`` for a
+        non-component device.
+
+        Returns:
+            dpctl.SyclDevice:
+                The composite :class:`dpctl.SyclDevice` instance for a
+                component device, or ``None`` for a non-component device.
+        """
+        cdef DPCTLSyclDeviceRef CDRef = NULL
+        CDRef = DPCTLDevice_GetCompositeDevice(self._device_ref)
+        if (CDRef is NULL):
+            return None
+        return SyclDevice._create(CDRef)
+
+    def component_devices(self):
+        """ Returns a list of component devices contained in this SYCL device.
+
+        The returned list will be empty if this SYCL device is not a composite
+        device, i.e., if `is_composite` is ``False``.
+
+        Returns:
+            List[:class:`dpctl.SyclDevice`]:
+                List of component devices.
+
+        Raises:
+            ValueError:
+                If the ``DPCTLDevice_GetComponentDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
+        """
+        cdef DPCTLDeviceVectorRef cDVRef = NULL
+        cDVRef = DPCTLDevice_GetComponentDevices(self._device_ref)
+        if cDVRef is NULL:
+            raise ValueError("Internal error: NULL device vector encountered")
+        return _get_devices(cDVRef)
 
     @property
     def profiling_timer_resolution(self):
