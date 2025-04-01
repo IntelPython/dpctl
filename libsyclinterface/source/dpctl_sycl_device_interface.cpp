@@ -862,6 +862,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
                 D->get_info<sycl::ext::oneapi::experimental::info::device::
                                 component_devices>();
             ComponentDevicesVectorPtr = new vecTy();
+            ComponentDevicesVectorPtr->reserve(componentDevices.size());
             for (const auto &cd : componentDevices) {
                 ComponentDevicesVectorPtr->emplace_back(
                     wrap<device>(new device(cd)));
