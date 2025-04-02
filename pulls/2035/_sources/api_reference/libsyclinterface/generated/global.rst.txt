@@ -70,6 +70,9 @@ Overview
 
 	// global functions
 
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	:ref:`DPCTLDevice_GetCompositeDevice<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a2bf41112c0b3a5bb4717eaa0e350dadd>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
+
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	:ref:`DPCTLDevice_GetGlobalMemCacheLineSize<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac47e84e08c40272eb54358b6ab76c0f0>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
@@ -294,6 +297,35 @@ Used to pass a ``sycl::usm`` memory opaquely through DPCTL interfaces.
 
 Global Functions
 ----------------
+
+.. index:: pair: function; DPCTLDevice_GetCompositeDevice
+.. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a2bf41112c0b3a5bb4717eaa0e350dadd:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
+	DPCTLDevice_GetCompositeDevice(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
+
+Wrapper over device.get_info<info::device::parent_device>
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- DRef
+
+		- Opaque pointer to a sycl::device
+
+
+
+.. rubric:: Returns:
+
+Returns an opaque pointer to the composite device for a component device, or nullptr if the device is not a component device.
 
 .. index:: pair: function; DPCTLDevice_GetGlobalMemCacheLineSize
 .. _doxid-d4/d5a/dpctl__sycl__device__interface_8h_1ac47e84e08c40272eb54358b6ab76c0f0:
