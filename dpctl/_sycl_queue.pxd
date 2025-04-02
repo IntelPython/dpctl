@@ -20,11 +20,13 @@
 """ This file declares the SyclQueue extension type.
 """
 
+from cpython.buffer cimport Py_buffer
 from libcpp cimport bool as cpp_bool
 
 from ._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclQueueRef,
+    DPCTLSyclRawKernelArgRef,
     DPCTLSyclWorkGroupMemoryRef,
     _arg_data_type,
 )
@@ -111,5 +113,17 @@ cdef public api class _WorkGroupMemory [
 
 cdef public api class WorkGroupMemory(_WorkGroupMemory) [
     object PyWorkGroupMemoryObject, type PyWorkGroupMemoryType
+]:
+    pass
+
+cdef public api class _RawKernelArg [
+    object Py_RawKernelArgObject, type Py_RawKernelArgType
+]:
+    cdef DPCTLSyclRawKernelArgRef _arg_ref
+    cdef Py_buffer _buf
+    cdef bint _is_buf
+
+cdef public api class RawKernelArg(_RawKernelArg) [
+    object PyRawKernelArgObject, type PyRawKernelArgType
 ]:
     pass

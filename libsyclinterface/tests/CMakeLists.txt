@@ -17,6 +17,8 @@ set(spirv-test-files
     local_accessor_kernel_fp64.spv
     work_group_memory_kernel_fp64.spv
     work_group_memory_kernel_inttys_fp32.spv
+    raw_kernel_arg_kernel_fp64.spv
+    raw_kernel_arg_kernel_inttys_fp32.spv
 )
 
 foreach(tf ${spirv-test-files})
@@ -53,6 +55,7 @@ add_sycl_to_target(
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit_local_accessor_arg.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit_work_group_memory_arg.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_submit_raw_kernel_arg.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_queue_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_usm_interface.cpp
 )
