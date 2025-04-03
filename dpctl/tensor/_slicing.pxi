@@ -308,8 +308,6 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 new_shape.extend(shape[k:k_new])
                 new_strides.extend(strides[k:k_new])
                 k = k_new
-            else:
-                raise IndexError
         new_shape.extend(shape[k:])
         new_strides.extend(strides[k:])
         new_shape_len += len(shape) - k
