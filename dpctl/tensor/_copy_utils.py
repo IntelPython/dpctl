@@ -800,6 +800,79 @@ def _nonzero_impl(ary):
     return res
 
 
+def _validate_indices(inds, queue_list, usm_type_list):
+    """
+    Utility for validating indices are usm_ndarray of integral dtype or Python
+    integers. At least one must be an array.
+
+    For each array, the queue and usm type are appended to `queue_list` and
+    `usm_type_list`, respectively.
+    """
+    any_usmarray = False
+    for ind in inds:
+        if isinstance(ind, dpt.usm_ndarray):
+            any_usmarray = True
+            if ind.dtype.kind not in "ui":
+                raise IndexError(
+                    "arrays used as indices must be of integer (or boolean) "
+                    "type"
+                )
+            queue_list.append(ind.sycl_queue)
+            usm_type_list.append(ind.usm_type)
+        elif not isinstance(ind, Integral):
+            raise TypeError(
+                "all elements of `ind` expected to be usm_ndarrays "
+                f"or integers, found {type(ind)}"
+            )
+    if not any_usmarray:
+        raise TypeError(
+            "at least one element of `inds` expected to be a usm_ndarray"
+        )
+    return inds
+
+
+def _prepare_indices_arrays(inds, q, usm_type):
+    """
+    Utility taking a mix of usm_ndarray and possibly Python int scalar indices,
+    a queue (assumed to be common to arrays in inds), and a usm type.
+
+    Python scalar integers are promoted to arrays on the provided queue and
+    with the provided usm type. All arrays are then promoted to a common
+    integral type (if possible) before being broadcast to a common shape.
+    """
+    # scalar integers -> arrays
+    inds = tuple(
+        map(
+            lambda ind: (
+                ind
+                if isinstance(ind, dpt.usm_ndarray)
+                else dpt.asarray(ind, usm_type=usm_type, sycl_queue=q)
+            ),
+            inds,
+        )
+    )
+
+    # promote to a common integral type if possible
+    ind_dt = dpt.result_type(*inds)
+    if ind_dt.kind not in "ui":
+        raise ValueError(
+            "cannot safely promote indices to an integer data type"
+        )
+    inds = tuple(
+        map(
+            lambda ind: (
+                ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
+            ),
+            inds,
+        )
+    )
+
+    # broadcast
+    inds = dpt.broadcast_arrays(*inds)
+
+    return inds
+
+
 def _take_multi_index(ary, inds, p, mode=0):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(
@@ -820,26 +893,8 @@ def _take_multi_index(ary, inds, p, mode=0):
     ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
-    any_usmarray = False
-    for ind in inds:
-        if isinstance(ind, dpt.usm_ndarray):
-            any_usmarray = True
-            if ind.dtype.kind not in "ui":
-                raise IndexError(
-                    "arrays used as indices must be of integer (or boolean) "
-                    "type"
-                )
-            queues_.append(ind.sycl_queue)
-            usm_types_.append(ind.usm_type)
-        elif not isinstance(ind, Integral):
-            raise TypeError(
-                "all elements of `ind` expected to be usm_ndarrays "
-                "or integers"
-            )
-    if not any_usmarray:
-        raise TypeError(
-            "at least one element of `ind` expected to be a usm_ndarray"
-        )
+
+    _validate_indices(inds, queues_, usm_types_)
     res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is None:
@@ -849,34 +904,10 @@ def _take_multi_index(ary, inds, p, mode=0):
             "Use `usm_ndarray.to_device` method to migrate data to "
             "be associated with the same queue."
         )
+
     if len(inds) > 1:
-        inds = tuple(
-            map(
-                lambda ind: (
-                    ind
-                    if isinstance(ind, dpt.usm_ndarray)
-                    else dpt.asarray(
-                        ind, usm_type=res_usm_type, sycl_queue=exec_q
-                    )
-                ),
-                inds,
-            )
-        )
-        ind_dt = dpt.result_type(*inds)
-        # ind arrays have been checked to be of integer dtype
-        if ind_dt.kind not in "ui":
-            raise ValueError(
-                "cannot safely promote indices to an integer data type"
-            )
-        inds = tuple(
-            map(
-                lambda ind: (
-                    ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
-                ),
-                inds,
-            )
-        )
-        inds = dpt.broadcast_arrays(*inds)
+        inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
+
     ind0 = inds[0]
     ary_sh = ary.shape
     p_end = p + len(inds)
@@ -992,26 +1023,9 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
-    any_usmarray = False
-    for ind in inds:
-        if isinstance(ind, dpt.usm_ndarray):
-            any_usmarray = True
-            if ind.dtype.kind not in "ui":
-                raise IndexError(
-                    "arrays used as indices must be of integer (or boolean) "
-                    "type"
-                )
-            queues_.append(ind.sycl_queue)
-            usm_types_.append(ind.usm_type)
-        elif not isinstance(ind, Integral):
-            raise TypeError(
-                "all elements of `ind` expected to be usm_ndarrays "
-                "or integers"
-            )
-    if not any_usmarray:
-        raise TypeError(
-            "at least one element of `ind` expected to be a usm_ndarray"
-        )
+
+    _validate_indices(inds, queues_, usm_types_)
+
     vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
     exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is not None:
@@ -1028,34 +1042,10 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
             "Use `usm_ndarray.to_device` method to migrate data to "
             "be associated with the same queue."
         )
+
     if len(inds) > 1:
-        inds = tuple(
-            map(
-                lambda ind: (
-                    ind
-                    if isinstance(ind, dpt.usm_ndarray)
-                    else dpt.asarray(
-                        ind, usm_type=vals_usm_type, sycl_queue=exec_q
-                    )
-                ),
-                inds,
-            )
-        )
-        ind_dt = dpt.result_type(*inds)
-        # ind arrays have been checked to be of integer dtype
-        if ind_dt.kind not in "ui":
-            raise ValueError(
-                "cannot safely promote indices to an integer data type"
-            )
-        inds = tuple(
-            map(
-                lambda ind: (
-                    ind if ind.dtype == ind_dt else dpt.astype(ind, ind_dt)
-                ),
-                inds,
-            )
-        )
-        inds = dpt.broadcast_arrays(*inds)
+        inds = _prepare_indices_arrays(inds, exec_q, vals_usm_type)
+
     ind0 = inds[0]
     ary_sh = ary.shape
     p_end = p + len(inds)
