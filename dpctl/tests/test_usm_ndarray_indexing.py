@@ -22,6 +22,7 @@ from numpy.testing import assert_array_equal
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+from dpctl.tensor._copy_utils import _take_multi_index
 from dpctl.utils import ExecutionPlacementError
 
 from .helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -1962,3 +1963,17 @@ def test_take_out_errors():
     out_bad_q = dpt.empty(ind.shape, dtype=x.dtype, sycl_queue=q2)
     with pytest.raises(dpctl.utils.ExecutionPlacementError):
         dpt.take(x, ind, out=out_bad_q)
+
+
+def test_getitem_impl_fn_invalid_inp():
+    get_queue_or_skip()
+
+    x = dpt.ones((10, 10), dtype="i4")
+
+    bad_ind_type = (dpt.ones((), dtype="i4"), 2.0)
+    with pytest.raises(TypeError):
+        _take_multi_index(x, bad_ind_type, 0, 0)
+
+    no_array_inds = (2, 3)
+    with pytest.raises(TypeError):
+        _take_multi_index(x, no_array_inds, 0, 0)
