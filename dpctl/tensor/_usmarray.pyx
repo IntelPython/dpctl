@@ -964,27 +964,27 @@ cdef class usm_ndarray:
 
         # if len(adv_ind == 1), the (only) element is always an array
         if len(adv_ind) == 1 and adv_ind[0].dtype == dpt_bool:
-                key_ = adv_ind[0]
-                adv_ind_end_p = key_.ndim + adv_ind_start_p
-                if adv_ind_end_p > res.ndim:
-                    raise IndexError("too many indices for the array")
-                key_shape = key_.shape
-                arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
-                for i in range(key_.ndim):
-                    if matching:
-                        if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
-                            matching = 0
-                if not matching:
-                    raise IndexError("boolean index did not match indexed array in dimensions")
-                res = _extract_impl(res, key_, axis=adv_ind_start_p)
-                res.flags_ = _copy_writable(res.flags_, self.flags_)
-                return res
+            key_ = adv_ind[0]
+            adv_ind_end_p = key_.ndim + adv_ind_start_p
+            if adv_ind_end_p > res.ndim:
+                raise IndexError("too many indices for the array")
+            key_shape = key_.shape
+            arr_shape = res.shape[adv_ind_start_p:adv_ind_end_p]
+            for i in range(key_.ndim):
+                if matching:
+                    if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
+                        matching = 0
+            if not matching:
+                raise IndexError("boolean index did not match indexed array in dimensions")
+            res = _extract_impl(res, key_, axis=adv_ind_start_p)
+            res.flags_ = _copy_writable(res.flags_, self.flags_)
+            return res
 
         if any((isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool) for ind in adv_ind):
             adv_ind_int = list()
             for ind in adv_ind:
                 if isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool:
-                        adv_ind_int.extend(_nonzero_impl(ind))
+                    adv_ind_int.extend(_nonzero_impl(ind))
                 else:
                     adv_ind_int.append(ind)
             res = _take_multi_index(res, tuple(adv_ind_int), adv_ind_start_p)
