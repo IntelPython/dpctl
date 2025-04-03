@@ -1589,6 +1589,79 @@
     <span class="k">return</span> <span class="n">res</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_indices</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">queue_list</span><span class="p">,</span> <span class="n">usm_type_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility for validating indices are usm_ndarray of integral dtype or Python</span>
+<span class="sd">    integers. At least one must be an array.</span>
+
+<span class="sd">    For each array, the queue and usm type are appended to `queue_list` and</span>
+<span class="sd">    `usm_type_list`, respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+            <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;arrays used as indices must be of integer (or boolean) &quot;</span>
+                    <span class="s2">&quot;type&quot;</span>
+                <span class="p">)</span>
+            <span class="n">queue_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
+            <span class="n">usm_type_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">Integral</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;all elements of `ind` expected to be usm_ndarrays &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or integers, found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">any_usmarray</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;at least one element of `inds` expected to be a usm_ndarray&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">inds</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_prepare_indices_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility taking a mix of usm_ndarray and possibly Python int scalar indices,</span>
+<span class="sd">    a queue (assumed to be common to arrays in inds), and a usm type.</span>
+
+<span class="sd">    Python scalar integers are promoted to arrays on the provided queue and</span>
+<span class="sd">    with the provided usm type. All arrays are then promoted to a common</span>
+<span class="sd">    integral type (if possible) before being broadcast to a common shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># scalar integers -&gt; arrays</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="nb">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">ind</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">inds</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># promote to a common integral type if possible</span>
+    <span class="n">ind_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ind_dt</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot safely promote indices to an integer data type&quot;</span>
+        <span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="nb">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">ind</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ind_dt</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind_dt</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">inds</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># broadcast</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inds</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_take_multi_index</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1609,26 +1682,8 @@
     <span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">inds</span><span class="p">,)</span>
-    <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-            <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                    <span class="s2">&quot;arrays used as indices must be of integer (or boolean) &quot;</span>
-                    <span class="s2">&quot;type&quot;</span>
-                <span class="p">)</span>
-            <span class="n">queues_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-            <span class="n">usm_types_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">Integral</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;all elements of `ind` expected to be usm_ndarrays &quot;</span>
-                <span class="s2">&quot;or integers&quot;</span>
-            <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">any_usmarray</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;at least one element of `ind` expected to be a usm_ndarray&quot;</span>
-        <span class="p">)</span>
+
+    <span class="n">_validate_indices</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">queues_</span><span class="p">,</span> <span class="n">usm_types_</span><span class="p">)</span>
     <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span><span class="n">queues_</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1638,34 +1693,10 @@
             <span class="s2">&quot;Use `usm_ndarray.to_device` method to migrate data to &quot;</span>
             <span class="s2">&quot;be associated with the same queue.&quot;</span>
         <span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">ind</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                        <span class="n">ind</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">inds</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">ind_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
-        <span class="c1"># ind arrays have been checked to be of integer dtype</span>
-        <span class="k">if</span> <span class="n">ind_dt</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;cannot safely promote indices to an integer data type&quot;</span>
-            <span class="p">)</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">ind</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ind_dt</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind_dt</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">inds</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">_prepare_indices_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">)</span>
+
     <span class="n">ind0</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">ary_sh</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">p_end</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
@@ -1781,26 +1812,9 @@
         <span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">inds</span><span class="p">,)</span>
-    <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-            <span class="n">any_usmarray</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                    <span class="s2">&quot;arrays used as indices must be of integer (or boolean) &quot;</span>
-                    <span class="s2">&quot;type&quot;</span>
-                <span class="p">)</span>
-            <span class="n">queues_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">)</span>
-            <span class="n">usm_types_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">Integral</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;all elements of `ind` expected to be usm_ndarrays &quot;</span>
-                <span class="s2">&quot;or integers&quot;</span>
-            <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">any_usmarray</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;at least one element of `ind` expected to be a usm_ndarray&quot;</span>
-        <span class="p">)</span>
+
+    <span class="n">_validate_indices</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">queues_</span><span class="p">,</span> <span class="n">usm_types_</span><span class="p">)</span>
+
     <span class="n">vals_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span><span class="n">usm_types_</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">(</span><span class="n">queues_</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1817,34 +1831,10 @@
             <span class="s2">&quot;Use `usm_ndarray.to_device` method to migrate data to &quot;</span>
             <span class="s2">&quot;be associated with the same queue.&quot;</span>
         <span class="p">)</span>
+
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">ind</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                        <span class="n">ind</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">vals_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">inds</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">ind_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
-        <span class="c1"># ind arrays have been checked to be of integer dtype</span>
-        <span class="k">if</span> <span class="n">ind_dt</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;cannot safely promote indices to an integer data type&quot;</span>
-            <span class="p">)</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="p">(</span>
-                    <span class="n">ind</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">ind_dt</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ind_dt</span><span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">inds</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">inds</span><span class="p">)</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">_prepare_indices_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">vals_usm_type</span><span class="p">)</span>
+
     <span class="n">ind0</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">ary_sh</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">p_end</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
