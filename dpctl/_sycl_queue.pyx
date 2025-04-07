@@ -1740,8 +1740,7 @@ cdef class _RawKernelArg:
     def __dealloc(self):
         if(self._arg_ref):
             DPCTLRawKernelArg_Delete(self._arg_ref)
-        if(self._is_buf):
-            PyBuffer_Release(&(self._buf))
+
 
 cdef class RawKernelArg:
     """
@@ -1762,9 +1761,11 @@ cdef class RawKernelArg:
 
     - If the constructor is invoked with two arguments, the first argument is
       interpreted as the number of bytes in the binary argument, while the
-      second argument is interpreted as a pointer to the data. Note that the
-      raw kernel arg does not own or copy the data, so the pointed-to object
-      must be kept alive by the user until kernel launch.
+      second argument is interpreted as a pointer to the data.
+
+    Note that construction of the ``RawKernelArg`` copies the bytes, so
+    modifications made after construction of the ``RawKernelArg`` will not be
+    reflected in the kernel launch.
 
     Args:
         args:
@@ -1778,6 +1779,8 @@ cdef class RawKernelArg:
         cdef void* ptr = NULL
         cdef size_t count
         cdef int ret_code = 0
+        cdef Py_buffer _buffer
+        cdef bint _is_buf
 
         if not DPCTLRawKernelArg_Available():
             raise RuntimeError("Raw kernel arg extension not available")
@@ -1792,13 +1795,13 @@ cdef class RawKernelArg:
                                 "expects argument to be buffer",
                                 f"but got {type(args[0])}")
 
-            ret_code = PyObject_GetBuffer(args[0], &(self._buf), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
+            ret_code = PyObject_GetBuffer(args[0], &(_buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
             if ret_code != 0: # pragma: no cover
                 raise RuntimeError("Could not access buffer")
 
-            ptr = self._buf.buf
-            count = self._buf.len
-            self._is_buf = True
+            ptr = _buffer.buf
+            count = _buffer.len
+            _is_buf = True
         else:
             if not isinstance(args[0], numbers.Integral):
                 raise TypeError("RawKernelArg constructor expects first"
@@ -1807,11 +1810,14 @@ cdef class RawKernelArg:
                 raise TypeError("RawKernelArg constructor expects second"
                                 "argument to be `int`, but got {type(args[1])}")
 
-            self._is_buf = False
+            _is_buf = False
             count = args[0]
             ptr = <void*>(<unsigned long long>args[1])
 
         self._arg_ref = DPCTLRawKernelArg_Create(ptr, count)
+        if(_is_buf):
+            PyBuffer_Release(&(_buffer))
+
 
     """Check whether the raw_kernel_arg extension is available"""
     @staticmethod

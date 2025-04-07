@@ -69,8 +69,12 @@ __dpctl_give DPCTLSyclRawKernelArgRef DPCTLRawKernelArg_Create(void *bytes,
 {
     DPCTLSyclRawKernelArgRef rka = nullptr;
     try {
-        auto RawKernelArg = new RawKernelArgData{bytes, count};
-        rka = wrap<RawKernelArgData>(RawKernelArg);
+        auto rawData =
+            std::unique_ptr<unsigned char[]>(new unsigned char[count]);
+        std::memcpy(rawData.get(), bytes, count);
+        auto RawKernelArg = std::unique_ptr<RawKernelArgData>(
+            new RawKernelArgData{rawData.release(), count});
+        rka = wrap<RawKernelArgData>(RawKernelArg.release());
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
