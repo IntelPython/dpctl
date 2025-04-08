@@ -3,30 +3,23 @@ import dpctl.tensor as dpt
 
 class Binary:
 
+    params = (
+        [dpctl.SyclQueue(property='enable_profiling')],
+        [1],
+        [2**27],
+        [
+            dpt.add, dpt.multiply, dpt.divide, dpt.subtract,
+            dpt.floor_divide, dpt.remainder,
+            dpt.hypot, dpt.logaddexp, dpt.pow, dpt.atan2, dpt.nextafter, dpt.copysign,
+            dpt.less, dpt.less_equal, dpt.greater, dpt.greater_equal, dpt.equal, dpt.not_equal,
+            dpt.minimum, dpt.maximum, dpt.bitwise_and, dpt.bitwise_or, dpt.bitwise_xor,
+            dpt.bitwise_left_shift, dpt.bitwise_right_shift, dpt.logical_and, dpt.logical_or, dpt.logical_xor
+        ]
+
+    )
+
     def setup(self):
-      
-        self.q = dpctl.SyclQueue(property='enable_profiling')
-        self.n_iters = 1
-        self.n_values = 2**27
-
-        f_list = [
-                dpt.add, dpt.multiply, dpt.divide, dpt.subtract,
-                dpt.floor_divide, dpt.remainder,
-                dpt.hypot, dpt.logaddexp, dpt.pow, dpt.atan2, dpt.nextafter, dpt.copysign,
-                dpt.less, dpt.less_equal, dpt.greater, dpt.greater_equal, dpt.equal, dpt.not_equal,
-                dpt.minimum, dpt.maximum, dpt.bitwise_and, dpt.bitwise_or, dpt.bitwise_xor,
-                dpt.bitwise_left_shift, dpt.bitwise_right_shift, dpt.logical_and, dpt.logical_or, dpt.logical_xor
-            ]
-
-        for fn in f_list:
-            method_name = 'time_' + fn.name_
-            setattr(self, method_name, fn)
-
-
-        for f in f_list:
-            dtypes = [list(map(dpt.dtype, sig.split('->')[0])) for sig in op.types]
-            for dt1, dt2 in dtypes:
-                self.run_bench2(self.q, self.n_iters, self.n_values, dt1, dt2, f)
+      pass
 
 
     def get_sizes(self, n):
@@ -39,7 +32,7 @@ class Binary:
         return s
 
 
-    def run_bench(self, q, reps, n_max, dtype, op):
+    def time_bench(self, q, reps, n_max, dtype, op):
         self.run_bench2(q, reps, n_max, dtype, dtype, op)
 
 
@@ -72,7 +65,3 @@ class Binary:
                     break
 
         return times_res
-
-
-    def build_dtype_code(self, dt):
-        return dt.kind + str(dt.itemsize)
