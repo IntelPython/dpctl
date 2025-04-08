@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Support for Boolean data-type is added to `dpctl.tensor.ceil`, `dpctl.tensor.floor`, and `dpctl.tensor.trunc` [gh-2033](https://github.com/IntelPython/dpctl/pull/2033)
+* Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [#2042](https://github.com/IntelPython/dpctl/pull/2042).
 
 ### Fixed
 
