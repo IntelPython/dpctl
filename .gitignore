@@ -102,3 +102,6 @@ dpctl/tensor/_usmarray.h
 
 # moved cmake scripts
 dpctl/resources/cmake
+
+# asv artifacts
+*.asv*
