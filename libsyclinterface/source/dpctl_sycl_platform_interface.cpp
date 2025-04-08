@@ -227,9 +227,16 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
 {
     auto P = unwrap<platform>(PRef);
     if (P) {
-#ifdef SYCL_EXT_ONEAPI_DEFAULT_CONTEXT
+#if defined(SYCL_KHR_DEFAULT_CONTEXT) ||                                       \
+    defined(SYCL_EXT_ONEAPI_DEFAULT_CONTEXT)
         try {
-            const auto &default_ctx = P->ext_oneapi_get_default_context();
+            const auto &default_ctx = P->
+#ifdef SYCL_KHR_DEFAULT_CONTEXT
+                                      khr_get_default_context()
+#else
+                                      ext_oneapi_get_default_context()
+#endif // SYCL_KHR_DEFAULT_CONTEXT
+                ;
             return wrap<context>(new context(default_ctx));
         } catch (const std::exception &ex) {
             error_handler(ex, __FILE__, __func__, __LINE__);
@@ -237,7 +244,7 @@ DPCTLPlatform_GetDefaultContext(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         }
 #else
         return nullptr;
-#endif
+#endif // SYCL_KHR_DEFAULT_CONTEXT || SYCL_EXT_ONEAPI_DEFAULT_CONTEXT
     }
     else {
         error_handler(
