@@ -104,26 +104,9 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    
-    q = dpctl.SyclQueue(property='enable_profiling')
-    n_iters = args.n_iters
-    n_values = args.n_values
-    if args.funcs == "all":
-        f_list = [
-            dpt.add, dpt.multiply, dpt.divide, dpt.subtract,
-            dpt.floor_divide, dpt.remainder,
-            dpt.hypot, dpt.logaddexp, dpt.pow, dpt.atan2, dpt.nextafter, dpt.copysign,
-            dpt.less, dpt.less_equal, dpt.greater, dpt.greater_equal, dpt.equal, dpt.not_equal,
-            dpt.minimum, dpt.maximum, dpt.bitwise_and, dpt.bitwise_or, dpt.bitwise_xor,
-            dpt.bitwise_left_shift, dpt.bitwise_right_shift, dpt.logical_and, dpt.logical_or, dpt.logical_xor
-        ]
-    else:
-        f_list = []
-        for fn in args.funcs:
+    hasattr(dpt, fn):
+            print(print)
+            print(getattr(print, fn))
+            f_list.append(getattr(dpt, fn))
 
-            if fn != "all" and hasattr(dpt, fn):
-                f_list.append(getattr(dpt, fn))
 
-    for f in f_list:
-        time_binary_supported_types(q, n_iters, n_values, f)

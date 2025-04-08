@@ -3,7 +3,7 @@ import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import dpctl.tensor._tensor_elementwise_impl as tei
 
-class Suite:
+class EfBenchAdd:
 
     def setup(self):
         self.q = dpctl.SyclQueue(property='enable_profiling')
