@@ -18,25 +18,22 @@ class Binary:
 
     )
 
-    def setup(self):
-      pass
-
-
-    def get_sizes(self, n):
-        s = []
-        m = 8192
-        while m < n:
-            s.append(m)
-            m *= 2
-        s.append(n)
-        return s
-
 
     def time_bench(self, q, reps, n_max, dtype, op):
         self.run_bench2(q, reps, n_max, dtype, dtype, op)
 
 
     def run_bench2(self, q, reps, n_max, dtype1, dtype2, op):
+
+        def get_sizes(n):
+            s = []
+            m = 8192
+            while m < n:
+                s.append(m)
+                m *= 2
+            s.append(n)
+            return s
+
         x1 = dpt.ones(n_max, dtype=dtype1, sycl_queue=q)
         x2 = dpt.ones(n_max, dtype=dtype2, sycl_queue=q)
         r = op(x1, x2)
@@ -45,7 +42,7 @@ class Binary:
 
         times_res = []
 
-        for n in self.get_sizes(n_max):
+        for n in get_sizes(n_max):
             x1_n = x1[:n]
             x2_n = x2[:n]
             r_n = r[:n]
