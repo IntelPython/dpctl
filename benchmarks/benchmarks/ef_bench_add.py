@@ -3,7 +3,7 @@ import dpctl.tensor as dpt
 import dpctl.utils as dpu
 import dpctl.tensor._tensor_elementwise_impl as tei
 
-class EfBenchAdd:
+class Suite:
 
     def setup(self):
         self.q = dpctl.SyclQueue(property='enable_profiling')
@@ -22,7 +22,7 @@ class EfBenchAdd:
         self.timer = dpctl.SyclTimer(device_timer="order_manager", time_scale=1e9)
         self.m = dpu.SequentialOrderManager[self.q]
 
-    def ef_bench_add(self):
+    def time_ef_bench_add(self):
         with self.timer(self.q):
             for _ in range(self.reps):
                 deps = self.m.submitted_events
@@ -33,7 +33,7 @@ class EfBenchAdd:
                                 depends=deps)
                 self.m.add_event_pair(ht_e, c_e)
         
-        ddt = self.timer.dt.device_dt
-        print((self.n, self.reps, self.dt))
-        print(ddt / self.reps)
-        print(dpt.max(dpt.abs(self.r - 2)))
+        # ddt = self.timer.dt.device_dt
+        # print((self.n, self.reps, self.dt))
+        # print(ddt / self.reps)
+        # print(dpt.max(dpt.abs(self.r - 2)))
