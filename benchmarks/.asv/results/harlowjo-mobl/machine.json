@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz",
+    "machine": "harlowjo-mobl",
+    "num_cpu": "8",
+    "os": "Linux 5.15.167.4-microsoft-standard-WSL2",
+    "ram": "16220180",
+    "version": 1
+}

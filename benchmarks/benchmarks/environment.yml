@@ -1,0 +1,39 @@
+# Conda environment.yml file for dpbench
+name: dpctl-benchmarks
+
+channels:
+    - 'https://af01p-igk.devtools.intel.com/artifactory/api/conda/idp-conda-pkgserver-igk-local/gold'
+    - 'https://af01p-igk.devtools.intel.com/artifactory/api/conda/idp-conda-pkgserver-igk-local/tools'
+    - conda-forge
+
+dependencies:
+  - python=3.10
+  - sysroot_linux-64==2.28
+  - asv
+  - pip
+  - wheel
+  - tomli
+  - alembic
+  - sqlalchemy
+  - py-cpuinfo
+  - scipy
+  - scikit-learn
+  - versioneer
+  - pandas
+  - numpy
+  - numba
+  - dpctl
+  - dpnp
+  - numba-dpex>=0.23.0*
+  - dpcpp_linux-64
+  - dpcpp-cpp-rt
+  - cython
+  - cmake
+  - ninja
+  - scikit-build
+  - setuptools>=42,<64
+  - pybind11
+  - libgcc-ng
+  - libstdcxx-ng
+  - libgomp
+
