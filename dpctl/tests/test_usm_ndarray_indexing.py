@@ -402,6 +402,24 @@ def test_advanced_slice13():
     assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
 
 
+def test_advanced_slice14():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    y = x[ii, 0, ii, 1, :]
+    assert isinstance(y, dpt.usm_ndarray)
+    # integers broadcast to ii.shape per array API
+    assert y.shape == ii.shape + x.shape[-1:]
+    assert _all_equal(
+        (
+            x[ii[i], 0, ii[i], 1, k]
+            for i in range(ii.shape[0])
+            for k in range(x.shape[-1])
+        ),
+        (y[i, k] for i in range(ii.shape[0]) for k in range(x.shape[-1])),
+    )
+
+
 def test_boolean_indexing_validation():
     get_queue_or_skip()
     x = dpt.zeros(10, dtype="i4")
