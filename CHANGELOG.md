@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Support for Boolean data-type is added to `dpctl.tensor.ceil`, `dpctl.tensor.floor`, and `dpctl.tensor.trunc` [gh-2033](https://github.com/IntelPython/dpctl/pull/2033)
+* Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [#2042](https://github.com/IntelPython/dpctl/pull/2042).
 
 ### Fixed
 
@@ -223,7 +224,7 @@ The full list of changes that went into this release are:
 * Fix for crash during testing with open source SYCL bundle by updating CPU RT library used [gh-1762](https://github.com/IntelPython/dpctl/pull/1762)
 * Add missing include to fix build break with newer LLVM [gh-1776](https://github.com/IntelPython/dpctl/pull/1776)
 * Add `#include <utility>` for definition of `std::move` used [gh-1787](https://github.com/IntelPython/dpctl/pull/1787)
-* Change to CMake script to accomodate DPC++ transition from PI to UR architecture [gh-1788](https://github.com/IntelPython/dpctl/pull/1788)
+* Change to CMake script to accommodate DPC++ transition from PI to UR architecture [gh-1788](https://github.com/IntelPython/dpctl/pull/1788)
 * Document `tensor._flags.Flags` class [gh-1794](https://github.com/IntelPython/dpctl/pull/1794)
 * Fix for unreferenced unreleased bug in copy-and-cast code logic [gh-1799](https://github.com/IntelPython/dpctl/pull/1799)
 * Explicitly include headers used in C++ translation units implementing reduction operations [gh-1802](https://github.com/IntelPython/dpctl/pull/1802)
@@ -378,7 +379,7 @@ This release reaches milestone of 100% compliance of `dpctl.tensor` functions wi
 * Added bitwise elementwise functions `dpctl.tensor.bitwise_and`, `dpctl.tensor.bitwise_xor`, `dpctl.tensor.bitwise_or`, `dpctl.tensor.bitwise_invert`
 * Added bitwise shift functions `dpctl.tensor.bitwise_left_shift` and `dpctl.tensor.bitwise_right_shift`.
 * Added `dpctl.tensor.atan2` and `dpctl.tensor.signbit` elementwise functions.
-* Added `dpctl.tensor.minumum` and `dpctl.tensor.maximum` binary elementwise functions.
+* Added `dpctl.tensor.minimum` and `dpctl.tensor.maximum` binary elementwise functions.
 * Supported equality checking and hashing for `dpctl.SyclPlatform`.
 * Implemented `types` property for all unary and binary elementwise functions  [#1361](https://github.com/IntelPython/dpctl/pull/1361)
 * Added `dpctl.tensor.repeat` and `dpctl.tensor.tile` functions.
@@ -523,7 +524,7 @@ This release reaches milestone of 100% compliance of `dpctl.tensor` functions wi
 * Updated supported version of DLPack to 0.8 [#1073](https://github.com/IntelPython/dpctl/pull/1073)
 * Implemented queue cache per context/device pair and deployed it in `dpctl.memory`, `dpctl.tensor.from_dlpack` and `dpctl.tensor` array creation functions [#1076](https://github.com/IntelPython/dpctl/pull/1076), [#1079](https://github.com/IntelPython/dpctl/pull/1079)
 
-* Maintainance, CI work: [#1001](https://github.com/IntelPython/dpctl/pull/1001), [#1009](https://github.com/IntelPython/dpctl/pull/1009), [#1011](https://github.com/IntelPython/dpctl/pull/1011), [#1024](https://github.com/IntelPython/dpctl/pull/1024), [#1030](https://github.com/IntelPython/dpctl/pull/1030), [#1032](https://github.com/IntelPython/dpctl/pull/1032), [#1035](https://github.com/IntelPython/dpctl/pull/1035), [#1037](https://github.com/IntelPython/dpctl/pull/1037), [#1039](https://github.com/IntelPython/dpctl/pull/1039), [#1041](https://github.com/IntelPython/dpctl/pull/1041), [#1045](https://github.com/IntelPython/dpctl/pull/1045), [#1047](https://github.com/IntelPython/dpctl/pull/1047), [#1055](https://github.com/IntelPython/dpctl/pull/1055), [#1057](https://github.com/IntelPython/dpctl/pull/1057), [#1059](https://github.com/IntelPython/dpctl/pull/1059), [#1068](https://github.com/IntelPython/dpctl/pull/1068), [#1070](https://github.com/IntelPython/dpctl/pull/1070), [#1074](https://github.com/IntelPython/dpctl/pull/1074), [#1077](https://github.com/IntelPython/dpctl/pull/1077), [#1078](https://github.com/IntelPython/dpctl/pull/1078), [#1081](https://github.com/IntelPython/dpctl/pull/1081), [#1084](https://github.com/IntelPython/dpctl/pull/1084), [#1085](https://github.com/IntelPython/dpctl/pull/1085), [#1088](https://github.com/IntelPython/dpctl/pull/1088), [#1086](https://github.com/IntelPython/dpctl/pull/1086), [#1092](https://github.com/IntelPython/dpctl/pull/1092), [#1093](https://github.com/IntelPython/dpctl/pull/1093)
+* Maintenance, CI work: [#1001](https://github.com/IntelPython/dpctl/pull/1001), [#1009](https://github.com/IntelPython/dpctl/pull/1009), [#1011](https://github.com/IntelPython/dpctl/pull/1011), [#1024](https://github.com/IntelPython/dpctl/pull/1024), [#1030](https://github.com/IntelPython/dpctl/pull/1030), [#1032](https://github.com/IntelPython/dpctl/pull/1032), [#1035](https://github.com/IntelPython/dpctl/pull/1035), [#1037](https://github.com/IntelPython/dpctl/pull/1037), [#1039](https://github.com/IntelPython/dpctl/pull/1039), [#1041](https://github.com/IntelPython/dpctl/pull/1041), [#1045](https://github.com/IntelPython/dpctl/pull/1045), [#1047](https://github.com/IntelPython/dpctl/pull/1047), [#1055](https://github.com/IntelPython/dpctl/pull/1055), [#1057](https://github.com/IntelPython/dpctl/pull/1057), [#1059](https://github.com/IntelPython/dpctl/pull/1059), [#1068](https://github.com/IntelPython/dpctl/pull/1068), [#1070](https://github.com/IntelPython/dpctl/pull/1070), [#1074](https://github.com/IntelPython/dpctl/pull/1074), [#1077](https://github.com/IntelPython/dpctl/pull/1077), [#1078](https://github.com/IntelPython/dpctl/pull/1078), [#1081](https://github.com/IntelPython/dpctl/pull/1081), [#1084](https://github.com/IntelPython/dpctl/pull/1084), [#1085](https://github.com/IntelPython/dpctl/pull/1085), [#1088](https://github.com/IntelPython/dpctl/pull/1088), [#1086](https://github.com/IntelPython/dpctl/pull/1086), [#1092](https://github.com/IntelPython/dpctl/pull/1092), [#1093](https://github.com/IntelPython/dpctl/pull/1093)
 
 
 ### Fixed
@@ -585,7 +586,7 @@ This release reaches milestone of 100% compliance of `dpctl.tensor` functions wi
 
 ### Added
 
-* Implemented and deployed dedicated kernels for copying with casting [#781](https://github.com/IntelPython/dpctl/781), used in `__setitem__`, implementaion of `asarray`, `dpctl.tensor.copy` functions.
+* Implemented and deployed dedicated kernels for copying with casting [#781](https://github.com/IntelPython/dpctl/781), used in `__setitem__`, implementation of `asarray`, `dpctl.tensor.copy` functions.
 * Implemented dedicated copying kernel for `dpctl.tensor.reshape` function [#810](https://github.com/IntelPython/dpctl/810), added support for `copy` keyword [#807](https://github.com/IntelPython/dpctl/807).
 * Implemented dedicated kernel to copy with casting from `numpy.ndarray` into `dpctl.tensor.usm_ndarray` [#817](https://github.com/IntelPython/dpctl/pull/817).
 
@@ -696,7 +697,7 @@ This release reaches milestone of 100% compliance of `dpctl.tensor` functions wi
 - Add a new C API utility function (`DPCTLDeviceMgr_GetDeviceInfoStr`) to return the device info as a C string object [#620](https://github.com/IntelPython/dpctl/pull/620)
 - New Github workflow to build dpclt with nightly Intel llvm/sycl + drivers [#621](https://github.com/IntelPython/dpctl/pull/621)
 - Always raise SubDeviceCreationError even when sub-device counts are zero [#622](https://github.com/IntelPython/dpctl/pull/622)
-- Updated OpenCL interoprability code to fix build with Intel llvm/sycl bundle [#625](https://github.com/IntelPython/dpctl/pull/625)
+- Updated OpenCL interoperability code to fix build with Intel llvm/sycl bundle [#625](https://github.com/IntelPython/dpctl/pull/625)
 - Enabled use of default platform context extension in SYCL compilers that implement this extension [#627](https://github.com/IntelPython/dpctl/pull/627)
 - Implemented `dpctl.utils.get_execution_queue(queue_seq)` utility to help implementing "compute-follows data" convention for offload target [#632](https://github.com/IntelPython/dpctl/pull/632)
  [#631](https://github.com/IntelPython/dpctl/pull/631)
@@ -987,7 +988,7 @@ supports USM.
 ## [0.4.0] - 2020-11-04
 ### Added
 - Device descriptors "max_compute_units", "max_work_item_dimensions", "max_work_item_sizes", "max_work_group_size", "max_num_sub_groups" and "aspects" for int64 atomics inside dpctl C API and inside the dpctl.SyclDevice class.
-- MemoryUSM* classes moved to `dpctl.memory` module, added support for aligned allocation, added support for `prefetch` and `mem_advise` (sychronous) methods, implemented `copy_to_host`, `copy_from_host` and `copy_from_device` methods, pickling support, and zero-copy interoperability with Python objects which implement `__sycl_usm_array_inerface__` protocol.
+- MemoryUSM* classes moved to `dpctl.memory` module, added support for aligned allocation, added support for `prefetch` and `mem_advise` (synchronous) methods, implemented `copy_to_host`, `copy_from_host` and `copy_from_device` methods, pickling support, and zero-copy interoperability with Python objects which implement `__sycl_usm_array_inerface__` protocol.
 - Helper scripts to generate API documentation for both C API and Python.
 
 ### Fixed
@@ -1072,7 +1073,7 @@ supports USM.
 ### Changed
 - Refactored API to expose a minimal sycl::queue interface.
 - Modify cpu_queues, gpu_queues and active_queues to functions.
-- Change static vectors to static pointers to verctors. It disables call for destructors. Destructors are also call in undefined order.
+- Change static vectors to static pointers to vectors. It disables call for destructors. Destructors are also call in undefined order.
 - Rename package PyDPPL to dpCtl.
 - Use dpcpp.exe on Windows instead of dpcpp-cl.exe deleted in oneAPI beta08.
 
