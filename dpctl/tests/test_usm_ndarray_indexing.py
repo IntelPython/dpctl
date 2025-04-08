@@ -420,6 +420,15 @@ def test_advanced_slice14():
     )
 
 
+def test_advanced_slice15():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    # : cannot appear between two integral arrays
+    with pytest.raises(IndexError):
+        x[ii, 0, ii, :, ii]
+
+
 def test_boolean_indexing_validation():
     get_queue_or_skip()
     x = dpt.zeros(10, dtype="i4")
