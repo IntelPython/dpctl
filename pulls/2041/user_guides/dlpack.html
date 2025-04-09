@@ -823,8 +823,8 @@ It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</
 <span class="c1">// Keep in mind, the device may be a sub-device</span>
 <span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">ptr_dev</span> <span class="o">=</span> <span class="n">sycl</span><span class="o">::</span><span class="n">get_pointer_device</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span> <span class="n">ctx</span><span class="p">);</span>
 
-<span class="cp">#if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT</span>
-<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">ptr_dev</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">ext_oneapi_get_default_context</span><span class="p">();</span>
+<span class="cp">#if SYCL_KHR_DEFAULT_CONTEXT</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">ptr_dev</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">khr_get_default_context</span><span class="p">();</span>
 <span class="cp">#else</span>
 <span class="k">static_assert</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;ext_oneapi_default_context extension is required&quot;</span><span class="p">);</span>
 <span class="cp">#endif</span>
@@ -883,8 +883,8 @@ It is not <code class="docutils literal notranslate"><span class="pre">kDLSycl</
 <span class="c1">// );</span>
 
 <span class="c1">// Get default platform context</span>
-<span class="cp">#if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT</span>
-<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">root_device</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">ext_oneapi_get_default_context</span><span class="p">();</span>
+<span class="cp">#if SYCL_KHR_DEFAULT_CONTEXT</span>
+<span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">context</span> <span class="o">&amp;</span><span class="n">default_ctx</span> <span class="o">=</span> <span class="n">root_device</span><span class="p">.</span><span class="n">get_platform</span><span class="p">().</span><span class="n">khr_get_default_context</span><span class="p">();</span>
 <span class="cp">#else</span>
 <span class="k">static_assert</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;ext_oneapi_default_context extension is required&quot;</span><span class="p">);</span>
 <span class="cp">#endif</span>
