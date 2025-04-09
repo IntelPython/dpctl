@@ -2,7 +2,7 @@ import dpctl
 import dpctl.tensor as dpt
 
 class Binary:
-    def setup(self):
+    def __init__(self):
         self.q = dpctl.SyclQueue(property='enable_profiling')
         self.iterations = 1
         self.zie = 2**27,
