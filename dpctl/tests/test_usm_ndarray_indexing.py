@@ -22,6 +22,7 @@ from numpy.testing import assert_array_equal
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
+from dpctl.tensor._copy_utils import _take_multi_index
 from dpctl.utils import ExecutionPlacementError
 
 from .helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -252,8 +253,14 @@ def test_advanced_slice5():
     q = get_queue_or_skip()
     ii = dpt.asarray([1, 2], sycl_queue=q)
     x = _make_3d("i4", q)
-    with pytest.raises(IndexError):
-        x[ii, 0, ii]
+    y = x[ii, 0, ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    # 0 broadcast to [0, 0] per array API
+    assert y.shape == ii.shape
+    assert _all_equal(
+        (x[ii[i], 0, ii[i]] for i in range(ii.shape[0])),
+        (y[i] for i in range(ii.shape[0])),
+    )
 
 
 def test_advanced_slice6():
@@ -393,6 +400,44 @@ def test_advanced_slice13():
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == expected.shape
     assert (dpt.asnumpy(y) == dpt.asnumpy(expected)).all()
+
+
+def test_advanced_slice14():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    y = x[ii, 0, ii, 1, :]
+    assert isinstance(y, dpt.usm_ndarray)
+    # integers broadcast to ii.shape per array API
+    assert y.shape == ii.shape + x.shape[-1:]
+    assert _all_equal(
+        (
+            x[ii[i], 0, ii[i], 1, k]
+            for i in range(ii.shape[0])
+            for k in range(x.shape[-1])
+        ),
+        (y[i, k] for i in range(ii.shape[0]) for k in range(x.shape[-1])),
+    )
+
+
+def test_advanced_slice15():
+    q = get_queue_or_skip()
+    ii = dpt.asarray([1, 2], sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    # : cannot appear between two integral arrays
+    with pytest.raises(IndexError):
+        x[ii, 0, ii, :, ii]
+
+
+def test_advanced_slice16():
+    q = get_queue_or_skip()
+    ii = dpt.asarray(1, sycl_queue=q)
+    i0 = dpt.asarray(False, sycl_queue=q)
+    i1 = dpt.asarray(True, sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    y = x[ii, i0, ii, i1, :]
+    # TODO: add a shape check here when discrepancy with NumPy is investigated
+    assert isinstance(y, dpt.usm_ndarray)
 
 
 def test_boolean_indexing_validation():
@@ -1956,3 +2001,17 @@ def test_take_out_errors():
     out_bad_q = dpt.empty(ind.shape, dtype=x.dtype, sycl_queue=q2)
     with pytest.raises(dpctl.utils.ExecutionPlacementError):
         dpt.take(x, ind, out=out_bad_q)
+
+
+def test_getitem_impl_fn_invalid_inp():
+    get_queue_or_skip()
+
+    x = dpt.ones((10, 10), dtype="i4")
+
+    bad_ind_type = (dpt.ones((), dtype="i4"), 2.0)
+    with pytest.raises(TypeError):
+        _take_multi_index(x, bad_ind_type, 0, 0)
+
+    no_array_inds = (2, 3)
+    with pytest.raises(TypeError):
+        _take_multi_index(x, no_array_inds, 0, 0)

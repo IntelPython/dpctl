@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import numbers
+from operator import index
 from cpython.buffer cimport PyObject_CheckBuffer
 
 
@@ -64,7 +65,7 @@ cdef bint _is_integral(object x) except *:
            return False
     if callable(getattr(x, "__index__", None)):
         try:
-            x.__index__()
+            index(x)
         except (TypeError, ValueError):
             return False
         return True
@@ -136,7 +137,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
         else:
             return ((0,) + shape, (0,) + strides, offset, _no_advanced_ind, _no_advanced_pos)
     elif _is_integral(ind):
-        ind = ind.__index__()
+        ind = index(ind)
         new_shape = shape[1:]
         new_strides = strides[1:]
         is_empty = any(sh_i == 0 for sh_i in new_shape)
@@ -179,10 +180,12 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 if array_streak_started:
                     array_streak_interrupted = True
             elif _is_integral(i):
-                explicit_index += 1
                 axes_referenced += 1
-                if array_streak_started:
-                    array_streak_interrupted = True
+                if array_streak_started and not array_streak_interrupted:
+                    # integers converted to arrays in this case
+                    array_count += 1
+                else:
+                    explicit_index += 1
             elif isinstance(i, usm_ndarray):
                 if not seen_arrays_yet:
                     seen_arrays_yet = True
@@ -229,6 +232,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
         advanced_start_pos_set = False
         new_offset = offset
         is_empty = False
+        array_streak = False
         for i in range(len(ind)):
             ind_i = ind[i]
             if (ind_i is Ellipsis):
@@ -239,9 +243,13 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                     is_empty = True
                     new_offset = offset
                 k = k_new
+                if array_streak:
+                    array_streak = False
             elif ind_i is None:
                 new_shape.append(1)
                 new_strides.append(0)
+                if array_streak:
+                    array_streak = False
             elif isinstance(ind_i, slice):
                 k_new = k + 1
                 sl_start, sl_stop, sl_step = ind_i.indices(shape[k])
@@ -255,26 +263,46 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                     is_empty = True
                     new_offset = offset
                 k = k_new
+                if array_streak:
+                    array_streak = False
             elif _is_boolean(ind_i):
                 new_shape.append(1 if ind_i else 0)
                 new_strides.append(0)
+                if array_streak:
+                    array_streak = False
             elif _is_integral(ind_i):
-                ind_i = ind_i.__index__()
-                if 0 <= ind_i < shape[k]:
+                if array_streak:
+                    if not isinstance(ind_i, usm_ndarray):
+                        ind_i = index(ind_i)
+                        # integer will be converted to an array, still raise if OOB
+                        if not (0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0):
+                            raise IndexError(
+                                ("Index {0} is out of range for "
+                                "axes {1} with size {2}").format(ind_i, k, shape[k]))
+                    new_advanced_ind.append(ind_i)
                     k_new = k + 1
-                    if not is_empty:
-                        new_offset = new_offset + ind_i * strides[k]
-                    k = k_new
-                elif -shape[k] <= ind_i < 0:
-                    k_new = k + 1
-                    if not is_empty:
-                        new_offset = new_offset + (shape[k] + ind_i) * strides[k]
+                    new_shape.extend(shape[k:k_new])
+                    new_strides.extend(strides[k:k_new])
                     k = k_new
                 else:
-                    raise IndexError(
-                        ("Index {0} is out of range for "
-                        "axes {1} with size {2}").format(ind_i, k, shape[k]))
+                    ind_i = index(ind_i)
+                    if 0 <= ind_i < shape[k]:
+                        k_new = k + 1
+                        if not is_empty:
+                            new_offset = new_offset + ind_i * strides[k]
+                        k = k_new
+                    elif -shape[k] <= ind_i < 0:
+                        k_new = k + 1
+                        if not is_empty:
+                            new_offset = new_offset + (shape[k] + ind_i) * strides[k]
+                        k = k_new
+                    else:
+                        raise IndexError(
+                            ("Index {0} is out of range for "
+                            "axes {1} with size {2}").format(ind_i, k, shape[k]))
             elif isinstance(ind_i, usm_ndarray):
+                if not array_streak:
+                    array_streak = True
                 if not advanced_start_pos_set:
                     new_advanced_start_pos = len(new_shape)
                     advanced_start_pos_set = True
@@ -287,8 +315,6 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 new_shape.extend(shape[k:k_new])
                 new_strides.extend(strides[k:k_new])
                 k = k_new
-            else:
-                raise IndexError
         new_shape.extend(shape[k:])
         new_strides.extend(strides[k:])
         new_shape_len += len(shape) - k
