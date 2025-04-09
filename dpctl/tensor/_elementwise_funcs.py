@@ -33,7 +33,7 @@ Calculates the absolute value for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -123,9 +123,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -555,7 +555,7 @@ Computes conjugate of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -674,10 +674,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have a boolean or numeric data
-        type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -833,10 +832,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have a boolean or numeric data
-        type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -869,10 +867,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have a boolean or numeric data
-        type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -905,7 +902,7 @@ Computes imaginary part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -936,7 +933,7 @@ Test if each element of input array is a finite number.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -965,7 +962,7 @@ Test if each element of input array is an infinity.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -993,7 +990,7 @@ Test if each element of an input array is a NaN.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1022,9 +1019,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1058,9 +1055,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1244,9 +1241,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1275,7 +1272,7 @@ Computes the logical NOT for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1305,9 +1302,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1337,9 +1334,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1369,9 +1366,9 @@ element-wise maxima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1402,9 +1399,9 @@ element-wise minima.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1435,9 +1432,9 @@ respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a boolean or numeric data type.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array, expected to have a boolean or numeric data type.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1871,7 +1868,7 @@ Squares each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a boolean or numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
