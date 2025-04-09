@@ -10,7 +10,7 @@ class Binary:
         """Setup the benchmark environment."""
         self.q = dpctl.SyclQueue(property="enable_profiling")
         self.iterations = 1
-        self.n_values = 10**8
+        self.n_values = 10**6
 
     def run_bench2(self, q, reps, n_max, dtype1, dtype2, op):
         """Run the benchmark for a specific function and dtype combination."""
@@ -56,7 +56,7 @@ class Binary:
 binary_instance = Binary()
 binary_instance.q = dpctl.SyclQueue(property="enable_profiling")
 binary_instance.iterations = 1
-binary_instance.n_values = 10**8
+binary_instance.n_values = 10**6
 
 function_list = [
     dpt.add,
