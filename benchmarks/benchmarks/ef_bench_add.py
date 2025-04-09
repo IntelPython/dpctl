@@ -12,8 +12,8 @@ class EfBenchAdd:
         self.reps = 50
 
         self.dt = dpt.int8
-        self.x1 = dpt.ones(self.n, dtype=self.dt, sycl_queue=q)
-        self.x2 = dpt.ones(self.n, dtype=self.dt, sycl_queue=q)
+        self.x1 = dpt.ones(self.n, dtype=self.dt, sycl_queue=self.q)
+        self.x2 = dpt.ones(self.n, dtype=self.dt, sycl_queue=self.q)
 
         self.op1, self.op2 = dpt.add, tei._add
 
