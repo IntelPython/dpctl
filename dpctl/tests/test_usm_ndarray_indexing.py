@@ -429,6 +429,17 @@ def test_advanced_slice15():
         x[ii, 0, ii, :, ii]
 
 
+def test_advanced_slice16():
+    q = get_queue_or_skip()
+    ii = dpt.asarray(1, sycl_queue=q)
+    i0 = dpt.asarray(False, sycl_queue=q)
+    i1 = dpt.asarray(True, sycl_queue=q)
+    x = dpt.reshape(dpt.arange(3**5, dtype="i4", sycl_queue=q), (3,) * 5)
+    y = x[ii, i0, ii, i1, :]
+    # TODO: add a shape check here when discrepancy with NumPy is investigated
+    assert isinstance(y, dpt.usm_ndarray)
+
+
 def test_boolean_indexing_validation():
     get_queue_or_skip()
     x = dpt.zeros(10, dtype="i4")
