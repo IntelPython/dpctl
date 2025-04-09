@@ -15,6 +15,7 @@
 #  limitations under the License.
 
 import numbers
+from operator import index
 from cpython.buffer cimport PyObject_CheckBuffer
 
 
@@ -64,7 +65,7 @@ cdef bint _is_integral(object x) except *:
            return False
     if callable(getattr(x, "__index__", None)):
         try:
-            x.__index__()
+            index(x)
         except (TypeError, ValueError):
             return False
         return True
@@ -136,7 +137,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
         else:
             return ((0,) + shape, (0,) + strides, offset, _no_advanced_ind, _no_advanced_pos)
     elif _is_integral(ind):
-        ind = ind.__index__()
+        ind = index(ind)
         new_shape = shape[1:]
         new_strides = strides[1:]
         is_empty = any(sh_i == 0 for sh_i in new_shape)
@@ -272,7 +273,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
             elif _is_integral(ind_i):
                 if array_streak:
                     if not isinstance(ind_i, usm_ndarray):
-                        ind_i = ind_i.__index__()
+                        ind_i = index(ind_i)
                         # integer will be converted to an array, still raise if OOB
                         if not (0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0):
                             raise IndexError(
@@ -284,7 +285,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                     new_strides.extend(strides[k:k_new])
                     k = k_new
                 else:
-                    ind_i = ind_i.__index__()
+                    ind_i = index(ind_i)
                     if 0 <= ind_i < shape[k]:
                         k_new = k + 1
                         if not is_empty:
