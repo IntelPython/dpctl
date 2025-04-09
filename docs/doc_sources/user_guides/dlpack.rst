@@ -46,8 +46,8 @@ When sharing USM allocation (of any ``sycl::usm::kind``) with ``void * ptr`` bou
     // Keep in mind, the device may be a sub-device
     const sycl::device &ptr_dev = sycl::get_pointer_device(ptr, ctx);
 
-    #if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT
-    const sycl::context &default_ctx = ptr_dev.get_platform().ext_oneapi_get_default_context();
+    #if SYCL_KHR_DEFAULT_CONTEXT
+    const sycl::context &default_ctx = ptr_dev.get_platform().khr_get_default_context();
     #else
     static_assert(false, "ext_oneapi_default_context extension is required");
     #endif
@@ -106,8 +106,8 @@ Importing DLPack with ``device_type == kDLOneAPI``
     // );
 
     // Get default platform context
-    #if SYCL_EXT_ONEAPI_DEFAULT_CONTEXT
-    const sycl::context &default_ctx = root_device.get_platform().ext_oneapi_get_default_context();
+    #if SYCL_KHR_DEFAULT_CONTEXT
+    const sycl::context &default_ctx = root_device.get_platform().khr_get_default_context();
     #else
     static_assert(false, "ext_oneapi_default_context extension is required");
     #endif
