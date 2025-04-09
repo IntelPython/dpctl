@@ -46,7 +46,11 @@ cdef Py_ssize_t _slice_len(
 cdef bint _is_integral(object x) except *:
     """Gives True if x is an integral slice spec"""
     if isinstance(x, usm_ndarray):
-        return False
+        if x.ndim > 0:
+            return False
+        if x.dtype.kind not in "ui":
+            return False
+        return True
     if isinstance(x, bool):
         return False
     if isinstance(x, int):
@@ -194,7 +198,7 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 dt_k = i.dtype.kind
                 if dt_k == "b" and i.ndim > 0:
                     axes_referenced += i.ndim
-                elif dt_k in "ui":
+                elif dt_k in "ui" and i.ndim > 0:
                     axes_referenced += 1
                 else:
                     raise IndexError(
@@ -266,19 +270,21 @@ def _basic_slice_meta(ind, shape : tuple, strides : tuple, offset : int):
                 if array_streak:
                     array_streak = False
             elif _is_integral(ind_i):
-                ind_i = ind_i.__index__()
                 if array_streak:
-                    # integer will be converted to an array, still raise if OOB
-                    if not (0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0):
-                        raise IndexError(
-                            ("Index {0} is out of range for "
-                            "axes {1} with size {2}").format(ind_i, k, shape[k]))
+                    if not isinstance(ind_i, usm_ndarray):
+                        ind_i = ind_i.__index__()
+                        # integer will be converted to an array, still raise if OOB
+                        if not (0 <= ind_i < shape[k] or -shape[k] <= ind_i < 0):
+                            raise IndexError(
+                                ("Index {0} is out of range for "
+                                "axes {1} with size {2}").format(ind_i, k, shape[k]))
                     new_advanced_ind.append(ind_i)
                     k_new = k + 1
                     new_shape.extend(shape[k:k_new])
                     new_strides.extend(strides[k:k_new])
                     k = k_new
                 else:
+                    ind_i = ind_i.__index__()
                     if 0 <= ind_i < shape[k]:
                         k_new = k + 1
                         if not is_empty:
