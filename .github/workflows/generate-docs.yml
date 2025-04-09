@@ -58,7 +58,7 @@ jobs:
         if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools scikit-build cmake sphinx"<7.2" pydot graphviz furo \
+          pip install numpy cython setuptools">=70.1" scikit-build cmake sphinx"<7.2" pydot graphviz furo \
                       sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design \
                       sphinxcontrib-jsmath sphinx-copybutton sphinxcontrib-spelling \
                       versioneer[toml]==0.29
