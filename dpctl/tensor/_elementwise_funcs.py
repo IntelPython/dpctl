@@ -33,7 +33,7 @@ Calculates the absolute value for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -75,8 +75,8 @@ Args:
 Returns:
     usm_ndarray:
         An array containing the element-wise inverse cosine, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        and in the closed interval :math:`[0, \pi]`. The data type of the
+        returned array is determined by the Type Promotion Rules.
 """
 
 acos = UnaryElementwiseFunc(
@@ -104,8 +104,8 @@ Args:
 Returns:
     usm_ndarray:
         An array containing the element-wise inverse hyperbolic cosine, in
-        radians and in the half-closed interval `[0, inf)`. The data type
-        of the returned array is determined by the Type Promotion Rules.
+        radians and in the half-closed interval :math:`[0, \infty)`. The data
+        type of the returned array is determined by the Type Promotion Rules.
 """
 
 acosh = UnaryElementwiseFunc(
@@ -123,9 +123,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -168,7 +168,7 @@ Args:
 Returns:
     usm_ndarray:
         An array containing the element-wise inverse sine, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
+        and in the closed interval :math:`[-\pi/2, \pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -196,8 +196,8 @@ Args:
 
 Returns:
     usm_ndarray:
-        An array containing the element-wise inverse hyperbolic sine.
-        The data type of the returned array is determined by
+        An array containing the element-wise inverse hyperbolic sine, in
+        radians. The data type of the returned array is determined by
         the Type Promotion Rules.
 """
 
@@ -226,7 +226,7 @@ Args:
 Returns:
     usm_ndarray:
         An array containing the element-wise inverse tangent, in radians
-        and in the closed interval `[-pi/2, pi/2]`. The data type
+        and in the closed interval :math:`[-\pi/2, \pi/2]`. The data type
         of the returned array is determined by the Type Promotion Rules.
 """
 
@@ -289,8 +289,8 @@ Args:
 
 Returns:
     usm_ndarray:
-        An array containing the element-wise hyperbolic inverse tangent.
-        The data type of the returned array is determined by
+        An array containing the element-wise hyperbolic inverse tangent, in
+        radians. The data type of the returned array is determined by
         the Type Promotion Rules.
 """
 
@@ -555,7 +555,7 @@ Computes conjugate of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -674,9 +674,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -719,7 +719,7 @@ Args:
 
 Returns:
     usm_ndarray:
-        An array containing the element-wise exponential of x.
+        An array containing the element-wise exponential of `x`.
         The data type of the returned array is determined by
         the Type Promotion Rules.
 """
@@ -796,10 +796,9 @@ integer-value number that is not greater than the division result.
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a real-valued or boolean data type.
+        First input array, expected to have a real-valued data type.
     x2 (usm_ndarray):
-        Second input array, also expected to have a real-valued or boolean data
-        type.
+        Second input array, also expected to have a real-valued data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -833,9 +832,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -868,9 +867,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -903,7 +902,7 @@ Computes imaginary part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -934,7 +933,7 @@ Test if each element of input array is a finite number.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -963,7 +962,7 @@ Test if each element of input array is an infinity.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -991,7 +990,7 @@ Test if each element of an input array is a NaN.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1020,9 +1019,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1056,9 +1055,9 @@ the input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1242,9 +1241,9 @@ the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1273,7 +1272,7 @@ Computes the logical NOT for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array. May have any data type.
     out (usm_ndarray):
         Output array to populate. Array must have the correct
         shape and the expected data type.
@@ -1303,9 +1302,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1335,9 +1334,9 @@ with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1367,9 +1366,9 @@ element-wise maxima.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1400,9 +1399,9 @@ element-wise minima.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1433,9 +1432,9 @@ respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array. May have any data type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1497,9 +1496,11 @@ array `x1` toward the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
-        First input array.
+        First input array, expected to have a real-valued floating-point data
+        type.
     x2 (usm_ndarray):
-        Second input array.
+        Second input array, expected to have a real-valued floating-point data
+        type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1652,7 +1653,7 @@ Computes real part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array.
+        Input array, expected to have a numeric data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1724,7 +1725,7 @@ integer to `x_i`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a numeric data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1813,7 +1814,7 @@ Computes sine for each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a floating-point data type.
+        Input array, expected to have a real-valued floating-point data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -1867,7 +1868,7 @@ Squares each element `x_i` of input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -2041,8 +2042,8 @@ del _trunc_docstring
 _hypot_docstring_ = r"""
 hypot(x1, x2, /, \*, out=None, order='K')
 
-Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
-input arrays `x1` and `x2`.
+Computes the square root of the sum of squares for each element `x1_i` of the
+input array `x1` with the respective element `x2_i` of the input array `x2`.
 
 Args:
     x1 (usm_ndarray):
@@ -2075,11 +2076,11 @@ del _hypot_docstring_
 _cbrt_docstring_ = r"""
 cbrt(x, /, \*, out=None, order='K')
 
-Computes positive cube-root for each element `x_i` for input array `x`.
+Computes the cube-root for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real floating-point data type.
+        Input array, expected to have a real-valued floating-point data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -2090,7 +2091,7 @@ Args:
 
 Returns:
     usm_ndarray:
-        An array containing the element-wise positive cube-root.
+        An array containing the element-wise cube-root.
         The data type of the returned array is determined by
         the Type Promotion Rules.
 """
@@ -2140,10 +2141,11 @@ Composes a floating-point value with the magnitude of `x1_i` and the sign of
 
 Args:
     x1 (usm_ndarray):
-        First input array, expected to have a real floating-point data type.
-    x2 (usm_ndarray):
-        Second input array, also expected to have a real floating-point data
+        First input array, expected to have a real-valued floating-point data
         type.
+    x2 (usm_ndarray):
+        Second input array, also expected to have a real-valued floating-point
+        data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -2174,7 +2176,7 @@ Computes the reciprocal square-root for each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real floating-point data type.
+        Input array, expected to have a real-valued floating-point data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -2204,7 +2206,7 @@ Computes the reciprocal of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a real-valued floating-point data type.
+        Input array, expected to have a floating-point data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
@@ -2239,7 +2241,7 @@ input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a complex-valued floating-point data type.
+        Input array, expected to have a complex floating-point data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array have the correct shape and the expected data type.
