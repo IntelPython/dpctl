@@ -3,7 +3,11 @@ import dpctl.tensor as dpt
 
 
 class Binary:
-    def __init__(self):
+    """Benchmark class for binary operations on SYCL devices."""
+    timeout = 300.0
+
+    def setup(self):
+        """Setup the benchmark environment."""
         self.q = dpctl.SyclQueue(property="enable_profiling")
         self.iterations = 1
         self.n_values = 2**27
@@ -95,13 +99,14 @@ for fn in function_list:
 def generate_benchmark_functions():
     """Dynamically create benchmark functions for each function and dtype combination."""
     for fn in function_list:
-        fn_name = fn.__name__
+        fn_name = fn.name_
         for dtype1, dtype2 in dtypes[fn]:
             # Create a unique function name
             method_name = f"time_{fn_name}_{dtype1.name}_{dtype2.name}"
 
             # Define the benchmark function
             def benchmark_method(self, fn=fn, dtype1=dtype1, dtype2=dtype2):
+                # Ensure binary_instance is used correctly
                 return binary_instance.run_bench2(
                     binary_instance.q,
                     binary_instance.iterations,
