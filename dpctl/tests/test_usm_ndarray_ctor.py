@@ -1427,6 +1427,8 @@ def test_array_namespace():
     X.__array_namespace__()
     X._set_namespace(dpt)
     assert X.__array_namespace__() is dpt
+    X.__array_namespace__(api_version=dpt.__array_api_version__)
+    assert X.__array_namespace__() is dpt
 
 
 def test_dlpack():
