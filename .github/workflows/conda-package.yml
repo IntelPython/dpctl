@@ -763,6 +763,8 @@ jobs:
         id: run-array-api-tests
         shell: bash -l {0}
         env:
+          ARRAY_API_TESTS_MODULE: 'dpctl.tensor'
+          ARRAY_API_TESTS_VERSION: '2024.12'
           SYCL_CACHE_PERSISTENT: 1
         run: |
           FILE=/home/runner/work/.report.json
@@ -770,7 +772,6 @@ jobs:
           conda activate ${{ env.TEST_ENV_NAME }}
           cd /home/runner/work/array-api-tests
           ${CONDA_PREFIX}/bin/python -c "import dpctl; dpctl.lsplatform()"
-          export ARRAY_API_TESTS_MODULE=dpctl.tensor
           ${CONDA_PREFIX}/bin/python -m pytest --json-report --json-report-file=$FILE --disable-deadline --skips-file ${GITHUB_WORKSPACE}/.github/workflows/array-api-skips.txt array_api_tests/ || true
       - name: Set Github environment variables
         shell: bash -l {0}
