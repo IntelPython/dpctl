@@ -761,3 +761,250 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
         return nullptr;
     }
 }
+
+using build_option_list_t = std::vector<std::string>;
+
+__dpctl_give DPCTLBuildOptionListRef DPCTLBuildOptionList_Create()
+{
+    auto BuildOptionList =
+        std::unique_ptr<build_option_list_t>(new build_option_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLBuildOptionListRef>(BuildOptionList.get());
+    BuildOptionList.release();
+    return RetVal;
+}
+
+void DPCTLBuildOptionList_Delete(__dpctl_take DPCTLBuildOptionListRef Ref)
+{
+    delete reinterpret_cast<build_option_list_t *>(Ref);
+}
+
+void DPCTLBuildOptionList_Append(__dpctl_keep DPCTLBuildOptionListRef Ref,
+                                 __dpctl_keep const char *Option)
+{
+    reinterpret_cast<build_option_list_t *>(Ref)->emplace_back(Option);
+}
+
+using kernel_name_list_t = std::vector<std::string>;
+
+__dpctl_give DPCTLKernelNameListRef DPCTLKernelNameList_Create()
+{
+    auto KernelNameList =
+        std::unique_ptr<kernel_name_list_t>(new kernel_name_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLKernelNameListRef>(KernelNameList.get());
+    KernelNameList.release();
+    return RetVal;
+}
+
+void DPCTLKernelNameList_Delete(__dpctl_take DPCTLKernelNameListRef Ref)
+{
+    delete reinterpret_cast<kernel_name_list_t *>(Ref);
+}
+
+void DPCTLKernelNameList_Append(__dpctl_keep DPCTLKernelNameListRef Ref,
+                                __dpctl_keep const char *Option)
+{
+    reinterpret_cast<kernel_name_list_t *>(Ref)->emplace_back(Option);
+}
+
+using virtual_header_list_t = std::vector<std::pair<std::string, std::string>>;
+
+__dpctl_give DPCTLVirtualHeaderListRef DPCTLVirtualHeaderList_Create()
+{
+    auto HeaderList =
+        std::unique_ptr<virtual_header_list_t>(new virtual_header_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLVirtualHeaderListRef>(HeaderList.get());
+    HeaderList.release();
+    return RetVal;
+}
+
+void DPCTLVirtualHeaderList_Delete(__dpctl_take DPCTLVirtualHeaderListRef Ref)
+{
+    delete reinterpret_cast<virtual_header_list_t *>(Ref);
+}
+
+void DPCTLVirtualHeaderList_Append(__dpctl_keep DPCTLVirtualHeaderListRef Ref,
+                                   __dpctl_keep const char *Name,
+                                   __dpctl_keep const char *Content)
+{
+    auto Header = std::make_pair<std::string, std::string>(Name, Content);
+    reinterpret_cast<virtual_header_list_t *>(Ref)->push_back(Header);
+}
+
+using kernel_build_log_t = std::string;
+
+__dpctl_give DPCTLKernelBuildLogRef DPCTLKernelBuildLog_Create()
+{
+    auto BuildLog =
+        std::unique_ptr<kernel_build_log_t>(new kernel_build_log_t(""));
+    auto *RetVal = reinterpret_cast<DPCTLKernelBuildLogRef>(BuildLog.get());
+    BuildLog.release();
+    return RetVal;
+}
+
+void DPCTLKernelBuildLog_Delete(__dpctl_take DPCTLKernelBuildLogRef Ref)
+{
+    delete reinterpret_cast<kernel_build_log_t *>(Ref);
+}
+
+const char *DPCTLKernelBuildLog_Get(__dpctl_keep DPCTLKernelBuildLogRef Ref)
+{
+    return reinterpret_cast<kernel_build_log_t *>(Ref)->data();
+}
+
+namespace syclex = sycl::ext::oneapi::experimental;
+
+#if defined(SYCL_EXT_ONEAPI_KERNEL_COMPILER) &&                                \
+    defined(__SYCL_COMPILER_VERSION) && !defined(SUPPORTS_SYCL_COMPILATION)
+// SYCL source code compilation is supported from 2025.1 onwards.
+#if __SYCL_COMPILER_VERSION >= 20250317u
+#define SUPPORTS_SYCL_COMPILATION 1
+#else
+#define SUPPORTS_SYCL_COMPILATION 0
+#endif
+#endif
+
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+// The property for registering names was renamed between DPC++ versions 2025.1
+// and 2025.2. The original name was `registered_kernel_names`, the new name is
+// `registered_names`. To select the correct name without being overly reliant
+// on the SYCL compiler version definition, we forward declare both names and
+// then select the new name if it is defined (i.e., not only declared).
+namespace sycl::ext::oneapi::experimental
+{
+struct registered_names;
+struct registered_kernel_names;
+} // namespace sycl::ext::oneapi::experimental
+
+template <typename NewT, typename FallbackT, typename = void>
+struct new_type_if_defined
+{
+    using type = FallbackT;
+};
+
+template <typename NewT, typename FallbackT>
+struct new_type_if_defined<NewT, FallbackT, std::void_t<decltype(sizeof(NewT))>>
+{
+    using type = NewT;
+};
+
+using registered_names_property_t =
+    new_type_if_defined<syclex::registered_names,
+                        syclex::registered_kernel_names>::type;
+#endif
+
+__dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
+    __dpctl_keep const DPCTLSyclContextRef Ctx,
+    __dpctl_keep const DPCTLSyclDeviceRef Dev,
+    __dpctl_keep const char *Source,
+    __dpctl_keep DPCTLVirtualHeaderListRef Headers,
+    __dpctl_keep DPCTLKernelNameListRef Names,
+    __dpctl_keep DPCTLBuildOptionListRef BuildOptions,
+    __dpctl_keep DPCTLKernelBuildLogRef BuildLog)
+{
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+    context *SyclCtx = unwrap<context>(Ctx);
+    device *SyclDev = unwrap<device>(Dev);
+    if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
+        return nullptr;
+    }
+    try {
+        auto *IncludeFileList =
+            reinterpret_cast<virtual_header_list_t *>(Headers);
+        std::unique_ptr<kernel_bundle<bundle_state::ext_oneapi_source>>
+            SrcBundle;
+        std::string Src(Source);
+        // The following logic is to work around a bug in DPC++ version 2025.1.
+        // This version declares a constructor with no parameters for the
+        // `include_files` property, but does not implement it. Therefore, the
+        // only way to create `include_files` is with the name and content of
+        // the first virtual header, if any.
+        if (!IncludeFileList->empty()) {
+            auto IncludeFileIt = IncludeFileList->begin();
+            syclex::include_files IncludeFiles{IncludeFileIt->first,
+                                               IncludeFileIt->second};
+            for (std::advance(IncludeFileIt, 1);
+                 IncludeFileIt != IncludeFileList->end(); ++IncludeFileIt)
+            {
+                IncludeFiles.add(IncludeFileIt->first, IncludeFileIt->second);
+            }
+            SrcBundle = std::make_unique<
+                kernel_bundle<bundle_state::ext_oneapi_source>>(
+                syclex::create_kernel_bundle_from_source(
+                    *SyclCtx, syclex::source_language::sycl, Src,
+                    syclex::properties{IncludeFiles}));
+        }
+        else {
+            SrcBundle = std::make_unique<
+                kernel_bundle<bundle_state::ext_oneapi_source>>(
+                syclex::create_kernel_bundle_from_source(
+                    *SyclCtx, syclex::source_language::sycl, Src));
+        }
+
+        registered_names_property_t RegisteredNames;
+        for (const std::string &Name :
+             *reinterpret_cast<kernel_name_list_t *>(Names))
+        {
+            RegisteredNames.add(Name);
+        }
+
+        syclex::build_options Opts{
+            *reinterpret_cast<build_option_list_t *>(BuildOptions)};
+
+        std::vector<sycl::device> Devices({*SyclDev});
+
+        auto ExeBundle = syclex::build(
+            *SrcBundle, Devices, syclex::properties{RegisteredNames, Opts});
+        auto ResultBundle =
+            std::make_unique<sycl::kernel_bundle<bundle_state::executable>>(
+                ExeBundle);
+        return wrap<kernel_bundle<bundle_state::executable>>(
+            ResultBundle.release());
+    } catch (const std::exception &e) {
+        auto *RawBuildLog = reinterpret_cast<kernel_build_log_t *>(BuildLog);
+        *RawBuildLog = e.what();
+        return nullptr;
+    }
+#else
+    return nullptr;
+#endif
+}
+
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
+                                __dpctl_keep const char *KernelName)
+{
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+    try {
+        auto KernelBundle =
+            unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
+        auto Kernel = KernelBundle->ext_oneapi_get_kernel(KernelName);
+        return wrap<sycl::kernel>(new sycl::kernel(Kernel));
+    } catch (const std::exception &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+#else
+    return nullptr;
+#endif
+}
+
+bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
+                                         KBRef,
+                                     __dpctl_keep const char *KernelName)
+{
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+    try {
+        auto KernelBundle =
+            unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
+        return KernelBundle->ext_oneapi_has_kernel(KernelName);
+    } catch (const std::exception &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return false;
+    }
+#else
+    return false;
+#endif
+}
