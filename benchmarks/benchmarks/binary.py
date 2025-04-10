@@ -15,6 +15,11 @@ class Binary:
         self.n_values = 10**3
 
 
+    def teardown(self):
+        """Clean up after each benchmark to prevent resource accumulation."""
+        gc.collect()
+
+
     def run_bench2(self, q, reps, n_max, dtype1, dtype2, op):
         """Run the benchmark for a specific function and dtype combination."""
         def get_sizes(n):
@@ -51,6 +56,9 @@ class Binary:
                 if dev_dt > 0:
                     times_res.append((n, dev_dt / n_iters))
                     break
+
+        del x1, x2, r, x1_n, x2_n, r_n
+        gc.collect()
 
         return times_res
 
