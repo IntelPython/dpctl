@@ -982,3 +982,28 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return;
 }
+
+bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto Dev = unwrap<device>(DRef);
+    auto Backend = Dev->get_platform().get_backend();
+    return Backend == backend::opencl ||
+           Backend == backend::ext_oneapi_level_zero;
+}
+
+bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    auto Dev = unwrap<device>(DRef);
+    return Dev->get_platform().get_backend() == backend::opencl;
+}
+
+bool DPCTLDevice_CanCompileSYCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    auto Dev = unwrap<device>(DRef);
+    return Dev->ext_oneapi_can_compile(
+        ext::oneapi::experimental::source_language::sycl);
+#else
+    return false;
+#endif
+}

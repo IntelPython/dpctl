@@ -29,6 +29,7 @@ from ._program import (
     SyclKernelBundleCompilationError,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
+    create_kernel_bundle_from_sycl_source,
     create_program_from_source,
     create_program_from_spirv,
 )
@@ -38,6 +39,7 @@ __all__ = [
     "create_kernel_bundle_from_spirv",
     "create_program_from_source",
     "create_program_from_spirv",
+    "create_kernel_bundle_from_sycl_source",
     "SyclKernel",
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
