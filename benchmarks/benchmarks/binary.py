@@ -2,7 +2,7 @@ import dpctl
 import dpctl.tensor as dpt
 import gc
 
-q = dpctl.SyclQueue(property="enable_profiling")
+SHARED_QUEUE = dpctl.SyclQueue(property="enable_profiling")
 
 class Binary:
     """Benchmark class for binary operations on SYCL devices."""
@@ -10,9 +10,9 @@ class Binary:
 
     def setup(self):
         """Setup the benchmark environment."""
-
+        self.q = SHARED_QUEUE
         self.iterations = 1
-        self.n_values = 10**6
+        self.n_values = 10**3
 
 
     def run_bench2(self, q, reps, n_max, dtype1, dtype2, op):
@@ -57,8 +57,9 @@ class Binary:
 
 # Create the SYCL queue and function list at the module level
 binary_instance = Binary()
+binary_instance.q = SHARED_QUEUE
 binary_instance.iterations = 1
-binary_instance.n_values = 10**6
+binary_instance.n_values = 10**3
 
 function_list = [
     dpt.add,
@@ -110,7 +111,7 @@ def generate_benchmark_functions():
             def benchmark_method(self, fn=fn, dtype1=dtype1, dtype2=dtype2):
                 # Ensure binary_instance is used correctly
                 return binary_instance.run_bench2(
-                    q,
+                    binary_instance.q,
                     binary_instance.iterations,
                     binary_instance.n_values,
                     dtype1,
