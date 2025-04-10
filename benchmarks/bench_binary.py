@@ -109,7 +109,7 @@ if __name__ == "__main__":
     q = dpctl.SyclQueue(property='enable_profiling')
     n_iters = args.n_iters
     n_values = args.n_values
-    if args.funcs == ["all",]:
+    if args.funcs == "all":
         f_list = [
             dpt.add, dpt.multiply, dpt.divide, dpt.subtract,
             dpt.floor_divide, dpt.remainder,
