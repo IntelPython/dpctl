@@ -1653,7 +1653,7 @@ Computes real part of each element `x_i` for input array `x`.
 
 Args:
     x (usm_ndarray):
-        Input array, expected to have a numeric data type.
+        Input array. May have any data type.
     out (Union[usm_ndarray, None], optional):
         Output array to populate.
         Array must have the correct shape and the expected data type.
