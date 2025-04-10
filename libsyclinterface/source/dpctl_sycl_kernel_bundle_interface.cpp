@@ -761,3 +761,143 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
         return nullptr;
     }
 }
+
+__dpctl_give DPCTLBuildOptionListRef DPCTLBuildOptionList_Create()
+{
+    return new DPCTLBuildOptionList;
+}
+
+void DPCTLBuildOptionList_Delete(__dpctl_take DPCTLBuildOptionListRef Ref)
+{
+    delete Ref;
+}
+
+void DPCTLBuildOptionList_Append(__dpctl_keep DPCTLBuildOptionListRef Ref,
+                                 __dpctl_keep const char *Option)
+{
+    Ref->options.emplace_back(Option);
+}
+
+__dpctl_give DPCTLKernelNameListRef DPCTLKernelNameList_Create()
+{
+    return new DPCTLKernelNameList;
+}
+
+void DPCTLKernelNameList_Delete(__dpctl_take DPCTLKernelNameListRef Ref)
+{
+    delete Ref;
+}
+
+void DPCTLKernelNameList_Append(__dpctl_keep DPCTLKernelNameListRef Ref,
+                                __dpctl_keep const char *Option)
+{
+    Ref->names.emplace_back(Option);
+}
+
+__dpctl_give DPCTLVirtualHeaderListRef DPCTLVirtualHeaderList_Create()
+{
+    return new DPCTLVirtualHeaderList;
+}
+
+void DPCTLVirtualHeaderList_Delete(__dpctl_take DPCTLVirtualHeaderListRef Ref)
+{
+    delete Ref;
+}
+
+void DPCTLVirtualHeaderList_Append(__dpctl_keep DPCTLVirtualHeaderListRef Ref,
+                                   __dpctl_keep const char *Name,
+                                   __dpctl_keep const char *Content)
+{
+    auto Header = std::make_pair<std::string, std::string>(Name, Content);
+    Ref->headers.push_back(Header);
+}
+
+namespace syclex = sycl::ext::oneapi::experimental;
+
+__dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
+    __dpctl_keep const DPCTLSyclContextRef Ctx,
+    __dpctl_keep const DPCTLSyclDeviceRef Dev,
+    __dpctl_keep const char *Source,
+    __dpctl_keep DPCTLVirtualHeaderListRef Headers,
+    __dpctl_keep DPCTLKernelNameListRef Names,
+    __dpctl_keep DPCTLBuildOptionListRef BuildOptions)
+{
+#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    context *SyclCtx = unwrap<context>(Ctx);
+    device *SyclDev = unwrap<device>(Dev);
+    if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
+        return nullptr;
+    }
+    try {
+        syclex::include_files IncludeFiles;
+        for (auto &Include : Headers->headers) {
+            const auto &[Name, Content] = Include;
+            IncludeFiles.add(Name, Content);
+        }
+
+        std::string Src(Source);
+        auto SrcBundle = syclex::create_kernel_bundle_from_source(
+            *SyclCtx, syclex::source_language::sycl, Src,
+            syclex::properties{IncludeFiles});
+
+        syclex::registered_names RegisteredNames;
+        for (const std::string &Name : Names->names) {
+            RegisteredNames.add(Name);
+        }
+
+        syclex::build_options Opts{BuildOptions->options};
+
+        std::vector<sycl::device> Devices({*SyclDev});
+
+        auto ExeBundle = syclex::build(
+            SrcBundle, Devices, syclex::properties{RegisteredNames, Opts});
+        auto ResultBundle =
+            std::make_unique<sycl::kernel_bundle<bundle_state::executable>>(
+                ExeBundle);
+        return wrap<kernel_bundle<bundle_state::executable>>(
+            ResultBundle.release());
+    } catch (const std::exception &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+#else
+    return nullptr;
+#endif
+}
+
+__dpctl_give DPCTLSyclKernelRef
+DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
+                                __dpctl_keep const char *KernelName)
+{
+#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    try {
+        auto KernelBundle =
+            unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
+        auto Kernel = KernelBundle->ext_oneapi_get_kernel(KernelName);
+        return wrap<sycl::kernel>(new sycl::kernel(Kernel));
+    } catch (const std::exception &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+#else
+    return nullptr;
+#endif
+}
+
+bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
+                                         KBRef,
+                                     __dpctl_keep const char *KernelName)
+{
+#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    try {
+        auto KernelBundle =
+            unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
+        return KernelBundle->ext_oneapi_has_kernel(KernelName);
+    } catch (const std::exception &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return false;
+    }
+#else
+    return false;
+#endif
+}
