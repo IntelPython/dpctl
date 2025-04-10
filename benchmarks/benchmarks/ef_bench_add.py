@@ -6,7 +6,7 @@ import dpctl.tensor._tensor_elementwise_impl as tei
 class EfBenchAdd:
 
     def setup(self):
-        self.q = dpctl.SyclQueue(property='enable_profiling')
+        self.q = dpctl.SyclQueue("opencl:cpu", property='enable_profiling')
 
         self.n = 2**26
         self.reps = 50
