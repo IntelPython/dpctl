@@ -26,6 +26,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLDefaultSelector_Create,
     DPCTLDevice_AreEq,
     DPCTLDevice_CanAccessPeer,
+    DPCTLDevice_CanCompileOpenCL,
+    DPCTLDevice_CanCompileSPIRV,
+    DPCTLDevice_CanCompileSYCL,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_CreateSubDevicesByAffinity,
@@ -2366,6 +2369,34 @@ cdef class SyclDevice(_SyclDevice):
         if dev_id < 0:
             raise ValueError("device could not be found")
         return dev_id
+
+    cpdef bint can_compile(self, str language):
+        """
+        Check whether it is possible to create an executable kernel_bundle
+        for this device from the given source language.
+
+        Parameters:
+            language
+                Input language. Possible values are "spirv" for SPIR-V binary
+                files, "opencl" for OpenCL C device code and "sycl" for SYCL
+                device code.
+
+        Returns:
+            bool:
+                True if compilation is supported, False otherwise.
+
+        Raises:
+            ValueError:
+                If an unknown source language is used.
+        """
+        if language == "spirv" or language == "spv":
+            return DPCTLDevice_CanCompileSPIRV(self._device_ref)
+        if language == "opencl" or language == "ocl":
+            return DPCTLDevice_CanCompileOpenCL(self._device_ref)
+        if language == "sycl":
+            return DPCTLDevice_CanCompileSYCL(self._device_ref)
+
+        raise ValueError(f"Unknown source language {language}")
 
 
 cdef api DPCTLSyclDeviceRef SyclDevice_GetDeviceRef(SyclDevice dev):
