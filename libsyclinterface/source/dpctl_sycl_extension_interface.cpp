@@ -62,3 +62,37 @@ bool DPCTLWorkGroupMemory_Available()
     return false;
 #endif
 }
+
+DPCTL_API
+__dpctl_give DPCTLSyclRawKernelArgRef DPCTLRawKernelArg_Create(void *bytes,
+                                                               size_t count)
+{
+    DPCTLSyclRawKernelArgRef rka = nullptr;
+    try {
+        auto rawData =
+            std::unique_ptr<unsigned char[]>(new unsigned char[count]);
+        std::memcpy(rawData.get(), bytes, count);
+        auto RawKernelArg = std::unique_ptr<RawKernelArgData>(
+            new RawKernelArgData{rawData.release(), count});
+        rka = wrap<RawKernelArgData>(RawKernelArg.release());
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+    }
+    return rka;
+}
+
+DPCTL_API
+void DPCTLRawKernelArg_Delete(__dpctl_take DPCTLSyclRawKernelArgRef Ref)
+{
+    delete unwrap<RawKernelArgData>(Ref);
+}
+
+DPCTL_API
+bool DPCTLRawKernelArg_Available()
+{
+#ifdef SYCL_EXT_ONEAPI_RAW_KERNEL_ARG
+    return true;
+#else
+    return false;
+#endif
+}
