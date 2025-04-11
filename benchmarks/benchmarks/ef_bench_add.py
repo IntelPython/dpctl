@@ -5,35 +5,25 @@ import dpctl.tensor._tensor_elementwise_impl as tei
 
 class EfBenchAdd:
 
-    def setup(self):
-        self.q = dpctl.SyclQueue("opencl:cpu", property='enable_profiling')
-
-        self.n = 2**26
-        self.reps = 50
-
-        self.dt = dpt.int8
-        self.x1 = dpt.ones(self.n, dtype=self.dt, sycl_queue=self.q)
-        self.x2 = dpt.ones(self.n, dtype=self.dt, sycl_queue=self.q)
-
-        self.op1, self.op2 = dpt.add, tei._add
-
-        self.r = self.op1(self.x1, self.x2)
-
-        self.timer = dpctl.SyclTimer(device_timer="order_manager", time_scale=1e9)
-        self.m = dpu.SequentialOrderManager[self.q]
-
     def time_ef_bench_add(self):
-        with self.timer(self.q):
-            for _ in range(self.reps):
-                deps = self.m.submitted_events
-                ht_e, c_e = self.op2(src1=self.x1,
-                                src2=self.x2,
-                                dst=self.r,
-                                sycl_queue=self.q,
-                                depends=deps)
-                self.m.add_event_pair(ht_e, c_e)
-        
-        # ddt = self.timer.dt.device_dt
-        # print((self.n, self.reps, self.dt))
-        # print(ddt / self.reps)
-        # print(dpt.max(dpt.abs(self.r - 2)))
+        q = dpctl.SyclQueue("opencl:cpu", property='enable_profiling')
+        n = 2**26
+        reps = 50
+
+        dt = dpt.int8
+        x1 = dpt.ones(n, dtype=dt, sycl_queue=q)
+        x2 = dpt.ones(n, dtype=dt, sycl_queue=q)
+
+        op1, op2 = dpt.add, tei._add
+
+        r = op1(x1, x2)
+
+        timer = dpctl.SyclTimer(device_timer="order_manager", time_scale=1e9)
+
+        m = dpu.SequentialOrderManager[q]
+        with timer(q):
+            for _ in range(reps):
+                deps = m.submitted_events
+                ht_e, c_e = op2(src1=x1, src2=x2, dst=r, sycl_queue=q, depends=deps)
+                m.add_event_pair(ht_e, c_e)
+

@@ -24,7 +24,7 @@
 
     // Customizable commands for installing and uninstalling the project.
     // See asv.conf.json documentation.
-    "install_command": ["in-dir={env_dir} conda install /home/harlowjo/repositories/IntelPython/dpctl/benchmarks/dpctl-0.19.0dev0-py310h79eebe9_480.conda --yes"],
+    // "install_command": ["in-dir={env_dir} conda install dpctl --yes"],
     // "uninstall_command": ["return-code=any conda uninstall dpctl --yes"],
 
     // List of branches to benchmark. If not provided, defaults to "main"
