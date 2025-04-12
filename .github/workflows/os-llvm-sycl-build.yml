@@ -26,6 +26,11 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Install hwloc
+        shell: bash -l {0}
+        run: |
+          sudo apt install hwloc
+
       - name: Cache sycl bundle
         id: cache-sycl-bundle
         uses: actions/cache@v4
