@@ -309,6 +309,8 @@ cdef class SyclPlatform(_SyclPlatform):
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:
             return backend_type.opencl
+        elif BTy == _backend_type._NATIVE_CPU:
+            return backend_type.native_cpu
         else:
             raise ValueError("Unknown backend type.")
 

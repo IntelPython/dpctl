@@ -79,6 +79,8 @@ cdef _backend_type _string_to_dpctl_sycl_backend_ty(str backend_str):
         return _backend_type._LEVEL_ZERO
     elif backend_str == "opencl":
         return _backend_type._OPENCL
+    elif backend_str == "native_cpu":
+        return _backend_type._NATIVE_CPU
     else:
         return _backend_type._UNKNOWN_BACKEND
 
@@ -112,6 +114,8 @@ cdef _backend_type _enum_to_dpctl_sycl_backend_ty(BTy):
         return _backend_type._LEVEL_ZERO
     elif BTy == backend_type.opencl:
         return _backend_type._OPENCL
+    elif BTy == backend_type.native_cpu:
+        return _backend_type._NATIVE_CPU
     else:
         return _backend_type._UNKNOWN_BACKEND
 
@@ -159,7 +163,7 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
         backend (str, :class:`dpctl.backend_type`, optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
-            "hip", "opencl", "level_zero", or "all".
+            "hip", "opencl", "level_zero", "native_cpu", or "all".
             Default: ``dpctl.backend_type.all``.
         device_type (str, :class:`dpctl.device_type`, optional):
             A :class:`dpctl.device_type` enum value or a string that
@@ -243,7 +247,7 @@ cpdef int get_num_devices(
         backend (str, :class:`dpctl.backend_type`, optional):
             A :class:`dpctl.backend_type` enum value or a string that
             specifies a SYCL backend. Currently, accepted values are: "cuda",
-            "hip", "opencl", "level_zero", or "all".
+            "hip", "opencl", "level_zero", "native_cpu", or "all".
             Default: ``dpctl.backend_type.all``.
         device_type (str, :class:`dpctl.device_type`, optional):
             A :class:`dpctl.device_type` enum value or a string that
