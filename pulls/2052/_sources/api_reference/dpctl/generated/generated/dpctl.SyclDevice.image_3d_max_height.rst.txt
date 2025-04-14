@@ -1,6 +1,0 @@
-dpctl.SyclDevice.image\_3d\_max\_height
-=======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.image_3d_max_height
