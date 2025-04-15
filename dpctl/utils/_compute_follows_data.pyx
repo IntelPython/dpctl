@@ -28,7 +28,9 @@ import dpctl
 
 from .._sycl_queue cimport SyclQueue
 
-__all__ = ["get_execution_queue", "get_coerced_usm_type", "ExecutionPlacementError"]
+__all__ = [
+    "get_execution_queue", "get_coerced_usm_type", "ExecutionPlacementError"
+]
 
 
 class ExecutionPlacementError(Exception):
@@ -77,7 +79,7 @@ def get_execution_queue(qs, /):
         elif not isinstance(q2, dpctl.SyclQueue):
             return None
         elif not queue_equiv(<SyclQueue> q1, <SyclQueue> q2):
-             return None
+            return None
     return qs[0]
 
 
@@ -104,7 +106,7 @@ def get_coerced_usm_type(usm_types, /):
     if len(usm_types) == 0:
         return None
     _k = ["device", "shared", "host"]
-    _m = {k:i for i, k in enumerate(_k)}
+    _m = {k: i for i, k in enumerate(_k)}
     res = len(_k)
     for t in usm_types:
         if not isinstance(t, str):
@@ -128,6 +130,7 @@ def _validate_usm_type_allow_none(usm_type):
             raise TypeError(
                 f"Expected usm_type to be a str or None, got {type(usm_type)}"
             )
+
 
 def _validate_usm_type_disallow_none(usm_type):
     "Validates usm_type argument"

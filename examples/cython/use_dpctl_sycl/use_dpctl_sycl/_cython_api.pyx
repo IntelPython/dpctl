@@ -48,6 +48,8 @@ cpdef dpctl.SyclDevice device_copy(dpctl.SyclDevice dev):
     cdef dpctl.DPCTLSyclDeviceRef d_ref = dev.get_device_ref()
     cdef const dpctl.sycl.device *dpcpp_device = dpctl.sycl.unwrap_device(d_ref)
     cdef dpctl.sycl.device *copied_device = copy_device(dpcpp_device[0])
-    cdef dpctl.DPCTLSyclDeviceRef copied_d_ref = dpctl.sycl.wrap_device(copied_device)
+    cdef dpctl.DPCTLSyclDeviceRef copied_d_ref = dpctl.sycl.wrap_device(
+        copied_device
+    )
 
     return dpctl.SyclDevice._create(copied_d_ref)

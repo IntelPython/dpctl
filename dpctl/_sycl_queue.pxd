@@ -65,8 +65,10 @@ cdef public api class SyclQueue (_SyclQueue) [
         _arg_data_type *kargty
     )
     cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
+
     @staticmethod
     cdef  SyclQueue _create(DPCTLSyclQueueRef qref)
+
     @staticmethod
     cdef  SyclQueue _create_from_context_and_device(
         SyclContext ctx, SyclDevice dev, int props=*

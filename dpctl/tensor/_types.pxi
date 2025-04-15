@@ -16,23 +16,23 @@
 
 # these typenum values are aligned to values in NumPy
 cdef:
-    int UAR_BOOL = 0     # pragma: no cover
-    int UAR_BYTE = 1     # pragma: no cover
-    int UAR_UBYTE = 2    # pragma: no cover
-    int UAR_SHORT = 3    # pragma: no cover
-    int UAR_USHORT = 4   # pragma: no cover
-    int UAR_INT = 5      # pragma: no cover
-    int UAR_UINT = 6     # pragma: no cover
-    int UAR_LONG = 7     # pragma: no cover
-    int UAR_ULONG = 8    # pragma: no cover
-    int UAR_LONGLONG = 9 # pragma: no cover
-    int UAR_ULONGLONG = 10 # pragma: no cover
-    int UAR_FLOAT = 11   # pragma: no cover
+    int UAR_BOOL = 0  # pragma: no cover
+    int UAR_BYTE = 1  # pragma: no cover
+    int UAR_UBYTE = 2  # pragma: no cover
+    int UAR_SHORT = 3  # pragma: no cover
+    int UAR_USHORT = 4  # pragma: no cover
+    int UAR_INT = 5  # pragma: no cover
+    int UAR_UINT = 6  # pragma: no cover
+    int UAR_LONG = 7  # pragma: no cover
+    int UAR_ULONG = 8  # pragma: no cover
+    int UAR_LONGLONG = 9  # pragma: no cover
+    int UAR_ULONGLONG = 10  # pragma: no cover
+    int UAR_FLOAT = 11  # pragma: no cover
     int UAR_DOUBLE = 12  # pragma: no cover
     int UAR_CFLOAT = 14  # pragma: no cover
-    int UAR_CDOUBLE = 15 # pragma: no cover
-    int UAR_TYPE_SENTINEL = 17 # pragma: no cover
-    int UAR_HALF = 23    # pragma: no cover
+    int UAR_CDOUBLE = 15  # pragma: no cover
+    int UAR_TYPE_SENTINEL = 17  # pragma: no cover
+    int UAR_HALF = 23  # pragma: no cover
 
 cdef int type_bytesize(int typenum):
     """
@@ -72,7 +72,7 @@ cdef int type_bytesize(int typenum):
         sizeof(float complex),
         sizeof(double complex), -1]
 
-    if typenum < 0: # pragma: no cover
+    if typenum < 0:  # pragma: no cover
         return -1
     if typenum > 16:
         if typenum == 23:
@@ -90,7 +90,7 @@ cdef str _make_typestr(int typenum):
                         "|i", "|u", "|i", "|u", "|i", "|u",
                         "|f", "|f", "", "|c", "|c", ""]
 
-    if (typenum < 0): # pragma: no cover
+    if (typenum < 0):  # pragma: no cover
         return ""
     if (typenum > 16):
         if (typenum == 23):
@@ -119,15 +119,20 @@ cdef int typenum_from_format(str s):
 
 
 cdef int descr_to_typenum(object dtype):
-    "Returns typenum for argumentd dtype that has attribute descr, assumed numpy.dtype"
-    obj = getattr(dtype, 'descr')
+    """
+    Returns typenum for argumentd dtype that has attribute descr,
+    assumed numpy.dtype
+    """
+    obj = getattr(dtype, "descr")
     if (not isinstance(obj, list) or len(obj) != 1):
         return -1    # token for ValueError
     obj = obj[0]
-    if (not isinstance(obj, tuple) or len(obj) != 2 or obj[0]): # pragma: no cover
+    if (
+        not isinstance(obj, tuple) or len(obj) != 2 or obj[0]
+    ):  # pragma: no cover
         return -1
     obj = obj[1]
-    if not isinstance(obj, str): # pragma: no cover
+    if not isinstance(obj, str):  # pragma: no cover
         return -1
     return typenum_from_format(obj)
 
@@ -137,16 +142,16 @@ cdef int dtype_to_typenum(dtype):
         return typenum_from_format(dtype)
     elif isinstance(dtype, bytes):
         return typenum_from_format(dtype.decode("UTF-8"))
-    elif hasattr(dtype, 'descr'):
+    elif hasattr(dtype, "descr"):
         return descr_to_typenum(dtype)
     else:
         try:
             dt = np.dtype(dtype)
         except TypeError:
             return -3
-        except Exception: # pragma: no cover
+        except Exception:  # pragma: no cover
             return -1
-        if hasattr(dt, 'descr'):
+        if hasattr(dt, "descr"):
             return descr_to_typenum(dt)
-        else:          # pragma: no cover
+        else:  # pragma: no cover
             return -3  # token for TypeError

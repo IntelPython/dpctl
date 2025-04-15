@@ -79,7 +79,7 @@ from cpython.buffer cimport (
     PyObject_CheckBuffer,
     PyObject_GetBuffer,
 )
-from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
+from cpython.ref cimport Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
 import collections.abc
@@ -87,7 +87,10 @@ import logging
 
 
 cdef extern from "_host_task_util.hpp":
-    DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef, PyObject **, size_t, DPCTLSyclEventRef *, size_t, int *) nogil
+    DPCTLSyclEventRef async_dec_ref(
+        DPCTLSyclQueueRef, PyObject **,
+        size_t, DPCTLSyclEventRef *, size_t, int *
+    ) nogil
 
 
 __all__ = [
@@ -155,7 +158,8 @@ cdef class LocalAccessor:
         TypeError:
             If the given shape is not a tuple or list.
         ValueError:
-            If the given shape sequence is not between one and three elements long.
+            If the given shape sequence is not between one and
+            three elements long.
         TypeError:
             If the shape is not a sequence of integers.
         ValueError:
@@ -166,43 +170,51 @@ cdef class LocalAccessor:
     cdef _md_local_accessor lacc
 
     def __cinit__(self, str dtype, shape):
-       if not isinstance(shape, (list, tuple)):
-            raise TypeError(f"`shape` must be a list or tuple, got {type(shape)}")
-       ndim = len(shape)
-       if ndim < 1 or ndim > 3:
-            raise ValueError("LocalAccessor must have dimension between one and three")
-       for s in shape:
+        if not isinstance(shape, (list, tuple)):
+            raise TypeError(
+                f"`shape` must be a list or tuple, got {type(shape)}"
+            )
+        ndim = len(shape)
+        if ndim < 1 or ndim > 3:
+            raise ValueError(
+                "LocalAccessor must have dimension between one and three"
+            )
+        for s in shape:
             if not isinstance(s, numbers.Integral):
-                raise TypeError("LocalAccessor shape must be a sequence of integers")
+                raise TypeError(
+                    "LocalAccessor shape must be a sequence of integers"
+                )
             if s < 0:
-                raise ValueError("LocalAccessor dimensions must be non-negative")
-       self.lacc.ndim = ndim
-       self.lacc.dim0 = <size_t> shape[0]
-       self.lacc.dim1 = <size_t> shape[1] if ndim > 1 else 1
-       self.lacc.dim2 = <size_t> shape[2] if ndim > 2 else 1
+                raise ValueError(
+                    "LocalAccessor dimensions must be non-negative"
+                )
+        self.lacc.ndim = ndim
+        self.lacc.dim0 = <size_t> shape[0]
+        self.lacc.dim1 = <size_t> shape[1] if ndim > 1 else 1
+        self.lacc.dim2 = <size_t> shape[2] if ndim > 2 else 1
 
-       if dtype == 'i1':
-           self.lacc.dpctl_type_id = _arg_data_type._INT8_T
-       elif dtype == 'u1':
-           self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
-       elif dtype == 'i2':
-           self.lacc.dpctl_type_id = _arg_data_type._INT16_T
-       elif dtype == 'u2':
-           self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
-       elif dtype == 'i4':
-           self.lacc.dpctl_type_id = _arg_data_type._INT32_T
-       elif dtype == 'u4':
-           self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
-       elif dtype == 'i8':
-           self.lacc.dpctl_type_id = _arg_data_type._INT64_T
-       elif dtype == 'u8':
-           self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
-       elif dtype == 'f4':
-           self.lacc.dpctl_type_id = _arg_data_type._FLOAT
-       elif dtype == 'f8':
-           self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
-       else:
-           raise ValueError(f"Unrecognized type value: '{dtype}'")
+        if dtype == "i1":
+            self.lacc.dpctl_type_id = _arg_data_type._INT8_T
+        elif dtype == "u1":
+            self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
+        elif dtype == "i2":
+            self.lacc.dpctl_type_id = _arg_data_type._INT16_T
+        elif dtype == "u2":
+            self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
+        elif dtype == "i4":
+            self.lacc.dpctl_type_id = _arg_data_type._INT32_T
+        elif dtype == "u4":
+            self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
+        elif dtype == "i8":
+            self.lacc.dpctl_type_id = _arg_data_type._INT64_T
+        elif dtype == "u8":
+            self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
+        elif dtype == "f4":
+            self.lacc.dpctl_type_id = _arg_data_type._FLOAT
+        elif dtype == "f8":
+            self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
+        else:
+            raise ValueError(f"Unrecognized type value: '{dtype}'")
 
     def __repr__(self):
         return f"LocalAccessor({self.lacc.ndim})"
@@ -224,7 +236,6 @@ cdef class _kernel_arg_type:
 
     def __cinit__(self):
         self._name = "kernel_arg_type"
-
 
     @property
     def __name__(self):
@@ -458,8 +469,10 @@ cdef DPCTLSyclEventRef _memcpy_impl(
     if isinstance(src, _Memory):
         c_src_ptr = <void*>(<_Memory>src).get_data_ptr()
     elif _is_buffer(src):
-        ret_code = PyObject_GetBuffer(src, &src_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
-        if ret_code != 0: # pragma: no cover
+        ret_code = PyObject_GetBuffer(
+            src, &src_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS
+        )
+        if ret_code != 0:  # pragma: no cover
             raise RuntimeError("Could not access buffer")
         c_src_ptr = src_buf_view.buf
         src_is_buf = True
@@ -468,13 +481,16 @@ cdef DPCTLSyclEventRef _memcpy_impl(
              "Parameter `src` should have either type "
              "`dpctl.memory._Memory` or a type that "
              "supports Python buffer protocol"
-       )
+        )
 
     if isinstance(dst, _Memory):
         c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
     elif _is_buffer(dst):
-        ret_code = PyObject_GetBuffer(dst, &dst_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS | PyBUF_WRITABLE)
-        if ret_code != 0: # pragma: no cover
+        ret_code = PyObject_GetBuffer(
+            dst, &dst_buf_view,
+            PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS | PyBUF_WRITABLE
+        )
+        if ret_code != 0:  # pragma: no cover
             if src_is_buf:
                 PyBuffer_Release(&src_buf_view)
             raise RuntimeError("Could not access buffer")
@@ -485,7 +501,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
              "Parameter `dst` should have either type "
              "`dpctl.memory._Memory` or a type that "
              "supports Python buffer protocol"
-       )
+        )
 
     if dep_events_count == 0 or dep_events is NULL:
         ERef = DPCTLQueue_Memcpy(q._queue_ref, c_dst_ptr, c_src_ptr, byte_count)
@@ -623,7 +639,7 @@ cdef class SyclQueue(_SyclQueue):
                 "but {} were given.".format(len(args))
             )
         props = _parse_queue_properties(
-            kwargs.pop('property', _queue_property_type._DEFAULT_PROPERTY)
+            kwargs.pop("property", _queue_property_type._DEFAULT_PROPERTY)
         )
         if (kwargs):
             raise TypeError(
@@ -685,9 +701,8 @@ cdef class SyclQueue(_SyclQueue):
             elif status == -3 or status == -7:
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created " +
-                    ("by default constructor" if len_args == 0 else
-                     "from '{}'.".format(arg)
-                    )
+                    "by default constructor" if len_args == 0 else
+                    "from '{}'.".format(arg)
                 )
             elif status == -4 or status == -6:
                 if len_args == 2:
@@ -1068,7 +1083,6 @@ cdef class SyclQueue(_SyclQueue):
         """
         return <size_t>self._queue_ref
 
-
     cpdef SyclEvent _submit_keep_args_alive(
         self,
         object args,
@@ -1138,12 +1152,12 @@ cdef class SyclQueue(_SyclQueue):
 
         free(depEvents)
         if (status != 0):
-            with nogil: DPCTLEvent_Wait(htERef)
+            with nogil:
+                DPCTLEvent_Wait(htERef)
             DPCTLEvent_Delete(htERef)
             raise RuntimeError("Could not submit keep_args_alive host_task")
 
         return SyclEvent._create(htERef)
-
 
     cpdef SyclEvent submit_async(
         self,
@@ -1189,15 +1203,12 @@ cdef class SyclQueue(_SyclQueue):
         cdef _arg_data_type *kargty = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef Eref = NULL
-        cdef DPCTLSyclEventRef htEref = NULL
         cdef int ret = 0
         cdef size_t gRange[3]
         cdef size_t lRange[3]
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
-        cdef PyObject *args_raw = NULL
-        cdef ssize_t i = 0
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1348,7 +1359,8 @@ cdef class SyclQueue(_SyclQueue):
         return e
 
     cpdef void wait(self):
-        with nogil: DPCTLQueue_Wait(self._queue_ref)
+        with nogil:
+            DPCTLQueue_Wait(self._queue_ref)
 
     cpdef memcpy(self, dest, src, size_t count):
         """Copy memory from `src` to `dst`"""
@@ -1359,10 +1371,13 @@ cdef class SyclQueue(_SyclQueue):
             raise RuntimeError(
                 "SyclQueue.memcpy operation encountered an error"
             )
-        with nogil: DPCTLEvent_Wait(ERef)
+        with nogil:
+            DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
-    cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=None):
+    cpdef SyclEvent memcpy_async(
+        self, dest, src, size_t count, list dEvents=None
+    ):
         """Copy memory from ``src`` to ``dst``"""
         cdef DPCTLSyclEventRef ERef = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -1410,10 +1425,9 @@ cdef class SyclQueue(_SyclQueue):
 
         ERef = DPCTLQueue_Prefetch(self._queue_ref, ptr, count)
         if (ERef is NULL):
-            raise RuntimeError(
-                "SyclQueue.prefetch encountered an error"
-            )
-        with nogil: DPCTLEvent_Wait(ERef)
+            raise RuntimeError("SyclQueue.prefetch encountered an error")
+        with nogil:
+            DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef mem_advise(self, mem, size_t count, int advice):
@@ -1433,7 +1447,8 @@ cdef class SyclQueue(_SyclQueue):
             raise RuntimeError(
                 "SyclQueue.mem_advise operation encountered an error"
             )
-        with nogil: DPCTLEvent_Wait(ERef)
+        with nogil:
+            DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     @property
@@ -1689,11 +1704,15 @@ cdef class WorkGroupMemory:
             nbytes = <size_t>(args[0])
         else:
             if not isinstance(args[0], str):
-                raise TypeError("WorkGroupMemory constructor expects first"
-                                f"argument to be `str`, but got {type(args[0])}")
+                raise TypeError(
+                    "WorkGroupMemory constructor expects first"
+                    f"argument to be `str`, but got {type(args[0])}"
+                )
             if not isinstance(args[1], numbers.Integral):
-                raise TypeError("WorkGroupMemory constructor expects second"
-                                f"argument to be `int`, but got {type(args[1])}")
+                raise TypeError(
+                    "WorkGroupMemory constructor expects second"
+                    f"argument to be `int`, but got {type(args[1])}"
+                )
             dtype = <str>(args[0])
             count = <size_t>(args[1])
             if not dtype[0] in ["i", "u", "f"]:
@@ -1708,7 +1727,7 @@ cdef class WorkGroupMemory:
 
         self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)
 
-    """Check whether the work_group_memory extension is available"""
+    # Check whether the work_group_memory extension is available
     @staticmethod
     def is_available():
         return DPCTLWorkGroupMemory_Available()

@@ -41,13 +41,13 @@ cdef api class SyclKernel [object PySyclKernelObject, type PySyclKernelType]:
 
 
 cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
-    ''' Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created by
-        using SYCL interoperability layer for OpenCL and Level-Zero backends.
-
-        SyclProgram exposes the C API from dpctl_sycl_kernel_bundle_interface.h. A
-        SyclProgram can be created from either a source string or a SPIR-V
-        binary file.
-    '''
+    """
+    Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created
+    by using SYCL interoperability layer for OpenCL and Level-Zero backends.
+    SyclProgram exposes the C API from dpctl_sycl_kernel_bundle_interface.h.
+    A SyclProgram can be created from either a source string or a SPIR-V
+    binary file.
+    """
     cdef DPCTLSyclKernelBundleRef _program_ref
 
     @staticmethod

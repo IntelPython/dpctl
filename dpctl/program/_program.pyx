@@ -28,7 +28,6 @@ a OpenCL source string or a SPIR-V binary file.
 from libc.stdint cimport uint32_t
 
 from dpctl._backend cimport (  # noqa: E211, E402;
-    DPCTLCString_Delete,
     DPCTLKernel_Copy,
     DPCTLKernel_Delete,
     DPCTLKernel_GetCompileNumSubGroups,
@@ -125,7 +124,7 @@ cdef class SyclKernel:
         """
         cdef size_t v = DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
             self._kernel_ref
-	)
+        )
         return v
 
     @property
@@ -209,14 +208,14 @@ cdef class SyclProgram:
         return self._program_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
-        name = kernel_name.encode('utf8')
+        name = kernel_name.encode("utf8")
         return SyclKernel._create(
             DPCTLKernelBundle_GetKernel(self._program_ref, name),
             kernel_name
         )
 
     def has_sycl_kernel(self, str kernel_name):
-        name = kernel_name.encode('utf8')
+        name = kernel_name.encode("utf8")
         return DPCTLKernelBundle_HasKernel(self._program_ref, name)
 
     def addressof_ref(self):
@@ -261,8 +260,8 @@ cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
     """
 
     cdef DPCTLSyclKernelBundleRef KBref
-    cdef bytes bSrc = src.encode('utf8')
-    cdef bytes bCOpts = copts.encode('utf8')
+    cdef bytes bSrc = src.encode("utf8")
+    cdef bytes bCOpts = copts.encode("utf8")
     cdef const char *Src = <const char*>bSrc
     cdef const char *COpts = <const char*>bCOpts
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
@@ -280,9 +279,9 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     """
         Creates a Sycl interoperability program from an SPIR-V binary.
 
-        We use the :c:func:`DPCTLKernelBundle_CreateFromOCLSpirv` C API function to
-        create a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
-        from an compiled SPIR-V binary file.
+        We use the :c:func:`DPCTLKernelBundle_CreateFromOCLSpirv` C API function
+        to create a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+        object from an compiled SPIR-V binary file.
 
         Parameters:
             q (:class:`dpctl.SyclQueue`)
@@ -310,7 +309,7 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
     cdef size_t length = IL.shape[0]
-    cdef bytes bCOpts = copts.encode('utf8')
+    cdef bytes bCOpts = copts.encode("utf8")
     cdef const char *COpts = <const char*>bCOpts
     KBref = DPCTLKernelBundle_CreateFromSpirv(
         CRef, DRef, <const void*>dIL, length, COpts
@@ -321,7 +320,9 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     return SyclProgram._create(KBref)
 
 
-cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(SyclProgram pro):
+cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(
+    SyclProgram pro
+):
     """ C-API function to access opaque kernel bundle reference from
     Python object of type :class:`dpctl.program.SyclKernel`.
     """

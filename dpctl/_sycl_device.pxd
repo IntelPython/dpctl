@@ -53,7 +53,9 @@ cdef public api class SyclDevice(_SyclDevice) [
     cdef DPCTLSyclDeviceRef get_device_ref(self)
     cdef list create_sub_devices_equally(self, size_t count)
     cdef list create_sub_devices_by_counts(self, object counts)
-    cdef list create_sub_devices_by_affinity(self, _partition_affinity_domain_type domain)
+    cdef list create_sub_devices_by_affinity(
+        self, _partition_affinity_domain_type domain
+    )
     cdef cpp_bool equals(self, SyclDevice q)
     cdef int get_device_type_ordinal(self)
     cdef int get_overall_ordinal(self)

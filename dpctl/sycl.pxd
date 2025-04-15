@@ -39,7 +39,7 @@ cdef extern from "sycl/sycl.hpp" namespace "sycl":
         pass
 
     cdef cppclass executable_kernel_bundle \
-        "sycl::kernel_bundle<sycl::bundle_state::executable>":
+            "sycl::kernel_bundle<sycl::bundle_state::executable>":
         pass
 
 cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
@@ -47,7 +47,7 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
     ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
 
 cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
-    namespace "dpctl::syclinterface":
+        namespace "dpctl::syclinterface":
     # queue
     cdef dpctl_backend.DPCTLSyclQueueRef wrap_queue \
         "dpctl::syclinterface::wrap<sycl::queue>" (const queue *)
@@ -63,20 +63,25 @@ cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
     # context
     cdef dpctl_backend.DPCTLSyclContextRef wrap_context \
         "dpctl::syclinterface::wrap<sycl::context>" (const context *)
-    cdef context * unwrap_context "dpctl::syclinterface::unwrap<sycl::context>" (
-        dpctl_backend.DPCTLSyclContextRef)
+    cdef context * unwrap_context \
+        "dpctl::syclinterface::unwrap<sycl::context>" (
+            dpctl_backend.DPCTLSyclContextRef
+        )
 
     # event
     cdef dpctl_backend.DPCTLSyclEventRef wrap_event \
         "dpctl::syclinterface::wrap<sycl::event>" (const event *)
-    cdef event * unwrap_event "dpctl::syclinterface::unwrap<sycl::event>" (
-        dpctl_backend.DPCTLSyclEventRef)
+    cdef event * unwrap_event \
+        "dpctl::syclinterface::unwrap<sycl::event>" (
+            dpctl_backend.DPCTLSyclEventRef
+        )
 
     # work group memory extension
     cdef dpctl_backend.DPCTLSyclWorkGroupMemoryRef wrap_work_group_memory \
-            "dpctl::syclinterface::wrap<RawWorkGroupMemory>" \
-            (const RawWorkGroupMemory *)
+        "dpctl::syclinterface::wrap<RawWorkGroupMemory>" \
+        (const RawWorkGroupMemory *)
 
     cdef RawWorkGroupMemory * unwrap_work_group_memory \
-            "dpctl::syclinterface::unwrap<RawWorkGroupMemory>" (
-            dpctl_backend.DPCTLSyclWorkGroupMemoryRef)
+        "dpctl::syclinterface::unwrap<RawWorkGroupMemory>" (
+            dpctl_backend.DPCTLSyclWorkGroupMemoryRef
+        )

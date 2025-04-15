@@ -71,10 +71,10 @@ def columnwise_total(cython.floating[:, ::1] mat, queue=None):
         res_memslice = np.empty(n_cols, dtype=np.double)
     else:
         raise TypeError(
-	        "Use single or double precision floating point types are supported"
-	    )
+            "Use single or double precision floating point types are supported"
+        )
 
-    if (queue is None):
+    if queue is None:
         # use default-constructed queue
         q = c_dpctl.SyclQueue()
     elif isinstance(queue, dpctl.SyclQueue):
@@ -85,7 +85,7 @@ def columnwise_total(cython.floating[:, ::1] mat, queue=None):
 
     with nogil, cython.boundscheck(False):
         native_columnwise_total(
-            exec_queue_ptr[0], n_rows, n_cols, &mat[0,0], &res_memslice[0]
+            exec_queue_ptr[0], n_rows, n_cols, &mat[0, 0], &res_memslice[0]
         )
 
     return np.asarray(res_memslice)

@@ -56,11 +56,15 @@ cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
 
     @staticmethod
     cdef SyclDevice get_pointer_device(
-        DPCTLSyclUSMRef p, SyclContext ctx)
+        DPCTLSyclUSMRef p, SyclContext ctx
+    )
+
     @staticmethod
     cdef bytes get_pointer_type(DPCTLSyclUSMRef p, SyclContext ctx)
+
     @staticmethod
     cdef _usm_type get_pointer_type_enum(DPCTLSyclUSMRef p, SyclContext ctx)
+
     @staticmethod
     cdef object create_from_usm_pointer_size_qref(
         DPCTLSyclUSMRef USMRef,
@@ -70,16 +74,19 @@ cdef public api class _Memory [object Py_MemoryObject, type Py_MemoryType]:
     )
 
 
-cdef public api class MemoryUSMShared(_Memory) [object PyMemoryUSMSharedObject,
-                                            type PyMemoryUSMSharedType]:
+cdef public api class MemoryUSMShared(_Memory) [
+    object PyMemoryUSMSharedObject, type PyMemoryUSMSharedType
+]:
     pass
 
 
-cdef public api class MemoryUSMHost(_Memory) [object PyMemoryUSMHostObject,
-                                          type PyMemoryUSMHostType]:
+cdef public api class MemoryUSMHost(_Memory) [
+    object PyMemoryUSMHostObject, type PyMemoryUSMHostType
+]:
     pass
 
 
-cdef public api class MemoryUSMDevice(_Memory) [object PyMemoryUSMDeviceObject,
-                                            type PyMemoryUSMDeviceType]:
+cdef public api class MemoryUSMDevice(_Memory) [
+    object PyMemoryUSMDeviceObject, type PyMemoryUSMDeviceType
+]:
     pass

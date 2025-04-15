@@ -38,7 +38,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLEvent_GetProfilingInfoSubmit,
     DPCTLEvent_GetWaitList,
     DPCTLEvent_Wait,
-    DPCTLEvent_WaitAndThrow,
     DPCTLEventVector_Delete,
     DPCTLEventVector_GetAt,
     DPCTLEventVector_Size,
@@ -220,7 +219,8 @@ cdef class SyclEvent(_SyclEvent):
 
     @staticmethod
     cdef void _wait(SyclEvent event):
-        with nogil: DPCTLEvent_Wait(event._event_ref)
+        with nogil:
+            DPCTLEvent_Wait(event._event_ref)
 
     @staticmethod
     def wait_for(event):
@@ -417,4 +417,5 @@ cdef class SyclEvent(_SyclEvent):
         Returns:
             None
         """
-        with nogil: DPCTLEvent_Wait(self._event_ref)
+        with nogil:
+            DPCTLEvent_Wait(self._event_ref)

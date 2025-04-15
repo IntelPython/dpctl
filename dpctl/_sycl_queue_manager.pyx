@@ -58,7 +58,8 @@ cdef class _DeviceDefaultQueueCache:
             raise TypeError
         if ctx_dev in self.__device_queue_map__:
             return self.__device_queue_map__[ctx_dev], False
-        if q is None: q = SyclQueue(*ctx_dev)
+        if q is None:
+            q = SyclQueue(*ctx_dev)
         self.__device_queue_map__[ctx_dev] = q
         return q, True
 
@@ -67,13 +68,14 @@ cdef class _DeviceDefaultQueueCache:
 
     def __copy__(self):
         cdef _DeviceDefaultQueueCache _copy = _DeviceDefaultQueueCache.__new__(
-	     _DeviceDefaultQueueCache)
+            _DeviceDefaultQueueCache
+        )
         _copy._update_map(self.__device_queue_map__)
         return _copy
 
 
 _global_device_queue_cache = ContextVar(
-    'global_device_queue_cache',
+    "global_device_queue_cache",
     default=_DeviceDefaultQueueCache()
 )
 
@@ -96,5 +98,6 @@ cpdef object get_device_cached_queue(object key):
     """
     _cache = _global_device_queue_cache.get()
     q_, changed_ = _cache.get_or_create(key)
-    if changed_: _global_device_queue_cache.set(_cache)
+    if changed_:
+        _global_device_queue_cache.set(_cache)
     return q_
