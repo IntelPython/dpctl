@@ -349,28 +349,7 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     _copy_same_shape(dst, src_same_shape)
 
 
-def _empty_like_orderK(X, dt, usm_type=None, dev=None):
-    """Returns empty array like `x`, using order='K'
-
-    For an array `x` that was obtained by permutation of a contiguous
-    array the returned array will have the same shape and the same
-    strides as `x`.
-    """
-    if not isinstance(X, dpt.usm_ndarray):
-        raise TypeError(f"Expected usm_ndarray, got {type(X)}")
-    if usm_type is None:
-        usm_type = X.usm_type
-    if dev is None:
-        dev = X.device
-    fl = X.flags
-    if fl["C"] or X.size <= 1:
-        return dpt.empty_like(
-            X, dtype=dt, usm_type=usm_type, device=dev, order="C"
-        )
-    elif fl["F"]:
-        return dpt.empty_like(
-            X, dtype=dt, usm_type=usm_type, device=dev, order="F"
-        )
+def _make_empty_like_orderK(X, dt, usm_type, dev):
     st = list(X.strides)
     perm = sorted(
         range(X.ndim),
@@ -393,6 +372,52 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
         )
         R = R[sl]
     return dpt.permute_dims(R, inv_perm)
+
+
+def _empty_like_orderK(X, dt, usm_type=None, dev=None):
+    """Returns empty array like `x`, using order='K'
+
+    For an array `x` that was obtained by permutation of a contiguous
+    array the returned array will have the same shape and the same
+    strides as `x`.
+    """
+    if not isinstance(X, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(X)}")
+    if usm_type is None:
+        usm_type = X.usm_type
+    if dev is None:
+        dev = X.device
+    fl = X.flags
+    if fl["C"] or X.size <= 1:
+        return dpt.empty_like(
+            X, dtype=dt, usm_type=usm_type, device=dev, order="C"
+        )
+    elif fl["F"]:
+        return dpt.empty_like(
+            X, dtype=dt, usm_type=usm_type, device=dev, order="F"
+        )
+    return _make_empty_like_orderK(X, dt, usm_type, dev)
+
+
+def _from_numpy_empty_like_orderK(X, dt, usm_type, dev):
+    """Returns empty usm_ndarray like NumPy array `x`, using order='K'
+
+    For an array `x` that was obtained by permutation of a contiguous
+    array the returned array will have the same shape and the same
+    strides as `x`.
+    """
+    if not isinstance(X, np.ndarray):
+        raise TypeError(f"Expected np.ndarray, got {type(X)}")
+    fl = X.flags
+    if fl["C"] or X.size <= 1:
+        return dpt.empty(
+            X.shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
+        )
+    elif fl["F"]:
+        return dpt.empty(
+            X.shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
+        )
+    return _make_empty_like_orderK(X, dt, usm_type, dev)
 
 
 def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
