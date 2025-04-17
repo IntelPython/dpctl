@@ -1,0 +1,10 @@
+﻿dpctl.tensor.greater\_equal
+===========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: greater_equal
+    :no-value:
+
+
