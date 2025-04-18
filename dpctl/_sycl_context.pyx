@@ -286,7 +286,7 @@ cdef class SyclContext(_SyclContext):
         elif isinstance(arg, SyclDevice):
             ret = self._init_context_from_one_device(<SyclDevice> arg, 0)
         elif pycapsule.PyCapsule_IsValid(arg, "SyclContextRef"):
-            status = self._init_context_from_capsule(arg)
+            ret = self._init_context_from_capsule(arg)
         elif isinstance(arg, (list, tuple)) and all(
             [isinstance(argi, SyclDevice) for argi in arg]
         ):
