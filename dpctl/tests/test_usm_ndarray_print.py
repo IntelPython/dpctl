@@ -282,9 +282,7 @@ class TestPrintFns(TestPrint):
         )
 
         x = dpt.arange(4, dtype="i4", sycl_queue=q)
-        x.sycl_queue.wait()
-        r = repr(x)
-        assert r == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
+        assert repr(x) == "usm_ndarray([0, 1, 2, 3], dtype=int32)"
 
         dpt.set_print_options(linewidth=1)
         np.testing.assert_equal(
@@ -296,22 +294,27 @@ class TestPrintFns(TestPrint):
             "\n            dtype=int32)",
         )
 
+        # zero-size array
+        dpt.set_print_options(linewidth=75)
+        x = dpt.ones((9, 0), dtype="i4", sycl_queue=q)
+        assert repr(x) == "usm_ndarray([], shape=(9, 0), dtype=int32)"
+
     def test_print_repr_abbreviated(self):
         q = get_queue_or_skip()
 
         dpt.set_print_options(threshold=0, edgeitems=1)
         x = dpt.arange(9, dtype="int64", sycl_queue=q)
-        assert repr(x) == "usm_ndarray([0, ..., 8])"
+        assert repr(x) == "usm_ndarray([0, ..., 8], shape=(9,))"
 
         y = dpt.asarray(x, dtype="i4", copy=True)
-        assert repr(y) == "usm_ndarray([0, ..., 8], dtype=int32)"
+        assert repr(y) == "usm_ndarray([0, ..., 8], shape=(9,), dtype=int32)"
 
         x = dpt.reshape(x, (3, 3))
         np.testing.assert_equal(
             repr(x),
             "usm_ndarray([[0, ..., 2],"
             "\n             ...,"
-            "\n             [6, ..., 8]])",
+            "\n             [6, ..., 8]], shape=(3, 3))",
         )
 
         y = dpt.reshape(y, (3, 3))
@@ -319,7 +322,7 @@ class TestPrintFns(TestPrint):
             repr(y),
             "usm_ndarray([[0, ..., 2],"
             "\n             ...,"
-            "\n             [6, ..., 8]], dtype=int32)",
+            "\n             [6, ..., 8]], shape=(3, 3), dtype=int32)",
         )
 
         dpt.set_print_options(linewidth=1)
@@ -332,6 +335,7 @@ class TestPrintFns(TestPrint):
             "\n             [6,"
             "\n              ...,"
             "\n              8]],"
+            "\n            shape=(3, 3),"
             "\n            dtype=int32)",
         )
 

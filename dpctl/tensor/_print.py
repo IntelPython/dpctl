@@ -40,6 +40,17 @@ _print_options = {
 }
 
 
+def _move_to_next_line(string, s, line_width, prefix):
+    """
+    Move string to next line if it doesn't fit in the current line.
+    """
+    bottom_len = len(s) - (s.rfind("\n") + 1)
+    next_line = bottom_len + len(string) + 1 > line_width
+    string = ",\n" + " " * len(prefix) + string if next_line else ", " + string
+
+    return string
+
+
 def _options_dict(
     linewidth=None,
     edgeitems=None,
@@ -463,16 +474,18 @@ def usm_ndarray_repr(
         suffix=suffix,
     )
 
-    if show_dtype:
-        dtype_str = "dtype={}".format(x.dtype.name)
-        bottom_len = len(s) - (s.rfind("\n") + 1)
-        next_line = bottom_len + len(dtype_str) + 1 > line_width
-        dtype_str = (
-            ",\n" + " " * len(prefix) + dtype_str
-            if next_line
-            else ", " + dtype_str
-        )
+    if show_dtype or x.size == 0:
+        dtype_str = f"dtype={x.dtype.name}"
+        dtype_str = _move_to_next_line(dtype_str, s, line_width, prefix)
     else:
         dtype_str = ""
 
-    return prefix + s + dtype_str + suffix
+    options = get_print_options()
+    threshold = options["threshold"]
+    if x.size == 0 and x.shape != (0,) or x.size > threshold:
+        shape_str = f"shape={x.shape}"
+        shape_str = _move_to_next_line(shape_str, s, line_width, prefix)
+    else:
+        shape_str = ""
+
+    return prefix + s + shape_str + dtype_str + suffix
