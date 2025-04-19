@@ -14,3 +14,6 @@
 
 # Transition from clang-format 11 to clang-format 18
 b37657e6ad9af16eaec2982d8e2397acd2af2881
+
+# Add cython-lint to pre-commit config
+0ce1aef210ffb88b7d2ea3a89e861486498f652f

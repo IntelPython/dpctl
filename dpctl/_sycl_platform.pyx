@@ -238,8 +238,8 @@ cdef class SyclPlatform(_SyclPlatform):
         Args:
             verbosity (Literal[0, 1, 2], optional):.
                 The verbosity controls how much information is printed by the
-                function. Value ``0`` is the lowest level set by default and ``2``
-                is the highest level to print the most verbose output.
+                function. Value ``0`` is the lowest level set by default and
+                ``2`` is the highest level to print the most verbose output.
                 Default: ``0``
         """
         cdef size_t v = 0
@@ -367,7 +367,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     def __hash__(self):
         """
-        Returns a hash value by hashing the underlying ``sycl::platform`` object.
+        Returns a hash value by hashing the underlying ``sycl::platform``
+        object.
 
         Returns:
             int:
@@ -579,11 +580,11 @@ def lsplatform(verbosity=0):
             if v != 0:
                 print("Platform ", i, "::")
             PRef = DPCTLPlatformVector_GetAt(PVRef, i)
-            info_str = DPCTLPlatformMgr_GetInfo(PRef,v)
+            info_str = DPCTLPlatformMgr_GetInfo(PRef, v)
             py_info = <bytes> info_str
             DPCTLCString_Delete(info_str)
             DPCTLPlatform_Delete(PRef)
-            print(py_info.decode("utf-8"),end='')
+            print(py_info.decode("utf-8"), end="")
     DPCTLPlatformVector_Delete(PVRef)
 
 

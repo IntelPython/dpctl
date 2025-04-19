@@ -150,14 +150,14 @@ cdef class Flags:
         out = []
         for name in "C_CONTIGUOUS", "F_CONTIGUOUS", "WRITABLE":
             out.append("  {} : {}".format(name, self[name]))
-        return '\n'.join(out)
+        return "\n".join(out)
 
     def __eq__(self, other):
         cdef Flags other_
         if isinstance(other, self.__class__):
-           other_ = <Flags>other
-           return self.flags_ == other_.flags_
+            other_ = <Flags>other
+            return self.flags_ == other_.flags_
         elif isinstance(other, int):
-           return self.flags_ == <int>other
+            return self.flags_ == <int>other
         else:
-           return False
+            return False

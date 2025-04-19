@@ -20,7 +20,8 @@ cdef bint _valid_usm_ptr_and_context(DPCTLSyclUSMRef ptr, SyclContext ctx):
 
 
 cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(
-    DPCTLSyclUSMRef ptr, SyclQueue q):
+    DPCTLSyclUSMRef ptr, SyclQueue q
+):
     """ Check that USM ptr is consistent with SYCL context in the queue,
     and return a copy of QueueRef if so, or NULL otherwise.
     """
@@ -32,7 +33,8 @@ cdef DPCTLSyclQueueRef _queue_ref_copy_from_SyclQueue(
 
 
 cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
-    DPCTLSyclUSMRef ptr, SyclContext ctx):
+    DPCTLSyclUSMRef ptr, SyclContext ctx
+):
     """ Obtain device from pointer and sycl context, use
         context and device to create a queue from which this memory
         can be accessible.
@@ -44,7 +46,8 @@ cdef DPCTLSyclQueueRef _queue_ref_copy_from_USMRef_and_SyclContext(
 
 
 cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
-    DPCTLSyclUSMRef ptr, object syclobj):
+        DPCTLSyclUSMRef ptr, object syclobj
+):
     """ Constructs queue from pointer and syclobject from
         __sycl_usm_array_interface__
     """
@@ -78,8 +81,9 @@ cdef DPCTLSyclQueueRef get_queue_ref_from_ptr_and_syclobj(
 
 
 cdef object _pointers_from_shape_and_stride(
-    int nd, object ary_shape, Py_ssize_t itemsize, Py_ssize_t ary_offset,
-    object ary_strides):
+    int nd, object ary_shape, Py_ssize_t itemsize,
+    Py_ssize_t ary_offset, object ary_strides
+):
     """
     Internal utility: for given array data about shape/layout/element
     compute left-most displacement when enumerating all elements of the array
@@ -141,13 +145,13 @@ cdef class _USMBufferData:
 
     @staticmethod
     cdef _USMBufferData from_sycl_usm_ary_iface(dict ary_iface):
-        cdef object ary_data_tuple = ary_iface.get('data', None)
-        cdef object ary_typestr = ary_iface.get('typestr', None)
-        cdef object ary_shape = ary_iface.get('shape', None)
-        cdef object ary_strides = ary_iface.get('strides', None)
-        cdef object ary_syclobj = ary_iface.get('syclobj', None)
-        cdef Py_ssize_t ary_offset = ary_iface.get('offset', 0)
-        cdef int ary_version = ary_iface.get('version', 0)
+        cdef object ary_data_tuple = ary_iface.get("data", None)
+        cdef object ary_typestr = ary_iface.get("typestr", None)
+        cdef object ary_shape = ary_iface.get("shape", None)
+        cdef object ary_strides = ary_iface.get("strides", None)
+        cdef object ary_syclobj = ary_iface.get("syclobj", None)
+        cdef Py_ssize_t ary_offset = ary_iface.get("offset", 0)
+        cdef int ary_version = ary_iface.get("version", 0)
         cdef size_t arr_data_ptr = 0
         cdef DPCTLSyclUSMRef memRef = NULL
         cdef Py_ssize_t itemsize = -1

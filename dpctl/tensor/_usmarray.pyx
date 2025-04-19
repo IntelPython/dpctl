@@ -18,8 +18,6 @@
 # cython: language_level=3
 # cython: linetrace=True
 
-import sys
-
 import numpy as np
 
 import dpctl
@@ -55,7 +53,8 @@ include "_slicing.pxi"
 
 class DLDeviceType(IntEnum):
     """
-    An :class:`enum.IntEnum` for the types of DLDevices supported by the DLPack protocol.
+    An :class:`enum.IntEnum` for the types of DLDevices supported by the DLPack
+    protocol.
 
         ``kDLCPU``:
             CPU (host) device
@@ -149,7 +148,9 @@ cdef bint _is_host_cpu(object dl_device):
     return (dl_type == DLDeviceType.kDLCPU) and (dl_id == 0)
 
 
-cdef void _validate_and_use_stream(object stream, c_dpctl.SyclQueue self_queue) except *:
+cdef void _validate_and_use_stream(
+    object stream, c_dpctl.SyclQueue self_queue
+) except *:
     if (stream is None or stream == self_queue):
         pass
     else:
@@ -258,8 +259,8 @@ cdef class usm_ndarray:
             PyMem_Free(self.strides_)
         self._reset()
 
-    def __cinit__(self, shape, dtype=None, strides=None, buffer='device',
-                  Py_ssize_t offset=0, order='C',
+    def __cinit__(self, shape, dtype=None, strides=None, buffer="device",
+                  Py_ssize_t offset=0, order="C",
                   buffer_ctor_kwargs=dict(),
                   array_namespace=None):
         """
@@ -285,8 +286,8 @@ cdef class usm_ndarray:
 
         self._reset()
         if not isinstance(shape, (list, tuple)):
-            if hasattr(shape, 'tolist'):
-                fn = getattr(shape, 'tolist')
+            if hasattr(shape, "tolist"):
+                fn = getattr(shape, "tolist")
                 if callable(fn):
                     shape = shape.tolist()
             if not isinstance(shape, (list, tuple)):
@@ -312,13 +313,22 @@ cdef class usm_ndarray:
         typenum = dtype_to_typenum(dtype)
         if (typenum < 0):
             if typenum == -2:
-                raise ValueError("Data type '" + str(dtype) + "' can only have native byteorder.")
+                raise ValueError(
+                    "Data type '" + str(dtype) +
+                    "' can only have native byteorder."
+                )
             elif typenum == -1:
-                raise ValueError("Data type '" + str(dtype) + "' is not understood.")
-            raise TypeError(f"Expected string or a dtype object, got {type(dtype)}")
+                raise ValueError(
+                    "Data type '" + str(dtype) + "' is not understood."
+                )
+            raise TypeError(
+                f"Expected string or a dtype object, got {type(dtype)}"
+            )
         itemsize = type_bytesize(typenum)
         if (itemsize < 1):
-            raise TypeError("dtype=" + np.dtype(dtype).name + " is not supported.")
+            raise TypeError(
+                "dtype=" + np.dtype(dtype).name + " is not supported."
+            )
         # allocate host C-arrays for shape, strides
         err = _from_input_shape_strides(
             nd, shape, strides, itemsize, <char> ord(order),
@@ -360,10 +370,11 @@ cdef class usm_ndarray:
             else:
                 self._cleanup()
                 raise ValueError(
-                    ("buffer='{}' is not understood. "
+                    "buffer='{}' is not understood. "
                     "Recognized values are 'device', 'shared',  'host', "
                     "an instance of `MemoryUSM*` object, or a usm_ndarray"
-                     "").format(buffer))
+                    "".format(buffer)
+                )
         elif isinstance(buffer, usm_ndarray):
             if not buffer.flags.writable:
                 writable_flag = 0
@@ -379,7 +390,8 @@ cdef class usm_ndarray:
         is_fp64 = (typenum == UAR_DOUBLE or typenum == UAR_CDOUBLE)
         is_fp16 = (typenum == UAR_HALF)
         if (is_fp64 or is_fp16):
-            if ((is_fp64 and not _buffer.sycl_device.has_aspect_fp64) or
+            if (
+                (is_fp64 and not _buffer.sycl_device.has_aspect_fp64) or
                 (is_fp16 and not _buffer.sycl_device.has_aspect_fp16)
             ):
                 raise ValueError(
@@ -419,8 +431,8 @@ cdef class usm_ndarray:
 
     @property
     def _element_offset(self):
-        """Returns the offset of the zero-index element of the array, in elements,
-        relative to the start of memory allocation"""
+        """Returns the offset of the zero-index element of the array, in
+        elements, relative to the start of memory allocation"""
         return self.get_offset()
 
     @property
@@ -452,26 +464,30 @@ cdef class usm_ndarray:
         cdef int it = 0
         cdef Py_ssize_t _itemsize = self.get_itemsize()
 
-        if ((self.flags_ & USM_ARRAY_C_CONTIGUOUS) or (self.flags_ & USM_ARRAY_F_CONTIGUOUS)):
+        if (
+            (self.flags_ & USM_ARRAY_C_CONTIGUOUS)
+            or (self.flags_ & USM_ARRAY_F_CONTIGUOUS)
+        ):
             return (
                 self._pointer,
-                self._pointer + shape_to_elem_count(self.nd_, self.shape_) * _itemsize
+                self._pointer + shape_to_elem_count(
+                    self.nd_, self.shape_
+                ) * _itemsize
             )
 
         for it in range(self.nd_):
-           dim_ = self.shape[it]
-           if dim_ > 0:
-               step_ = self.strides[it]
-               if step_ > 0:
-                   max_disp += step_ * (dim_ - 1)
-               else:
-                   min_disp += step_ * (dim_ - 1)
+            dim_ = self.shape[it]
+            if dim_ > 0:
+                step_ = self.strides[it]
+                if step_ > 0:
+                    max_disp += step_ * (dim_ - 1)
+                else:
+                    min_disp += step_ * (dim_ - 1)
 
         return (
             self._pointer + min_disp * _itemsize,
             self._pointer + (max_disp + 1) * _itemsize
         )
-
 
     cdef char* get_data(self):
         """Returns the USM pointer for this array."""
@@ -564,30 +580,30 @@ cdef class usm_ndarray:
                 )
             )
         ary_iface = self.base_.__sycl_usm_array_interface__
-        mem_ptr = <char *>(<size_t> ary_iface['data'][0])
+        mem_ptr = <char *>(<size_t> ary_iface["data"][0])
         ary_ptr = <char *>(<size_t> self.data_)
         ro_flag = False if (self.flags_ & USM_ARRAY_WRITABLE) else True
-        ary_iface['data'] = (<size_t> mem_ptr, ro_flag)
-        ary_iface['shape'] = self.shape
+        ary_iface["data"] = (<size_t> mem_ptr, ro_flag)
+        ary_iface["shape"] = self.shape
         if (self.strides_):
-            ary_iface['strides'] = _make_int_tuple(self.nd_, self.strides_)
+            ary_iface["strides"] = _make_int_tuple(self.nd_, self.strides_)
         else:
             if (self.flags_ & USM_ARRAY_C_CONTIGUOUS):
-                ary_iface['strides'] = None
+                ary_iface["strides"] = None
             elif (self.flags_ & USM_ARRAY_F_CONTIGUOUS):
-                ary_iface['strides'] = _f_contig_strides(self.nd_, self.shape_)
+                ary_iface["strides"] = _f_contig_strides(self.nd_, self.shape_)
             else:
                 raise InternalUSMArrayError(
                     "USM Array is not contiguous and has empty strides"
                 )
-        ary_iface['typestr'] = _make_typestr(self.typenum_)
+        ary_iface["typestr"] = _make_typestr(self.typenum_)
         byte_offset = ary_ptr - mem_ptr
         item_size = self.get_itemsize()
         if (byte_offset % item_size):
             raise InternalUSMArrayError(
                 "byte_offset is not a multiple of item_size.")
         elem_offset = byte_offset // item_size
-        ary_iface['offset'] = elem_offset
+        ary_iface["offset"] = elem_offset
         # must wait for content of the memory to finalize
         self.sycl_queue.wait()
         return ary_iface
@@ -818,7 +834,8 @@ cdef class usm_ndarray:
     @property
     def sycl_device(self):
         """
-        Returns :class:`dpctl.SyclDevice` object on which USM data was allocated.
+        Returns :class:`dpctl.SyclDevice` object on which USM data
+        was allocated.
         """
         q = self.sycl_queue
         return q.sycl_device
@@ -975,12 +992,18 @@ cdef class usm_ndarray:
                     if not key_shape[i] == arr_shape[i] and key_shape[i] > 0:
                         matching = 0
             if not matching:
-                raise IndexError("boolean index did not match indexed array in dimensions")
+                raise IndexError(
+                    "boolean index did not match indexed array in dimensions"
+                )
             res = _extract_impl(res, key_, axis=adv_ind_start_p)
             res.flags_ = _copy_writable(res.flags_, self.flags_)
             return res
 
-        if any((isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool) for ind in adv_ind):
+        if any(
+            (
+                isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool
+            ) for ind in adv_ind
+        ):
             adv_ind_int = list()
             for ind in adv_ind:
                 if isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool:
@@ -1097,7 +1120,11 @@ cdef class usm_ndarray:
                 raise TypeError(f"Expected type str, got {type(api_version)}")
             if api_version != __array_api_version__:
                 raise ValueError(f"Only {__array_api_version__} is supported")
-        return self.array_namespace_ if self.array_namespace_ is not None else dpctl.tensor
+        return (
+            self.array_namespace_
+            if self.array_namespace_ is not None
+            else dpctl.tensor
+        )
 
     def __bool__(self):
         if self.size == 1:
@@ -1160,7 +1187,9 @@ cdef class usm_ndarray:
         "Implementation for operator.and"
         return dpctl.tensor.bitwise_and(self, other)
 
-    def __dlpack__(self, *, stream=None, max_version=None, dl_device=None, copy=None):
+    def __dlpack__(
+        self, *, stream=None, max_version=None, dl_device=None, copy=None
+    ):
         """
         Produces DLPack capsule.
 
@@ -1232,27 +1261,32 @@ cdef class usm_ndarray:
                             f"got {dl_device}"
                         )
                     if dl_device != self.__dlpack_device__():
-                        if copy == False:
+                        if copy is False:
                             raise BufferError(
-                                "array cannot be placed on the requested device without a copy"
+                                "array cannot be placed on the requested "
+                                "device without a copy"
                             )
                         if _is_host_cpu(dl_device):
                             if stream is not None:
                                 raise ValueError(
-                                    "`stream` must be `None` when `dl_device` is of type `kDLCPU`"
+                                    "`stream` must be `None` when `dl_device` "
+                                    "is of type `kDLCPU`"
                                 )
                             from ._copy_utils import _copy_to_numpy
                             _arr = _copy_to_numpy(self)
                             _arr.flags["W"] = self.flags["W"]
-                            return c_dlpack.numpy_to_dlpack_versioned_capsule(_arr, True)
+                            return c_dlpack.numpy_to_dlpack_versioned_capsule(
+                                _arr, True
+                            )
                         else:
                             raise BufferError(
-                                f"targeting `dl_device` {dl_device} with `__dlpack__` is not "
-                                "yet implemented"
+                                f"targeting `dl_device` {dl_device} with "
+                                "`__dlpack__` is not yet implemented"
                             )
                 if copy is None:
                     copy = False
-                # TODO: strategy for handling stream on different device from dl_device
+                # TODO: strategy for handling stream on different device
+                # from dl_device
                 if copy:
                     _validate_and_use_stream(stream, self.sycl_queue)
                     nbytes = self.usm_data.nbytes
@@ -1268,7 +1302,9 @@ cdef class usm_ndarray:
                         offset=self.get_offset()
                     )
                     _copied_arr.flags_ = self.flags_
-                    _caps = c_dlpack.to_dlpack_versioned_capsule(_copied_arr, copy)
+                    _caps = c_dlpack.to_dlpack_versioned_capsule(
+                        _copied_arr, copy
+                    )
                 else:
                     _caps = c_dlpack.to_dlpack_versioned_capsule(self, copy)
                     _validate_and_use_stream(stream, self.sycl_queue)
@@ -1284,10 +1320,12 @@ cdef class usm_ndarray:
         Gives a tuple (``device_type``, ``device_id``) corresponding to
         ``DLDevice`` entry in ``DLTensor`` in DLPack protocol.
 
-        The tuple describes the non-partitioned device where the array has been allocated,
-        or the non-partitioned parent device of the allocation device.
+        The tuple describes the non-partitioned device where the array has been
+        allocated, or the non-partitioned parent device of the allocation
+        device.
 
-        See ``DLDeviceType`` for a list of devices supported by the DLPack protocol.
+        See ``DLDeviceType`` for a list of devices supported by the DLPack
+        protocol.
 
         Raises:
             DLPackCreationError:
@@ -1297,7 +1335,8 @@ cdef class usm_ndarray:
             dev_id = self.sycl_device.get_device_id()
         except ValueError as e:
             raise c_dlpack.DLPackCreationError(
-                "Could not determine id of the device where array was allocated."
+                "Could not determine id of the device where array was "
+                "allocated."
             )
         return (
             DLDeviceType.kDLOneAPI,
@@ -1434,7 +1473,11 @@ cdef class usm_ndarray:
             _place_impl(Xv, adv_ind[0], rhs, axis=adv_ind_start_p)
             return
 
-        if any((isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool) for ind in adv_ind):
+        if any(
+            (
+                isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool
+            ) for ind in adv_ind
+        ):
             adv_ind_int = list()
             for ind in adv_ind:
                 if isinstance(ind, usm_ndarray) and ind.dtype == dpt_bool:
@@ -1446,7 +1489,6 @@ cdef class usm_ndarray:
 
         _put_multi_index(Xv, adv_ind, adv_ind_start_p, rhs)
         return
-
 
     def __sub__(self, other):
         return dpctl.tensor.subtract(self, other)
@@ -1581,7 +1623,7 @@ cdef usm_ndarray _real_view(usm_ndarray ary):
         strides=tuple(2 * si for si in ary.strides),
         buffer=ary.base_,
         offset=offset_elems,
-        order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
+        order=("C" if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else "F")
     )
     r.flags_ = _copy_writable(r.flags_, ary.flags_)
     r.array_namespace_ = ary.array_namespace_
@@ -1613,7 +1655,7 @@ cdef usm_ndarray _imag_view(usm_ndarray ary):
         strides=tuple(2 * si for si in ary.strides),
         buffer=ary.base_,
         offset=offset_elems,
-        order=('C' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'F')
+        order=("C" if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else "F")
     )
     r.flags_ = _copy_writable(r.flags_, ary.flags_)
     r.array_namespace_ = ary.array_namespace_
@@ -1632,7 +1674,7 @@ cdef usm_ndarray _transpose(usm_ndarray ary):
             _make_reversed_int_tuple(ary.nd_, ary.strides_)
             if (ary.strides_) else None),
         buffer=ary.base_,
-        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
+        order=("F" if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else "C"),
         offset=ary.get_offset()
     )
     r.flags_ = _copy_writable(r.flags_, ary.flags_)
@@ -1649,7 +1691,7 @@ cdef usm_ndarray _m_transpose(usm_ndarray ary):
         dtype=_make_typestr(ary.typenum_),
         strides=_swap_last_two(ary.strides),
         buffer=ary.base_,
-        order=('F' if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else 'C'),
+        order=("F" if (ary.flags_ & USM_ARRAY_C_CONTIGUOUS) else "C"),
         offset=ary.get_offset()
     )
     r.flags_ = _copy_writable(r.flags_, ary.flags_)
@@ -1780,9 +1822,12 @@ cdef api object UsmNDArray_MakeSimpleFromPtr(
     """
     cdef int itemsize = type_bytesize(typenum)
     if (itemsize < 1):
-        raise ValueError("dtype with typenum=" + str(typenum) + " is not supported.")
+        raise ValueError(
+            "dtype with typenum=" + str(typenum) + " is not supported."
+        )
     cdef size_t nbytes = (<size_t> itemsize) * nelems
-    cdef c_dpmem._Memory mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
+    cdef c_dpmem._Memory mobj
+    mobj = c_dpmem._Memory.create_from_usm_pointer_size_qref(
         ptr, nbytes, QRef, memory_owner=owner
     )
     cdef usm_ndarray arr = usm_ndarray(
@@ -1821,7 +1866,6 @@ cdef api object UsmNDArray_MakeFromPtr(
         Created usm_ndarray instance
     """
     cdef int itemsize = type_bytesize(typenum)
-    cdef int err = 0
     cdef size_t nelems = 1
     cdef Py_ssize_t min_disp = 0
     cdef Py_ssize_t max_disp = 0
@@ -1834,7 +1878,9 @@ cdef api object UsmNDArray_MakeFromPtr(
     cdef object obj_strides
 
     if (itemsize < 1):
-        raise ValueError("dtype with typenum=" + str(typenum) + " is not supported.")
+        raise ValueError(
+            "dtype with typenum=" + str(typenum) + " is not supported."
+        )
     if (nd < 0):
         raise ValueError("Dimensionality must be non-negative")
     if (ptr is NULL or QRef is NULL):
@@ -1901,5 +1947,5 @@ cdef api object UsmNDArray_MakeFromPtr(
 
 
 def _is_object_with_buffer_protocol(o):
-   "Returns True if object supports Python buffer protocol"
-   return _is_buffer(o)
+    "Returns True if object supports Python buffer protocol"
+    return _is_buffer(o)

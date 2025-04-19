@@ -17,17 +17,11 @@
 # cython: language_level=3
 # distutils: language=c++
 
-cimport numpy as cnp
-from cython cimport floating
-
 cimport dpctl as c_dpctl
 cimport dpctl.tensor as c_dpt
 from dpctl.sycl cimport queue as dpcpp_queue
 from dpctl.sycl cimport unwrap_queue
 
-import numpy as np
-
-import dpctl
 import dpctl.tensor as dpt
 
 
@@ -56,7 +50,8 @@ cdef extern from "sycl_blackscholes.hpp":
 def black_scholes_price(c_dpt.usm_ndarray option_params_arr):
     """black_scholes_price(params)
 
-    Applies Black-Scholes-Merton formula to compute call and put European option prices.
+    Applies Black-Scholes-Merton formula to compute call and put European
+    option prices.
 
     Args:
         option_params_arr: usm_ndarray
@@ -64,12 +59,11 @@ def black_scholes_price(c_dpt.usm_ndarray option_params_arr):
             (price, strike, maturity, rate, volatility) per each option.
     Returns:
         usm_ndarray
-            Floating point array with shape (n_opts, 2) containing (call_price, put_price)
-            per each option.
+            Floating point array with shape (n_opts, 2) containing
+            (call_price, put_price) per each option.
     """
     cdef size_t n_opts = 0
     cdef size_t n_params = 0
-    cdef size_t n_bytes = 0
     cdef c_dpctl.SyclQueue q
     cdef dpcpp_queue* exec_q_ptr = NULL
     cdef c_dpt.usm_ndarray call_put_prices
@@ -103,14 +97,14 @@ def black_scholes_price(c_dpt.usm_ndarray option_params_arr):
     typenum_ = option_params_arr.get_typenum()
 
     if (typenum_ == c_dpt.UAR_DOUBLE):
-        call_put_prices = dpt.empty((n_opts, 2), dtype='d', sycl_queue=q)
+        call_put_prices = dpt.empty((n_opts, 2), dtype="d", sycl_queue=q)
         dp1 = <double *>option_params_arr.get_data()
         dp2 = <double *>call_put_prices.get_data()
         # ensure content of dp1 and dp2 is no longer worked on
         exec_q_ptr[0].wait()
         cpp_blackscholes[double](exec_q_ptr[0], n_opts, dp1, dp2)
     elif (typenum_ == c_dpt.UAR_FLOAT):
-        call_put_prices = dpt.empty((n_opts, 2), dtype='f', sycl_queue=q)
+        call_put_prices = dpt.empty((n_opts, 2), dtype="f", sycl_queue=q)
         fp1 = <float *>option_params_arr.get_data()
         fp2 = <float *>call_put_prices.get_data()
         # ensure content of fp1 and fp2 is no longer worked on
@@ -168,7 +162,6 @@ def populate_params(
     """
     cdef size_t n_opts = 0
     cdef size_t n_params = 0
-    cdef c_dpctl.SyclQueue sycl_queue
     cdef dpcpp_queue* exec_q_ptr = NULL
     cdef double* dp = NULL
     cdef float* fp = NULL
@@ -202,13 +195,15 @@ def populate_params(
         dp = <double *>option_params_arr.get_data()
         exec_q_ptr[0].wait()
         cpp_populate_params[double](
-            exec_q_ptr[0], n_opts, dp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
+            exec_q_ptr[0], n_opts, dp, pl, ph,
+            sl, sh, tl, th, rl, rh, vl, vh, seed
         )
     elif (typenum_ == c_dpt.UAR_FLOAT):
         fp = <float *>option_params_arr.get_data()
         exec_q_ptr[0].wait()
         cpp_populate_params[float](
-            exec_q_ptr[0], n_opts, fp, pl, ph, sl, sh, tl, th, rl, rh, vl, vh, seed
+            exec_q_ptr[0], n_opts, fp, pl, ph,
+            sl, sh, tl, th, rl, rh, vl, vh, seed
         )
     else:
         raise ValueError("Unsupported data-type")

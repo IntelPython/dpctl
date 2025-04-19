@@ -38,7 +38,6 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLDevice_Copy,
     DPCTLEvent_Delete,
     DPCTLEvent_Wait,
-    DPCTLfree_with_queue,
     DPCTLmalloc_device,
     DPCTLmalloc_host,
     DPCTLmalloc_shared,
@@ -84,6 +83,7 @@ cdef extern from "_opaque_smart_ptr.hpp":
     void OpaqueSmartPtr_Delete(void *) nogil
     void * OpaqueSmartPtr_Get(void *) nogil
 
+
 class USMAllocationError(Exception):
     """
     An exception raised when Universal Shared Memory (USM) allocation
@@ -127,7 +127,8 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
         1
     )
     DPCTLEvent_Delete(E1Ref)
-    with nogil: DPCTLEvent_Wait(E2Ref)
+    with nogil:
+        DPCTLEvent_Wait(E2Ref)
     DPCTLEvent_Delete(E2Ref)
 
 
@@ -178,25 +179,31 @@ cdef class _Memory:
             QRef = queue.get_queue_ref()
             if (ptr_type == b"shared"):
                 if alignment > 0:
-                    with nogil: p = DPCTLaligned_alloc_shared(
-                        alignment, nbytes, QRef
-                    )
+                    with nogil:
+                        p = DPCTLaligned_alloc_shared(
+                            alignment, nbytes, QRef
+                        )
                 else:
-                    with nogil: p = DPCTLmalloc_shared(nbytes, QRef)
+                    with nogil:
+                        p = DPCTLmalloc_shared(nbytes, QRef)
             elif (ptr_type == b"host"):
                 if alignment > 0:
-                    with nogil: p = DPCTLaligned_alloc_host(
-                        alignment, nbytes, QRef
-                    )
+                    with nogil:
+                        p = DPCTLaligned_alloc_host(
+                            alignment, nbytes, QRef
+                        )
                 else:
-                    with nogil: p = DPCTLmalloc_host(nbytes, QRef)
+                    with nogil:
+                        p = DPCTLmalloc_host(nbytes, QRef)
             elif (ptr_type == b"device"):
                 if (alignment > 0):
-                    with nogil: p = DPCTLaligned_alloc_device(
-                        alignment, nbytes, QRef
-                    )
+                    with nogil:
+                        p = DPCTLaligned_alloc_device(
+                            alignment, nbytes, QRef
+                        )
                 else:
-                    with nogil: p = DPCTLmalloc_device(nbytes, QRef)
+                    with nogil:
+                        p = DPCTLmalloc_device(nbytes, QRef)
             else:
                 raise RuntimeError(
                     "Pointer type '{}' is not recognized".format(
@@ -232,7 +239,7 @@ cdef class _Memory:
                 self._memory_ptr = other_mem._memory_ptr
                 self._opaque_ptr = OpaqueSmartPtr_Copy(other_mem._opaque_ptr)
                 self.refobj = None
-        elif hasattr(other, '__sycl_usm_array_interface__'):
+        elif hasattr(other, "__sycl_usm_array_interface__"):
             other_iface = other.__sycl_usm_array_interface__
             if isinstance(other_iface, dict):
                 other_buf = _USMBufferData.from_sycl_usm_ary_iface(other_iface)
@@ -272,7 +279,7 @@ cdef class _Memory:
         if UsmTy == _usm_type._USM_DEVICE:
             raise ValueError("USM Device memory is not host accessible")
         buffer.buf = <void *>self._memory_ptr
-        buffer.format = 'B'                     # byte
+        buffer.format = "B"                     # byte
         buffer.internal = NULL                  # see References
         buffer.itemsize = 1
         buffer.len = self.nbytes
@@ -410,7 +417,6 @@ cdef class _Memory:
         to query against ``self.sycl_context`` - the context used to create the
         allocation.
         """
-        cdef const char* kind
         cdef SyclContext ctx
         cdef SyclQueue q
         if syclobj is None:
@@ -443,7 +449,6 @@ cdef class _Memory:
         to query against ``self.sycl_context`` - the context used to create the
         allocation.
         """
-        cdef const char* kind
         cdef SyclContext ctx
         cdef SyclQueue q
         if syclobj is None:
@@ -493,7 +498,8 @@ cdef class _Memory:
             <void *>self._memory_ptr,  # source
             <size_t>self.nbytes
         )
-        with nogil: DPCTLEvent_Wait(ERef)
+        with nogil:
+            DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
         return obj
@@ -518,7 +524,8 @@ cdef class _Memory:
             <void *>&host_buf[0],      # source
             <size_t>buf_len
         )
-        with nogil: DPCTLEvent_Wait(ERef)
+        with nogil:
+            DPCTLEvent_Wait(ERef)
         DPCTLEvent_Delete(ERef)
 
     cpdef copy_from_device(self, object sycl_usm_ary):
@@ -532,7 +539,7 @@ cdef class _Memory:
         cdef SyclQueue this_queue = None
         cdef SyclQueue src_queue = None
 
-        if not hasattr(sycl_usm_ary, '__sycl_usm_array_interface__'):
+        if not hasattr(sycl_usm_ary, "__sycl_usm_array_interface__"):
             raise ValueError(
                 "Object does not implement "
                 "`__sycl_usm_array_interface__` protocol"
@@ -560,12 +567,13 @@ cdef class _Memory:
                     <void *>src_buf.p,
                     <size_t>src_buf.nbytes
                 )
-                with nogil: DPCTLEvent_Wait(ERef)
+                with nogil:
+                    DPCTLEvent_Wait(ERef)
                 DPCTLEvent_Delete(ERef)
             else:
                 copy_via_host(
-                    <void *>self._memory_ptr, this_queue, # dest
-                    <void *>src_buf.p, src_queue,         # src
+                    <void *>self._memory_ptr, this_queue,  # dest
+                    <void *>src_buf.p, src_queue,          # src
                     <size_t>src_buf.nbytes
                 )
         else:
@@ -643,13 +651,13 @@ cdef class _Memory:
             p, ctx.get_context_ref()
         )
         if usm_ty == _usm_type._USM_DEVICE:
-            return b'device'
+            return b"device"
         elif usm_ty == _usm_type._USM_SHARED:
-            return b'shared'
+            return b"shared"
         elif usm_ty == _usm_type._USM_HOST:
-            return b'host'
+            return b"host"
         else:
-            return b'unknown'
+            return b"unknown"
 
     @staticmethod
     cdef _usm_type get_pointer_type_enum(DPCTLSyclUSMRef p, SyclContext ctx):
@@ -930,6 +938,7 @@ def as_usm_memory(obj):
             "USM allocation represented by argument {}".
             format(obj)
         )
+
 
 cdef api void * Memory_GetOpaquePointer(_Memory obj):
     "Opaque pointer value"

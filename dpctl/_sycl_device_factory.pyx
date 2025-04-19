@@ -437,7 +437,7 @@ cdef class _DefaultDeviceCache:
 
 
 _global_default_device_cache = ContextVar(
-    'global_default_device_cache',
+    "global_default_device_cache",
     default=_DefaultDeviceCache()
 )
 
@@ -452,5 +452,6 @@ cpdef SyclDevice _cached_default_device():
     """
     cdef _DefaultDeviceCache _cache = _global_default_device_cache.get()
     d_, changed_ = _cache.get_or_create()
-    if changed_: _global_default_device_cache.set(_cache)
+    if changed_:
+        _global_default_device_cache.set(_cache)
     return d_

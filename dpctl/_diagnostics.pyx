@@ -25,8 +25,8 @@ import os
 
 
 cdef extern from "syclinterface/dpctl_service.h":
-   cdef void DPCTLService_InitLogger(const char *, const char *)
-   cdef void DPCTLService_ShutdownLogger()
+    cdef void DPCTLService_InitLogger(const char *, const char *)
+    cdef void DPCTLService_ShutdownLogger()
 
 
 def _init_logger(log_dir=None):
@@ -62,7 +62,7 @@ def syclinterface_diagnostics(verbosity="warning", log_dir=None):
     function calls.
     """
     _allowed_verbosity = ["warning", "error"]
-    if not verbosity in _allowed_verbosity:
+    if verbosity not in _allowed_verbosity:
         raise ValueError(
             f"Verbosity argument not understood. "
             f"Permitted values are {_allowed_verbosity}"

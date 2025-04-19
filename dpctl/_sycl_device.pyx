@@ -85,7 +85,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDeviceMgr_GetDeviceInfoStr,
-    DPCTLDeviceMgr_GetDevices,
     DPCTLDeviceMgr_GetPositionInDevices,
     DPCTLDeviceMgr_GetRelativeId,
     DPCTLDeviceSelector_Delete,
@@ -348,7 +347,7 @@ cdef class SyclDevice(_SyclDevice):
             if ret == -1:
                 raise SyclDeviceCreationError(
                     "Could not create a SyclDevice with the selector string "
-		            "'{selector_string}'".format(selector_string=arg)
+                    "'{selector_string}'".format(selector_string=arg)
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
@@ -810,7 +809,6 @@ cdef class SyclDevice(_SyclDevice):
         cdef _aspect_type AT = _aspect_type._is_component
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
-
     @property
     def has_aspect_is_composite(self):
         """ Returns ``True`` if this device is a composite device, ``False``
@@ -1113,8 +1111,8 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def sub_group_independent_forward_progress(self):
-        """ Returns ``True`` if the device supports independent forward progress of
-        sub-groups with respect to other sub-groups in the same work-group.
+        """ Returns ``True`` if the device supports independent forward progress
+        of sub-groups with respect to other sub-groups in the same work-group.
 
         Returns:
             bool:
@@ -1155,7 +1153,7 @@ cdef class SyclDevice(_SyclDevice):
             DPCTLSize_t_Array_Delete(sg_sizes)
             return res
         else:
-           return []
+            return []
 
     @property
     def sycl_platform(self):
@@ -1667,19 +1665,20 @@ cdef class SyclDevice(_SyclDevice):
 
                 - Specifying an int (``count``)
                     The returned list contains as
-                    many sub-devices as can be created such that each sub-device
-                    contains ``count`` compute units. If the device’s total number
-                    of compute units is not evenly divided by ``count``, then the
-                    remaining compute units are not included in any of the
-                    sub-devices.
+                    many sub-devices as can be created such that each
+                    sub-device contains ``count`` compute units. If the
+                    device’s total number of compute units is not evenly
+                    divided by ``count``, then the remaining compute units
+                    are not included in any of the sub-devices.
 
                 - Specifying an affinity domain as a string
-                    The supported values are: ``"numa"``, ``"L4_cache"``, ``"L3_cache"``,
-                    ``"L2_cache"``, ``"L1_cache"``, ``"next_partitionable"``.
+                    The supported values are: ``"numa"``, ``"L4_cache"``,
+                    ``"L3_cache"``, ``"L2_cache"``, ``"L1_cache"``,
+                    ``"next_partitionable"``.
 
                 - Specifying a collection of integral values
-                    For each non-zero value ``M`` in the collection, a sub-device with ``M``
-                    compute units is created.
+                    For each non-zero value ``M`` in the collection, a
+                    sub-device with ``M`` compute units is created.
 
         Returns:
             List[:class:`dpctl.SyclDevice`]:
@@ -1816,7 +1815,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef uint32_t clock_fr = DPCTLDevice_GetMaxClockFrequency(
             self._device_ref
-	)
+        )
         return clock_fr
 
     @property
@@ -1829,7 +1828,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef uint64_t max_alloc_sz = DPCTLDevice_GetMaxMemAllocSize(
             self._device_ref
-	)
+        )
         return max_alloc_sz
 
     @property
@@ -1875,7 +1874,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef uint64_t cache_sz = DPCTLDevice_GetGlobalMemCacheSize(
             self._device_ref
-	)
+        )
         return cache_sz
 
     @property
@@ -1888,7 +1887,7 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef uint64_t cache_line_sz = DPCTLDevice_GetGlobalMemCacheLineSize(
             self._device_ref
-	    )
+        )
         return cache_line_sz
 
     @property
@@ -1957,9 +1956,6 @@ cdef class SyclDevice(_SyclDevice):
                 assert level_zero_gpu == dev
         """
         cdef DPCTLSyclDeviceRef pDRef = NULL
-        cdef _backend_type BTy
-        cdef _device_type DTy
-        cdef int64_t relId = -1
         pDRef = DPCTLDevice_GetParentDevice(self._device_ref)
         if (pDRef is NULL):
             return _cached_filter_string(self)

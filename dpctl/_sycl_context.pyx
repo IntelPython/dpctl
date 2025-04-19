@@ -35,8 +35,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLContext_DeviceCount,
     DPCTLContext_GetDevices,
     DPCTLContext_Hash,
-    DPCTLDevice_Copy,
-    DPCTLDevice_Delete,
     DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceVector_CreateFromArray,
     DPCTLDeviceVector_Delete,
@@ -216,7 +214,6 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_context_from_devices(self, object devices, int props):
         cdef int num_devices = len(devices)
         cdef int i = 0
-        cdef int j = 0
         cdef size_t num_bytes
         cdef DPCTLDeviceVectorRef DVRef = NULL
         cdef error_handler_callback * eh_callback = NULL
@@ -289,7 +286,7 @@ cdef class SyclContext(_SyclContext):
         elif isinstance(arg, SyclDevice):
             ret = self._init_context_from_one_device(<SyclDevice> arg, 0)
         elif pycapsule.PyCapsule_IsValid(arg, "SyclContextRef"):
-            status = self._init_context_from_capsule(arg)
+            ret = self._init_context_from_capsule(arg)
         elif isinstance(arg, (list, tuple)) and all(
             [isinstance(argi, SyclDevice) for argi in arg]
         ):

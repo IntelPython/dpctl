@@ -34,93 +34,94 @@ cdef extern from "syclinterface/dpctl_utils.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
-    ctypedef enum _usm_type 'DPCTLSyclUSMType':
-        _USM_UNKNOWN     'DPCTL_USM_UNKNOWN'
-        _USM_DEVICE      'DPCTL_USM_DEVICE'
-        _USM_SHARED      'DPCTL_USM_SHARED'
-        _USM_HOST        'DPCTL_USM_HOST'
+    ctypedef enum _usm_type "DPCTLSyclUSMType":
+        _USM_UNKNOWN     "DPCTL_USM_UNKNOWN"
+        _USM_DEVICE      "DPCTL_USM_DEVICE"
+        _USM_SHARED      "DPCTL_USM_SHARED"
+        _USM_HOST        "DPCTL_USM_HOST"
 
-    ctypedef enum _backend_type 'DPCTLSyclBackendType':
-        _ALL_BACKENDS    'DPCTL_ALL_BACKENDS'
-        _CUDA            'DPCTL_CUDA'
-        _HIP             'DPCTL_HIP'
-        _LEVEL_ZERO      'DPCTL_LEVEL_ZERO'
-        _OPENCL          'DPCTL_OPENCL'
-        _UNKNOWN_BACKEND 'DPCTL_UNKNOWN_BACKEND'
+    ctypedef enum _backend_type "DPCTLSyclBackendType":
+        _ALL_BACKENDS    "DPCTL_ALL_BACKENDS"
+        _CUDA            "DPCTL_CUDA"
+        _HIP             "DPCTL_HIP"
+        _LEVEL_ZERO      "DPCTL_LEVEL_ZERO"
+        _OPENCL          "DPCTL_OPENCL"
+        _UNKNOWN_BACKEND "DPCTL_UNKNOWN_BACKEND"
 
-    ctypedef enum _device_type 'DPCTLSyclDeviceType':
-        _ACCELERATOR    'DPCTL_ACCELERATOR'
-        _ALL_DEVICES    'DPCTL_ALL'
-        _AUTOMATIC      'DPCTL_AUTOMATIC'
-        _CPU            'DPCTL_CPU'
-        _CUSTOM         'DPCTL_CUSTOM'
-        _GPU            'DPCTL_GPU'
-        _UNKNOWN_DEVICE 'DPCTL_UNKNOWN_DEVICE'
+    ctypedef enum _device_type "DPCTLSyclDeviceType":
+        _ACCELERATOR    "DPCTL_ACCELERATOR"
+        _ALL_DEVICES    "DPCTL_ALL"
+        _AUTOMATIC      "DPCTL_AUTOMATIC"
+        _CPU            "DPCTL_CPU"
+        _CUSTOM         "DPCTL_CUSTOM"
+        _GPU            "DPCTL_GPU"
+        _UNKNOWN_DEVICE "DPCTL_UNKNOWN_DEVICE"
 
-    ctypedef enum _arg_data_type 'DPCTLKernelArgType':
-        _INT8_T             'DPCTL_INT8_T',
-        _UINT8_T            'DPCTL_UINT8_T',
-        _INT16_T            'DPCTL_INT16_T',
-        _UINT16_T           'DPCTL_UINT16_T',
-        _INT32_T            'DPCTL_INT32_T',
-        _UINT32_T           'DPCTL_UINT32_T',
-        _INT64_T            'DPCTL_INT64_T',
-        _UINT64_T           'DPCTL_UINT64_T',
-        _FLOAT              'DPCTL_FLOAT32_T',
-        _DOUBLE             'DPCTL_FLOAT64_T',
-        _VOID_PTR           'DPCTL_VOID_PTR',
-        _LOCAL_ACCESSOR     'DPCTL_LOCAL_ACCESSOR',
-        _WORK_GROUP_MEMORY  'DPCTL_WORK_GROUP_MEMORY'
+    ctypedef enum _arg_data_type "DPCTLKernelArgType":
+        _INT8_T             "DPCTL_INT8_T",
+        _UINT8_T            "DPCTL_UINT8_T",
+        _INT16_T            "DPCTL_INT16_T",
+        _UINT16_T           "DPCTL_UINT16_T",
+        _INT32_T            "DPCTL_INT32_T",
+        _UINT32_T           "DPCTL_UINT32_T",
+        _INT64_T            "DPCTL_INT64_T",
+        _UINT64_T           "DPCTL_UINT64_T",
+        _FLOAT              "DPCTL_FLOAT32_T",
+        _DOUBLE             "DPCTL_FLOAT64_T",
+        _VOID_PTR           "DPCTL_VOID_PTR",
+        _LOCAL_ACCESSOR     "DPCTL_LOCAL_ACCESSOR",
+        _WORK_GROUP_MEMORY  "DPCTL_WORK_GROUP_MEMORY"
 
-    ctypedef enum _queue_property_type 'DPCTLQueuePropertyType':
-        _DEFAULT_PROPERTY   'DPCTL_DEFAULT_PROPERTY'
-        _ENABLE_PROFILING   'DPCTL_ENABLE_PROFILING'
-        _IN_ORDER           'DPCTL_IN_ORDER'
+    ctypedef enum _queue_property_type "DPCTLQueuePropertyType":
+        _DEFAULT_PROPERTY   "DPCTL_DEFAULT_PROPERTY"
+        _ENABLE_PROFILING   "DPCTL_ENABLE_PROFILING"
+        _IN_ORDER           "DPCTL_IN_ORDER"
 
-    ctypedef enum _aspect_type 'DPCTLSyclAspectType':
-        _host                               'host',
-        _cpu                                'cpu',
-        _gpu                                'gpu',
-        _accelerator                        'accelerator',
-        _custom                             'custom',
-        _fp16                               'fp16',
-        _fp64                               'fp64',
-        _atomic64                           'atomic64',
-        _image                              'image',
-        _online_compiler                    'online_compiler',
-        _online_linker                      'online_linker',
-        _queue_profiling                    'queue_profiling',
-        _usm_device_allocations             'usm_device_allocations',
-        _usm_host_allocations               'usm_host_allocations',
-        _usm_shared_allocations             'usm_shared_allocations',
-        _usm_system_allocations             'usm_system_allocations',
-        _usm_atomic_host_allocations        'usm_atomic_host_allocations',
-        _usm_atomic_shared_allocations      'usm_atomic_shared_allocations',
-        _host_debuggable                    'host_debuggable',
-        _emulated                           'emulated',
-        _is_component                       'is_component',
-        _is_composite                       'is_composite',
+    ctypedef enum _aspect_type "DPCTLSyclAspectType":
+        _host                               "host",
+        _cpu                                "cpu",
+        _gpu                                "gpu",
+        _accelerator                        "accelerator",
+        _custom                             "custom",
+        _fp16                               "fp16",
+        _fp64                               "fp64",
+        _atomic64                           "atomic64",
+        _image                              "image",
+        _online_compiler                    "online_compiler",
+        _online_linker                      "online_linker",
+        _queue_profiling                    "queue_profiling",
+        _usm_device_allocations             "usm_device_allocations",
+        _usm_host_allocations               "usm_host_allocations",
+        _usm_shared_allocations             "usm_shared_allocations",
+        _usm_system_allocations             "usm_system_allocations",
+        _usm_atomic_host_allocations        "usm_atomic_host_allocations",
+        _usm_atomic_shared_allocations      "usm_atomic_shared_allocations",
+        _host_debuggable                    "host_debuggable",
+        _emulated                           "emulated",
+        _is_component                       "is_component",
+        _is_composite                       "is_composite",
 
-    ctypedef enum _partition_affinity_domain_type 'DPCTLPartitionAffinityDomainType':
-        _not_applicable                     'not_applicable',
-        _numa                               'numa',
-        _L4_cache                           'L4_cache',
-        _L3_cache                           'L3_cache',
-        _L2_cache                           'L2_cache',
-        _L1_cache                           'L1_cache',
-        _next_partitionable                 'next_partitionable',
+    ctypedef enum _partition_affinity_domain_type \
+            "DPCTLPartitionAffinityDomainType":
+        _not_applicable                     "not_applicable",
+        _numa                               "numa",
+        _L4_cache                           "L4_cache",
+        _L3_cache                           "L3_cache",
+        _L2_cache                           "L2_cache",
+        _L1_cache                           "L1_cache",
+        _next_partitionable                 "next_partitionable",
 
-    ctypedef enum _event_status_type 'DPCTLSyclEventStatusType':
-        _UNKNOWN_STATUS     'DPCTL_UNKNOWN_STATUS'
-        _SUBMITTED          'DPCTL_SUBMITTED'
-        _RUNNING            'DPCTL_RUNNING'
-        _COMPLETE           'DPCTL_COMPLETE'
+    ctypedef enum _event_status_type "DPCTLSyclEventStatusType":
+        _UNKNOWN_STATUS     "DPCTL_UNKNOWN_STATUS"
+        _SUBMITTED          "DPCTL_SUBMITTED"
+        _RUNNING            "DPCTL_RUNNING"
+        _COMPLETE           "DPCTL_COMPLETE"
 
-    ctypedef enum _global_mem_cache_type 'DPCTLGlobalMemCacheType':
-        _MEM_CACHE_TYPE_INDETERMINATE    'DPCTL_MEM_CACHE_TYPE_INDETERMINATE'
-        _MEM_CACHE_TYPE_NONE             'DPCTL_MEM_CACHE_TYPE_NONE'
-        _MEM_CACHE_TYPE_READ_ONLY        'DPCTL_MEM_CACHE_TYPE_READ_ONLY'
-        _MEM_CACHE_TYPE_READ_WRITE       'DPCTL_MEM_CACHE_TYPE_READ_WRITE'
+    ctypedef enum _global_mem_cache_type "DPCTLGlobalMemCacheType":
+        _MEM_CACHE_TYPE_INDETERMINATE    "DPCTL_MEM_CACHE_TYPE_INDETERMINATE"
+        _MEM_CACHE_TYPE_NONE             "DPCTL_MEM_CACHE_TYPE_NONE"
+        _MEM_CACHE_TYPE_READ_ONLY        "DPCTL_MEM_CACHE_TYPE_READ_ONLY"
+        _MEM_CACHE_TYPE_READ_WRITE       "DPCTL_MEM_CACHE_TYPE_READ_WRITE"
 
 
 cdef extern from "syclinterface/dpctl_sycl_types.h":
@@ -134,15 +135,15 @@ cdef extern from "syclinterface/dpctl_sycl_types.h":
     cdef struct DPCTLOpaqueSyclQueue
     cdef struct DPCTLOpaqueSyclUSM
 
-    ctypedef DPCTLOpaqueSyclContext        *DPCTLSyclContextRef
-    ctypedef DPCTLOpaqueSyclDevice         *DPCTLSyclDeviceRef
+    ctypedef DPCTLOpaqueSyclContext *DPCTLSyclContextRef
+    ctypedef DPCTLOpaqueSyclDevice *DPCTLSyclDeviceRef
     ctypedef DPCTLOpaqueSyclDeviceSelector *DPCTLSyclDeviceSelectorRef
-    ctypedef DPCTLOpaqueSyclEvent          *DPCTLSyclEventRef
-    ctypedef DPCTLOpaqueSyclKernel         *DPCTLSyclKernelRef
-    ctypedef DPCTLOpaqueSyclPlatform       *DPCTLSyclPlatformRef
-    ctypedef DPCTLOpaqueSyclKernelBundle   *DPCTLSyclKernelBundleRef
-    ctypedef DPCTLOpaqueSyclQueue          *DPCTLSyclQueueRef
-    ctypedef DPCTLOpaqueSyclUSM            *DPCTLSyclUSMRef
+    ctypedef DPCTLOpaqueSyclEvent *DPCTLSyclEventRef
+    ctypedef DPCTLOpaqueSyclKernel *DPCTLSyclKernelRef
+    ctypedef DPCTLOpaqueSyclPlatform *DPCTLSyclPlatformRef
+    ctypedef DPCTLOpaqueSyclKernelBundle *DPCTLSyclKernelBundleRef
+    ctypedef DPCTLOpaqueSyclQueue *DPCTLSyclQueueRef
+    ctypedef DPCTLOpaqueSyclUSM *DPCTLSyclUSMRef
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
@@ -167,9 +168,15 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef uint32_t DPCTLDevice_GetMaxNumSubGroups(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetMaxWorkGroupSize(const DPCTLSyclDeviceRef DRef)
     cdef uint32_t DPCTLDevice_GetMaxWorkItemDims(const DPCTLSyclDeviceRef DRef)
-    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes1d(const DPCTLSyclDeviceRef DRef)
-    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes2d(const DPCTLSyclDeviceRef DRef)
-    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes3d(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes1d(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes2d(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef size_t *DPCTLDevice_GetMaxWorkItemSizes3d(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef const char *DPCTLDevice_GetName(const DPCTLSyclDeviceRef DRef)
     cdef DPCTLSyclPlatformRef DPCTLDevice_GetPlatform(
         const DPCTLSyclDeviceRef DRef)
@@ -178,24 +185,56 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthInt(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthLong(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthChar(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthShort(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthInt(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthLong(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthFloat(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthDouble(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetNativeVectorWidthHalf(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthShort(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthInt(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthLong(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthFloat(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthDouble(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetPreferredVectorWidthHalf(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthChar(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthShort(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthInt(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthLong(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthFloat(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthDouble(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetNativeVectorWidthHalf(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef bool DPCTLDevice_HasAspect(const DPCTLSyclDeviceRef, _aspect_type)
     cdef uint32_t DPCTLDevice_GetMaxReadImageArgs(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxWriteImageArgs(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef size_t DPCTLDevice_GetImage2dMaxWidth(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage2dMaxHeight(const DPCTLSyclDeviceRef DRef)
     cdef size_t DPCTLDevice_GetImage3dMaxWidth(const DPCTLSyclDeviceRef DRef)
@@ -208,19 +247,36 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
         const DPCTLSyclDeviceRef DRef,
         _partition_affinity_domain_type PartitionAffinityDomainTy)
-    cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(const DPCTLSyclDeviceRef DRef)
-    cdef size_t DPCTLDevice_GetProfilingTimerResolution(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(const DPCTLSyclDeviceRef DRef)
-    cdef uint64_t DPCTLDevice_GetGlobalMemCacheSize(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclDeviceRef DPCTLDevice_GetParentDevice(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef size_t DPCTLDevice_GetProfilingTimerResolution(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetGlobalMemCacheLineSize(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint64_t DPCTLDevice_GetGlobalMemCacheSize(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef _global_mem_cache_type DPCTLDevice_GetGlobalMemCacheType(
         const DPCTLSyclDeviceRef DRef)
-    cdef size_t *DPCTLDevice_GetSubGroupSizes(const DPCTLSyclDeviceRef DRef,
-        size_t *res_len)
-    cdef uint32_t DPCTLDevice_GetPartitionMaxSubDevices(const DPCTLSyclDeviceRef DRef)
-    cdef uint32_t DPCTLDevice_GetMaxClockFrequency(const DPCTLSyclDeviceRef DRef)
+    cdef size_t *DPCTLDevice_GetSubGroupSizes(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len
+    )
+    cdef uint32_t DPCTLDevice_GetPartitionMaxSubDevices(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef uint32_t DPCTLDevice_GetMaxClockFrequency(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef uint64_t DPCTLDevice_GetMaxMemAllocSize(const DPCTLSyclDeviceRef DRef)
-    cdef DPCTLSyclDeviceRef DPCTLDevice_GetCompositeDevice(const DPCTLSyclDeviceRef DRef)
-    cdef DPCTLDeviceVectorRef DPCTLDevice_GetComponentDevices(const DPCTLSyclDeviceRef DRef)
+    cdef DPCTLSyclDeviceRef DPCTLDevice_GetCompositeDevice(
+        const DPCTLSyclDeviceRef DRef
+    )
+    cdef DPCTLDeviceVectorRef DPCTLDevice_GetComponentDevices(
+        const DPCTLSyclDeviceRef DRef
+    )
 
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
@@ -238,7 +294,9 @@ cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
         const DPCTLSyclDeviceRef DRef,
         int device_identifier)
     cdef size_t DPCTLDeviceMgr_GetNumDevices(int device_identifier)
-    cdef const char * DPCTLDeviceMgr_GetDeviceInfoStr(const DPCTLSyclDeviceRef DRef)
+    cdef const char * DPCTLDeviceMgr_GetDeviceInfoStr(
+        const DPCTLSyclDeviceRef DRef
+    )
     cdef DPCTLSyclContextRef DPCTLDeviceMgr_GetCachedContext(
         const DPCTLSyclDeviceRef DRef)
     cdef int64_t DPCTLDeviceMgr_GetRelativeId(const DPCTLSyclDeviceRef DRef)
@@ -252,7 +310,9 @@ cdef extern from "syclinterface/dpctl_sycl_device_selector_interface.h":
     DPCTLSyclDeviceSelectorRef DPCTLFilterSelector_Create(const char *)
     DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
     void DPCTLDeviceSelector_Delete(DPCTLSyclDeviceSelectorRef)
-    int DPCTLDeviceSelector_Score(DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef)
+    int DPCTLDeviceSelector_Score(
+        DPCTLSyclDeviceSelectorRef, DPCTLSyclDeviceRef
+    )
 
 
 cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
@@ -261,7 +321,9 @@ cdef extern from "syclinterface/dpctl_sycl_event_interface.h":
     cdef void DPCTLEvent_Wait(DPCTLSyclEventRef ERef) nogil
     cdef void DPCTLEvent_WaitAndThrow(DPCTLSyclEventRef ERef) nogil
     cdef void DPCTLEvent_Delete(DPCTLSyclEventRef ERef)
-    cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(DPCTLSyclEventRef ERef)
+    cdef _event_status_type DPCTLEvent_GetCommandExecutionStatus(
+        DPCTLSyclEventRef ERef
+    )
     cdef _backend_type DPCTLEvent_GetBackend(DPCTLSyclEventRef ERef)
     cdef struct DPCTLEventVector
     ctypedef DPCTLEventVector *DPCTLEventVectorRef
@@ -282,12 +344,18 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_interface.h":
     cdef void DPCTLKernel_Delete(DPCTLSyclKernelRef KRef)
     cdef DPCTLSyclKernelRef DPCTLKernel_Copy(const DPCTLSyclKernelRef KRef)
     cdef size_t DPCTLKernel_GetWorkGroupSize(const DPCTLSyclKernelRef KRef)
-    cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(const DPCTLSyclKernelRef KRef)
+    cdef size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
+        const DPCTLSyclKernelRef KRef
+    )
     cdef size_t DPCTLKernel_GetPrivateMemSize(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetMaxNumSubGroups(const DPCTLSyclKernelRef KRef)
     cdef uint32_t DPCTLKernel_GetMaxSubGroupSize(const DPCTLSyclKernelRef KRef)
-    cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(const DPCTLSyclKernelRef KRef)
-    cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(const DPCTLSyclKernelRef KRef)
+    cdef uint32_t DPCTLKernel_GetCompileNumSubGroups(
+        const DPCTLSyclKernelRef KRef
+    )
+    cdef uint32_t DPCTLKernel_GetCompileSubGroupSize(
+        const DPCTLSyclKernelRef KRef
+    )
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
@@ -301,11 +369,15 @@ cdef extern from "syclinterface/dpctl_sycl_platform_manager.h":
         DPCTLPlatformVectorRef,
         size_t index)
     cdef void DPCTLPlatformMgr_PrintInfo(const DPCTLSyclPlatformRef, size_t)
-    cdef const char *DPCTLPlatformMgr_GetInfo(const DPCTLSyclPlatformRef, size_t)
+    cdef const char *DPCTLPlatformMgr_GetInfo(
+        const DPCTLSyclPlatformRef, size_t
+    )
 
 
 cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
-    cdef bool DPCTLPlatform_AreEq(const DPCTLSyclPlatformRef, const DPCTLSyclPlatformRef)
+    cdef bool DPCTLPlatform_AreEq(
+        const DPCTLSyclPlatformRef, const DPCTLSyclPlatformRef
+    )
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Copy(const DPCTLSyclPlatformRef)
     cdef DPCTLSyclPlatformRef DPCTLPlatform_Create()
     cdef DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
@@ -361,15 +433,16 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef DPCTLSyclKernelRef DPCTLKernelBundle_GetKernel(
         DPCTLSyclKernelBundleRef KBRef,
         const char *KernelName)
-    cdef bool DPCTLKernelBundle_HasKernel(DPCTLSyclKernelBundleRef KBRef,
-                                     const char *KernelName)
+    cdef bool DPCTLKernelBundle_HasKernel(
+        DPCTLSyclKernelBundleRef KBRef, const char *KernelName
+    )
     cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(
         const DPCTLSyclKernelBundleRef KBRef)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
-    ctypedef struct _md_local_accessor 'MDLocalAccessor':
+    ctypedef struct _md_local_accessor "MDLocalAccessor":
         size_t ndim
         _arg_data_type dpctl_type_id
         size_t dim0
@@ -490,11 +563,11 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
     ctypedef RawWorkGroupMemoryTy RawWorkGroupMemory
 
     cdef struct DPCTLOpaqueWorkGroupMemory
-    ctypedef DPCTLOpaqueWorkGroupMemory *DPCTLSyclWorkGroupMemoryRef;
+    ctypedef DPCTLOpaqueWorkGroupMemory *DPCTLSyclWorkGroupMemoryRef
 
-    cdef DPCTLSyclWorkGroupMemoryRef DPCTLWorkGroupMemory_Create(size_t nbytes);
+    cdef DPCTLSyclWorkGroupMemoryRef DPCTLWorkGroupMemory_Create(size_t nbytes)
 
     cdef void DPCTLWorkGroupMemory_Delete(
-        DPCTLSyclWorkGroupMemoryRef Ref);
+        DPCTLSyclWorkGroupMemoryRef Ref)
 
-    cdef bint DPCTLWorkGroupMemory_Available();
+    cdef bint DPCTLWorkGroupMemory_Available()
