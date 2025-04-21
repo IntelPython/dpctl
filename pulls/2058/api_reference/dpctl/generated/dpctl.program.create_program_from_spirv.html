@@ -799,9 +799,9 @@
 <dt class="sig sig-object py" id="dpctl.program.create_program_from_spirv">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_program_from_spirv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_spirv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function to
-create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> object
-from an compiled SPIR-V binary file.</p>
+<p>We use the <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function
+to create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
+object from an compiled SPIR-V binary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

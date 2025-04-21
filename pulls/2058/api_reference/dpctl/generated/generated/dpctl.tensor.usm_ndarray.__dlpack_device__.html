@@ -800,9 +800,11 @@
 <span class="sig-prename descclassname"><span class="pre">usm_ndarray.</span></span><span class="sig-name descname"><span class="pre">__dlpack_device__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.tensor.usm_ndarray.__dlpack_device__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gives a tuple (<code class="docutils literal notranslate"><span class="pre">device_type</span></code>, <code class="docutils literal notranslate"><span class="pre">device_id</span></code>) corresponding to
 <code class="docutils literal notranslate"><span class="pre">DLDevice</span></code> entry in <code class="docutils literal notranslate"><span class="pre">DLTensor</span></code> in DLPack protocol.</p>
-<p>The tuple describes the non-partitioned device where the array has been allocated,
-or the non-partitioned parent device of the allocation device.</p>
-<p>See <code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code> for a list of devices supported by the DLPack protocol.</p>
+<p>The tuple describes the non-partitioned device where the array has been
+allocated, or the non-partitioned parent device of the allocation
+device.</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">DLDeviceType</span></code> for a list of devices supported by the DLPack
+protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>DLPackCreationError</strong> – when the <code class="docutils literal notranslate"><span class="pre">device_id</span></code> could not be determined.</p>

@@ -832,23 +832,24 @@ string specifying the affinity domain, or a collection of integers.</p>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Specifying an int (<code class="docutils literal notranslate"><span class="pre">count</span></code>)</dt><dd><p>The returned list contains as
-many sub-devices as can be created such that each sub-device
-contains <code class="docutils literal notranslate"><span class="pre">count</span></code> compute units. If the device’s total number
-of compute units is not evenly divided by <code class="docutils literal notranslate"><span class="pre">count</span></code>, then the
-remaining compute units are not included in any of the
-sub-devices.</p>
+many sub-devices as can be created such that each
+sub-device contains <code class="docutils literal notranslate"><span class="pre">count</span></code> compute units. If the
+device’s total number of compute units is not evenly
+divided by <code class="docutils literal notranslate"><span class="pre">count</span></code>, then the remaining compute units
+are not included in any of the sub-devices.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Specifying an affinity domain as a string</dt><dd><p>The supported values are: <code class="docutils literal notranslate"><span class="pre">&quot;numa&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L4_cache&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L3_cache&quot;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">&quot;L2_cache&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L1_cache&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;next_partitionable&quot;</span></code>.</p>
+<dt>Specifying an affinity domain as a string</dt><dd><p>The supported values are: <code class="docutils literal notranslate"><span class="pre">&quot;numa&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L4_cache&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;L3_cache&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L2_cache&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;L1_cache&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;next_partitionable&quot;</span></code>.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Specifying a collection of integral values</dt><dd><p>For each non-zero value <code class="docutils literal notranslate"><span class="pre">M</span></code> in the collection, a sub-device with <code class="docutils literal notranslate"><span class="pre">M</span></code>
-compute units is created.</p>
+<dt>Specifying a collection of integral values</dt><dd><p>For each non-zero value <code class="docutils literal notranslate"><span class="pre">M</span></code> in the collection, a
+sub-device with <code class="docutils literal notranslate"><span class="pre">M</span></code> compute units is created.</p>
 </dd>
 </dl>
 </li>
