@@ -350,6 +350,10 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
 
 
 def _make_empty_like_orderK(X, dt, usm_type, dev):
+    """
+    Returns empty array with shape and strides like `X`, with dtype `dt`,
+    USM type `usm_type`, on device `dev`.
+    """
     st = list(X.strides)
     perm = sorted(
         range(X.ndim),
@@ -375,7 +379,8 @@ def _make_empty_like_orderK(X, dt, usm_type, dev):
 
 
 def _empty_like_orderK(X, dt, usm_type=None, dev=None):
-    """Returns empty array like `x`, using order='K'
+    """
+    Returns empty array like `x`, using order='K'
 
     For an array `x` that was obtained by permutation of a contiguous
     array the returned array will have the same shape and the same
@@ -400,7 +405,8 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
 
 
 def _from_numpy_empty_like_orderK(X, dt, usm_type, dev):
-    """Returns empty usm_ndarray like NumPy array `x`, using order='K'
+    """
+    Returns empty usm_ndarray like NumPy array `x`, using order='K'
 
     For an array `x` that was obtained by permutation of a contiguous
     array the returned array will have the same shape and the same
