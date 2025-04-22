@@ -84,7 +84,8 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclEventRef>,
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(RawWorkGroupMemory,
                                    DPCTLSyclWorkGroupMemoryRef)
 
-DEFINE_SIMPLE_CONVERSION_FUNCTIONS(RawKernelArgData, DPCTLSyclRawKernelArgRef)
+DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<unsigned char>,
+                                   DPCTLSyclRawKernelArgRef)
 
 #endif
 

@@ -34,9 +34,6 @@
 #include "dpctl_sycl_enum_types.h"
 #include "dpctl_sycl_types.h"
 
-#include <cstring>
-#include <vector>
-
 DPCTL_C_EXTERN_C_BEGIN
 
 typedef struct RawWorkGroupMemoryTy
@@ -55,21 +52,6 @@ void DPCTLWorkGroupMemory_Delete(__dpctl_take DPCTLSyclWorkGroupMemoryRef Ref);
 
 DPCTL_API
 bool DPCTLWorkGroupMemory_Available();
-
-typedef class RawKernelArgDataTy
-{
-public:
-    RawKernelArgDataTy(void *bytes, size_t count) : data(count)
-    {
-        std::memcpy(data.data(), bytes, count);
-    }
-
-    void *bytes() { return data.data(); }
-    size_t count() { return data.size(); }
-
-private:
-    std::vector<unsigned char> data;
-} RawKernelArgData;
 
 typedef struct DPCTLOpaqueSyclRawKernelArg *DPCTLSyclRawKernelArgRef;
 

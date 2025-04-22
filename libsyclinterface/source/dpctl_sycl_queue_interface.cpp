@@ -237,9 +237,10 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_RAW_KERNEL_ARG:
     {
         auto ref = static_cast<DPCTLSyclRawKernelArgRef>(Arg);
-        RawKernelArgData *raw_arg = unwrap<RawKernelArgData>(ref);
-        void *bytes = raw_arg->bytes();
-        size_t count = raw_arg->count();
+        std::vector<unsigned char> *raw_arg =
+            unwrap<std::vector<unsigned char>>(ref);
+        void *bytes = raw_arg->data();
+        size_t count = raw_arg->size();
         sycl::ext::oneapi::experimental::raw_kernel_arg arg{bytes, count};
         cgh.set_arg(idx, arg);
         break;

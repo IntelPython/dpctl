@@ -93,7 +93,7 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
     Params<T> p{T{4}, T{5}};
     auto rka = DPCTLRawKernelArg_Create(&p, sizeof(Params<T>));
     ASSERT_TRUE(rka != nullptr);
-    auto *rka_raw = unwrap<RawKernelArgData>(rka);
+    auto *rka_raw = unwrap<std::vector<unsigned char>>(rka);
     ASSERT_TRUE(rka_raw != nullptr);
     void *args_1d[NARGS] = {unwrap<void>(a), rka};
     DPCTLKernelArgType addKernelArgTypes[] = {DPCTL_VOID_PTR,
