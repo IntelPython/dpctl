@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 import logging
 from contextvars import ContextVar
