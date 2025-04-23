@@ -6,7 +6,7 @@
 #include "sequential_order_keeper.hpp"
 #include <sycl/sycl.hpp>
 
-PYBIND11_MODULE(_seq_order_keeper, m)
+PYBIND11_MODULE(_seq_order_keeper, m, py::mod_gil_not_used())
 {
     py::class_<SequentialOrder>(m, "_OrderManager")
         .def(py::init<std::size_t>())
