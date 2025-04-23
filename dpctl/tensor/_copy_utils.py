@@ -413,7 +413,7 @@ def _from_numpy_empty_like_orderK(X, dt, usm_type, dev):
     strides as `x`.
     """
     if not isinstance(X, np.ndarray):
-        raise TypeError(f"Expected np.ndarray, got {type(X)}")
+        raise TypeError(f"Expected numpy.ndarray, got {type(X)}")
     fl = X.flags
     if fl["C"] or X.size <= 1:
         return dpt.empty(
