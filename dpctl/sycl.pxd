@@ -85,12 +85,3 @@ cdef extern from "syclinterface/dpctl_sycl_type_casters.hpp" \
         "dpctl::syclinterface::unwrap<RawWorkGroupMemory>" (
             dpctl_backend.DPCTLSyclWorkGroupMemoryRef
         )
-
-    # raw kernel arg extension
-    cdef dpctl_backend.DPCTLSyclRawKernelArgRef wrap_raw_kernel_arg \
-            "dpctl::syclinterface::wrap<std::vector<unsigned char>>" \
-            (const std::vector<unsigned char> *)
-
-    cdef std::vector<unsigned char> * unwrap_raw_kernel_arg \
-            "dpctl::syclinterface::unwrap<std::vector<unsigned char>>" (
-            dpctl_backend.DPCTLSyclRawKernelArgRef)

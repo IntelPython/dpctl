@@ -1814,8 +1814,9 @@ cdef class RawKernelArg:
                                 "expects argument to be buffer",
                                 f"but got {type(args[0])}")
 
-            ret_code = PyObject_GetBuffer(args[0], &(_buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
-            if ret_code != 0: # pragma: no cover
+            ret_code = PyObject_GetBuffer(args[0], &(_buffer),
+                                          PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
+            if ret_code != 0:  # pragma: no cover
                 raise RuntimeError("Could not access buffer")
 
             ptr = _buffer.buf
@@ -1837,11 +1838,9 @@ cdef class RawKernelArg:
         if(_is_buf):
             PyBuffer_Release(&(_buffer))
 
-
-    """Check whether the raw_kernel_arg extension is available"""
     @staticmethod
     def is_available():
-        return DPCTLRawKernelArg_Available();
+        return DPCTLRawKernelArg_Available()
 
     property _ref:
         """Returns the address of the C API ``DPCTLRawKernelArgRef`` pointer

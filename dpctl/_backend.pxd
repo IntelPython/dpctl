@@ -574,11 +574,12 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
     cdef bint DPCTLWorkGroupMemory_Available()
 
     cdef struct DPCTLOpaqueRawKernelArg
-    ctypedef DPCTLOpaqueRawKernelArg *DPCTLSyclRawKernelArgRef;
+    ctypedef DPCTLOpaqueRawKernelArg *DPCTLSyclRawKernelArgRef
 
-    cdef DPCTLSyclRawKernelArgRef DPCTLRawKernelArg_Create(void* bytes, size_t count);
+    cdef DPCTLSyclRawKernelArgRef DPCTLRawKernelArg_Create(void* bytes,
+                                                           size_t count)
 
     cdef void DPCTLRawKernelArg_Delete(
-        DPCTLSyclRawKernelArgRef Ref);
+        DPCTLSyclRawKernelArgRef Ref)
 
-    cdef bint DPCTLRawKernelArg_Available();
+    cdef bint DPCTLRawKernelArg_Available()
