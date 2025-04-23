@@ -34,7 +34,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_tensor_sorting_impl, m)
+PYBIND11_MODULE(_tensor_sorting_impl, m, py::mod_gil_not_used())
 {
     dpctl::tensor::py_internal::init_merge_sort_functions(m);
     dpctl::tensor::py_internal::init_merge_argsort_functions(m);

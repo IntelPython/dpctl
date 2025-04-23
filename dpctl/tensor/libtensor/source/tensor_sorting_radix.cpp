@@ -30,7 +30,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_tensor_sorting_radix_impl, m)
+PYBIND11_MODULE(_tensor_sorting_radix_impl, m, py::mod_gil_not_used())
 {
     dpctl::tensor::py_internal::init_radix_sort_functions(m);
     dpctl::tensor::py_internal::init_radix_argsort_functions(m);
