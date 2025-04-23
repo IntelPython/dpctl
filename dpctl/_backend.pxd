@@ -454,18 +454,18 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef DPCTLBuildOptionListRef DPCTLBuildOptionList_Create()
     cdef void DPCTLBuildOptionList_Delete(DPCTLBuildOptionListRef Ref)
     cdef void DPCTLBuildOptionList_Append(DPCTLBuildOptionListRef Ref,
-                                 const char *Option)
+                                          const char *Option)
 
     cdef DPCTLKernelNameListRef DPCTLKernelNameList_Create()
     cdef void DPCTLKernelNameList_Delete(DPCTLKernelNameListRef Ref)
     cdef void DPCTLKernelNameList_Append(DPCTLKernelNameListRef Ref,
-                                const char *Option)
+                                         const char *Option)
 
     cdef DPCTLVirtualHeaderListRef DPCTLVirtualHeaderList_Create()
     cdef void DPCTLVirtualHeaderList_Delete(DPCTLVirtualHeaderListRef Ref)
     cdef void DPCTLVirtualHeaderList_Append(DPCTLVirtualHeaderListRef Ref,
-                                   const char *Name,
-                                   const char *Content)
+                                            const char *Name,
+                                            const char *Content)
 
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         const DPCTLSyclContextRef Ctx,
@@ -475,11 +475,12 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
         DPCTLKernelNameListRef Names,
         DPCTLBuildOptionListRef BuildOptions)
 
-    cdef DPCTLSyclKernelRef DPCTLKernelBundle_GetSyclKernel(DPCTLSyclKernelBundleRef KBRef,
-                                const char *KernelName)
+    cdef DPCTLSyclKernelRef DPCTLKernelBundle_GetSyclKernel(
+                                                DPCTLSyclKernelBundleRef KBRef,
+                                                const char *KernelName)
 
     cdef bool DPCTLKernelBundle_HasSyclKernel(DPCTLSyclKernelBundleRef KBRef,
-                                     const char *KernelName);
+                                              const char *KernelName)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":

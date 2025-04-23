@@ -211,7 +211,8 @@ cdef class SyclProgram:
     """
 
     @staticmethod
-    cdef SyclProgram _create(DPCTLSyclKernelBundleRef KBRef, bint is_sycl_source):
+    cdef SyclProgram _create(DPCTLSyclKernelBundleRef KBRef,
+                             bint is_sycl_source):
         cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
         ret._program_ref = KBRef
         ret._is_sycl_source = is_sycl_source
@@ -342,7 +343,10 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
     return SyclProgram._create(KBref, False)
 
 
-cpdef create_program_from_sycl_source(SyclQueue q, unicode source, list headers=[], list registered_names=[], list copts=[]):
+cpdef create_program_from_sycl_source(SyclQueue q, unicode source,
+                                      list headers=None,
+                                      list registered_names=None,
+                                      list copts=None):
     """
         Creates an executable SYCL kernel_bundle from SYCL source code.
 
@@ -384,7 +388,7 @@ cpdef create_program_from_sycl_source(SyclQueue q, unicode source, list headers=
     cdef DPCTLSyclKernelBundleRef KBref
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
-    cdef bytes bSrc = source.encode('utf8')
+    cdef bytes bSrc = source.encode("utf8")
     cdef const char *Src = <const char*>bSrc
     cdef DPCTLBuildOptionListRef BuildOpts = DPCTLBuildOptionList_Create()
     cdef bytes bOpt
@@ -397,7 +401,7 @@ cpdef create_program_from_sycl_source(SyclQueue q, unicode source, list headers=
         if not isinstance(opt, unicode):
             DPCTLBuildOptionList_Delete(BuildOpts)
             raise SyclProgramCompilationError()
-        bOpt = opt.encode('utf8')
+        bOpt = opt.encode("utf8")
         sOpt = <const char*>bOpt
         DPCTLBuildOptionList_Append(BuildOpts, sOpt)
 
@@ -407,21 +411,22 @@ cpdef create_program_from_sycl_source(SyclQueue q, unicode source, list headers=
             DPCTLBuildOptionList_Delete(BuildOpts)
             DPCTLKernelNameList_Delete(KernelNames)
             raise SyclProgramCompilationError()
-        bName = name.encode('utf8')
+        bName = name.encode("utf8")
         sName = <const char*>bName
         DPCTLKernelNameList_Append(KernelNames, sName)
 
+    cdef DPCTLVirtualHeaderListRef VirtualHeaders
+    VirtualHeaders = DPCTLVirtualHeaderList_Create()
 
-    cdef DPCTLVirtualHeaderListRef VirtualHeaders = DPCTLVirtualHeaderList_Create()
     for name, content in headers:
         if not isinstance(name, unicode) or not isinstance(content, unicode):
             DPCTLBuildOptionList_Delete(BuildOpts)
             DPCTLKernelNameList_Delete(KernelNames)
             DPCTLVirtualHeaderList_Delete(VirtualHeaders)
             raise SyclProgramCompilationError()
-        bName = name.encode('utf8')
+        bName = name.encode("utf8")
         sName = <const char*>bName
-        bContent = content.encode('utf8')
+        bContent = content.encode("utf8")
         sContent = <const char*>bContent
         DPCTLVirtualHeaderList_Append(VirtualHeaders, sName, sContent)
 

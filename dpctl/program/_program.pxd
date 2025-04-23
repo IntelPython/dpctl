@@ -52,7 +52,8 @@ cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
     cdef bint _is_sycl_source
 
     @staticmethod
-    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref, bint _is_sycl_source)
+    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref,
+                               bint _is_sycl_source)
     cdef  DPCTLSyclKernelBundleRef get_program_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 

@@ -32,8 +32,6 @@
 #include "Support/MemOwnershipAttrs.h"
 #include "dpctl_data_types.h"
 #include "dpctl_sycl_types.h"
-#include <string>
-#include <vector>
 
 DPCTL_C_EXTERN_C_BEGIN
 
@@ -131,24 +129,9 @@ DPCTL_API
 __dpctl_give DPCTLSyclKernelBundleRef
 DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef);
 
-struct DPCTLBuildOptionList
-{
-    std::vector<std::string> options;
-};
-
-struct DPCTLKernelNameList
-{
-    std::vector<std::string> names;
-};
-
-struct DPCTLVirtualHeaderList
-{
-    std::vector<std::pair<std::string, std::string>> headers;
-};
-
-using DPCTLBuildOptionListRef = DPCTLBuildOptionList *;
-using DPCTLKernelNameListRef = DPCTLKernelNameList *;
-using DPCTLVirtualHeaderListRef = DPCTLVirtualHeaderList *;
+typedef struct DPCTLBuildOptionList *DPCTLBuildOptionListRef;
+typedef struct DPCTLKernelNameList *DPCTLKernelNameListRef;
+typedef struct DPCTLVirtualHeaderList *DPCTLVirtualHeaderListRef;
 
 /*!
  * @brief Create an empty list of build options.

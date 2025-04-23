@@ -26,7 +26,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDefaultSelector_Create,
     DPCTLDevice_AreEq,
     DPCTLDevice_CanCompileOpenCL,
-    DPCTLDevice_CanCompileSPIRV,
     DPCTLDevice_CanCompileSYCL,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
@@ -2190,7 +2189,6 @@ cdef class SyclDevice(_SyclDevice):
             return DPCTLDevice_CanCompileSYCL(self._device_ref)
 
         raise ValueError(f"Unknown source language {language}")
-
 
 
 cdef api DPCTLSyclDeviceRef SyclDevice_GetDeviceRef(SyclDevice dev):

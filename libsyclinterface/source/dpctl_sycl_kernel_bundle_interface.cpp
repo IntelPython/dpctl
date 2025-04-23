@@ -762,46 +762,67 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
     }
 }
 
+using build_option_list_t = std::vector<std::string>;
+
 __dpctl_give DPCTLBuildOptionListRef DPCTLBuildOptionList_Create()
 {
-    return new DPCTLBuildOptionList;
+    auto BuildOptionList =
+        std::unique_ptr<build_option_list_t>(new build_option_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLBuildOptionListRef>(BuildOptionList.get());
+    BuildOptionList.release();
+    return RetVal;
 }
 
 void DPCTLBuildOptionList_Delete(__dpctl_take DPCTLBuildOptionListRef Ref)
 {
-    delete Ref;
+    delete reinterpret_cast<build_option_list_t *>(Ref);
 }
 
 void DPCTLBuildOptionList_Append(__dpctl_keep DPCTLBuildOptionListRef Ref,
                                  __dpctl_keep const char *Option)
 {
-    Ref->options.emplace_back(Option);
+    reinterpret_cast<build_option_list_t *>(Ref)->emplace_back(Option);
 }
+
+using kernel_name_list_t = std::vector<std::string>;
 
 __dpctl_give DPCTLKernelNameListRef DPCTLKernelNameList_Create()
 {
-    return new DPCTLKernelNameList;
+    auto KernelNameList =
+        std::unique_ptr<kernel_name_list_t>(new kernel_name_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLKernelNameListRef>(KernelNameList.get());
+    KernelNameList.release();
+    return RetVal;
 }
 
 void DPCTLKernelNameList_Delete(__dpctl_take DPCTLKernelNameListRef Ref)
 {
-    delete Ref;
+    delete reinterpret_cast<kernel_name_list_t *>(Ref);
 }
 
 void DPCTLKernelNameList_Append(__dpctl_keep DPCTLKernelNameListRef Ref,
                                 __dpctl_keep const char *Option)
 {
-    Ref->names.emplace_back(Option);
+    reinterpret_cast<kernel_name_list_t *>(Ref)->emplace_back(Option);
 }
+
+using virtual_header_list_t = std::vector<std::pair<std::string, std::string>>;
 
 __dpctl_give DPCTLVirtualHeaderListRef DPCTLVirtualHeaderList_Create()
 {
-    return new DPCTLVirtualHeaderList;
+    auto HeaderList =
+        std::unique_ptr<virtual_header_list_t>(new virtual_header_list_t());
+    auto *RetVal =
+        reinterpret_cast<DPCTLVirtualHeaderListRef>(HeaderList.get());
+    HeaderList.release();
+    return RetVal;
 }
 
 void DPCTLVirtualHeaderList_Delete(__dpctl_take DPCTLVirtualHeaderListRef Ref)
 {
-    delete Ref;
+    delete reinterpret_cast<virtual_header_list_t *>(Ref);
 }
 
 void DPCTLVirtualHeaderList_Append(__dpctl_keep DPCTLVirtualHeaderListRef Ref,
@@ -809,10 +830,33 @@ void DPCTLVirtualHeaderList_Append(__dpctl_keep DPCTLVirtualHeaderListRef Ref,
                                    __dpctl_keep const char *Content)
 {
     auto Header = std::make_pair<std::string, std::string>(Name, Content);
-    Ref->headers.push_back(Header);
+    reinterpret_cast<virtual_header_list_t *>(Ref)->push_back(Header);
 }
 
 namespace syclex = sycl::ext::oneapi::experimental;
+
+#if defined(SYCL_EXT_ONEAPI_KERNEL_COMPILER) &&                                \
+    defined(__SYCL_COMPILER_VERSION) && !defined(SUPPORTS_SYCL_COMPILATION)
+// SYCL source code compilation is supported from 2025.1 onwards.
+#if __SYCL_COMPILER_VERSION >= 20250317u
+#define SUPPORTS_SYCL_COMPILATION 1
+#else
+#define SUPPORTS_SYCL_COMPILATION 0
+#endif
+#endif
+
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+#ifndef __SYCL_COMPILER_VERSION
+#error SYCL compiler version not defined
+#else
+// The property was renamed to `registered_names` after 2025.1
+#if __SYCL_COMPILER_VERSION > 20250317u
+using registered_names_property_t = syclex::registered_names;
+#else
+using registered_names_property_t = syclex::registered_kernel_names;
+#endif
+#endif
+#endif
 
 __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     __dpctl_keep const DPCTLSyclContextRef Ctx,
@@ -822,7 +866,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     __dpctl_keep DPCTLKernelNameListRef Names,
     __dpctl_keep DPCTLBuildOptionListRef BuildOptions)
 {
-#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+#if (SUPPORTS_SYCL_COMPILATION > 0)
     context *SyclCtx = unwrap<context>(Ctx);
     device *SyclDev = unwrap<device>(Dev);
     if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
@@ -830,7 +874,9 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     }
     try {
         syclex::include_files IncludeFiles;
-        for (auto &Include : Headers->headers) {
+        for (auto &Include :
+             *reinterpret_cast<virtual_header_list_t *>(Headers))
+        {
             const auto &[Name, Content] = Include;
             IncludeFiles.add(Name, Content);
         }
@@ -840,12 +886,15 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
             *SyclCtx, syclex::source_language::sycl, Src,
             syclex::properties{IncludeFiles});
 
-        syclex::registered_names RegisteredNames;
-        for (const std::string &Name : Names->names) {
+        registered_names_property_t RegisteredNames;
+        for (const std::string &Name :
+             *reinterpret_cast<kernel_name_list_t *>(Names))
+        {
             RegisteredNames.add(Name);
         }
 
-        syclex::build_options Opts{BuildOptions->options};
+        syclex::build_options Opts{
+            *reinterpret_cast<build_option_list_t *>(BuildOptions)};
 
         std::vector<sycl::device> Devices({*SyclDev});
 
@@ -869,7 +918,7 @@ __dpctl_give DPCTLSyclKernelRef
 DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                                 __dpctl_keep const char *KernelName)
 {
-#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+#if (SUPPORTS_SYCL_COMPILATION > 0)
     try {
         auto KernelBundle =
             unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
@@ -888,7 +937,7 @@ bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
                                          KBRef,
                                      __dpctl_keep const char *KernelName)
 {
-#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+#if (SUPPORTS_SYCL_COMPILATION > 0)
     try {
         auto KernelBundle =
             unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
