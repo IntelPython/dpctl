@@ -236,6 +236,7 @@ def _asarray_from_numpy_ndarray(
     if dtype is None:
         # deduce device-representable output data type
         dtype = _map_to_device_dtype(ary.dtype, copy_q)
+    _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -245,10 +246,8 @@ def _asarray_from_numpy_ndarray(
         order = "C" if c_contig else "F"
     if order == "K":
         # new USM allocation
-        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = _from_numpy_empty_like_orderK(ary, dtype, usm_type, copy_q)
     else:
-        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(
             ary.shape,
             dtype=dtype,
