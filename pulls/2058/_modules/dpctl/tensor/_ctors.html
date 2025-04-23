@@ -1025,6 +1025,7 @@
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># deduce device-representable output data type</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">_map_to_device_dtype</span><span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
+    <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">f_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span>
     <span class="n">c_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
     <span class="n">fc_contig</span> <span class="o">=</span> <span class="n">f_contig</span> <span class="ow">or</span> <span class="n">c_contig</span>
@@ -1034,10 +1035,8 @@
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">c_contig</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
         <span class="c1"># new USM allocation</span>
-        <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">_from_numpy_empty_like_orderK</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
