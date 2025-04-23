@@ -349,19 +349,19 @@ def _copy_from_usm_ndarray_to_usm_ndarray(dst, src):
     _copy_same_shape(dst, src_same_shape)
 
 
-def _make_empty_like_orderK(X, dt, usm_type, dev):
+def _make_empty_like_orderK(x, dt, usm_type, dev):
     """
-    Returns empty array with shape and strides like `X`, with dtype `dt`,
+    Returns empty array with shape and strides like `x`, with dtype `dt`,
     USM type `usm_type`, on device `dev`.
     """
-    st = list(X.strides)
+    st = list(x.strides)
     perm = sorted(
-        range(X.ndim),
-        key=lambda d: builtins.abs(st[d]) if X.shape[d] > 1 else 0,
+        range(x.ndim),
+        key=lambda d: builtins.abs(st[d]) if x.shape[d] > 1 else 0,
         reverse=True,
     )
-    inv_perm = sorted(range(X.ndim), key=lambda i: perm[i])
-    sh = X.shape
+    inv_perm = sorted(range(x.ndim), key=lambda i: perm[i])
+    sh = x.shape
     sh_sorted = tuple(sh[i] for i in perm)
     R = dpt.empty(sh_sorted, dtype=dt, usm_type=usm_type, device=dev, order="C")
     if min(st) < 0:
@@ -372,13 +372,13 @@ def _make_empty_like_orderK(X, dt, usm_type, dev):
                 if st_sorted[i] < 0
                 else slice(None, None, None)
             )
-            for i in range(X.ndim)
+            for i in range(x.ndim)
         )
         R = R[sl]
     return dpt.permute_dims(R, inv_perm)
 
 
-def _empty_like_orderK(X, dt, usm_type=None, dev=None):
+def _empty_like_orderK(x, dt, usm_type=None, dev=None):
     """
     Returns empty array like `x`, using order='K'
 
@@ -386,25 +386,25 @@ def _empty_like_orderK(X, dt, usm_type=None, dev=None):
     array the returned array will have the same shape and the same
     strides as `x`.
     """
-    if not isinstance(X, dpt.usm_ndarray):
-        raise TypeError(f"Expected usm_ndarray, got {type(X)}")
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected usm_ndarray, got {type(x)}")
     if usm_type is None:
-        usm_type = X.usm_type
+        usm_type = x.usm_type
     if dev is None:
-        dev = X.device
-    fl = X.flags
-    if fl["C"] or X.size <= 1:
+        dev = x.device
+    fl = x.flags
+    if fl["C"] or x.size <= 1:
         return dpt.empty_like(
-            X, dtype=dt, usm_type=usm_type, device=dev, order="C"
+            x, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     elif fl["F"]:
         return dpt.empty_like(
-            X, dtype=dt, usm_type=usm_type, device=dev, order="F"
+            x, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
-    return _make_empty_like_orderK(X, dt, usm_type, dev)
+    return _make_empty_like_orderK(x, dt, usm_type, dev)
 
 
-def _from_numpy_empty_like_orderK(X, dt, usm_type, dev):
+def _from_numpy_empty_like_orderK(x, dt, usm_type, dev):
     """
     Returns empty usm_ndarray like NumPy array `x`, using order='K'
 
@@ -412,18 +412,18 @@ def _from_numpy_empty_like_orderK(X, dt, usm_type, dev):
     array the returned array will have the same shape and the same
     strides as `x`.
     """
-    if not isinstance(X, np.ndarray):
-        raise TypeError(f"Expected numpy.ndarray, got {type(X)}")
-    fl = X.flags
-    if fl["C"] or X.size <= 1:
+    if not isinstance(x, np.ndarray):
+        raise TypeError(f"Expected numpy.ndarray, got {type(x)}")
+    fl = x.flags
+    if fl["C"] or x.size <= 1:
         return dpt.empty(
-            X.shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
+            x.shape, dtype=dt, usm_type=usm_type, device=dev, order="C"
         )
     elif fl["F"]:
         return dpt.empty(
-            X.shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
+            x.shape, dtype=dt, usm_type=usm_type, device=dev, order="F"
         )
-    return _make_empty_like_orderK(X, dt, usm_type, dev)
+    return _make_empty_like_orderK(x, dt, usm_type, dev)
 
 
 def _empty_like_pair_orderK(X1, X2, dt, res_shape, usm_type, dev):
@@ -763,7 +763,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "arrays have different associated queues. "
-            "Use `Y.to_device(X.device)` to migrate."
+            "Use `y.to_device(x.device)` to migrate."
         )
     ary_nd = ary.ndim
     pp = normalize_axis_index(operator.index(axis), ary_nd)
