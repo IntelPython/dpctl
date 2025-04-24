@@ -813,7 +813,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_empty_like_orderK</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_empty_like_orderK</span><span class="p">,</span>
+    <span class="n">_from_numpy_empty_like_orderK</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_dtype</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._usmarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">_is_object_with_buffer_protocol</span>
@@ -1022,6 +1025,7 @@
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># deduce device-representable output data type</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">_map_to_device_dtype</span><span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
+    <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
     <span class="n">f_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;F&quot;</span><span class="p">]</span>
     <span class="n">c_contig</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span>
     <span class="n">fc_contig</span> <span class="o">=</span> <span class="n">f_contig</span> <span class="ow">or</span> <span class="n">c_contig</span>
@@ -1031,27 +1035,8 @@
         <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">c_contig</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
         <span class="c1"># new USM allocation</span>
-        <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">buffer</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
-            <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">copy_q</span><span class="p">},</span>
-        <span class="p">)</span>
-        <span class="n">original_strides</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">strides</span>
-        <span class="n">ind</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="nb">range</span><span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span>
-            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">original_strides</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">new_strides</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">strides</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">)</span>
-        <span class="c1"># reuse previously made USM allocation</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
-            <span class="n">res</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">usm_data</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">new_strides</span>
-        <span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">_from_numpy_empty_like_orderK</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">_ensure_native_dtype_device_support</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">(</span>
             <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
