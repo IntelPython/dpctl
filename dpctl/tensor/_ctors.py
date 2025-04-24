@@ -24,7 +24,10 @@ import dpctl.memory as dpm
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
-from dpctl.tensor._copy_utils import _empty_like_orderK
+from dpctl.tensor._copy_utils import (
+    _empty_like_orderK,
+    _from_numpy_empty_like_orderK,
+)
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
 from dpctl.tensor._usmarray import _is_object_with_buffer_protocol
@@ -233,6 +236,7 @@ def _asarray_from_numpy_ndarray(
     if dtype is None:
         # deduce device-representable output data type
         dtype = _map_to_device_dtype(ary.dtype, copy_q)
+    _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
     f_contig = ary.flags["F"]
     c_contig = ary.flags["C"]
     fc_contig = f_contig or c_contig
@@ -242,27 +246,8 @@ def _asarray_from_numpy_ndarray(
         order = "C" if c_contig else "F"
     if order == "K":
         # new USM allocation
-        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
-        res = dpt.usm_ndarray(
-            ary.shape,
-            dtype=dtype,
-            buffer=usm_type,
-            order="C",
-            buffer_ctor_kwargs={"queue": copy_q},
-        )
-        original_strides = ary.strides
-        ind = sorted(
-            range(ary.ndim),
-            key=lambda i: abs(original_strides[i]),
-            reverse=True,
-        )
-        new_strides = tuple(res.strides[ind[i]] for i in ind)
-        # reuse previously made USM allocation
-        res = dpt.usm_ndarray(
-            res.shape, dtype=res.dtype, buffer=res.usm_data, strides=new_strides
-        )
+        res = _from_numpy_empty_like_orderK(ary, dtype, usm_type, copy_q)
     else:
-        _ensure_native_dtype_device_support(dtype, copy_q.sycl_device)
         res = dpt.usm_ndarray(
             ary.shape,
             dtype=dtype,
