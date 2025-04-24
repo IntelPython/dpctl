@@ -873,18 +873,37 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         return nullptr;
     }
     try {
-        syclex::include_files IncludeFiles;
-        for (auto &Include :
-             *reinterpret_cast<virtual_header_list_t *>(Headers))
-        {
-            const auto &[Name, Content] = Include;
-            IncludeFiles.add(Name, Content);
-        }
-
+        auto *IncludeFileList =
+            reinterpret_cast<virtual_header_list_t *>(Headers);
+        std::unique_ptr<kernel_bundle<bundle_state::ext_oneapi_source>>
+            SrcBundle;
         std::string Src(Source);
-        auto SrcBundle = syclex::create_kernel_bundle_from_source(
-            *SyclCtx, syclex::source_language::sycl, Src,
-            syclex::properties{IncludeFiles});
+        // The following logic is to work around a bug in DPC++ version 2025.1.
+        // This version declares a constructor with no parameters for the
+        // `include_files` property, but does not implement it. Therefore, the
+        // only way to create `include_files` is with the name and content of
+        // the first virtual header, if any.
+        if (!IncludeFileList->empty()) {
+            auto IncludeFileIt = IncludeFileList->begin();
+            syclex::include_files IncludeFiles{IncludeFileIt->first,
+                                               IncludeFileIt->second};
+            for (std::advance(IncludeFileIt, 1);
+                 IncludeFileIt != IncludeFileList->end(); ++IncludeFileIt)
+            {
+                IncludeFiles.add(IncludeFileIt->first, IncludeFileIt->second);
+            }
+            SrcBundle = std::make_unique<
+                kernel_bundle<bundle_state::ext_oneapi_source>>(
+                syclex::create_kernel_bundle_from_source(
+                    *SyclCtx, syclex::source_language::sycl, Src,
+                    syclex::properties{IncludeFiles}));
+        }
+        else {
+            SrcBundle = std::make_unique<
+                kernel_bundle<bundle_state::ext_oneapi_source>>(
+                syclex::create_kernel_bundle_from_source(
+                    *SyclCtx, syclex::source_language::sycl, Src));
+        }
 
         registered_names_property_t RegisteredNames;
         for (const std::string &Name :
@@ -899,7 +918,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         std::vector<sycl::device> Devices({*SyclDev});
 
         auto ExeBundle = syclex::build(
-            SrcBundle, Devices, syclex::properties{RegisteredNames, Opts});
+            *SrcBundle, Devices, syclex::properties{RegisteredNames, Opts});
         auto ResultBundle =
             std::make_unique<sycl::kernel_bundle<bundle_state::executable>>(
                 ExeBundle);
