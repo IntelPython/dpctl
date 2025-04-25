@@ -151,7 +151,7 @@ An alternative way to migrate data is to use :py:func:`asarray` and specify devi
     x_cpu = tensor.concat((tensor.ones(10, device="cpu"), tensor.zeros(1000, device="cpu")))
 
     # data migration is performed via host
-    x_gpu = tensor.asarray(x_cpu, device="cpu")
+    x_gpu = tensor.asarray(x_cpu, device="gpu")
 
 An advantage of using the function ``asarray`` is that migration from ``usm_ndarray`` instances allocated on different
 devices as well migration from :py:class:`numpy.ndarray` may be accomplished in a single call:
