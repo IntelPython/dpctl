@@ -31,6 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -56,11 +57,11 @@ using dpctl::tensor::type_utils::is_complex;
 
 template <typename argT, typename resT> struct ImagFunctor
 {
-
     // is function constant for given argT
-    using is_constant = typename std::false_type;
+    using is_constant =
+        typename std::is_same<is_complex<argT>, std::false_type>;
     // constant value, if constant
-    // constexpr resT constant_value = resT{};
+    static constexpr resT constant_value = resT{0};
     // is function defined for sycl::vec
     using supports_vec = typename std::false_type;
     // do both argTy and resTy support sugroup store/load operation
@@ -70,11 +71,13 @@ template <typename argT, typename resT> struct ImagFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            return std::imag(in);
+            using realT = typename argT::value_type;
+            using sycl_complexT = typename exprm_ns::complex<realT>;
+            return exprm_ns::imag(sycl_complexT(in));
         }
         else {
             static_assert(std::is_same_v<resT, argT>);
-            return resT{0};
+            return constant_value;
         }
     }
 };
