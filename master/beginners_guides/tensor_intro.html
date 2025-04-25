@@ -935,7 +935,7 @@ the current device to the host, and then from the host to the target device:</p>
 <span class="n">x_cpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">tensor</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">),</span> <span class="n">tensor</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)))</span>
 
 <span class="c1"># data migration is performed via host</span>
-<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">x_gpu</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x_cpu</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
