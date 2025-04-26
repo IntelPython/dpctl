@@ -31,6 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -73,8 +74,10 @@ template <typename argT, typename resT> struct Expm1Functor
             using realT = typename argT::value_type;
             // expm1(x + I*y) = expm1(x)*cos(y) - 2*sin(y / 2)^2 +
             // I*exp(x)*sin(y)
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             // special cases
             if (std::isinf(x)) {

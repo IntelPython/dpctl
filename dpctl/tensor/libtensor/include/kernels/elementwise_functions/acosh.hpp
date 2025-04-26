@@ -77,17 +77,19 @@ template <typename argT, typename resT> struct AcoshFunctor
              * where the sign is chosen so Re(acosh(in)) >= 0.
              * So, we first calculate acos(in) and then acosh(in).
              */
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
-            resT acos_in;
+            sycl_complexT acos_z;
             if (std::isnan(x)) {
                 /* acos(NaN + I*+-Inf) = NaN + I*-+Inf */
                 if (std::isinf(y)) {
-                    acos_in = resT{q_nan, -y};
+                    acos_z = resT{q_nan, -y};
                 }
                 else {
-                    acos_in = resT{q_nan, q_nan};
+                    acos_z = resT{q_nan, q_nan};
                 }
             }
             else if (std::isnan(y)) {
@@ -95,15 +97,15 @@ template <typename argT, typename resT> struct AcoshFunctor
                 constexpr realT inf = std::numeric_limits<realT>::infinity();
 
                 if (std::isinf(x)) {
-                    acos_in = resT{q_nan, -inf};
+                    acos_z = resT{q_nan, -inf};
                 }
                 /* acos(0 + I*NaN) = Pi/2 + I*NaN with inexact */
                 else if (x == realT(0)) {
                     const realT pi_half = sycl::atan(realT(1)) * 2;
-                    acos_in = resT{pi_half, q_nan};
+                    acos_z = resT{pi_half, q_nan};
                 }
                 else {
-                    acos_in = resT{q_nan, q_nan};
+                    acos_z = resT{q_nan, q_nan};
                 }
             }
 
@@ -113,23 +115,21 @@ template <typename argT, typename resT> struct AcoshFunctor
              * For large x or y including acos(+-Inf + I*+-Inf)
              */
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = typename exprm_ns::complex<realT>;
-                const sycl_complexT log_in = exprm_ns::log(sycl_complexT(in));
-                const realT wx = log_in.real();
-                const realT wy = log_in.imag();
+                const sycl_complexT log_z = exprm_ns::log(z);
+                const realT wx = log_z.real();
+                const realT wy = log_z.imag();
                 const realT rx = sycl::fabs(wy);
                 realT ry = wx + sycl::log(realT(2));
-                acos_in = resT{rx, (sycl::signbit(y)) ? ry : -ry};
+                acos_z = resT{rx, (sycl::signbit(y)) ? ry : -ry};
             }
             else {
                 /* ordinary cases */
-                acos_in =
-                    exprm_ns::acos(exprm_ns::complex<realT>(in)); // acos(in);
+                acos_z = exprm_ns::acos(z); // acos(z);
             }
 
             /* Now we calculate acosh(z) */
-            const realT rx = std::real(acos_in);
-            const realT ry = std::imag(acos_in);
+            const realT rx = exprm_ns::real(acos_z);
+            const realT ry = exprm_ns::imag(acos_z);
 
             /* acosh(NaN + I*NaN) = NaN + I*NaN */
             if (std::isnan(rx) && std::isnan(ry)) {
@@ -145,7 +145,7 @@ template <typename argT, typename resT> struct AcoshFunctor
                 return resT{ry, ry};
             }
             /* ordinary cases */
-            const realT res_im = sycl::copysign(rx, std::imag(in));
+            const realT res_im = sycl::copysign(rx, exprm_ns::imag(z));
             return resT{sycl::fabs(ry), res_im};
         }
         else {

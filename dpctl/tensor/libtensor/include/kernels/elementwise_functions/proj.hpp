@@ -32,6 +32,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -70,8 +71,11 @@ template <typename argT, typename resT> struct ProjFunctor
     resT operator()(const argT &in) const
     {
         using realT = typename argT::value_type;
-        const realT x = std::real(in);
-        const realT y = std::imag(in);
+        using realT = typename argT::value_type;
+        using sycl_complexT = exprm_ns::complex<realT>;
+        sycl_complexT z = sycl_complexT(in);
+        const realT x = exprm_ns::real(z);
+        const realT y = exprm_ns::imag(z);
 
         if (std::isinf(x)) {
             return value_at_infinity(y);

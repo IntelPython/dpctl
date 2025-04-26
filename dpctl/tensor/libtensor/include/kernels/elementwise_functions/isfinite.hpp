@@ -30,6 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -69,8 +70,11 @@ template <typename argT, typename resT> struct IsFiniteFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            const bool real_isfinite = std::isfinite(std::real(in));
-            const bool imag_isfinite = std::isfinite(std::imag(in));
+            using realT = typename argT::value_type;
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const bool real_isfinite = std::isfinite(exprm_ns::real(z));
+            const bool imag_isfinite = std::isfinite(exprm_ns::imag(z));
             return (real_isfinite && imag_isfinite);
         }
         else if constexpr (std::is_same<argT, bool>::value ||

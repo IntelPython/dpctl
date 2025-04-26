@@ -73,8 +73,10 @@ template <typename argT, typename resT> struct CoshFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             const bool xfinite = std::isfinite(x);
             const bool yfinite = std::isfinite(y);
@@ -84,8 +86,7 @@ template <typename argT, typename resT> struct CoshFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-                return exprm_ns::cosh(
-                    exprm_ns::complex<realT>(in)); // cosh(in);
+                return exprm_ns::cosh(z); // cosh(z);
             }
 
             /*

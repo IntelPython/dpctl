@@ -80,8 +80,10 @@ template <typename argT, typename resT> struct AsinFunctor
              * y = imag(I * conj(in)) = real(in)
              * and then return {imag(w), real(w)} which is asin(in)
              */
-            const realT x = std::imag(in);
-            const realT y = std::real(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::imag(z);
+            const realT y = exprm_ns::real(z);
 
             if (std::isnan(x)) {
                 /* asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN */
@@ -120,26 +122,24 @@ template <typename argT, typename resT> struct AsinFunctor
             constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = exprm_ns::complex<realT>;
-                const sycl_complexT z{x, y};
+                const sycl_complexT z1{x, y};
                 realT wx, wy;
                 if (!sycl::signbit(x)) {
-                    const auto log_z = exprm_ns::log(z);
-                    wx = log_z.real() + sycl::log(realT(2));
-                    wy = log_z.imag();
+                    const auto log_z1 = exprm_ns::log(z1);
+                    wx = log_z1.real() + sycl::log(realT(2));
+                    wy = log_z1.imag();
                 }
                 else {
-                    const auto log_mz = exprm_ns::log(-z);
-                    wx = log_mz.real() + sycl::log(realT(2));
-                    wy = log_mz.imag();
+                    const auto log_mz1 = exprm_ns::log(-z1);
+                    wx = log_mz1.real() + sycl::log(realT(2));
+                    wy = log_mz1.imag();
                 }
                 const realT asinh_re = sycl::copysign(wx, x);
                 const realT asinh_im = sycl::copysign(wy, y);
                 return resT{asinh_im, asinh_re};
             }
             /* ordinary cases */
-            return exprm_ns::asin(
-                exprm_ns::complex<realT>(in)); // sycl::asin(in);
+            return exprm_ns::asin(z); // sycl::asin(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

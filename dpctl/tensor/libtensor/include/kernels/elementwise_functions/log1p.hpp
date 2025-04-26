@@ -30,6 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -78,8 +79,11 @@ template <typename argT, typename resT> struct Log1pFunctor
             //          = log1p(x^2 + 2x + y^2) / 2
             //             + I * atan2(y, x + 1)
             using realT = typename argT::value_type;
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using realT = typename argT::value_type;
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             // imaginary part of result
             const realT res_im = sycl::atan2(y, x + 1);

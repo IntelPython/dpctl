@@ -72,9 +72,10 @@ template <typename argT, typename resT> struct AsinhFunctor
             using realT = typename argT::value_type;
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
-
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             if (std::isnan(x)) {
                 /* asinh(NaN + I*+-Inf) = opt(+-)Inf + I*NaN */
@@ -109,12 +110,10 @@ template <typename argT, typename resT> struct AsinhFunctor
                 realT(1) / std::numeric_limits<realT>::epsilon();
 
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
-                using sycl_complexT = exprm_ns::complex<realT>;
-                sycl_complexT log_in = (sycl::signbit(x))
-                                           ? exprm_ns::log(sycl_complexT(-in))
-                                           : exprm_ns::log(sycl_complexT(in));
-                realT wx = log_in.real() + sycl::log(realT(2));
-                realT wy = log_in.imag();
+                sycl_complexT log_in =
+                    (sycl::signbit(x)) ? exprm_ns::log(-z) : exprm_ns::log(z);
+                realT wx = exprm_ns::real(log_in) + sycl::log(realT(2));
+                realT wy = exprm_ns::imag(log_in);
 
                 const realT res_re = sycl::copysign(wx, x);
                 const realT res_im = sycl::copysign(wy, y);
@@ -122,7 +121,7 @@ template <typename argT, typename resT> struct AsinhFunctor
             }
 
             /* ordinary cases */
-            return exprm_ns::asinh(exprm_ns::complex<realT>(in)); // asinh(in);
+            return exprm_ns::asinh(z); // asinh(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

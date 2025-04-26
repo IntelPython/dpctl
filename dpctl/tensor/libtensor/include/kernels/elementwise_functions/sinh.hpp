@@ -70,9 +70,10 @@ template <typename argT, typename resT> struct SinhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             const bool xfinite = std::isfinite(x);
             const bool yfinite = std::isfinite(y);
@@ -82,7 +83,7 @@ template <typename argT, typename resT> struct SinhFunctor
              * real and imaginary parts of input are finite.
              */
             if (xfinite && yfinite) {
-                return exprm_ns::sinh(exprm_ns::complex<realT>(in));
+                return exprm_ns::sinh(z);
             }
             /*
              * sinh(+-0 +- I Inf) = sign(d(+-0, dNaN))0 + I dNaN.
