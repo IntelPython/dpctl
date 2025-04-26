@@ -72,30 +72,31 @@ template <typename argT, typename resT> struct CosFunctor
             using realT = typename argT::value_type;
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT z_re = exprm_ns::real(z);
+            const realT z_im = exprm_ns::imag(z);
 
-            realT const &in_re = std::real(in);
-            realT const &in_im = std::imag(in);
-
-            const bool in_re_finite = std::isfinite(in_re);
-            const bool in_im_finite = std::isfinite(in_im);
+            const bool z_re_finite = std::isfinite(z_re);
+            const bool z_im_finite = std::isfinite(z_im);
 
             /*
              * Handle the nearly-non-exceptional cases where
              * real and imaginary parts of input are finite.
              */
-            if (in_re_finite && in_im_finite) {
-                return exprm_ns::cos(exprm_ns::complex<realT>(in)); // cos(in);
+            if (z_re_finite && z_im_finite) {
+                return exprm_ns::cos(z); // cos(z);
             }
 
             /*
-             * since cos(in) = cosh(I * in), for special cases,
-             * we return cosh(I * in).
+             * since cos(z) = cosh(I * z), for special cases,
+             * we return cosh(I * z).
              */
-            const realT x = -in_im;
-            const realT y = in_re;
+            const realT x = -z_im;
+            const realT y = z_re;
 
-            const bool xfinite = in_im_finite;
-            const bool yfinite = in_re_finite;
+            const bool xfinite = z_im_finite;
+            const bool yfinite = z_re_finite;
             /*
              * cosh(+-0 +- I Inf) = dNaN + I sign(d(+-0, dNaN))0.
              * The sign of 0 in the result is unspecified.  Choice = normally

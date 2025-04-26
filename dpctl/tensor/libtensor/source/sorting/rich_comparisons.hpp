@@ -24,7 +24,9 @@
 
 #pragma once
 
+#define SYCL_EXT_ONEAPI_COMPLEX
 #include "sycl/sycl.hpp"
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 #include <type_traits>
 
 namespace dpctl
@@ -53,6 +55,8 @@ template <typename fpT> struct ExtendedRealFPGreater
     }
 };
 
+namespace exprm_ns = sycl::ext::oneapi::experimental;
+
 template <typename cT> struct ExtendedComplexFPLess
 {
     /* [(R, R), (R, nan), (nan, R), (nan, nan)] */
@@ -60,15 +64,17 @@ template <typename cT> struct ExtendedComplexFPLess
     bool operator()(const cT &v1, const cT &v2) const
     {
         using realT = typename cT::value_type;
-
-        const realT real1 = std::real(v1);
-        const realT real2 = std::real(v2);
+        using sycl_complexT = exprm_ns::complex<realT>;
+        sycl_complexT z1 = sycl_complexT(v1);
+        sycl_complexT z2 = sycl_complexT(v2);
+        const realT real1 = exprm_ns::real(z1);
+        const realT real2 = exprm_ns::real(z2);
 
         const bool r1_nan = std::isnan(real1);
         const bool r2_nan = std::isnan(real2);
 
-        const realT imag1 = std::imag(v1);
-        const realT imag2 = std::imag(v2);
+        const realT imag1 = exprm_ns::imag(z1);
+        const realT imag2 = exprm_ns::imag(z2);
 
         const bool i1_nan = std::isnan(imag1);
         const bool i2_nan = std::isnan(imag2);

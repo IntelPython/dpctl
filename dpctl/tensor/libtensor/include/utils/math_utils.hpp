@@ -24,7 +24,8 @@
 
 #pragma once
 #include <cmath>
-#include <complex>
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 #include <sycl/sycl.hpp>
 
 namespace dpctl
@@ -34,13 +35,18 @@ namespace tensor
 namespace math_utils
 {
 
+namespace exprm_ns = sycl::ext::oneapi::experimental;
+
 template <typename T> bool less_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     return (real1 == real2)
                ? (imag1 < imag2)
@@ -50,10 +56,13 @@ template <typename T> bool less_complex(const T &x1, const T &x2)
 template <typename T> bool greater_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     return (real1 == real2)
                ? (imag1 > imag2)
@@ -63,10 +72,13 @@ template <typename T> bool greater_complex(const T &x1, const T &x2)
 template <typename T> bool less_equal_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     return (real1 == real2)
                ? (imag1 <= imag2)
@@ -76,10 +88,13 @@ template <typename T> bool less_equal_complex(const T &x1, const T &x2)
 template <typename T> bool greater_equal_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     return (real1 == real2)
                ? (imag1 >= imag2)
@@ -89,10 +104,13 @@ template <typename T> bool greater_equal_complex(const T &x1, const T &x2)
 template <typename T> T max_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     bool isnan_imag1 = std::isnan(imag1);
     bool gt = (real1 == real2)
@@ -104,10 +122,13 @@ template <typename T> T max_complex(const T &x1, const T &x2)
 template <typename T> T min_complex(const T &x1, const T &x2)
 {
     using realT = typename T::value_type;
-    realT real1 = std::real(x1);
-    realT real2 = std::real(x2);
-    realT imag1 = std::imag(x1);
-    realT imag2 = std::imag(x2);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT z1 = sycl_complexT(x1);
+    sycl_complexT z2 = sycl_complexT(x2);
+    realT real1 = exprm_ns::real(z1);
+    realT real2 = exprm_ns::real(z2);
+    realT imag1 = exprm_ns::imag(z1);
+    realT imag2 = exprm_ns::imag(z2);
 
     bool isnan_imag1 = std::isnan(imag1);
     bool lt = (real1 == real2)

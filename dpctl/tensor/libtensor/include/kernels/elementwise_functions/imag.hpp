@@ -31,6 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -72,7 +73,9 @@ template <typename argT, typename resT> struct ImagFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex_v<argT>) {
-            return std::imag(in);
+            using realT = typename argT::value_type;
+            using sycl_complexT = typename exprm_ns::complex<realT>;
+            return exprm_ns::real(sycl_complexT(in));
         }
         else {
             static_assert(std::is_same_v<resT, argT>);

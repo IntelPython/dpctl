@@ -72,12 +72,13 @@ template <typename argT, typename resT> struct ExpFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
             if (std::isfinite(x)) {
                 if (std::isfinite(y)) {
-                    return exprm_ns::exp(
-                        exprm_ns::complex<realT>(in)); // exp(in);
+                    return exprm_ns::exp(z); // exp(z);
                 }
                 else {
                     return resT{q_nan, q_nan};
@@ -86,7 +87,7 @@ template <typename argT, typename resT> struct ExpFunctor
             else if (std::isnan(x)) {
                 /* x is nan */
                 if (y == realT(0)) {
-                    return resT{in};
+                    return resT{z};
                 }
                 else {
                     return resT{x, q_nan};

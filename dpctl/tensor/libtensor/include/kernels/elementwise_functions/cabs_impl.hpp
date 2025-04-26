@@ -51,8 +51,10 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     //   * If x is a finite number and y is NaN, the result is NaN.
     //   * If x is NaN and y is NaN, the result is NaN.
 
-    const realT x = std::real(z);
-    const realT y = std::imag(z);
+    using sycl_complexT = exprm_ns::complex<realT>;
+    sycl_complexT _z = exprm_ns::complex<realT>(z);
+    const realT x = exprm_ns::real(_z);
+    const realT y = exprm_ns::imag(_z);
 
     constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
     constexpr realT p_inf = std::numeric_limits<realT>::infinity();
@@ -60,11 +62,8 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     const realT res =
         std::isinf(x)
             ? p_inf
-            : ((std::isinf(y)
-                    ? p_inf
-                    : ((std::isnan(x)
-                            ? q_nan
-                            : exprm_ns::abs(exprm_ns::complex<realT>(z))))));
+            : ((std::isinf(y) ? p_inf
+                              : ((std::isnan(x) ? q_nan : exprm_ns::abs(_z)))));
 
     return res;
 }

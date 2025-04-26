@@ -83,8 +83,11 @@ template <typename argT, typename resT> struct AtanFunctor
              * y = imag(I * conj(in)) = real(in)
              * and then return {imag(w), real(w)} which is atan(in)
              */
-            const realT x = std::imag(in);
-            const realT y = std::real(in);
+            using sycl_complexT = exprm_ns::complex<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::imag(z);
+            const realT y = exprm_ns::real(z);
+
             if (std::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-Pi/2 */
                 if (std::isinf(y)) {
@@ -132,7 +135,7 @@ template <typename argT, typename resT> struct AtanFunctor
                 return resT{atanh_im, atanh_re};
             }
             /* ordinary cases */
-            return exprm_ns::atan(exprm_ns::complex<realT>(in)); // atan(in);
+            return exprm_ns::atan(z); // atan(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||
