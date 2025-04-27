@@ -54,6 +54,7 @@ using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::is_complex_v;
 
 template <typename argT, typename resT> struct ImagFunctor
 {
@@ -70,7 +71,7 @@ template <typename argT, typename resT> struct ImagFunctor
 
     resT operator()(const argT &in) const
     {
-        if constexpr (is_complex<argT>::value) {
+        if constexpr (is_complex_v<argT>) {
             using realT = typename argT::value_type;
             using sycl_complexT = typename exprm_ns::complex<realT>;
             return exprm_ns::imag(sycl_complexT(in));
