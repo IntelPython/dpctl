@@ -71,7 +71,7 @@ template <typename argT, typename resT> struct ImagFunctor
 
     resT operator()(const argT &in) const
     {
-        if constexpr (is_complex<argT>::value) {
+        if constexpr (is_complex_v<argT>) {
             return std::imag(in);
         }
         else {

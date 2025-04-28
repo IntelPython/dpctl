@@ -53,6 +53,7 @@ using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::is_complex_v;
 
 template <typename argT, typename resT> struct RealFunctor
 {
@@ -69,7 +70,7 @@ template <typename argT, typename resT> struct RealFunctor
 
     resT operator()(const argT &in) const
     {
-        if constexpr (is_complex<argT>::value) {
+        if constexpr (is_complex_v<argT>) {
             return std::real(in);
         }
         else {
