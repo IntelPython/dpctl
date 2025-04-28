@@ -53,14 +53,16 @@ using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
+using dpctl::tensor::type_utils::is_complex_v;
 
 template <typename argT, typename resT> struct ImagFunctor
 {
 
     // is function constant for given argT
-    using is_constant = typename std::false_type;
+    using is_constant =
+        typename std::is_same<is_complex<argT>, std::false_type>;
     // constant value, if constant
-    // constexpr resT constant_value = resT{};
+    static constexpr resT constant_value = resT{0};
     // is function defined for sycl::vec
     using supports_vec = typename std::false_type;
     // do both argTy and resTy support sugroup store/load operation
@@ -74,7 +76,7 @@ template <typename argT, typename resT> struct ImagFunctor
         }
         else {
             static_assert(std::is_same_v<resT, argT>);
-            return resT{0};
+            return constant_value;
         }
     }
 };
