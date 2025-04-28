@@ -36,6 +36,9 @@
 #include <utility>
 #include <vector>
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -720,6 +723,43 @@ public:
     }
 
     PYBIND11_TYPE_CASTER(sycl::half, _("float"));
+};
+
+/* This type caster associates
+ * ``sycl:ext::oneapi::complex<T>`` C++ classes with Python :class:`complex` for
+ * the purposes of generation of Python bindings by pybind11.
+ */
+template <typename T>
+struct type_caster<sycl::ext::oneapi::experimental::complex<T>>
+{
+public:
+    bool load(handle src, bool convert)
+    {
+        if (!src) {
+            return false;
+        }
+        if (!convert && !PyComplex_Check(src.ptr())) {
+            return false;
+        }
+        Py_complex result = PyComplex_AsCComplex(src.ptr());
+        if (result.real == -1.0 && PyErr_Occurred()) {
+            PyErr_Clear();
+            return false;
+        }
+        value = sycl::ext::oneapi::experimental::complex<T>(
+            static_cast<T>(result.real), static_cast<T>(result.imag));
+        return true;
+    }
+
+    static handle cast(const sycl::ext::oneapi::experimental::complex<T> &src,
+                       return_value_policy /* policy */,
+                       handle /* parent */)
+    {
+        return PyComplex_FromDoubles((double)src.real(), (double)src.imag());
+    }
+
+    PYBIND11_TYPE_CASTER(sycl::ext::oneapi::experimental::complex<T>,
+                         const_name("sycl_complex"));
 };
 
 } // namespace detail

@@ -29,11 +29,15 @@
 
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 
 namespace cg_solver
 {
 namespace detail
 {
+
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename T> class sub_kern;
 
@@ -122,7 +126,7 @@ template <typename T> class complex_norm_squared_blocking_kern;
 template <typename T>
 T complex_norm_squared_blocking(sycl::queue &q,
                                 size_t nelems,
-                                const std::complex<T> *r,
+                                const exprm_ns::complex<T> *r,
                                 const std::vector<sycl::event> &depends = {})
 {
     sycl::buffer<T, 1> sum_sq_buf(sycl::range<1>{1});

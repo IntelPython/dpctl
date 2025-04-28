@@ -29,6 +29,8 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 #include <utility>
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 
 namespace dpctl
 {
@@ -36,6 +38,8 @@ namespace tensor
 {
 namespace type_utils
 {
+
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename T, typename = void>
 struct is_complex : public std::false_type
@@ -45,8 +49,9 @@ struct is_complex : public std::false_type
 template <typename T>
 struct is_complex<
     T,
-    std::enable_if_t<std::is_same_v<std::remove_cv_t<T>, std::complex<float>> ||
-                     std::is_same_v<std::remove_cv_t<T>, std::complex<double>>>>
+    std::enable_if_t<
+        std::is_same_v<std::remove_cv_t<T>, exprm_ns::complex<float>> ||
+        std::is_same_v<std::remove_cv_t<T>, exprm_ns::complex<double>>>>
     : public std::true_type
 {
 };
@@ -91,7 +96,7 @@ template <typename T> void validate_type_for_device(const sycl::device &d)
                                      " does not support type 'float64'");
         }
     }
-    else if constexpr (std::is_same_v<T, std::complex<double>>) {
+    else if constexpr (std::is_same_v<T, exprm_ns::complex<double>>) {
         if (!d.has(sycl::aspect::fp64)) {
             throw std::runtime_error("Device " +
                                      d.get_info<sycl::info::device::name>() +

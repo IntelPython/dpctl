@@ -35,6 +35,9 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -46,6 +49,7 @@ namespace py_internal
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace su_ns = dpctl::tensor::sycl_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace impl
 {
@@ -102,14 +106,14 @@ struct TypePairSupportForArgmaxReductionTemps
         // input double
         td_ns::TypePairDefinedEntry<argTy, double, outTy, std::int64_t>,
 
-        // input std::complex
+        // input exprm_ns::complex
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
+                                    exprm_ns::complex<float>,
                                     outTy,
                                     std::int64_t>,
 
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
+                                    exprm_ns::complex<double>,
                                     outTy,
                                     std::int64_t>,
 

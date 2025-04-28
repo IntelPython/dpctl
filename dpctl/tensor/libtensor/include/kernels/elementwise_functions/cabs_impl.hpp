@@ -24,7 +24,6 @@
 
 #pragma once
 #include <cmath>
-#include <complex>
 #include <limits>
 
 #include "sycl_complex.hpp"
@@ -38,7 +37,7 @@ namespace kernels
 namespace detail
 {
 
-template <typename realT> realT cabs(std::complex<realT> const &z)
+template <typename realT> realT cabs(exprm_ns::complex<realT> const &z)
 {
     // Special values for cabs( x + y * 1j):
     //   * If x is either +infinity or -infinity and y is any value

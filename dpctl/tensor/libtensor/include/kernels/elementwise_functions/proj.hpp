@@ -25,7 +25,6 @@
 
 #pragma once
 #include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -89,10 +88,11 @@ template <typename argT, typename resT> struct ProjFunctor
     }
 
 private:
-    template <typename T> std::complex<T> value_at_infinity(const T &y) const
+    template <typename T>
+    exprm_ns::complex<T> value_at_infinity(const T &y) const
     {
         const T res_im = sycl::copysign(T(0), y);
-        return std::complex<T>{std::numeric_limits<T>::infinity(), res_im};
+        return exprm_ns::complex<T>{std::numeric_limits<T>::infinity(), res_im};
     }
 };
 
@@ -116,8 +116,8 @@ using ProjStridedFunctor = elementwise_common::
 template <typename T> struct ProjOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<float>>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
@@ -170,7 +170,7 @@ template <typename fnT, typename T> struct ProjContigFactory
             return fn;
         }
         else {
-            if constexpr (std::is_same_v<T, std::complex<double>>) {
+            if constexpr (std::is_same_v<T, exprm_ns::complex<double>>) {
                 fnT fn = proj_contig_impl<T>;
                 return fn;
             }

@@ -121,8 +121,8 @@ template <typename T> struct RoundOutputType
         td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<float>>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;

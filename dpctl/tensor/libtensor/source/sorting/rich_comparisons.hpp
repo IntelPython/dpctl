@@ -118,9 +118,9 @@ template <typename argTy> struct AscendingSorter
                                     std::less<argTy>>;
 };
 
-template <typename T> struct AscendingSorter<std::complex<T>>
+template <typename T> struct AscendingSorter<exprm_ns::complex<T>>
 {
-    using type = ExtendedComplexFPLess<std::complex<T>>;
+    using type = ExtendedComplexFPLess<exprm_ns::complex<T>>;
 };
 
 template <typename argTy> struct DescendingSorter
@@ -130,9 +130,9 @@ template <typename argTy> struct DescendingSorter
                                     std::greater<argTy>>;
 };
 
-template <typename T> struct DescendingSorter<std::complex<T>>
+template <typename T> struct DescendingSorter<exprm_ns::complex<T>>
 {
-    using type = ExtendedComplexFPGreater<std::complex<T>>;
+    using type = ExtendedComplexFPGreater<exprm_ns::complex<T>>;
 };
 
 } // end of namespace py_internal

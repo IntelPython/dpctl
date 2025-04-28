@@ -30,6 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -149,14 +150,14 @@ template <typename T1, typename T2> struct LogicalXorOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, bool>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         T2,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         T2,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
 

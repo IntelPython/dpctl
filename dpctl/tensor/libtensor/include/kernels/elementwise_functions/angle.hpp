@@ -95,8 +95,8 @@ using AngleStridedFunctor = elementwise_common::
 template <typename T> struct AngleOutputType
 {
     using value_type = typename std::disjunction<
-        td_ns::TypeMapResultEntry<T, std::complex<float>, float>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<float>, float>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<double>, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;

@@ -178,14 +178,14 @@ template <typename T1, typename T2> struct EqualOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, bool>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         T2,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         bool>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         T2,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         bool>,
         td_ns::DefaultResultEntry<void>>::result_type;
 

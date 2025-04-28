@@ -36,6 +36,9 @@
 #include "reduction_atomic_support.hpp"
 #include "reduction_over_axis.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -46,6 +49,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace impl
 {
@@ -193,37 +197,46 @@ struct TypePairSupportDataForProductReductionTemps
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, sycl::half>,
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, sycl::half, outTy, double>,
-        td_ns::
-            TypePairDefinedEntry<argTy, sycl::half, outTy, std::complex<float>>,
         td_ns::TypePairDefinedEntry<argTy,
                                     sycl::half,
                                     outTy,
-                                    std::complex<double>>,
+                                    exprm_ns::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    sycl::half,
+                                    outTy,
+                                    exprm_ns::complex<double>>,
 
         // input float
         td_ns::TypePairDefinedEntry<argTy, float, outTy, float>,
         td_ns::TypePairDefinedEntry<argTy, float, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<float>>,
-        td_ns::TypePairDefinedEntry<argTy, float, outTy, std::complex<double>>,
+        td_ns::
+            TypePairDefinedEntry<argTy, float, outTy, exprm_ns::complex<float>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    float,
+                                    outTy,
+                                    exprm_ns::complex<double>>,
 
         // input double
         td_ns::TypePairDefinedEntry<argTy, double, outTy, double>,
-        td_ns::TypePairDefinedEntry<argTy, double, outTy, std::complex<double>>,
+        td_ns::TypePairDefinedEntry<argTy,
+                                    double,
+                                    outTy,
+                                    exprm_ns::complex<double>>,
 
-        // input std::complex
+        // input exprm_ns::complex
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
+                                    exprm_ns::complex<float>,
                                     outTy,
-                                    std::complex<float>>,
+                                    exprm_ns::complex<float>>,
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
+                                    exprm_ns::complex<float>,
                                     outTy,
-                                    std::complex<double>>,
+                                    exprm_ns::complex<double>>,
 
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
+                                    exprm_ns::complex<double>,
                                     outTy,
-                                    std::complex<double>>,
+                                    exprm_ns::complex<double>>,
 
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;

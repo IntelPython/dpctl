@@ -48,6 +48,9 @@
 #include "kernels/elementwise_functions/common_inplace.hpp"
 #include "kernels/elementwise_functions/true_divide.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -58,6 +61,7 @@ namespace py_internal
 {
 
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
@@ -332,13 +336,13 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     }
     case complex64_typeid:
     {
-        fn = divide_by_scalar<std::complex<float>, float>;
+        fn = divide_by_scalar<exprm_ns::complex<float>, float>;
         std::ignore = new (scalar_alloc) float(scalar);
         break;
     }
     case complex128_typeid:
     {
-        fn = divide_by_scalar<std::complex<double>, double>;
+        fn = divide_by_scalar<exprm_ns::complex<double>, double>;
         std::ignore = new (scalar_alloc) double(scalar);
         break;
     }

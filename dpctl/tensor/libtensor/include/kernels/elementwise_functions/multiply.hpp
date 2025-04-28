@@ -24,7 +24,6 @@
 //===---------------------------------------------------------------------===//
 
 #pragma once
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
@@ -173,15 +172,15 @@ template <typename T1, typename T2> struct MultiplyOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         T2,
-                                        std::complex<float>,
-                                        std::complex<float>>,
+                                        exprm_ns::complex<float>,
+                                        exprm_ns::complex<float>>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         T2,
-                                        std::complex<double>,
-                                        std::complex<double>>,
+                                        exprm_ns::complex<double>,
+                                        exprm_ns::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
@@ -475,13 +474,13 @@ template <typename argTy, typename resTy> struct MultiplyInplaceTypePairSupport
         td_ns::TypePairDefinedEntry<argTy, float, resTy, float>,
         td_ns::TypePairDefinedEntry<argTy, double, resTy, double>,
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<float>,
+                                    exprm_ns::complex<float>,
                                     resTy,
-                                    std::complex<float>>,
+                                    exprm_ns::complex<float>>,
         td_ns::TypePairDefinedEntry<argTy,
-                                    std::complex<double>,
+                                    exprm_ns::complex<double>,
                                     resTy,
-                                    std::complex<double>>,
+                                    exprm_ns::complex<double>>,
         // fall-through
         td_ns::NotDefinedEntry>::is_defined;
 };

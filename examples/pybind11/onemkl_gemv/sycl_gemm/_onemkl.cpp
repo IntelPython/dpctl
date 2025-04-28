@@ -34,9 +34,12 @@
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
 #include "dpctl4pybind11.hpp"
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 // clang-format on
 
 namespace py = pybind11;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::utils::keep_args_alive;
 
@@ -119,7 +122,7 @@ py_gemv(sycl::queue &q,
         res_ev = gemv_ev;
     }
     else if (v_typenum == api.UAR_CDOUBLE_) {
-        using T = std::complex<double>;
+        using T = exprm_ns::complex<double>;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
             reinterpret_cast<T *>(mat_typeless_ptr), m,
@@ -128,7 +131,7 @@ py_gemv(sycl::queue &q,
         res_ev = gemv_ev;
     }
     else if (v_typenum == api.UAR_CFLOAT_) {
-        using T = std::complex<float>;
+        using T = exprm_ns::complex<float>;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
             reinterpret_cast<T *>(mat_typeless_ptr), m,
@@ -228,12 +231,12 @@ py_sub(sycl::queue q,
                              out_r_typeless_ptr, depends);
     }
     else if (out_r_typenum == api.UAR_CDOUBLE_) {
-        using T = std::complex<double>;
+        using T = exprm_ns::complex<double>;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
     else if (out_r_typenum == api.UAR_CFLOAT_) {
-        using T = std::complex<float>;
+        using T = exprm_ns::complex<float>;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
@@ -329,12 +332,12 @@ py_axpby_inplace(sycl::queue q,
                                        y_typeless_ptr, depends);
     }
     else if (x_typenum == api.UAR_CDOUBLE_) {
-        using T = std::complex<double>;
+        using T = exprm_ns::complex<double>;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else if (x_typenum == api.UAR_CFLOAT_) {
-        using T = std::complex<float>;
+        using T = exprm_ns::complex<float>;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
@@ -367,8 +370,8 @@ T complex_norm_squared_blocking_impl(
     const char *r_typeless,
     const std::vector<sycl::event> &depends = {})
 {
-    const std::complex<T> *r =
-        reinterpret_cast<const std::complex<T> *>(r_typeless);
+    const exprm_ns::complex<T> *r =
+        reinterpret_cast<const exprm_ns::complex<T> *>(r_typeless);
 
     return cg_solver::detail::complex_norm_squared_blocking(q, nelems, r,
                                                             depends);
@@ -419,13 +422,13 @@ py::object py_norm_squared_blocking(sycl::queue q,
         res = py::float_(n_sq);
     }
     else if (r_typenum == api.UAR_CDOUBLE_) {
-        using T = std::complex<double>;
+        using T = exprm_ns::complex<double>;
         double n_sq = complex_norm_squared_blocking_impl<double>(
             q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
     else if (r_typenum == api.UAR_CFLOAT_) {
-        using T = std::complex<float>;
+        using T = exprm_ns::complex<float>;
         float n_sq = complex_norm_squared_blocking_impl<float>(
             q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
@@ -506,7 +509,7 @@ py::object py_dot_blocking(sycl::queue q,
         res = py::float_(res_v);
     }
     else if (v1_typenum == api.UAR_CDOUBLE_) {
-        using T = std::complex<double>;
+        using T = exprm_ns::complex<double>;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
             q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
@@ -517,7 +520,7 @@ py::object py_dot_blocking(sycl::queue q,
         res = py::cast(res_v);
     }
     else if (v1_typenum == api.UAR_CFLOAT_) {
-        using T = std::complex<float>;
+        using T = exprm_ns::complex<float>;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
             q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,

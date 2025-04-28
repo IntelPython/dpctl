@@ -32,12 +32,18 @@
 
 #include "math_utils.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace dpctl
 {
 namespace tensor
 {
 namespace sycl_utils
 {
+
+namespace exprm_ns = sycl::ext::oneapi::experimental;
+
 namespace detail
 {
 
@@ -79,7 +85,7 @@ template <typename T> struct IsContained<T, NullTypeList> : std::false_type
 template <class T> struct IsComplex : std::false_type
 {
 };
-template <class T> struct IsComplex<std::complex<T>> : std::true_type
+template <class T> struct IsComplex<exprm_ns::complex<T>> : std::true_type
 {
 };
 
@@ -380,11 +386,12 @@ struct GetIdentity<Op, bool, std::enable_if_t<IsMaximum<bool, Op>::value>>
 
 template <typename Op, typename T>
 struct GetIdentity<Op,
-                   std::complex<T>,
-                   std::enable_if_t<IsMaximum<std::complex<T>, Op>::value>>
+                   exprm_ns::complex<T>,
+                   std::enable_if_t<IsMaximum<exprm_ns::complex<T>, Op>::value>>
 {
-    static constexpr std::complex<T> value{-std::numeric_limits<T>::infinity(),
-                                           -std::numeric_limits<T>::infinity()};
+    static constexpr exprm_ns::complex<T> value{
+        -std::numeric_limits<T>::infinity(),
+        -std::numeric_limits<T>::infinity()};
 };
 
 // Minimum
@@ -413,11 +420,11 @@ struct GetIdentity<Op, bool, std::enable_if_t<IsMinimum<bool, Op>::value>>
 
 template <typename Op, typename T>
 struct GetIdentity<Op,
-                   std::complex<T>,
-                   std::enable_if_t<IsMinimum<std::complex<T>, Op>::value>>
+                   exprm_ns::complex<T>,
+                   std::enable_if_t<IsMinimum<exprm_ns::complex<T>, Op>::value>>
 {
-    static constexpr std::complex<T> value{std::numeric_limits<T>::infinity(),
-                                           std::numeric_limits<T>::infinity()};
+    static constexpr exprm_ns::complex<T> value{
+        std::numeric_limits<T>::infinity(), std::numeric_limits<T>::infinity()};
 };
 
 // Plus
@@ -428,6 +435,15 @@ using IsPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>> ||
 
 template <typename T, class Op>
 using IsSyclPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>>>;
+
+template <typename Op, typename T>
+struct GetIdentity<Op,
+                   exprm_ns::complex<T>,
+                   std::enable_if_t<IsPlus<exprm_ns::complex<T>, Op>::value>>
+{
+    static constexpr exprm_ns::complex<T> value{static_cast<T>(0),
+                                                static_cast<T>(0)};
+};
 
 // Multiplies
 

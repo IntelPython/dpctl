@@ -40,6 +40,9 @@
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace dpctl
 {
 namespace tensor
@@ -50,6 +53,7 @@ namespace kernels
 using dpctl::tensor::ssize_t;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace su_ns = dpctl::tensor::sycl_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace reduction_detail
 {
@@ -1914,8 +1918,8 @@ public:
                         using dpctl::tensor::math_utils::less_complex;
                         // less_complex always returns false for NaNs, so check
                         if (less_complex<argT>(val, red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
+                            std::isnan(exprm_ns::real(val)) ||
+                            std::isnan(exprm_ns::imag(val)))
                         {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -1941,8 +1945,8 @@ public:
                     if constexpr (is_complex<argT>::value) {
                         using dpctl::tensor::math_utils::greater_complex;
                         if (greater_complex<argT>(val, red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
+                            std::isnan(exprm_ns::real(val)) ||
+                            std::isnan(exprm_ns::imag(val)))
                         {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -2230,8 +2234,8 @@ public:
                             // less_complex always returns false for NaNs, so
                             // check
                             if (less_complex<argT>(val, local_red_val) ||
-                                std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
+                                std::isnan(exprm_ns::real(val)) ||
+                                std::isnan(exprm_ns::imag(val)))
                             {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -2277,8 +2281,8 @@ public:
                         if constexpr (is_complex<argT>::value) {
                             using dpctl::tensor::math_utils::greater_complex;
                             if (greater_complex<argT>(val, local_red_val) ||
-                                std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
+                                std::isnan(exprm_ns::real(val)) ||
+                                std::isnan(exprm_ns::imag(val)))
                             {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -2330,8 +2334,8 @@ public:
         if constexpr (is_complex<argT>::value) {
             // equality does not hold for NaNs, so check here
             local_idx = (red_val_over_wg == local_red_val ||
-                         std::isnan(std::real(local_red_val)) ||
-                         std::isnan(std::imag(local_red_val)))
+                         std::isnan(exprm_ns::real(local_red_val)) ||
+                         std::isnan(exprm_ns::imag(local_red_val)))
                             ? local_idx
                             : idx_identity_;
         }

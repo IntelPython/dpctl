@@ -1014,7 +1014,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =
@@ -1261,7 +1261,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =

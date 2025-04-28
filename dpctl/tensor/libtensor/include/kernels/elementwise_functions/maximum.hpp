@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/math_utils.hpp"
@@ -181,15 +182,15 @@ template <typename T1, typename T2> struct MaximumOutputType
         td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
         td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<float>,
+                                        exprm_ns::complex<float>,
                                         T2,
-                                        std::complex<float>,
-                                        std::complex<float>>,
+                                        exprm_ns::complex<float>,
+                                        exprm_ns::complex<float>>,
         td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::complex<double>,
+                                        exprm_ns::complex<double>,
                                         T2,
-                                        std::complex<double>,
-                                        std::complex<double>>,
+                                        exprm_ns::complex<double>,
+                                        exprm_ns::complex<double>>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;

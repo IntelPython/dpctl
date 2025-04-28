@@ -25,7 +25,6 @@
 
 #pragma once
 #include <cmath>
-#include <complex>
 #include <cstddef>
 #include <cstdint>
 #include <sycl/sycl.hpp>
@@ -116,8 +115,8 @@ template <typename T> struct ImagOutputType
         td_ns::TypeMapResultEntry<T, sycl::half>,
         td_ns::TypeMapResultEntry<T, float>,
         td_ns::TypeMapResultEntry<T, double>,
-        td_ns::TypeMapResultEntry<T, std::complex<float>, float>,
-        td_ns::TypeMapResultEntry<T, std::complex<double>, double>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<float>, float>,
+        td_ns::TypeMapResultEntry<T, exprm_ns::complex<double>, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
 
     static constexpr bool is_defined = !std::is_same_v<value_type, void>;
@@ -178,7 +177,7 @@ template <typename fnT, typename T> struct ImagContigFactory
 
 template <typename fnT, typename T> struct ImagTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::imag(T x) */
+    /*! @brief get typeid for output type of imag(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename ImagOutputType<T>::value_type;
