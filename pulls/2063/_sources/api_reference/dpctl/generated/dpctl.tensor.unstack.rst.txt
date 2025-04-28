@@ -1,0 +1,6 @@
+﻿dpctl.tensor.unstack
+====================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: unstack
