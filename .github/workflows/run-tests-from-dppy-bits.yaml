@@ -108,6 +108,11 @@ jobs:
         run: |
           conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
 
+      # intel-opencl-rt is not being installed when running conda install dpctl, so do it manually
+      - name: Install intel-opencl-rt
+        run: |
+          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} intel-opencl-rt
+
       - name: Configure Intel OpenCL CPU RT
         shell: pwsh
         run: |
