@@ -419,7 +419,20 @@ template <typename argT, typename resT> struct MultiplyInplaceFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
-    void operator()(resT &res, const argT &in) { res *= in; }
+    void operator()(resT &res, const argT &in)
+    {
+        if constexpr (tu_ns::is_complex_v<resT> && tu_ns::is_complex_v<argT>) {
+            using res_rT = typename resT::value_type;
+            using arg_rT = typename argT::value_type;
+
+            auto res1 = exprm_ns::complex<res_rT>(res);
+            res1 *= exprm_ns::complex<arg_rT>(in);
+            res = res1;
+        }
+        else {
+            res *= in;
+        }
+    }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,

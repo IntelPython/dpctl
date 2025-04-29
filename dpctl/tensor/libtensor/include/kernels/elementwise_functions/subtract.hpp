@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -62,7 +63,17 @@ template <typename argT1, typename argT2, typename resT> struct SubtractFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return in1 - in2;
+        if constexpr (tu_ns::is_complex_v<argT1> && tu_ns::is_complex_v<argT2>)
+        {
+            using realT1 = typename argT1::value_type;
+            using realT2 = typename argT2::value_type;
+
+            return exprm_ns::complex<realT1>(in1) -
+                   exprm_ns::complex<realT2>(in2);
+        }
+        else {
+            return in1 - in2;
+        }
     }
 
     template <int vec_sz>
@@ -424,7 +435,17 @@ template <typename argT, typename resT> struct SubtractInplaceFunctor
     void operator()(sycl::vec<resT, vec_sz> &res,
                     const sycl::vec<argT, vec_sz> &in)
     {
-        res -= in;
+        if constexpr (tu_ns::is_complex_v<resT> && tu_ns::is_complex_v<argT>) {
+            using res_rT = typename resT::value_type;
+            using arg_rT = typename argT::value_type;
+
+            auto res1 = exprm_ns::complex<res_rT>(res);
+            res1 -= exprm_ns::complex<arg_rT>(in);
+            res = res1;
+        }
+        else {
+            res -= in;
+        }
     }
 };
 
