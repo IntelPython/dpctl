@@ -40,6 +40,9 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace dpctl
 {
 namespace tensor
@@ -49,6 +52,8 @@ namespace kernels
 
 using dpctl::tensor::ssize_t;
 namespace su_ns = dpctl::tensor::sycl_utils;
+namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename lhsT,
           typename rhsT,
@@ -92,7 +97,7 @@ public:
             auto lhs_reduction_offset = reduction_offsets.get_first_offset();
             auto rhs_reduction_offset = reduction_offsets.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using tu_ns::convert_impl;
             red_val += convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -175,7 +180,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using tu_ns::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -273,7 +278,7 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
+            using tu_ns::convert_impl;
             outT val = convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
                        convert_impl<outT, rhsT>(
@@ -718,13 +723,26 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            using tu_ns::convert_impl;
+            using tu_ns::is_complex_v;
+            if constexpr (is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complexT = exprm_ns::complex<realT>;
 
-            local_red_val += val;
+                sycl_complexT val =
+                    sycl_complexT(convert_impl<outT, lhsT>(
+                        lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                    sycl_complexT(convert_impl<outT, rhsT>(
+                        rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                local_red_val = outT(sycl_complexT(local_red_val) + val);
+            }
+            else {
+                outT val = convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+                local_red_val += val;
+            }
         }
 
         auto work_group = it.get_group();
@@ -819,13 +837,26 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            using tu_ns::convert_impl;
+            using tu_ns::is_complex_v;
+            if constexpr (is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complexT = exprm_ns::complex<realT>;
 
-            local_red_val += val;
+                sycl_complexT val =
+                    sycl_complexT(convert_impl<outT, lhsT>(
+                        lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                    sycl_complexT(convert_impl<outT, rhsT>(
+                        rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                local_red_val = outT(sycl_complexT(local_red_val) + val);
+            }
+            else {
+                outT val = convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+                local_red_val += val;
+            }
         }
 
         auto work_group = it.get_group();
