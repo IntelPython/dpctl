@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -49,7 +49,9 @@ namespace sinh
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -70,7 +72,7 @@ template <typename argT, typename resT> struct SinhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-            using sycl_complexT = exprm_ns::complex<realT>;
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
             sycl_complexT z = sycl_complexT(in);
             const realT x = exprm_ns::real(z);
             const realT y = exprm_ns::imag(z);

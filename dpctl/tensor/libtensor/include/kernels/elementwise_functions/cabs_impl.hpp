@@ -27,7 +27,7 @@
 #include <complex>
 #include <limits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 
 namespace dpctl
 {
@@ -37,6 +37,9 @@ namespace kernels
 {
 namespace detail
 {
+
+namespace su_ns = dpctl::tensor::sycl_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename realT> realT cabs(std::complex<realT> const &z)
 {
@@ -51,8 +54,8 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     //   * If x is a finite number and y is NaN, the result is NaN.
     //   * If x is NaN and y is NaN, the result is NaN.
 
-    using sycl_complexT = exprm_ns::complex<realT>;
-    sycl_complexT _z = exprm_ns::complex<realT>(z);
+    using sycl_complexT = su_ns::sycl_complex_t<realT>;
+    sycl_complexT _z = su_ns::sycl_complex_t<realT>(z);
     const realT x = exprm_ns::real(_z);
     const realT y = exprm_ns::imag(_z);
 

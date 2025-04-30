@@ -26,11 +26,25 @@
 
 #pragma once
 
-#define SYCL_EXT_ONEAPI_COMPLEX
+#ifndef SYCL_EXT_ONEAPI_COMPLEX
+#define SYCL_EXT_ONEAPI_COMPLEX 1
+#endif
 #if __has_include(<sycl/ext/oneapi/experimental/sycl_complex.hpp>)
 #include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
 #else
 #include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 #endif
 
-namespace exprm_ns = sycl::ext::oneapi::experimental;
+namespace dpctl
+{
+namespace tensor
+{
+namespace sycl_utils
+{
+
+template <typename T>
+using sycl_complex_t = sycl::ext::oneapi::experimental::complex<T>;
+
+} // namespace sycl_utils
+} // namespace tensor
+} // namespace dpctl

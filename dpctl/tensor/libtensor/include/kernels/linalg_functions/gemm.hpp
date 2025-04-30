@@ -37,11 +37,9 @@
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/sycl_complex.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
-
-#define SYCL_EXT_ONEAPI_COMPLEX
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 
 namespace dpctl
 {
@@ -53,7 +51,6 @@ namespace kernels
 using dpctl::tensor::ssize_t;
 namespace su_ns = dpctl::tensor::sycl_utils;
 namespace tu_ns = dpctl::tensor::type_utils;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace gemm_detail
 {
@@ -1090,7 +1087,7 @@ public:
                     {
                         if constexpr (tu_ns::is_complex_v<resT>) {
                             using realT = typename resT::value_type;
-                            using sycl_complex = exprm_ns::complex<realT>;
+                            using sycl_complex = su_ns::sycl_complex_t<realT>;
 
                             auto tmp = sycl_complex(
                                 private_C[pr_i * wi_delta_m_vecs + pr_j]);
@@ -1981,7 +1978,7 @@ public:
             {
                 if constexpr (tu_ns::is_complex_v<resT>) {
                     using realT = typename resT::value_type;
-                    using sycl_complex = exprm_ns::complex<realT>;
+                    using sycl_complex = su_ns::sycl_complex_t<realT>;
                     auto tmp = sycl_complex(local_sum);
                     tmp += (sycl_complex(local_A_block[a_offset + a_pr_offset +
                                                        private_s]) *
@@ -2158,7 +2155,7 @@ public:
         for (std::size_t t = local_s; t < local_B_block.size(); t += delta_k) {
             if constexpr (tu_ns::is_complex_v<resT>) {
                 using realT = typename resT::value_type;
-                using sycl_complex = exprm_ns::complex<realT>;
+                using sycl_complex = su_ns::sycl_complex_t<realT>;
 
                 auto tmp = sycl_complex(private_sum);
                 tmp += ((i < n) && (t + t_shift < k))
@@ -2190,7 +2187,7 @@ public:
             for (std::size_t t = 1; t < delta_k; ++t) {
                 if constexpr (tu_ns::is_complex_v<resT>) {
                     using realT = typename resT::value_type;
-                    using sycl_complex = exprm_ns::complex<realT>;
+                    using sycl_complex = su_ns::sycl_complex_t<realT>;
 
                     auto tmp = sycl_complex(local_sum);
                     tmp += sycl_complex(workspace[workspace_i_shift + t]);

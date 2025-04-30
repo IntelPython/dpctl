@@ -37,11 +37,9 @@
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/sycl_complex.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
-
-#define SYCL_EXT_ONEAPI_COMPLEX
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 
 namespace dpctl
 {
@@ -53,7 +51,6 @@ namespace kernels
 using dpctl::tensor::ssize_t;
 namespace su_ns = dpctl::tensor::sycl_utils;
 namespace tu_ns = dpctl::tensor::type_utils;
-namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace detail
 {
@@ -110,7 +107,7 @@ public:
 
             if constexpr (tu_ns::is_complex_v<outT>) {
                 using realT = typename outT::value_type;
-                using sycl_complex = exprm_ns::complex<realT>;
+                using sycl_complex = su_ns::sycl_complex_t<realT>;
 
                 auto tmp = sycl_complex(red_val);
                 tmp += sycl_complex(tu_ns::convert_impl<outT, lhsT>(
@@ -746,7 +743,7 @@ public:
 
             if constexpr (tu_ns::is_complex_v<outT>) {
                 using realT = typename outT::value_type;
-                using sycl_complexT = exprm_ns::complex<realT>;
+                using sycl_complexT = su_ns::sycl_complex_t<realT>;
 
                 sycl_complexT val =
                     sycl_complexT(tu_ns::convert_impl<outT, lhsT>(
@@ -859,7 +856,7 @@ public:
 
             if constexpr (tu_ns::is_complex_v<outT>) {
                 using realT = typename outT::value_type;
-                using sycl_complexT = exprm_ns::complex<realT>;
+                using sycl_complexT = su_ns::sycl_complex_t<realT>;
 
                 sycl_complexT val =
                     sycl_complexT(tu_ns::convert_impl<outT, lhsT>(

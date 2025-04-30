@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +50,9 @@ namespace log
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -71,7 +73,7 @@ template <typename argT, typename resT> struct LogFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-            return exprm_ns::log(exprm_ns::complex<realT>(in)); // log(in);
+            return exprm_ns::log(su_ns::sycl_complex_t<realT>(in)); // log(in);
         }
         else {
             return sycl::log(in);

@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "math_utils.hpp"
+#include "sycl_complex.hpp"
 
 namespace dpctl
 {

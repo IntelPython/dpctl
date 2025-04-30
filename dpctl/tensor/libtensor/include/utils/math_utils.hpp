@@ -24,9 +24,16 @@
 
 #pragma once
 #include <cmath>
-#define SYCL_EXT_ONEAPI_COMPLEX
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 #include <sycl/sycl.hpp>
+
+#ifndef SYCL_EXT_ONEAPI_COMPLEX
+#define SYCL_EXT_ONEAPI_COMPLEX 1
+#endif
+#if __has_include(<sycl/ext/oneapi/experimental/sycl_complex.hpp>)
+#include <sycl/ext/oneapi/experimental/sycl_complex.hpp>
+#else
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+#endif
 
 namespace dpctl
 {

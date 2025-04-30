@@ -31,7 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -51,7 +51,9 @@ namespace imag
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::is_complex_v;
@@ -74,7 +76,7 @@ template <typename argT, typename resT> struct ImagFunctor
     {
         if constexpr (is_complex_v<argT>) {
             using realT = typename argT::value_type;
-            using sycl_complexT = typename exprm_ns::complex<realT>;
+            using sycl_complexT = typename su_ns::sycl_complex_t<realT>;
             return exprm_ns::imag(sycl_complexT(in));
         }
         else {

@@ -24,10 +24,10 @@
 
 #pragma once
 
-#define SYCL_EXT_ONEAPI_COMPLEX
 #include "sycl/sycl.hpp"
-#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
 #include <type_traits>
+
+#include "utils/sycl_complex.hpp"
 
 namespace dpctl
 {
@@ -38,6 +38,9 @@ namespace py_internal
 
 namespace
 {
+
+namespace su_ns = dpctl::tensor::sycl_utils;
+
 template <typename fpT> struct ExtendedRealFPLess
 {
     /* [R, nan] */
@@ -64,7 +67,7 @@ template <typename cT> struct ExtendedComplexFPLess
     bool operator()(const cT &v1, const cT &v2) const
     {
         using realT = typename cT::value_type;
-        using sycl_complexT = exprm_ns::complex<realT>;
+        using sycl_complexT = su_ns::sycl_complex_t<realT>;
         sycl_complexT z1 = sycl_complexT(v1);
         sycl_complexT z2 = sycl_complexT(v2);
         const realT real1 = exprm_ns::real(z1);

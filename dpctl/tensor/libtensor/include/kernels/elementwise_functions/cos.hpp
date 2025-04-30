@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -49,7 +49,9 @@ namespace cos
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -72,7 +74,7 @@ template <typename argT, typename resT> struct CosFunctor
             using realT = typename argT::value_type;
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
-            using sycl_complexT = exprm_ns::complex<realT>;
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
             sycl_complexT z = sycl_complexT(in);
             const realT z_re = exprm_ns::real(z);
             const realT z_im = exprm_ns::imag(z);
