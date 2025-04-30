@@ -40,6 +40,9 @@
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
+#define SYCL_EXT_ONEAPI_COMPLEX
+#include <sycl/ext/oneapi/experimental/complex/complex.hpp>
+
 namespace dpctl
 {
 namespace tensor
@@ -48,6 +51,8 @@ namespace kernels
 {
 
 using dpctl::tensor::ssize_t;
+namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 namespace gemm_detail
 {
@@ -1082,8 +1087,21 @@ public:
 #pragma unroll
                     for (std::uint32_t pr_j = 0; pr_j < wi_delta_m_vecs; ++pr_j)
                     {
-                        private_C[pr_i * wi_delta_m_vecs + pr_j] +=
-                            pr_lhs[pr_i] * pr_rhs[pr_j];
+                        if constexpr (tu_ns::is_complex_v<resT>) {
+                            using realT = typename resT::value_type;
+                            using sycl_complex = exprm_ns::complex<realT>;
+
+                            auto tmp = sycl_complex(
+                                private_C[pr_i * wi_delta_m_vecs + pr_j]);
+                            tmp += sycl_complex(pr_lhs[pr_i]) *
+                                   sycl_complex(pr_rhs[pr_j]);
+                            private_C[pr_i * wi_delta_m_vecs + pr_j] =
+                                resT(tmp);
+                        }
+                        else {
+                            private_C[pr_i * wi_delta_m_vecs + pr_j] +=
+                                pr_lhs[pr_i] * pr_rhs[pr_j];
+                        }
                     }
                 }
             }
@@ -1949,9 +1967,21 @@ public:
             slmB_t local_sum(identity_);
             for (std::size_t private_s = 0; private_s < wi_delta_k; ++private_s)
             {
-                local_sum = local_sum +
-                            (local_A_block[a_offset + a_pr_offset + private_s] *
-                             local_B_block[b_offset + private_s]);
+                if constexpr (tu_ns::is_complex_v<resT>) {
+                    using realT = typename resT::value_type;
+                    using sycl_complex = exprm_ns::complex<realT>;
+                    auto tmp = sycl_complex(local_sum);
+                    tmp += (sycl_complex(local_A_block[a_offset + a_pr_offset +
+                                                       private_s]) *
+                            sycl_complex(local_B_block[b_offset + private_s]));
+                    local_sum = resT(tmp);
+                }
+                else {
+                    local_sum =
+                        local_sum +
+                        (local_A_block[a_offset + a_pr_offset + private_s] *
+                         local_B_block[b_offset + private_s]);
+                }
             }
 
             const std::size_t gl_i = i + private_i;
@@ -2114,12 +2144,28 @@ public:
         accV_t private_sum(identity_);
         constexpr accV_t vec_identity_(identity_);
         for (std::size_t t = local_s; t < local_B_block.size(); t += delta_k) {
-            private_sum +=
-                ((i < n) && (t + t_shift < k))
-                    ? (static_cast<resT>(
-                           lhs[lhs_offset + lhs_indexer(global_s_offset + t)]) *
-                       local_B_block[t])
-                    : vec_identity_;
+            if constexpr (tu_ns::is_complex_v<resT>) {
+                using realT = typename resT::value_type;
+                using sycl_complex = exprm_ns::complex<realT>;
+
+                auto tmp = sycl_complex(private_sum);
+                tmp += ((i < n) && (t + t_shift < k))
+                           ? sycl_complex(static_cast<resT>(
+                                 lhs[lhs_offset +
+                                     lhs_indexer(global_s_offset + t)])) *
+                                 sycl_complex(local_B_block[t])
+                           : sycl_complex(vec_identity_);
+                private_sum = resT(tmp);
+            }
+            else {
+                private_sum +=
+                    ((i < n) && (t + t_shift < k))
+                        ? (static_cast<resT>(
+                               lhs[lhs_offset +
+                                   lhs_indexer(global_s_offset + t)]) *
+                           local_B_block[t])
+                        : vec_identity_;
+            }
         }
 
         std::size_t workspace_i_shift = local_i * delta_k;
@@ -2130,7 +2176,17 @@ public:
         if (local_s == 0 && i < n) {
             accV_t local_sum(workspace[workspace_i_shift]);
             for (std::size_t t = 1; t < delta_k; ++t) {
-                local_sum += workspace[workspace_i_shift + t];
+                if constexpr (tu_ns::is_complex_v<resT>) {
+                    using realT = typename resT::value_type;
+                    using sycl_complex = exprm_ns::complex<realT>;
+
+                    auto tmp = sycl_complex(local_sum);
+                    tmp += sycl_complex(workspace[workspace_i_shift + t]);
+                    local_sum = resT(tmp);
+                }
+                else {
+                    local_sum += workspace[workspace_i_shift + t];
+                }
             }
 
             const std::size_t total_offset =
@@ -2863,8 +2919,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             if (m < 4) {
                 constexpr std::uint32_t m_groups_one = 1;
                 return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy,
@@ -2900,8 +2955,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             constexpr std::uint32_t m_groups_four = 4;
             return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, m_groups_four>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
@@ -3435,8 +3489,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             if (m < 4) {
                 return gemm_batch_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -3454,8 +3507,7 @@ gemm_batch_contig_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             return gemm_batch_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, depends);
         }
@@ -3840,8 +3892,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             if (m < 4) {
                 return gemm_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd,
@@ -3866,8 +3917,7 @@ sycl::event gemm_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             return gemm_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, inner_nd, lhs_outer_nd,
                 lhs_outer_inner_shapes_strides, rhs_outer_nd,
@@ -4191,8 +4241,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     }
 
     if (max_nm < 64) {
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             if (m < 4) {
                 return gemm_contig_tree_k_impl<lhsTy, rhsTy, resTy, 1>(
                     exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
@@ -4208,8 +4257,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
         }
     }
     else { // m > 1, n > k or m > k
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!is_complex<resTy>::value) {
+        if constexpr (!tu_ns::is_complex_v<resTy>) {
             return gemm_contig_tree_nm_impl<lhsTy, rhsTy, resTy, 4>(
                 exec_q, lhs_tp, rhs_tp, res_tp, n, k, m, depends);
         }
