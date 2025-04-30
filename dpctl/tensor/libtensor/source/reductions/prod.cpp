@@ -31,7 +31,9 @@
 #include <vector>
 
 #include "kernels/reductions.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
+#include "utils/type_utils.hpp"
 
 #include "reduction_atomic_support.hpp"
 #include "reduction_over_axis.hpp"
@@ -45,7 +47,9 @@ namespace tensor
 namespace py_internal
 {
 
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace tu_ns = dpctl::tensor::type_utils;
 
 namespace impl
 {
@@ -256,9 +260,11 @@ struct ProductOverAxisTempsStridedFactory
         if constexpr (TypePairSupportDataForProductReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
-                                                    sycl::logical_and<dstTy>,
-                                                    sycl::multiplies<dstTy>>;
+            using ReductionOpT = std::conditional_t<
+                std::is_same_v<dstTy, bool>, sycl::logical_and<dstTy>,
+                std::conditional_t<tu_ns::is_complex_v<dstTy>,
+                                   su_ns::Multiplies<dstTy>,
+                                   sycl::multiplies<dstTy>>>;
             return dpctl::tensor::kernels::
                 reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                         ReductionOpT>;
@@ -315,9 +321,11 @@ struct ProductOverAxis1TempsContigFactory
         if constexpr (TypePairSupportDataForProductReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
-                                                    sycl::logical_and<dstTy>,
-                                                    sycl::multiplies<dstTy>>;
+            using ReductionOpT = std::conditional_t<
+                std::is_same_v<dstTy, bool>, sycl::logical_and<dstTy>,
+                std::conditional_t<tu_ns::is_complex_v<dstTy>,
+                                   su_ns::Multiplies<dstTy>,
+                                   sycl::multiplies<dstTy>>>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
@@ -336,9 +344,11 @@ struct ProductOverAxis0TempsContigFactory
         if constexpr (TypePairSupportDataForProductReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<std::is_same_v<dstTy, bool>,
-                                                    sycl::logical_and<dstTy>,
-                                                    sycl::multiplies<dstTy>>;
+            using ReductionOpT = std::conditional_t<
+                std::is_same_v<dstTy, bool>, sycl::logical_and<dstTy>,
+                std::conditional_t<tu_ns::is_complex_v<dstTy>,
+                                   su_ns::Multiplies<dstTy>,
+                                   sycl::multiplies<dstTy>>>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;

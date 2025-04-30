@@ -298,7 +298,11 @@ T custom_inclusive_scan_over_group(GroupT &&wg,
     return scan_val;
 }
 
-// Reduction functors
+// Define identities and operator checking structs
+
+template <typename Op, typename T, typename = void> struct GetIdentity
+{
+};
 
 // Maximum
 
@@ -323,38 +327,6 @@ template <typename T> struct Maximum
         }
     }
 };
-
-// Minimum
-
-template <typename T> struct Minimum
-{
-    T operator()(const T &x, const T &y) const
-    {
-        if constexpr (detail::IsComplex<T>::value) {
-            using dpctl::tensor::math_utils::min_complex;
-            return min_complex<T>(x, y);
-        }
-        else if constexpr (std::is_floating_point_v<T> ||
-                           std::is_same_v<T, sycl::half>)
-        {
-            return (std::isnan(x) || x < y) ? x : y;
-        }
-        else if constexpr (std::is_same_v<T, bool>) {
-            return x && y;
-        }
-        else {
-            return (x < y) ? x : y;
-        }
-    }
-};
-
-// Define identities and operator checking structs
-
-template <typename Op, typename T, typename = void> struct GetIdentity
-{
-};
-
-// Maximum
 
 template <typename T, class Op>
 using IsMaximum = std::bool_constant<std::is_same_v<Op, sycl::maximum<T>> ||
@@ -389,6 +361,28 @@ struct GetIdentity<Op,
 
 // Minimum
 
+template <typename T> struct Minimum
+{
+    T operator()(const T &x, const T &y) const
+    {
+        if constexpr (detail::IsComplex<T>::value) {
+            using dpctl::tensor::math_utils::min_complex;
+            return min_complex<T>(x, y);
+        }
+        else if constexpr (std::is_floating_point_v<T> ||
+                           std::is_same_v<T, sycl::half>)
+        {
+            return (std::isnan(x) || x < y) ? x : y;
+        }
+        else if constexpr (std::is_same_v<T, bool>) {
+            return x && y;
+        }
+        else {
+            return (x < y) ? x : y;
+        }
+    }
+};
+
 template <typename T, class Op>
 using IsMinimum = std::bool_constant<std::is_same_v<Op, sycl::minimum<T>> ||
                                      std::is_same_v<Op, Minimum<T>>>;
@@ -422,19 +416,55 @@ struct GetIdentity<Op,
 
 // Plus
 
+template <typename T> struct Plus
+{
+    T operator()(const T &x, const T &y) const
+    {
+        if constexpr (detail::IsComplex<T>::value) {
+            using dpctl::tensor::math_utils::plus_complex;
+            return plus_complex<T>(x, y);
+        }
+        else {
+            return sycl::plus<T>(x, y);
+        }
+    }
+};
+
 template <typename T, class Op>
 using IsPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>> ||
-                                  std::is_same_v<Op, std::plus<T>>>;
+                                  std::is_same_v<Op, std::plus<T>> ||
+                                  std::is_same_v<Op, Plus<T>>>;
 
 template <typename T, class Op>
 using IsSyclPlus = std::bool_constant<std::is_same_v<Op, sycl::plus<T>>>;
 
+template <typename Op, typename T>
+struct GetIdentity<Op, T, std::enable_if_t<IsPlus<T, Op>::value>>
+{
+    static constexpr T value = static_cast<T>(0);
+};
+
 // Multiplies
+
+template <typename T> struct Multiplies
+{
+    T operator()(const T &x, const T &y) const
+    {
+        if constexpr (detail::IsComplex<T>::value) {
+            using dpctl::tensor::math_utils::multiplies_complex;
+            return multiplies_complex<T>(x, y);
+        }
+        else {
+            return sycl::multiplies<T>(x, y);
+        }
+    }
+};
 
 template <typename T, class Op>
 using IsMultiplies =
     std::bool_constant<std::is_same_v<Op, sycl::multiplies<T>> ||
-                       std::is_same_v<Op, std::multiplies<T>>>;
+                       std::is_same_v<Op, std::multiplies<T>> ||
+                       std::is_same_v<Op, Multiplies<T>>>;
 
 template <typename T, class Op>
 using IsSyclMultiplies =

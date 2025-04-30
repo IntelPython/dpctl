@@ -154,6 +154,20 @@ template <typename T> T logaddexp(T x, T y)
     }
 }
 
+template <typename T> T plus_complex(const T &x1, const T &x2)
+{
+    using realT = typename T::value_type;
+    using sycl_complexT = exprm_ns::complex<realT>;
+    return T(sycl_complexT(x1) + sycl_complexT(x2));
+}
+
+template <typename T> T multiplies_complex(const T &x1, const T &x2)
+{
+    using realT = typename T::value_type;
+    using sycl_complexT = exprm_ns::complex<realT>;
+    return T(sycl_complexT(x1) * sycl_complexT(x2));
+}
+
 } // namespace math_utils
 } // namespace tensor
 } // namespace dpctl

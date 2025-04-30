@@ -34,6 +34,7 @@
 #include "kernels/accumulators.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
+#include "utils/type_utils.hpp"
 
 namespace py = pybind11;
 
@@ -46,6 +47,7 @@ namespace py_internal
 
 namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace tu_ns = dpctl::tensor::type_utils;
 
 namespace impl
 {
@@ -133,8 +135,10 @@ struct TypePairSupportDataForSumAccumulation
 };
 
 template <typename T>
-using CumSumScanOpT = std::
-    conditional_t<std::is_same_v<T, bool>, sycl::logical_or<T>, sycl::plus<T>>;
+using CumSumScanOpT = std::conditional_t<
+    std::is_same_v<T, bool>,
+    sycl::logical_or<T>,
+    std::conditional_t<tu_ns::is_complex_v<T>, su_ns::Plus<T>, sycl::plus<T>>>;
 
 template <typename fnT, typename srcTy, typename dstTy>
 struct CumSum1DContigFactory
