@@ -97,11 +97,23 @@ public:
             auto lhs_reduction_offset = reduction_offsets.get_first_offset();
             auto rhs_reduction_offset = reduction_offsets.get_second_offset();
 
-            using tu_ns::convert_impl;
-            red_val += convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            if constexpr (tu_ns::is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complex = exprm_ns::complex<realT>;
+
+                auto tmp = sycl_complex(red_val);
+                tmp += sycl_complex(tu_ns::convert_impl<outT, lhsT>(
+                           lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                       sycl_complex(tu_ns::convert_impl<outT, rhsT>(
+                           rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                red_val = outT(tmp);
+            }
+            else {
+                red_val += tu_ns::convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           tu_ns::convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            }
         }
 
         out_[out_batch_offset] = red_val;
@@ -180,10 +192,9 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using tu_ns::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
+            outT val = tu_ns::convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
+                       tu_ns::convert_impl<outT, rhsT>(
                            rhs_[rhs_batch_offset + rhs_reduction_offset]);
 
             local_red_val += val;
@@ -278,10 +289,9 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using tu_ns::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
+            outT val = tu_ns::convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
+                       tu_ns::convert_impl<outT, rhsT>(
                            rhs_[rhs_batch_offset + rhs_reduction_offset]);
 
             local_red_val += val;
@@ -723,23 +733,21 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using tu_ns::convert_impl;
-            using tu_ns::is_complex_v;
-            if constexpr (is_complex_v<outT>) {
+            if constexpr (tu_ns::is_complex_v<outT>) {
                 using realT = typename outT::value_type;
                 using sycl_complexT = exprm_ns::complex<realT>;
 
                 sycl_complexT val =
-                    sycl_complexT(convert_impl<outT, lhsT>(
+                    sycl_complexT(tu_ns::convert_impl<outT, lhsT>(
                         lhs_[lhs_batch_offset + lhs_reduction_offset])) *
-                    sycl_complexT(convert_impl<outT, rhsT>(
+                    sycl_complexT(tu_ns::convert_impl<outT, rhsT>(
                         rhs_[rhs_batch_offset + rhs_reduction_offset]));
                 local_red_val = outT(sycl_complexT(local_red_val) + val);
             }
             else {
-                outT val = convert_impl<outT, lhsT>(
+                outT val = tu_ns::convert_impl<outT, lhsT>(
                                lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                           convert_impl<outT, rhsT>(
+                           tu_ns::convert_impl<outT, rhsT>(
                                rhs_[rhs_batch_offset + rhs_reduction_offset]);
                 local_red_val += val;
             }
@@ -837,23 +845,21 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using tu_ns::convert_impl;
-            using tu_ns::is_complex_v;
-            if constexpr (is_complex_v<outT>) {
+            if constexpr (tu_ns::is_complex_v<outT>) {
                 using realT = typename outT::value_type;
                 using sycl_complexT = exprm_ns::complex<realT>;
 
                 sycl_complexT val =
-                    sycl_complexT(convert_impl<outT, lhsT>(
+                    sycl_complexT(tu_ns::convert_impl<outT, lhsT>(
                         lhs_[lhs_batch_offset + lhs_reduction_offset])) *
-                    sycl_complexT(convert_impl<outT, rhsT>(
+                    sycl_complexT(tu_ns::convert_impl<outT, rhsT>(
                         rhs_[rhs_batch_offset + rhs_reduction_offset]));
                 local_red_val = outT(sycl_complexT(local_red_val) + val);
             }
             else {
-                outT val = convert_impl<outT, lhsT>(
+                outT val = tu_ns::convert_impl<outT, lhsT>(
                                lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                           convert_impl<outT, rhsT>(
+                           tu_ns::convert_impl<outT, rhsT>(
                                rhs_[rhs_batch_offset + rhs_reduction_offset]);
                 local_red_val += val;
             }
