@@ -755,9 +755,10 @@ public:
 
         auto work_group = it.get_group();
 
-        using RedOpT = typename std::conditional<std::is_same_v<outT, bool>,
-                                                 sycl::logical_or<outT>,
-                                                 sycl::plus<outT>>::type;
+        using RedOpT = std::conditional_t<
+            std::is_same_v<outT, bool>, sycl::logical_or<outT>,
+            std::conditional_t<tu_ns::is_complex_v<outT>, su_ns::Plus<outT>,
+                             sycl::plus<outT>>>;
         outT red_val_over_wg = sycl::reduce_over_group(
             work_group, local_red_val, outT(0), RedOpT());
 
@@ -1009,9 +1010,10 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
-                                                   sycl::logical_or<resTy>,
-                                                   sycl::plus<resTy>>::type;
+    using ReductionOpT = std::conditional_t<
+        std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+        std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                         sycl::plus<resTy>>>;
 
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1051,7 +1053,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =
@@ -1252,9 +1254,10 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
-                                                   sycl::logical_or<resTy>,
-                                                   sycl::plus<resTy>>::type;
+    using ReductionOpT = std::conditional_t<
+        std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+        std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                         sycl::plus<resTy>>>;
 
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1298,7 +1301,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =

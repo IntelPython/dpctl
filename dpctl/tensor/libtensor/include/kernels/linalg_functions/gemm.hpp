@@ -51,6 +51,7 @@ namespace kernels
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace tu_ns = dpctl::tensor::type_utils;
 namespace exprm_ns = sycl::ext::oneapi::experimental;
 
@@ -101,7 +102,7 @@ void scale_gemm_nm_parameters(const std::size_t &local_mem_size,
 }
 } // namespace gemm_detail
 
-using dpctl::tensor::sycl_utils::choose_workgroup_size;
+using su_ns::choose_workgroup_size;
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 class gemm_seq_reduction_krn;
@@ -2367,12 +2368,12 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems =
@@ -2663,12 +2664,12 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
 
@@ -3034,12 +3035,12 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems =
@@ -3222,12 +3223,12 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
 
@@ -3591,12 +3592,12 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
         std::size_t reduction_nelems =
@@ -3745,12 +3746,12 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
@@ -3979,12 +3980,12 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
         std::size_t reduction_nelems =
@@ -4118,12 +4119,12 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT =
-            typename std::conditional<std::is_same_v<resTy, bool>,
-                                      sycl::logical_or<resTy>,
-                                      sycl::plus<resTy>>::type;
+        using ReductionOpT = std::conditional_t<
+            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
+            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
+                             sycl::plus<resTy>>>;
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
