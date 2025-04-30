@@ -1795,6 +1795,17 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
 
 // ========== Gemm Tree
 
+namespace gemm_detail
+{
+
+template <typename T>
+using SumTempsOpT = std::conditional_t<
+    std::is_same_v<T, bool>,
+    sycl::logical_or<T>,
+    std::conditional_t<tu_ns::is_complex_v<T>, su_ns::Plus<T>, sycl::plus<T>>>;
+
+} // namespace gemm_detail
+
 template <typename lhsT,
           typename rhsT,
           typename resT,
@@ -2368,10 +2379,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -2664,10 +2672,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
@@ -3035,10 +3040,7 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -3223,10 +3225,7 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
@@ -3592,10 +3591,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -3746,10 +3742,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -3980,10 +3973,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 
@@ -4119,10 +4109,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                         lhs_indexer, rhs_indexer, res_indexer, depends);
     }
     else {
-        using ReductionOpT = std::conditional_t<
-            std::is_same_v<resTy, bool>, sycl::logical_or<resTy>,
-            std::conditional_t<tu_ns::is_complex_v<resTy>, su_ns::Plus<resTy>,
-                             sycl::plus<resTy>>>;
+        using ReductionOpT = gemm_detail::SumTempsOpT<resTy>;
         constexpr resTy identity_val =
             su_ns::Identity<ReductionOpT, resTy>::value;
 

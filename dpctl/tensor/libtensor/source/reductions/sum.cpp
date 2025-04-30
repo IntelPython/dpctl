@@ -233,6 +233,12 @@ struct TypePairSupportDataForSumReductionTemps
         td_ns::NotDefinedEntry>::is_defined;
 };
 
+template <typename T>
+using SumTempsOpT = std::conditional_t<
+    std::is_same_v<T, bool>,
+    sycl::logical_or<T>,
+    std::conditional_t<tu_ns::is_complex_v<T>, su_ns::Plus<T>, sycl::plus<T>>>;
+
 template <typename fnT, typename srcTy, typename dstTy>
 struct SumOverAxisAtomicStridedFactory
 {
@@ -260,10 +266,7 @@ struct SumOverAxisTempsStridedFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<
-                std::is_same_v<dstTy, bool>, sycl::logical_or<dstTy>,
-                std::conditional_t<tu_ns::is_complex_v<dstTy>,
-                                   su_ns::Plus<dstTy>, sycl::plus<dstTy>>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                         ReductionOpT>;
@@ -320,10 +323,7 @@ struct SumOverAxis1TempsContigFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<
-                std::is_same_v<dstTy, bool>, sycl::logical_or<dstTy>,
-                std::conditional_t<tu_ns::is_complex_v<dstTy>,
-                                   su_ns::Plus<dstTy>, sycl::plus<dstTy>>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
@@ -342,10 +342,7 @@ struct SumOverAxis0TempsContigFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT = std::conditional_t<
-                std::is_same_v<dstTy, bool>, sycl::logical_or<dstTy>,
-                std::conditional_t<tu_ns::is_complex_v<dstTy>,
-                                   su_ns::Plus<dstTy>, sycl::plus<dstTy>>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
