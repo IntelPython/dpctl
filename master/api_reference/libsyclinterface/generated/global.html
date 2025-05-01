@@ -807,6 +807,7 @@
 <span class="c1">// typedefs</span>
 
 <span class="k">typedef</span> <span class="kt">void</span> <a class="reference internal" href="#doxid-de-d75-dpctl-error-handler-type-8h-1aeb0f262687ced57ead8f8b7d0b7dcefe"><span class="std std-ref">error_handler_callback</span></a><span></span><span class="p">(</span><span class="kt">int</span> <span class="n">err_code</span><span class="p">);</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclRawKernelArg</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a72d61960f9c803f28ada3994d6b50f76"><span></span><span class="n">DPCTLSyclRawKernelArgRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclWorkGroupMemory</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ab3a8275f34098811f89278732d5dc8a7"><span></span><span class="n">DPCTLSyclWorkGroupMemoryRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <a class="reference internal" href="#doxid-d7-d31-extern-c-8h-1ad85f54ad0bab1d5206255e5920261be3"><span class="std std-ref">DPCTL_C_EXTERN_C_BEGIN</span></a><span></span> <span class="k">struct</span> <a class="reference internal" href="struct_RawWorkGroupMemoryTy.html#doxid-db-d1d-struct-raw-work-group-memory-ty"><span class="std std-ref">RawWorkGroupMemoryTy</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ace3e58dbaa53288d9b7272fe9a6d03b3"><span></span><span class="n">RawWorkGroupMemory</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span> <a class="reference internal" href="#doxid-da-db8-dpctl-sycl-queue-interface-8h-1a7779ae83e3fd4db1174768e1ba62f30b"><span class="std std-ref">MDLocalAccessor</span></a><span></span><span class="p">;</span>
@@ -889,6 +890,18 @@ DPCTL_API<span></span> <span class="kt">size_t</span>
 
 DPCTL_API<span></span> <span class="kt">size_t</span>
 <a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a28538fa8029a6d4c7ff4d972ec690b97"><span class="std std-ref">DPCTLDevice_Hash</span></a><span></span><span class="p">(</span>__dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
+
+DPCTL_API<span></span> <span class="kt">bool</span>
+<span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a17f6390c34f180364c3d0404798702c0"><span></span><span class="n">DPCTLRawKernelArg_Available</span></span><span></span><span class="p">();</span>
+
+DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="#doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a72d61960f9c803f28ada3994d6b50f76"><span class="std std-ref">DPCTLSyclRawKernelArgRef</span></a><span></span>
+<span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1aa1763e8649306773bcf52256af411260"><span></span><span class="n">DPCTLRawKernelArg_Create</span></span><span></span><span class="p">(</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="n">bytes</span><span class="p">,</span>
+    <span class="kt">size_t</span> <span class="n">count</span>
+    <span class="p">);</span>
+
+DPCTL_API<span></span> <span class="kt">void</span>
+<span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ae8e1fb1182a0a39c2fed2aa9d4448767"><span></span><span class="n">DPCTLRawKernelArg_Delete</span></span><span></span><span class="p">(</span>__dpctl_take<span></span> <a class="reference internal" href="#doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a72d61960f9c803f28ada3994d6b50f76"><span class="std std-ref">DPCTLSyclRawKernelArgRef</span></a><span></span> <span class="n">Ref</span><span class="p">);</span>
 
 DPCTL_API<span></span> <span class="kt">bool</span>
 <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ae822b8edf0c8c3192819037b4b8af68e"><span></span><span class="n">DPCTLWorkGroupMemory_Available</span></span><span></span><span class="p">();</span>
