@@ -53,4 +53,16 @@ void DPCTLWorkGroupMemory_Delete(__dpctl_take DPCTLSyclWorkGroupMemoryRef Ref);
 DPCTL_API
 bool DPCTLWorkGroupMemory_Available();
 
+typedef struct DPCTLOpaqueSyclRawKernelArg *DPCTLSyclRawKernelArgRef;
+
+DPCTL_API
+__dpctl_give DPCTLSyclRawKernelArgRef DPCTLRawKernelArg_Create(void *bytes,
+                                                               size_t count);
+
+DPCTL_API
+void DPCTLRawKernelArg_Delete(__dpctl_take DPCTLSyclRawKernelArgRef Ref);
+
+DPCTL_API
+bool DPCTLRawKernelArg_Available();
+
 DPCTL_C_EXTERN_C_END

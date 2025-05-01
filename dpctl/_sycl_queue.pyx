@@ -51,6 +51,9 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_SubmitNDRange,
     DPCTLQueue_SubmitRange,
     DPCTLQueue_Wait,
+    DPCTLRawKernelArg_Available,
+    DPCTLRawKernelArg_Create,
+    DPCTLRawKernelArg_Delete,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclEventRef,
@@ -362,6 +365,15 @@ cdef class _kernel_arg_type:
             self._name,
             p_name,
             _arg_data_type._WORK_GROUP_MEMORY
+        )
+
+    @property
+    def dpctl_raw_kernel_arg(self):
+        cdef str p_name = "dpctl_raw_kernel_arg"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._RAW_KERNEL_ARG
         )
 
 
@@ -973,6 +985,9 @@ cdef class SyclQueue(_SyclQueue):
             elif isinstance(arg, LocalAccessor):
                 kargs[idx] = <void*>((<LocalAccessor>arg).addressof())
                 kargty[idx] = _arg_data_type._LOCAL_ACCESSOR
+            elif isinstance(arg, RawKernelArg):
+                kargs[idx] = <void*>(<size_t>arg._ref)
+                kargty[idx] = _arg_data_type._RAW_KERNEL_ARG
             else:
                 ret = -1
         return ret
@@ -1738,3 +1753,98 @@ cdef class WorkGroupMemory:
         """
         def __get__(self):
             return <size_t>self._mem_ref
+
+
+cdef class _RawKernelArg:
+    def __dealloc(self):
+        if(self._arg_ref):
+            DPCTLRawKernelArg_Delete(self._arg_ref)
+
+
+cdef class RawKernelArg:
+    """
+    RawKernelArg(*args)
+    Python class representing the ``raw_kernel_arg`` class from the Raw Kernel
+    Argument oneAPI SYCL extension for passing binary data as data to kernels.
+
+    This class is intended to be used as kernel argument when launching kernels.
+
+    This is based on a DPC++ SYCL extension and only available in newer
+    versions. Use ``is_available()`` to check availability in your build.
+
+    There are multiple ways to create a ``RawKernelArg``.
+
+    - If the constructor is invoked with just a single argument, this argument
+      is expected to expose the Python buffer interface. The raw kernel arg will
+      be constructed from the data in that buffer.
+
+    - If the constructor is invoked with two arguments, the first argument is
+      interpreted as the number of bytes in the binary argument, while the
+      second argument is interpreted as a pointer to the data.
+
+    Note that construction of the ``RawKernelArg`` copies the bytes, so
+    modifications made after construction of the ``RawKernelArg`` will not be
+    reflected in the kernel launch.
+
+    Args:
+        args:
+            Variadic argument, see class documentation.
+
+    Raises:
+        TypeError: In case of incorrect arguments given to constructurs,
+                   unexpected types of input arguments.
+    """
+    def __cinit__(self, *args):
+        cdef void* ptr = NULL
+        cdef size_t count
+        cdef int ret_code = 0
+        cdef Py_buffer _buffer
+        cdef bint _is_buf
+
+        if not DPCTLRawKernelArg_Available():
+            raise RuntimeError("Raw kernel arg extension not available")
+
+        if not (0 < len(args) < 3):
+            raise TypeError("RawKernelArg constructor takes 1 or 2 "
+                            f"arguments, but {len(args)} were given")
+
+        if len(args) == 1:
+            if not _is_buffer(args[0]):
+                raise TypeError("RawKernelArg single argument constructor"
+                                "expects argument to be buffer",
+                                f"but got {type(args[0])}")
+
+            ret_code = PyObject_GetBuffer(args[0], &(_buffer),
+                                          PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
+            if ret_code != 0:  # pragma: no cover
+                raise RuntimeError("Could not access buffer")
+
+            ptr = _buffer.buf
+            count = _buffer.len
+            _is_buf = True
+        else:
+            if not isinstance(args[0], numbers.Integral):
+                raise TypeError("RawKernelArg constructor expects first"
+                                "argument to be `int`, but got {type(args[0])}")
+            if not isinstance(args[1], numbers.Integral):
+                raise TypeError("RawKernelArg constructor expects second"
+                                "argument to be `int`, but got {type(args[1])}")
+
+            _is_buf = False
+            count = args[0]
+            ptr = <void*>(<unsigned long long>args[1])
+
+        self._arg_ref = DPCTLRawKernelArg_Create(ptr, count)
+        if(_is_buf):
+            PyBuffer_Release(&(_buffer))
+
+    @staticmethod
+    def is_available():
+        return DPCTLRawKernelArg_Available()
+
+    property _ref:
+        """Returns the address of the C API ``DPCTLRawKernelArgRef`` pointer
+        as a ``size_t``.
+        """
+        def __get__(self):
+            return <size_t>self._arg_ref
