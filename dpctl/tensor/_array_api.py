@@ -75,7 +75,7 @@ class Info:
         self._capabilities = {
             "boolean indexing": True,
             "data-dependent shapes": True,
-            "max dimensions": 64,
+            "max dimensions": None,
         }
         self._all_dtypes = {
             "bool": dpt.bool,
@@ -108,7 +108,7 @@ class Info:
                 Value: ``True``
             ``max dimensions``:
                 integer indication the maximum array dimension supported by ``dpctl``.
-                Value: ``64``
+                Value: ``None``
 
         Returns:
             dict:
