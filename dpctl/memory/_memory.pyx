@@ -86,7 +86,7 @@ cdef extern from "_opaque_smart_ptr.hpp":
 
 class USMAllocationError(Exception):
     """
-    An exception raised when Universal Shared Memory (USM) allocation
+    An exception raised when Unified Shared Memory (USM) allocation
     call returns a null pointer, signaling a failure to perform the allocation.
     Some common reasons for allocation failure are:
 
