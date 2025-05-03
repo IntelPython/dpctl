@@ -482,7 +482,7 @@ def usm_ndarray_repr(
 
     options = get_print_options()
     threshold = options["threshold"]
-    if x.size == 0 and x.shape != (0,) or x.size > threshold:
+    if (x.size == 0 and x.shape != (0,)) or x.size > threshold:
         shape_str = f"shape={x.shape}"
         shape_str = _move_to_next_line(shape_str, s, line_width, prefix)
     else:
