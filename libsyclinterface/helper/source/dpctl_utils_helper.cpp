@@ -452,6 +452,32 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     }
 }
 
+ext::oneapi::peer_access
+DPCTL_DPCTLPeerAccessTypeToSycl(DPCTLPeerAccessType PeerAccessTy)
+{
+    switch (PeerAccessTy) {
+    case DPCTLPeerAccessType::access_supported:
+        return ext::oneapi::peer_access::access_supported;
+    case DPCTLPeerAccessType::atomics_supported:
+        return ext::oneapi::peer_access::atomics_supported;
+    default:
+        throw std::runtime_error("Unsupported peer_access type");
+    }
+}
+
+DPCTLPeerAccessType
+DPCTL_SyclPeerAccessToDPCTLType(ext::oneapi::peer_access PeerAccess)
+{
+    switch (PeerAccess) {
+    case ext::oneapi::peer_access::access_supported:
+        return DPCTLPeerAccessType::access_supported;
+    case ext::oneapi::peer_access::atomics_supported:
+        return DPCTLPeerAccessType::atomics_supported;
+    default:
+        throw std::runtime_error("Unsupported peer_access type");
+    }
+}
+
 int64_t DPCTL_GetRelativeDeviceId(const device &Device)
 {
     auto relid = -1;

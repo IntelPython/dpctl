@@ -903,3 +903,51 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     else
         return nullptr;
 }
+
+bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                               __dpctl_keep const DPCTLSyclDeviceRef PDRef,
+                               DPCTLPeerAccessType PT)
+{
+    bool canAccess = false;
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        try {
+            canAccess = D->ext_oneapi_can_access_peer(
+                *PD, DPCTL_DPCTLPeerAccessTypeToSycl(PT));
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canAccess;
+}
+
+void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                  __dpctl_keep const DPCTLSyclDeviceRef PDRef)
+{
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        try {
+            D->ext_oneapi_enable_peer_access(*PD);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return;
+}
+
+void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef)
+{
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        try {
+            D->ext_oneapi_disable_peer_access(*PD);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return;
+}

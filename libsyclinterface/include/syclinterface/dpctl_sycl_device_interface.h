@@ -792,4 +792,40 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
+/*!
+ * @brief Checks if device supports peer access to another device.
+ *
+ * @param    DRef       Opaque pointer to a ``sycl::device``
+ * @param    PDRef      Opaque pointer to a ``sycl::device``
+ * @param    PT         DPCTLPeerAccessType of ``ext::oneapi::peer_access``.
+ * @return   True if sycl::device supports the kind of peer access, else false.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                               __dpctl_keep const DPCTLSyclDeviceRef PDRef,
+                               DPCTLPeerAccessType PT);
+
+/*!
+ * @brief Checks if device supports peer access to another device.
+ *
+ * @param    DRef       Opaque pointer to a ``sycl::device``
+ * @param    PDRef      Opaque pointer to a ``sycl::device``
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                  __dpctl_keep const DPCTLSyclDeviceRef PDRef);
+
+/*!
+ * @brief Checks if device supports peer access to another device.
+ *
+ * @param    DRef       Opaque pointer to a ``sycl::device``
+ * @param    PDRef      Opaque pointer to a ``sycl::device``
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef);
+
 DPCTL_C_EXTERN_C_END

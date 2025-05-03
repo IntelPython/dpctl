@@ -25,12 +25,15 @@ from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_AreEq,
+    DPCTLDevice_CanAccessPeer,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_CreateSubDevicesByAffinity,
     DPCTLDevice_CreateSubDevicesByCounts,
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_Delete,
+    DPCTLDevice_DisablePeerAccess,
+    DPCTLDevice_EnablePeerAccess,
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetComponentDevices,
     DPCTLDevice_GetCompositeDevice,
@@ -103,6 +106,7 @@ from ._backend cimport (  # noqa: E211
     _device_type,
     _global_mem_cache_type,
     _partition_affinity_domain_type,
+    _peer_access,
 )
 
 from .enum_types import backend_type, device_type, global_mem_cache_type
@@ -1791,6 +1795,108 @@ cdef class SyclDevice(_SyclDevice):
         if cDVRef is NULL:
             raise ValueError("Internal error: NULL device vector encountered")
         return _get_devices(cDVRef)
+
+    def can_access_peer(self, peer):
+        """ Returns ``True`` if `self` can enable peer access
+        to `peer`, ``False`` otherwise.
+
+        Args:
+            peer (dpctl.SyclDevice):
+                The :class:`dpctl.SyclDevice` instance to
+                check.
+
+        Returns:
+            bool:
+                ``True`` if `self` can enable peer access
+                to `peer`, otherwise ``False``.
+        """
+        cdef SyclDevice p_dev
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "second argument must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+        return DPCTLDevice_CanAccessPeer(
+            self._device_ref,
+            p_dev.get_device_ref(),
+            _peer_access._access_supported
+        )
+
+    def can_access_peer_atomics_supported(self, peer):
+        """ Returns ``True`` if `self` can enable peer access
+        to and can atomically modify memory on `peer`, ``False`` otherwise.
+
+        Args:
+            peer (dpctl.SyclDevice):
+                The :class:`dpctl.SyclDevice` instance to
+                check.
+
+        Returns:
+            bool:
+                ``True`` if `self` can enable peer access
+                to and can atomically modify memory on `peer`,
+                otherwise ``False``.
+        """
+        cdef SyclDevice p_dev
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "second argument must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+        return DPCTLDevice_CanAccessPeer(
+            self._device_ref,
+            p_dev.get_device_ref(),
+            _peer_access._atomics_supported
+        )
+
+    def enable_peer_access(self, peer):
+        """ Enables this device (`self`) to access USM device allocations
+        located on `peer`.
+
+        Args:
+            peer (dpctl.SyclDevice):
+                The :class:`dpctl.SyclDevice` instance to
+                enable peer access to.
+
+        Raises:
+            ValueError:
+                If the ``DPCTLDevice_GetComponentDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
+        """
+        cdef SyclDevice p_dev
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "second argument must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+        DPCTLDevice_EnablePeerAccess(self._device_ref, p_dev.get_device_ref())
+        return
+
+    def disable_peer_access(self, peer):
+        """ Disables peer access to `peer` from `self`.
+
+        Args:
+            peer (dpctl.SyclDevice):
+                The :class:`dpctl.SyclDevice` instance to
+                disable peer access to.
+
+        Raises:
+            ValueError:
+                If the ``DPCTLDevice_GetComponentDevices`` call returned
+                ``NULL`` instead of a ``DPCTLDeviceVectorRef`` object.
+        """
+        cdef SyclDevice p_dev
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "second argument must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+        DPCTLDevice_DisablePeerAccess(self._device_ref, p_dev.get_device_ref())
+        return
 
     @property
     def profiling_timer_resolution(self):
