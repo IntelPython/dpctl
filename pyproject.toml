@@ -4,7 +4,7 @@ requires = [
   # TODO: keep in sync with [project.dependencies]
   "wheel>=0.43",
   "build>=1.1",
-  "setuptools>=63.0.0",
+  "setuptools>=63.0.0,<80",
   "scikit-build>=0.17.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   "cmake>=3.29.0",
