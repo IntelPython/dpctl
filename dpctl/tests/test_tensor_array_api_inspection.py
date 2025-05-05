@@ -74,7 +74,7 @@ def test_array_api_inspection_capabilities():
     capabilities = dpt.__array_namespace_info__().capabilities()
     assert capabilities["boolean indexing"]
     assert capabilities["data-dependent shapes"]
-    assert capabilities["max dimensions"] == 64
+    assert capabilities["max dimensions"] is None
 
 
 def test_array_api_inspection_default_dtypes():
