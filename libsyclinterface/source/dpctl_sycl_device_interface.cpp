@@ -184,8 +184,7 @@ DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto D = unwrap<device>(DRef);
     if (D) {
-        BTy = DPCTL_SyclBackendToDPCTLBackendType(
-            D->get_platform().get_backend());
+        BTy = DPCTL_SyclBackendToDPCTLBackendType(D->get_backend());
     }
     return BTy;
 }
