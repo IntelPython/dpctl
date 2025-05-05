@@ -1,6 +1,0 @@
-﻿dpctl.tensor.where
-==================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: where
