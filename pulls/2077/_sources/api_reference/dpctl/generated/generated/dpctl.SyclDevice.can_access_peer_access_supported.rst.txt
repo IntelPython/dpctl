@@ -1,0 +1,6 @@
+dpctl.SyclDevice.can\_access\_peer\_access\_supported
+=====================================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.can_access_peer_access_supported

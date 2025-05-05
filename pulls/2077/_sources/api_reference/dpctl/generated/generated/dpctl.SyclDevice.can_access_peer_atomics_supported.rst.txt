@@ -1,0 +1,6 @@
+dpctl.SyclDevice.can\_access\_peer\_atomics\_supported
+======================================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.can_access_peer_atomics_supported
