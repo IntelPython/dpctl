@@ -620,9 +620,9 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
         break;
 #endif
     default:
-        error_handler("Backend " + std::to_string(static_cast<int>(BE)) +
-                          " is not supported",
-                      __FILE__, __func__, __LINE__);
+        std::ostringstream os;
+        os << "Backend " << BE << " is not supported";
+        error_handler(os.str(), __FILE__, __func__, __LINE__);
         break;
     }
     return KBRef;
@@ -700,9 +700,9 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         return _GetKernel_ze_impl(*SyclKB, KernelName);
 #endif
     default:
-        error_handler("Backend " + std::to_string(static_cast<int>(be)) +
-                          " is not supported.",
-                      __FILE__, __func__, __LINE__);
+        std::ostringstream os;
+        os << "Backend " << be << " is not supported";
+        error_handler(os.str(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -730,9 +730,9 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         return _HasKernel_ze_impl(*SyclKB, KernelName);
 #endif
     default:
-        error_handler("Backend " + std::to_string(static_cast<int>(be)) +
-                          " is not supported.",
-                      __FILE__, __func__, __LINE__);
+        std::ostringstream os;
+        os << "Backend " << be << " is not supported";
+        error_handler(os.str(), __FILE__, __func__, __LINE__);
         return false;
     }
 }
