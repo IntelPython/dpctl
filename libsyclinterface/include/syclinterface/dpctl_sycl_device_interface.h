@@ -807,7 +807,7 @@ bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                DPCTLPeerAccessType PT);
 
 /*!
- * @brief Checks if device supports peer access to another device.
+ * @brief Enables peer access to another device.
  *
  * @param    DRef       Opaque pointer to a ``sycl::device``
  * @param    PDRef      Opaque pointer to a ``sycl::device``
@@ -818,7 +818,7 @@ void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef);
 
 /*!
- * @brief Checks if device supports peer access to another device.
+ * @brief Disables peer access to another device.
  *
  * @param    DRef       Opaque pointer to a ``sycl::device``
  * @param    PDRef      Opaque pointer to a ``sycl::device``
