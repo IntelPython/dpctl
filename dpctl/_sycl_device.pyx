@@ -1829,26 +1829,24 @@ cdef class SyclDevice(_SyclDevice):
 
         if not isinstance(peer, SyclDevice):
             raise TypeError(
-                "second argument must be a `dpctl.SyclDevice`, got "
+                "peer device must be a `dpctl.SyclDevice`, got "
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
-        if (
-            BTy1 != _backend_type._CUDA and
-            BTy1 != _backend_type._HIP and
-            BTy1 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy1 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
-        if (
-            BTy2 != _backend_type._CUDA and
-            BTy2 != _backend_type._HIP and
-            BTy2 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy2 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
@@ -1895,26 +1893,24 @@ cdef class SyclDevice(_SyclDevice):
 
         if not isinstance(peer, SyclDevice):
             raise TypeError(
-                "second argument must be a `dpctl.SyclDevice`, got "
+                "peer device must be a `dpctl.SyclDevice`, got "
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
-        if (
-            BTy1 != _backend_type._CUDA and
-            BTy1 != _backend_type._HIP and
-            BTy1 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy1 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
-        if (
-            BTy2 != _backend_type._CUDA and
-            BTy2 != _backend_type._HIP and
-            BTy2 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy2 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
@@ -1953,28 +1949,26 @@ cdef class SyclDevice(_SyclDevice):
 
         if not isinstance(peer, SyclDevice):
             raise TypeError(
-                "second argument must be a `dpctl.SyclDevice`, got "
+                "peer device must be a `dpctl.SyclDevice`, got "
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
         BTy1 = (
             DPCTLDevice_GetBackend(self._device_ref)
         )
-        if (
-            BTy1 != _backend_type._CUDA and
-            BTy1 != _backend_type._HIP and
-            BTy1 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy1 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
-        if (
-            BTy2 != _backend_type._CUDA and
-            BTy2 != _backend_type._HIP and
-            BTy2 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy2 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
@@ -2007,26 +2001,24 @@ cdef class SyclDevice(_SyclDevice):
 
         if not isinstance(peer, SyclDevice):
             raise TypeError(
-                "second argument must be a `dpctl.SyclDevice`, got "
+                "peer device must be a `dpctl.SyclDevice`, got "
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
-        if (
-            BTy1 != _backend_type._CUDA and
-            BTy1 != _backend_type._HIP and
-            BTy1 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy1 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
-        if (
-            BTy2 != _backend_type._CUDA and
-            BTy2 != _backend_type._HIP and
-            BTy2 != _backend_type._LEVEL_ZERO
-        ):
+        if BTy2 not in _peer_access_backends:
             raise ValueError(
                 "Peer access not supported for backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
