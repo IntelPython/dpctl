@@ -1980,6 +1980,8 @@ cdef class SyclDevice(_SyclDevice):
     def disable_peer_access(self, peer):
         """ Disables peer access to ``peer`` from this device (``self``).
 
+        Peer access may be enabled by calling :meth:`.enable_peer_access`.
+
         For details, see
         :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
 
