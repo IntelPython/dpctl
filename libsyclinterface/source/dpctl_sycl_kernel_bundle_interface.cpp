@@ -846,16 +846,32 @@ namespace syclex = sycl::ext::oneapi::experimental;
 #endif
 
 #if (SUPPORTS_SYCL_COMPILATION > 0)
-#ifndef __SYCL_COMPILER_VERSION
-#error SYCL compiler version not defined
-#else
-// The property was renamed to `registered_names` after 2025.1
-#if __SYCL_COMPILER_VERSION > 20250317u
-using registered_names_property_t = syclex::registered_names;
-#else
-using registered_names_property_t = syclex::registered_kernel_names;
-#endif
-#endif
+// The property for registering names was renamed between DPC++ versions 2025.1
+// and 2025.2. The original name was `registered_kernel_names`, the new name is
+// `registered_names`. To select the correct name without being overly reliant
+// on the SYCL compiler version definition, we forward declare both names and
+// then select the new name if it is defined (i.e., not only declared).
+namespace sycl::ext::oneapi::experimental
+{
+struct registered_names;
+struct registered_kernel_names;
+} // namespace sycl::ext::oneapi::experimental
+
+template <typename NewT, typename FallbackT, typename = void>
+struct new_type_if_defined
+{
+    using type = FallbackT;
+};
+
+template <typename NewT, typename FallbackT>
+struct new_type_if_defined<NewT, FallbackT, std::void_t<decltype(sizeof(NewT))>>
+{
+    using type = NewT;
+};
+
+using registered_names_property_t =
+    new_type_if_defined<syclex::registered_names,
+                        syclex::registered_kernel_names>::type;
 #endif
 
 __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
