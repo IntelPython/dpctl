@@ -1842,13 +1842,13 @@ cdef class SyclDevice(_SyclDevice):
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
         if BTy1 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for this device backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
         if BTy2 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for peer device backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
             )
 
@@ -1906,13 +1906,13 @@ cdef class SyclDevice(_SyclDevice):
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
         if BTy1 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for this device backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
         if BTy2 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for peer device backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
             )
 
@@ -1964,13 +1964,13 @@ cdef class SyclDevice(_SyclDevice):
         )
         if BTy1 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for this device backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
         if BTy2 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for peer device backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
             )
 
@@ -2016,13 +2016,13 @@ cdef class SyclDevice(_SyclDevice):
         BTy1 = DPCTLDevice_GetBackend(self._device_ref)
         if BTy1 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for this device backend "
                 f"{_backend_type_to_filter_string_part(BTy1)}"
             )
         BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
         if BTy2 not in _peer_access_backends:
             raise ValueError(
-                "Peer access not supported for backend "
+                "Peer access not supported for peer device backend "
                 f"{_backend_type_to_filter_string_part(BTy2)}"
             )
 
