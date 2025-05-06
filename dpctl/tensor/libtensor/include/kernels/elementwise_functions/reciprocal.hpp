@@ -32,7 +32,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -52,6 +52,7 @@ namespace reciprocal
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -74,7 +75,7 @@ template <typename argT, typename resT> struct ReciprocalFunctor
 
             using realT = typename argT::value_type;
 
-            return realT(1) / exprm_ns::complex<realT>(in);
+            return realT(1) / su_ns::sycl_complex_t<realT>(in);
         }
         else {
             return argT(1) / in;

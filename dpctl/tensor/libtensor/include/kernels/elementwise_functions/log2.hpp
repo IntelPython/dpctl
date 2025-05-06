@@ -31,7 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -51,7 +51,9 @@ namespace log2
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -76,7 +78,7 @@ template <typename argT, typename resT> struct Log2Functor
             using realT = typename argT::value_type;
 
             // log(in) / log(realT{2});
-            return exprm_ns::log(exprm_ns::complex<realT>(in)) /
+            return exprm_ns::log(su_ns::sycl_complex_t<realT>(in)) /
                    sycl::log(realT{2});
         }
         else {

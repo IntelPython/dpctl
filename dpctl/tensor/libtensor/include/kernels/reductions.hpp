@@ -1914,8 +1914,7 @@ public:
                         using dpctl::tensor::math_utils::less_complex;
                         // less_complex always returns false for NaNs, so check
                         if (less_complex<argT>(val, red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
+                            std::isnan(val.real()) || std::isnan(val.imag()))
                         {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -1941,8 +1940,7 @@ public:
                     if constexpr (is_complex<argT>::value) {
                         using dpctl::tensor::math_utils::greater_complex;
                         if (greater_complex<argT>(val, red_val) ||
-                            std::isnan(std::real(val)) ||
-                            std::isnan(std::imag(val)))
+                            std::isnan(val.real()) || std::isnan(val.imag()))
                         {
                             red_val = val;
                             idx_val = static_cast<outT>(m);
@@ -2230,8 +2228,8 @@ public:
                             // less_complex always returns false for NaNs, so
                             // check
                             if (less_complex<argT>(val, local_red_val) ||
-                                std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
+                                std::isnan(val.real()) ||
+                                std::isnan(val.imag()))
                             {
                                 local_red_val = val;
                                 if constexpr (!First) {
@@ -2277,8 +2275,8 @@ public:
                         if constexpr (is_complex<argT>::value) {
                             using dpctl::tensor::math_utils::greater_complex;
                             if (greater_complex<argT>(val, local_red_val) ||
-                                std::isnan(std::real(val)) ||
-                                std::isnan(std::imag(val)))
+                                std::isnan(val.real()) ||
+                                std::isnan(val.imag()))
                             {
                                 local_red_val = val;
                                 if constexpr (!First) {

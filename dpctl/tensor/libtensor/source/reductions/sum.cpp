@@ -31,7 +31,9 @@
 #include <vector>
 
 #include "kernels/reductions.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_dispatch_building.hpp"
+#include "utils/type_utils.hpp"
 
 #include "reduction_atomic_support.hpp"
 #include "reduction_over_axis.hpp"
@@ -45,7 +47,9 @@ namespace tensor
 namespace py_internal
 {
 
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace tu_ns = dpctl::tensor::type_utils;
 
 namespace impl
 {
@@ -229,6 +233,12 @@ struct TypePairSupportDataForSumReductionTemps
         td_ns::NotDefinedEntry>::is_defined;
 };
 
+template <typename T>
+using SumTempsOpT = std::conditional_t<
+    std::is_same_v<T, bool>,
+    sycl::logical_or<T>,
+    std::conditional_t<tu_ns::is_complex_v<T>, su_ns::Plus<T>, sycl::plus<T>>>;
+
 template <typename fnT, typename srcTy, typename dstTy>
 struct SumOverAxisAtomicStridedFactory
 {
@@ -256,9 +266,7 @@ struct SumOverAxisTempsStridedFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_over_group_temps_strided_impl<srcTy, dstTy,
                                                         ReductionOpT>;
@@ -315,9 +323,7 @@ struct SumOverAxis1TempsContigFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis1_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;
@@ -336,9 +342,7 @@ struct SumOverAxis0TempsContigFactory
         if constexpr (TypePairSupportDataForSumReductionTemps<
                           srcTy, dstTy>::is_defined)
         {
-            using ReductionOpT =
-                std::conditional_t<std::is_same_v<dstTy, bool>,
-                                   sycl::logical_or<dstTy>, sycl::plus<dstTy>>;
+            using ReductionOpT = SumTempsOpT<dstTy>;
             return dpctl::tensor::kernels::
                 reduction_axis0_over_group_temps_contig_impl<srcTy, dstTy,
                                                              ReductionOpT>;

@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +50,9 @@ namespace atan
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::kernels::vec_size_utils::ContigHyperparameterSetDefault;
 using dpctl::tensor::kernels::vec_size_utils::UnaryContigHyperparameterSetEntry;
@@ -83,8 +85,11 @@ template <typename argT, typename resT> struct AtanFunctor
              * y = imag(I * conj(in)) = real(in)
              * and then return {imag(w), real(w)} which is atan(in)
              */
-            const realT x = std::imag(in);
-            const realT y = std::real(in);
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::imag(z);
+            const realT y = exprm_ns::real(z);
+
             if (std::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)*0 + I*+-Pi/2 */
                 if (std::isinf(y)) {
@@ -132,7 +137,7 @@ template <typename argT, typename resT> struct AtanFunctor
                 return resT{atanh_im, atanh_re};
             }
             /* ordinary cases */
-            return exprm_ns::atan(exprm_ns::complex<realT>(in)); // atan(in);
+            return exprm_ns::atan(z); // atan(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

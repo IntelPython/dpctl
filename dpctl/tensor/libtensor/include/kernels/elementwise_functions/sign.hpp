@@ -37,6 +37,7 @@
 #include "kernels/elementwise_functions/common.hpp"
 
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_complex.hpp"
 #include "utils/type_dispatch_building.hpp"
 #include "utils/type_utils.hpp"
 
@@ -50,6 +51,7 @@ namespace sign
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
 using dpctl::tensor::type_utils::is_complex;
@@ -82,7 +84,7 @@ template <typename argT, typename resT> struct SignFunctor
                     return resT(0);
                 }
                 else {
-                    auto z = exprm_ns::complex<realT>(in);
+                    auto z = su_ns::sycl_complex_t<realT>(in);
                     return (z / detail::cabs(in));
                 }
             }

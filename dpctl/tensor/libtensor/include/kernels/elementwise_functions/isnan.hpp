@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -47,7 +48,9 @@ namespace isnan
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::vec_cast;
@@ -70,8 +73,11 @@ template <typename argT, typename resT> struct IsNanFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex<argT>::value) {
-            const bool real_isnan = sycl::isnan(std::real(in));
-            const bool imag_isnan = sycl::isnan(std::imag(in));
+            using realT = typename argT::value_type;
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const bool real_isnan = sycl::isnan(exprm_ns::real(z));
+            const bool imag_isnan = sycl::isnan(exprm_ns::imag(z));
             return (real_isnan || imag_isnan);
         }
         else if constexpr (std::is_same<argT, bool>::value ||
