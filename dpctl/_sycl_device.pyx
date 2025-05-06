@@ -224,7 +224,7 @@ def _cached_filter_string(d : SyclDevice):
     and cached with `functools.cache`.
 
     Args:
-        d (dpctl.SyclDevice):
+        d (:class:`dpctl.SyclDevice`):
             A device for which to compute the filter string.
     Returns:
         out(str):
@@ -1797,24 +1797,30 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(cDVRef)
 
     def can_access_peer_access_supported(self, peer):
-        """ Returns ``True`` if `self` can enable peer access
-        to `peer`, ``False`` otherwise.
+        """ Returns ``True`` if this device (``self``) can enable peer access
+        to USM device memory on ``peer``, ``False`` otherwise.
+
+        If peer access is supported, it may be enabled by calling
+        :meth:`.enable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
 
         Args:
-            peer (dpctl.SyclDevice):
-                The :class:`dpctl.SyclDevice` instance to
-                check.
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to check for peer access
+                by this device.
 
         Returns:
             bool:
-                ``True`` if `self` can enable peer access
-                to `peer`, otherwise ``False``.
+                ``True`` if this device may access USM device memory on
+                ``peer`` when peer access is enabled, otherwise ``False``.
 
         Raises:
             TypeError:
-                If `peer` is not `dpctl.SyclDevice`.
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
             ValueError:
-                If the backend associated with `self` or `peer` does not
+                If the backend associated with this device or ``peer`` does not
                 support peer access.
         """
         cdef SyclDevice p_dev
@@ -1855,25 +1861,32 @@ cdef class SyclDevice(_SyclDevice):
         )
 
     def can_access_peer_atomics_supported(self, peer):
-        """ Returns ``True`` if `self` can enable peer access
-        to and can atomically modify memory on `peer`, ``False`` otherwise.
+        """ Returns ``True`` if this device (``self``) can concurrently access
+        and modify USM device memory on ``peer`` when peer access is enabled,
+        ``False`` otherwise.
+
+        If peer access is supported, it may be enabled by calling
+        :meth:`.enable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
 
         Args:
-            peer (dpctl.SyclDevice):
-                The :class:`dpctl.SyclDevice` instance to
-                check.
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to check for concurrent
+                peer access and modification by this device.
 
         Returns:
             bool:
-                ``True`` if `self` can enable peer access
-                to and can atomically modify memory on `peer`,
+                ``True`` if this device may concurrently access and modify USM
+                device memory on ``peer`` when peer access is enabled,
                 otherwise ``False``.
 
         Raises:
             TypeError:
-                If `peer` is not `dpctl.SyclDevice`.
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
             ValueError:
-                If the backend associated with `self` or `peer` does not
+                If the backend associated with this device or ``peer`` does not
                 support peer access.
         """
         cdef SyclDevice p_dev
@@ -1914,19 +1927,24 @@ cdef class SyclDevice(_SyclDevice):
         )
 
     def enable_peer_access(self, peer):
-        """ Enables this device (`self`) to access USM device allocations
-        located on `peer`.
+        """ Enables this device (``self``) to access USM device allocations
+        located on ``peer``.
+
+        Peer access may be disabled by calling :meth:`.disable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
 
         Args:
-            peer (dpctl.SyclDevice):
-                The :class:`dpctl.SyclDevice` instance to
-                enable peer access to.
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to enable peer access
+                to.
 
         Raises:
             TypeError:
-                If `peer` is not `dpctl.SyclDevice`.
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
             ValueError:
-                If the backend associated with `self` or `peer` does not
+                If the backend associated with this device or ``peer`` does not
                 support peer access.
         """
         cdef SyclDevice p_dev
@@ -1966,18 +1984,21 @@ cdef class SyclDevice(_SyclDevice):
         return
 
     def disable_peer_access(self, peer):
-        """ Disables peer access to `peer` from `self`.
+        """ Disables peer access to ``peer`` from this device (``self``).
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
 
         Args:
-            peer (dpctl.SyclDevice):
+            peer (:class:`dpctl.SyclDevice`):
                 The :class:`dpctl.SyclDevice` instance to
                 disable peer access to.
 
         Raises:
             TypeError:
-                If `peer` is not `dpctl.SyclDevice`.
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
             ValueError:
-                If the backend associated with `self` or `peer` does not
+                If the backend associated with this device or ``peer`` does not
                 support peer access.
         """
         cdef SyclDevice p_dev
@@ -2134,7 +2155,7 @@ cdef class SyclDevice(_SyclDevice):
         same _device_ref as this SyclDevice.
 
         Args:
-            other (dpctl.SyclDevice):
+            other (:class:`dpctl.SyclDevice`):
                 A :class:`dpctl.SyclDevice` instance to
                 compare against.
 
