@@ -112,6 +112,10 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _L1_cache                           "L1_cache",
         _next_partitionable                 "next_partitionable",
 
+    ctypedef enum _peer_access "DPCTLPeerAccessType":
+        _access_supported                   "access_supported",
+        _atomics_supported                  "atomics_supported",
+
     ctypedef enum _event_status_type "DPCTLSyclEventStatusType":
         _UNKNOWN_STATUS     "DPCTL_UNKNOWN_STATUS"
         _SUBMITTED          "DPCTL_SUBMITTED"
@@ -278,7 +282,14 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef DPCTLDeviceVectorRef DPCTLDevice_GetComponentDevices(
         const DPCTLSyclDeviceRef DRef
     )
+    cdef bool DPCTLDevice_CanAccessPeer(const DPCTLSyclDeviceRef DRef,
+                                        const DPCTLSyclDeviceRef PDRef,
+                                        _peer_access PT)
+    cdef void DPCTLDevice_EnablePeerAccess(const DPCTLSyclDeviceRef DRef,
+                                           const DPCTLSyclDeviceRef PDRef)
 
+    cdef void DPCTLDevice_DisablePeerAccess(const DPCTLSyclDeviceRef DRef,
+                                            const DPCTLSyclDeviceRef PDRef)
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(

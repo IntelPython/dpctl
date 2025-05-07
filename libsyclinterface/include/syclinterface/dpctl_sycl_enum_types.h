@@ -152,6 +152,16 @@ typedef enum
 } DPCTLPartitionAffinityDomainType;
 
 /*!
+ * @brief DPCTL analogue of ``sycl::ext::oneapi::peer_access`` enum.
+ *
+ */
+typedef enum
+{
+    access_supported,
+    atomics_supported
+} DPCTLPeerAccessType;
+
+/*!
  * @brief Enums to depict the properties that can be passed to a sycl::queue
  * constructor.
  *

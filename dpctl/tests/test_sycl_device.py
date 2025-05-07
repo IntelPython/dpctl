@@ -341,3 +341,69 @@ def test_get_component_devices_from_composite():
             assert d.has_aspect_is_component
             # component devices are root devices
             assert d in devices
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_can_access_peer(platform_name):
+    """
+    Test checks for peer access.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    devices = platform.get_devices()
+    if len(devices) < 2:
+        pytest.skip(
+            f"Platform {platform_name} does not have enough devices to "
+            "test peer access"
+        )
+    dev0 = devices[0]
+    dev1 = devices[1]
+    assert isinstance(dev0.can_access_peer_access_supported(dev1), bool)
+    assert isinstance(dev0.can_access_peer_atomics_supported(dev1), bool)
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_enable_disable_peer(platform_name):
+    """
+    Test that peer access can be enabled and disabled.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    devices = platform.get_devices()
+    if len(devices) < 2:
+        pytest.skip(
+            f"Platform {platform_name} does not have enough devices to "
+            "test peer access"
+        )
+    dev0 = devices[0]
+    dev1 = devices[1]
+    if dev0.can_access_peer_access_supported(dev1):
+        dev0.enable_peer_access(dev1)
+        dev0.disable_peer_access(dev1)
+    else:
+        pytest.skip(
+            f"Provided {platform_name} devices do not support peer access"
+        )
+
+
+def test_peer_device_arg_validation():
+    """
+    Test for validation of arguments to peer access related methods.
+    """
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    bad_dev = dict()
+    with pytest.raises(TypeError):
+        dev.can_access_peer_access_supported(bad_dev)
+    with pytest.raises(TypeError):
+        dev.can_access_peer_atomics_supported(bad_dev)
+    with pytest.raises(TypeError):
+        dev.enable_peer_access(bad_dev)
+    with pytest.raises(TypeError):
+        dev.disable_peer_access(bad_dev)

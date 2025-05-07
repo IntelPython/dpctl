@@ -25,12 +25,15 @@ from ._backend cimport (  # noqa: E211
     DPCTLCString_Delete,
     DPCTLDefaultSelector_Create,
     DPCTLDevice_AreEq,
+    DPCTLDevice_CanAccessPeer,
     DPCTLDevice_Copy,
     DPCTLDevice_CreateFromSelector,
     DPCTLDevice_CreateSubDevicesByAffinity,
     DPCTLDevice_CreateSubDevicesByCounts,
     DPCTLDevice_CreateSubDevicesEqually,
     DPCTLDevice_Delete,
+    DPCTLDevice_DisablePeerAccess,
+    DPCTLDevice_EnablePeerAccess,
     DPCTLDevice_GetBackend,
     DPCTLDevice_GetComponentDevices,
     DPCTLDevice_GetCompositeDevice,
@@ -103,6 +106,7 @@ from ._backend cimport (  # noqa: E211
     _device_type,
     _global_mem_cache_type,
     _partition_affinity_domain_type,
+    _peer_access,
 )
 
 from .enum_types import backend_type, device_type, global_mem_cache_type
@@ -220,7 +224,7 @@ def _cached_filter_string(d : SyclDevice):
     and cached with `functools.cache`.
 
     Args:
-        d (dpctl.SyclDevice):
+        d (:class:`dpctl.SyclDevice`):
             A device for which to compute the filter string.
     Returns:
         out(str):
@@ -1792,6 +1796,239 @@ cdef class SyclDevice(_SyclDevice):
             raise ValueError("Internal error: NULL device vector encountered")
         return _get_devices(cDVRef)
 
+    def can_access_peer_access_supported(self, peer):
+        """ Returns ``True`` if this device (``self``) can enable peer access
+        to USM device memory on ``peer``, ``False`` otherwise.
+
+        If peer access is supported, it may be enabled by calling
+        :meth:`.enable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
+
+        Args:
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to check for peer access
+                by this device.
+
+        Returns:
+            bool:
+                ``True`` if this device may access USM device memory on
+                ``peer`` when peer access is enabled, otherwise ``False``.
+
+        Raises:
+            TypeError:
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
+            ValueError:
+                If the backend associated with this device or ``peer`` does not
+                support peer access.
+        """
+        cdef SyclDevice p_dev
+        cdef _backend_type BTy1
+        cdef _backend_type BTy2
+
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "peer device must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
+        BTy1 = DPCTLDevice_GetBackend(self._device_ref)
+        if BTy1 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for this device backend "
+                f"{_backend_type_to_filter_string_part(BTy1)}"
+            )
+        BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
+        if BTy2 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for peer device backend "
+                f"{_backend_type_to_filter_string_part(BTy2)}"
+            )
+
+        return DPCTLDevice_CanAccessPeer(
+            self._device_ref,
+            p_dev.get_device_ref(),
+            _peer_access._access_supported
+        )
+
+    def can_access_peer_atomics_supported(self, peer):
+        """ Returns ``True`` if this device (``self``) can concurrently access
+        and modify USM device memory on ``peer`` when peer access is enabled,
+        ``False`` otherwise.
+
+        If peer access is supported, it may be enabled by calling
+        :meth:`.enable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
+
+        Args:
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to check for concurrent
+                peer access and modification by this device.
+
+        Returns:
+            bool:
+                ``True`` if this device may concurrently access and modify USM
+                device memory on ``peer`` when peer access is enabled,
+                otherwise ``False``.
+
+        Raises:
+            TypeError:
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
+            ValueError:
+                If the backend associated with this device or ``peer`` does not
+                support peer access.
+        """
+        cdef SyclDevice p_dev
+        cdef _backend_type BTy1
+        cdef _backend_type BTy2
+
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "peer device must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
+        BTy1 = DPCTLDevice_GetBackend(self._device_ref)
+        if BTy1 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for this device backend "
+                f"{_backend_type_to_filter_string_part(BTy1)}"
+            )
+        BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
+        if BTy2 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for peer device backend "
+                f"{_backend_type_to_filter_string_part(BTy2)}"
+            )
+
+        return DPCTLDevice_CanAccessPeer(
+            self._device_ref,
+            p_dev.get_device_ref(),
+            _peer_access._atomics_supported
+        )
+
+    def enable_peer_access(self, peer):
+        """ Enables this device (``self``) to access USM device allocations
+        located on ``peer``.
+
+        Peer access may be disabled by calling :meth:`.disable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
+
+        Args:
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to enable peer access
+                to.
+
+        Raises:
+            TypeError:
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
+            ValueError:
+                If the backend associated with this device or ``peer`` does not
+                support peer access.
+        """
+        cdef SyclDevice p_dev
+        cdef _backend_type BTy1
+        cdef _backend_type BTy2
+
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "peer device must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
+        BTy1 = (
+            DPCTLDevice_GetBackend(self._device_ref)
+        )
+        if BTy1 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for this device backend "
+                f"{_backend_type_to_filter_string_part(BTy1)}"
+            )
+        BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
+        if BTy2 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for peer device backend "
+                f"{_backend_type_to_filter_string_part(BTy2)}"
+            )
+
+        DPCTLDevice_EnablePeerAccess(self._device_ref, p_dev.get_device_ref())
+        return
+
+    def disable_peer_access(self, peer):
+        """ Disables peer access to ``peer`` from this device (``self``).
+
+        Peer access may be enabled by calling :meth:`.enable_peer_access`.
+
+        For details, see
+        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
+
+        Args:
+            peer (:class:`dpctl.SyclDevice`):
+                The :class:`dpctl.SyclDevice` instance to
+                disable peer access to.
+
+        Raises:
+            TypeError:
+                If ``peer`` is not :class:`dpctl.SyclDevice`.
+            ValueError:
+                If the backend associated with this device or ``peer`` does not
+                support peer access.
+        """
+        cdef SyclDevice p_dev
+        cdef _backend_type BTy1
+        cdef _backend_type BTy2
+
+        if not isinstance(peer, SyclDevice):
+            raise TypeError(
+                "peer device must be a `dpctl.SyclDevice`, got "
+                f"{type(peer)}"
+            )
+        p_dev = <SyclDevice>peer
+
+        _peer_access_backends = [
+            _backend_type._CUDA,
+            _backend_type._HIP,
+            _backend_type._LEVEL_ZERO
+        ]
+        BTy1 = DPCTLDevice_GetBackend(self._device_ref)
+        if BTy1 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for this device backend "
+                f"{_backend_type_to_filter_string_part(BTy1)}"
+            )
+        BTy2 = DPCTLDevice_GetBackend(p_dev.get_device_ref())
+        if BTy2 not in _peer_access_backends:
+            raise ValueError(
+                "Peer access not supported for peer device backend "
+                f"{_backend_type_to_filter_string_part(BTy2)}"
+            )
+
+        DPCTLDevice_DisablePeerAccess(self._device_ref, p_dev.get_device_ref())
+        return
+
     @property
     def profiling_timer_resolution(self):
         """ Profiling timer resolution.
@@ -1912,7 +2149,7 @@ cdef class SyclDevice(_SyclDevice):
         same _device_ref as this SyclDevice.
 
         Args:
-            other (dpctl.SyclDevice):
+            other (:class:`dpctl.SyclDevice`):
                 A :class:`dpctl.SyclDevice` instance to
                 compare against.
 

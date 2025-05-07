@@ -180,6 +180,33 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     sycl::info::partition_affinity_domain PartitionAffinityDomain);
 
 /*!
+ * @brief Converts a DPCTLPeerAccessType enum value to its corresponding
+ * sycl::ext::oneapi::peer_access enum value.
+ *
+ * @param    PeerAccessTy A DPCTLPeerAccessType enum value
+ * @return   A sycl::ext::oneapi::peer_access enum value for the input
+ * DPCTLPeerAccessType enum value.
+ * @throws runtime_error
+ */
+DPCTL_API
+sycl::ext::oneapi::peer_access
+DPCTL_DPCTLPeerAccessTypeToSycl(DPCTLPeerAccessType PeerAccessTy);
+
+/*!
+ * @brief Converts a sycl::ext::oneapi::peer_access enum value to
+ * corresponding DPCTLPeerAccessType enum value.
+ *
+ * @param    PeerAccess sycl::ext::oneapi::peer_access to be
+ * converted to DPCTLPeerAccessType enum.
+ * @return   A DPCTLPeerAccessType enum value for the input
+ * sycl::ext::oneapi::peer_access enum value.
+ * @throws runtime_error
+ */
+DPCTL_API
+DPCTLPeerAccessType
+DPCTL_SyclPeerAccessToDPCTLType(sycl::ext::oneapi::peer_access PeerAccess);
+
+/*!
  * @brief Gives the index of the given device with respective to all the other
  * devices of the same type in the device's platform.
  *
