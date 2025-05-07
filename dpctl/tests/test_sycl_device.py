@@ -390,7 +390,16 @@ def test_enable_disable_peer(platform_name):
         )
 
 
-def test_peer_device_arg_validation():
+@pytest.mark.parametrize(
+    "method",
+    [
+        "can_access_peer_access_supported",
+        "can_access_peer_atomics_supported",
+        "enable_peer_access",
+        "disable_peer_access",
+    ],
+)
+def test_peer_device_arg_validation(method):
     """
     Test for validation of arguments to peer access related methods.
     """
@@ -399,11 +408,6 @@ def test_peer_device_arg_validation():
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
     bad_dev = dict()
+    callable = getattr(dev, method)
     with pytest.raises(TypeError):
-        dev.can_access_peer_access_supported(bad_dev)
-    with pytest.raises(TypeError):
-        dev.can_access_peer_atomics_supported(bad_dev)
-    with pytest.raises(TypeError):
-        dev.enable_peer_access(bad_dev)
-    with pytest.raises(TypeError):
-        dev.disable_peer_access(bad_dev)
+        callable(bad_dev)
