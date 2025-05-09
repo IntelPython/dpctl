@@ -371,8 +371,12 @@ TEST_P(TestSYCLKernelBundleFromSource, CheckCreateFromSYCLSource)
 {
     ASSERT_TRUE(KBRef != nullptr);
     ASSERT_TRUE(DPCTLKernelBundle_HasSyclKernel(KBRef, "vector_add"));
+    // DPC++ version 2025.1 supports compilation of SYCL template kernels,
+    // but does not yet support referencing them with the unmangled name.
     ASSERT_TRUE(
-        DPCTLKernelBundle_HasSyclKernel(KBRef, "vector_add_template<int>"));
+        DPCTLKernelBundle_HasSyclKernel(KBRef, "vector_add_template<int>") ||
+        DPCTLKernelBundle_HasSyclKernel(
+            KBRef, "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"));
 }
 
 TEST_P(TestSYCLKernelBundleFromSource, CheckGetKernelSYCLSource)
@@ -380,6 +384,13 @@ TEST_P(TestSYCLKernelBundleFromSource, CheckGetKernelSYCLSource)
     auto AddKernel = DPCTLKernelBundle_GetSyclKernel(KBRef, "vector_add");
     auto AxpyKernel =
         DPCTLKernelBundle_GetSyclKernel(KBRef, "vector_add_template<int>");
+    if (AxpyKernel == nullptr) {
+        // DPC++ version 2025.1 supports compilation of SYCL template kernels,
+        // but does not yet support referencing them with the unmangled name.
+        AxpyKernel = DPCTLKernelBundle_GetSyclKernel(
+            KBRef, "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_");
+    }
+
     ASSERT_TRUE(AddKernel != nullptr);
     ASSERT_TRUE(AxpyKernel != nullptr);
     DPCTLKernel_Delete(AddKernel);

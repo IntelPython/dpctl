@@ -330,10 +330,22 @@ def test_create_program_from_sycl_source():
 
     assert type(prog.addressof_ref()) is int
     assert prog.has_sycl_kernel("vector_add")
-    assert prog.has_sycl_kernel("vector_add_template<int>")
-
     regularKernel = prog.get_sycl_kernel("vector_add")
-    templateKernel = prog.get_sycl_kernel("vector_add_template<int>")
+
+    # DPC++ version 2025.1 supports compilation of SYCL template kernels, but
+    # does not yet support referencing them with the unmangled name.
+    hasTemplateName = prog.has_sycl_kernel("vector_add_template<int>")
+    hasMangledName = prog.has_sycl_kernel(
+        "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"
+    )
+    assert hasTemplateName or hasMangledName
+
+    if hasTemplateName:
+        templateKernel = prog.get_sycl_kernel("vector_add_template<int>")
+    else:
+        templateKernel = prog.get_sycl_kernel(
+            "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"
+        )
 
     assert "vector_add" == regularKernel.get_function_name()
     assert type(regularKernel.addressof_ref()) is int
