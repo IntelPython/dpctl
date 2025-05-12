@@ -908,17 +908,18 @@ bool _CallPeerAccess(device dev, device peer)
     auto BE1 = dev.get_backend();
     auto BE2 = peer.get_backend();
 
-    if ((BE1 != sycl::backend::ext_oneapi_level_zero &&
-         BE1 != sycl::backend::ext_oneapi_cuda &&
-         BE1 != sycl::backend::ext_oneapi_hip) ||
-        (BE2 != sycl::backend::ext_oneapi_level_zero &&
-         BE2 != sycl::backend::ext_oneapi_cuda &&
-         BE2 != sycl::backend::ext_oneapi_hip) ||
-        (dev == peer))
+    if ((BE1 == BE2) &&
+        (BE1 == sycl::backend::ext_oneapi_level_zero ||
+         BE1 == sycl::backend::ext_oneapi_cuda ||
+         BE1 == sycl::backend::ext_oneapi_hip) &&
+        (BE2 == sycl::backend::ext_oneapi_level_zero ||
+         BE2 == sycl::backend::ext_oneapi_cuda ||
+         BE2 == sycl::backend::ext_oneapi_hip) &&
+        (dev != peer))
     {
-        return false;
+        return true;
     }
-    return true;
+    return false;
 }
 
 bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
