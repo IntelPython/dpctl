@@ -47,6 +47,7 @@ add_sycl_to_target(
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_selector_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_device_aspects.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_event_interface.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_peer_access.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_platform_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_interface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_sycl_kernel_bundle_interface.cpp
