@@ -903,6 +903,24 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return nullptr;
 }
 
+bool _CallPeerAccess(device dev, device peer)
+{
+    auto BE1 = dev.get_backend();
+    auto BE2 = peer.get_backend();
+
+    if ((BE1 != sycl::backend::ext_oneapi_level_zero &&
+         BE1 != sycl::backend::ext_oneapi_cuda &&
+         BE1 != sycl::backend::ext_oneapi_hip) ||
+        (BE2 != sycl::backend::ext_oneapi_level_zero &&
+         BE2 != sycl::backend::ext_oneapi_cuda &&
+         BE2 != sycl::backend::ext_oneapi_hip) ||
+        (dev == peer))
+    {
+        return false;
+    }
+    return true;
+}
+
 bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                __dpctl_keep const DPCTLSyclDeviceRef PDRef,
                                DPCTLPeerAccessType PT)
@@ -911,33 +929,13 @@ bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
-        auto BE1 = D->get_backend();
-        auto BE2 = PD->get_backend();
-
-        if (BE1 != sycl::backend::ext_oneapi_level_zero &&
-            BE1 != sycl::backend::ext_oneapi_cuda &&
-            BE1 != sycl::backend::ext_oneapi_hip)
-        {
-            std::ostringstream os;
-            os << "Backend " << BE1 << " does not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
-            return false;
-        }
-
-        if (BE2 != sycl::backend::ext_oneapi_level_zero &&
-            BE2 != sycl::backend::ext_oneapi_cuda &&
-            BE2 != sycl::backend::ext_oneapi_hip)
-        {
-            std::ostringstream os;
-            os << "Backend " << BE2 << " does not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
-            return false;
-        }
-        try {
-            canAccess = D->ext_oneapi_can_access_peer(
-                *PD, DPCTL_DPCTLPeerAccessTypeToSycl(PT));
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                canAccess = D->ext_oneapi_can_access_peer(
+                    *PD, DPCTL_DPCTLPeerAccessTypeToSycl(PT));
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
         }
     }
     return canAccess;
@@ -949,30 +947,17 @@ void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
-        auto BE1 = D->get_backend();
-        auto BE2 = PD->get_backend();
-
-        if (BE1 != sycl::backend::ext_oneapi_level_zero &&
-            BE1 != sycl::backend::ext_oneapi_cuda &&
-            BE1 != sycl::backend::ext_oneapi_hip)
-        {
-            std::ostringstream os;
-            os << "Backend " << BE1 << " does not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                D->ext_oneapi_enable_peer_access(*PD);
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
         }
-
-        if (BE2 != sycl::backend::ext_oneapi_level_zero &&
-            BE2 != sycl::backend::ext_oneapi_cuda &&
-            BE2 != sycl::backend::ext_oneapi_hip)
-        {
+        else {
             std::ostringstream os;
-            os << "Backend " << BE2 << " does not support peer access";
+            os << "Given devices do not support peer access";
             error_handler(os.str(), __FILE__, __func__, __LINE__);
-        }
-        try {
-            D->ext_oneapi_enable_peer_access(*PD);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return;
@@ -984,30 +969,17 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
-        auto BE1 = D->get_backend();
-        auto BE2 = PD->get_backend();
-
-        if (BE1 != sycl::backend::ext_oneapi_level_zero &&
-            BE1 != sycl::backend::ext_oneapi_cuda &&
-            BE1 != sycl::backend::ext_oneapi_hip)
-        {
-            std::ostringstream os;
-            os << "Backend " << BE1 << " does not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                D->ext_oneapi_disable_peer_access(*PD);
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
         }
-
-        if (BE2 != sycl::backend::ext_oneapi_level_zero &&
-            BE2 != sycl::backend::ext_oneapi_cuda &&
-            BE2 != sycl::backend::ext_oneapi_hip)
-        {
+        else {
             std::ostringstream os;
-            os << "Backend " << BE2 << " does not support peer access";
+            os << "Given devices do not support peer access";
             error_handler(os.str(), __FILE__, __func__, __LINE__);
-        }
-        try {
-            D->ext_oneapi_disable_peer_access(*PD);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
     return;
