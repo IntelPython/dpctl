@@ -217,7 +217,7 @@ cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef) except *:
         raise RuntimeError("Descriptor 'max_work_item_sizes3d' not available")
 
 
-cdef bint _check_peer_access(SyclDevice dev, SyclDevice peer) except *:
+cdef inline bint _check_peer_access(SyclDevice dev, SyclDevice peer) except *:
     """
     Check peer access ahead of time to avoid errors from unified runtime or
     compiler implementation.
