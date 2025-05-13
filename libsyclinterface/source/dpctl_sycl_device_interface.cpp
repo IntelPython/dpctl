@@ -903,7 +903,7 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
         return nullptr;
 }
 
-bool _CallPeerAccess(device dev, device peer)
+static inline bool _CallPeerAccess(device dev, device peer)
 {
     auto BE1 = dev.get_backend();
     auto BE2 = peer.get_backend();
