@@ -426,4 +426,4 @@ def test_peer_access_to_self(platform_name):
     with pytest.raises(ValueError):
         dev.enable_peer_access(dev)
     with pytest.raises(ValueError):
-        dev.enable_peer_access(dev)
+        dev.disable_peer_access(dev)
