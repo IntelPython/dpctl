@@ -813,7 +813,8 @@ to USM device memory on <code class="docutils literal notranslate"><span class="
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>peer</strong> (<a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a>) – The <a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instance to check for peer access
 by this device.</p></li>
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Specifies the kind of peer access being queried</p>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Specifies the kind of peer access being queried.</p>
+<p>The supported values are</p>
 <ul>
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">&quot;access_supported&quot;</span></code></dt><dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if it is possible for this device to
@@ -824,11 +825,11 @@ enable peer access to USM device memory on <code class="docutils literal notrans
 <li><dl>
 <dt><code class="docutils literal notranslate"><span class="pre">&quot;atomics_supported&quot;</span></code></dt><dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if it is possible for this device to
 concurrently access and atomically modify USM device
-memory on <code class="docutils literal notranslate"><span class="pre">peer</span></code> when enabled.</p>
+memory on <code class="docutils literal notranslate"><span class="pre">peer</span></code> when enabled. Atomics must have
+<code class="docutils literal notranslate"><span class="pre">memory_scope::system</span></code> when modifying memory on a peer
+device.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> is returned, these operations result in
 undefined behavior.</p>
-<p>Note: atomics must have <code class="docutils literal notranslate"><span class="pre">memory_scope::system</span></code> when
-modifying memory on a peer device.</p>
 </dd>
 </dl>
 </li>
