@@ -19,25 +19,26 @@ See the user guide :ref:`document <user_guide_dpctl_license>` for additional inf
 Installation using conda
 ========================
 
-Binary builds of :py:mod:`dpctl` are available for the `conda package manager <conda_docs_>`_
-ecosystem.
+Binary builds of :py:mod:`dpctl` can be installed through the ``conda``/``mamba`` package managers,
+from either the ``conda-forge`` channel, or from Intel's channel.
 
-.. _conda_docs: https://docs.conda.io/projects/conda/en/stable/
-
-Released versions of the package can be installed from the Intel channel, as
-indicated by ``--channel`` option:
+.. warning::
+    Packages from the Intel channel are meant to be used together with dependencies from the **conda-forge** channel, and might not
+    work correctly when used in an environment where packages from the ``anaconda`` default channel have been installed. It is
+    advisable to use the `miniforge <https://github.com/conda-forge/miniforge>`__ installer for ``conda``/``mamba``, as it comes with
+    ``conda-forge`` as the only default channel.
 
 .. code-block:: bash
     :caption: Getting latest released version of ``dpctl`` using conda
 
-    conda create --name dpctl_env --channel https://software.repos.intel.com/python/conda/ --channel conda-forge dpctl
+    conda create --name dpctl_env --channel https://software.repos.intel.com/python/conda/ --channel conda-forge --override-channels dpctl
 
-Development builds of ``dpctl`` can be accessed from the ``dppy/label/dev`` channel:
+Development builds of ``dpctl`` can be installed from the ``dppy/label/dev`` channel:
 
 .. code-block:: bash
     :caption: Getting latest development version
 
-    conda create -n dpctl_nightly -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge dpctl
+    conda create -n dpctl_nightly -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels dpctl
 
 .. note::
     If :py:mod:`dpctl` is not available for the Python version of interest,
