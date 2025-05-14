@@ -416,7 +416,7 @@ def test_peer_device_arg_validation(method):
 @pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
 def test_peer_access_to_self(platform_name):
     """
-    Test for validation of arguments to peer access related methods.
+    Validate behavior of a device attempting to enable peer access to itself.
     """
     try:
         platform = dpctl.SyclPlatform(platform_name)
