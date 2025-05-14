@@ -104,6 +104,16 @@ TEST_P(TestDPCTLPeerAccess, ChkPeerAccess)
     }
 }
 
+TEST_P(TestDPCTLPeerAccess, ChkPeerAccessToSelf)
+{
+    auto D0 = DPCTLDeviceVector_GetAt(DV, 0);
+    ASSERT_TRUE(D0 != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_CanAccessPeer(
+        D0, D0, DPCTLPeerAccessType::access_supported));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_EnablePeerAccess(D0, D0));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_DisablePeerAccess(D0, D0));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLPeerAccess,
                          ::testing::Values("level_zero", "cuda", "hip"));
