@@ -1855,7 +1855,7 @@ cdef class SyclDevice(_SyclDevice):
             raise ValueError("Internal error: NULL device vector encountered")
         return _get_devices(cDVRef)
 
-    def can_access_peer_access_supported(self, peer):
+    def can_access_peer(self, peer, value="access_supported"):
         """ Returns ``True`` if this device (``self``) can enable peer access
         to USM device memory on ``peer``, ``False`` otherwise.
 
@@ -1869,6 +1869,25 @@ cdef class SyclDevice(_SyclDevice):
             peer (:class:`dpctl.SyclDevice`):
                 The :class:`dpctl.SyclDevice` instance to check for peer access
                 by this device.
+            value (str, optional):
+                Specifies the kind of peer access being queried
+
+                - ``"access_supported"``
+                    Returns ``True`` if it is possible for this device to
+                    enable peer access to USM device memory on ``peer``.
+
+                - ``"atomics_supported"``
+                    Returns ``True`` if it is possible for this device to
+                    concurrently access and atomically modify USM device
+                    memory on ``peer`` when enabled.
+
+                    If ``False`` is returned, these operations result in
+                    undefined behavior.
+
+                    Note: atomics must have ``memory_scope::system`` when
+                    modifying memory on a peer device.
+
+                Default: ``"access_supported"``
 
         Returns:
             bool:
@@ -1881,6 +1900,19 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef SyclDevice p_dev
 
+        if not isinstance(value, str):
+            raise TypeError(
+                f"Expected `value` to be of type str, got {type(value)}"
+            )
+        if value == "access_supported":
+            access_type = _peer_access._access_supported
+        elif value == "atomics_supported":
+            access_type = _peer_access._atomics_supported
+        else:
+            raise ValueError(
+                "`value` must be 'access_supported' or 'atomics_supported', "
+                f"got {value}"
+            )
         if not isinstance(peer, SyclDevice):
             raise TypeError(
                 "peer device must be a `dpctl.SyclDevice`, got "
@@ -1891,49 +1923,7 @@ cdef class SyclDevice(_SyclDevice):
             return DPCTLDevice_CanAccessPeer(
                 self._device_ref,
                 p_dev.get_device_ref(),
-                _peer_access._access_supported
-            )
-        return False
-
-    def can_access_peer_atomics_supported(self, peer):
-        """ Returns ``True`` if this device (``self``) can concurrently access
-        and modify USM device memory on ``peer`` when peer access is enabled,
-        ``False`` otherwise.
-
-        If peer access is supported, it may be enabled by calling
-        :meth:`.enable_peer_access`.
-
-        For details, see
-        :oneapi_peer_access:`DPC++ peer access SYCL extension <>`.
-
-        Args:
-            peer (:class:`dpctl.SyclDevice`):
-                The :class:`dpctl.SyclDevice` instance to check for concurrent
-                peer access and modification by this device.
-
-        Returns:
-            bool:
-                ``True`` if this device may concurrently access and modify USM
-                device memory on ``peer`` when peer access is enabled,
-                otherwise ``False``.
-
-        Raises:
-            TypeError:
-                If ``peer`` is not :class:`dpctl.SyclDevice`.
-        """
-        cdef SyclDevice p_dev
-
-        if not isinstance(peer, SyclDevice):
-            raise TypeError(
-                "peer device must be a `dpctl.SyclDevice`, got "
-                f"{type(peer)}"
-            )
-        p_dev = <SyclDevice>peer
-        if _check_peer_access(self, p_dev):
-            return DPCTLDevice_CanAccessPeer(
-                self._device_ref,
-                p_dev.get_device_ref(),
-                _peer_access._atomics_supported
+                access_type
             )
         return False
 
@@ -2002,11 +1992,10 @@ cdef class SyclDevice(_SyclDevice):
             )
         p_dev = <SyclDevice>peer
         _raise_invalid_peer_access(self, p_dev)
-        if _check_peer_access(self, p_dev):
-            DPCTLDevice_DisablePeerAccess(
-                self._device_ref,
-                p_dev.get_device_ref()
-            )
+        DPCTLDevice_DisablePeerAccess(
+            self._device_ref,
+            p_dev.get_device_ref()
+        )
         return
 
     @property

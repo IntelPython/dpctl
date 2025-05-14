@@ -360,8 +360,10 @@ def test_can_access_peer(platform_name):
         )
     dev0 = devices[0]
     dev1 = devices[1]
-    assert isinstance(dev0.can_access_peer_access_supported(dev1), bool)
-    assert isinstance(dev0.can_access_peer_atomics_supported(dev1), bool)
+    assert isinstance(dev0.can_access_peer(dev1), bool)
+    assert isinstance(
+        dev0.can_access_peer(dev1, value="atomics_supported"), bool
+    )
 
 
 @pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
@@ -381,7 +383,7 @@ def test_enable_disable_peer_access(platform_name):
         )
     dev0 = devices[0]
     dev1 = devices[1]
-    if dev0.can_access_peer_access_supported(dev1):
+    if dev0.can_access_peer(dev1):
         dev0.enable_peer_access(dev1)
         dev0.disable_peer_access(dev1)
     else:
@@ -393,8 +395,7 @@ def test_enable_disable_peer_access(platform_name):
 @pytest.mark.parametrize(
     "method",
     [
-        "can_access_peer_access_supported",
-        "can_access_peer_atomics_supported",
+        "can_access_peer",
         "enable_peer_access",
         "disable_peer_access",
     ],
@@ -427,3 +428,33 @@ def test_peer_access_to_self(platform_name):
         dev.enable_peer_access(dev)
     with pytest.raises(ValueError):
         dev.disable_peer_access(dev)
+
+
+def test_peer_access_value_keyword_validation():
+    """
+    Validate behavior of `can_access_peer` for invalid `value` keyword.
+    """
+    # we pick an arbitrary platform that supports peer access
+    platforms = dpctl.get_platforms()
+    peer_access_backends = [
+        dpctl.backend_type.cuda,
+        dpctl.backend_type.hip,
+        dpctl.backend_type.hip,
+    ]
+    devs = None
+    for p in platforms:
+        if p.backend in peer_access_backends:
+            p_devs = p.get_devices()
+            if len(p_devs) >= 2:
+                devs = p_devs
+                break
+    if devs is None:
+        pytest.skip("No platform available with enough devices")
+    dev0 = devs[0]
+    dev1 = devs[1]
+    bad_type = 2
+    with pytest.raises(TypeError):
+        dev0.can_access_peer(dev1, value=bad_type)
+    bad_value = "wrong"
+    with pytest.raises(ValueError):
+        dev0.can_access_peer(dev1, value=bad_value)
