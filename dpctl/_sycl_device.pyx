@@ -1892,8 +1892,8 @@ cdef class SyclDevice(_SyclDevice):
 
         Returns:
             bool:
-                ``True`` if this device may access USM device memory on
-                ``peer`` when peer access is enabled, otherwise ``False``.
+                ``True`` if the kind of peer access specified by ``value`` is
+                supported between this device and ``peer``, otherwise ``False``.
 
         Raises:
             TypeError:
