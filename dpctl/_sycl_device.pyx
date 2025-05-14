@@ -239,6 +239,43 @@ cdef inline bint _check_peer_access(SyclDevice dev, SyclDevice peer) except *:
     return False
 
 
+cdef inline void _raise_invalid_peer_access(
+    SyclDevice dev,
+    SyclDevice peer,
+) except *:
+    """
+    Check peer access ahead of time and raise errors for invalid cases.
+    """
+    cdef list _peer_access_backends = [
+        _backend_type._CUDA,
+        _backend_type._HIP,
+        _backend_type._LEVEL_ZERO
+    ]
+    cdef _backend_type BTy1 = DPCTLDevice_GetBackend(dev._device_ref)
+    cdef _backend_type BTy2 = DPCTLDevice_GetBackend(peer.get_device_ref())
+    if (BTy1 != BTy2):
+        raise ValueError(
+            f"Device with backend {_backend_type_to_filter_string_part(BTy1)} "
+            "cannot peer access device with backend "
+            f"{_backend_type_to_filter_string_part(BTy2)}"
+        )
+    if (BTy1 not in _peer_access_backends):
+        raise ValueError(
+            "Peer access not supported for backend "
+            f"{_backend_type_to_filter_string_part(BTy1)}"
+        )
+    if (BTy2 not in _peer_access_backends):
+        raise ValueError(
+            "Peer access not supported for backend "
+            f"{_backend_type_to_filter_string_part(BTy2)}"
+        )
+    if (dev == peer):
+        raise ValueError(
+            "Peer access cannot be enabled between a device and itself"
+        )
+    return
+
+
 @functools.lru_cache(maxsize=None)
 def _cached_filter_string(d : SyclDevice):
     """
@@ -1850,7 +1887,6 @@ cdef class SyclDevice(_SyclDevice):
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
-
         if _check_peer_access(self, p_dev):
             return DPCTLDevice_CanAccessPeer(
                 self._device_ref,
@@ -1893,7 +1929,6 @@ cdef class SyclDevice(_SyclDevice):
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
-
         if _check_peer_access(self, p_dev):
             return DPCTLDevice_CanAccessPeer(
                 self._device_ref,
@@ -1931,14 +1966,11 @@ cdef class SyclDevice(_SyclDevice):
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
-
-        if _check_peer_access(self, p_dev):
-            DPCTLDevice_EnablePeerAccess(
-                self._device_ref,
-                p_dev.get_device_ref()
-            )
-        else:
-            raise ValueError("Peer access cannot be enabled for these devices")
+        _raise_invalid_peer_access(self, p_dev)
+        DPCTLDevice_EnablePeerAccess(
+            self._device_ref,
+            p_dev.get_device_ref()
+        )
         return
 
     def disable_peer_access(self, peer):
@@ -1969,14 +2001,12 @@ cdef class SyclDevice(_SyclDevice):
                 f"{type(peer)}"
             )
         p_dev = <SyclDevice>peer
-
+        _raise_invalid_peer_access(self, p_dev)
         if _check_peer_access(self, p_dev):
             DPCTLDevice_DisablePeerAccess(
                 self._device_ref,
                 p_dev.get_device_ref()
             )
-        else:
-            raise ValueError("Peer access cannot be enabled for these devices")
         return
 
     @property
