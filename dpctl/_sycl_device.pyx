@@ -1870,7 +1870,9 @@ cdef class SyclDevice(_SyclDevice):
                 The :class:`dpctl.SyclDevice` instance to check for peer access
                 by this device.
             value (str, optional):
-                Specifies the kind of peer access being queried
+                Specifies the kind of peer access being queried.
+
+                The supported values are
 
                 - ``"access_supported"``
                     Returns ``True`` if it is possible for this device to
@@ -1879,13 +1881,12 @@ cdef class SyclDevice(_SyclDevice):
                 - ``"atomics_supported"``
                     Returns ``True`` if it is possible for this device to
                     concurrently access and atomically modify USM device
-                    memory on ``peer`` when enabled.
+                    memory on ``peer`` when enabled. Atomics must have
+                    ``memory_scope::system`` when modifying memory on a peer
+                    device.
 
                     If ``False`` is returned, these operations result in
                     undefined behavior.
-
-                    Note: atomics must have ``memory_scope::system`` when
-                    modifying memory on a peer device.
 
                 Default: ``"access_supported"``
 
