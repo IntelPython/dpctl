@@ -33,7 +33,6 @@
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <algorithm>
-#include <sstream>
 #include <stddef.h>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
@@ -956,9 +955,8 @@ void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             }
         }
         else {
-            std::ostringstream os;
-            os << "Given devices do not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
+            error_handler("Devices do not support peer access", __FILE__,
+                          __func__, __LINE__);
         }
     }
     return;
@@ -978,9 +976,8 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             }
         }
         else {
-            std::ostringstream os;
-            os << "Given devices do not support peer access";
-            error_handler(os.str(), __FILE__, __func__, __LINE__);
+            error_handler("Devices do not support peer access", __FILE__,
+                          __func__, __LINE__);
         }
     }
     return;
