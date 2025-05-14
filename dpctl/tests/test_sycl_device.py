@@ -365,7 +365,7 @@ def test_can_access_peer(platform_name):
 
 
 @pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
-def test_enable_disable_peer(platform_name):
+def test_enable_disable_peer_access(platform_name):
     """
     Test that peer access can be enabled and disabled.
     """
@@ -411,3 +411,19 @@ def test_peer_device_arg_validation(method):
     callable = getattr(dev, method)
     with pytest.raises(TypeError):
         callable(bad_dev)
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_peer_access_to_self(platform_name):
+    """
+    Test for validation of arguments to peer access related methods.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    dev = platform.get_devices()[0]
+    with pytest.raises(ValueError):
+        dev.enable_peer_access(dev)
+    with pytest.raises(ValueError):
+        dev.enable_peer_access(dev)
