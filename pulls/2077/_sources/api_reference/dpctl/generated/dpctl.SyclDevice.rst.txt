@@ -13,8 +13,7 @@
       :toctree: generated
    
       ~SyclDevice.addressof_ref
-      ~SyclDevice.can_access_peer_access_supported
-      ~SyclDevice.can_access_peer_atomics_supported
+      ~SyclDevice.can_access_peer
       ~SyclDevice.component_devices
       ~SyclDevice.create_sub_devices
       ~SyclDevice.disable_peer_access

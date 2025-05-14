@@ -233,8 +233,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api_reference/dpctl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of dpctl.SyclDevice</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer_access_supported.html">dpctl.SyclDevice.can_access_peer_access_supported</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer_atomics_supported.html">dpctl.SyclDevice.can_access_peer_atomics_supported</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -810,20 +809,25 @@ conditions of this license.</p>
 </section>
 <section id="installation-using-conda">
 <h2>Installation using conda<a class="headerlink" href="#installation-using-conda" title="Permalink to this heading">¶</a></h2>
-<p>Binary builds of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> are available for the <a class="reference external" href="https://docs.conda.io/projects/conda/en/stable/">conda package manager</a>
-ecosystem.</p>
-<p>Released versions of the package can be installed from the Intel channel, as
-indicated by <code class="docutils literal notranslate"><span class="pre">--channel</span></code> option:</p>
+<p>Binary builds of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> can be installed through the <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code> package managers,
+from either the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> channel, or from Intel’s channel.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Packages from the Intel channel are meant to be used together with dependencies from the <strong>conda-forge</strong> channel, and might not
+work correctly when used in an environment where packages from the <code class="docutils literal notranslate"><span class="pre">anaconda</span></code> default channel have been installed. It is
+advisable to use the <a class="reference external" href="https://github.com/conda-forge/miniforge">miniforge</a> installer for <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>, as it comes with
+<code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> as the only default channel.</p>
+</div>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Getting latest released version of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> using conda</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>dpctl_env<span class="w"> </span>--channel<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>--channel<span class="w"> </span>conda-forge<span class="w"> </span>dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>dpctl_env<span class="w"> </span>--channel<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>--channel<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels<span class="w"> </span>dpctl
 </pre></div>
 </div>
 </div>
-<p>Development builds of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be accessed from the <code class="docutils literal notranslate"><span class="pre">dppy/label/dev</span></code> channel:</p>
+<p>Development builds of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be installed from the <code class="docutils literal notranslate"><span class="pre">dppy/label/dev</span></code> channel:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Getting latest development version</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>dpctl_nightly<span class="w"> </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>dpctl
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>dpctl_nightly<span class="w"> </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--override-channels<span class="w"> </span>dpctl
 </pre></div>
 </div>
 </div>
@@ -863,7 +867,7 @@ see <a class="reference internal" href="#building-from-source">Building from sou
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.18.0dev2+8.g61672caa160)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.18.0dev2+11.g282016e485b)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
