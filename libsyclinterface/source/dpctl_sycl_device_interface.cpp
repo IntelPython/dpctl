@@ -115,7 +115,7 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
 {
     auto Selector = unwrap<dpctl_device_selector>(DSRef);
     if (!Selector) {
-        error_handler("Cannot difine device selector for DPCTLSyclDeviceRef "
+        error_handler("Cannot define device selector for DPCTLSyclDeviceRef "
                       "as input is a nullptr.",
                       __FILE__, __func__, __LINE__);
         return nullptr;
