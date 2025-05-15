@@ -11,6 +11,7 @@ Global Namespace
 	enum_DPCTLGlobalMemCacheType.rst
 	enum_DPCTLKernelArgType.rst
 	enum_DPCTLPartitionAffinityDomainType.rst
+	enum_DPCTLPeerAccessType.rst
 	enum_DPCTLQueuePropertyType.rst
 	enum_DPCTLSyclAspectType.rst
 	enum_DPCTLSyclBackendType.rst
@@ -57,6 +58,7 @@ Overview
 	enum :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`;
 	enum :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`;
 	enum :ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>`;
+	enum :ref:`DPCTLPeerAccessType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2abd5871b3207b5249bab61f0731e878>`;
 	enum :ref:`DPCTLQueuePropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4f>`;
 	enum :ref:`DPCTLSyclAspectType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389>`;
 	enum :ref:`DPCTLSyclBackendType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1aa217d239d7e3752c49bd9fd42c71c933>`;

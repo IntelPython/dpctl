@@ -13,8 +13,11 @@
       :toctree: generated
    
       ~SyclDevice.addressof_ref
+      ~SyclDevice.can_access_peer
       ~SyclDevice.component_devices
       ~SyclDevice.create_sub_devices
+      ~SyclDevice.disable_peer_access
+      ~SyclDevice.enable_peer_access
       ~SyclDevice.get_device_id
       ~SyclDevice.get_filter_string
       ~SyclDevice.get_unpartitioned_parent_device

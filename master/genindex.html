@@ -231,8 +231,11 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="api_reference/dpctl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of dpctl.SyclDevice</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.enable_peer_access.html">dpctl.SyclDevice.enable_peer_access</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_device_id.html">dpctl.SyclDevice.get_device_id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_filter_string.html">dpctl.SyclDevice.get_filter_string</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_unpartitioned_parent_device.html">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
@@ -720,6 +723,7 @@
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLGlobalMemCacheType.html">enum DPCTLGlobalMemCacheType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLPeerAccessType.html">enum DPCTLPeerAccessType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="api_reference/libsyclinterface/generated/enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
@@ -932,6 +936,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_reference/dpctl/flags.html#dpctl.tensor._flags.Flags.c_contiguous">c_contiguous (dpctl.tensor._flags.Flags attribute)</a>
 </li>
+        <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html#dpctl.SyclDevice.can_access_peer">can_access_peer() (dpctl.SyclDevice method)</a>
+</li>
         <li><a href="api_reference/dpctl/generated/dpctl.tensor.can_cast.html#dpctl.tensor.can_cast">can_cast() (in module dpctl.tensor)</a>
 </li>
         <li><a href="api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.capabilities.html#dpctl.tensor._array_api.Info.capabilities">capabilities() (dpctl.tensor._array_api.Info method)</a>
@@ -1064,6 +1070,8 @@
         <li><a href="api_reference/dpctl/generated/generated/dpctl.tensor._array_api.Info.devices.html#dpctl.tensor._array_api.Info.devices">devices() (dpctl.tensor._array_api.Info method)</a>
 </li>
         <li><a href="api_reference/dpctl/generated/dpctl.tensor.diff.html#dpctl.tensor.diff">diff() (in module dpctl.tensor)</a>
+</li>
+        <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html#dpctl.SyclDevice.disable_peer_access">disable_peer_access() (dpctl.SyclDevice method)</a>
 </li>
         <li><a href="api_reference/dpctl/generated/dpctl.tensor.divide.html#dpctl.tensor.divide">divide (in module dpctl.tensor)</a>
 </li>
@@ -1312,6 +1320,13 @@
 </li>
         </ul></li>
         <li>
+    DPCTLPeerAccessType
+
+        <ul>
+          <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLPeerAccessType.html#index-0">enum</a>
+</li>
+        </ul></li>
+        <li>
     DPCTLQueue_SubmitBarrier
 
         <ul>
@@ -1467,6 +1482,8 @@
 </li>
         <li><a href="api_reference/dpctl/generated/dpctl.tensor.empty_like.html#dpctl.tensor.empty_like">empty_like() (in module dpctl.tensor)</a>
 </li>
+        <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.enable_peer_access.html#dpctl.SyclDevice.enable_peer_access">enable_peer_access() (dpctl.SyclDevice method)</a>
+</li>
         <li>
     enum
 
@@ -1476,6 +1493,8 @@
           <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLKernelArgType.html#index-0">DPCTLKernelArgType</a>
 </li>
           <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLPartitionAffinityDomainType.html#index-0">DPCTLPartitionAffinityDomainType</a>
+</li>
+          <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLPeerAccessType.html#index-0">DPCTLPeerAccessType</a>
 </li>
           <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLQueuePropertyType.html#index-0">DPCTLQueuePropertyType</a>
 </li>

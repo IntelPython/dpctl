@@ -233,8 +233,11 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../dpctl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of dpctl</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of dpctl.SyclDevice</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.enable_peer_access.html">dpctl.SyclDevice.enable_peer_access</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.get_device_id.html">dpctl.SyclDevice.get_device_id</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.get_filter_string.html">dpctl.SyclDevice.get_filter_string</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../dpctl/generated/generated/dpctl.SyclDevice.get_unpartitioned_parent_device.html">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
@@ -722,6 +725,7 @@
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html">enum DPCTLGlobalMemCacheType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="enum_DPCTLPeerAccessType.html">enum DPCTLPeerAccessType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
@@ -826,6 +830,7 @@
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLGlobalMemCacheType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a229ff3945c2347aa0999fe2e28aaa94d"><span class="std std-ref">DPCTLGlobalMemCacheType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLPartitionAffinityDomainType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a27908eb4caace370bd771904e6a48670"><span class="std std-ref">DPCTLPartitionAffinityDomainType</span></a><span></span><span class="p">;</span>
+<span class="k">enum</span> <a class="reference internal" href="enum_DPCTLPeerAccessType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2abd5871b3207b5249bab61f0731e878"><span class="std std-ref">DPCTLPeerAccessType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLQueuePropertyType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a439a88c8e537df22ac3e2c66fce3ad4f"><span class="std std-ref">DPCTLQueuePropertyType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclAspectType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a5f57a140cfab264daf4500bdac0be389"><span class="std std-ref">DPCTLSyclAspectType</span></a><span></span><span class="p">;</span>
 <span class="k">enum</span> <a class="reference internal" href="enum_DPCTLSyclBackendType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1aa217d239d7e3752c49bd9fd42c71c933"><span class="std std-ref">DPCTLSyclBackendType</span></a><span></span><span class="p">;</span>
