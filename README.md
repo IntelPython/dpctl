@@ -44,7 +44,7 @@ to program on XPUs.
 
 # Installing
 
-You can install the library using [conda](https://anaconda.org/intel/dpctl) or
+You can install the library using conda (from Intel's channel - see instructions below) or
 [pip](https://pypi.org/project/dpctl/) package managers. It is also available in the [Intel(R)
 Distribution for
 Python](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
