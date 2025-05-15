@@ -33,7 +33,6 @@
 #include "dpctl_sycl_type_casters.hpp"
 #include "dpctl_utils_helper.h"
 #include <algorithm>
-#include <cstring>
 #include <stddef.h>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
@@ -116,7 +115,7 @@ __dpctl_give DPCTLSyclDeviceRef DPCTLDevice_CreateFromSelector(
 {
     auto Selector = unwrap<dpctl_device_selector>(DSRef);
     if (!Selector) {
-        error_handler("Cannot difine device selector for DPCTLSyclDeviceRef "
+        error_handler("Cannot define device selector for DPCTLSyclDeviceRef "
                       "as input is a nullptr.",
                       __FILE__, __func__, __LINE__);
         return nullptr;
@@ -184,8 +183,7 @@ DPCTLDevice_GetBackend(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto D = unwrap<device>(DRef);
     if (D) {
-        BTy = DPCTL_SyclBackendToDPCTLBackendType(
-            D->get_platform().get_backend());
+        BTy = DPCTL_SyclBackendToDPCTLBackendType(D->get_backend());
     }
     return BTy;
 }
@@ -902,4 +900,85 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
     else
         return nullptr;
+}
+
+static inline bool _CallPeerAccess(device dev, device peer)
+{
+    auto BE1 = dev.get_backend();
+    auto BE2 = peer.get_backend();
+
+    if ((BE1 == BE2) &&
+        (BE1 == sycl::backend::ext_oneapi_level_zero ||
+         BE1 == sycl::backend::ext_oneapi_cuda ||
+         BE1 == sycl::backend::ext_oneapi_hip) &&
+        (BE2 == sycl::backend::ext_oneapi_level_zero ||
+         BE2 == sycl::backend::ext_oneapi_cuda ||
+         BE2 == sycl::backend::ext_oneapi_hip) &&
+        (dev != peer))
+    {
+        return true;
+    }
+    return false;
+}
+
+bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                               __dpctl_keep const DPCTLSyclDeviceRef PDRef,
+                               DPCTLPeerAccessType PT)
+{
+    bool canAccess = false;
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                canAccess = D->ext_oneapi_can_access_peer(
+                    *PD, DPCTL_DPCTLPeerAccessTypeToSycl(PT));
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
+        }
+    }
+    return canAccess;
+}
+
+void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                  __dpctl_keep const DPCTLSyclDeviceRef PDRef)
+{
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                D->ext_oneapi_enable_peer_access(*PD);
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
+        }
+        else {
+            error_handler("Devices do not support peer access", __FILE__,
+                          __func__, __LINE__);
+        }
+    }
+    return;
+}
+
+void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef)
+{
+    auto D = unwrap<device>(DRef);
+    auto PD = unwrap<device>(PDRef);
+    if (D && PD) {
+        if (_CallPeerAccess(*D, *PD)) {
+            try {
+                D->ext_oneapi_disable_peer_access(*PD);
+            } catch (std::exception const &e) {
+                error_handler(e, __FILE__, __func__, __LINE__);
+            }
+        }
+        else {
+            error_handler("Devices do not support peer access", __FILE__,
+                          __func__, __LINE__);
+        }
+    }
+    return;
 }

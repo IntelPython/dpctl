@@ -184,3 +184,32 @@ TEST_F(TestHelperFns, SyclDeviceTypeToDPCTLDeviceType)
                                 sycl::info::device_type::custom));
     ASSERT_TRUE(DTy == DPCTLSyclDeviceType::DPCTL_CUSTOM);
 }
+
+TEST_F(TestHelperFns, ChkDPCTLPeerAccessTypeToSycl)
+{
+    sycl::ext::oneapi::peer_access peer_type =
+        sycl::ext::oneapi::peer_access::atomics_supported;
+
+    EXPECT_NO_FATAL_FAILURE(peer_type = DPCTL_DPCTLPeerAccessTypeToSycl(
+                                DPCTLPeerAccessType::access_supported));
+    ASSERT_TRUE(peer_type == sycl::ext::oneapi::peer_access::access_supported);
+
+    EXPECT_NO_FATAL_FAILURE(peer_type = DPCTL_DPCTLPeerAccessTypeToSycl(
+                                DPCTLPeerAccessType::atomics_supported));
+    ASSERT_TRUE(peer_type == sycl::ext::oneapi::peer_access::atomics_supported);
+}
+
+TEST_F(TestHelperFns, ChkSyclPeerAccessToDPCTLType)
+{
+    DPCTLPeerAccessType PTy = DPCTLPeerAccessType::atomics_supported;
+
+    EXPECT_NO_FATAL_FAILURE(
+        PTy = DPCTL_SyclPeerAccessToDPCTLType(
+            sycl::ext::oneapi::peer_access::access_supported));
+    ASSERT_TRUE(PTy == DPCTLPeerAccessType::access_supported);
+
+    EXPECT_NO_FATAL_FAILURE(
+        PTy = DPCTL_SyclPeerAccessToDPCTLType(
+            sycl::ext::oneapi::peer_access::atomics_supported));
+    ASSERT_TRUE(PTy == DPCTLPeerAccessType::atomics_supported);
+}

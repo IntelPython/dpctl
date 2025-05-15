@@ -341,3 +341,120 @@ def test_get_component_devices_from_composite():
             assert d.has_aspect_is_component
             # component devices are root devices
             assert d in devices
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_can_access_peer(platform_name):
+    """
+    Test checks for peer access.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    devices = platform.get_devices()
+    if len(devices) < 2:
+        pytest.skip(
+            f"Platform {platform_name} does not have enough devices to "
+            "test peer access"
+        )
+    dev0 = devices[0]
+    dev1 = devices[1]
+    assert isinstance(dev0.can_access_peer(dev1), bool)
+    assert isinstance(
+        dev0.can_access_peer(dev1, value="atomics_supported"), bool
+    )
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_enable_disable_peer_access(platform_name):
+    """
+    Test that peer access can be enabled and disabled.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    devices = platform.get_devices()
+    if len(devices) < 2:
+        pytest.skip(
+            f"Platform {platform_name} does not have enough devices to "
+            "test peer access"
+        )
+    dev0 = devices[0]
+    dev1 = devices[1]
+    if dev0.can_access_peer(dev1):
+        dev0.enable_peer_access(dev1)
+        dev0.disable_peer_access(dev1)
+    else:
+        pytest.skip(
+            f"Provided {platform_name} devices do not support peer access"
+        )
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        "can_access_peer",
+        "enable_peer_access",
+        "disable_peer_access",
+    ],
+)
+def test_peer_device_arg_validation(method):
+    """
+    Test for validation of arguments to peer access related methods.
+    """
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    bad_dev = dict()
+    callable = getattr(dev, method)
+    with pytest.raises(TypeError):
+        callable(bad_dev)
+
+
+@pytest.mark.parametrize("platform_name", ["level_zero", "cuda", "hip"])
+def test_peer_access_to_self(platform_name):
+    """
+    Validate behavior of a device attempting to enable peer access to itself.
+    """
+    try:
+        platform = dpctl.SyclPlatform(platform_name)
+    except ValueError as e:
+        pytest.skip(f"{str(e)} {platform_name}")
+    dev = platform.get_devices()[0]
+    with pytest.raises(ValueError):
+        dev.enable_peer_access(dev)
+    with pytest.raises(ValueError):
+        dev.disable_peer_access(dev)
+
+
+def test_peer_access_value_keyword_validation():
+    """
+    Validate behavior of `can_access_peer` for invalid `value` keyword.
+    """
+    # we pick an arbitrary platform that supports peer access
+    platforms = dpctl.get_platforms()
+    peer_access_backends = [
+        dpctl.backend_type.cuda,
+        dpctl.backend_type.hip,
+        dpctl.backend_type.hip,
+    ]
+    devs = None
+    for p in platforms:
+        if p.backend in peer_access_backends:
+            p_devs = p.get_devices()
+            if len(p_devs) >= 2:
+                devs = p_devs
+                break
+    if devs is None:
+        pytest.skip("No platform available with enough devices")
+    dev0 = devs[0]
+    dev1 = devs[1]
+    bad_type = 2
+    with pytest.raises(TypeError):
+        dev0.can_access_peer(dev1, value=bad_type)
+    bad_value = "wrong"
+    with pytest.raises(ValueError):
+        dev0.can_access_peer(dev1, value=bad_value)
