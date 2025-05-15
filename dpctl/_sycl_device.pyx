@@ -1885,8 +1885,8 @@ cdef class SyclDevice(_SyclDevice):
                     ``memory_scope::system`` when modifying memory on a peer
                     device.
 
-                    If ``False`` is returned, these operations result in
-                    undefined behavior.
+                If ``False`` is returned, these operations result in
+                undefined behavior.
 
                 Default: ``"access_supported"``
 
