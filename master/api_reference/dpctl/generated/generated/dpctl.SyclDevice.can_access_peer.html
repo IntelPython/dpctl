@@ -822,18 +822,18 @@ enable peer access to USM device memory on <code class="docutils literal notrans
 </dd>
 </dl>
 </li>
-<li><dl>
+<li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">&quot;atomics_supported&quot;</span></code></dt><dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if it is possible for this device to
 concurrently access and atomically modify USM device
 memory on <code class="docutils literal notranslate"><span class="pre">peer</span></code> when enabled. Atomics must have
 <code class="docutils literal notranslate"><span class="pre">memory_scope::system</span></code> when modifying memory on a peer
 device.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> is returned, these operations result in
-undefined behavior.</p>
 </dd>
 </dl>
 </li>
 </ul>
+<p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> is returned, these operations result in
+undefined behavior.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;access_supported&quot;</span></code></p>
 </p></li>
 </ul>
