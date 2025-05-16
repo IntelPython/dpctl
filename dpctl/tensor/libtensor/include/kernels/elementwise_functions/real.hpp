@@ -31,6 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +51,9 @@ namespace real
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 using dpctl::tensor::type_utils::is_complex_v;
@@ -71,7 +74,9 @@ template <typename argT, typename resT> struct RealFunctor
     resT operator()(const argT &in) const
     {
         if constexpr (is_complex_v<argT>) {
-            return std::real(in);
+            using realT = typename argT::value_type;
+            using sycl_complexT = typename su_ns::sycl_complex_t<realT>;
+            return exprm_ns::real(sycl_complexT(in));
         }
         else {
             static_assert(std::is_same_v<resT, argT>);
@@ -174,7 +179,7 @@ template <typename fnT, typename T> struct RealContigFactory
 
 template <typename fnT, typename T> struct RealTypeMapFactory
 {
-    /*! @brief get typeid for output type of std::real(T x) */
+    /*! @brief get typeid for output type of real(T x) */
     std::enable_if_t<std::is_same<fnT, int>::value, int> get()
     {
         using rT = typename RealOutputType<T>::value_type;
