@@ -76,7 +76,7 @@ docs = [
 ]
 
 [project.urls]
-Changelog = "https://github.com/IntelPython/dpctl/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/IntelPython/dpctl/blob/master/CHANGELOG.md"
 Documentation = "https://intelpython.github.io/dpctl/"
 Homepage = "https://github.com/IntelPython/dpctl"
 Issues = "https://github.com/IntelPython/dpctl/issues"
