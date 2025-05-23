@@ -4,19 +4,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev] - XXX. XX, XXXX
+## [0.20.0] - XXX. XX, XXXX
 
 ### Added
 
+* Added `dpctl.WorkGroupMemory` class representing `sycl::ext::oneapi::experimental::work_group_memory`, to be used as a kernel argument type [gh-1984](https://github.com/IntelPython/dpctl/pull/1984)
+* Added `dpctl.LocalAccessor`class representing `sycl::local_accessor`, to be used as a kernel argument type [gh-1991](https://github.com/IntelPython/dpctl/pull/1991)
+* Added `dpctl.SyclPlatform.get_devices` method for getting all `dpctl.SyclDevices` for the platform [gh-1992](https://github.com/IntelPython/dpctl/pull/1992)
+* Added support for the composite devices extension for Level Zero devices, usable with some devices when setting `ZE_FLAT_DEVICE_HIERARCHY=COMBINED` [gh-1993](https://github.com/IntelPython/dpctl/pull/1993)
 * Added `out` keyword to `tensor.take` [gh-2010](https://github.com/IntelPython/dpctl/pull/2010)
+* Added `dpctl.RawKernelArg` class representing `sycl::ext::oneapi::experimental::raw_kernal_arg`, to be used as a kernel argument type [gh-2038](https://github.com/IntelPython/dpctl/pull/2038)
+* Added `dpctl.SyclDevice` methods for querying, enabling, and disabling peer access between devices [gh-2077](https://github.com/IntelPython/dpctl/pull/2077), [gh-2082](https://github.com/IntelPython/dpctl/pull/2082)
 
 ### Changed
 
+* Updated Level Zero loader detection to no longer rely on reading `libur_adapter_level_zero.so` for the loader filename [gh-2025](https://github.com/IntelPython/dpctl/pull/2025)
+* Updated integer array indexing to align with the 2024.12 array API specification [gh-2032](https://github.com/IntelPython/dpctl/pull/2032)
 * Support for Boolean data-type is added to `dpctl.tensor.ceil`, `dpctl.tensor.floor`, and `dpctl.tensor.trunc` [gh-2033](https://github.com/IntelPython/dpctl/pull/2033)
-* Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [#2042](https://github.com/IntelPython/dpctl/pull/2042)
-* Updated `repr` to show the shape of the abbreviated arrays and show the shape and data type of zero-size arrays [#2067](https://github.com/IntelPython/dpctl/pull/2067)
+* Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [gh-2042](https://github.com/IntelPython/dpctl/pull/2042)
+* Updated supported array API specification version to 2024.12 [gh-2047](https://github.com/IntelPython/dpctl/pull/2047)
+* Implementation struct for `tensor.imag` now uses a static member value for the imaginary part of real-valued inputs [gh-2063](https://github.com/IntelPython/dpctl/pull/2063)
+* Updated `repr` to show the shape of the abbreviated arrays and show the shape and data type of zero-size arrays [gh-2067](https://github.com/IntelPython/dpctl/pull/2067)
+* Changed `tensor.__array_namespace_info__().capabilities()[]"max dimensions"]` to `None` [gh-2071](https://github.com/IntelPython/dpctl/pull/2071)
 
 ### Fixed
+
+* Refactored code common to accumulation operations (`dpt.cumulative_sum`, `dpt.cumulative_prod`, `dpt.cumulative_logsumexp`) and removed unnecessary event initialization [gh-2011](https://github.com/IntelPython/dpctl/pull/2011)
+* Fixed incorrect results for `dpt.cumulative_sum` and `dpt.cumulative_prod` when `dtype=dpt.bool` [gh-2018](https://github.com/IntelPython/dpctl/pull/2018)
+* Fixed a typo in `dpctl.SyclPlatform` repr [gh-2035](https://github.com/IntelPython/dpctl/pull/2035)
+* Fixed a bug in `tensor.asarray` where `order="K"` could fail to produce an array sufficient for the internal copy operation for some edge cases, including a contiguous array with permuted dimensions [gh-2058](https://github.com/IntelPython/dpctl/pull/2058)
+* Fixed a typo in `dpctl.memory.USMAllocationError` [gh-2072](https://github.com/IntelPython/dpctl/pull/2072)
+
+### Maintenance
+
+* Document `dpctl.device_type`, `dpctl.backend_type`, `dpctl.event_status_type`, and `dpctl.global_mem_cache_type` enums [gh-2019](https://github.com/IntelPython/dpctl/pull/2019)
+* Updated `SYCL_INCLUDE_DIR_HINT` in Conda recipe [gh-2039](https://github.com/IntelPython/dpctl/pull/2039)
+* Updated expected dtypes in element-wise function docstrings [gh-2041](https://github.com/IntelPython/dpctl/pull/2041), [gh-2048](https://github.com/IntelPython/dpctl/pull/2048)
+* Set `ARRAY_API_TESTS_VERSION=2024.12` for when running array API conformity job in CI [gh-2046](https://github.com/IntelPython/dpctl/pull/2046)
+* Install `hwloc` when running CI job for nightly SYCL compiler [gh-2050](https://github.com/IntelPython/dpctl/pull/2050)
+* Added `cython-lint` to `pre-commit` to improve style and readability of Cython code [gh-2056](https://github.com/IntelPython/dpctl/pull/2056)
+* Skip upload jobs when GitHub CI is called from a forked repo [gh-2059](https://github.com/IntelPython/dpctl/pull/2059)
+* Disable nightly tests run from forked repos [gh-2060](https://github.com/IntelPython/dpctl/pull/2060)
+* Fixed a typo in beginner's guide example [gh-2061](https://github.com/IntelPython/dpctl/pull/2061)
+* Updated bandit version [gh-2075](https://github.com/IntelPython/dpctl/pull/2075)
+* Updated Conda installation instructions [gh-2080](https://github.com/IntelPython/dpctl/pull/2080), [gh-2081](https://github.com/IntelPython/dpctl/pull/2081)
+* Fixed an incorrect link to changelog in package metadata [gh-2085](https://github.com/IntelPython/dpctl/pull/2085)
+* Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
+[gh-2020](https://github.com/IntelPython/dpctl/pull/2020),
+[gh-2034](https://github.com/IntelPython/dpctl/pull/2034),
+[gh-2043](https://github.com/IntelPython/dpctl/pull/2043),
+[gh-2044](https://github.com/IntelPython/dpctl/pull/2044),
+[gh-2065](https://github.com/IntelPython/dpctl/pull/2065),
+[gh-2066](https://github.com/IntelPython/dpctl/pull/2066),
+[gh-2068](https://github.com/IntelPython/dpctl/pull/2068),
+[gh-2070](https://github.com/IntelPython/dpctl/pull/2070)
 
 ## [0.19.0] - Feb. 26, 2025
 
