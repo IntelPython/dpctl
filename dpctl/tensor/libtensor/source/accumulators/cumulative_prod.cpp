@@ -46,6 +46,7 @@ namespace py_internal
 
 namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace tu_ns = dpctl::tensor::type_utils;
 
 namespace impl
 {
@@ -133,9 +134,12 @@ struct TypePairSupportDataForProdAccumulation
 };
 
 template <typename T>
-using CumProdScanOpT = std::conditional_t<std::is_same_v<T, bool>,
-                                          sycl::logical_and<T>,
-                                          sycl::multiplies<T>>;
+using CumProdScanOpT =
+    std::conditional_t<std::is_same_v<T, bool>,
+                       sycl::logical_and<T>,
+                       std::conditional_t<tu_ns::is_complex_v<T>,
+                                          su_ns::Multiplies<T>,
+                                          sycl::multiplies<T>>>;
 
 template <typename fnT, typename srcTy, typename dstTy>
 struct CumProd1DContigFactory

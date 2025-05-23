@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -50,8 +50,10 @@ namespace add
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT> struct AddFunctor
 {
@@ -69,21 +71,22 @@ template <typename argT1, typename argT2, typename resT> struct AddFunctor
             using rT1 = typename argT1::value_type;
             using rT2 = typename argT2::value_type;
 
-            return exprm_ns::complex<rT1>(in1) + exprm_ns::complex<rT2>(in2);
+            return su_ns::sycl_complex_t<rT1>(in1) +
+                   su_ns::sycl_complex_t<rT2>(in2);
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
                            !tu_ns::is_complex<argT2>::value)
         {
             using rT1 = typename argT1::value_type;
 
-            return exprm_ns::complex<rT1>(in1) + in2;
+            return su_ns::sycl_complex_t<rT1>(in1) + in2;
         }
         else if constexpr (!tu_ns::is_complex<argT1>::value &&
                            tu_ns::is_complex<argT2>::value)
         {
             using rT2 = typename argT2::value_type;
 
-            return in1 + exprm_ns::complex<rT2>(in2);
+            return in1 + su_ns::sycl_complex_t<rT2>(in2);
         }
         else {
             return in1 + in2;
@@ -460,7 +463,21 @@ template <typename argT, typename resT> struct AddInplaceFunctor
     using supports_vec = std::negation<
         std::disjunction<tu_ns::is_complex<argT>, tu_ns::is_complex<resT>>>;
 
-    void operator()(resT &res, const argT &in) { res += in; }
+    void operator()(resT &res, const argT &in)
+    {
+        if constexpr (tu_ns::is_complex_v<resT> && tu_ns::is_complex_v<argT>) {
+            using rT1 = typename resT::value_type;
+            using rT2 = typename argT::value_type;
+
+            auto tmp = su_ns::sycl_complex_t<rT1>(res);
+            tmp += su_ns::sycl_complex_t<rT2>(in);
+
+            res = resT(tmp);
+        }
+        else {
+            res += in;
+        }
+    }
 
     template <int vec_sz>
     void operator()(sycl::vec<resT, vec_sz> &res,

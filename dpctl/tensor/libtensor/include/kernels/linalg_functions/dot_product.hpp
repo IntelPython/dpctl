@@ -37,6 +37,7 @@
 #include "kernels/reductions.hpp"
 #include "utils/offset_utils.hpp"
 #include "utils/sycl_alloc_utils.hpp"
+#include "utils/sycl_complex.hpp"
 #include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
@@ -49,6 +50,18 @@ namespace kernels
 
 using dpctl::tensor::ssize_t;
 namespace su_ns = dpctl::tensor::sycl_utils;
+namespace tu_ns = dpctl::tensor::type_utils;
+
+namespace detail
+{
+
+template <typename T>
+using SumTempsOpT = std::conditional_t<
+    std::is_same_v<T, bool>,
+    sycl::logical_or<T>,
+    std::conditional_t<tu_ns::is_complex_v<T>, su_ns::Plus<T>, sycl::plus<T>>>;
+
+} // namespace detail
 
 template <typename lhsT,
           typename rhsT,
@@ -92,11 +105,23 @@ public:
             auto lhs_reduction_offset = reduction_offsets.get_first_offset();
             auto rhs_reduction_offset = reduction_offsets.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            red_val += convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            if constexpr (tu_ns::is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complex = su_ns::sycl_complex_t<realT>;
+
+                auto tmp = sycl_complex(red_val);
+                tmp += sycl_complex(tu_ns::convert_impl<outT, lhsT>(
+                           lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                       sycl_complex(tu_ns::convert_impl<outT, rhsT>(
+                           rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                red_val = outT(tmp);
+            }
+            else {
+                red_val += tu_ns::convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           tu_ns::convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            }
         }
 
         out_[out_batch_offset] = red_val;
@@ -175,10 +200,9 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
+            outT val = tu_ns::convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
+                       tu_ns::convert_impl<outT, rhsT>(
                            rhs_[rhs_batch_offset + rhs_reduction_offset]);
 
             local_red_val += val;
@@ -273,10 +297,9 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
+            outT val = tu_ns::convert_impl<outT, lhsT>(
                            lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
+                       tu_ns::convert_impl<outT, rhsT>(
                            rhs_[rhs_batch_offset + rhs_reduction_offset]);
 
             local_red_val += val;
@@ -718,20 +741,32 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            if constexpr (tu_ns::is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complexT = su_ns::sycl_complex_t<realT>;
 
-            local_red_val += val;
+                sycl_complexT val =
+                    sycl_complexT(tu_ns::convert_impl<outT, lhsT>(
+                        lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                    sycl_complexT(tu_ns::convert_impl<outT, rhsT>(
+                        rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                local_red_val = outT(sycl_complexT(local_red_val) + val);
+            }
+            else {
+                outT val = tu_ns::convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           tu_ns::convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+                local_red_val += val;
+            }
         }
 
         auto work_group = it.get_group();
 
-        using RedOpT = typename std::conditional<std::is_same_v<outT, bool>,
-                                                 sycl::logical_or<outT>,
-                                                 sycl::plus<outT>>::type;
+        using RedOpT = std::conditional_t<
+            std::is_same_v<outT, bool>, sycl::logical_or<outT>,
+            std::conditional_t<tu_ns::is_complex_v<outT>, su_ns::Plus<outT>,
+                               sycl::plus<outT>>>;
         outT red_val_over_wg = sycl::reduce_over_group(
             work_group, local_red_val, outT(0), RedOpT());
 
@@ -819,13 +854,24 @@ public:
             const auto &rhs_reduction_offset =
                 reduction_offsets_.get_second_offset();
 
-            using dpctl::tensor::type_utils::convert_impl;
-            outT val = convert_impl<outT, lhsT>(
-                           lhs_[lhs_batch_offset + lhs_reduction_offset]) *
-                       convert_impl<outT, rhsT>(
-                           rhs_[rhs_batch_offset + rhs_reduction_offset]);
+            if constexpr (tu_ns::is_complex_v<outT>) {
+                using realT = typename outT::value_type;
+                using sycl_complexT = su_ns::sycl_complex_t<realT>;
 
-            local_red_val += val;
+                sycl_complexT val =
+                    sycl_complexT(tu_ns::convert_impl<outT, lhsT>(
+                        lhs_[lhs_batch_offset + lhs_reduction_offset])) *
+                    sycl_complexT(tu_ns::convert_impl<outT, rhsT>(
+                        rhs_[rhs_batch_offset + rhs_reduction_offset]));
+                local_red_val = outT(sycl_complexT(local_red_val) + val);
+            }
+            else {
+                outT val = tu_ns::convert_impl<outT, lhsT>(
+                               lhs_[lhs_batch_offset + lhs_reduction_offset]) *
+                           tu_ns::convert_impl<outT, rhsT>(
+                               rhs_[rhs_batch_offset + rhs_reduction_offset]);
+                local_red_val += val;
+            }
         }
 
         auto work_group = it.get_group();
@@ -972,9 +1018,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
-                                                   sycl::logical_or<resTy>,
-                                                   sycl::plus<resTy>>::type;
+    using ReductionOpT = detail::SumTempsOpT<resTy>;
 
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1014,7 +1058,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =
@@ -1215,9 +1259,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
-    using ReductionOpT = typename std::conditional<std::is_same_v<resTy, bool>,
-                                                   sycl::logical_or<resTy>,
-                                                   sycl::plus<resTy>>::type;
+    using ReductionOpT = detail::SumTempsOpT<resTy>;
 
     std::size_t reductions_per_wi(preferred_reductions_per_wi);
     if (reduction_nelems <= preferred_reductions_per_wi * max_wg) {
@@ -1261,7 +1303,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
     }
     else {
         constexpr resTy identity_val =
-            sycl::known_identity<ReductionOpT, resTy>::value;
+            su_ns::Identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
         std::size_t reduction_groups =

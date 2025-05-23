@@ -29,6 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -48,7 +49,9 @@ namespace round
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -67,14 +70,15 @@ template <typename argT, typename resT> struct RoundFunctor
 
     resT operator()(const argT &in) const
     {
-
         if constexpr (std::is_integral_v<argT>) {
             return in;
         }
         else if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-            return resT{round_func<realT>(std::real(in)),
-                        round_func<realT>(std::imag(in))};
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            return resT{round_func<realT>(exprm_ns::real(z)),
+                        round_func<realT>(exprm_ns::imag(z))};
         }
         else {
             return round_func<argT>(in);

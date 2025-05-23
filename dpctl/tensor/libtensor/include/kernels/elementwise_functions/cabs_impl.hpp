@@ -27,7 +27,7 @@
 #include <complex>
 #include <limits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 
 namespace dpctl
 {
@@ -37,6 +37,9 @@ namespace kernels
 {
 namespace detail
 {
+
+namespace su_ns = dpctl::tensor::sycl_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename realT> realT cabs(std::complex<realT> const &z)
 {
@@ -51,8 +54,10 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     //   * If x is a finite number and y is NaN, the result is NaN.
     //   * If x is NaN and y is NaN, the result is NaN.
 
-    const realT x = std::real(z);
-    const realT y = std::imag(z);
+    using sycl_complexT = su_ns::sycl_complex_t<realT>;
+    sycl_complexT _z = su_ns::sycl_complex_t<realT>(z);
+    const realT x = exprm_ns::real(_z);
+    const realT y = exprm_ns::imag(_z);
 
     constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
     constexpr realT p_inf = std::numeric_limits<realT>::infinity();
@@ -60,11 +65,8 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     const realT res =
         std::isinf(x)
             ? p_inf
-            : ((std::isinf(y)
-                    ? p_inf
-                    : ((std::isnan(x)
-                            ? q_nan
-                            : exprm_ns::abs(exprm_ns::complex<realT>(z))))));
+            : ((std::isinf(y) ? p_inf
+                              : ((std::isnan(x) ? q_nan : exprm_ns::abs(_z)))));
 
     return res;
 }
