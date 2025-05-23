@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Document `dpctl.device_type`, `dpctl.backend_type`, `dpctl.event_status_type`, and `dpctl.global_mem_cache_type` enums [gh-2019](https://github.com/IntelPython/dpctl/pull/2019)
 * Updated `SYCL_INCLUDE_DIR_HINT` in Conda recipe [gh-2039](https://github.com/IntelPython/dpctl/pull/2039)
 * Updated expected dtypes in element-wise function docstrings [gh-2041](https://github.com/IntelPython/dpctl/pull/2041), [gh-2048](https://github.com/IntelPython/dpctl/pull/2048)
-* Set `ARRAY_API_TESTS_VERSION=2024.12` for when running array API conformity job in CI [gh-2046](https://github.com/IntelPython/dpctl/pull/2046)
+* Set `ARRAY_API_TESTS_VERSION=2024.12` when running array API conformity job in CI [gh-2046](https://github.com/IntelPython/dpctl/pull/2046)
 * Install `hwloc` when running CI job for nightly SYCL compiler [gh-2050](https://github.com/IntelPython/dpctl/pull/2050)
 * Added `cython-lint` to `pre-commit` to improve style and readability of Cython code [gh-2056](https://github.com/IntelPython/dpctl/pull/2056)
 * Skip upload jobs when GitHub CI is called from a forked repo [gh-2059](https://github.com/IntelPython/dpctl/pull/2059)
