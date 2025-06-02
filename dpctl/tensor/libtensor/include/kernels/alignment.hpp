@@ -30,7 +30,7 @@ namespace kernels
 namespace alignment_utils
 {
 
-static constexpr std::size_t required_alignment = 64UL;
+inline constexpr std::size_t required_alignment = 64UL;
 
 template <std::uintptr_t alignment, typename Ptr> bool is_aligned(Ptr p)
 {

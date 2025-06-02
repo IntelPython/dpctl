@@ -56,7 +56,7 @@ enum class typenum_t : int
     CFLOAT,
     CDOUBLE, // 13
 };
-constexpr int num_types = 14; // number of elements in typenum_t
+inline constexpr int num_types = 14; // number of elements in typenum_t
 
 template <typename funcPtrT,
           template <typename fnT, typename D, typename S>
