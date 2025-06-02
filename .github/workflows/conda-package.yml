@@ -80,7 +80,7 @@ jobs:
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   build_windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     timeout-minutes: 150
 
     strategy:
@@ -254,7 +254,7 @@ jobs:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         experimental: [false]
-        runner: [windows-2019]
+        runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
     env:
       workdir: '${{ github.workspace }}'
@@ -458,7 +458,7 @@ jobs:
     if: |
       (github.repository == 'IntelPython/dpctl') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-    runs-on: windows-2019
+    runs-on: windows-latest
     timeout-minutes: 20
     strategy:
       matrix:
