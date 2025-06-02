@@ -1,0 +1,6 @@
+﻿dpctl.tensor.empty
+==================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: empty
