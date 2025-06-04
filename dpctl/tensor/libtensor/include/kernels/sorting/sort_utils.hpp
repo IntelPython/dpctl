@@ -47,8 +47,8 @@ sycl::event iota_impl(sycl::queue &exec_q,
                       std::size_t nelems,
                       const std::vector<sycl::event> &dependent_events)
 {
-    constexpr std::uint32_t lws = 256;
-    constexpr std::uint32_t n_wi = 4;
+    static constexpr std::uint32_t lws = 256;
+    static constexpr std::uint32_t n_wi = 4;
     const std::size_t n_groups = (nelems + n_wi * lws - 1) / (n_wi * lws);
 
     sycl::range<1> gRange{n_groups * lws};
@@ -72,7 +72,7 @@ sycl::event iota_impl(sycl::queue &exec_q,
             }
 
             if (offset + n_wi * max_sgSize < nelems) {
-                constexpr auto group_ls_props = syclexp::properties{
+                static constexpr auto group_ls_props = syclexp::properties{
                     syclexp::data_placement_striped
                     // , syclexp::full_group
                 };
@@ -105,8 +105,8 @@ sycl::event map_back_impl(sycl::queue &exec_q,
                           std::size_t row_size,
                           const std::vector<sycl::event> &dependent_events)
 {
-    constexpr std::uint32_t lws = 64;
-    constexpr std::uint32_t n_wi = 4;
+    static constexpr std::uint32_t lws = 64;
+    static constexpr std::uint32_t n_wi = 4;
     const std::size_t n_groups = (nelems + lws * n_wi - 1) / (n_wi * lws);
 
     sycl::range<1> lRange{lws};

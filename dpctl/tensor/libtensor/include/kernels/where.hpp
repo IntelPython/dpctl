@@ -88,7 +88,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
+        static constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<condT>::value ||
@@ -185,8 +185,8 @@ sycl::event where_contig_impl(sycl::queue &q,
         cgh.depends_on(depends);
 
         std::size_t lws = 64;
-        constexpr std::uint8_t vec_sz = 4u;
-        constexpr std::uint8_t n_vecs = 2u;
+        static constexpr std::uint8_t vec_sz = 4u;
+        static constexpr std::uint8_t n_vecs = 2u;
         const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -197,7 +197,7 @@ sycl::event where_contig_impl(sycl::queue &q,
             is_aligned<required_alignment>(x2_cp) &&
             is_aligned<required_alignment>(dst_cp))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName = where_contig_kernel<T, condT, vec_sz, n_vecs>;
 
             cgh.parallel_for<KernelName>(
@@ -207,7 +207,7 @@ sycl::event where_contig_impl(sycl::queue &q,
                                                         x2_tp, dst_tp));
         }
         else {
-            constexpr bool disable_sg_loadstore = false;
+            static constexpr bool disable_sg_loadstore = false;
             using InnerKernelName =
                 where_contig_kernel<T, condT, vec_sz, n_vecs>;
             using KernelName =

@@ -115,8 +115,8 @@ template <typename argTy> struct AngleContigHyperparameterSet
     using value_type =
         typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
 
-    constexpr static auto vec_sz = value_type::vec_sz;
-    constexpr static auto n_vecs = value_type::n_vecs;
+    static constexpr static auto vec_sz = value_type::vec_sz;
+    static constexpr static auto n_vecs = value_type::n_vecs;
 };
 
 } // end of namespace hyperparam_detail
@@ -132,8 +132,8 @@ sycl::event angle_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using AngleHS = hyperparam_detail::AngleContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AngleHS::vec_sz;
-    constexpr std::uint8_t n_vec = AngleHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AngleHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AngleHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AngleOutputType, AngleContigFunctor, angle_contig_kernel, vec_sz,

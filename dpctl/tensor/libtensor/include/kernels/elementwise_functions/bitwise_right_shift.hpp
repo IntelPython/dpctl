@@ -83,8 +83,9 @@ struct BitwiseRightShiftFunctor
 private:
     resT impl(const argT1 &in1, const argT2 &in2) const
     {
-        constexpr argT2 in1_bitsize = static_cast<argT2>(sizeof(argT1) * 8);
-        constexpr resT zero = resT(0);
+        static constexpr argT2 in1_bitsize =
+            static_cast<argT2>(sizeof(argT1) * 8);
+        static constexpr resT zero = resT(0);
 
         // bitshift op with second operand negative, or >= bitwidth(argT1) is UB
         // array API spec mandates 0
@@ -318,8 +319,8 @@ template <typename argT, typename resT> struct BitwiseRightShiftInplaceFunctor
 private:
     void impl(resT &res, const argT &in) const
     {
-        constexpr argT res_bitsize = static_cast<argT>(sizeof(resT) * 8);
-        constexpr resT zero = resT(0);
+        static constexpr argT res_bitsize = static_cast<argT>(sizeof(resT) * 8);
+        static constexpr resT zero = resT(0);
 
         // bitshift op with second operand negative, or >= bitwidth(argT1) is UB
         // array API spec mandates 0
@@ -413,8 +414,8 @@ sycl::event bitwise_right_shift_inplace_contig_impl(
                                                                     argTy>;
 
     // res = OP(res, arg)
-    constexpr std::uint8_t vec_sz = BitwiseRSHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseRSHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseRSHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseRSHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, BitwiseRightShiftInplaceContigFunctor,

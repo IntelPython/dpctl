@@ -227,11 +227,11 @@ std::size_t _get_lws_impl(std::size_t n)
     }
 }
 
-std::size_t get_lws(std::size_t n)
+inline std::size_t get_lws(std::size_t n)
 {
-    constexpr std::size_t lws0 = 256u;
-    constexpr std::size_t lws1 = 128u;
-    constexpr std::size_t lws2 = 64u;
+    static constexpr std::size_t lws0 = 256u;
+    static constexpr std::size_t lws1 = 128u;
+    static constexpr std::size_t lws2 = 64u;
     return _get_lws_impl<lws0, lws1, lws2>(n);
 }
 
@@ -261,9 +261,9 @@ sycl::event masked_extract_all_slices_contig_impl(
     ssize_t dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
+    static constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
 
-    constexpr NoOpIndexer masked_src_indexer{};
+    static constexpr NoOpIndexer masked_src_indexer{};
     const Strided1DIndexer masked_dst_indexer(/* size */ dst_size,
                                               /* step */ dst_stride);
 
@@ -339,7 +339,7 @@ sycl::event masked_extract_all_slices_strided_impl(
     ssize_t dst_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
+    static constexpr TwoZeroOffsets_Indexer orthog_src_dst_indexer{};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
@@ -578,7 +578,7 @@ sycl::event masked_place_all_slices_strided_impl(
     ssize_t rhs_stride,
     const std::vector<sycl::event> &depends = {})
 {
-    constexpr TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
+    static constexpr TwoZeroOffsets_Indexer orthog_dst_rhs_indexer{};
 
     /* StridedIndexer(int _nd, ssize_t _offset, ssize_t const
      * *_packed_shape_strides) */
@@ -589,7 +589,7 @@ sycl::event masked_place_all_slices_strided_impl(
         TwoZeroOffsets_Indexer, StridedIndexer, Strided1DCyclicIndexer, dataT,
         indT>;
 
-    constexpr std::size_t nominal_lws = 256;
+    static constexpr std::size_t nominal_lws = 256;
     const std::size_t masked_extent = iteration_size;
     const std::size_t lws = std::min(masked_extent, nominal_lws);
 
@@ -685,7 +685,7 @@ sycl::event masked_place_some_slices_strided_impl(
         TwoOffsets_StridedIndexer, StridedIndexer, Strided1DCyclicIndexer,
         dataT, indT>;
 
-    constexpr std::size_t nominal_lws = 256;
+    static constexpr std::size_t nominal_lws = 256;
     const std::size_t orthog_extent = orthog_nelems;
     const std::size_t masked_extent = masked_nelems;
     const std::size_t lws = std::min(masked_extent, nominal_lws);
@@ -788,7 +788,7 @@ sycl::event non_zero_indexes_impl(sycl::queue &exec_q,
     const indT1 *cumsum_data = reinterpret_cast<const indT1 *>(cumsum_cp);
     indT2 *indexes_data = reinterpret_cast<indT2 *>(indexes_cp);
 
-    constexpr std::size_t nominal_lws = 256u;
+    static constexpr std::size_t nominal_lws = 256u;
     const std::size_t masked_extent = iter_size;
     const std::size_t lws = std::min(masked_extent, nominal_lws);
 

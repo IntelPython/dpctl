@@ -266,7 +266,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -299,7 +299,7 @@ std::pair<sycl::event, sycl::event> py_reduction_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -586,7 +586,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -610,7 +610,7 @@ std::pair<sycl::event, sycl::event> py_tree_reduction_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -863,7 +863,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -885,7 +885,7 @@ std::pair<sycl::event, sycl::event> py_search_over_axis(
         if (fn != nullptr) {
             std::size_t iter_nelems = dst_nelems;
 
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event reduction_over_axis_contig_ev =
                 fn(exec_q, iter_nelems, reduction_nelems, src.get_data(),
@@ -1128,7 +1128,8 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
     int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
 
-    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
+    static constexpr int int32_typeid =
+        static_cast<int>(td_ns::typenum_t::INT32);
     if (dst_typeid != int32_typeid) {
         throw py::value_error(
             "Unexpected data type of destination array, expecting 'int32'");
@@ -1152,7 +1153,7 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
         (is_src_f_contig && dst_nelems == 0))
     {
         auto fn = axis1_contig_dispatch_vector[src_typeid];
-        constexpr py::ssize_t zero_offset = 0;
+        static constexpr py::ssize_t zero_offset = 0;
 
         sycl::event red_ev =
             fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, zero_offset,
@@ -1167,7 +1168,7 @@ py_boolean_reduction(const dpctl::tensor::usm_ndarray &src,
              ((is_dst_c_contig && dst_nd == 1) || dst.is_f_contiguous()))
     {
         auto fn = axis0_contig_dispatch_vector[src_typeid];
-        constexpr py::ssize_t zero_offset = 0;
+        static constexpr py::ssize_t zero_offset = 0;
 
         sycl::event red_ev =
             fn(exec_q, dst_nelems, red_nelems, src_data, dst_data, zero_offset,

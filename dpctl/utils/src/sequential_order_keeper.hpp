@@ -7,9 +7,10 @@
 
 namespace
 {
-bool is_event_complete(const sycl::event &e)
+inline bool is_event_complete(const sycl::event &e)
 {
-    constexpr auto exec_complete = sycl::info::event_command_status::complete;
+    static constexpr auto exec_complete =
+        sycl::info::event_command_status::complete;
 
     const auto status =
         e.get_info<sycl::info::event::command_execution_status>();

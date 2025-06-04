@@ -269,7 +269,7 @@ DPCTLDeviceMgr_GetDeviceInfoStr(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 int DPCTLDeviceMgr_GetPositionInDevices(__dpctl_keep DPCTLSyclDeviceRef DRef,
                                         int device_identifier)
 {
-    constexpr int not_found = -1;
+    static constexpr int not_found = -1;
     if (!DRef) {
         return not_found;
     }

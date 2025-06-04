@@ -142,8 +142,8 @@ sycl::event sqrt_contig_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {})
 {
     using SqrtHS = hyperparam_detail::SqrtContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = SqrtHS::vec_sz;
-    constexpr std::uint8_t n_vecs = SqrtHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = SqrtHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = SqrtHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SqrtOutputType, SqrtContigFunctor, sqrt_contig_kernel, vec_sz,

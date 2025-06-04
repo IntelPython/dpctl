@@ -203,8 +203,8 @@ logical_and_contig_impl(sycl::queue &exec_q,
 {
     using LogicalAndHS =
         hyperparam_detail::LogicalAndContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = LogicalAndHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LogicalAndHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LogicalAndHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LogicalAndHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, LogicalAndOutputType, LogicalAndContigFunctor,

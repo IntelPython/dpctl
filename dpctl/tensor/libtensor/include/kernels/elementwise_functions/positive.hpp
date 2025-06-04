@@ -145,8 +145,8 @@ sycl::event positive_contig_impl(sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {})
 {
     using PosHS = hyperparam_detail::PositiveContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = PosHS::vec_sz;
-    constexpr std::uint8_t n_vecs = PosHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = PosHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = PosHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, PositiveOutputType, PositiveContigFunctor,

@@ -213,8 +213,8 @@ sycl::event subtract_contig_impl(sycl::queue &exec_q,
 {
     using SubHS =
         hyperparam_detail::SubtractContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = SubHS::vec_sz;
-    constexpr std::uint8_t n_vecs = SubHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = SubHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = SubHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, SubtractOutputType, SubtractContigFunctor,
@@ -511,8 +511,8 @@ subtract_inplace_contig_impl(sycl::queue &exec_q,
 {
     using SubHS =
         hyperparam_detail::SubtractContigHyperparameterSet<resTy, argTy>;
-    constexpr std::uint8_t vec_sz = SubHS::vec_sz;
-    constexpr std::uint8_t n_vecs = SubHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = SubHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = SubHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, SubtractInplaceContigFunctor,

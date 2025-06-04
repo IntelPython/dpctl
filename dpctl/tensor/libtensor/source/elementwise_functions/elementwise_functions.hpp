@@ -458,7 +458,7 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
                 std::initializer_list<py::ssize_t>{0, 1};
             static constexpr auto one_zero_strides =
                 std::initializer_list<py::ssize_t>{1, 0};
-            constexpr py::ssize_t one{1};
+            static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_src2_strides, zero_one_strides) &&
                 isEqual(simplified_src1_strides, {simplified_shape[1], one}) &&
@@ -751,7 +751,7 @@ py_binary_inplace_ufunc(const dpctl::tensor::usm_ndarray &lhs,
         if (nd == 2) {
             static constexpr auto one_zero_strides =
                 std::initializer_list<py::ssize_t>{1, 0};
-            constexpr py::ssize_t one{1};
+            static constexpr py::ssize_t one{1};
             // special case of C-contiguous matrix and a row
             if (isEqual(simplified_rhs_strides, one_zero_strides) &&
                 isEqual(simplified_lhs_strides, {one, simplified_shape[0]}))
