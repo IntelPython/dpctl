@@ -6,10 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.20.0] - Jun. 03, 2025
 
+This release achieves compliance of `dpctl.tensor` with the Python Array API 2024.12 standard.
+
+The `dpctl` namespace has also received a number of new features, including new Python classes `dpctl.LocalAccessor`, `dpctl.WorkGroupMemory`, and `dpctl.RawKernelArg` to be used as kernel argument types, support for peer access between `dpctl.SyclDevice` instances, and support for composite Level Zero devices.
+
 ### Added
 
 * Added `dpctl.WorkGroupMemory` class representing `sycl::ext::oneapi::experimental::work_group_memory`, to be used as a kernel argument type [gh-1984](https://github.com/IntelPython/dpctl/pull/1984)
-* Added `dpctl.LocalAccessor`class representing `sycl::local_accessor`, to be used as a kernel argument type [gh-1991](https://github.com/IntelPython/dpctl/pull/1991)
+* Added `dpctl.LocalAccessor` class representing `sycl::local_accessor`, to be used as a kernel argument type [gh-1991](https://github.com/IntelPython/dpctl/pull/1991)
 * Added `dpctl.SyclPlatform.get_devices` method for getting all `dpctl.SyclDevices` for the platform [gh-1992](https://github.com/IntelPython/dpctl/pull/1992)
 * Added support for the composite devices extension for Level Zero devices, usable with some devices when setting `ZE_FLAT_DEVICE_HIERARCHY=COMBINED` [gh-1993](https://github.com/IntelPython/dpctl/pull/1993)
 * Added `out` keyword to `tensor.take` [gh-2010](https://github.com/IntelPython/dpctl/pull/2010)
