@@ -28,7 +28,7 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
 set(DPCTL_TARGET_CUDA
     ""
     CACHE STRING
-    "Build DPCTL to target CUDA devices. Set to ON to use default architecture (sm_50), or to a specific architecture like sm_80."
+    "Build DPCTL to target CUDA devices. Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), or to a specific architecture like sm_80."
 )
 set(DPCTL_TARGET_HIP
     ""
