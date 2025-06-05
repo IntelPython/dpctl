@@ -159,13 +159,31 @@ The following plugins from CodePlay are supported:
 .. _codeplay_nv_plugin: https://developer.codeplay.com/products/oneapi/nvidia/
 .. _codeplay_amd_plugin: https://developer.codeplay.com/products/oneapi/amd/
 
-``dpctl`` can be built for CUDA devices as follows:
+``dpctl`` can be built for CUDA devices using the ``DPCTL_TARGET_CUDA`` CMake option,
+which accepts a specific compute architecture string:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=sm_80"
+
+To use the default architecture (``sm_50``), use:
 
 .. code-block:: bash
 
     python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=ON"
 
-And for AMD devices
+Note that kernels are built for ``sm_50`` by default, allowing them to work on a wider
+range of architectures, but limiting the usage of more recent CUDA features.
+
+For reference, compute architecture strings like ``sm_80`` are based on
+CUDA Compute Capability. A complete mapping between NVIDIA GPU models and their
+respective ``sm_XX`` values can be found in the official
+`CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_.
+
+A full list of available SYCL alias targets is available in the
+`DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
+
+To build for AMD devices, use:
 
 .. code-block:: bash
 
