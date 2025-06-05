@@ -937,7 +937,8 @@ which accepts a specific compute architecture string:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=sm_80&quot;</span>
 </pre></div>
 </div>
-<p>To use the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>), use:</p>
+<p>To use the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>),
+set <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CUDA</span></code> to a value such as <code class="docutils literal notranslate"><span class="pre">ON</span></code>, <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, <code class="docutils literal notranslate"><span class="pre">YES</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>, or <code class="docutils literal notranslate"><span class="pre">1</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON&quot;</span>
 </pre></div>
 </div>

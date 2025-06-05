@@ -166,7 +166,8 @@ which accepts a specific compute architecture string:
 
     python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=sm_80"
 
-To use the default architecture (``sm_50``), use:
+To use the default architecture (``sm_50``),
+set ``DPCTL_TARGET_CUDA`` to a value such as ``ON``, ``TRUE``, ``YES``, ``Y``, or ``1``:
 
 .. code-block:: bash
 
