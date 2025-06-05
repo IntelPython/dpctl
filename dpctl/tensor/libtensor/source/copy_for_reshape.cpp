@@ -108,7 +108,7 @@ copy_usm_ndarray_for_reshape(const dpctl::tensor::usm_ndarray &src,
         const char *src_data = src.get_data();
         char *dst_data = dst.get_data();
         sycl::event copy_ev =
-            exec_q.copy<char>(src_data, dst_data, src_elemsize);
+            exec_q.copy<char>(src_data, dst_data, src_elemsize, depends);
         return std::make_pair(keep_args_alive(exec_q, {src, dst}, {copy_ev}),
                               copy_ev);
     }
