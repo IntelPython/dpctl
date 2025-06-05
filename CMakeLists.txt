@@ -54,20 +54,22 @@ set(_dpctl_sycl_target_link_options)
 set(_dpctl_sycl_targets)
 set(_dpctl_cuda_arch)
 set(_dpctl_amd_targets)
+
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    if (NOT "x${DPCTL_TARGET_CUDA}" STREQUAL "x")
-      if (DPCTL_TARGET_CUDA STREQUAL "ON")
-         set(_dpctl_cuda_arch "sm_50")
-      elseif(DPCTL_TARGET_CUDA MATCHES "^sm_")
+      if(DPCTL_TARGET_CUDA MATCHES "^sm_")
          set(_dpctl_cuda_arch ${DPCTL_TARGET_CUDA})
+      elseif(DPCTL_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
+         set(_dpctl_cuda_arch "sm_50")
       else()
          message(FATAL_ERROR
             "Invalid value for DPCTL_TARGET_CUDA: \"${DPCTL_TARGET_CUDA}\". "
-            "Expected 'ON' or an architecture like 'sm_80'."
+            "Expected 'ON', 'TRUE', 'YES', 'Y', '1', or a CUDA architecture like 'sm_80'."
          )
       endif()
       set(_dpctl_sycl_targets "nvidia_gpu_${_dpctl_cuda_arch},spir64-unknown-unknown")
    endif()
+
    if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
       set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
       if(_dpctl_sycl_targets)
