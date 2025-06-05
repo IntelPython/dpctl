@@ -25,9 +25,10 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
     "Build dpctl pybind11 offloading extensions with coverage instrumentation"
     OFF
 )
-option(DPCTL_TARGET_CUDA
-    "Build DPCTL to target CUDA devices"
-    OFF
+set(DPCTL_TARGET_CUDA
+    ""
+    CACHE STRING
+    "Build DPCTL to target CUDA devices. Set to ON to use default architecture (sm_50), or to a specific architecture like sm_80."
 )
 set(DPCTL_TARGET_HIP
     ""
@@ -51,9 +52,20 @@ set(_dpctl_sycl_target_compile_options)
 set(_dpctl_sycl_target_link_options)
 
 set(_dpctl_sycl_targets)
+set(_dpctl_cuda_arch)
 set(_dpctl_amd_targets)
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
-   if (DPCTL_TARGET_CUDA)
+   if (NOT "x${DPCTL_TARGET_CUDA}" STREQUAL "x")
+      if (DPCTL_TARGET_CUDA STREQUAL "ON")
+         set(_dpctl_cuda_arch "sm_50")
+      elseif(DPCTL_TARGET_CUDA MATCHES "^sm_")
+         set(_dpctl_cuda_arch ${DPCTL_TARGET_CUDA})
+      else()
+         message(FATAL_ERROR
+            "Invalid value for DPCTL_TARGET_CUDA: \"${DPCTL_TARGET_CUDA}\". "
+            "Expected 'ON' or an architecture like 'sm_80'."
+         )
+      endif()
       set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
    endif()
    if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
@@ -88,6 +100,10 @@ if (_dpctl_sycl_targets)
    message(STATUS "Compiling for -fsycl-targets=${_dpctl_sycl_targets}")
    list(APPEND _dpctl_sycl_target_compile_options -fsycl-targets=${_dpctl_sycl_targets})
    list(APPEND _dpctl_sycl_target_link_options -fsycl-targets=${_dpctl_sycl_targets})
+   if (_dpctl_cuda_arch)
+        list(APPEND _dpctl_sycl_target_compile_options -Xsycl-target-backend=nvptx64-nvidia-cuda --offload-arch=${_dpctl_cuda_arch})
+        list(APPEND _dpctl_sycl_target_link_options -Xsycl-target-backend=nvptx64-nvidia-cuda --offload-arch=${_dpctl_cuda_arch})
+   endif()
    if(_dpctl_amd_targets)
       list(APPEND _dpctl_sycl_target_compile_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpctl_amd_targets})
       list(APPEND _dpctl_sycl_target_link_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpctl_amd_targets})
