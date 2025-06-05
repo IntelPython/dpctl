@@ -633,23 +633,17 @@ def test_asarray_to_device_with_unsupported_dtype(dt):
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No device with aspect for test")
     d1 = None
-    try:
-        d1 = dpctl.select_device_with_aspects("cpu", excluded_aspects=[aspect])
-    except dpctl.SyclDeviceCreationError:
-        pass
-    try:
-        d1 = dpctl.select_device_with_aspects("gpu", excluded_aspects=[aspect])
-    except dpctl.SyclDeviceCreationError:
-        pass
-    try:
-        d1 = dpctl.select_device_with_aspects(
-            "accelerator", excluded_aspects=[aspect]
-        )
-    except dpctl.SyclDeviceCreationError:
-        pass
+    for d in dpctl.get_devices():
+        if d.default_selector_score < 0:
+            pass
+        try:
+            d1 = dpctl.select_device_with_aspects(
+                d.device_type.name, excluded_aspects=[aspect]
+            )
+        except dpctl.SyclDeviceCreationError:
+            pass
     if d1 is None:
         pytest.skip("No device with missing aspect for test")
-
     x = dpt.ones(10, dtype=dt, device=d0)
     y = dpt.asarray(x, device=d1)
     assert y.sycl_device == d1
