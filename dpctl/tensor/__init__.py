@@ -198,6 +198,7 @@ from ._reduction import (
 )
 from ._searchsorted import searchsorted
 from ._set_functions import (
+    isin,
     unique_all,
     unique_counts,
     unique_inverse,
@@ -394,4 +395,5 @@ __all__ = [
     "top_k",
     "dldevice_to_sycl_device",
     "sycl_device_to_dldevice",
+    "isin",
 ]

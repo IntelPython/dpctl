@@ -19,6 +19,7 @@ from typing import NamedTuple
 import dpctl.tensor as dpt
 import dpctl.utils as du
 
+from ._copy_utils import _empty_like_orderK
 from ._tensor_elementwise_impl import _not_equal, _subtract
 from ._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
@@ -31,6 +32,7 @@ from ._tensor_impl import (
 )
 from ._tensor_sorting_impl import (
     _argsort_ascending,
+    _isin,
     _searchsorted_left,
     _sort_ascending,
 )
@@ -624,3 +626,64 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
         inv,
         _counts,
     )
+
+
+def isin(x, test_elements, /, *, assume_unique=False, invert=False):
+    if not isinstance(x, dpt.usm_ndarray):
+        raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    if not isinstance(test_elements, dpt.usm_ndarray):
+        raise TypeError(
+            f"Expected dpctl.tensor.usm_ndarray, got {type(test_elements)}"
+        )
+
+    q = du.get_execution_queue([x.sycl_queue, test_elements.sycl_queue])
+    if q is None:
+        raise du.ExecutionPlacementError(
+            "Execution placement can not be unambiguously "
+            "inferred from input arguments."
+        )
+
+    x1 = x
+    x2 = dpt.reshape(test_elements, -1)
+
+    x1_dt = x1.dtype
+    x2_dt = x2.dtype
+
+    _manager = du.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    if x1_dt != x2_dt:
+        dt = dpt.result_type(x1, x2)
+        if x1_dt != dt:
+            x1_buf = _empty_like_orderK(x1, dt)
+            dep_evs = _manager.submitted_events
+            ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+                src=x1, dst=x1_buf, sycl_queue=q, depends=dep_evs
+            )
+            _manager.add_event_pair(ht_ev, ev)
+            x1 = x1_buf
+        if x2_dt != dt:
+            x2_buf = _empty_like_orderK(x2, dt)
+            dep_evs = _manager.submitted_events
+            ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+                src=x2, dst=x2_buf, sycl_queue=q, depends=dep_evs
+            )
+            _manager.add_event_pair(ht_ev, ev)
+            x2 = x2_buf
+
+    x2 = dpt.sort(x2)
+
+    dst_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
+    dst = _empty_like_orderK(x1, dpt.bool, usm_type=dst_usm_type)
+
+    dep_evs = _manager.submitted_events
+    ht_ev, s_ev = _isin(
+        needles=x1,
+        hay=x2,
+        dst=dst,
+        sycl_queue=q,
+        invert=invert,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, s_ev)
+    return dpt.reshape(dst, x.shape)
