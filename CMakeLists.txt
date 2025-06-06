@@ -56,7 +56,6 @@ set(_dpctl_sycl_target_link_options)
 
 set(_dpctl_sycl_targets)
 set(_dpctl_cuda_arch)
-set(_dpctl_amd_targets)
 
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    if (DPCTL_TARGET_CUDA)
@@ -74,28 +73,33 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    endif()
 
    if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
-      set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
-      if(_dpctl_sycl_targets)
-         set(_dpctl_sycl_targets "amdgcn-amd-amdhsa,${_dpctl_sycl_targets}")
+      if(DPCTL_TARGET_HIP MATCHES "^gfx")
+         if(_dpctl_sycl_targets)
+            set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},${_dpctl_sycl_targets}")
+         else()
+            set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},spir64-unknown-unknown")
+         endif()
       else()
-         set(_dpctl_sycl_targets "amdgcn-amd-amdhsa,spir64-unknown-unknown")
+         message(FATAL_ERROR
+            "Invalid value for DPCTL_TARGET_HIP: \"${DPCTL_TARGET_HIP}\". "
+            "Expected something starting with 'gfx', e.g. 'gfx1030'."
+         )
       endif()
    endif()
 else()
-   set(_dpctl_sycl_targets ${DPCTL_SYCL_TARGETS})
-   if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
-      set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
+   if ("${DPCTL_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
+      message(FATAL_ERROR
+         "Legacy target 'amdgcn-amd-amdhsa' is not supported. "
+         "Use alias form 'amd_gpu_<arch>' instead."
+      )
    endif()
+   set(_dpctl_sycl_targets ${DPCTL_SYCL_TARGETS})
 endif()
 
 if (_dpctl_sycl_targets)
    message(STATUS "Compiling for -fsycl-targets=${_dpctl_sycl_targets}")
    list(APPEND _dpctl_sycl_target_compile_options -fsycl-targets=${_dpctl_sycl_targets})
    list(APPEND _dpctl_sycl_target_link_options -fsycl-targets=${_dpctl_sycl_targets})
-   if(_dpctl_amd_targets)
-      list(APPEND _dpctl_sycl_target_compile_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpctl_amd_targets})
-      list(APPEND _dpctl_sycl_target_link_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpctl_amd_targets})
-   endif()
 endif()
 
 add_subdirectory(libsyclinterface)
