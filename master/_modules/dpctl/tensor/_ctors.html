@@ -904,8 +904,6 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">usm_ndary</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dtype</span> <span class="o">=</span> <span class="n">usm_ndary</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">usm_type</span> <span class="o">=</span> <span class="n">usm_ndary</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="k">if</span> <span class="n">sycl_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -915,6 +913,8 @@
         <span class="n">copy_q</span> <span class="o">=</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">copy_q</span> <span class="o">=</span> <span class="n">usm_ndary</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">_map_to_device_dtype</span><span class="p">(</span><span class="n">usm_ndary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy_q</span><span class="p">)</span>
     <span class="c1"># Conditions for zero copy:</span>
     <span class="n">can_zero_copy</span> <span class="o">=</span> <span class="n">copy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span>
     <span class="c1">#    dtype is unchanged</span>
