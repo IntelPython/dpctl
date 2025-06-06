@@ -111,8 +111,6 @@ def _asarray_from_usm_ndarray(
         raise TypeError(
             f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ndary)}"
         )
-    if dtype is None:
-        dtype = usm_ndary.dtype
     if usm_type is None:
         usm_type = usm_ndary.usm_type
     if sycl_queue is not None:
@@ -122,6 +120,8 @@ def _asarray_from_usm_ndarray(
         copy_q = normalize_queue_device(sycl_queue=sycl_queue, device=exec_q)
     else:
         copy_q = usm_ndary.sycl_queue
+    if dtype is None:
+        dtype = _map_to_device_dtype(usm_ndary.dtype, copy_q)
     # Conditions for zero copy:
     can_zero_copy = copy is not True
     #    dtype is unchanged
