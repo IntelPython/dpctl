@@ -1,6 +1,0 @@
-﻿dpctl.select\_device\_with\_aspects
-===================================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: select_device_with_aspects
