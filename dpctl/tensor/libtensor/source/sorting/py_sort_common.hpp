@@ -127,7 +127,7 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if (is_src_c_contig && is_dst_c_contig) {
-        constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
         auto fn = sort_contig_fns[src_typeid];
 

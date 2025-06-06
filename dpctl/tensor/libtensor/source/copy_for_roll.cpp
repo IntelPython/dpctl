@@ -160,7 +160,7 @@ copy_usm_ndarray_for_roll_1d(const dpctl::tensor::usm_ndarray &src,
         auto fn = copy_for_roll_contig_dispatch_vector[type_id];
 
         if (fn != nullptr) {
-            constexpr py::ssize_t zero_offset = 0;
+            static constexpr py::ssize_t zero_offset = 0;
 
             sycl::event copy_for_roll_ev =
                 fn(exec_q, offset, src_nelems, src_data, zero_offset, dst_data,
@@ -331,8 +331,8 @@ copy_usm_ndarray_for_roll_nd(const dpctl::tensor::usm_ndarray &src,
     auto const &dst_strides = dst.get_strides_vector();
     auto const &common_shape = src.get_shape_vector();
 
-    constexpr py::ssize_t src_offset = 0;
-    constexpr py::ssize_t dst_offset = 0;
+    static constexpr py::ssize_t src_offset = 0;
+    static constexpr py::ssize_t dst_offset = 0;
 
     auto fn = copy_for_roll_ndshift_dispatch_vector[type_id];
 

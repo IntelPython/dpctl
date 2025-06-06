@@ -156,8 +156,8 @@ sycl::event round_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using RoundHS = hyperparam_detail::RoundContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = RoundHS::vec_sz;
-    constexpr std::uint8_t n_vecs = RoundHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = RoundHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = RoundHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, RoundOutputType, RoundContigFunctor, round_contig_kernel, vec_sz,

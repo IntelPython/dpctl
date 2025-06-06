@@ -250,7 +250,7 @@ std::pair<sycl::event, sycl::event> py_accumulate_final_axis_include_initial(
                               "the same array ranks");
     }
 
-    constexpr int acc_nd = 1;
+    static constexpr int acc_nd = 1;
 
     int iter_nd = src_nd - acc_nd;
     if (iter_nd < 0) {

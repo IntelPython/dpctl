@@ -99,10 +99,10 @@ auto build_gtest_values(const std::array<std::pair<T1, T2>, N> &params)
 
 auto build_params()
 {
-    constexpr auto param_1 = get_param_list<const char *>(
+    static constexpr auto param_1 = get_param_list<const char *>(
         "opencl:gpu", "opencl:cpu", "level_zero:gpu");
 
-    constexpr auto param_2 =
+    static constexpr auto param_2 =
         get_param_list<std::pair<const char *, sycl::aspect>>(
             std::make_pair("cpu", sycl::aspect::cpu),
             std::make_pair("gpu", sycl::aspect::gpu),

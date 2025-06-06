@@ -235,7 +235,7 @@ sycl::event repeat_by_sequence_1d_impl(sycl::queue &q,
         T *dst_tp = reinterpret_cast<T *>(dst_cp);
 
         // orthog ndim indexer
-        constexpr TwoZeroOffsets_Indexer orthog_indexer{};
+        static constexpr TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
         const StridedIndexer src_indexer{src_nd, 0, src_shape_strides};
         const Strided1DIndexer dst_indexer{/* size */ dst_shape,
@@ -422,7 +422,7 @@ sycl::event repeat_by_scalar_1d_impl(sycl::queue &q,
         T *dst_tp = reinterpret_cast<T *>(dst_cp);
 
         // orthog ndim indexer
-        constexpr TwoZeroOffsets_Indexer orthog_indexer{};
+        static constexpr TwoZeroOffsets_Indexer orthog_indexer{};
         // indexers along repeated axis
         const StridedIndexer src_indexer(src_nd, 0, src_shape_strides);
         const Strided1DIndexer dst_indexer{/* size */ dst_shape,

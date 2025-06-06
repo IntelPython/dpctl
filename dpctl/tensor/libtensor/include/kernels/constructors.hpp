@@ -468,7 +468,7 @@ sycl::event tri_impl(sycl::queue &exec_q,
                      const std::vector<sycl::event> &depends,
                      const std::vector<sycl::event> &additional_depends)
 {
-    constexpr int d2 = 2;
+    static constexpr int d2 = 2;
     ssize_t src_s = nd;
     ssize_t dst_s = 2 * nd;
     ssize_t nd_1 = nd - 1;

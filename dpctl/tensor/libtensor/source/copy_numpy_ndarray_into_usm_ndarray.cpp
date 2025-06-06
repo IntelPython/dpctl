@@ -160,7 +160,7 @@ void copy_numpy_ndarray_into_usm_ndarray(
                 copy_and_cast_from_host_contig_blocking_dispatch_table
                     [dst_type_id][src_type_id];
 
-            constexpr py::ssize_t zero_offset(0);
+            static constexpr py::ssize_t zero_offset(0);
 
             copy_and_cast_from_host_contig_blocking_fn(
                 exec_q, src_nelems, src_data, zero_offset, dst_data,

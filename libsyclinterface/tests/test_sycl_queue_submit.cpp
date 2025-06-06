@@ -45,7 +45,7 @@
 
 namespace
 {
-constexpr std::size_t SIZE = 1024;
+static constexpr std::size_t SIZE = 1024;
 static_assert(SIZE % 8 == 0);
 
 using namespace dpctl::syclinterface;
@@ -59,10 +59,10 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
                    std::string kernelName)
 {
     T scalarVal = 3;
-    constexpr std::size_t NARGS = 4;
-    constexpr std::size_t RANGE_NDIMS_1 = 1;
-    constexpr std::size_t RANGE_NDIMS_2 = 2;
-    constexpr std::size_t RANGE_NDIMS_3 = 3;
+    static constexpr std::size_t NARGS = 4;
+    static constexpr std::size_t RANGE_NDIMS_1 = 1;
+    static constexpr std::size_t RANGE_NDIMS_2 = 2;
+    static constexpr std::size_t RANGE_NDIMS_3 = 3;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
@@ -373,7 +373,7 @@ TEST_F(TestQueueSubmit, CheckForUnsupportedArgTy)
     int scalarVal = 3;
     std::size_t Range[] = {SIZE};
     std::size_t RANGE_NDIMS = 1;
-    constexpr std::size_t NARGS = 4;
+    static constexpr std::size_t NARGS = 4;
 
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS11RangeKernelIdE");
     void *args[NARGS] = {unwrap<void>(nullptr), unwrap<void>(nullptr),

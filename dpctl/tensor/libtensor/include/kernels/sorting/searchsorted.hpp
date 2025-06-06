@@ -87,7 +87,7 @@ public:
         // position of the needle_v in the hay array
         indTy pos{};
 
-        constexpr std::size_t zero(0);
+        static constexpr std::size_t zero(0);
         if constexpr (left_side) {
             // search in hay in left-closed interval, give `pos` such that
             // hay[pos - 1] < needle_v <= hay[pos]
@@ -155,9 +155,9 @@ sycl::event searchsorted_contig_impl(sycl::queue &exec_q,
 
         using TrivialIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        constexpr TrivialIndexerT hay_indexer{};
-        constexpr TrivialIndexerT needles_indexer{};
-        constexpr TrivialIndexerT positions_indexer{};
+        static constexpr TrivialIndexerT hay_indexer{};
+        static constexpr TrivialIndexerT needles_indexer{};
+        static constexpr TrivialIndexerT positions_indexer{};
 
         const auto fnctr =
             SearchSortedFunctor<argTy, indTy, left_closed, TrivialIndexerT,

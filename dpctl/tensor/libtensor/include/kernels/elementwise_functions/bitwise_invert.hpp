@@ -150,8 +150,8 @@ bitwise_invert_contig_impl(sycl::queue &exec_q,
 {
     using BitwiseInvertHS =
         hyperparam_detail::BitwiseInvertContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = BitwiseInvertHS::vec_sz;
-    constexpr std::uint8_t n_vec = BitwiseInvertHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseInvertHS::vec_sz;
+    static constexpr std::uint8_t n_vec = BitwiseInvertHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, BitwiseInvertOutputType, BitwiseInvertContigFunctor,

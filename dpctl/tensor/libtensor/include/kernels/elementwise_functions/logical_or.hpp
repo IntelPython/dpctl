@@ -201,8 +201,8 @@ sycl::event logical_or_contig_impl(sycl::queue &exec_q,
 {
     using LogicalOrHS =
         hyperparam_detail::LogicalOrContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = LogicalOrHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LogicalOrHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LogicalOrHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LogicalOrHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, LogicalOrOutputType, LogicalOrContigFunctor,

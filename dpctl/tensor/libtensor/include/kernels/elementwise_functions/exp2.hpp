@@ -73,7 +73,8 @@ template <typename argT, typename resT> struct Exp2Functor
 
             const argT tmp = in * sycl::log(realT(2));
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
 
             const realT x = std::real(tmp);
             const realT y = std::imag(tmp);
@@ -186,8 +187,8 @@ sycl::event exp2_contig_impl(sycl::queue &exec_q,
 {
     using Exp2HS = hyperparam_detail::Exp2ContigHyperparameterSet<argTy>;
 
-    constexpr std::uint8_t vec_sz = Exp2HS::vec_sz;
-    constexpr std::uint8_t n_vecs = Exp2HS::n_vecs;
+    static constexpr std::uint8_t vec_sz = Exp2HS::vec_sz;
+    static constexpr std::uint8_t n_vecs = Exp2HS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, Exp2OutputType, Exp2ContigFunctor, exp2_contig_kernel, vec_sz,

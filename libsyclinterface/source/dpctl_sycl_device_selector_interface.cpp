@@ -100,7 +100,7 @@ __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLGPUSelector_Create()
 int DPCTLDeviceSelector_Score(__dpctl_keep DPCTLSyclDeviceSelectorRef DSRef,
                               __dpctl_keep DPCTLSyclDeviceRef DRef)
 {
-    constexpr int REJECT_DEVICE_SCORE = -1;
+    static constexpr int REJECT_DEVICE_SCORE = -1;
     if (DSRef && DRef) {
         auto dev = *(unwrap<device>(DRef));
         return (*unwrap<dpctl_device_selector>(DSRef))(dev);

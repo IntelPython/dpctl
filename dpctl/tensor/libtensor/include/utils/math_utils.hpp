@@ -124,7 +124,7 @@ template <typename T> T logaddexp(T x, T y)
     }
     else {
         const T tmp = x - y;
-        constexpr T zero(0);
+        static constexpr T zero(0);
 
         return (tmp > zero)
                    ? (x + sycl::log1p(sycl::exp(-tmp)))

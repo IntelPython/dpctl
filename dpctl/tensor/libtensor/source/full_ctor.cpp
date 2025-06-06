@@ -127,7 +127,7 @@ sycl::event full_contig_impl(sycl::queue &exec_q,
         }
 
         if (is_zero) {
-            constexpr int memset_val = 0;
+            static constexpr int memset_val = 0;
             fill_ev = exec_q.submit([&](sycl::handler &cgh) {
                 cgh.depends_on(depends);
 

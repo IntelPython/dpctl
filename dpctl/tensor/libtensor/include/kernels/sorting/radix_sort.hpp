@@ -143,13 +143,13 @@ std::make_unsigned_t<IntT> order_preserving_cast(IntT val)
 
     if constexpr (is_ascending) {
         // ascending_mask: 100..0
-        constexpr UIntT ascending_mask =
+        static constexpr UIntT ascending_mask =
             (UIntT(1) << std::numeric_limits<IntT>::digits);
         return (uint_val ^ ascending_mask);
     }
     else {
         // descending_mask: 011..1
-        constexpr UIntT descending_mask =
+        static constexpr UIntT descending_mask =
             (std::numeric_limits<UIntT>::max() >> 1);
         return (uint_val ^ descending_mask);
     }
@@ -167,11 +167,11 @@ template <bool is_ascending> std::uint16_t order_preserving_cast(sycl::half val)
     // test the sign bit of the original value
     const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 15));
 
-    constexpr UIntT zero_mask = UIntT(0x8000u);
-    constexpr UIntT nonzero_mask = UIntT(0xFFFFu);
+    static constexpr UIntT zero_mask = UIntT(0x8000u);
+    static constexpr UIntT nonzero_mask = UIntT(0xFFFFu);
 
-    constexpr UIntT inv_zero_mask = static_cast<UIntT>(~zero_mask);
-    constexpr UIntT inv_nonzero_mask = static_cast<UIntT>(~nonzero_mask);
+    static constexpr UIntT inv_zero_mask = static_cast<UIntT>(~zero_mask);
+    static constexpr UIntT inv_nonzero_mask = static_cast<UIntT>(~nonzero_mask);
 
     if constexpr (is_ascending) {
         mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
@@ -200,8 +200,8 @@ std::uint32_t order_preserving_cast(FloatT val)
     // test the sign bit of the original value
     const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 31));
 
-    constexpr UIntT zero_mask = UIntT(0x80000000u);
-    constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFu);
+    static constexpr UIntT zero_mask = UIntT(0x80000000u);
+    static constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFu);
 
     if constexpr (is_ascending)
         mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
@@ -227,8 +227,8 @@ std::uint64_t order_preserving_cast(FloatT val)
     // test the sign bit of the original value
     const bool zero_fp_sign_bit = (UIntT(0) == (uint_val >> 63));
 
-    constexpr UIntT zero_mask = UIntT(0x8000000000000000u);
-    constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFFFFFFFFFu);
+    static constexpr UIntT zero_mask = UIntT(0x8000000000000000u);
+    static constexpr UIntT nonzero_mask = UIntT(0xFFFFFFFFFFFFFFFFu);
 
     if constexpr (is_ascending)
         mask = (zero_fp_sign_bit) ? zero_mask : nonzero_mask;
@@ -290,8 +290,9 @@ radix_sort_count_submit(sycl::queue &exec_q,
                         const std::vector<sycl::event> &dependency_events)
 {
     // bin_count = radix_states used for an array storing bucket state counters
-    constexpr std::uint32_t radix_states = (std::uint32_t(1) << radix_bits);
-    constexpr std::uint32_t radix_mask = radix_states - 1;
+    static constexpr std::uint32_t radix_states =
+        (std::uint32_t(1) << radix_bits);
+    static constexpr std::uint32_t radix_mask = radix_states - 1;
 
     // iteration space info
     const std::size_t n = n_values;
@@ -444,7 +445,8 @@ sycl::event radix_sort_scan_submit(sycl::queue &exec_q,
     const std::size_t scan_size = n_segments + 1;
     wg_size = std::min(scan_size, wg_size);
 
-    constexpr std::uint32_t radix_states = std::uint32_t(1) << radix_bits;
+    static constexpr std::uint32_t radix_states = std::uint32_t(1)
+                                                  << radix_bits;
 
     // compilation of the kernel prevents out of resources issue, which may
     // occur due to usage of collective algorithms such as joint_exclusive_scan
@@ -497,8 +499,8 @@ struct empty_storage
 // Number with `n` least significant bits of uint32_t
 inline std::uint32_t n_ls_bits_set(std::uint32_t n) noexcept
 {
-    constexpr std::uint32_t zero{};
-    constexpr std::uint32_t all_bits_set = ~zero;
+    static constexpr std::uint32_t zero{};
+    static constexpr std::uint32_t all_bits_set = ~zero;
 
     return ~(all_bits_set << n);
 }
@@ -716,8 +718,9 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
     using ValueT = InputT;
     using PeerHelper = peer_prefix_helper<OffsetT, PeerAlgo>;
 
-    constexpr std::uint32_t radix_states = std::uint32_t{1} << radix_bits;
-    constexpr std::uint32_t radix_mask = radix_states - 1;
+    static constexpr std::uint32_t radix_states = std::uint32_t{1}
+                                                  << radix_bits;
+    static constexpr std::uint32_t radix_mask = radix_states - 1;
     const std::size_t elems_per_segment =
         (n_values + n_segments - 1) / n_segments;
 
@@ -777,7 +780,7 @@ radix_sort_reorder_submit(sycl::queue &exec_q,
             OffsetT scanned_bin = 0;
 
             /* find cumulative offset */
-            constexpr std::uint32_t zero_radix_state_id = 0;
+            static constexpr std::uint32_t zero_radix_state_id = 0;
             offset_arr[zero_radix_state_id] = b_offset_ptr[segment_id];
 
             for (std::uint32_t radix_state_id = 1;
@@ -980,11 +983,12 @@ struct parallel_radix_sort_iteration_step
             exec_q.get_device()
                 .template get_info<sycl::info::device::max_work_group_size>();
 
-        constexpr std::size_t two_mils = (std::size_t(1) << 21);
+        static constexpr std::size_t two_mils = (std::size_t(1) << 21);
         std::size_t count_wg_size =
             ((max_sg_size > 0) && (n_values > two_mils) ? 128 : max_sg_size);
 
-        constexpr std::uint32_t radix_states = std::uint32_t(1) << radix_bits;
+        static constexpr std::uint32_t radix_states = std::uint32_t(1)
+                                                      << radix_bits;
 
         // correct count_wg_size according to local memory limit in count phase
         const auto max_count_wg_size = _slm_adjusted_work_group_size(
@@ -1022,13 +1026,14 @@ struct parallel_radix_sort_iteration_step
         sycl::event reorder_ev{};
         // subgroup_ballot-based peer algo uses extract_bits to populate
         // uint32_t mask and hence relies on sub-group to be 32 or narrower
-        constexpr std::size_t sg32_v = 32u;
-        constexpr std::size_t sg16_v = 16u;
-        constexpr std::size_t sg08_v = 8u;
+        static constexpr std::size_t sg32_v = 32u;
+        static constexpr std::size_t sg16_v = 16u;
+        static constexpr std::size_t sg08_v = 8u;
         if (sg32_v == reorder_sg_size || sg16_v == reorder_sg_size ||
             sg08_v == reorder_sg_size)
         {
-            constexpr auto peer_algorithm = peer_prefix_algo::subgroup_ballot;
+            static constexpr auto peer_algorithm =
+                peer_prefix_algo::subgroup_ballot;
 
             reorder_ev = radix_sort_reorder_submit<_RadixReorderPeerKernel,
                                                    radix_bits, peer_algorithm>(
@@ -1037,7 +1042,7 @@ struct parallel_radix_sort_iteration_step
                 {scan_ev});
         }
         else {
-            constexpr auto peer_algorithm =
+            static constexpr auto peer_algorithm =
                 peer_prefix_algo::scan_then_broadcast;
 
             reorder_ev = radix_sort_reorder_submit<_RadixReorderKernel,
@@ -1089,7 +1094,7 @@ public:
         using _SortKernelGlob =
             radix_sort_one_wg_krn<KernelNameBase, wg_size, block_size, 2>;
 
-        constexpr std::size_t max_concurrent_work_groups = 128U;
+        static constexpr std::size_t max_concurrent_work_groups = 128U;
 
         // Choose this to occupy the entire accelerator
         const std::size_t n_work_groups =
@@ -1104,8 +1109,8 @@ public:
         switch (SLM_availability) {
         case temp_allocations::both_in_slm:
         {
-            constexpr auto storage_for_values = use_slm_tag{};
-            constexpr auto storage_for_counters = use_slm_tag{};
+            static constexpr auto storage_for_values = use_slm_tag{};
+            static constexpr auto storage_for_counters = use_slm_tag{};
 
             return one_group_submitter<_SortKernelLoc>()(
                 exec_q, n_iters, n_iters, n_to_sort, input_ptr, output_ptr,
@@ -1114,8 +1119,8 @@ public:
         }
         case temp_allocations::counters_in_slm:
         {
-            constexpr auto storage_for_values = use_global_mem_tag{};
-            constexpr auto storage_for_counters = use_slm_tag{};
+            static constexpr auto storage_for_values = use_global_mem_tag{};
+            static constexpr auto storage_for_counters = use_slm_tag{};
 
             return one_group_submitter<_SortKernelPartGlob>()(
                 exec_q, n_iters, n_batch_size, n_to_sort, input_ptr, output_ptr,
@@ -1124,8 +1129,8 @@ public:
         }
         default:
         {
-            constexpr auto storage_for_values = use_global_mem_tag{};
-            constexpr auto storage_for_counters = use_global_mem_tag{};
+            static constexpr auto storage_for_values = use_global_mem_tag{};
+            static constexpr auto storage_for_counters = use_global_mem_tag{};
 
             return one_group_submitter<_SortKernelGlob>()(
                 exec_q, n_iters, n_batch_size, n_to_sort, input_ptr, output_ptr,
@@ -1186,7 +1191,7 @@ private:
         // the kernel is designed for data size <= 64K
         assert(n <= (SizeT(1) << 16));
 
-        constexpr auto req_slm_size_counters =
+        static constexpr auto req_slm_size_counters =
             counter_buf_sz * sizeof(std::uint16_t);
 
         const auto &dev = exec_q.get_device();
@@ -1319,7 +1324,7 @@ private:
                         std::uint16_t wi = ndit.get_local_linear_id();
                         std::uint16_t begin_bit = 0;
 
-                        constexpr std::uint16_t end_bit =
+                        static constexpr std::uint16_t end_bit =
                             number_of_bits_in_type<KeyT>();
 
                         // copy from input array into values
@@ -1358,12 +1363,12 @@ private:
                                     {
                                         const std::uint16_t id =
                                             wi * block_size + i;
-                                        constexpr std::uint16_t bin_mask =
-                                            bin_count - 1;
+                                        static constexpr std::uint16_t
+                                            bin_mask = bin_count - 1;
 
                                         // points to the padded element, i.e. id
                                         // is in-range
-                                        constexpr std::uint16_t
+                                        static constexpr std::uint16_t
                                             default_out_of_range_bin_id =
                                                 bin_mask;
 
@@ -1395,12 +1400,12 @@ private:
                                     {
                                         const std::uint16_t id =
                                             wi * block_size + i;
-                                        constexpr std::uint16_t bin_mask =
-                                            bin_count - 1;
+                                        static constexpr std::uint16_t
+                                            bin_mask = bin_count - 1;
 
                                         // points to the padded element, i.e. id
                                         // is in-range
-                                        constexpr std::uint16_t
+                                        static constexpr std::uint16_t
                                             default_out_of_range_bin_id =
                                                 bin_mask;
 
@@ -1549,7 +1554,7 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
 
     // radix bits represent number of processed bits in each value during one
     // iteration
-    constexpr std::uint32_t radix_bits = 4;
+    static constexpr std::uint32_t radix_bits = 4;
 
     sycl::event sort_ev{};
 
@@ -1557,14 +1562,14 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
     const auto max_wg_size =
         dev.template get_info<sycl::info::device::max_work_group_size>();
 
-    constexpr std::uint16_t ref_wg_size = 64;
+    static constexpr std::uint16_t ref_wg_size = 64;
     if (n_to_sort <= 16384 && ref_wg_size * 8 <= max_wg_size) {
         using _RadixSortKernel = OneWorkGroupRadixSortKernel<ValueT, ProjT>;
 
         if (n_to_sort <= 64 && ref_wg_size <= max_wg_size) {
             // wg_size * block_size == 64 * 1 * 1 == 64
-            constexpr std::uint16_t wg_size = ref_wg_size;
-            constexpr std::uint16_t block_size = 1;
+            static constexpr std::uint16_t wg_size = ref_wg_size;
+            static constexpr std::uint16_t block_size = 1;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1573,8 +1578,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 128 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 1 == 128
-            constexpr std::uint16_t wg_size = ref_wg_size * 2;
-            constexpr std::uint16_t block_size = 1;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 2;
+            static constexpr std::uint16_t block_size = 1;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1583,8 +1588,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 256 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 2 == 256
-            constexpr std::uint16_t wg_size = ref_wg_size * 2;
-            constexpr std::uint16_t block_size = 2;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 2;
+            static constexpr std::uint16_t block_size = 2;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1593,8 +1598,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 512 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 4 == 512
-            constexpr std::uint16_t wg_size = ref_wg_size * 2;
-            constexpr std::uint16_t block_size = 4;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 2;
+            static constexpr std::uint16_t block_size = 4;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1603,8 +1608,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 1024 && ref_wg_size * 2 <= max_wg_size) {
             // wg_size * block_size == 64 * 2 * 8 == 1024
-            constexpr std::uint16_t wg_size = ref_wg_size * 2;
-            constexpr std::uint16_t block_size = 8;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 2;
+            static constexpr std::uint16_t block_size = 8;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1613,8 +1618,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 2048 && ref_wg_size * 4 <= max_wg_size) {
             // wg_size * block_size == 64 * 4 * 8 == 2048
-            constexpr std::uint16_t wg_size = ref_wg_size * 4;
-            constexpr std::uint16_t block_size = 8;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 4;
+            static constexpr std::uint16_t block_size = 8;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1623,8 +1628,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 4096 && ref_wg_size * 4 <= max_wg_size) {
             // wg_size * block_size == 64 * 4 * 16 == 4096
-            constexpr std::uint16_t wg_size = ref_wg_size * 4;
-            constexpr std::uint16_t block_size = 16;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 4;
+            static constexpr std::uint16_t block_size = 16;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1633,8 +1638,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else if (n_to_sort <= 8192 && ref_wg_size * 8 <= max_wg_size) {
             // wg_size * block_size == 64 * 8 * 16 == 8192
-            constexpr std::uint16_t wg_size = ref_wg_size * 8;
-            constexpr std::uint16_t block_size = 16;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 8;
+            static constexpr std::uint16_t block_size = 16;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1643,8 +1648,8 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
         else {
             // wg_size * block_size == 64 * 8 * 32 == 16384
-            constexpr std::uint16_t wg_size = ref_wg_size * 8;
-            constexpr std::uint16_t block_size = 32;
+            static constexpr std::uint16_t wg_size = ref_wg_size * 8;
+            static constexpr std::uint16_t block_size = 32;
 
             sort_ev = subgroup_radix_sort<_RadixSortKernel, wg_size, block_size,
                                           radix_bits>{}(
@@ -1653,12 +1658,13 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
         }
     }
     else {
-        constexpr std::uint32_t radix_iters =
+        static constexpr std::uint32_t radix_iters =
             number_of_buckets_in_type<KeyT>(radix_bits);
-        constexpr std::uint32_t radix_states = std::uint32_t(1) << radix_bits;
+        static constexpr std::uint32_t radix_states = std::uint32_t(1)
+                                                      << radix_bits;
 
-        constexpr std::size_t bound_512k = (std::size_t(1) << 19);
-        constexpr std::size_t bound_2m = (std::size_t(1) << 21);
+        static constexpr std::size_t bound_512k = (std::size_t(1) << 19);
+        static constexpr std::size_t bound_2m = (std::size_t(1) << 21);
 
         const auto wg_sz_k = (n_to_sort < bound_512k)  ? 8
                              : (n_to_sort <= bound_2m) ? 4
@@ -1682,7 +1688,7 @@ sycl::event parallel_radix_sort_impl(sycl::queue &exec_q,
 
         CountT *count_ptr = count_owner.get();
 
-        constexpr std::uint32_t zero_radix_iter{0};
+        static constexpr std::uint32_t zero_radix_iter{0};
 
         if constexpr (std::is_same_v<KeyT, bool>) {
 
@@ -1805,7 +1811,7 @@ radix_sort_axis1_contig_impl(sycl::queue &exec_q,
         reinterpret_cast<argTy *>(res_cp) + iter_res_offset + sort_res_offset;
 
     using Proj = radix_sort_details::IdentityProj;
-    constexpr Proj proj_op{};
+    static constexpr Proj proj_op{};
 
     sycl::event radix_sort_ev =
         radix_sort_details::parallel_radix_sort_impl<argTy, Proj>(

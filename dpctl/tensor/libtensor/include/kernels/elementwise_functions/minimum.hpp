@@ -235,8 +235,8 @@ sycl::event minimum_contig_impl(sycl::queue &exec_q,
 {
     using MinHS =
         hyperparam_detail::MinimumContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = MinHS::vec_sz;
-    constexpr std::uint8_t n_vecs = MinHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = MinHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = MinHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, MinimumOutputType, MinimumContigFunctor,

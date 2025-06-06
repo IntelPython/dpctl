@@ -146,8 +146,8 @@ sycl::event floor_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using FloorHS = hyperparam_detail::FloorContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = FloorHS::vec_sz;
-    constexpr std::uint8_t n_vecs = FloorHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = FloorHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = FloorHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, FloorOutputType, FloorContigFunctor, floor_contig_kernel, vec_sz,

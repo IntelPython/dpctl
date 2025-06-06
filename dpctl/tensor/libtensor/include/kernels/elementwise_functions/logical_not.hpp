@@ -125,8 +125,8 @@ logical_not_contig_impl(sycl::queue &exec_q,
 {
     using LogicalNotHS =
         hyperparam_detail::LogicalNotContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = LogicalNotHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LogicalNotHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LogicalNotHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LogicalNotHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, LogicalNotOutputType, LogicalNotContigFunctor,

@@ -204,8 +204,8 @@ bitwise_xor_contig_impl(sycl::queue &exec_q,
 {
     using BitwiseXorHS =
         hyperparam_detail::BitwiseXorContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = BitwiseXorHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseXorHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseXorHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseXorHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, BitwiseXorOutputType, BitwiseXorContigFunctor,
@@ -393,8 +393,8 @@ bitwise_xor_inplace_contig_impl(sycl::queue &exec_q,
     using BitwiseXorHS =
         hyperparam_detail::BitwiseXorContigHyperparameterSet<resTy, argTy>;
 
-    constexpr std::uint8_t vec_sz = BitwiseXorHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseXorHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseXorHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseXorHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, BitwiseXorInplaceContigFunctor,

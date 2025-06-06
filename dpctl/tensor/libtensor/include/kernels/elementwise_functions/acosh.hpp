@@ -71,7 +71,8 @@ template <typename argT, typename resT> struct AcoshFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
             /*
              * acosh(in) = I*acos(in) or -I*acos(in)
              * where the sign is chosen so Re(acosh(in)) >= 0.
@@ -92,7 +93,8 @@ template <typename argT, typename resT> struct AcoshFunctor
             }
             else if (std::isnan(y)) {
                 /* acos(+-Inf + I*NaN) = NaN + I*opt(-)Inf */
-                constexpr realT inf = std::numeric_limits<realT>::infinity();
+                static constexpr realT inf =
+                    std::numeric_limits<realT>::infinity();
 
                 if (std::isinf(x)) {
                     acos_in = resT{q_nan, -inf};
@@ -107,7 +109,7 @@ template <typename argT, typename resT> struct AcoshFunctor
                 }
             }
 
-            constexpr realT r_eps =
+            static constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             /*
              * For large x or y including acos(+-Inf + I*+-Inf)
@@ -216,8 +218,8 @@ sycl::event acosh_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using AcoshHS = hyperparam_detail::AcoshContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AcoshHS::vec_sz;
-    constexpr std::uint8_t n_vec = AcoshHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AcoshHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AcoshHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AcoshOutputType, AcoshContigFunctor, acosh_contig_kernel, vec_sz,

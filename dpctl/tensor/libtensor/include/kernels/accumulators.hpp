@@ -60,9 +60,9 @@ template <typename inputT, typename outputT> struct NonZeroIndicator
 
     outputT operator()(const inputT &val) const
     {
-        constexpr outputT out_one(1);
-        constexpr outputT out_zero(0);
-        constexpr inputT val_zero(0);
+        static constexpr outputT out_one(1);
+        static constexpr outputT out_zero(0);
+        static constexpr inputT val_zero(0);
 
         return (val == val_zero) ? out_zero : out_one;
     }
@@ -583,7 +583,7 @@ sycl::event update_local_chunks_1d(sycl::queue &exec_q,
         cgh.depends_on(dependent_event);
         cgh.use_kernel_bundle(kb);
 
-        constexpr nwiT updates_per_wi = n_wi;
+        static constexpr nwiT updates_per_wi = n_wi;
         const std::size_t n_items =
             ceiling_quotient<std::size_t>(src_size, sg_size * n_wi) * sg_size;
 
@@ -594,8 +594,8 @@ sycl::event update_local_chunks_1d(sycl::queue &exec_q,
         cgh.parallel_for<UpdateKernelName>(
             ndRange,
             [chunk_size, src, src_size, local_scans](sycl::nd_item<1> ndit) {
-                constexpr ScanOpT scan_op{};
-                constexpr outputT identity =
+                static constexpr ScanOpT scan_op{};
+                static constexpr outputT identity =
                     su_ns::Identity<ScanOpT, outputT>::value;
 
                 const std::uint32_t lws = ndit.get_local_range(0);
@@ -640,16 +640,17 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
                                    std::vector<sycl::event> &host_tasks,
                                    const std::vector<sycl::event> &depends = {})
 {
-    constexpr ScanOpT scan_op{};
-    constexpr outputT identity = su_ns::Identity<ScanOpT, outputT>::value;
+    static constexpr ScanOpT scan_op{};
+    static constexpr outputT identity =
+        su_ns::Identity<ScanOpT, outputT>::value;
 
-    constexpr std::size_t _iter_nelems = 1;
+    static constexpr std::size_t _iter_nelems = 1;
 
     using IterIndexerT = dpctl::tensor::offset_utils::TwoZeroOffsets_Indexer;
-    constexpr IterIndexerT _no_op_iter_indexer{};
+    static constexpr IterIndexerT _no_op_iter_indexer{};
 
     using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr NoOpIndexerT _no_op_indexer{};
+    static constexpr NoOpIndexerT _no_op_indexer{};
 
     std::size_t n_groups;
     sycl::event inc_scan_phase1_ev =
@@ -687,7 +688,7 @@ sycl::event inclusive_scan_iter_1d(sycl::queue &exec_q,
         outputT *local_scans = temp;
 
         using NoOpTransformerT = NoOpTransformer<outputT>;
-        constexpr NoOpTransformerT _no_op_transformer{};
+        static constexpr NoOpTransformerT _no_op_transformer{};
         std::size_t size_to_update = n_elems;
         while (n_groups_ > 1) {
 
@@ -761,16 +762,16 @@ accumulate_1d_contig_impl(sycl::queue &q,
     dstT *dst_data_ptr = reinterpret_cast<dstT *>(dst);
 
     using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr NoOpIndexerT flat_indexer{};
-    constexpr transformerT transformer{};
+    static constexpr NoOpIndexerT flat_indexer{};
+    static constexpr transformerT transformer{};
 
-    constexpr std::size_t s0 = 0;
-    constexpr std::size_t s1 = 1;
+    static constexpr std::size_t s0 = 0;
+    static constexpr std::size_t s1 = 1;
 
     sycl::event comp_ev;
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
-        constexpr nwiT n_wi_for_cpu = 8;
+        static constexpr nwiT n_wi_for_cpu = 8;
         const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<srcT, dstT, n_wi_for_cpu, NoOpIndexerT,
                                          transformerT, AccumulateOpT,
@@ -779,7 +780,7 @@ accumulate_1d_contig_impl(sycl::queue &q,
             flat_indexer, transformer, host_tasks, depends);
     }
     else {
-        constexpr nwiT n_wi_for_gpu = 4;
+        static constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
         const std::uint32_t wg_size =
@@ -829,7 +830,7 @@ sycl::event final_update_local_chunks(sycl::queue &exec_q,
     const std::uint32_t sg_size = krn.template get_info<
         sycl::info::kernel_device_specific::max_sub_group_size>(dev);
 
-    constexpr nwiT updates_per_wi = n_wi;
+    static constexpr nwiT updates_per_wi = n_wi;
     const std::size_t updates_per_sg = sg_size * updates_per_wi;
     const std::size_t update_nelems =
         ceiling_quotient(src_size, updates_per_sg) * sg_size;
@@ -845,8 +846,8 @@ sycl::event final_update_local_chunks(sycl::queue &exec_q,
         cgh.parallel_for<UpdateKernelName>(
             ndRange, [chunk_size, src_size, local_stride, src, local_scans,
                       out_iter_indexer, out_indexer](sycl::nd_item<2> ndit) {
-                constexpr ScanOpT scan_op{};
-                constexpr outputT identity =
+                static constexpr ScanOpT scan_op{};
+                static constexpr outputT identity =
                     su_ns::Identity<ScanOpT, outputT>::value;
 
                 const std::uint32_t lws = ndit.get_local_range(1);
@@ -898,8 +899,8 @@ sycl::event update_local_chunks(sycl::queue &exec_q,
                                 std::size_t local_stride,
                                 sycl::event dependent_event)
 {
-    constexpr NoOpIndexer out_indexer{};
-    constexpr NoOpIndexer iter_out_indexer{};
+    static constexpr NoOpIndexer out_indexer{};
+    static constexpr NoOpIndexer iter_out_indexer{};
 
     return final_update_local_chunks<UpdateKernelName, outputT, n_wi,
                                      NoOpIndexer, NoOpIndexer, ScanOpT>(
@@ -933,8 +934,9 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
                                 std::vector<sycl::event> &host_tasks,
                                 const std::vector<sycl::event> &depends = {})
 {
-    constexpr ScanOpT scan_op{};
-    constexpr outputT identity = su_ns::Identity<ScanOpT, outputT>::value;
+    static constexpr ScanOpT scan_op{};
+    static constexpr outputT identity =
+        su_ns::Identity<ScanOpT, outputT>::value;
 
     using IterIndexerT =
         dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<
@@ -977,9 +979,9 @@ sycl::event inclusive_scan_iter(sycl::queue &exec_q,
         outputT *local_scans = temp;
 
         using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        constexpr NoOpIndexerT _no_op_indexer{};
+        static constexpr NoOpIndexerT _no_op_indexer{};
         using NoOpTransformerT = NoOpTransformer<outputT>;
-        constexpr NoOpTransformerT _no_op_transformer{};
+        static constexpr NoOpTransformerT _no_op_transformer{};
         std::size_t size_to_update = acc_nelems;
 
         {
@@ -1142,15 +1144,15 @@ accumulate_strided_impl(sycl::queue &q,
                                        iter_shape_strides,
                                        iter_shape_strides + 2 * iter_nd};
 
-    constexpr transformerT transformer{};
+    static constexpr transformerT transformer{};
 
-    constexpr std::size_t s0 = 0;
-    constexpr std::size_t s1 = 1;
+    static constexpr std::size_t s0 = 0;
+    static constexpr std::size_t s1 = 1;
 
     const sycl::device &dev = q.get_device();
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
-        constexpr nwiT n_wi_for_cpu = 8;
+        static constexpr nwiT n_wi_for_cpu = 8;
         const std::uint32_t wg_size = 256;
         comp_ev =
             inclusive_scan_iter<srcT, dstT, n_wi_for_cpu, InpIndexerT,
@@ -1161,7 +1163,7 @@ accumulate_strided_impl(sycl::queue &q,
                 out_axis_indexer, transformer, host_tasks, depends);
     }
     else {
-        constexpr nwiT n_wi_for_gpu = 4;
+        static constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
         const std::uint32_t wg_size =
@@ -1198,18 +1200,18 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
     cumsumT *cumsum_data_ptr = reinterpret_cast<cumsumT *>(cumsum);
 
     using NoOpIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr NoOpIndexerT flat_indexer{};
-    constexpr transformerT transformer{};
+    static constexpr NoOpIndexerT flat_indexer{};
+    static constexpr transformerT transformer{};
 
-    constexpr std::size_t s0 = 0;
-    constexpr std::size_t s1 = 1;
-    constexpr bool include_initial = false;
+    static constexpr std::size_t s0 = 0;
+    static constexpr std::size_t s1 = 1;
+    static constexpr bool include_initial = false;
     using AccumulateOpT = sycl::plus<cumsumT>;
 
     sycl::event comp_ev;
     const sycl::device &dev = q.get_device();
     if (dev.has(sycl::aspect::cpu)) {
-        constexpr nwiT n_wi_for_cpu = 8;
+        static constexpr nwiT n_wi_for_cpu = 8;
         const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          NoOpIndexerT, transformerT,
@@ -1218,7 +1220,7 @@ std::size_t cumsum_val_contig_impl(sycl::queue &q,
             flat_indexer, transformer, host_tasks, depends);
     }
     else {
-        constexpr nwiT n_wi_for_gpu = 4;
+        static constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
         const std::uint32_t wg_size =
@@ -1313,17 +1315,17 @@ cumsum_val_strided_impl(sycl::queue &q,
 
     using StridedIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const StridedIndexerT strided_indexer{nd, 0, shape_strides};
-    constexpr transformerT transformer{};
+    static constexpr transformerT transformer{};
 
-    constexpr std::size_t s0 = 0;
-    constexpr std::size_t s1 = 1;
-    constexpr bool include_initial = false;
+    static constexpr std::size_t s0 = 0;
+    static constexpr std::size_t s1 = 1;
+    static constexpr bool include_initial = false;
     using AccumulateOpT = sycl::plus<cumsumT>;
 
     const sycl::device &dev = q.get_device();
     sycl::event comp_ev;
     if (dev.has(sycl::aspect::cpu)) {
-        constexpr nwiT n_wi_for_cpu = 8;
+        static constexpr nwiT n_wi_for_cpu = 8;
         const std::uint32_t wg_size = 256;
         comp_ev = inclusive_scan_iter_1d<maskT, cumsumT, n_wi_for_cpu,
                                          StridedIndexerT, transformerT,
@@ -1332,7 +1334,7 @@ cumsum_val_strided_impl(sycl::queue &q,
             strided_indexer, transformer, host_tasks, depends);
     }
     else {
-        constexpr nwiT n_wi_for_gpu = 4;
+        static constexpr nwiT n_wi_for_gpu = 4;
         // base_scan_striped algorithm does not execute correctly
         // on HIP device with wg_size > 64
         const std::uint32_t wg_size =

@@ -116,7 +116,7 @@ template <typename dimT> std::size_t get_nelems(const std::vector<dimT> &shape)
         return prod * static_cast<std::size_t>(term);
     };
 
-    constexpr std::size_t unit{1};
+    static constexpr std::size_t unit{1};
 
     const std::size_t nelems =
         std::accumulate(std::begin(shape), std::end(shape), unit, mult_fn);
@@ -185,7 +185,7 @@ py_as_c_contig(const dpctl::tensor::usm_ndarray &src,
     if (src_nd >= 2) {
         auto n = dst_shape_vec.back();
         if (n == dst_shape_vec[src_nd - 2]) {
-            constexpr auto unit_stride = py::ssize_t(1);
+            static constexpr auto unit_stride = py::ssize_t(1);
             if (src_strides_vec[src_nd - 2] == unit_stride) {
                 return py_as_c_contig_f2c(src, dst, exec_q, depends);
             }
@@ -310,7 +310,7 @@ py_as_f_contig(const dpctl::tensor::usm_ndarray &src,
     if (src_nd >= 2) {
         auto n = dst_shape_vec.front();
         if (n == dst_shape_vec[1]) {
-            constexpr auto unit_stride = py::ssize_t(1);
+            static constexpr auto unit_stride = py::ssize_t(1);
             if (src_strides_vec[1] == unit_stride) {
                 return py_as_f_contig_c2f(src, dst, exec_q, depends);
             }
