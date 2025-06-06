@@ -623,3 +623,27 @@ def test_asarray_support_for_usm_ndarray_protocol(usm_type):
     assert x.dtype == y3.dtype
     assert y3.usm_data.reference_obj is None
     assert dpt.all(x[dpt.newaxis, :] == y3)
+
+
+@pytest.mark.parametrize("dt", [dpt.float16, dpt.float64, dpt.complex128])
+def test_asarray_to_device_with_unsupported_dtype(dt):
+    aspect = "fp16" if dt == dpt.float16 else "fp64"
+    try:
+        d0 = dpctl.select_device_with_aspects(aspect)
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No device with aspect for test")
+    d1 = None
+    for d in dpctl.get_devices():
+        if d.default_selector_score < 0:
+            pass
+        try:
+            d1 = dpctl.select_device_with_aspects(
+                d.device_type.name, excluded_aspects=[aspect]
+            )
+        except dpctl.SyclDeviceCreationError:
+            pass
+    if d1 is None:
+        pytest.skip("No device with missing aspect for test")
+    x = dpt.ones(10, dtype=dt, device=d0)
+    y = dpt.asarray(x, device=d1)
+    assert y.sycl_device == d1
