@@ -25,12 +25,15 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
     "Build dpctl pybind11 offloading extensions with coverage instrumentation"
     OFF
 )
-set(DPCTL_TARGET_CUDA
-    ""
-    CACHE STRING
+string(CONCAT _desc_target_cuda
     "Build DPCTL to target CUDA device. "
     "Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), "
     "or to a specific architecture like sm_80."
+)
+set(DPCTL_TARGET_CUDA
+    ""
+    CACHE STRING
+    "${_desc_target_cuda}"
 )
 set(DPCTL_TARGET_HIP
     ""
