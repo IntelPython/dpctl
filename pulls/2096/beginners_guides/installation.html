@@ -944,10 +944,11 @@ set <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CU
 </div>
 <p>Note that kernels are built for <code class="docutils literal notranslate"><span class="pre">sm_50</span></code> by default, allowing them to work on a wider
 range of architectures, but limiting the usage of more recent CUDA features.</p>
-<p>For reference, compute architecture strings like <code class="docutils literal notranslate"><span class="pre">sm_80</span></code> are based on
-CUDA Compute Capability. A complete mapping between NVIDIA GPU models and their
-respective <code class="docutils literal notranslate"><span class="pre">sm_XX</span></code> values can be found in the official
-<a class="reference external" href="https://developer.nvidia.com/cuda-gpus">CUDA GPU Compute Capability</a>.</p>
+<p>For reference, compute architecture strings like <code class="docutils literal notranslate"><span class="pre">sm_80</span></code> correspond to specific
+CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to <code class="docutils literal notranslate"><span class="pre">sm_80</span></code>).
+A complete mapping between NVIDIA GPU models and their respective
+Compute Capabilities can be found in the official
+<a class="reference external" href="https://developer.nvidia.com/cuda-gpus">CUDA GPU Compute Capability</a> documentation.</p>
 <p>A full list of available SYCL alias targets is available in the
 <a class="reference external" href="https://intel.github.io/llvm/UsersManual.html">DPC++ Compiler User Manual</a>.</p>
 <p>To build for AMD devices, use:</p>

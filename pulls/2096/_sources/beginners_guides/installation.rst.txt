@@ -176,10 +176,11 @@ set ``DPCTL_TARGET_CUDA`` to a value such as ``ON``, ``TRUE``, ``YES``, ``Y``, o
 Note that kernels are built for ``sm_50`` by default, allowing them to work on a wider
 range of architectures, but limiting the usage of more recent CUDA features.
 
-For reference, compute architecture strings like ``sm_80`` are based on
-CUDA Compute Capability. A complete mapping between NVIDIA GPU models and their
-respective ``sm_XX`` values can be found in the official
-`CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_.
+For reference, compute architecture strings like ``sm_80`` correspond to specific
+CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to ``sm_80``).
+A complete mapping between NVIDIA GPU models and their respective
+Compute Capabilities can be found in the official
+`CUDA GPU Compute Capability <https://developer.nvidia.com/cuda-gpus>`_ documentation.
 
 A full list of available SYCL alias targets is available in the
 `DPC++ Compiler User Manual <https://intel.github.io/llvm/UsersManual.html>`_.
