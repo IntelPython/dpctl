@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -51,8 +51,10 @@ namespace pow
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT> struct PowFunctor
 {
@@ -92,8 +94,8 @@ template <typename argT1, typename argT2, typename resT> struct PowFunctor
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
-            return exprm_ns::pow(exprm_ns::complex<realT1>(in1),
-                                 exprm_ns::complex<realT2>(in2));
+            return exprm_ns::pow(su_ns::sycl_complex_t<realT1>(in1),
+                                 su_ns::sycl_complex_t<realT2>(in2));
         }
         else {
             return sycl::pow(in1, in2);
@@ -392,8 +394,8 @@ template <typename argT, typename resT> struct PowInplaceFunctor
             using r_resT = typename resT::value_type;
             using r_argT = typename argT::value_type;
 
-            res = exprm_ns::pow(exprm_ns::complex<r_resT>(res),
-                                exprm_ns::complex<r_argT>(in));
+            res = exprm_ns::pow(su_ns::sycl_complex_t<r_resT>(res),
+                                su_ns::sycl_complex_t<r_argT>(in));
         }
         else {
             res = sycl::pow(res, in);

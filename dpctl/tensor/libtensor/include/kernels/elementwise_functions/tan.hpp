@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +50,9 @@ namespace tan
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -75,12 +77,14 @@ template <typename argT, typename resT> struct TanFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
             /*
-             * since tan(in) = -I * tanh(I * in), for special cases,
-             * we calculate real and imaginary parts of z = tanh(I * in) and
-             * return { imag(z) , -real(z) } which is tan(in).
+             * since tan(z) = -I * tanh(I * z), for special cases,
+             * we calculate real and imaginary parts of z = tanh(I * z) and
+             * return { imag(z) , -real(z) } which is tan(z).
              */
-            const realT x = -std::imag(in);
-            const realT y = std::real(in);
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = -exprm_ns::imag(z);
+            const realT y = exprm_ns::real(z);
             /*
              * tanh(NaN + i 0) = NaN + i 0
              *
@@ -121,7 +125,7 @@ template <typename argT, typename resT> struct TanFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-            return exprm_ns::tan(exprm_ns::complex<realT>(in)); // tan(in);
+            return exprm_ns::tan(z); // tan(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

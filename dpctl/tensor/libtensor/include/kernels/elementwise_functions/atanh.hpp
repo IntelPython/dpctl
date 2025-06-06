@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +50,9 @@ namespace atanh
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -73,8 +75,10 @@ template <typename argT, typename resT> struct AtanhFunctor
             using realT = typename argT::value_type;
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
 
             if (std::isnan(x)) {
                 /* atanh(NaN + I*+-Inf) = sign(NaN)0 + I*+-PI/2 */
@@ -123,7 +127,7 @@ template <typename argT, typename resT> struct AtanhFunctor
                 return resT{res_re, res_im};
             }
             /* ordinary cases */
-            return exprm_ns::atanh(exprm_ns::complex<realT>(in)); // atanh(in);
+            return exprm_ns::atanh(z); // atanh(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

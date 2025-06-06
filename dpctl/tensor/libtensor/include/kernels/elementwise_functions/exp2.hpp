@@ -30,7 +30,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -50,7 +50,9 @@ namespace exp2
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -71,15 +73,18 @@ template <typename argT, typename resT> struct Exp2Functor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            const argT tmp = in * sycl::log(realT(2));
-
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            const realT x = std::real(tmp);
-            const realT y = std::imag(tmp);
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
+
+            const sycl_complexT tmp = z * sycl::log(realT(2));
+
             if (std::isfinite(x)) {
                 if (std::isfinite(y)) {
-                    return exprm_ns::exp(exprm_ns::complex<realT>(tmp));
+                    return exprm_ns::exp(tmp);
                 }
                 else {
                     return resT{q_nan, q_nan};
