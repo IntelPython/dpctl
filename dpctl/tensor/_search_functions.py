@@ -17,16 +17,16 @@
 import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
-from dpctl.tensor._elementwise_common import (
+from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+
+from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
+from ._scalar_utils import (
     _get_dtype,
     _get_queue_usm_type,
     _get_shape,
     _validate_dtype,
 )
-from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
-
-from ._copy_utils import _empty_like_orderK, _empty_like_triple_orderK
 from ._type_utils import (
     WeakBooleanType,
     WeakComplexType,
