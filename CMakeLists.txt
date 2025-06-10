@@ -61,7 +61,7 @@ set(_dpctl_cuda_arch)
 set(_dpctl_amd_targets)
 
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
-   if (NOT "x${DPCTL_TARGET_CUDA}" STREQUAL "x")
+   if (DPCTL_TARGET_CUDA)
       if(DPCTL_TARGET_CUDA MATCHES "^sm_")
          set(_dpctl_cuda_arch ${DPCTL_TARGET_CUDA})
       elseif(DPCTL_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
