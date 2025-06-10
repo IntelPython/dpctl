@@ -154,6 +154,18 @@ jobs:
           source set_allvars.sh
           python -m dpctl -f || exit 1
 
+      - name: Run special complex case trig tests
+        shell: bash -l {0}
+        run: |
+          source set_allvars.sh
+          python -m pytest -ra --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_complex_special_cases -vv || true
+
+      - name: Run special complex case hyperbolic trig tests
+        shell: bash -l {0}
+        run: |
+          source set_allvars.sh
+          python -m pytest -ra --pyargs dpctl.tests.elementwise.test_hyperbolic::test_hyper_complex_special_cases -vv || true
+
       - name: Run dpctl/tests
         shell: bash -l {0}
         env:

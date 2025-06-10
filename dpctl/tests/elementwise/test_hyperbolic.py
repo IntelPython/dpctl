@@ -311,5 +311,37 @@ def test_hyper_complex_special_cases(np_call, dpt_call, dtype):
 
     tol = 50 * dpt.finfo(dtype).resolution
     Y = dpt_call(Xc)
-    assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)
+    Y_x = dpt.real(Y)
+    Y_x_np = dpt.asnumpy(Y_x)
+    Ynp_x = np.real(Ynp)
+    try:
+        assert_allclose(Y_x_np, Ynp_x, rtol=tol)
+    except AssertionError as e:
+        print("Y:")
+        print(Y)
+        print("Y_x:")
+        print(Y_x)
+        print("Y_x_np:")
+        print(Y_x_np)
+        print("Ynp:")
+        print(Ynp)
+        print("Ynp_x:")
+        print(Ynp_x)
+        raise e
+    Y_y = dpt.imag(Y)
+    Y_y_np = dpt.asnumpy(Y_y)
+    Ynp_y = np.imag(Ynp)
+    try:
+        assert_allclose(Y_y_np, Ynp_y, atol=tol, rtol=tol)
+    except AssertionError as e:
+        print("Y:")
+        print(Y)
+        print("Y_y:")
+        print(Y_y)
+        print("Y_y_np:")
+        print(Y_y_np)
+        print("Ynp:")
+        print(Ynp)
+        print("Ynp_y:")
+        print(Ynp_y)
+        raise e
