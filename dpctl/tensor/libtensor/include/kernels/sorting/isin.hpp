@@ -143,9 +143,9 @@ sycl::event isin_contig_impl(sycl::queue &exec_q,
 
         using TrivialIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
 
-        constexpr TrivialIndexerT hay_indexer{};
-        constexpr TrivialIndexerT needles_indexer{};
-        constexpr TrivialIndexerT out_indexer{};
+        static constexpr TrivialIndexerT hay_indexer{};
+        static constexpr TrivialIndexerT needles_indexer{};
+        static constexpr TrivialIndexerT out_indexer{};
 
         const auto fnctr =
             IsinFunctor<T, TrivialIndexerT, TrivialIndexerT, TrivialIndexerT,
