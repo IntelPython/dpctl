@@ -217,7 +217,7 @@ py_isin(const dpctl::tensor::usm_ndarray &needles,
     if (all_c_contig || all_f_contig) {
         auto fn = detail::isin_contig_impl_dispatch_vector[hay_typeid];
 
-        constexpr py::ssize_t zero_offset(0);
+        static constexpr py::ssize_t zero_offset(0);
 
         sycl::event comp_ev = fn(exec_q, invert, hay_nelems, needles_nelems,
                                  hay_data, zero_offset, needles_data,
@@ -287,7 +287,7 @@ py_isin(const dpctl::tensor::usm_ndarray &needles,
             "No implementation for data types of input arrays");
     }
 
-    constexpr py::ssize_t zero_offset(0);
+    static constexpr py::ssize_t zero_offset(0);
     py::ssize_t hay_step = hay.get_strides_vector()[0];
 
     const sycl::event &comp_ev = strided_fn(
