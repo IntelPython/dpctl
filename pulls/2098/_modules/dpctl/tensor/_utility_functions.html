@@ -814,14 +814,14 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_reductions_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tri</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._scalar_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_dtype</span><span class="p">,</span>
     <span class="n">_get_queue_usm_type</span><span class="p">,</span>
     <span class="n">_get_shape</span><span class="p">,</span>
     <span class="n">_validate_dtype</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_index</span><span class="p">,</span> <span class="n">normalize_axis_tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">,</span>
     <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">,</span>

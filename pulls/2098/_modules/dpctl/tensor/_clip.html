@@ -816,16 +816,16 @@
     <span class="n">_empty_like_pair_orderK</span><span class="p">,</span>
     <span class="n">_empty_like_triple_orderK</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_can_cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._scalar_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_dtype</span><span class="p">,</span>
     <span class="n">_get_queue_usm_type</span><span class="p">,</span>
     <span class="n">_get_shape</span><span class="p">,</span>
     <span class="n">_validate_dtype</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._manipulation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_broadcast_shape_impl</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_can_cast</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionPlacementError</span><span class="p">,</span> <span class="n">SequentialOrderManager</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_resolve_one_strong_one_weak_types</span><span class="p">,</span>
     <span class="n">_resolve_one_strong_two_weak_types</span><span class="p">,</span>
