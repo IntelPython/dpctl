@@ -16,10 +16,12 @@
 
 from typing import NamedTuple
 
+import dpctl
 import dpctl.tensor as dpt
 import dpctl.utils as du
 
 from ._copy_utils import _empty_like_orderK
+from ._scalar_utils import _get_dtype, _get_queue_usm_type, _validate_dtype
 from ._tensor_elementwise_impl import _not_equal, _subtract
 from ._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
@@ -36,8 +38,10 @@ from ._tensor_sorting_impl import (
     _searchsorted_left,
     _sort_ascending,
 )
+from ._type_utils import _resolve_weak_types_all_py_ints
 
 __all__ = [
+    "isin",
     "unique_values",
     "unique_counts",
     "unique_inverse",
@@ -629,61 +633,101 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
 
 
 def isin(x, test_elements, /, *, assume_unique=False, invert=False):
+    """
+    Tests `x in test_elements` for each element of `x`. Returns a boolean array
+    with the same shape as `x` that is `True` where the element is in
+    `test_elements`, `False` otherwise.
+
+    Args:
+        x (usm_ndarray):
+            input array.
+        test_elements (Union[usm_ndarray, bool, int, float, complex]):
+            elements against which to test each value of `x`.
+            Default: `None`.
+        assume_unique (Optional[bool]):
+            if `True`, the input arrays are both assumed to be unique, which
+            currently has no effect.
+            Default: `False`.
+        invert (Optional[bool]):
+            if `True`, the output results are inverted, i.e., are equivalent to
+            testing `x not in test_elements` for each element of `x`.
+            Default: `False`.
+
+    Returns:
+        usm_ndarray:
+            an array of the inclusion test results. The returned array has a
+            boolean data type and the same shape as `x`.
+    """
     if not isinstance(x, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(x)}")
+    q1, x_usm_type = x.sycl_queue, x.usm_type
+    q2, test_usm_type = _get_queue_usm_type(test_elements)
+    if q2 is None:
+        exec_q = q1
+        res_usm_type = x_usm_type
+    else:
+        exec_q = dpctl.utils.get_execution_queue((q1, q2))
+        if exec_q is None:
+            raise du.ExecutionPlacementError(
+                "Execution placement can not be unambiguously inferred "
+                "from input arguments."
+            )
+        res_usm_type = dpctl.utils.get_coerced_usm_type(
+            (
+                x_usm_type,
+                test_usm_type,
+            )
+        )
+    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    sycl_dev = exec_q.sycl_device
+
+    x_dt = x.dtype
+    test_dt = _get_dtype(test_elements, sycl_dev)
+    if not _validate_dtype(test_dt):
+        raise ValueError("`test_elements` has unsupported dtype")
+
+    dt = dpt.result_type(
+        *_resolve_weak_types_all_py_ints(x_dt, test_dt, sycl_dev)
+    )
+
+    _manager = du.SequentialOrderManager[exec_q]
+
+    if x_dt != dt:
+        x_buf = _empty_like_orderK(x, dt)
+        dep_evs = _manager.submitted_events
+        ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+            src=x, dst=x_buf, sycl_queue=exec_q, depends=dep_evs
+        )
+        _manager.add_event_pair(ht_ev, ev)
+    else:
+        x_buf = x
+
     if not isinstance(test_elements, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expected dpctl.tensor.usm_ndarray, got {type(test_elements)}"
+        test_buf = dpt.asarray(test_elements, dtype=dt, sycl_queue=exec_q)
+    elif test_dt != dt:
+        # copy into C-contiguous memory, because the array will be flattened
+        test_buf = dpt.empty_like(test_elements, dt, order="C")
+        dep_evs = _manager.submitted_events
+        ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
+            src=test_elements, dst=test_buf, sycl_queue=exec_q, depends=dep_evs
         )
+        _manager.add_event_pair(ht_ev, ev)
+    else:
+        test_buf = test_elements
 
-    q = du.get_execution_queue([x.sycl_queue, test_elements.sycl_queue])
-    if q is None:
-        raise du.ExecutionPlacementError(
-            "Execution placement can not be unambiguously "
-            "inferred from input arguments."
-        )
+    test_buf = dpt.reshape(test_buf, -1)
+    test_buf = dpt.sort(test_buf)
 
-    x1 = x
-    x2 = dpt.reshape(test_elements, -1)
-
-    x1_dt = x1.dtype
-    x2_dt = x2.dtype
-
-    _manager = du.SequentialOrderManager[q]
-    dep_evs = _manager.submitted_events
-
-    if x1_dt != x2_dt:
-        dt = dpt.result_type(x1, x2)
-        if x1_dt != dt:
-            x1_buf = _empty_like_orderK(x1, dt)
-            dep_evs = _manager.submitted_events
-            ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
-                src=x1, dst=x1_buf, sycl_queue=q, depends=dep_evs
-            )
-            _manager.add_event_pair(ht_ev, ev)
-            x1 = x1_buf
-        if x2_dt != dt:
-            x2_buf = _empty_like_orderK(x2, dt)
-            dep_evs = _manager.submitted_events
-            ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
-                src=x2, dst=x2_buf, sycl_queue=q, depends=dep_evs
-            )
-            _manager.add_event_pair(ht_ev, ev)
-            x2 = x2_buf
-
-    x2 = dpt.sort(x2)
-
-    dst_usm_type = du.get_coerced_usm_type([x1.usm_type, x2.usm_type])
-    dst = _empty_like_orderK(x1, dpt.bool, usm_type=dst_usm_type)
+    dst = _empty_like_orderK(x_buf, dpt.bool, usm_type=res_usm_type)
 
     dep_evs = _manager.submitted_events
     ht_ev, s_ev = _isin(
-        needles=x1,
-        hay=x2,
+        needles=x_buf,
+        hay=test_buf,
         dst=dst,
-        sycl_queue=q,
+        sycl_queue=exec_q,
         invert=invert,
         depends=dep_evs,
     )
     _manager.add_event_pair(ht_ev, s_ev)
-    return dpt.reshape(dst, x.shape)
+    return dst
