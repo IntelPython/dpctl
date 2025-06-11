@@ -25,9 +25,13 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
     "Build dpctl pybind11 offloading extensions with coverage instrumentation"
     OFF
 )
-option(DPCTL_TARGET_CUDA
-    "Build DPCTL to target CUDA devices"
-    OFF
+
+set(DPCTL_TARGET_CUDA
+    ""
+    CACHE STRING
+    "Build DPCTL to target CUDA device. \
+Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), \
+or to a specific architecture like sm_80."
 )
 set(DPCTL_TARGET_HIP
     ""
@@ -51,15 +55,24 @@ set(_dpctl_sycl_target_compile_options)
 set(_dpctl_sycl_target_link_options)
 
 set(_dpctl_sycl_targets)
+set(_dpctl_cuda_arch)
 set(_dpctl_amd_targets)
+
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    if (DPCTL_TARGET_CUDA)
-      set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
-   else()
-      if (DEFINED ENV{DPCTL_TARGET_CUDA})
-          set(_dpctl_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+      if(DPCTL_TARGET_CUDA MATCHES "^sm_")
+         set(_dpctl_cuda_arch ${DPCTL_TARGET_CUDA})
+      elseif(DPCTL_TARGET_CUDA MATCHES "^(ON|TRUE|YES|Y|1)$")
+         set(_dpctl_cuda_arch "sm_50")
+      else()
+         message(FATAL_ERROR
+            "Invalid value for DPCTL_TARGET_CUDA: \"${DPCTL_TARGET_CUDA}\". "
+            "Expected 'ON', 'TRUE', 'YES', 'Y', '1', or a CUDA architecture like 'sm_80'."
+         )
       endif()
+      set(_dpctl_sycl_targets "nvidia_gpu_${_dpctl_cuda_arch},spir64-unknown-unknown")
    endif()
+
    if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
       set(_dpctl_amd_targets ${DPCTL_TARGET_HIP})
       if(_dpctl_sycl_targets)
