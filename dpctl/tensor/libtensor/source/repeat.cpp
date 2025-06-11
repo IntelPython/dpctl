@@ -198,7 +198,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             "Destination array must have the same elemental data type");
     }
 
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Unexpected data type of `cumsum` array, expecting "
@@ -425,7 +426,8 @@ py_repeat_by_sequence(const dpctl::tensor::usm_ndarray &src,
             "Destination array must have the same elemental data type");
     }
 
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Unexpected data type of `cumsum` array, expecting "

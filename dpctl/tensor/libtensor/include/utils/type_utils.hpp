@@ -51,7 +51,7 @@ struct is_complex<
 {
 };
 
-template <typename T> constexpr bool is_complex_v = is_complex<T>::value;
+template <typename T> inline constexpr bool is_complex_v = is_complex<T>::value;
 
 template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
 {

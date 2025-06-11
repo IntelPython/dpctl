@@ -54,8 +54,8 @@ template <typename realT> realT cabs(std::complex<realT> const &z)
     const realT x = std::real(z);
     const realT y = std::imag(z);
 
-    constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
-    constexpr realT p_inf = std::numeric_limits<realT>::infinity();
+    static constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+    static constexpr realT p_inf = std::numeric_limits<realT>::infinity();
 
     const realT res =
         std::isinf(x)

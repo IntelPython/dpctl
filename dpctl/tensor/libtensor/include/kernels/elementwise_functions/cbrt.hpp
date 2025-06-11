@@ -124,8 +124,8 @@ sycl::event cbrt_contig_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {})
 {
     using CbrtHS = hyperparam_detail::CbrtContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = CbrtHS::vec_sz;
-    constexpr std::uint8_t n_vecs = CbrtHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = CbrtHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = CbrtHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, CbrtOutputType, CbrtContigFunctor, cbrt_contig_kernel, vec_sz,

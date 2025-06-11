@@ -52,8 +52,8 @@ template <typename T>
 bool check_atomic_support(const sycl::queue &exec_q,
                           sycl::usm::alloc usm_alloc_type)
 {
-    constexpr bool atomic32 = (sizeof(T) == 4);
-    constexpr bool atomic64 = (sizeof(T) == 8);
+    static constexpr bool atomic32 = (sizeof(T) == 4);
+    static constexpr bool atomic64 = (sizeof(T) == 8);
     using dpctl::tensor::type_utils::is_complex;
     if constexpr ((!atomic32 && !atomic64) || is_complex<T>::value) {
         return fixed_decision<false>(exec_q, usm_alloc_type);

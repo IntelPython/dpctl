@@ -202,8 +202,8 @@ sycl::event bitwise_or_contig_impl(sycl::queue &exec_q,
 {
     using BitwiseOrHS =
         hyperparam_detail::BitwiseOrContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = BitwiseOrHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseOrHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseOrHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseOrHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, BitwiseOrOutputType, BitwiseOrContigFunctor,
@@ -387,8 +387,8 @@ bitwise_or_inplace_contig_impl(sycl::queue &exec_q,
     using BitwiseOrHS =
         hyperparam_detail::BitwiseOrContigHyperparameterSet<resTy, argTy>;
 
-    constexpr std::uint8_t vec_sz = BitwiseOrHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseOrHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseOrHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseOrHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, BitwiseOrInplaceContigFunctor,

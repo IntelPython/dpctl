@@ -72,7 +72,7 @@ static const int clLibLoadFlags = 0;
     case code:                                                                 \
         return std::string(#code) + CodeStringSuffix(code)
 
-constexpr backend cl_be = backend::opencl;
+static constexpr backend cl_be = backend::opencl;
 
 struct cl_loader
 {
@@ -339,7 +339,7 @@ static const int zeLibLoadFlags = 0;
 #error "Level Zero program compilation is unavailable for this platform"
 #endif
 
-constexpr sycl::backend ze_be = sycl::backend::ext_oneapi_level_zero;
+static constexpr sycl::backend ze_be = sycl::backend::ext_oneapi_level_zero;
 
 struct ze_loader
 {

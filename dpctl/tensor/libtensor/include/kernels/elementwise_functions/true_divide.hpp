@@ -221,8 +221,8 @@ true_divide_contig_impl(sycl::queue &exec_q,
 {
     using DivHS =
         hyperparam_detail::TrueDivideContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = DivHS::vec_sz;
-    constexpr std::uint8_t n_vecs = DivHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = DivHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = DivHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, TrueDivideOutputType, TrueDivideContigFunctor,
@@ -540,8 +540,8 @@ true_divide_inplace_contig_impl(sycl::queue &exec_q,
 {
     using DivHS =
         hyperparam_detail::TrueDivideContigHyperparameterSet<resTy, argTy>;
-    constexpr std::uint8_t vec_sz = DivHS::vec_sz;
-    constexpr std::uint8_t n_vecs = DivHS::vec_sz;
+    static constexpr std::uint8_t vec_sz = DivHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = DivHS::vec_sz;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, TrueDivideInplaceContigFunctor,

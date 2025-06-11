@@ -74,7 +74,7 @@ struct LeftSideSearchSortedContigFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>)
         {
-            constexpr bool left_side_search(true);
+            static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_contig_impl;
 
             using Compare = typename AscendingSorter<argTy>::type;
@@ -98,7 +98,7 @@ struct RightSideSearchSortedContigFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>)
         {
-            constexpr bool right_side_search(false);
+            static constexpr bool right_side_search(false);
             using dpctl::tensor::kernels::searchsorted_contig_impl;
 
             using Compare = typename AscendingSorter<argTy>::type;
@@ -130,7 +130,7 @@ struct LeftSideSearchSortedStridedFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>)
         {
-            constexpr bool left_side_search(true);
+            static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
 
             using Compare = typename AscendingSorter<argTy>::type;
@@ -154,7 +154,7 @@ struct RightSideSearchSortedStridedFactory
         if constexpr (std::is_same_v<indTy, std::int32_t> ||
                       std::is_same_v<indTy, std::int64_t>)
         {
-            constexpr bool right_side_search(false);
+            static constexpr bool right_side_search(false);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
 
             using Compare = typename AscendingSorter<argTy>::type;
@@ -321,7 +321,7 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
                                                              [positions_typeid];
 
         if (fn) {
-            constexpr py::ssize_t zero_offset(0);
+            static constexpr py::ssize_t zero_offset(0);
 
             sycl::event comp_ev =
                 fn(exec_q, hay_nelems, needles_nelems, hay_data, zero_offset,
@@ -399,7 +399,7 @@ py_searchsorted(const dpctl::tensor::usm_ndarray &hay,
             "No implementation for data types of input arrays");
     }
 
-    constexpr py::ssize_t zero_offset(0);
+    static constexpr py::ssize_t zero_offset(0);
     py::ssize_t hay_step = hay.get_strides_vector()[0];
 
     const sycl::event &comp_ev = strided_fn(
@@ -429,7 +429,7 @@ py_searchsorted_left(const dpctl::tensor::usm_ndarray &hay,
                      sycl::queue &exec_q,
                      const std::vector<sycl::event> &depends)
 {
-    constexpr bool side_left(true);
+    static constexpr bool side_left(true);
     return py_searchsorted(hay, needles, positions, exec_q, side_left, depends);
 }
 
@@ -443,7 +443,7 @@ py_searchsorted_right(const dpctl::tensor::usm_ndarray &hay,
                       sycl::queue &exec_q,
                       const std::vector<sycl::event> &depends)
 {
-    constexpr bool side_right(false);
+    static constexpr bool side_right(false);
     return py_searchsorted(hay, needles, positions, exec_q, side_right,
                            depends);
 }

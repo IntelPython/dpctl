@@ -346,7 +346,7 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                                                             [x2_typeid];
             }
             if (fn != nullptr) {
-                constexpr py::ssize_t zero_offset = 0;
+                static constexpr py::ssize_t zero_offset = 0;
                 dot_ev = fn(exec_q, dst_nelems, inner_nelems, x1.get_data(),
                             x2.get_data(), dst.get_data(),
                             zero_offset, // lhs batch offset
@@ -601,7 +601,7 @@ py_dot(const dpctl::tensor::usm_ndarray &x1,
                                                                [x2_typeid];
                 }
                 if (fn != nullptr) {
-                    constexpr py::ssize_t zero_offset = 0;
+                    static constexpr py::ssize_t zero_offset = 0;
                     dot_ev = fn(exec_q, x1_data, x2_data, dst_data, batches,
                                 x1_outer_nelems, // n
                                 inner_nelems,    // k

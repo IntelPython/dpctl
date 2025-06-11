@@ -160,8 +160,8 @@ sycl::event nextafter_contig_impl(sycl::queue &exec_q,
 {
     using NextafterHS =
         hyperparam_detail::NextafterContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = NextafterHS::vec_sz;
-    constexpr std::uint8_t n_vecs = NextafterHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = NextafterHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = NextafterHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, NextafterOutputType, NextafterContigFunctor,

@@ -177,8 +177,8 @@ sycl::event logaddexp_contig_impl(sycl::queue &exec_q,
 {
     using LogAddExpHS =
         hyperparam_detail::LogAddExpContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = LogAddExpHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LogAddExpHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LogAddExpHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LogAddExpHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, LogAddExpOutputType, LogAddExpContigFunctor,

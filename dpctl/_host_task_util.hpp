@@ -77,19 +77,19 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
             });
         });
 
-        constexpr int result_ok = 0;
+        static constexpr int result_ok = 0;
 
         *status = result_ok;
         auto e_ptr = new sycl::event(ht_ev);
         return wrap<sycl::event>(e_ptr);
     } catch (const std::exception &e) {
-        constexpr int result_std_exception = 1;
+        static constexpr int result_std_exception = 1;
 
         *status = result_std_exception;
         return nullptr;
     }
 
-    constexpr int result_other_abnormal = 2;
+    static constexpr int result_other_abnormal = 2;
 
     *status = result_other_abnormal;
     return nullptr;

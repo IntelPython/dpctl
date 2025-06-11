@@ -78,7 +78,7 @@ sycl::event zeros_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends)
 {
 
-    constexpr int memset_val(0);
+    static constexpr int memset_val(0);
     sycl::event fill_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 

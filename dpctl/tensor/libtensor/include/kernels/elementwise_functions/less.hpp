@@ -230,8 +230,8 @@ sycl::event less_contig_impl(sycl::queue &exec_q,
 {
     using LessHS =
         hyperparam_detail::LessContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = LessHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LessHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LessHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LessHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, LessOutputType, LessContigFunctor, less_contig_kernel,

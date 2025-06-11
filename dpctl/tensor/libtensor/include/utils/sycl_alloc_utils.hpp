@@ -181,7 +181,7 @@ sycl::event async_smart_free(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends,
                              UniquePtrTs &&...unique_pointers)
 {
-    constexpr std::size_t n = sizeof...(UniquePtrTs);
+    static constexpr std::size_t n = sizeof...(UniquePtrTs);
     static_assert(
         n > 0, "async_smart_free requires at least one smart pointer argument");
 

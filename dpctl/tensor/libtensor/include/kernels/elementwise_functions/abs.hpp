@@ -154,8 +154,8 @@ sycl::event abs_contig_impl(sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends = {})
 {
     using AbsHS = hyperparam_detail::AbsContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AbsHS::vec_sz;
-    constexpr std::uint8_t n_vec = AbsHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AbsHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AbsHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AbsOutputType, AbsContigFunctor, abs_contig_kernel, vec_sz,

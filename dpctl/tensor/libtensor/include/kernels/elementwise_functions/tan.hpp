@@ -73,7 +73,8 @@ template <typename argT, typename resT> struct TanFunctor
 
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
             /*
              * since tan(in) = -I * tanh(I * in), for special cases,
              * we calculate real and imaginary parts of z = tanh(I * in) and
@@ -191,8 +192,8 @@ sycl::event tan_contig_impl(sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends = {})
 {
     using TanHS = hyperparam_detail::TanContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = TanHS::vec_sz;
-    constexpr std::uint8_t n_vecs = TanHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = TanHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = TanHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, TanOutputType, TanContigFunctor, tan_contig_kernel, vec_sz,

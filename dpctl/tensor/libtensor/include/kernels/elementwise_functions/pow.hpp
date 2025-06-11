@@ -277,8 +277,8 @@ sycl::event pow_contig_impl(sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends = {})
 {
     using PowHS = hyperparam_detail::PowContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = PowHS::vec_sz;
-    constexpr std::uint8_t n_vecs = PowHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = PowHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = PowHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, PowOutputType, PowContigFunctor, pow_contig_kernel,
@@ -522,8 +522,8 @@ pow_inplace_contig_impl(sycl::queue &exec_q,
                         const std::vector<sycl::event> &depends = {})
 {
     using PowHS = hyperparam_detail::PowContigHyperparameterSet<resTy, argTy>;
-    constexpr std::uint8_t vec_sz = PowHS::vec_sz;
-    constexpr std::uint8_t n_vecs = PowHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = PowHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = PowHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, PowInplaceContigFunctor, pow_inplace_contig_kernel,

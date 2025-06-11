@@ -148,8 +148,10 @@ std::size_t py_mask_positions(const dpctl::tensor::usm_ndarray &mask,
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
     // cumsum must be int32_t/int64_t only
-    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int32_typeid =
+        static_cast<int>(td_ns::typenum_t::INT32);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Cumulative sum array must have int32 or int64 data-type.");
@@ -307,7 +309,8 @@ std::size_t py_cumsum_1d(const dpctl::tensor::usm_ndarray &src,
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
     // this cumsum must be int64_t only
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int64_typeid) {
         throw py::value_error(
             "Cumulative sum array must have int64 data-type.");

@@ -42,7 +42,7 @@ using namespace sycl;
 
 namespace
 {
-constexpr size_t SIZE = 1024;
+static constexpr size_t SIZE = 1024;
 
 void common_test_body(size_t nbytes,
                       const DPCTLSyclUSMRef Ptr,

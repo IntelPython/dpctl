@@ -140,8 +140,8 @@ sycl::event log_contig_impl(sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends = {})
 {
     using LogHS = hyperparam_detail::LogContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = LogHS::vec_sz;
-    constexpr std::uint8_t n_vecs = LogHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = LogHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = LogHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, LogOutputType, LogContigFunctor, log_contig_kernel, vec_sz,

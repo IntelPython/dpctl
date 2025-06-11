@@ -273,8 +273,8 @@ sycl::event add_contig_impl(sycl::queue &exec_q,
                             const std::vector<sycl::event> &depends = {})
 {
     using AddHS = hyperparam_detail::AddContigHyperparameterSet<argTy1, argTy2>;
-    constexpr auto vec_sz = AddHS::vec_sz;
-    constexpr auto n_vecs = AddHS::n_vecs;
+    static constexpr auto vec_sz = AddHS::vec_sz;
+    static constexpr auto n_vecs = AddHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, AddOutputType, AddContigFunctor, add_contig_kernel,
@@ -551,9 +551,9 @@ add_inplace_contig_impl(sycl::queue &exec_q,
                         ssize_t res_offset,
                         const std::vector<sycl::event> &depends = {})
 {
-    constexpr auto vec_sz =
+    static constexpr auto vec_sz =
         hyperparam_detail::AddContigHyperparameterSet<resTy, argTy>::vec_sz;
-    constexpr auto n_vecs =
+    static constexpr auto n_vecs =
         hyperparam_detail::AddContigHyperparameterSet<resTy, argTy>::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
