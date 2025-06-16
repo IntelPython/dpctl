@@ -814,7 +814,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._copy_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_empty_like_orderK</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._scalar_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_dtype</span><span class="p">,</span> <span class="n">_get_queue_usm_type</span><span class="p">,</span> <span class="n">_validate_dtype</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._scalar_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_get_dtype</span><span class="p">,</span>
+    <span class="n">_get_queue_usm_type</span><span class="p">,</span>
+    <span class="n">_get_shape</span><span class="p">,</span>
+    <span class="n">_validate_dtype</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_elementwise_impl</span><span class="w"> </span><span class="kn">import</span> <span class="n">_not_equal</span><span class="p">,</span> <span class="n">_subtract</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._tensor_impl</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">,</span>
@@ -831,7 +836,10 @@
     <span class="n">_searchsorted_left</span><span class="p">,</span>
     <span class="n">_sort_ascending</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_resolve_weak_types_all_py_ints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_resolve_weak_types_all_py_ints</span><span class="p">,</span>
+    <span class="n">_to_device_supported_dtype</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;isin&quot;</span><span class="p">,</span>
@@ -1425,21 +1433,17 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests `x in test_elements` for each element of `x`. Returns a boolean array</span>
 <span class="sd">    with the same shape as `x` that is `True` where the element is in</span>
 <span class="sd">    `test_elements`, `False` otherwise.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        x (usm_ndarray):</span>
-<span class="sd">            input array.</span>
+<span class="sd">        x (Union[usm_ndarray, bool, int, float, complex]):</span>
+<span class="sd">            input element or elements.</span>
 <span class="sd">        test_elements (Union[usm_ndarray, bool, int, float, complex]):</span>
 <span class="sd">            elements against which to test each value of `x`.</span>
-<span class="sd">        assume_unique (Optional[bool]):</span>
-<span class="sd">            if `True`, the input arrays are both assumed to be unique, which</span>
-<span class="sd">            currently has no effect.</span>
-<span class="sd">            Default: `False`.</span>
 <span class="sd">        invert (Optional[bool]):</span>
 <span class="sd">            if `True`, the output results are inverted, i.e., are equivalent to</span>
 <span class="sd">            testing `x not in test_elements` for each element of `x`.</span>
@@ -1450,11 +1454,19 @@
 <span class="sd">            an array of the inclusion test results. The returned array has a</span>
 <span class="sd">            boolean data type and the same shape as `x`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="n">q1</span><span class="p">,</span> <span class="n">x_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">q2</span><span class="p">,</span> <span class="n">test_usm_type</span> <span class="o">=</span> <span class="n">_get_queue_usm_type</span><span class="p">(</span><span class="n">test_elements</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+            <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
+            <span class="s2">&quot;from input arguments. &quot;</span>
+            <span class="s2">&quot;One of the arguments must represent USM allocation and &quot;</span>
+            <span class="s2">&quot;expose `__sycl_usm_array_interface__` property&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">q1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q2</span>
+        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">test_usm_type</span>
+    <span class="k">elif</span> <span class="n">q2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
         <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1473,48 +1485,63 @@
     <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
 
+    <span class="n">x_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+    <span class="n">test_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">_validate_dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">test_dt</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Operands have unsupported data types&quot;</span><span class="p">)</span>
+
+    <span class="n">x_sh</span> <span class="o">=</span> <span class="n">_get_shape</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">test_elements</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">invert</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                <span class="n">x_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="n">x_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="p">)</span>
 
-    <span class="n">x_dt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">test_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate_dtype</span><span class="p">(</span><span class="n">test_dt</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`test_elements` has unsupported dtype&quot;</span><span class="p">)</span>
+    <span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span> <span class="o">=</span> <span class="n">_resolve_weak_types_all_py_ints</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">test_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span><span class="p">),</span> <span class="n">sycl_dev</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">x_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt1</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x_arr</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="n">test_arr</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">test_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt2</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_arr</span> <span class="o">=</span> <span class="n">test_elements</span>
 
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
 
-    <span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span> <span class="o">=</span> <span class="n">_resolve_weak_types_all_py_ints</span><span class="p">(</span><span class="n">x_dt</span><span class="p">,</span> <span class="n">test_dt</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">x_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
-        <span class="n">x_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="n">x_buf</span> <span class="o">=</span> <span class="n">_empty_like_orderK</span><span class="p">(</span><span class="n">x_arr</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">x_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">x_arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">x_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
         <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x_buf</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">x_buf</span> <span class="o">=</span> <span class="n">x_arr</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">test_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">test_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">test_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
         <span class="c1"># copy into C-contiguous memory, because the array will be flattened</span>
-        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
-            <span class="n">src</span><span class="o">=</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">test_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">test_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
         <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">test_elements</span>
+        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">test_arr</span>
 
-    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">test_buf</span><span class="p">)</span>
+    <span class="c1"># flatten and sort</span>
+    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
     <span class="n">dst</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
         <span class="n">x_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
