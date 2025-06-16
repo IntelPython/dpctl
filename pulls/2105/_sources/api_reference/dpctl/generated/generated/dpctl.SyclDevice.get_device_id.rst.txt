@@ -1,6 +1,0 @@
-dpctl.SyclDevice.get\_device\_id
-================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclDevice.get_device_id
