@@ -78,7 +78,7 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
-        const Compare comp{};
+        static constexpr Compare comp{};
 
         const std::size_t i = id[0];
         const T needle_v = needles_tp[needles_indexer(i)];
