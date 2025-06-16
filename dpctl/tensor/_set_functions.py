@@ -643,7 +643,6 @@ def isin(x, test_elements, /, *, assume_unique=False, invert=False):
             input array.
         test_elements (Union[usm_ndarray, bool, int, float, complex]):
             elements against which to test each value of `x`.
-            Default: `None`.
         assume_unique (Optional[bool]):
             if `True`, the input arrays are both assumed to be unique, which
             currently has no effect.
@@ -681,20 +680,25 @@ def isin(x, test_elements, /, *, assume_unique=False, invert=False):
     dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
     sycl_dev = exec_q.sycl_device
 
+    if isinstance(test_elements, dpt.usm_ndarray) and test_elements.size == 0:
+        if invert:
+            return dpt.ones_like(x, dtype=dpt.bool, usm_type=res_usm_type)
+        else:
+            return dpt.zeros_like(x, dtype=dpt.bool, usm_type=res_usm_type)
+
     x_dt = x.dtype
     test_dt = _get_dtype(test_elements, sycl_dev)
     if not _validate_dtype(test_dt):
         raise ValueError("`test_elements` has unsupported dtype")
 
-    dt = dpt.result_type(
-        *_resolve_weak_types_all_py_ints(x_dt, test_dt, sycl_dev)
-    )
-
     _manager = du.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    dt1, dt2 = _resolve_weak_types_all_py_ints(x_dt, test_dt, sycl_dev)
+    dt = dpt.result_type(dt1, dt2)
 
     if x_dt != dt:
         x_buf = _empty_like_orderK(x, dt)
-        dep_evs = _manager.submitted_events
         ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
             src=x, dst=x_buf, sycl_queue=exec_q, depends=dep_evs
         )
@@ -703,11 +707,12 @@ def isin(x, test_elements, /, *, assume_unique=False, invert=False):
         x_buf = x
 
     if not isinstance(test_elements, dpt.usm_ndarray):
-        test_buf = dpt.asarray(test_elements, dtype=dt, sycl_queue=exec_q)
+        test_buf = dpt.asarray(
+            test_elements, dtype=dt, usm_type=res_usm_type, sycl_queue=exec_q
+        )
     elif test_dt != dt:
         # copy into C-contiguous memory, because the array will be flattened
-        test_buf = dpt.empty_like(test_elements, dt, order="C")
-        dep_evs = _manager.submitted_events
+        test_buf = dpt.empty_like(test_elements, dtype=dt, order="C")
         ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
             src=test_elements, dst=test_buf, sycl_queue=exec_q, depends=dep_evs
         )
@@ -718,7 +723,9 @@ def isin(x, test_elements, /, *, assume_unique=False, invert=False):
     test_buf = dpt.reshape(test_buf, -1)
     test_buf = dpt.sort(test_buf)
 
-    dst = _empty_like_orderK(x_buf, dpt.bool, usm_type=res_usm_type)
+    dst = dpt.empty_like(
+        x_buf, dtype=dpt.bool, usm_type=res_usm_type, order="C"
+    )
 
     dep_evs = _manager.submitted_events
     ht_ev, s_ev = _isin(
