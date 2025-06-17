@@ -1540,8 +1540,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">test_buf</span> <span class="o">=</span> <span class="n">test_arr</span>
 
-    <span class="c1"># flatten and sort</span>
-    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">test_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">test_buf</span><span class="p">)</span>
 
     <span class="n">dst</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
         <span class="n">x_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span>
