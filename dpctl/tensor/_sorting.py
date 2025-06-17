@@ -85,6 +85,8 @@ def sort(x, /, *, axis=-1, descending=False, stable=True, kind=None):
         return dpt.copy(x, order="C")
     else:
         axis = normalize_axis_index(axis, ndim=nd, msg_prefix="axis")
+    if x.size == 1:
+        return dpt.copy(x, order="C")
     a1 = axis + 1
     if a1 == nd:
         perm = list(range(nd))
