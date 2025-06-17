@@ -31,7 +31,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -51,7 +51,9 @@ namespace tanh
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -75,8 +77,10 @@ template <typename argT, typename resT> struct TanhFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            const realT x = std::real(in);
-            const realT y = std::imag(in);
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            const realT x = exprm_ns::real(z);
+            const realT y = exprm_ns::imag(z);
             /*
              * tanh(NaN + i 0) = NaN + i 0
              *
@@ -115,7 +119,7 @@ template <typename argT, typename resT> struct TanhFunctor
                 return resT{q_nan, q_nan};
             }
             /* ordinary cases */
-            return exprm_ns::tanh(exprm_ns::complex<realT>(in)); // tanh(in);
+            return exprm_ns::tanh(z); // tanh(z);
         }
         else {
             static_assert(std::is_floating_point_v<argT> ||

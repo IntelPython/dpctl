@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "utils/offset_utils.hpp"
@@ -50,8 +50,10 @@ namespace true_divide
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
 namespace tu_ns = dpctl::tensor::type_utils;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 template <typename argT1, typename argT2, typename resT>
 struct TrueDivideFunctor
@@ -70,22 +72,22 @@ struct TrueDivideFunctor
             using realT1 = typename argT1::value_type;
             using realT2 = typename argT2::value_type;
 
-            return exprm_ns::complex<realT1>(in1) /
-                   exprm_ns::complex<realT2>(in2);
+            return su_ns::sycl_complex_t<realT1>(in1) /
+                   su_ns::sycl_complex_t<realT2>(in2);
         }
         else if constexpr (tu_ns::is_complex<argT1>::value &&
                            !tu_ns::is_complex<argT2>::value)
         {
             using realT1 = typename argT1::value_type;
 
-            return exprm_ns::complex<realT1>(in1) / in2;
+            return su_ns::sycl_complex_t<realT1>(in1) / in2;
         }
         else if constexpr (!tu_ns::is_complex<argT1>::value &&
                            tu_ns::is_complex<argT2>::value)
         {
             using realT2 = typename argT2::value_type;
 
-            return in1 / exprm_ns::complex<realT2>(in2);
+            return in1 / su_ns::sycl_complex_t<realT2>(in2);
         }
         else {
             return in1 / in2;
@@ -435,14 +437,14 @@ template <typename argT, typename resT> struct TrueDivideInplaceFunctor
                 using res_rT = typename resT::value_type;
                 using arg_rT = typename argT::value_type;
 
-                auto res1 = exprm_ns::complex<res_rT>(res);
-                res1 /= exprm_ns::complex<arg_rT>(in);
+                auto res1 = su_ns::sycl_complex_t<res_rT>(res);
+                res1 /= su_ns::sycl_complex_t<arg_rT>(in);
                 res = res1;
             }
             else {
                 using res_rT = typename resT::value_type;
 
-                auto res1 = exprm_ns::complex<res_rT>(res);
+                auto res1 = su_ns::sycl_complex_t<res_rT>(res);
                 res1 /= in;
                 res = res1;
             }

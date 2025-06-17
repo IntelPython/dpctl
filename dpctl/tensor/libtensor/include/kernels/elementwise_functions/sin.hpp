@@ -29,7 +29,7 @@
 #include <sycl/sycl.hpp>
 #include <type_traits>
 
-#include "sycl_complex.hpp"
+#include "utils/sycl_complex.hpp"
 #include "vec_size_util.hpp"
 
 #include "kernels/dpctl_tensor_types.hpp"
@@ -49,7 +49,9 @@ namespace sin
 {
 
 using dpctl::tensor::ssize_t;
+namespace su_ns = dpctl::tensor::sycl_utils;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace exprm_ns = sycl::ext::oneapi::experimental;
 
 using dpctl::tensor::type_utils::is_complex;
 
@@ -72,8 +74,11 @@ template <typename argT, typename resT> struct SinFunctor
 
             constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
 
-            realT const &in_re = std::real(in);
-            realT const &in_im = std::imag(in);
+            using realT = typename argT::value_type;
+            using sycl_complexT = su_ns::sycl_complex_t<realT>;
+            sycl_complexT z = sycl_complexT(in);
+            realT const &in_re = exprm_ns::real(z);
+            realT const &in_im = exprm_ns::imag(z);
 
             const bool in_re_finite = std::isfinite(in_re);
             const bool in_im_finite = std::isfinite(in_im);
@@ -82,8 +87,7 @@ template <typename argT, typename resT> struct SinFunctor
              * real and imaginary parts of input are finite.
              */
             if (in_re_finite && in_im_finite) {
-                resT res =
-                    exprm_ns::sin(exprm_ns::complex<realT>(in)); // sin(in);
+                resT res = exprm_ns::sin(z); // sin(z);
                 if (in_re == realT(0)) {
                     res.real(sycl::copysign(realT(0), in_re));
                 }
@@ -91,9 +95,9 @@ template <typename argT, typename resT> struct SinFunctor
             }
 
             /*
-             * since sin(in) = -I * sinh(I * in), for special cases,
-             * we calculate real and imaginary parts of z = sinh(I * in) and
-             * then return { imag(z) , -real(z) } which is sin(in).
+             * since sin(z) = -I * sinh(I * z), for special cases,
+             * we calculate real and imaginary parts of z = sinh(I * z) and
+             * then return { imag(z) , -real(z) } which is sin(z).
              */
             const realT x = -in_im;
             const realT y = in_re;
