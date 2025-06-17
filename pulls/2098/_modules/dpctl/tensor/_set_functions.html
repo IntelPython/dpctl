@@ -807,9 +807,8 @@
 <span class="c1">#  See the License for the specific language governing permissions and</span>
 <span class="c1">#  limitations under the License.</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">du</span>
 
@@ -1433,7 +1432,13 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">test_elements</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">isin</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="n">test_elements</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">complex</span><span class="p">,</span> <span class="nb">bool</span><span class="p">],</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">invert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Tests `x in test_elements` for each element of `x`. Returns a boolean array</span>
 <span class="sd">    with the same shape as `x` that is `True` where the element is in</span>
@@ -1470,19 +1475,19 @@
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">q1</span>
         <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">x_usm_type</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
+        <span class="n">exec_q</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">du</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
                 <span class="s2">&quot;Execution placement can not be unambiguously inferred &quot;</span>
                 <span class="s2">&quot;from input arguments.&quot;</span>
             <span class="p">)</span>
-        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+        <span class="n">res_usm_type</span> <span class="o">=</span> <span class="n">du</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">x_usm_type</span><span class="p">,</span>
                 <span class="n">test_usm_type</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">du</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
 
     <span class="n">x_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
