@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import NamedTuple
+from typing import NamedTuple, Optional, Union
 
 import dpctl.tensor as dpt
 import dpctl.utils as du
@@ -639,7 +639,13 @@ def unique_all(x: dpt.usm_ndarray) -> UniqueAllResult:
     )
 
 
-def isin(x, test_elements, /, *, invert=False):
+def isin(
+    x: Union[dpt.usm_ndarray, int, float, complex, bool],
+    test_elements: Union[dpt.usm_ndarray, int, float, complex, bool],
+    /,
+    *,
+    invert: Optional[bool] = False,
+) -> dpt.usm_ndarray:
     """
     Tests `x in test_elements` for each element of `x`. Returns a boolean array
     with the same shape as `x` that is `True` where the element is in
