@@ -16,7 +16,6 @@
 
 from typing import NamedTuple
 
-import dpctl
 import dpctl.tensor as dpt
 import dpctl.utils as du
 
@@ -677,19 +676,19 @@ def isin(x, test_elements, /, *, invert=False):
         exec_q = q1
         res_usm_type = x_usm_type
     else:
-        exec_q = dpctl.utils.get_execution_queue((q1, q2))
+        exec_q = du.get_execution_queue((q1, q2))
         if exec_q is None:
             raise du.ExecutionPlacementError(
                 "Execution placement can not be unambiguously inferred "
                 "from input arguments."
             )
-        res_usm_type = dpctl.utils.get_coerced_usm_type(
+        res_usm_type = du.get_coerced_usm_type(
             (
                 x_usm_type,
                 test_usm_type,
             )
         )
-    dpctl.utils.validate_usm_type(res_usm_type, allow_none=False)
+    du.validate_usm_type(res_usm_type, allow_none=False)
     sycl_dev = exec_q.sycl_device
 
     x_dt = _get_dtype(x, sycl_dev)
