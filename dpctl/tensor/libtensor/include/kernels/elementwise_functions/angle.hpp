@@ -115,8 +115,8 @@ template <typename argTy> struct AngleContigHyperparameterSet
     using value_type =
         typename std::disjunction<ContigHyperparameterSetDefault<4u, 2u>>;
 
-    static constexpr static auto vec_sz = value_type::vec_sz;
-    static constexpr static auto n_vecs = value_type::n_vecs;
+    constexpr static auto vec_sz = value_type::vec_sz;
+    constexpr static auto n_vecs = value_type::n_vecs;
 };
 
 } // end of namespace hyperparam_detail
