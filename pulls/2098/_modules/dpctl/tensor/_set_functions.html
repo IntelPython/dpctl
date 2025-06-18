@@ -1537,7 +1537,9 @@
 
     <span class="k">if</span> <span class="n">test_dt</span> <span class="o">!=</span> <span class="n">dt</span><span class="p">:</span>
         <span class="c1"># copy into C-contiguous memory, because the array will be flattened</span>
-        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+        <span class="n">test_buf</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
+            <span class="n">test_arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">res_usm_type</span>
+        <span class="p">)</span>
         <span class="n">ht_ev</span><span class="p">,</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">_copy_usm_ndarray_into_usm_ndarray</span><span class="p">(</span>
             <span class="n">src</span><span class="o">=</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">test_buf</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">depends</span><span class="o">=</span><span class="n">dep_evs</span>
         <span class="p">)</span>
