@@ -1,0 +1,6 @@
+﻿dpctl.tensor.top\_k
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: top_k
