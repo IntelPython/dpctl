@@ -44,8 +44,8 @@ def test_isin_basic(dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     n = 100
-    x = dpt.arange(n, dtype=dtype)
-    test = dpt.arange(n - 1, dtype=dtype)
+    x = dpt.arange(n, dtype=dtype, sycl_queue=q)
+    test = dpt.arange(n - 1, dtype=dtype, sycl_queue=q)
     r1 = dpt.isin(x, test)
     assert dpt.all(r1[:-1])
     assert not r1[-1]
@@ -53,7 +53,7 @@ def test_isin_basic(dtype):
 
     # test with invert keyword
     r2 = dpt.isin(x, test, invert=True)
-    assert not dpt.all(r2[:-1])
+    assert not dpt.any(r2[:-1])
     assert r2[-1]
     assert r2.shape == x.shape
 
@@ -70,7 +70,7 @@ def test_isin_basic_bool():
     assert r1.shape == x.shape
 
     r2 = dpt.isin(x, test, invert=True)
-    assert not dpt.all(r2[:-1])
+    assert not dpt.any(r2[:-1])
     assert r2[-1]
     assert r2.shape == x.shape
 
@@ -98,37 +98,44 @@ def test_isin_strided(dtype):
     skip_if_dtype_not_supported(dtype, q)
 
     n, m = 100, 20
-    x = dpt.zeros((n, m), dtype=dtype, order="F")
-    x[:, ::2] = dpt.arange(1, (m / 2) + 1, dtype=dtype)
-    test = dpt.arange(1, (m / 2) + 1, dtype=dtype)
-    r1 = dpt.isin(x, test)
-    assert dpt.all(r1[:, ::2])
-    assert not dpt.all(r1[:, 1::2])
-    assert r1.shape == x.shape
+    x = dpt.zeros((n, m), dtype=dtype, order="F", sycl_queue=q)
+    x[:, ::2] = dpt.arange(1, (m / 2) + 1, dtype=dtype, sycl_queue=q)
+    x_s = x[:, ::2]
+    test = dpt.arange(1, (m / 2), dtype=dtype, sycl_queue=q)
+    r1 = dpt.isin(x_s, test)
+    assert dpt.all(r1[:, :-1])
+    assert not dpt.any(r1[:, -1])
+    assert not dpt.any(x[:, 1::2])
+    assert r1.shape == x_s.shape
 
     # test with invert keyword
-    r2 = dpt.isin(x, test, invert=True)
-    assert not dpt.all(r2[:, ::2])
-    assert dpt.all(r2[:, 1::2])
-    assert r2.shape == x.shape
+    r2 = dpt.isin(x_s, test, invert=True)
+    assert not dpt.any(r2[:, :-1])
+    assert dpt.all(r2[:, -1])
+    assert not dpt.any(x[:, 1:2])
+    assert r2.shape == x_s.shape
 
 
 def test_isin_strided_bool():
     dt = dpt.bool
+
     n, m = 100, 20
-    x = dpt.ones((n, m), dtype=dt, order="F")
-    x[:, ::2] = False
-    test = dpt.zeros((), dtype=dt)
-    r1 = dpt.isin(x, test)
-    assert dpt.all(r1[:, ::2])
-    assert not dpt.all(r1[:, 1::2])
-    assert r1.shape == x.shape
+    x = dpt.zeros((n, m), dtype=dt, order="F")
+    x[:, :-2:2] = True
+    x_s = x[:, ::2]
+    test = dpt.ones((), dtype=dt)
+    r1 = dpt.isin(x_s, test)
+    assert dpt.all(r1[:, :-1])
+    assert not dpt.any(r1[:, -1])
+    assert not dpt.any(x[:, 1::2])
+    assert r1.shape == x_s.shape
 
     # test with invert keyword
-    r2 = dpt.isin(x, test, invert=True)
-    assert not dpt.all(r2[:, ::2])
-    assert dpt.all(r2[:, 1::2])
-    assert r2.shape == x.shape
+    r2 = dpt.isin(x_s, test, invert=True)
+    assert not dpt.any(r2[:, :-1])
+    assert dpt.all(r2[:, -1])
+    assert not dpt.any(x[:, 1:2])
+    assert r2.shape == x_s.shape
 
 
 def test_isin_empty_inputs():
