@@ -173,3 +173,22 @@ def test_isin_empty_inputs():
 def test_isin_validation():
     with pytest.raises(ExecutionPlacementError):
         dpt.isin(1, 1)
+
+
+def test_isin_special_floating_point_vals():
+    get_queue_or_skip()
+
+    # real and complex nans compare false
+    x = dpt.asarray(dpt.nan, dtype="f4")
+    test = dpt.asarray(dpt.nan, dtype="f4")
+    assert not dpt.isin(x, test)
+
+    x = dpt.asarray(dpt.nan, dtype="c8")
+    test = dpt.asarray(dpt.nan, dtype="c8")
+    assert not dpt.isin(x, test)
+
+    # -0.0 compares equal to +0.0
+    x = dpt.asarray(-0.0, dtype="f4")
+    test = dpt.asarray(0.0, dtype="f4")
+    assert dpt.isin(x, test)
+    assert dpt.isin(test, x)
