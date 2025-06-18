@@ -744,7 +744,9 @@ def isin(
 
     if test_dt != dt:
         # copy into C-contiguous memory, because the array will be flattened
-        test_buf = dpt.empty_like(test_arr, dtype=dt, order="C")
+        test_buf = dpt.empty_like(
+            test_arr, dtype=dt, order="C", usm_type=res_usm_type
+        )
         ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
             src=test_arr, dst=test_buf, sycl_queue=exec_q, depends=dep_evs
         )
