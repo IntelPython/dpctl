@@ -106,7 +106,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
+        static constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (is_complex<T>::value || !enable_sg_loadstore) {
@@ -202,8 +202,8 @@ sycl::event clip_contig_impl(sycl::queue &q,
         cgh.depends_on(depends);
 
         std::size_t lws = 64;
-        constexpr std::uint8_t vec_sz = 4;
-        constexpr std::uint8_t n_vecs = 2;
+        static constexpr std::uint8_t vec_sz = 4;
+        static constexpr std::uint8_t n_vecs = 2;
         const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -214,7 +214,7 @@ sycl::event clip_contig_impl(sycl::queue &q,
             is_aligned<required_alignment>(max_cp) &&
             is_aligned<required_alignment>(dst_cp))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
             using Impl =
                 ClipContigFunctor<T, vec_sz, n_vecs, enable_sg_loadstore>;
@@ -224,7 +224,7 @@ sycl::event clip_contig_impl(sycl::queue &q,
                 Impl(nelems, x_tp, min_tp, max_tp, dst_tp));
         }
         else {
-            constexpr bool disable_sg_loadstore = false;
+            static constexpr bool disable_sg_loadstore = false;
             using InnerKernelName = clip_contig_kernel<T, vec_sz, n_vecs>;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<InnerKernelName>;

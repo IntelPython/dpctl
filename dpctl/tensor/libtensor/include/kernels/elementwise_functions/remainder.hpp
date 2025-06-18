@@ -262,8 +262,8 @@ sycl::event remainder_contig_impl(sycl::queue &exec_q,
 {
     using RemHS =
         hyperparam_detail::RemainderContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = RemHS::vec_sz;
-    constexpr std::uint8_t n_vecs = RemHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = RemHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = RemHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, RemainderOutputType, RemainderContigFunctor,
@@ -495,8 +495,8 @@ remainder_inplace_contig_impl(sycl::queue &exec_q,
 {
     using RemHS =
         hyperparam_detail::RemainderContigHyperparameterSet<resTy, argTy>;
-    constexpr std::uint8_t vec_sz = RemHS::vec_sz;
-    constexpr std::uint8_t n_vecs = RemHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = RemHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = RemHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, RemainderInplaceContigFunctor,

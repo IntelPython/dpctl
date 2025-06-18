@@ -168,9 +168,9 @@ T custom_reduce_over_group(const GroupT &wg,
 {
     // value experimentally tuned to achieve best runtime on Iris Xe,
     // Arc A140V integrated Intel GPUs, and discrete Intel Max GPU.
-    constexpr std::uint32_t low_sz = 8u;
+    static constexpr std::uint32_t low_sz = 8u;
     // maximal work-group size
-    constexpr std::uint32_t high_sz = 1024u;
+    static constexpr std::uint32_t high_sz = 1024u;
     const std::uint32_t wgs = wg.get_local_linear_range();
     const std::uint32_t lid = wg.get_local_linear_id();
 
@@ -568,7 +568,8 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     sycl::vec<ValueT, vec_sz> x{};
-    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    static constexpr auto striped =
+        ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
 #else
@@ -585,7 +586,8 @@ auto sub_group_load(const sycl::sub_group &sg,
 #if (USE_GROUP_LOAD_STORE)
     using ValueT = typename std::remove_cv_t<ElementType>;
     ValueT x{};
-    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    static constexpr auto striped =
+        ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_load(sg, m_ptr, x, striped);
     return x;
 #else
@@ -607,7 +609,8 @@ sub_group_store(const sycl::sub_group &sg,
 {
 #if (USE_GROUP_LOAD_STORE)
     static_assert(std::is_same_v<VecT, ElementType>);
-    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    static constexpr auto striped =
+        ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_store(sg, val, m_ptr, striped);
     return;
 #else
@@ -628,7 +631,8 @@ sub_group_store(const sycl::sub_group &sg,
                 sycl::multi_ptr<ElementType, Space, DecorateAddress> m_ptr)
 {
 #if (USE_GROUP_LOAD_STORE)
-    constexpr auto striped = ls_ns::properties{ls_ns::data_placement_striped};
+    static constexpr auto striped =
+        ls_ns::properties{ls_ns::data_placement_striped};
     ls_ns::group_store(sg, val, m_ptr, striped);
     return;
 #else

@@ -84,8 +84,9 @@ struct BitwiseLeftShiftFunctor
 private:
     resT impl(const argT1 &in1, const argT2 &in2) const
     {
-        constexpr argT2 in1_bitsize = static_cast<argT2>(sizeof(argT1) * 8);
-        constexpr resT zero = resT(0);
+        static constexpr argT2 in1_bitsize =
+            static_cast<argT2>(sizeof(argT1) * 8);
+        static constexpr resT zero = resT(0);
 
         // bitshift op with second operand negative, or >= bitwidth(argT1) is UB
         // array API spec mandates 0
@@ -214,8 +215,8 @@ bitwise_left_shift_contig_impl(sycl::queue &exec_q,
     using BitwiseLSHS =
         hyperparam_detail::BitwiseLeftShiftContigHyperparameterSet<argTy1,
                                                                    argTy2>;
-    constexpr std::uint8_t vec_sz = BitwiseLSHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseLSHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseLSHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseLSHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, BitwiseLeftShiftOutputType,
@@ -316,8 +317,8 @@ template <typename argT, typename resT> struct BitwiseLeftShiftInplaceFunctor
 private:
     void impl(resT &res, const argT &in) const
     {
-        constexpr argT res_bitsize = static_cast<argT>(sizeof(resT) * 8);
-        constexpr resT zero = resT(0);
+        static constexpr argT res_bitsize = static_cast<argT>(sizeof(resT) * 8);
+        static constexpr resT zero = resT(0);
 
         // bitshift op with second operand negative, or >= bitwidth(argT1) is UB
         // array API spec mandates 0
@@ -407,8 +408,8 @@ sycl::event bitwise_left_shift_inplace_contig_impl(
     using BitwiseLSHS =
         hyperparam_detail::BitwiseLeftShiftContigHyperparameterSet<resTy,
                                                                    argTy>;
-    constexpr std::uint8_t vec_sz = BitwiseLSHS::vec_sz;
-    constexpr std::uint8_t n_vecs = BitwiseLSHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = BitwiseLSHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = BitwiseLSHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, BitwiseLeftShiftInplaceContigFunctor,

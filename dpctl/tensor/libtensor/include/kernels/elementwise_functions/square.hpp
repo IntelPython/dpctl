@@ -167,8 +167,8 @@ sycl::event square_contig_impl(sycl::queue &exec_q,
                                const std::vector<sycl::event> &depends = {})
 {
     using SquareHS = hyperparam_detail::SquareContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = SquareHS::vec_sz;
-    constexpr std::uint8_t n_vecs = SquareHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = SquareHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = SquareHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, SquareOutputType, SquareContigFunctor, square_contig_kernel,

@@ -146,7 +146,7 @@ struct CumProd1DContigFactory
                                                              dstTy>::is_defined)
         {
             using ScanOpT = CumProdScanOpT<dstTy>;
-            constexpr bool include_initial = false;
+            static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
                 fnT fn = dpctl::tensor::kernels::accumulators::
@@ -179,7 +179,7 @@ struct CumProd1DIncludeInitialContigFactory
                                                              dstTy>::is_defined)
         {
             using ScanOpT = CumProdScanOpT<dstTy>;
-            constexpr bool include_initial = true;
+            static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
                 fnT fn = dpctl::tensor::kernels::accumulators::
@@ -212,7 +212,7 @@ struct CumProdStridedFactory
                                                              dstTy>::is_defined)
         {
             using ScanOpT = CumProdScanOpT<dstTy>;
-            constexpr bool include_initial = false;
+            static constexpr bool include_initial = false;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
                 fnT fn = dpctl::tensor::kernels::accumulators::
@@ -245,7 +245,7 @@ struct CumProdIncludeInitialStridedFactory
                                                              dstTy>::is_defined)
         {
             using ScanOpT = CumProdScanOpT<dstTy>;
-            constexpr bool include_initial = true;
+            static constexpr bool include_initial = true;
             if constexpr (std::is_same_v<srcTy, dstTy>) {
                 using dpctl::tensor::kernels::accumulators::NoOpTransformer;
                 fnT fn = dpctl::tensor::kernels::accumulators::

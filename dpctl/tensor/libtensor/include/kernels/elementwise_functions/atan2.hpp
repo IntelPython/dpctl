@@ -145,8 +145,8 @@ sycl::event atan2_contig_impl(sycl::queue &exec_q,
 {
     using Atan2HS =
         hyperparam_detail::Atan2ContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = Atan2HS::vec_sz;
-    constexpr std::uint8_t n_vecs = Atan2HS::n_vecs;
+    static constexpr std::uint8_t vec_sz = Atan2HS::vec_sz;
+    static constexpr std::uint8_t n_vecs = Atan2HS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, Atan2OutputType, Atan2ContigFunctor,

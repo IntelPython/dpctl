@@ -224,8 +224,10 @@ py_extract(const dpctl::tensor::usm_ndarray &src,
     int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int32_typeid =
+        static_cast<int>(td_ns::typenum_t::INT32);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
         throw py::value_error("Unexpected data type of cumsum array, expecting "
                               "'int32' or 'int64'");
@@ -550,8 +552,10 @@ py_place(const dpctl::tensor::usm_ndarray &dst,
     int rhs_typeid = array_types.typenum_to_lookup_id(rhs_typenum);
     int cumsum_typeid = array_types.typenum_to_lookup_id(cumsum_typenum);
 
-    constexpr int int32_typeid = static_cast<int>(td_ns::typenum_t::INT32);
-    constexpr int int64_typeid = static_cast<int>(td_ns::typenum_t::INT64);
+    static constexpr int int32_typeid =
+        static_cast<int>(td_ns::typenum_t::INT32);
+    static constexpr int int64_typeid =
+        static_cast<int>(td_ns::typenum_t::INT64);
     if (cumsum_typeid != int32_typeid && cumsum_typeid != int64_typeid) {
         throw py::value_error("Unexpected data type of cumsum array, expecting "
                               "'int32' or 'int64'");

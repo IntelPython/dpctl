@@ -234,8 +234,8 @@ sycl::event greater_contig_impl(sycl::queue &exec_q,
     using GreaterHS =
         hyperparam_detail::GreaterContigHyperparameterSet<argTy1, argTy2>;
 
-    constexpr std::uint8_t vec_sz = GreaterHS::vec_sz;
-    constexpr std::uint8_t n_vecs = GreaterHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = GreaterHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = GreaterHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, GreaterOutputType, GreaterContigFunctor,

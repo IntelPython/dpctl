@@ -55,16 +55,18 @@ template <typename IndT> struct WrapIndex
     ssize_t operator()(ssize_t max_item, IndT ind) const
     {
         ssize_t projected;
-        constexpr ssize_t unit(1);
+        static constexpr ssize_t unit(1);
         max_item = sycl::max(max_item, unit);
 
-        constexpr std::uintmax_t ind_max = std::numeric_limits<IndT>::max();
-        constexpr std::uintmax_t ssize_max =
+        static constexpr std::uintmax_t ind_max =
+            std::numeric_limits<IndT>::max();
+        static constexpr std::uintmax_t ssize_max =
             std::numeric_limits<ssize_t>::max();
 
         if constexpr (std::is_signed_v<IndT>) {
-            constexpr std::intmax_t ind_min = std::numeric_limits<IndT>::min();
-            constexpr std::intmax_t ssize_min =
+            static constexpr std::intmax_t ind_min =
+                std::numeric_limits<IndT>::min();
+            static constexpr std::intmax_t ssize_min =
                 std::numeric_limits<ssize_t>::min();
 
             if constexpr (ind_max <= ssize_max && ind_min >= ssize_min) {
@@ -102,25 +104,27 @@ template <typename IndT> struct ClipIndex
     ssize_t operator()(ssize_t max_item, IndT ind) const
     {
         ssize_t projected;
-        constexpr ssize_t unit(1);
+        static constexpr ssize_t unit(1);
         max_item = sycl::max<ssize_t>(max_item, unit);
 
-        constexpr std::uintmax_t ind_max = std::numeric_limits<IndT>::max();
-        constexpr std::uintmax_t ssize_max =
+        static constexpr std::uintmax_t ind_max =
+            std::numeric_limits<IndT>::max();
+        static constexpr std::uintmax_t ssize_max =
             std::numeric_limits<ssize_t>::max();
         if constexpr (std::is_signed_v<IndT>) {
-            constexpr std::intmax_t ind_min = std::numeric_limits<IndT>::min();
-            constexpr std::intmax_t ssize_min =
+            static constexpr std::intmax_t ind_min =
+                std::numeric_limits<IndT>::min();
+            static constexpr std::intmax_t ssize_min =
                 std::numeric_limits<ssize_t>::min();
 
             if constexpr (ind_max <= ssize_max && ind_min >= ssize_min) {
                 const ssize_t ind_ = static_cast<ssize_t>(ind);
-                constexpr ssize_t lb(0);
+                static constexpr ssize_t lb(0);
                 const ssize_t ub = max_item - 1;
                 projected = sycl::clamp(ind_, lb, ub);
             }
             else {
-                constexpr IndT lb(0);
+                static constexpr IndT lb(0);
                 const IndT ub = static_cast<IndT>(max_item - 1);
                 projected = static_cast<std::size_t>(sycl::clamp(ind, lb, ub));
             }

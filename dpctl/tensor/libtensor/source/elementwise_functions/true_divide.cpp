@@ -298,11 +298,15 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
     const char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
-    constexpr int float16_typeid = static_cast<int>(td_ns::typenum_t::HALF);
-    constexpr int float32_typeid = static_cast<int>(td_ns::typenum_t::FLOAT);
-    constexpr int float64_typeid = static_cast<int>(td_ns::typenum_t::DOUBLE);
-    constexpr int complex64_typeid = static_cast<int>(td_ns::typenum_t::CFLOAT);
-    constexpr int complex128_typeid =
+    static constexpr int float16_typeid =
+        static_cast<int>(td_ns::typenum_t::HALF);
+    static constexpr int float32_typeid =
+        static_cast<int>(td_ns::typenum_t::FLOAT);
+    static constexpr int float64_typeid =
+        static_cast<int>(td_ns::typenum_t::DOUBLE);
+    static constexpr int complex64_typeid =
+        static_cast<int>(td_ns::typenum_t::CFLOAT);
+    static constexpr int complex128_typeid =
         static_cast<int>(td_ns::typenum_t::CDOUBLE);
 
     // statically pre-allocated memory for scalar
@@ -370,7 +374,7 @@ py_divide_by_scalar(const dpctl::tensor::usm_ndarray &src,
 
     if (nd == 0) {
         // handle 0d array as 1d array with 1 element
-        constexpr py::ssize_t one{1};
+        static constexpr py::ssize_t one{1};
         simplified_shape.push_back(one);
         simplified_src_strides.push_back(one);
         simplified_dst_strides.push_back(one);

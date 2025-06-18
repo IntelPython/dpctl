@@ -130,8 +130,8 @@ sycl::event negative_contig_impl(sycl::queue &exec_q,
                                  const std::vector<sycl::event> &depends = {})
 {
     using NegHS = hyperparam_detail::NegativeContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = NegHS::vec_sz;
-    constexpr std::uint8_t n_vecs = NegHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = NegHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = NegHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, NegativeOutputType, NegativeContigFunctor,

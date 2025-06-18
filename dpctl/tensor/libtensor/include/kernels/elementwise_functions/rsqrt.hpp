@@ -127,8 +127,8 @@ sycl::event rsqrt_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using RsqrtHS = hyperparam_detail::RsqrtContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = RsqrtHS::vec_sz;
-    constexpr std::uint8_t n_vecs = RsqrtHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = RsqrtHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = RsqrtHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, RsqrtOutputType, RsqrtContigFunctor, rsqrt_contig_kernel, vec_sz,

@@ -44,7 +44,7 @@
 
 namespace
 {
-constexpr std::size_t SIZE = 320;
+static constexpr std::size_t SIZE = 320;
 
 static_assert(SIZE % 10 == 0);
 
@@ -58,8 +58,8 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
                    DPCTLKernelArgType kernelArgTy,
                    std::string kernelName)
 {
-    constexpr std::size_t NARGS = 2;
-    constexpr std::size_t RANGE_NDIMS = 1;
+    static constexpr std::size_t NARGS = 2;
+    static constexpr std::size_t RANGE_NDIMS = 1;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());
@@ -366,7 +366,7 @@ TEST_F(TestQueueSubmitWithLocalAccessor, CheckForUnsupportedArgTy)
     std::size_t gRange[] = {SIZE};
     std::size_t lRange[] = {SIZE / 10};
     std::size_t RANGE_NDIMS = 1;
-    constexpr std::size_t NARGS = 2;
+    static constexpr std::size_t NARGS = 2;
 
     auto la = MDLocalAccessor{1, DPCTL_UNSUPPORTED_KERNEL_ARG, SIZE / 10, 1, 1};
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS14SyclKernel_SLMImE");

@@ -75,7 +75,8 @@ template <typename argT, typename resT> struct AtanFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
             /*
              * atan(in) = I * conj( atanh(I * conj(in)) )
              * so we first calculate w = atanh(I * conj(in)) with
@@ -122,7 +123,7 @@ template <typename argT, typename resT> struct AtanFunctor
              * The sign of pi/2 depends on the sign of imaginary part of the
              * input.
              */
-            constexpr realT r_eps =
+            static constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
                 const realT pi_half = sycl::atan(realT(1)) * 2;
@@ -202,8 +203,8 @@ sycl::event atan_contig_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {})
 {
     using AtanHS = hyperparam_detail::AtanContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AtanHS::vec_sz;
-    constexpr std::uint8_t n_vec = AtanHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AtanHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AtanHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AtanOutputType, AtanContigFunctor, atan_contig_kernel, vec_sz,

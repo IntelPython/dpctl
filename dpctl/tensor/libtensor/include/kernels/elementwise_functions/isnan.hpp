@@ -148,8 +148,8 @@ sycl::event isnan_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using IsNanHS = hyperparam_detail::IsNanContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = IsNanHS::vec_sz;
-    constexpr std::uint8_t n_vecs = IsNanHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = IsNanHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = IsNanHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, IsNanOutputType, IsNanContigFunctor, isnan_contig_kernel, vec_sz,
