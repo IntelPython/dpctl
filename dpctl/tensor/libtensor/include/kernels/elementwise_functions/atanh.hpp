@@ -71,7 +71,8 @@ template <typename argT, typename resT> struct AtanhFunctor
     {
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
 
             const realT x = std::real(in);
             const realT y = std::imag(in);
@@ -193,8 +194,8 @@ sycl::event atanh_contig_impl(sycl::queue &exec_q,
                               const std::vector<sycl::event> &depends = {})
 {
     using AtanhHS = hyperparam_detail::AtanhContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AtanhHS::vec_sz;
-    constexpr std::uint8_t n_vec = AtanhHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AtanhHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AtanhHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AtanhOutputType, AtanhContigFunctor, atanh_contig_kernel, vec_sz,

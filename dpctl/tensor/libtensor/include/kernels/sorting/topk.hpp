@@ -83,8 +83,8 @@ sycl::event write_out_impl(sycl::queue &exec_q,
                            IndexTy *inds_tp,
                            const std::vector<sycl::event> &depends)
 {
-    constexpr std::uint32_t lws = 64;
-    constexpr std::uint32_t n_wi = 4;
+    static constexpr std::uint32_t lws = 64;
+    static constexpr std::uint32_t n_wi = 4;
     const std::size_t nelems = iter_nelems * k;
     const std::size_t n_groups = (nelems + lws * n_wi - 1) / (n_wi * lws);
 
@@ -252,7 +252,7 @@ sycl::event topk_merge_impl(
         const std::uint64_t nelems_per_slm =
             (device_local_memory_size - safety_margin) / (2 * sizeof(IndexTy));
 
-        constexpr std::uint32_t sub_groups_per_work_group = 4;
+        static constexpr std::uint32_t sub_groups_per_work_group = 4;
         const std::uint32_t elems_per_wi = dev.has(sycl::aspect::cpu) ? 8 : 2;
 
         std::size_t lws = sub_groups_per_work_group * max_sg_size;

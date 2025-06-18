@@ -151,8 +151,8 @@ sycl::event isfinite_contig_impl(sycl::queue &exec_q,
 {
     using IsFiniteHS =
         hyperparam_detail::IsFiniteContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = IsFiniteHS::vec_sz;
-    constexpr std::uint8_t n_vecs = IsFiniteHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = IsFiniteHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = IsFiniteHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, IsFiniteOutputType, IsFiniteContigFunctor,

@@ -227,8 +227,8 @@ sycl::event multiply_contig_impl(sycl::queue &exec_q,
 {
     using MulHS =
         hyperparam_detail::MultiplyContigHyperparameterSet<argTy1, argTy2>;
-    constexpr std::uint8_t vec_sz = MulHS::vec_sz;
-    constexpr std::uint8_t n_vecs = MulHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = MulHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = MulHS::n_vecs;
 
     return elementwise_common::binary_contig_impl<
         argTy1, argTy2, MultiplyOutputType, MultiplyContigFunctor,
@@ -513,8 +513,8 @@ multiply_inplace_contig_impl(sycl::queue &exec_q,
 {
     using MulHS =
         hyperparam_detail::MultiplyContigHyperparameterSet<resTy, argTy>;
-    constexpr std::uint8_t vec_sz = MulHS::vec_sz;
-    constexpr std::uint8_t n_vecs = MulHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = MulHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = MulHS::n_vecs;
 
     return elementwise_common::binary_inplace_contig_impl<
         argTy, resTy, MultiplyInplaceContigFunctor,

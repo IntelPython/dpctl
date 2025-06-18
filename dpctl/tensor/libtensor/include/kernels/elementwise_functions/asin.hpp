@@ -71,7 +71,8 @@ template <typename argT, typename resT> struct AsinFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
 
             /*
              * asin(in) = I * conj( asinh(I * conj(in)) )
@@ -117,7 +118,7 @@ template <typename argT, typename resT> struct AsinFunctor
              * because Im(asinh(in)) = sign(x)*atan2(sign(x)*y, fabs(x)) +
              * O(y/in^3) as in -> infinity, uniformly in y
              */
-            constexpr realT r_eps =
+            static constexpr realT r_eps =
                 realT(1) / std::numeric_limits<realT>::epsilon();
             if (sycl::fabs(x) > r_eps || sycl::fabs(y) > r_eps) {
                 using sycl_complexT = exprm_ns::complex<realT>;
@@ -209,8 +210,8 @@ sycl::event asin_contig_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {})
 {
     using AddHS = hyperparam_detail::AsinContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = AddHS::vec_sz;
-    constexpr std::uint8_t n_vec = AddHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = AddHS::vec_sz;
+    static constexpr std::uint8_t n_vec = AddHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, AsinOutputType, AsinContigFunctor, asin_contig_kernel, vec_sz,

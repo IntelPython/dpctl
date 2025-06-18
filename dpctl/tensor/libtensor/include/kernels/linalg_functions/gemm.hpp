@@ -59,7 +59,7 @@ void scale_gemm_k_parameters(const std::size_t &local_mem_size,
                              std::size_t &n_wi,
                              std::size_t &delta_n)
 {
-    constexpr std::size_t slm_elem_size = sizeof(T) * m_groups;
+    static constexpr std::size_t slm_elem_size = sizeof(T) * m_groups;
 
     while (slm_elem_size * (n_wi + delta_n) * delta_k + reserved_slm_size >=
            local_mem_size)
@@ -79,8 +79,8 @@ void scale_gemm_nm_parameters(const std::size_t &local_mem_size,
                               std::size_t &wg_delta_n,
                               std::size_t &wg_delta_m)
 {
-    constexpr std::size_t slm_A_elem_size = sizeof(T);
-    constexpr std::size_t slm_B_elem_size = sizeof(T) * wi_delta_m;
+    static constexpr std::size_t slm_A_elem_size = sizeof(T);
+    static constexpr std::size_t slm_B_elem_size = sizeof(T) * wi_delta_m;
 
     while ((wi_delta_n * wg_delta_n * wi_delta_k * slm_A_elem_size) +
                (wi_delta_k * wg_delta_m * slm_B_elem_size) +
@@ -210,8 +210,8 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
+        static constexpr InputOutputIterIndexerT in_out_iter_indexer{
+            NoOpIndexerT{}, NoOpIndexerT{}};
         // tmp allocation is a C-contiguous matrix (reduction_nelems,
         // iter_nelems) and we are reducing by axis 0
         const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
@@ -239,8 +239,8 @@ single_reduction_for_gemm_contig(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
+        static constexpr InputOutputIterIndexerT in_out_iter_indexer{
+            NoOpIndexerT{}, NoOpIndexerT{}};
         // tmp allocation is a C-contiguous matrix
         // (reduction_nelems, iter_nelems). Reducing along axis 0
         const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
@@ -294,8 +294,8 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
                 NoOpIndexerT, NoOpIndexerT>;
         using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-        constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                              NoOpIndexerT{}};
+        static constexpr InputOutputIterIndexerT in_out_iter_indexer{
+            NoOpIndexerT{}, NoOpIndexerT{}};
         // partially_reduced_tmp is C-contig matrix with shape
         // (reduction_nelems, iter_nelems). Reducing along axis 0.
         const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
@@ -331,12 +331,12 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
 
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ reduction_groups_};
-        constexpr ResIndexerT res_iter_indexer{};
+        static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
 
-        constexpr ReductionIndexerT reduction_indexer{};
+        static constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event partial_reduction_ev =
             dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -369,7 +369,7 @@ sycl::event tree_reduction_for_gemm(sycl::queue &exec_q,
 
     const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                       res_iter_indexer};
-    constexpr ReductionIndexerT reduction_indexer{};
+    static constexpr ReductionIndexerT reduction_indexer{};
 
     wg = max_wg;
     reductions_per_wi =
@@ -416,8 +416,8 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
                                                                 NoOpIndexerT>;
     using ReductionIndexerT = dpctl::tensor::offset_utils::Strided1DIndexer;
 
-    constexpr InputOutputIterIndexerT in_out_iter_indexer{NoOpIndexerT{},
-                                                          NoOpIndexerT{}};
+    static constexpr InputOutputIterIndexerT in_out_iter_indexer{
+        NoOpIndexerT{}, NoOpIndexerT{}};
     const ReductionIndexerT reduction_indexer{/* size */ reduction_nelems,
                                               /* step */ iter_nelems};
 
@@ -454,12 +454,12 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         // along the stack axis
         const InputIndexerT inp_indexer{/* size */ iter_nelems,
                                         /* step */ reduction_groups_};
-        constexpr ResIndexerT res_iter_indexer{};
+        static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
 
-        constexpr ReductionIndexerT reduction_indexer{};
+        static constexpr ReductionIndexerT reduction_indexer{};
 
         sycl::event partial_reduction_ev =
             dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -487,11 +487,11 @@ tree_reduction_for_gemm_contig(sycl::queue &exec_q,
         const InputIndexerT inp_indexer{
             /* size   */ iter_nelems,
             /* step   */ remaining_reduction_nelems};
-        constexpr ResIndexerT res_iter_indexer{};
+        static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
-        constexpr ReductionIndexerT reduction_indexer{};
+        static constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi = std::max<std::size_t>(
@@ -615,7 +615,7 @@ public:
 
         using accV_t = typename LocAccT::value_type;
 
-        constexpr resT identity_ = resT(0);
+        static constexpr resT identity_ = resT(0);
         if (local_i == 0) {
             for (std::size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 const std::size_t sq = s + q;
@@ -651,7 +651,7 @@ public:
         std::size_t global_s_offset = i * k + t_shift;
 
         accV_t private_sum(identity_);
-        constexpr accV_t vec_identity_(identity_);
+        static constexpr accV_t vec_identity_(identity_);
         for (std::size_t t = local_s; t < local_B_block.size(); t += delta_k) {
             private_sum +=
                 ((i < n) && (t + t_shift < k))
@@ -749,7 +749,7 @@ sycl::event _gemm_k_impl(sycl::queue &exec_q,
                          const ResIndexerT &res_indexer,
                          const std::vector<sycl::event> &depends)
 {
-    constexpr std::size_t m_groups = 4;
+    static constexpr std::size_t m_groups = 4;
     const std::size_t delta_k(4);
     std::size_t n_wi(64);
     std::size_t delta_n(32);
@@ -823,7 +823,7 @@ sycl::event _gemm_small_m_impl(sycl::queue &exec_q,
                                const ResIndexerT &res_indexer,
                                const std::vector<sycl::event> &depends)
 {
-    constexpr std::size_t m_groups = 1;
+    static constexpr std::size_t m_groups = 1;
     const std::size_t delta_k(4);
     std::size_t n_wi(64);
     std::size_t delta_n(32);
@@ -942,8 +942,9 @@ public:
 
     void operator()(sycl::nd_item<1> it) const
     {
-        constexpr resT zero_(0);
-        constexpr std::uint32_t wi_total_delta_m = wi_delta_m_vecs * m_vec_size;
+        static constexpr resT zero_(0);
+        static constexpr std::uint32_t wi_total_delta_m =
+            wi_delta_m_vecs * m_vec_size;
 
         const std::size_t gws_per_batch = it.get_group_range(0) / batch_nelems;
         const std::size_t batch_id = it.get_group_linear_id() / gws_per_batch;
@@ -987,7 +988,7 @@ public:
 
         // allocate/initialize private matrix C
         // size ( wi_total_delta_n, wi_total_delta_m )
-        constexpr std::uint32_t C_size = wi_delta_n * wi_delta_m_vecs;
+        static constexpr std::uint32_t C_size = wi_delta_n * wi_delta_m_vecs;
         std::array<slmB_t, C_size> private_C{slmB_t{zero_}};
 
         for (std::size_t s = 0; s < k; s += wi_delta_k) {
@@ -1281,16 +1282,18 @@ sycl::event _gemm_batch_nm_impl(sycl::queue &exec_q,
                                 const ResIndexerT &res_indexer,
                                 std::vector<sycl::event> const &depends)
 {
-    constexpr GemmBatchFunctorThreadNM_vecm_HyperParametersSelector<resTy>
+    static constexpr GemmBatchFunctorThreadNM_vecm_HyperParametersSelector<
+        resTy>
         selector{};
-    constexpr auto hyper_params = selector.get();
+    static constexpr auto hyper_params = selector.get();
 
-    constexpr std::uint32_t wi_delta_n = hyper_params.get_wi_delta_n();
-    constexpr std::uint32_t wi_delta_m_vecs =
+    static constexpr std::uint32_t wi_delta_n = hyper_params.get_wi_delta_n();
+    static constexpr std::uint32_t wi_delta_m_vecs =
         hyper_params.get_wi_delta_m_vecs();
-    constexpr std::uint32_t m_vec_size = hyper_params.get_m_vec_size();
+    static constexpr std::uint32_t m_vec_size = hyper_params.get_m_vec_size();
 
-    constexpr std::uint32_t wi_total_delta_m = wi_delta_m_vecs * m_vec_size;
+    static constexpr std::uint32_t wi_total_delta_m =
+        wi_delta_m_vecs * m_vec_size;
 
     using KernelName =
         class gemm_batch_nm_vecm_krn<lhsTy, rhsTy, resTy, BatchIndexerT,
@@ -1313,7 +1316,7 @@ sycl::event _gemm_batch_nm_impl(sycl::queue &exec_q,
         sycl::info::kernel_device_specific::work_group_size>(dev);
 
     // Limit work-group size
-    constexpr std::size_t wg_sz_limit(2048);
+    static constexpr std::size_t wg_sz_limit(2048);
     const std::size_t max_wg_sz = std::min(wg_sz_limit, k_wg_sz);
 
     const std::uint32_t max_subgroups_per_wg =
@@ -1422,9 +1425,9 @@ sycl::event gemm_impl(sycl::queue &exec_q,
     const OuterInnerIndexerT res_indexer(res_outer_nd, 0, res_shape_strides);
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     const std::size_t min_nm = std::min(n, m);
     const std::size_t max_nm = std::max(n, m);
@@ -1503,14 +1506,14 @@ sycl::event gemm_contig_impl(sycl::queue &exec_q,
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp);
 
     using OuterInnerIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr OuterInnerIndexerT lhs_indexer{};
-    constexpr OuterInnerIndexerT rhs_indexer{};
-    constexpr OuterInnerIndexerT res_indexer{};
+    static constexpr OuterInnerIndexerT lhs_indexer{};
+    static constexpr OuterInnerIndexerT rhs_indexer{};
+    static constexpr OuterInnerIndexerT res_indexer{};
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     const std::size_t min_nm = std::min(n, m);
     const std::size_t max_nm = std::max(n, m);
@@ -1712,9 +1715,9 @@ sycl::event gemm_batch_contig_impl(sycl::queue &exec_q,
     resTy *res_tp = reinterpret_cast<resTy *>(res_cp) + res_batch_offset;
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr OuterInnerDimsIndexerT lhs_indexer{};
-    constexpr OuterInnerDimsIndexerT rhs_indexer{};
-    constexpr OuterInnerDimsIndexerT res_indexer{};
+    static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT res_indexer{};
 
     using dpctl::tensor::offset_utils::Strided1DIndexer;
     using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -1941,7 +1944,7 @@ public:
         const std::size_t a_offset = local_i * wi_delta_k * wi_delta_n;
         const std::size_t b_offset = local_j * wi_delta_k;
 
-        constexpr resT identity_(0);
+        static constexpr resT identity_(0);
 
         for (std::uint8_t private_i = 0; private_i < wi_delta_n; ++private_i) {
             const std::size_t a_pr_offset = private_i * wi_delta_k;
@@ -2076,7 +2079,7 @@ public:
 
         using accV_t = typename LocAccT::value_type;
 
-        constexpr resT identity_ = resT(0);
+        static constexpr resT identity_ = resT(0);
         if (local_i == 0) {
             for (std::size_t q = 0; q < n_wi * delta_k; q += delta_k) {
                 std::size_t sq = s + q;
@@ -2112,7 +2115,7 @@ public:
         std::size_t global_s_offset = i * k + t_shift;
 
         accV_t private_sum(identity_);
-        constexpr accV_t vec_identity_(identity_);
+        static constexpr accV_t vec_identity_(identity_);
         for (std::size_t t = local_s; t < local_B_block.size(); t += delta_k) {
             private_sum +=
                 ((i < n) && (t + t_shift < k))
@@ -2315,7 +2318,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = batch_nelems * n * m;
@@ -2329,7 +2332,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 4;
+        static constexpr std::size_t preferred_reductions_per_wi = 4;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -2337,7 +2340,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
             (preferred_reductions_per_wi * wg);
 
         // max_max_wg prevents running out of resources on CPU
-        constexpr std::size_t max_max_wg = 2048;
+        static constexpr std::size_t max_max_wg = 2048;
         std::size_t max_wg = std::min(
             max_max_wg,
             dev.get_info<sycl::info::device::max_work_group_size>() / 2);
@@ -2355,7 +2358,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
-            constexpr TmpIndexerT res_indexer{};
+            static constexpr TmpIndexerT res_indexer{};
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::StridedIndexer;
@@ -2419,7 +2422,7 @@ gemm_batch_tree_k_impl(sycl::queue &exec_q,
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
-            constexpr TmpIndexerT res_indexer{};
+            static constexpr TmpIndexerT res_indexer{};
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::StridedIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -2564,7 +2567,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                         const ssize_t *res_shape_strides,
                         std::vector<sycl::event> const &depends)
 {
-    constexpr int wi_delta_n = 2;
+    static constexpr int wi_delta_n = 2;
     std::size_t wg_delta_n(16); // rows of A processed in WG
     std::size_t wg_delta_m(16); // rows of B processed in WG
     std::size_t wi_delta_k(64); // Elements in K dimension processed by WI
@@ -2611,7 +2614,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
@@ -2623,7 +2626,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 4;
+        static constexpr std::size_t preferred_reductions_per_wi = 4;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -2645,7 +2648,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
-            constexpr TmpIndexerT res_indexer{};
+            static constexpr TmpIndexerT res_indexer{};
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::StridedIndexer;
@@ -2708,7 +2711,7 @@ gemm_batch_tree_nm_impl(sycl::queue &exec_q,
                 inner_nd + lhs_outer_nd, 0, lhs_outer_inner_shapes_strides);
             const OuterInnerDimsIndexerT rhs_indexer(
                 inner_nd + rhs_outer_nd, 0, rhs_outer_inner_shapes_strides);
-            constexpr TmpIndexerT res_indexer{};
+            static constexpr TmpIndexerT res_indexer{};
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::StridedIndexer;
@@ -2866,7 +2869,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
             if (m < 4) {
-                constexpr std::uint32_t m_groups_one = 1;
+                static constexpr std::uint32_t m_groups_one = 1;
                 return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy,
                                               m_groups_one>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2877,7 +2880,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
                     res_outer_shapes_strides, res_shape_strides, depends);
             }
             else {
-                constexpr std::uint32_t m_groups_four = 4;
+                static constexpr std::uint32_t m_groups_four = 4;
                 return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy,
                                               m_groups_four>(
                     exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m,
@@ -2889,7 +2892,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
             }
         }
         else {
-            constexpr std::uint32_t m_groups_one = 1;
+            static constexpr std::uint32_t m_groups_one = 1;
             return gemm_batch_tree_k_impl<lhsTy, rhsTy, resTy, m_groups_one>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
                 batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
@@ -2902,7 +2905,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
     else { // m > 1, n > k or m > k
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!is_complex<resTy>::value) {
-            constexpr std::uint32_t m_groups_four = 4;
+            static constexpr std::uint32_t m_groups_four = 4;
             return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, m_groups_four>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
                 batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
@@ -2912,7 +2915,7 @@ sycl::event gemm_batch_tree_impl(sycl::queue &exec_q,
                 res_outer_shapes_strides, res_shape_strides, depends);
         }
         else { // m > 1, n > k or m > k, resTy complex
-            constexpr std::uint32_t m_groups_one = 1;
+            static constexpr std::uint32_t m_groups_one = 1;
             return gemm_batch_tree_nm_impl<lhsTy, rhsTy, resTy, m_groups_one>(
                 exec_q, lhs_tp, rhs_tp, res_tp, batch_nelems, n, k, m, batch_nd,
                 batch_shape_strides, lhs_batch_offset, rhs_batch_offset,
@@ -2953,9 +2956,9 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 
     if (k <= (delta_k * n_wi)) {
         using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        constexpr OuterInnerDimsIndexerT lhs_indexer{};
-        constexpr OuterInnerDimsIndexerT rhs_indexer{};
-        constexpr OuterInnerDimsIndexerT res_indexer{};
+        static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+        static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+        static constexpr OuterInnerDimsIndexerT res_indexer{};
 
         using dpctl::tensor::offset_utils::Strided1DIndexer;
         using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -2984,7 +2987,7 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = batch_nelems * n * m;
@@ -2998,7 +3001,7 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 4;
+        static constexpr std::size_t preferred_reductions_per_wi = 4;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -3015,9 +3018,9 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr OuterInnerDimsIndexerT lhs_indexer{};
-            constexpr OuterInnerDimsIndexerT rhs_indexer{};
-            constexpr OuterInnerDimsIndexerT tmp_indexer{};
+            static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT tmp_indexer{};
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
@@ -3068,9 +3071,9 @@ gemm_batch_contig_tree_k_impl(sycl::queue &exec_q,
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr OuterInnerDimsIndexerT lhs_indexer{};
-            constexpr OuterInnerDimsIndexerT rhs_indexer{};
-            constexpr OuterInnerDimsIndexerT tmp_indexer{};
+            static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT tmp_indexer{};
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
             using BatchDimsIndexerT =
@@ -3120,7 +3123,7 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
                                std::size_t m,
                                std::vector<sycl::event> const &depends)
 {
-    constexpr int wi_delta_n = 2;
+    static constexpr int wi_delta_n = 2;
     std::size_t wg_delta_n(16); // rows of A processed in WG
     std::size_t wg_delta_m(16); // rows of B processed in WG
     std::size_t wi_delta_k(64); // Elements in K dimension processed by WI
@@ -3142,9 +3145,9 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
     // temp memory if only one group is needed
     if (k <= wi_delta_k) {
         using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-        constexpr OuterInnerDimsIndexerT lhs_indexer{};
-        constexpr OuterInnerDimsIndexerT rhs_indexer{};
-        constexpr OuterInnerDimsIndexerT res_indexer{};
+        static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+        static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+        static constexpr OuterInnerDimsIndexerT res_indexer{};
 
         using dpctl::tensor::offset_utils::Strided1DIndexer;
         using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -3172,7 +3175,7 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
         std::size_t iter_nelems = batch_nelems * n * m;
         std::size_t reduction_nelems = (k + wi_delta_k - 1) / wi_delta_k;
@@ -3184,7 +3187,7 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 4;
+        static constexpr std::size_t preferred_reductions_per_wi = 4;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -3202,9 +3205,9 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr OuterInnerDimsIndexerT lhs_indexer{};
-            constexpr OuterInnerDimsIndexerT rhs_indexer{};
-            constexpr OuterInnerDimsIndexerT tmp_indexer{};
+            static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT tmp_indexer{};
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -3256,9 +3259,9 @@ gemm_batch_contig_tree_nm_impl(sycl::queue &exec_q,
 
             using OuterInnerDimsIndexerT =
                 dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr OuterInnerDimsIndexerT lhs_indexer{};
-            constexpr OuterInnerDimsIndexerT rhs_indexer{};
-            constexpr OuterInnerDimsIndexerT tmp_indexer{};
+            static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+            static constexpr OuterInnerDimsIndexerT tmp_indexer{};
 
             using dpctl::tensor::offset_utils::Strided1DIndexer;
             using dpctl::tensor::offset_utils::ThreeOffsets_CombinedIndexer;
@@ -3325,9 +3328,9 @@ sycl::event gemm_nm_impl(sycl::queue &exec_q,
 
     using BatchDimsIndexerT =
         dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchDimsIndexerT batch_indexer{};
+    static constexpr BatchDimsIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
         lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3351,15 +3354,15 @@ gemm_batch_nm_contig_impl(sycl::queue &exec_q,
                           std::vector<sycl::event> const &depends = {})
 {
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr OuterInnerDimsIndexerT lhs_indexer{};
-    constexpr OuterInnerDimsIndexerT rhs_indexer{};
-    constexpr OuterInnerDimsIndexerT res_indexer{};
+    static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT res_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
     if (batch_nelems == single_batch_nelems) {
         using BatchDimsIndexerT =
             dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-        constexpr BatchDimsIndexerT batch_indexer{};
+        static constexpr BatchDimsIndexerT batch_indexer{};
 
         sycl::event gemm_ev = gemm_detail::_gemm_batch_nm_impl<
             lhsTy, rhsTy, resTy, BatchDimsIndexerT, OuterInnerDimsIndexerT,
@@ -3517,9 +3520,9 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
     );
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
@@ -3543,7 +3546,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
@@ -3557,7 +3560,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 8;
+        static constexpr std::size_t preferred_reductions_per_wi = 8;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -3574,7 +3577,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
             resTy *tmp = tmp_owner.get();
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr ResIndexerT res_indexer{};
+            static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -3610,7 +3613,7 @@ sycl::event gemm_tree_k_impl(sycl::queue &exec_q,
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr ResIndexerT res_indexer{};
+            static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_k_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -3652,7 +3655,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                               const ssize_t *res_shapes_strides,
                               const std::vector<sycl::event> &depends)
 {
-    constexpr int wi_delta_n = 2;
+    static constexpr int wi_delta_n = 2;
     std::size_t wg_delta_n(16); // rows of A processed in WG
     std::size_t wg_delta_m(16); // rows of B processed in WG
     std::size_t wi_delta_k(64); // Elements in K dimension processed by WI
@@ -3670,9 +3673,9 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
     );
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const OuterInnerDimsIndexerT lhs_indexer(inner_nd + lhs_outer_nd, 0,
@@ -3697,7 +3700,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
@@ -3710,7 +3713,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 8;
+        static constexpr std::size_t preferred_reductions_per_wi = 8;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -3726,7 +3729,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
             resTy *tmp = tmp_owner.get();
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr ResIndexerT res_indexer{};
+            static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -3762,7 +3765,7 @@ sycl::event gemm_tree_nm_impl(sycl::queue &exec_q,
                 partially_reduced_tmp + reduction_nelems * iter_nelems;
 
             using ResIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-            constexpr ResIndexerT res_indexer{};
+            static constexpr ResIndexerT res_indexer{};
 
             sycl::event gemm_ev = gemm_detail::_gemm_tree_nm_step<
                 lhsTy, rhsTy, resTy, BatchIndexerT, OuterInnerDimsIndexerT,
@@ -3910,14 +3913,14 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
     );
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr OuterInnerDimsIndexerT lhs_indexer{};
-    constexpr OuterInnerDimsIndexerT rhs_indexer{};
-    constexpr OuterInnerDimsIndexerT res_indexer{};
+    static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT res_indexer{};
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     sycl::event gemm_ev;
     if (k <= (delta_k * n_wi)) {
@@ -3933,7 +3936,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
@@ -3947,7 +3950,7 @@ sycl::event gemm_contig_tree_k_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 8;
+        static constexpr std::size_t preferred_reductions_per_wi = 8;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -4029,7 +4032,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
                                      std::size_t m,
                                      std::vector<sycl::event> const &depends)
 {
-    constexpr int wi_delta_n = 2;
+    static constexpr int wi_delta_n = 2;
     std::size_t wg_delta_n(16); // rows of A processed in WG
     std::size_t wg_delta_m(16); // rows of B processed in WG
     std::size_t wi_delta_k(64); // Elements in K dimension processed by WI
@@ -4047,14 +4050,14 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
     );
 
     using OuterInnerDimsIndexerT = dpctl::tensor::offset_utils::NoOpIndexer;
-    constexpr OuterInnerDimsIndexerT lhs_indexer{};
-    constexpr OuterInnerDimsIndexerT rhs_indexer{};
-    constexpr OuterInnerDimsIndexerT res_indexer{};
+    static constexpr OuterInnerDimsIndexerT lhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT rhs_indexer{};
+    static constexpr OuterInnerDimsIndexerT res_indexer{};
 
     using BatchIndexerT = dpctl::tensor::offset_utils::ThreeZeroOffsets_Indexer;
-    constexpr BatchIndexerT batch_indexer{};
+    static constexpr BatchIndexerT batch_indexer{};
 
-    constexpr std::size_t single_batch_nelems = 1;
+    static constexpr std::size_t single_batch_nelems = 1;
 
     // each group processes delta_k items in a column,
     // so no need to allocate temp memory if one group needed
@@ -4072,7 +4075,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
             typename std::conditional<std::is_same_v<resTy, bool>,
                                       sycl::logical_or<resTy>,
                                       sycl::plus<resTy>>::type;
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         std::size_t iter_nelems = n * m;
@@ -4085,7 +4088,7 @@ sycl::event gemm_contig_tree_nm_impl(sycl::queue &exec_q,
             dev.get_info<sycl::info::device::sub_group_sizes>();
         std::size_t wg = choose_workgroup_size<4>(reduction_nelems, sg_sizes);
 
-        constexpr std::size_t preferred_reductions_per_wi = 8;
+        static constexpr std::size_t preferred_reductions_per_wi = 8;
         std::size_t reductions_per_wi(preferred_reductions_per_wi);
 
         std::size_t reduction_groups =
@@ -4175,7 +4178,7 @@ sycl::event gemm_contig_tree_impl(sycl::queue &exec_q,
     const std::size_t max_nm = std::max(n, m);
 
     if (min_nm > 0 && (max_nm >= ((64 * 1024) / min_nm))) {
-        constexpr std::size_t single_batch_nelems = 1;
+        static constexpr std::size_t single_batch_nelems = 1;
         return gemm_batch_nm_contig_impl<lhsTy, rhsTy, resTy>(
             exec_q, lhs_tp, rhs_tp, res_tp, single_batch_nelems, n, k, m,
             depends);

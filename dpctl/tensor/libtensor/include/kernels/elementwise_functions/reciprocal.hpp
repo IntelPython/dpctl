@@ -145,8 +145,8 @@ sycl::event reciprocal_contig_impl(sycl::queue &exec_q,
                                    const std::vector<sycl::event> &depends = {})
 {
     using RecipHS = hyperparam_detail::ReciprocalContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = RecipHS::vec_sz;
-    constexpr std::uint8_t n_vecs = RecipHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = RecipHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = RecipHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, ReciprocalOutputType, ReciprocalContigFunctor,

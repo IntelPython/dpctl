@@ -507,7 +507,7 @@ sycl::event dot_product_impl(sycl::queue &exec_q,
                                                   reduction_rhs_offset,
                                                   reduction_shape_stride};
 
-        constexpr std::size_t preferred_reductions_per_wi =
+        static constexpr std::size_t preferred_reductions_per_wi =
             4; // determined experimentally
         std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
@@ -584,8 +584,8 @@ dot_product_contig_impl(sycl::queue &exec_q,
                                                    /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                      NoOpIndexerT{}};
+        static constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                             NoOpIndexerT{}};
 
         sycl::event dot_ev =
             sequential_dot_product<lhsTy, rhsTy, resTy,
@@ -619,10 +619,10 @@ dot_product_contig_impl(sycl::queue &exec_q,
                                                    /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                      NoOpIndexerT{}};
+        static constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                             NoOpIndexerT{}};
 
-        constexpr std::size_t preferred_reductions_per_wi =
+        static constexpr std::size_t preferred_reductions_per_wi =
             4; // determined experimentally
         std::size_t reductions_per_wi =
             (reduction_nelems < preferred_reductions_per_wi * wg)
@@ -968,7 +968,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
 
-    constexpr std::size_t preferred_reductions_per_wi = 8;
+    static constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
@@ -1013,7 +1013,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
     else {
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
@@ -1053,7 +1053,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
             const RhsIndexerT rhs_indexer(
                 batch_nd, batch_rhs_offset, batch_shape_and_strides,
                 batch_shape_and_strides + 2 * batch_nd);
-            constexpr ResIndexerT noop_tmp_indexer{};
+            static constexpr ResIndexerT noop_tmp_indexer{};
 
             const InputOutputBatchIndexerT in_out_iter_indexer{
                 lhs_indexer, rhs_indexer, noop_tmp_indexer};
@@ -1093,11 +1093,11 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
             const InputIndexerT inp_indexer{/* size */ batches,
                                             /* step */ reduction_groups_};
-            constexpr ResIndexerT res_iter_indexer{};
+            static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                               res_iter_indexer};
-            constexpr ReductionIndexerT reduction_indexer{};
+            static constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -1130,7 +1130,7 @@ sycl::event dot_product_tree_impl(sycl::queue &exec_q,
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
-        constexpr ReductionIndexerT reduction_indexer{};
+        static constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi = std::max<std::size_t>(
@@ -1198,8 +1198,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                                                    /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                      NoOpIndexerT{}};
+        static constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                             NoOpIndexerT{}};
 
         sycl::event dot_ev =
             sequential_dot_product<lhsTy, rhsTy, resTy,
@@ -1211,7 +1211,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
 
-    constexpr std::size_t preferred_reductions_per_wi = 8;
+    static constexpr std::size_t preferred_reductions_per_wi = 8;
     // prevents running out of resources on CPU
     std::size_t max_wg = reduction_detail::get_work_group_size(d);
 
@@ -1235,8 +1235,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                                                    /* step */ reduction_nelems};
         const InputOutputBatchIndexerT inp_out_batch_indexer{
             inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-        constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                      NoOpIndexerT{}};
+        static constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
+                                                             NoOpIndexerT{}};
 
         if (batches == 1) {
             // increase GPU occupancy
@@ -1260,7 +1260,7 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
         return dot_ev;
     }
     else {
-        constexpr resTy identity_val =
+        static constexpr resTy identity_val =
             sycl::known_identity<ReductionOpT, resTy>::value;
 
         // more than one work-groups is needed, requires a temporary
@@ -1300,8 +1300,8 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
                 /* step */ reduction_nelems};
             const InputOutputBatchIndexerT inp_out_batch_indexer{
                 inp_batch_indexer, inp_batch_indexer, NoOpIndexerT{}};
-            constexpr ReductionIndexerT reduction_indexer{NoOpIndexerT{},
-                                                          NoOpIndexerT{}};
+            static constexpr ReductionIndexerT reduction_indexer{
+                NoOpIndexerT{}, NoOpIndexerT{}};
 
             first_reduction_ev = submit_no_atomic_dot_product<
                 lhsTy, rhsTy, resTy, ReductionOpT, InputOutputBatchIndexerT,
@@ -1335,11 +1335,11 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
 
             const InputIndexerT inp_indexer{/* size */ batches,
                                             /* step */ reduction_groups_};
-            constexpr ResIndexerT res_iter_indexer{};
+            static constexpr ResIndexerT res_iter_indexer{};
 
             const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                               res_iter_indexer};
-            constexpr ReductionIndexerT reduction_indexer{};
+            static constexpr ReductionIndexerT reduction_indexer{};
 
             sycl::event partial_reduction_ev =
                 dpctl::tensor::kernels::submit_no_atomic_reduction<
@@ -1365,11 +1365,11 @@ dot_product_contig_tree_impl(sycl::queue &exec_q,
 
         const InputIndexerT inp_indexer{/* size */ batches,
                                         /* step */ remaining_reduction_nelems};
-        constexpr ResIndexerT res_iter_indexer{};
+        static constexpr ResIndexerT res_iter_indexer{};
 
         const InputOutputIterIndexerT in_out_iter_indexer{inp_indexer,
                                                           res_iter_indexer};
-        constexpr ReductionIndexerT reduction_indexer{};
+        static constexpr ReductionIndexerT reduction_indexer{};
 
         wg = max_wg;
         reductions_per_wi = std::max<std::size_t>(

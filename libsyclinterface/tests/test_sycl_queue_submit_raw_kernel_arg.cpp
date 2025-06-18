@@ -46,7 +46,7 @@
 
 namespace
 {
-constexpr std::size_t SIZE = 320;
+static constexpr std::size_t SIZE = 320;
 
 static_assert(SIZE % 10 == 0);
 
@@ -71,8 +71,8 @@ void submit_kernel(DPCTLSyclQueueRef QRef,
         return;
     }
 
-    constexpr std::size_t NARGS = 2;
-    constexpr std::size_t RANGE_NDIMS = 1;
+    static constexpr std::size_t NARGS = 2;
+    static constexpr std::size_t RANGE_NDIMS = 1;
 
     ASSERT_TRUE(DPCTLKernelBundle_HasKernel(KBRef, kernelName.c_str()));
     auto kernel = DPCTLKernelBundle_GetKernel(KBRef, kernelName.c_str());

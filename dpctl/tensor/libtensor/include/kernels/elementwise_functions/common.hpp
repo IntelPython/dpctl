@@ -77,7 +77,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
         UnaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
@@ -94,7 +94,7 @@ public:
                 elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
                                 sg.get_group_id()[0] * sgSize);
             if (base + elems_per_wi * sgSize < nelems_) {
-                constexpr sycl::vec<resT, vec_sz> res_vec(const_val);
+                static constexpr sycl::vec<resT, vec_sz> res_vec(const_val);
 #pragma unroll
                 for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
                     const std::size_t offset = base + it * sgSize;
@@ -275,7 +275,7 @@ SizeT select_lws(const sycl::device &, SizeT n_work_items_needed)
     // TODO: make the decision based on device descriptors
 
     // constexpr SizeT few_threshold = (SizeT(1) << 17);
-    constexpr SizeT med_threshold = (SizeT(1) << 21);
+    static constexpr SizeT med_threshold = (SizeT(1) << 21);
 
     const SizeT lws =
         (n_work_items_needed <= med_threshold ? SizeT(128) : SizeT(256));
@@ -302,7 +302,7 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
                               char *res_p,
                               const std::vector<sycl::event> &depends = {})
 {
-    constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+    static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
     const std::size_t n_work_items_needed = nelems / elems_per_wi;
     const std::size_t lws =
         select_lws(exec_q.get_device(), n_work_items_needed);
@@ -324,7 +324,7 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
         if (is_aligned<required_alignment>(arg_p) &&
             is_aligned<required_alignment>(res_p))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName = BaseKernelName;
             using Impl = ContigFunctorT<argTy, resTy, vec_sz, n_vecs,
                                         enable_sg_loadstore>;
@@ -334,7 +334,7 @@ sycl::event unary_contig_impl(sycl::queue &exec_q,
                 Impl(arg_tp, res_tp, nelems));
         }
         else {
-            constexpr bool disable_sg_loadstore = false;
+            static constexpr bool disable_sg_loadstore = false;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<BaseKernelName>;
             using Impl = ContigFunctorT<argTy, resTy, vec_sz, n_vecs,
@@ -415,7 +415,7 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
         BinaryOperatorT op{};
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NOTE: work-group size must be divisible by sub-group size */
@@ -817,7 +817,7 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
             is_aligned<required_alignment>(arg2_tp) &&
             is_aligned<required_alignment>(res_tp))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName = BaseKernelName;
             using Impl = BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz,
                                               n_vecs, enable_sg_loadstore>;
@@ -827,7 +827,7 @@ sycl::event binary_contig_impl(sycl::queue &exec_q,
                 Impl(arg1_tp, arg2_tp, res_tp, nelems));
         }
         else {
-            constexpr bool disable_sg_loadstore = false;
+            static constexpr bool disable_sg_loadstore = false;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<BaseKernelName>;
             using Impl = BinaryContigFunctorT<argTy1, argTy2, resTy, vec_sz,

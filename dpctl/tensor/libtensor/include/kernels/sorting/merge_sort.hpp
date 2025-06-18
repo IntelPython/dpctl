@@ -408,7 +408,7 @@ sort_over_work_group_contig_impl(sycl::queue &q,
     const std::uint64_t nelems_per_slm =
         (device_local_memory_size - safety_margin) / (2 * sizeof(T));
 
-    constexpr std::uint32_t sub_groups_per_work_group = 4;
+    static constexpr std::uint32_t sub_groups_per_work_group = 4;
     const std::uint32_t elems_per_wi = dev.has(sycl::aspect::cpu) ? 8 : 2;
 
     const std::size_t lws = sub_groups_per_work_group * max_sg_size;

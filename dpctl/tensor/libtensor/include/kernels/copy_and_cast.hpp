@@ -233,9 +233,9 @@ public:
 
     void operator()(sycl::nd_item<1> ndit) const
     {
-        CastFnT fn{};
+        static constexpr CastFnT fn{};
 
-        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<srcT>::value ||
@@ -338,8 +338,8 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_cp);
 
         std::size_t lws = 64;
-        constexpr std::uint32_t vec_sz = 4;
-        constexpr std::uint32_t n_vecs = 2;
+        static constexpr std::uint32_t vec_sz = 4;
+        static constexpr std::uint32_t n_vecs = 2;
         const std::size_t n_groups =
             ((nelems + lws * n_vecs * vec_sz - 1) / (lws * n_vecs * vec_sz));
         const auto gws_range = sycl::range<1>(n_groups * lws);
@@ -348,7 +348,7 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
         if (is_aligned<required_alignment>(src_cp) &&
             is_aligned<required_alignment>(dst_cp))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName =
                 copy_cast_contig_kernel<srcTy, dstTy, vec_sz, n_vecs>;
 
@@ -359,7 +359,7 @@ sycl::event copy_and_cast_contig_impl(sycl::queue &q,
                                                                dst_tp));
         }
         else {
-            constexpr bool disable_sg_loadstore = false;
+            static constexpr bool disable_sg_loadstore = false;
             using InnerKernelName =
                 copy_cast_contig_kernel<srcTy, dstTy, vec_sz, n_vecs>;
             using KernelName =
@@ -724,9 +724,10 @@ void copy_and_cast_from_host_contig_impl(
         sycl::accessor npy_acc(npy_buf, cgh, sycl::read_only);
 
         using IndexerT = TwoOffsets_CombinedIndexer<NoOpIndexer, NoOpIndexer>;
-        constexpr NoOpIndexer src_indexer{};
-        constexpr NoOpIndexer dst_indexer{};
-        constexpr TwoOffsets_CombinedIndexer indexer{src_indexer, dst_indexer};
+        static constexpr NoOpIndexer src_indexer{};
+        static constexpr NoOpIndexer dst_indexer{};
+        static constexpr TwoOffsets_CombinedIndexer indexer{src_indexer,
+                                                            dst_indexer};
 
         dstTy *dst_tp = reinterpret_cast<dstTy *>(dst_p) + dst_offset;
 
@@ -1124,12 +1125,12 @@ sycl::event copy_for_roll_contig_impl(sycl::queue &q,
     sycl::event copy_for_roll_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        constexpr NoOpIndexer src_indexer{};
+        static constexpr NoOpIndexer src_indexer{};
         const LeftRolled1DTransformer roller{shift, nelems};
 
         const CompositionIndexer<NoOpIndexer, LeftRolled1DTransformer>
             left_rolled_src_indexer{src_indexer, roller};
-        constexpr NoOpIndexer dst_indexer{};
+        static constexpr NoOpIndexer dst_indexer{};
 
         using KernelName = copy_for_roll_contig_kernel<Ty>;
 

@@ -73,7 +73,8 @@ template <typename argT, typename resT> struct TanhFunctor
         if constexpr (is_complex<argT>::value) {
             using realT = typename argT::value_type;
 
-            constexpr realT q_nan = std::numeric_limits<realT>::quiet_NaN();
+            static constexpr realT q_nan =
+                std::numeric_limits<realT>::quiet_NaN();
 
             const realT x = std::real(in);
             const realT y = std::imag(in);
@@ -185,8 +186,8 @@ sycl::event tanh_contig_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends = {})
 {
     using TanhHS = hyperparam_detail::TanhContigHyperparameterSet<argTy>;
-    constexpr std::uint8_t vec_sz = TanhHS::vec_sz;
-    constexpr std::uint8_t n_vecs = TanhHS::n_vecs;
+    static constexpr std::uint8_t vec_sz = TanhHS::vec_sz;
+    static constexpr std::uint8_t n_vecs = TanhHS::n_vecs;
 
     return elementwise_common::unary_contig_impl<
         argTy, TanhOutputType, TanhContigFunctor, tanh_contig_kernel, vec_sz,

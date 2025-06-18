@@ -74,7 +74,7 @@ public:
         static_assert(vec_sz > 0);
         static_assert(n_vecs > 0);
 
-        constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
+        static constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
 
         using dpctl::tensor::type_utils::is_complex;
         if constexpr (!enable_sg_loadstore || is_complex<T>::value) {
@@ -151,7 +151,7 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
     static_assert(vec_sz > 0);
     static_assert(n_vecs > 0);
 
-    constexpr std::size_t preferred_lws = 256;
+    static constexpr std::size_t preferred_lws = 256;
 
     const auto &kernel_id = sycl::get_kernel_id<KernelName>();
 
@@ -168,7 +168,7 @@ sycl::event submit_c_contiguous_copy(sycl::queue &exec_q,
     const std::size_t lws =
         ((preferred_lws + max_sg_size - 1) / max_sg_size) * max_sg_size;
 
-    constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
+    static constexpr std::uint8_t nelems_per_wi = n_vecs * vec_sz;
 
     const std::size_t nelems_per_group = nelems_per_wi * lws;
     const std::size_t n_groups =
@@ -214,8 +214,8 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
     using IndexerT = dpctl::tensor::offset_utils::StridedIndexer;
     const IndexerT src_indexer(nd, ssize_t(0), shape_and_strides);
 
-    constexpr std::uint8_t vec_sz = 4u;
-    constexpr std::uint8_t n_vecs = 2u;
+    static constexpr std::uint8_t vec_sz = 4u;
+    static constexpr std::uint8_t n_vecs = 2u;
 
     using dpctl::tensor::kernels::alignment_utils::
         disabled_sg_loadstore_wrapper_krn;
@@ -224,7 +224,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
 
     sycl::event copy_ev;
     if (is_aligned<required_alignment>(dst_p)) {
-        constexpr bool enable_sg_load = true;
+        static constexpr bool enable_sg_load = true;
         using KernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, enable_sg_load>;
         copy_ev = submit_c_contiguous_copy<T, IndexerT, vec_sz, n_vecs,
@@ -232,7 +232,7 @@ as_c_contiguous_array_generic_impl(sycl::queue &exec_q,
             exec_q, nelems, src_tp, dst_tp, src_indexer, depends);
     }
     else {
-        constexpr bool disable_sg_load = false;
+        static constexpr bool disable_sg_load = false;
         using InnerKernelName =
             as_contig_krn<T, IndexerT, vec_sz, n_vecs, disable_sg_load>;
         using KernelName = disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
@@ -287,19 +287,19 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
     const T *src_tp = reinterpret_cast<const T *>(src_p);
     T *dst_tp = reinterpret_cast<T *>(dst_p);
 
-    constexpr std::uint16_t private_tile_size = 4;
-    constexpr std::uint16_t n_lines = 2;
-    constexpr std::uint16_t block_size =
+    static constexpr std::uint16_t private_tile_size = 4;
+    static constexpr std::uint16_t n_lines = 2;
+    static constexpr std::uint16_t block_size =
         n_lines * private_tile_size * private_tile_size;
 
-    constexpr std::uint16_t lws0 = block_size;
-    constexpr std::uint16_t lws1 = n_lines;
-    constexpr std::uint16_t nelems_per_wi = (block_size / lws1);
+    static constexpr std::uint16_t lws0 = block_size;
+    static constexpr std::uint16_t lws1 = n_lines;
+    static constexpr std::uint16_t nelems_per_wi = (block_size / lws1);
 
     static_assert(nelems_per_wi * lws1 == block_size);
     static_assert(nelems_per_wi == private_tile_size * private_tile_size);
 
-    constexpr std::uint32_t lws = lws0 * lws1;
+    static constexpr std::uint32_t lws = lws0 * lws1;
 
     const std::size_t n_tiles = (n + block_size - 1) / block_size;
 
@@ -384,7 +384,7 @@ sycl::event as_c_contiguous_batch_of_square_matrices_impl(
             // 0 <= lid_lin < lws0 * lws1 ==
             //       (block_size * block_size / nelems_per_wi) ==
             //       (block_size/private_tile_size)**2
-            constexpr std::uint16_t n_private_tiles_per_axis =
+            static constexpr std::uint16_t n_private_tiles_per_axis =
                 block_size / private_tile_size;
             const std::uint16_t local_tile_id0 =
                 lid_lin / n_private_tiles_per_axis;
@@ -594,7 +594,7 @@ sycl::event as_c_contiguous_nd_batch_of_square_matrices_impl(
     using dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer;
     using BatchIndexerT = TwoOffsets_CombinedIndexer<SrcIndexerT, DstIndexerT>;
 
-    constexpr ssize_t zero_offset{0};
+    static constexpr ssize_t zero_offset{0};
 
     const SrcIndexerT src_batch_indexer{batch_nd, zero_offset,
                                         src_batch_shape_strides};

@@ -79,7 +79,7 @@ public:
     void operator()(sycl::nd_item<1> ndit) const
     {
         BinaryInplaceOperatorT op{};
-        constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
+        static constexpr std::uint8_t elems_per_wi = vec_sz * n_vecs;
         /* Each work-item processes vec_sz elements, contiguous in memory */
         /* NB: Workgroup size must be divisible by sub-group size */
 
@@ -337,7 +337,7 @@ binary_inplace_contig_impl(sycl::queue &exec_q,
         if (is_aligned<required_alignment>(arg_tp) &&
             is_aligned<required_alignment>(res_tp))
         {
-            constexpr bool enable_sg_loadstore = true;
+            static constexpr bool enable_sg_loadstore = true;
             using KernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
             using Impl =
                 BinaryInplaceContigFunctorT<argTy, resTy, vec_sz, n_vecs,
@@ -348,7 +348,7 @@ binary_inplace_contig_impl(sycl::queue &exec_q,
                 Impl(arg_tp, res_tp, nelems));
         }
         else {
-            constexpr bool disable_sg_loadstore = true;
+            static constexpr bool disable_sg_loadstore = true;
             using InnerKernelName = kernel_name<argTy, resTy, vec_sz, n_vecs>;
             using KernelName =
                 disabled_sg_loadstore_wrapper_krn<InnerKernelName>;
