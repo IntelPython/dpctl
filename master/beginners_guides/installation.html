@@ -867,7 +867,7 @@ see <a class="reference internal" href="#building-from-source">Building from sou
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.19.0dev0+14.g7c2c8c262bb)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.19.0dev0+17.g03e5ba0c729)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
@@ -932,22 +932,50 @@ The following plugins from CodePlay are supported:</p>
 <li><p><a class="reference external" href="https://developer.codeplay.com/products/oneapi/amd/">oneAPI for AMD GPUs</a></p></li>
 </ul>
 </div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be built for CUDA devices as follows:</p>
+<p>Builds for CUDA and AMD devices internally use SYCL alias targets that are passed to the compiler.
+A full list of available SYCL alias targets is available in the
+<a class="reference external" href="https://intel.github.io/llvm/UsersManual.html">DPC++ Compiler User Manual</a>.</p>
+<section id="cuda-build">
+<h4>CUDA build<a class="headerlink" href="#cuda-build" title="Permalink to this heading">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be built for CUDA devices using the <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CUDA</span></code> CMake option,
+which accepts a specific compute architecture string:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=sm_80&quot;</span>
+</pre></div>
+</div>
+<p>To use the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>),
+set <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CUDA</span></code> to a value such as <code class="docutils literal notranslate"><span class="pre">ON</span></code>, <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, <code class="docutils literal notranslate"><span class="pre">YES</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>, or <code class="docutils literal notranslate"><span class="pre">1</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON&quot;</span>
 </pre></div>
 </div>
-<p>And for AMD devices</p>
+<p>Note that kernels are built for the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>), allowing them to work on a
+wider range of architectures, but limiting the usage of more recent CUDA features.</p>
+<p>For reference, compute architecture strings like <code class="docutils literal notranslate"><span class="pre">sm_80</span></code> correspond to specific
+CUDA Compute Capabilities (e.g., Compute Capability 8.0 corresponds to <code class="docutils literal notranslate"><span class="pre">sm_80</span></code>).
+A complete mapping between NVIDIA GPU models and their respective
+Compute Capabilities can be found in the official
+<a class="reference external" href="https://developer.nvidia.com/cuda-gpus">CUDA GPU Compute Capability</a> documentation.</p>
+</section>
+<section id="amd-build">
+<h4>AMD build<a class="headerlink" href="#amd-build" title="Permalink to this heading">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">dpctl</span></code> can be built for AMD devices using the <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_HIP</span></code> CMake option,
+which requires specifying a compute architecture string:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
 </pre></div>
 </div>
 <p>Note that the  <cite>oneAPI for AMD GPUs</cite> plugin requires the architecture be specified and only
 one architecture can be specified at a time.</p>
-<p>It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
-architecture all at once:</p>
+</section>
+<section id="multi-target-build">
+<h4>Multi-target build<a class="headerlink" href="#multi-target-build" title="Permalink to this heading">¶</a></h4>
+<p>The default <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> build from the source enables support of Intel devices only.
+Extending the build with a custom SYCL target additionally enables support of CUDA or AMD
+device in <code class="docutils literal notranslate"><span class="pre">dpctl</span></code>. Besides, the support can be also extended to enable both CUDA and AMD
+devices at the same time:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON \</span>
 <span class="s2">-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 <section id="running-examples-and-tests">
@@ -1041,7 +1069,12 @@ each example Python project and how to execute its test suite.</p>
 <li><a class="reference internal" href="#system-requirements">System requirements</a></li>
 <li><a class="reference internal" href="#building-from-source">Building from source</a><ul>
 <li><a class="reference internal" href="#building-locally-for-use-with-oneapi-dpc-installation">Building locally for use with oneAPI DPC++ installation</a></li>
-<li><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a></li>
+<li><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a><ul>
+<li><a class="reference internal" href="#cuda-build">CUDA build</a></li>
+<li><a class="reference internal" href="#amd-build">AMD build</a></li>
+<li><a class="reference internal" href="#multi-target-build">Multi-target build</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#running-examples-and-tests">Running Examples and Tests</a><ul>
