@@ -31,6 +31,7 @@ def run(
     verbose=False,
     cmake_opts="",
     target_cuda=None,
+    target_hip=None,
 ):
     build_system = None
 
@@ -74,6 +75,14 @@ def run(
             )
         cmake_args += [
             f"-DDPCTL_TARGET_CUDA={target_cuda}",
+        ]
+    if target_hip is not None:
+        if not target_hip.strip():
+            raise ValueError(
+                "--target-hip requires an architecture (e.g., gfx90a)"
+            )
+        cmake_args += [
+            f"-DDPCTL_TARGET_HIP={target_hip}",
         ]
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
@@ -150,6 +159,13 @@ if __name__ == "__main__":
         default=None,
         type=str,
     )
+    driver.add_argument(
+        "--target-hip",
+        required=False,
+        help="Enable HIP target for build. "
+        "Must specify HIP architecture (e.g., --target-hip=gfx90a)",
+        type=str,
+    )
     args = parser.parse_args()
 
     args_to_validate = [
@@ -206,4 +222,5 @@ if __name__ == "__main__":
         verbose=args.verbose,
         cmake_opts=args.cmake_opts,
         target_cuda=args.target_cuda,
+        target_hip=args.target_hip,
     )
