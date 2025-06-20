@@ -126,22 +126,42 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if (is_src_c_contig && is_dst_c_contig) {
-        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        if (sort_nelems > 1) {
+            static constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
-        auto fn = sort_contig_fns[src_typeid][dst_typeid];
+            auto fn = sort_contig_fns[src_typeid][dst_typeid];
 
-        if (fn == nullptr) {
-            throw py::value_error("Not implemented for dtypes of input arrays");
+            if (fn == nullptr) {
+                throw py::value_error(
+                    "Not implemented for dtypes of input arrays");
+            }
+
+            sycl::event comp_ev =
+                fn(exec_q, iter_nelems, sort_nelems, src.get_data(),
+                   dst.get_data(), zero_offset, zero_offset, zero_offset,
+                   zero_offset, depends);
+
+            sycl::event keep_args_alive_ev =
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
+
+            return std::make_pair(keep_args_alive_ev, comp_ev);
         }
+        else {
+            int dst_elemsize = dst.get_elemsize();
+            static constexpr int memset_val(0);
 
-        sycl::event comp_ev =
-            fn(exec_q, iter_nelems, sort_nelems, src.get_data(), dst.get_data(),
-               zero_offset, zero_offset, zero_offset, zero_offset, depends);
+            sycl::event fill_ev = exec_q.submit([&](sycl::handler &cgh) {
+                cgh.depends_on(depends);
 
-        sycl::event keep_args_alive_ev =
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
+                cgh.memset(reinterpret_cast<void *>(dst.get_data()), memset_val,
+                           iter_nelems * dst_elemsize);
+            });
 
-        return std::make_pair(keep_args_alive_ev, comp_ev);
+            sycl::event keep_args_alive_ev =
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {fill_ev});
+
+            return std::make_pair(keep_args_alive_ev, fill_ev);
+        }
     }
 
     throw py::value_error(
