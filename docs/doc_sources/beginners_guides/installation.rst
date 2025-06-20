@@ -192,12 +192,11 @@ Compute Capabilities can be found in the official
 AMD build
 ~~~~~~~~~
 
-``dpctl`` can be built for AMD devices using the ``DPCTL_TARGET_HIP`` CMake option,
-which requires specifying a compute architecture string:
+``dpctl`` can be built for AMD devices using the  ``--target-hip`` argument.
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=<arch>"
+    python scripts/build_locally.py --verbose --target-hip=<arch>
 
 Note that the `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
 one architecture can be specified at a time.
@@ -208,12 +207,12 @@ To determine the architecture code (``<arch>``) for your AMD GPU, run:
     rocminfo | grep 'Name: *gfx.*'
 
 This will print names like ``gfx90a``, ``gfx1030``, etc.
-You can then use one of them as the argument to ``-DDPCTL_TARGET_HIP``.
+You can then use one of them as the argument to ``--target-hip``.
 
 For example:
 
 .. code-block:: bash
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
+    python scripts/build_locally.py --verbose --target-hip=gfx1030
 
 Multi-target build
 ~~~~~~~~~~~~~~~~~~
@@ -225,7 +224,7 @@ devices at the same time:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --target-cuda --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
+    python scripts/build_locally.py --verbose --target-cuda --target-hip=gfx1030
 
 Running Examples and Tests
 ==========================
