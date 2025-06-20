@@ -197,10 +197,23 @@ which requires specifying a compute architecture string:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=<arch>"
 
-Note that the  `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
+Note that the `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
 one architecture can be specified at a time.
+
+To determine the architecture code (``<arch>``) for your AMD GPU, run:
+
+.. code-block:: bash
+    rocminfo | grep 'Name: *gfx.*'
+
+This will print names like ``gfx90a``, ``gfx1030``, etc.
+You can then use one of them as the argument to ``-DDPCTL_TARGET_HIP``.
+
+For example:
+
+.. code-block:: bash
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
 
 Multi-target build
 ~~~~~~~~~~~~~~~~~~
