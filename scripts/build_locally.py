@@ -30,6 +30,7 @@ def run(
     use_glog=False,
     verbose=False,
     cmake_opts="",
+    target_cuda=None,
 ):
     build_system = None
 
@@ -65,6 +66,15 @@ def run(
         ]
     if cmake_opts:
         cmake_args += cmake_opts.split()
+    if target_cuda is not None:
+        if not target_cuda.strip():
+            raise ValueError(
+                "--target-cuda can not be an empty string. "
+                "Use --target-cuda=<arch> or --target-cuda"
+            )
+        cmake_args += [
+            f"-DDPCTL_TARGET_CUDA={target_cuda}",
+        ]
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )
@@ -131,6 +141,15 @@ if __name__ == "__main__":
         default="",
         type=str,
     )
+    driver.add_argument(
+        "--target-cuda",
+        nargs="?",
+        const="ON",
+        help="Enable CUDA target for build; "
+        "optionally specify architecture (e.g., --target-cuda=sm_80)",
+        default=None,
+        type=str,
+    )
     args = parser.parse_args()
 
     args_to_validate = [
@@ -186,4 +205,5 @@ if __name__ == "__main__":
         use_glog=args.glog,
         verbose=args.verbose,
         cmake_opts=args.cmake_opts,
+        target_cuda=args.target_cuda,
     )
