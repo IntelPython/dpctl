@@ -166,19 +166,19 @@ A full list of available SYCL alias targets is available in the
 CUDA build
 ~~~~~~~~~~
 
-``dpctl`` can be built for CUDA devices using the ``DPCTL_TARGET_CUDA`` CMake option,
-which accepts a specific compute architecture string:
+``dpctl`` can be built for CUDA devices using the  ``--target-cuda`` argument.
+
+To target a specific architecture (e.g., ``sm_80``):
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=sm_80"
+    python scripts/build_locally.py --verbose --target-cuda=sm_80
 
-To use the default architecture (``sm_50``),
-set ``DPCTL_TARGET_CUDA`` to a value such as ``ON``, ``TRUE``, ``YES``, ``Y``, or ``1``:
+To use the default architecture (``sm_50``), omit the value:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=ON"
+    python scripts/build_locally.py --verbose --target-cuda
 
 Note that kernels are built for the default architecture (``sm_50``), allowing them to work on a
 wider range of architectures, but limiting the usage of more recent CUDA features.
@@ -225,8 +225,7 @@ devices at the same time:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=ON \
-    -DDPCTL_TARGET_HIP=gfx1030"
+    python scripts/build_locally.py --verbose --target-cuda --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
 
 Running Examples and Tests
 ==========================
