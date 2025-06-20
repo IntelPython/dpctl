@@ -72,7 +72,7 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
       set(_dpctl_sycl_targets "nvidia_gpu_${_dpctl_cuda_arch},spir64-unknown-unknown")
    endif()
 
-   if (NOT "x${DPCTL_TARGET_HIP}" STREQUAL "x")
+   if (DPCTL_TARGET_HIP)
       if(DPCTL_TARGET_HIP MATCHES "^gfx")
          if(_dpctl_sycl_targets)
             set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},${_dpctl_sycl_targets}")
