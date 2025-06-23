@@ -111,6 +111,7 @@ def test_isin_strided(dtype):
     assert not dpt.any(r1[:, -1])
     assert not dpt.any(x[:, 1::2])
     assert r1.shape == x_s.shape
+    assert r1.flags.c_contiguous
 
     # test with invert keyword
     r2 = dpt.isin(x_s, test, invert=True)
@@ -118,6 +119,7 @@ def test_isin_strided(dtype):
     assert dpt.all(r2[:, -1])
     assert not dpt.any(x[:, 1:2])
     assert r2.shape == x_s.shape
+    assert r2.flags.c_contiguous
 
 
 def test_isin_strided_bool():
@@ -133,6 +135,7 @@ def test_isin_strided_bool():
     assert not dpt.any(r1[:, -1])
     assert not dpt.any(x[:, 1::2])
     assert r1.shape == x_s.shape
+    assert r1.flags.c_contiguous
 
     # test with invert keyword
     r2 = dpt.isin(x_s, test, invert=True)
@@ -140,6 +143,7 @@ def test_isin_strided_bool():
     assert dpt.all(r2[:, -1])
     assert not dpt.any(x[:, 1:2])
     assert r2.shape == x_s.shape
+    assert r2.flags.c_contiguous
 
 
 @pytest.mark.parametrize("dt1", _numeric_dtypes)
