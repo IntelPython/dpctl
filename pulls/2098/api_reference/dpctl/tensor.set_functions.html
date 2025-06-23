@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.tensor.unique_all" href="generated/dpctl.tensor.unique_all.html" /><link rel="prev" title="dpctl.tensor.where" href="generated/dpctl.tensor.where.html" />
+    <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="dpctl.tensor.isin" href="generated/dpctl.tensor.isin.html" /><link rel="prev" title="dpctl.tensor.where" href="generated/dpctl.tensor.where.html" />
 
     <link rel="shortcut icon" href="../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
         <title>Set Functions - Data Parallel Control (dpctl) 0.21.0dev0 documentation</title>
@@ -654,6 +654,7 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">Set Functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle navigation of Set Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.isin.html">dpctl.tensor.isin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.unique_all.html">dpctl.tensor.unique_all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.unique_counts.html">dpctl.tensor.unique_counts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.tensor.unique_inverse.html">dpctl.tensor.unique_inverse</a></li>
@@ -802,16 +803,19 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_all.html#dpctl.tensor.unique_all" title="dpctl.tensor.unique_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_all</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.isin.html#dpctl.tensor.isin" title="dpctl.tensor.isin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isin</span></code></a>(x, test_elements, /, *[, invert])</p></td>
+<td><p>Tests <cite>x in test_elements</cite> for each element of <cite>x</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_all.html#dpctl.tensor.unique_all" title="dpctl.tensor.unique_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_all</span></code></a>(x)</p></td>
 <td><p>Returns the unique elements of an input array <cite>x</cite>, the first occurring indices for each unique element in <cite>x</cite>, the indices from the set of unique elements that reconstruct <cite>x</cite>, and the corresponding counts for each unique element in <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_counts.html#dpctl.tensor.unique_counts" title="dpctl.tensor.unique_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_counts</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_counts.html#dpctl.tensor.unique_counts" title="dpctl.tensor.unique_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_counts</span></code></a>(x)</p></td>
 <td><p>Returns the unique elements of an input array <cite>x</cite> and the corresponding counts for each unique element in <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_inverse.html#dpctl.tensor.unique_inverse" title="dpctl.tensor.unique_inverse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_inverse</span></code></a>(x)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_inverse.html#dpctl.tensor.unique_inverse" title="dpctl.tensor.unique_inverse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_inverse</span></code></a>(x)</p></td>
 <td><p>Returns the unique elements of an input array x and the indices from the set of unique elements that reconstruct <cite>x</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_values.html#dpctl.tensor.unique_values" title="dpctl.tensor.unique_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_values</span></code></a>(x)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.tensor.unique_values.html#dpctl.tensor.unique_values" title="dpctl.tensor.unique_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique_values</span></code></a>(x)</p></td>
 <td><p>Returns the unique elements of an input array <cite>x</cite>.</p></td>
 </tr>
 </tbody>
@@ -824,12 +828,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/dpctl.tensor.unique_all.html">
+          <a class="next-page" href="generated/dpctl.tensor.isin.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.unique_all</div>
+                <div class="title">dpctl.tensor.isin</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

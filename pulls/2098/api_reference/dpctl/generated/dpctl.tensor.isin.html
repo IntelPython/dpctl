@@ -12,10 +12,10 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.sign" href="dpctl.tensor.sign.html" /><link rel="prev" title="dpctl.tensor.round" href="dpctl.tensor.round.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="dpctl.tensor.unique_all" href="dpctl.tensor.unique_all.html" /><link rel="prev" title="Set Functions" href="../tensor.set_functions.html" />
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
-        <title>dpctl.tensor.rsqrt - Data Parallel Control (dpctl) 0.21.0dev0 documentation</title>
+        <title>dpctl.tensor.isin - Data Parallel Control (dpctl) 0.21.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -524,7 +524,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tensor.data_types.html">Data types</a></li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.elementwise_functions.html">Element-wise functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.elementwise_functions.html">Element-wise functions</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of Element-wise functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.abs.html">dpctl.tensor.abs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.acos.html">dpctl.tensor.acos</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.acosh.html">dpctl.tensor.acosh</a></li>
@@ -585,7 +585,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.remainder.html">dpctl.tensor.remainder</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.reciprocal.html">dpctl.tensor.reciprocal</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.round.html">dpctl.tensor.round</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.rsqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.rsqrt.html">dpctl.tensor.rsqrt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.sign.html">dpctl.tensor.sign</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.signbit.html">dpctl.tensor.signbit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.sin.html">dpctl.tensor.sin</a></li>
@@ -653,8 +653,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.where.html">dpctl.tensor.where</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../tensor.set_functions.html">Set Functions</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle navigation of Set Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.isin.html">dpctl.tensor.isin</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../tensor.set_functions.html">Set Functions</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle navigation of Set Functions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.tensor.isin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.unique_all.html">dpctl.tensor.unique_all</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.unique_counts.html">dpctl.tensor.unique_counts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.tensor.unique_inverse.html">dpctl.tensor.unique_inverse</a></li>
@@ -778,7 +778,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.rsqrt.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/api_reference/dpctl/generated/dpctl.tensor.isin.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -798,28 +798,27 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-tensor-rsqrt">
-<h1>dpctl.tensor.rsqrt<a class="headerlink" href="#dpctl-tensor-rsqrt" title="Permalink to this heading">¶</a></h1>
-<dl class="py data">
-<dt class="sig sig-object py" id="dpctl.tensor.rsqrt">
-<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">rsqrt</span></span><a class="headerlink" href="#dpctl.tensor.rsqrt" title="Permalink to this definition">¶</a></dt>
-<dd><p>rsqrt(x, /, *, out=None, order=’K’)</p>
-<p>Computes the reciprocal square-root for each element <cite>x_i</cite> for input array <cite>x</cite>.</p>
+          <section id="dpctl-tensor-isin">
+<h1>dpctl.tensor.isin<a class="headerlink" href="#dpctl-tensor-isin" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.tensor.isin">
+<span class="sig-prename descclassname"><span class="pre">dpctl.tensor.</span></span><span class="sig-name descname"><span class="pre">isin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor._usmarray.usm_ndarray"><span class="pre">usm_ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><span class="pre">complex</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor._usmarray.usm_ndarray"><span class="pre">usm_ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><span class="pre">complex</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor._usmarray.usm_ndarray"><span class="pre">usm_ndarray</span></a></span></span><a class="reference internal" href="../../../_modules/dpctl/tensor/_set_functions.html#isin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.tensor.isin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests <cite>x in test_elements</cite> for each element of <cite>x</cite>. Returns a boolean array
+with the same shape as <cite>x</cite> that is <cite>True</cite> where the element is in
+<cite>test_elements</cite>, <cite>False</cite> otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array, expected to have a real-valued floating-point data type.</p></li>
-<li><p><strong>out</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – Output array to populate.
-Array have the correct shape and the expected data type.</p></li>
-<li><p><strong>order</strong> (<em>&quot;C&quot;</em><em>,</em><em>&quot;F&quot;</em><em>,</em><em>&quot;A&quot;</em><em>,</em><em>&quot;K&quot;</em><em>, </em><em>optional</em>) – Memory layout of the new output array, if parameter
-<cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Default: “K”.</p></li>
+<li><p><strong>x</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><em>complex</em></a><em>]</em>) – input element or elements.</p></li>
+<li><p><strong>test_elements</strong> (<em>Union</em><em>[</em><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#complex" title="(in Python v3.13)"><em>complex</em></a><em>]</em>) – elements against which to test each value of <cite>x</cite>.</p></li>
+<li><p><strong>invert</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – if <cite>True</cite>, the output results are inverted, i.e., are equivalent to
+testing <cite>x not in test_elements</cite> for each element of <cite>x</cite>.
+Default: <cite>False</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array containing the element-wise reciprocal square-root.
-The returned array has a floating-point data type determined by
-the Type Promotion Rules.</p>
+<dd class="field-even"><p>an array of the inclusion test results. The returned array has a
+boolean data type and the same shape as <cite>x</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray">usm_ndarray</a></p>
@@ -834,23 +833,23 @@ the Type Promotion Rules.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.tensor.sign.html">
+          <a class="next-page" href="dpctl.tensor.unique_all.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.tensor.sign</div>
+                <div class="title">dpctl.tensor.unique_all</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.tensor.round.html">
+          <a class="prev-page" href="../tensor.set_functions.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.tensor.round</div>
+                <div class="title">Set Functions</div>
                 
               </div>
             </a>
@@ -884,8 +883,8 @@ the Type Promotion Rules.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.tensor.rsqrt</a><ul>
-<li><a class="reference internal" href="#dpctl.tensor.rsqrt"><code class="docutils literal notranslate"><span class="pre">rsqrt</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.tensor.isin</a><ul>
+<li><a class="reference internal" href="#dpctl.tensor.isin"><code class="docutils literal notranslate"><span class="pre">isin()</span></code></a></li>
 </ul>
 </li>
 </ul>
