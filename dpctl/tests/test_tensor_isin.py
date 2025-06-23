@@ -142,6 +142,35 @@ def test_isin_strided_bool():
     assert r2.shape == x_s.shape
 
 
+@pytest.mark.parametrize("dt1", _numeric_dtypes)
+@pytest.mark.parametrize("dt2", _numeric_dtypes)
+def test_isin_dtype_matrix(dt1, dt2):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt1, q)
+    skip_if_dtype_not_supported(dt2, q)
+
+    sz = 10
+    x = dpt.asarray([0, 1, 11], dtype=dt1, sycl_queue=q)
+    test1 = dpt.arange(sz, dtype=dt2, sycl_queue=q)
+
+    r1 = dpt.isin(x, test1)
+    assert isinstance(r1, dpt.usm_ndarray)
+    assert r1.dtype == dpt.bool
+    assert r1.shape == x.shape
+    assert not r1[-1]
+    assert dpt.all(r1[0:-1])
+    assert r1.sycl_queue == x.sycl_queue
+
+    test2 = dpt.tile(dpt.asarray([[0, 1]], dtype=dt2, sycl_queue=q).mT, 2)
+    r2 = dpt.isin(x, test2)
+    assert isinstance(r2, dpt.usm_ndarray)
+    assert r2.dtype == dpt.bool
+    assert r2.shape == x.shape
+    assert not r2[-1]
+    assert dpt.all(r1[0:-1])
+    assert r2.sycl_queue == x.sycl_queue
+
+
 def test_isin_empty_inputs():
     get_queue_or_skip()
 
