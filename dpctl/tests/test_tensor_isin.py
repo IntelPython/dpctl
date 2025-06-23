@@ -246,3 +246,13 @@ def test_isin_py_scalars(dt):
         assert isinstance(r1, dpt.usm_ndarray)
         r2 = dpt.isin(sc, x)
         assert isinstance(r2, dpt.usm_ndarray)
+
+
+def test_isin_compute_follows_data():
+    q1 = get_queue_or_skip()
+    q2 = get_queue_or_skip()
+
+    x = dpt.ones(10, sycl_queue=q1)
+    test = dpt.ones_like(x, sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpt.isin(x, test)
