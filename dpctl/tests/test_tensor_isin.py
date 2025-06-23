@@ -14,31 +14,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ctypes
+
+import numpy as np
 import pytest
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 from dpctl.utils import ExecutionPlacementError
 
+_numeric_dtypes = [
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+    "c8",
+    "c16",
+]
 
-@pytest.mark.parametrize(
-    "dtype",
-    [
-        "i1",
-        "u1",
-        "i2",
-        "u2",
-        "i4",
-        "u4",
-        "i8",
-        "u8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
-    ],
-)
+_all_dtypes = ["?"] + _numeric_dtypes
+
+
+@pytest.mark.parametrize("dtype", _numeric_dtypes)
 def test_isin_basic(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
@@ -192,3 +196,24 @@ def test_isin_special_floating_point_vals():
     test = dpt.asarray(0.0, dtype="f4")
     assert dpt.isin(x, test)
     assert dpt.isin(test, x)
+
+
+@pytest.mark.parametrize("dt", _all_dtypes)
+def test_isin_py_scalars(dt):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt, q)
+
+    x = dpt.zeros((10, 10), dtype=dt, sycl_queue=q)
+    py_zeros = (
+        bool(0),
+        int(0),
+        float(0),
+        complex(0),
+        np.float32(0),
+        ctypes.c_int(0),
+    )
+    for sc in py_zeros:
+        r1 = dpt.isin(x, sc)
+        assert isinstance(r1, dpt.usm_ndarray)
+        r2 = dpt.isin(sc, x)
+        assert isinstance(r2, dpt.usm_ndarray)

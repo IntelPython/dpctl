@@ -734,7 +734,7 @@ def isin(
     dep_evs = _manager.submitted_events
 
     if x_dt != dt:
-        x_buf = _empty_like_orderK(x_arr, dt, res_usm_type, sycl_dev)
+        x_buf = _empty_like_orderK(x_arr, dt, res_usm_type, exec_q)
         ht_ev, ev = _copy_usm_ndarray_into_usm_ndarray(
             src=x_arr, dst=x_buf, sycl_queue=exec_q, depends=dep_evs
         )
