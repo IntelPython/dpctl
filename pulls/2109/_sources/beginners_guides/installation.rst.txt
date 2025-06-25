@@ -180,6 +180,19 @@ To use the default architecture (``sm_50``), omit the value:
 
     python scripts/build_locally.py --verbose --target-cuda
 
+Alternatively, you can use the ``DPCTL_TARGET_CUDA`` CMake option:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=sm_80"
+
+To use the default architecture (``sm_50``) with CMake options,
+set ``DPCTL_TARGET_CUDA`` to a value such as ``ON``, ``TRUE``, ``YES``, ``Y``, or ``1``:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=ON"
+
 Note that kernels are built for the default architecture (``sm_50``), allowing them to work on a
 wider range of architectures, but limiting the usage of more recent CUDA features.
 
@@ -213,6 +226,12 @@ For example:
 
 .. code-block:: bash
     python scripts/build_locally.py --verbose --target-hip=gfx1030
+
+Alternatively, you can use the ``DPCTL_TARGET_HIP`` CMake option:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
 
 Multi-target build
 ~~~~~~~~~~~~~~~~~~

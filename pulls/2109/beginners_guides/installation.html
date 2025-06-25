@@ -867,7 +867,7 @@ see <a class="reference internal" href="#building-from-source">Building from sou
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.19.0dev0+17.g03e5ba0c729)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.19.0dev0+21.gca9a3f039a)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
@@ -946,6 +946,15 @@ A full list of available SYCL alias targets is available in the
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--target-cuda
 </pre></div>
 </div>
+<p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CUDA</span></code> CMake option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=sm_80&quot;</span>
+</pre></div>
+</div>
+<p>To use the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>) with CMake options,
+set <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_CUDA</span></code> to a value such as <code class="docutils literal notranslate"><span class="pre">ON</span></code>, <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, <code class="docutils literal notranslate"><span class="pre">YES</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>, or <code class="docutils literal notranslate"><span class="pre">1</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_CUDA=ON&quot;</span>
+</pre></div>
+</div>
 <p>Note that kernels are built for the default architecture (<code class="docutils literal notranslate"><span class="pre">sm_50</span></code>), allowing them to work on a
 wider range of architectures, but limiting the usage of more recent CUDA features.</p>
 <p>For reference, compute architecture strings like <code class="docutils literal notranslate"><span class="pre">sm_80</span></code> correspond to specific
@@ -966,6 +975,10 @@ one architecture can be specified at a time.</p>
 <p>This will print names like <code class="docutils literal notranslate"><span class="pre">gfx90a</span></code>, <code class="docutils literal notranslate"><span class="pre">gfx1030</span></code>, etc.
 You can then use one of them as the argument to <code class="docutils literal notranslate"><span class="pre">--target-hip</span></code>.</p>
 <p>For example:</p>
+<p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_HIP</span></code> CMake option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
+</pre></div>
+</div>
 </section>
 <section id="multi-target-build">
 <h4>Multi-target build<a class="headerlink" href="#multi-target-build" title="Permalink to this heading">¶</a></h4>
