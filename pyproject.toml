@@ -8,7 +8,8 @@ requires = [
   "scikit-build>=0.17.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   "cmake>=3.29.0",
-  "cython>=3.0.10",
+  "cython>=3.0.10;python_version<'3.13'",
+  "cython>=3.0.10,<3.1.0;python_version>='3.13'",
   "numpy >=1.23",
   # WARNING: check with doc how to upgrade
   "versioneer[toml]==0.29"
