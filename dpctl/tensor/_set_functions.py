@@ -646,7 +646,8 @@ def isin(
     *,
     invert: Optional[bool] = False,
 ) -> dpt.usm_ndarray:
-    """
+    """isin(x, test_elements, /, *, invert=False)
+
     Tests `x in test_elements` for each element of `x`. Returns a boolean array
     with the same shape as `x` that is `True` where the element is in
     `test_elements`, `False` otherwise.
