@@ -338,3 +338,43 @@ def test_sort_complex_fp_nan(dtype):
         assert np.array_equal(
             r1.view(np.int64), r2.view(np.int64)
         ), f"Failed for {i} and {j}"
+
+
+def test_radix_sort_size_1_axis():
+    get_queue_or_skip()
+
+    x1 = dpt.ones((), dtype="i1")
+    r1 = dpt.sort(x1, kind="radixsort")
+    assert r1 == x1
+
+    x2 = dpt.ones([1], dtype="i1")
+    r2 = dpt.sort(x2, kind="radixsort")
+    assert r2 == x2
+
+    x3 = dpt.reshape(dpt.arange(10, dtype="i1"), (10, 1))
+    r3 = dpt.sort(x3, kind="radixsort")
+    assert dpt.all(r3 == x3)
+
+    x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
+    r4 = dpt.sort(x4, axis=0, kind="radixsort")
+    assert dpt.all(r4 == x4)
+
+
+def test_radix_argsort_size_1_axis():
+    get_queue_or_skip()
+
+    x1 = dpt.ones((), dtype="i1")
+    r1 = dpt.argsort(x1, kind="radixsort")
+    assert r1 == 0
+
+    x2 = dpt.ones([1], dtype="i1")
+    r2 = dpt.argsort(x2, kind="radixsort")
+    assert r2 == 0
+
+    x3 = dpt.reshape(dpt.arange(10, dtype="i1"), (10, 1))
+    r3 = dpt.argsort(x3, kind="radixsort")
+    assert dpt.all(r3 == 0)
+
+    x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
+    r4 = dpt.argsort(x4, axis=0, kind="radixsort")
+    assert dpt.all(r4 == 0)
