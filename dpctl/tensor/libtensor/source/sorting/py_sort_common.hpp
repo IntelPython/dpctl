@@ -148,6 +148,7 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
             return std::make_pair(keep_args_alive_ev, comp_ev);
         }
         else {
+            assert(dst.get_size() == iter_nelems);
             int src_elemsize = src.get_elemsize();
 
             sycl::event copy_ev =

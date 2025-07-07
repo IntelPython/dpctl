@@ -147,6 +147,7 @@ py_argsort(const dpctl::tensor::usm_ndarray &src,
             return std::make_pair(keep_args_alive_ev, comp_ev);
         }
         else {
+            assert(dst.get_size() == iter_nelems);
             int dst_elemsize = dst.get_elemsize();
             static constexpr int memset_val(0);
 
