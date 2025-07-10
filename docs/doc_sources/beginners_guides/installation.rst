@@ -166,14 +166,27 @@ A full list of available SYCL alias targets is available in the
 CUDA build
 ~~~~~~~~~~
 
-``dpctl`` can be built for CUDA devices using the ``DPCTL_TARGET_CUDA`` CMake option,
-which accepts a specific compute architecture string:
+``dpctl`` can be built for CUDA devices using the  ``--target-cuda`` argument.
+
+To target a specific architecture (e.g., ``sm_80``):
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --target-cuda=sm_80
+
+To use the default architecture (``sm_50``), omit the value:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --target-cuda
+
+Alternatively, you can use the ``DPCTL_TARGET_CUDA`` CMake option:
 
 .. code-block:: bash
 
     python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=sm_80"
 
-To use the default architecture (``sm_50``),
+To use the default architecture (``sm_50``) with CMake options,
 set ``DPCTL_TARGET_CUDA`` to a value such as ``ON``, ``TRUE``, ``YES``, ``Y``, or ``1``:
 
 .. code-block:: bash
@@ -192,12 +205,11 @@ Compute Capabilities can be found in the official
 AMD build
 ~~~~~~~~~
 
-``dpctl`` can be built for AMD devices using the ``DPCTL_TARGET_HIP`` CMake option,
-which requires specifying a compute architecture string:
+``dpctl`` can be built for AMD devices using the  ``--target-hip`` argument.
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=<arch>"
+    python scripts/build_locally.py --verbose --target-hip=<arch>
 
 Note that the `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
 one architecture can be specified at a time.
@@ -208,11 +220,17 @@ To determine the architecture code (``<arch>``) for your AMD GPU, run:
     rocminfo | grep 'Name: *gfx.*'
 
 This will print names like ``gfx90a``, ``gfx1030``, etc.
-You can then use one of them as the argument to ``-DDPCTL_TARGET_HIP``.
+You can then use one of them as the argument to ``--target-hip``.
 
 For example:
 
 .. code-block:: bash
+    python scripts/build_locally.py --verbose --target-hip=gfx1030
+
+Alternatively, you can use the ``DPCTL_TARGET_HIP`` CMake option:
+
+.. code-block:: bash
+
     python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_HIP=gfx1030"
 
 Multi-target build
@@ -225,8 +243,7 @@ devices at the same time:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_TARGET_CUDA=ON \
-    -DDPCTL_TARGET_HIP=gfx1030"
+    python scripts/build_locally.py --verbose --target-cuda --target-hip=gfx1030
 
 Running Examples and Tests
 ==========================
