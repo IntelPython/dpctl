@@ -23,16 +23,16 @@ from dpctl.tensor._copy_utils import (
     _empty_like_pair_orderK,
     _empty_like_triple_orderK,
 )
-from dpctl.tensor._elementwise_common import (
+from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
+from dpctl.tensor._type_utils import _can_cast
+from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
+
+from ._scalar_utils import (
     _get_dtype,
     _get_queue_usm_type,
     _get_shape,
     _validate_dtype,
 )
-from dpctl.tensor._manipulation_functions import _broadcast_shape_impl
-from dpctl.tensor._type_utils import _can_cast
-from dpctl.utils import ExecutionPlacementError, SequentialOrderManager
-
 from ._type_utils import (
     _resolve_one_strong_one_weak_types,
     _resolve_one_strong_two_weak_types,
