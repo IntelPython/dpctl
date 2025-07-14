@@ -1,0 +1,6 @@
+﻿dpctl.tensor.tensordot
+======================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: tensordot
