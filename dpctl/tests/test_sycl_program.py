@@ -18,6 +18,7 @@
 """
 
 import os
+import shutil
 
 import pytest
 
@@ -272,6 +273,12 @@ def test_create_program_from_sycl_source():
     except dpctl.SyclQueueCreationError:
         pytest.skip("No OpenCL queue is available")
 
+    if not shutil.which("icpx"):
+        # In version 2025.2 and before, the packages do not contain the
+        # libraries in the .bc format necessary for RTC. Therefore,
+        # installation of the base toolkit is required.
+        pytest.skip("oneAPI Base Toolkit not installed")
+
     if not q.get_sycl_device().can_compile("sycl"):
         pytest.skip("SYCL source compilation not supported")
 
@@ -381,6 +388,12 @@ def test_create_program_from_invalid_src_sycl():
         q = dpctl.SyclQueue("opencl")
     except dpctl.SyclQueueCreationError:
         pytest.skip("No OpenCL queue is available")
+
+    if not shutil.which("icpx"):
+        # In version 2025.2 and before, the packages do not contain the
+        # libraries in the .bc format necessary for RTC. Therefore,
+        # installation of the base toolkit is required.
+        pytest.skip("oneAPI Base Toolkit not installed")
 
     if not q.get_sycl_device().can_compile("sycl"):
         pytest.skip("SYCL source compilation not supported")
