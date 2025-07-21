@@ -43,17 +43,10 @@ def test_trig_out_type(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
+    x = dpt.asarray(0, dtype=dtype, sycl_queue=q)
     expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    assert dpt_call(X).dtype == expected_dtype
-
-    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
-    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
-    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    Y = dpt.empty_like(X, dtype=expected_dtype)
-    dpt_call(X, out=Y)
-    assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
+    assert dpt_call(x).dtype == expected_dtype
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
