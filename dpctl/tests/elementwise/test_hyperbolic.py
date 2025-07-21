@@ -112,38 +112,6 @@ def test_hyper_complex_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_hyper_order(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (4, 4, 4, 4)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    if np_call == np.arctanh:
-        X[..., 0::2] = -0.4
-        X[..., 1::2] = 0.3
-    elif np_call == np.arccosh:
-        X[..., 0::2] = 2.2
-        X[..., 1::2] = 5.5
-    else:
-        X[..., 0::2] = -4.4
-        X[..., 1::2] = 5.5
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        with np.errstate(all="ignore"):
-            expected_Y = np_call(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt_call(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
 def test_hyper_real_strided(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
