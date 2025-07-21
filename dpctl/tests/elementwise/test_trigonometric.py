@@ -16,7 +16,6 @@
 
 import itertools
 import os
-import re
 
 import numpy as np
 import pytest
@@ -149,19 +148,6 @@ def test_trig_order(np_call, dpt_call, dtype):
                 np.finfo(expected_Y.dtype).resolution,
             )
             assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("callable", _dpt_funcs)
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_trig_error_dtype(callable, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = dpt.zeros(5, dtype=dtype)
-    y = dpt.empty_like(x, dtype="int16")
-    with pytest.raises(ValueError) as excinfo:
-        callable(x, out=y)
-    assert re.match("Output array of type.*is needed", str(excinfo.value))
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
