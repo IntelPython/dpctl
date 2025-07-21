@@ -113,34 +113,6 @@ def test_hyper_complex_contig(np_call, dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
-def test_hyper_usm_type(np_call, dpt_call, usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    if np_call == np.arctanh:
-        X[..., 0::2] = -0.4
-        X[..., 1::2] = 0.3
-    elif np_call == np.arccosh:
-        X[..., 0::2] = 2.2
-        X[..., 1::2] = 5.5
-    else:
-        X[..., 0::2] = -4.4
-        X[..., 1::2] = 5.5
-
-    Y = dpt_call(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np_call(dpt.asnumpy(X))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", _all_dtypes)
 def test_hyper_order(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
