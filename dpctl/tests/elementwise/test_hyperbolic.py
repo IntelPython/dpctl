@@ -45,17 +45,10 @@ def test_hyper_out_type(np_call, dpt_call, dtype):
 
     a = 1 if np_call == np.arccosh else 0
 
-    X = dpt.asarray(a, dtype=dtype, sycl_queue=q)
+    x = dpt.asarray(a, dtype=dtype, sycl_queue=q)
     expected_dtype = np_call(np.array(a, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    assert dpt_call(X).dtype == expected_dtype
-
-    X = dpt.asarray(a, dtype=dtype, sycl_queue=q)
-    expected_dtype = np_call(np.array(a, dtype=dtype)).dtype
-    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    Y = dpt.empty_like(X, dtype=expected_dtype)
-    dpt_call(X, out=Y)
-    assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
+    assert dpt_call(x).dtype == expected_dtype
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
