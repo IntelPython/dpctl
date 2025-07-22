@@ -30,7 +30,6 @@ _inv_trig_funcs = [
     (np.arctan, dpt.atan),
 ]
 _all_funcs = _trig_funcs + _inv_trig_funcs
-_dpt_funcs = [t[1] for t in _all_funcs]
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)

@@ -30,7 +30,6 @@ _inv_hyper_funcs = [
     (np.arctanh, dpt.atanh),
 ]
 _all_funcs = _hyper_funcs + _inv_hyper_funcs
-_dpt_funcs = [t[1] for t in _all_funcs]
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
