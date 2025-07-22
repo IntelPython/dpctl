@@ -107,8 +107,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          # TODO: unpin numpy when numpy#29167 resolved
-          pip install numpy"<2.3.0" cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29
+          pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29
 
       - name: Checkout repo
         uses: actions/checkout@v4.2.2
