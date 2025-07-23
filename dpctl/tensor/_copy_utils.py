@@ -756,20 +756,28 @@ def _extract_impl(ary, ary_mask, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
-    if not isinstance(ary_mask, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        dst_usm_type = dpctl.utils.get_coerced_usm_type(
+            (ary.usm_type, ary_mask.usm_type)
         )
-    dst_usm_type = dpctl.utils.get_coerced_usm_type(
-        (ary.usm_type, ary_mask.usm_type)
-    )
-    exec_q = dpctl.utils.get_execution_queue(
-        (ary.sycl_queue, ary_mask.sycl_queue)
-    )
-    if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
-            "arrays have different associated queues. "
-            "Use `y.to_device(x.device)` to migrate."
+        exec_q = dpctl.utils.get_execution_queue(
+            (ary.sycl_queue, ary_mask.sycl_queue)
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        dst_usm_type = ary.usm_type
+        exec_q = ary.sycl_queue
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=dst_usm_type, sycl_queue=exec_q
+        )
+    else:
+        raise TypeError(
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
         )
     ary_nd = ary.ndim
     pp = normalize_axis_index(operator.index(axis), ary_nd)
@@ -839,31 +847,32 @@ def _nonzero_impl(ary):
 
 def _validate_indices(inds, queue_list, usm_type_list):
     """
-    Utility for validating indices are usm_ndarray of integral dtype or Python
-    integers. At least one must be an array.
+    Utility for validating indices are NumPy ndarray or usm_ndarray of integral
+    dtype or Python integers. At least one must be an array.
 
     For each array, the queue and usm type are appended to `queue_list` and
     `usm_type_list`, respectively.
     """
-    any_usmarray = False
+    any_array = False
     for ind in inds:
-        if isinstance(ind, dpt.usm_ndarray):
-            any_usmarray = True
+        if isinstance(ind, (np.ndarray, dpt.usm_ndarray)):
+            any_array = True
             if ind.dtype.kind not in "ui":
                 raise IndexError(
                     "arrays used as indices must be of integer (or boolean) "
                     "type"
                 )
-            queue_list.append(ind.sycl_queue)
-            usm_type_list.append(ind.usm_type)
+            if isinstance(ind, dpt.usm_ndarray):
+                queue_list.append(ind.sycl_queue)
+                usm_type_list.append(ind.usm_type)
         elif not isinstance(ind, Integral):
             raise TypeError(
-                "all elements of `ind` expected to be usm_ndarrays "
-                f"or integers, found {type(ind)}"
+                "all elements of `ind` expected to be usm_ndarrays, "
+                f"NumPy arrays, or integers, found {type(ind)}"
             )
-    if not any_usmarray:
+    if not any_array:
         raise TypeError(
-            "at least one element of `inds` expected to be a usm_ndarray"
+            "at least one element of `inds` expected to be an array"
         )
     return inds
 
@@ -942,8 +951,7 @@ def _take_multi_index(ary, inds, p, mode=0):
             "be associated with the same queue."
         )
 
-    if len(inds) > 1:
-        inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
+    inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
 
     ind0 = inds[0]
     ary_sh = ary.shape
@@ -976,16 +984,28 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
-    if not isinstance(ary_mask, dpt.usm_ndarray):
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                ary.sycl_queue,
+                ary_mask.sycl_queue,
+            )
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        exec_q = ary.sycl_queue
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=ary.usm_type, sycl_queue=exec_q
+        )
+    else:
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
         )
-    exec_q = dpctl.utils.get_execution_queue(
-        (
-            ary.sycl_queue,
-            ary_mask.sycl_queue,
-        )
-    )
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
             vals = dpt.asarray(vals, dtype=ary.dtype, sycl_queue=exec_q)
@@ -1080,8 +1100,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
             "be associated with the same queue."
         )
 
-    if len(inds) > 1:
-        inds = _prepare_indices_arrays(inds, exec_q, vals_usm_type)
+    inds = _prepare_indices_arrays(inds, exec_q, vals_usm_type)
 
     ind0 = inds[0]
     ary_sh = ary.shape
