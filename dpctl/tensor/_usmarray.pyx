@@ -1325,8 +1325,8 @@ cdef class usm_ndarray:
         allocated, or the non-partitioned parent device of the allocation
         device.
 
-        See ``DLDeviceType`` for a list of devices supported by the DLPack
-        protocol.
+        See :class:`dpctl.tensor.DLDeviceType` for a list of devices supported
+        by the DLPack protocol.
 
         Raises:
             DLPackCreationError:
