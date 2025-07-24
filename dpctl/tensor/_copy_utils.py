@@ -845,7 +845,7 @@ def _nonzero_impl(ary):
     return res
 
 
-def _validate_indices(inds, queue_list, usm_type_list):
+def _get_indices_queue_usm_type(inds, queue, usm_type):
     """
     Utility for validating indices are NumPy ndarray or usm_ndarray of integral
     dtype or Python integers. At least one must be an array.
@@ -853,6 +853,8 @@ def _validate_indices(inds, queue_list, usm_type_list):
     For each array, the queue and usm type are appended to `queue_list` and
     `usm_type_list`, respectively.
     """
+    queues = [queue]
+    usm_types = [usm_type]
     any_array = False
     for ind in inds:
         if isinstance(ind, (np.ndarray, dpt.usm_ndarray)):
@@ -863,8 +865,8 @@ def _validate_indices(inds, queue_list, usm_type_list):
                     "type"
                 )
             if isinstance(ind, dpt.usm_ndarray):
-                queue_list.append(ind.sycl_queue)
-                usm_type_list.append(ind.usm_type)
+                queues.append(ind.sycl_queue)
+                usm_types.append(ind.usm_type)
         elif not isinstance(ind, Integral):
             raise TypeError(
                 "all elements of `ind` expected to be usm_ndarrays, "
@@ -874,7 +876,9 @@ def _validate_indices(inds, queue_list, usm_type_list):
         raise TypeError(
             "at least one element of `inds` expected to be an array"
         )
-    return inds
+    usm_type = dpctl.utils.get_coerced_usm_type(usm_types)
+    q = dpctl.utils.get_execution_queue(queues)
+    return q, usm_type
 
 
 def _prepare_indices_arrays(inds, q, usm_type):
@@ -931,18 +935,12 @@ def _take_multi_index(ary, inds, p, mode=0):
         raise ValueError(
             "Invalid value for mode keyword, only 0 or 1 is supported"
         )
-    queues_ = [
-        ary.sycl_queue,
-    ]
-    usm_types_ = [
-        ary.usm_type,
-    ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
 
-    _validate_indices(inds, queues_, usm_types_)
-    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-    exec_q = dpctl.utils.get_execution_queue(queues_)
+    exec_q, res_usm_type = _get_indices_queue_usm_type(
+        inds, ary.sycl_queue, ary.usm_type
+    )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
@@ -1068,23 +1066,13 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         raise ValueError(
             "Invalid value for mode keyword, only 0 or 1 is supported"
         )
-    if isinstance(vals, dpt.usm_ndarray):
-        queues_ = [ary.sycl_queue, vals.sycl_queue]
-        usm_types_ = [ary.usm_type, vals.usm_type]
-    else:
-        queues_ = [
-            ary.sycl_queue,
-        ]
-        usm_types_ = [
-            ary.usm_type,
-        ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
 
-    _validate_indices(inds, queues_, usm_types_)
+    exec_q, vals_usm_type = _get_indices_queue_usm_type(
+        inds, ary.sycl_queue, ary.usm_type
+    )
 
-    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-    exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
             vals = dpt.asarray(
