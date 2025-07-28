@@ -73,6 +73,12 @@ def run(
                 "--target-cuda can not be an empty string. "
                 "Use --target-cuda=<arch> or --target-cuda"
             )
+        if any(opt.startswith("-DDPCTL_TARGET_CUDA=") for opt in cmake_args):
+            raise ValueError(
+                "Both --target-cuda and -DDPCTL_TARGET_CUDA in --cmake-opts "
+                "were specified. Please use only one method "
+                "to avoid ambiguity"
+            )
         cmake_args += [
             f"-DDPCTL_TARGET_CUDA={target_cuda}",
         ]
@@ -80,6 +86,12 @@ def run(
         if not target_hip.strip():
             raise ValueError(
                 "--target-hip requires an architecture (e.g., gfx90a)"
+            )
+        if any(opt.startswith("-DDPCTL_TARGET_HIP=") for opt in cmake_args):
+            raise ValueError(
+                "Both --target-hip and -DDPCTL_TARGET_HIP in --cmake-opts "
+                "were specified. Please use only one method "
+                "to avoid ambiguity"
             )
         cmake_args += [
             f"-DDPCTL_TARGET_HIP={target_hip}",
