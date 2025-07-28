@@ -12,15 +12,16 @@
         gtag('config', 'G-7TCKS5BHYE');
     </script>
     <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+        <link rel="prefetch" href="../../../_static/dpctl.svg" as="image" />
 
-    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2024.08.06 -->
+    <link rel="shortcut icon" href="../../../_static/dpctl.svg"/><!-- Generated with Sphinx 7.1.2 and Furo 2025.07.19 -->
         <title>dpctl.tensor._copy_utils - Data Parallel Control (dpctl) 0.21.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/doxyrest-pygments.css?v=ff3f4257" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
@@ -33,14 +34,14 @@
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -199,7 +200,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
@@ -834,6 +834,9 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_copy_to_numpy</span><span class="p">(</span><span class="n">ary</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.tensor.usm_ndarray, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># no data needs to be copied for zero sized array</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">nb</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_data</span><span class="o">.</span><span class="n">nbytes</span>
     <span class="n">q</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">hh</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMHost</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
@@ -1532,6 +1535,9 @@
             <span class="n">order</span><span class="o">=</span><span class="n">copy_order</span><span class="p">,</span>
             <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">},</span>
         <span class="p">)</span>
+    <span class="c1"># see #2121</span>
+    <span class="k">if</span> <span class="n">ary_dtype</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+        <span class="n">usm_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">copy_order</span><span class="p">)</span>
     <span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">usm_ary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">R</span></div>
 
@@ -1931,7 +1937,7 @@
 </div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=0f84e51f"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=4ea706d9"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
