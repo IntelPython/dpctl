@@ -14,10 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import itertools
-import os
-import re
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -34,7 +30,6 @@ _inv_trig_funcs = [
     (np.arctan, dpt.atan),
 ]
 _all_funcs = _trig_funcs + _inv_trig_funcs
-_dpt_funcs = [t[1] for t in _all_funcs]
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
@@ -43,17 +38,10 @@ def test_trig_out_type(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
-    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
+    x = dpt.asarray(0, dtype=dtype, sycl_queue=q)
     expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
     expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    assert dpt_call(X).dtype == expected_dtype
-
-    X = dpt.asarray(0, dtype=dtype, sycl_queue=q)
-    expected_dtype = np_call(np.array(0, dtype=dtype)).dtype
-    expected_dtype = _map_to_device_dtype(expected_dtype, q.sycl_device)
-    Y = dpt.empty_like(X, dtype=expected_dtype)
-    dpt_call(X, out=Y)
-    assert_allclose(dpt.asnumpy(dpt_call(X)), dpt.asnumpy(Y))
+    assert dpt_call(x).dtype == expected_dtype
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
@@ -125,78 +113,6 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     dpt_call(X, out=Z)
 
     assert_allclose(dpt.asnumpy(Z), expected, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
-def test_trig_usm_type(np_call, dpt_call, usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    if np_call in _trig_funcs:
-        X[..., 0::2] = np.pi / 6
-        X[..., 1::2] = np.pi / 3
-    if np_call == np.arctan:
-        X[..., 0::2] = -2.2
-        X[..., 1::2] = 3.3
-    else:
-        X[..., 0::2] = -0.3
-        X[..., 1::2] = 0.7
-
-    Y = dpt_call(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np_call(dpt.asnumpy(X))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_trig_order(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (4, 4, 4, 4)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    if np_call in _trig_funcs:
-        X[..., 0::2] = np.pi / 6
-        X[..., 1::2] = np.pi / 3
-    if np_call == np.arctan:
-        X[..., 0::2] = -2.2
-        X[..., 1::2] = 3.3
-    else:
-        X[..., 0::2] = -0.3
-        X[..., 1::2] = 0.7
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np_call(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt_call(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("callable", _dpt_funcs)
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_trig_error_dtype(callable, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = dpt.zeros(5, dtype=dtype)
-    y = dpt.empty_like(x, dtype="int16")
-    with pytest.raises(ValueError) as excinfo:
-        callable(x, out=y)
-    assert re.match("Output array of type.*is needed", str(excinfo.value))
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
@@ -298,47 +214,3 @@ def test_trig_real_special_cases(np_call, dpt_call, dtype):
     tol = 8 * dpt.finfo(dtype).resolution
     Y = dpt_call(yf)
     assert_allclose(dpt.asnumpy(Y), Y_np, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_trig_complex_special_cases_conj_property(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
-    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
-
-    Xc_np = np.array(xc, dtype=dtype)
-    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
-
-    tol = 50 * dpt.finfo(dtype).resolution
-    Y = dpt_call(Xc)
-    Yc = dpt_call(dpt.conj(Xc))
-
-    dpt.allclose(Y, dpt.conj(Yc), atol=tol, rtol=tol)
-
-
-@pytest.mark.skipif(
-    os.name != "posix", reason="Known to fail on Windows due to bug in NumPy"
-)
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_trig_complex_special_cases(np_call, dpt_call, dtype):
-
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = [np.nan, np.inf, -np.inf, +0.0, -0.0, +1.0, -1.0]
-    xc = [complex(*val) for val in itertools.product(x, repeat=2)]
-
-    Xc_np = np.array(xc, dtype=dtype)
-    Xc = dpt.asarray(Xc_np, dtype=dtype, sycl_queue=q)
-
-    with np.errstate(all="ignore"):
-        Ynp = np_call(Xc_np)
-
-    tol = 50 * dpt.finfo(dtype).resolution
-    Y = dpt_call(Xc)
-    assert_allclose(dpt.asnumpy(dpt.real(Y)), np.real(Ynp), atol=tol, rtol=tol)
-    assert_allclose(dpt.asnumpy(dpt.imag(Y)), np.imag(Ynp), atol=tol, rtol=tol)

@@ -41,6 +41,12 @@ requirements:
         - {{ dep }}
         {% elif dep.startswith('build>=') %}
         - {{ 'python-' ~ dep }}
+        {% elif dep.startswith('cython') %}
+        {% if dep.split(';')[1] == "python_version<'3.13'" %}
+        - {{ dep.split(';')[0] }} # [py<313]
+        {% else %}
+        - {{ dep.split(';')[0] }} # [py>=313]
+        {% endif %}
         {% else %}
         - {{ dep|replace('_','-') }}
         {% endif %}

@@ -41,6 +41,9 @@ int32_t_max = 1 + np.iinfo(np.int32).max
 def _copy_to_numpy(ary):
     if not isinstance(ary, dpt.usm_ndarray):
         raise TypeError(f"Expected dpctl.tensor.usm_ndarray, got {type(ary)}")
+    if ary.size == 0:
+        # no data needs to be copied for zero sized array
+        return np.ndarray(ary.shape, dtype=ary.dtype)
     nb = ary.usm_data.nbytes
     q = ary.sycl_queue
     hh = dpm.MemoryUSMHost(nb, queue=q)
@@ -739,6 +742,9 @@ def astype(
             order=copy_order,
             buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
         )
+    # see #2121
+    if ary_dtype == dpt.bool:
+        usm_ary = dpt.not_equal(usm_ary, 0, order=copy_order)
     _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
     return R
 

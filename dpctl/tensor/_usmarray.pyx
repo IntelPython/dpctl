@@ -382,8 +382,9 @@ cdef class usm_ndarray:
         else:
             self._cleanup()
             raise ValueError("buffer='{}' was not understood.".format(buffer))
-        if (_offset + ary_min_displacement < 0 or
-           (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes):
+        if (shape_to_elem_count(nd, shape_ptr) > 0 and
+            (_offset + ary_min_displacement < 0 or
+             (_offset + ary_max_displacement + 1) * itemsize > _buffer.nbytes)):
             self._cleanup()
             raise ValueError(("buffer='{}' can not accommodate "
                               "the requested array.").format(buffer))
@@ -1324,8 +1325,8 @@ cdef class usm_ndarray:
         allocated, or the non-partitioned parent device of the allocation
         device.
 
-        See ``DLDeviceType`` for a list of devices supported by the DLPack
-        protocol.
+        See :class:`dpctl.tensor.DLDeviceType` for a list of devices supported
+        by the DLPack protocol.
 
         Raises:
             DLPackCreationError:

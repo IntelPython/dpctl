@@ -127,23 +127,38 @@ py_sort(const dpctl::tensor::usm_ndarray &src,
     bool is_dst_c_contig = dst.is_c_contiguous();
 
     if (is_src_c_contig && is_dst_c_contig) {
-        static constexpr py::ssize_t zero_offset = py::ssize_t(0);
+        if (sort_nelems > 1) {
+            static constexpr py::ssize_t zero_offset = py::ssize_t(0);
 
-        auto fn = sort_contig_fns[src_typeid];
+            auto fn = sort_contig_fns[src_typeid];
 
-        if (nullptr == fn) {
-            throw py::value_error(
-                "Not implemented for the dtype of input arrays");
+            if (nullptr == fn) {
+                throw py::value_error(
+                    "Not implemented for the dtype of input arrays");
+            }
+
+            sycl::event comp_ev =
+                fn(exec_q, iter_nelems, sort_nelems, src.get_data(),
+                   dst.get_data(), zero_offset, zero_offset, zero_offset,
+                   zero_offset, depends);
+
+            sycl::event keep_args_alive_ev =
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
+
+            return std::make_pair(keep_args_alive_ev, comp_ev);
         }
+        else {
+            assert(dst.get_size() == iter_nelems);
+            int src_elemsize = src.get_elemsize();
 
-        sycl::event comp_ev =
-            fn(exec_q, iter_nelems, sort_nelems, src.get_data(), dst.get_data(),
-               zero_offset, zero_offset, zero_offset, zero_offset, depends);
+            sycl::event copy_ev =
+                exec_q.copy<char>(src.get_data(), dst.get_data(),
+                                  src_elemsize * iter_nelems, depends);
 
-        sycl::event keep_args_alive_ev =
-            dpctl::utils::keep_args_alive(exec_q, {src, dst}, {comp_ev});
-
-        return std::make_pair(keep_args_alive_ev, comp_ev);
+            return std::make_pair(
+                dpctl::utils::keep_args_alive(exec_q, {src, dst}, {copy_ev}),
+                copy_ev);
+        }
     }
 
     throw py::value_error(

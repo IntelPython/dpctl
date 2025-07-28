@@ -28,6 +28,23 @@ from dpctl.tensor import Device
 
 from .helper import get_queue_or_skip, skip_if_dtype_not_supported
 
+_all_dtypes = [
+    "b1",
+    "i1",
+    "u1",
+    "i2",
+    "u2",
+    "i4",
+    "u4",
+    "i8",
+    "u8",
+    "f2",
+    "f4",
+    "f8",
+    "c8",
+    "c16",
+]
+
 
 @pytest.mark.parametrize(
     "shape",
@@ -150,6 +167,21 @@ def test_usm_ndarray_writable_flag_views():
     assert not a.imag.flags.writable
 
 
+@pytest.mark.parametrize("dt1", _all_dtypes)
+@pytest.mark.parametrize("dt2", _all_dtypes)
+def test_usm_ndarray_from_zero_sized_usm_ndarray(dt1, dt2):
+    q = get_queue_or_skip()
+    skip_if_dtype_not_supported(dt1, q)
+    skip_if_dtype_not_supported(dt2, q)
+
+    x1 = dpt.ones((0,), dtype=dt1, sycl_queue=q)
+    x2 = dpt.usm_ndarray(x1.shape, dtype=dt2, buffer=x1)
+    assert x2.dtype == dt2
+    assert x2.sycl_queue == q
+    assert x2._pointer == x1._pointer
+    assert x2.shape == x1.shape
+
+
 def test_usm_ndarray_from_usm_ndarray_readonly():
     get_queue_or_skip()
 
@@ -161,20 +193,8 @@ def test_usm_ndarray_from_usm_ndarray_readonly():
 
 @pytest.mark.parametrize(
     "dtype",
-    [
-        "u1",
-        "i1",
-        "u2",
-        "i2",
-        "u4",
-        "i4",
-        "u8",
-        "i8",
-        "f2",
-        "f4",
-        "f8",
-        "c8",
-        "c16",
+    _all_dtypes
+    + [
         b"float32",
         dpt.dtype("d"),
         np.half,
@@ -1103,24 +1123,6 @@ def test_pyx_capi_check_constants():
     assert cdouble_typenum == dpt.dtype(np.cdouble).num
 
 
-_all_dtypes = [
-    "b1",
-    "i1",
-    "u1",
-    "i2",
-    "u2",
-    "i4",
-    "u4",
-    "i8",
-    "u8",
-    "f2",
-    "f4",
-    "f8",
-    "c8",
-    "c16",
-]
-
-
 @pytest.mark.parametrize(
     "shape", [tuple(), (1,), (5,), (2, 3), (2, 3, 4), (2, 2, 2, 2, 2)]
 )
@@ -1539,6 +1541,16 @@ def test_astype_gh_1926():
 
     x__ = dpt.astype(x, x.dtype, copy=False, order="F")
     assert x is x__
+
+
+def test_astype_gh_2121():
+    get_queue_or_skip()
+
+    x_np = np.asarray([0, 3, 1, 2, 0, 1], dtype="u1").view("?")
+    x = dpt.asarray(x_np)
+    res = dpt.astype(x, dpt.uint8)
+    expected = dpt.asarray([0, 1, 1, 1, 0, 1], dtype="u1")
+    assert dpt.all(res == expected)
 
 
 def test_copy():
