@@ -1782,6 +1782,12 @@
                 <span class="n">ary_mask</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="n">ary_mask</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
                 <span class="s2">&quot;arrays have different associated queues. &quot;</span>
@@ -1789,8 +1795,9 @@
             <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ary_mask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="n">exec_q</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="n">ary_mask</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-            <span class="n">ary_mask</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+            <span class="n">ary_mask</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -1799,9 +1806,20 @@
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">)</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vals</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">coerced_usm_type</span><span class="p">,</span>
+                    <span class="n">vals</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;arrays have different associated queues. &quot;</span>
@@ -1816,7 +1834,12 @@
         <span class="p">)</span>
     <span class="n">mask_nelems</span> <span class="o">=</span> <span class="n">ary_mask</span><span class="o">.</span><span class="n">size</span>
     <span class="n">cumsum_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span> <span class="k">if</span> <span class="n">mask_nelems</span> <span class="o">&lt;</span> <span class="n">int32_t_max</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int64</span>
-    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">mask_nelems</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">cumsum</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">mask_nelems</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">cumsum_dt</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">ary_mask</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">cumsum</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
     <span class="n">dep_ev</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
@@ -1862,17 +1885,26 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">inds</span><span class="p">,)</span>
 
-    <span class="n">exec_q</span><span class="p">,</span> <span class="n">vals_usm_type</span> <span class="o">=</span> <span class="n">_get_indices_queue_usm_type</span><span class="p">(</span>
+    <span class="n">exec_q</span><span class="p">,</span> <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">_get_indices_queue_usm_type</span><span class="p">(</span>
         <span class="n">inds</span><span class="p">,</span> <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
             <span class="n">vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                <span class="n">vals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">vals_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span>
+                <span class="n">vals</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                <span class="n">usm_type</span><span class="o">=</span><span class="n">coerced_usm_type</span><span class="p">,</span>
+                <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">exec_q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">vals</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span>
+            <span class="n">coerced_usm_type</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">coerced_usm_type</span><span class="p">,</span>
+                    <span class="n">vals</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">exec_q</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
             <span class="s2">&quot;Can not automatically determine where to allocate the &quot;</span>
@@ -1881,7 +1913,7 @@
             <span class="s2">&quot;be associated with the same queue.&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">_prepare_indices_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">vals_usm_type</span><span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">_prepare_indices_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">coerced_usm_type</span><span class="p">)</span>
 
     <span class="n">ind0</span> <span class="o">=</span> <span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">ary_sh</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span>
