@@ -989,6 +989,12 @@ def _place_impl(ary, ary_mask, vals, axis=0):
                 ary_mask.sycl_queue,
             )
         )
+        coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+            (
+                ary.usm_type,
+                ary_mask.usm_type,
+            )
+        )
         if exec_q is None:
             raise dpctl.utils.ExecutionPlacementError(
                 "arrays have different associated queues. "
@@ -996,8 +1002,9 @@ def _place_impl(ary, ary_mask, vals, axis=0):
             )
     elif isinstance(ary_mask, np.ndarray):
         exec_q = ary.sycl_queue
+        coerced_usm_type = ary.usm_type
         ary_mask = dpt.asarray(
-            ary_mask, usm_type=ary.usm_type, sycl_queue=exec_q
+            ary_mask, usm_type=coerced_usm_type, sycl_queue=exec_q
         )
     else:
         raise TypeError(
@@ -1006,9 +1013,20 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         )
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
-            vals = dpt.asarray(vals, dtype=ary.dtype, sycl_queue=exec_q)
+            vals = dpt.asarray(
+                vals,
+                dtype=ary.dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
         else:
             exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    coerced_usm_type,
+                    vals.usm_type,
+                )
+            )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "arrays have different associated queues. "
@@ -1023,7 +1041,12 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         )
     mask_nelems = ary_mask.size
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
-    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
+    cumsum = dpt.empty(
+        mask_nelems,
+        dtype=cumsum_dt,
+        usm_type=coerced_usm_type,
+        device=ary_mask.device,
+    )
     exec_q = cumsum.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
@@ -1069,17 +1092,26 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
 
-    exec_q, vals_usm_type = _get_indices_queue_usm_type(
+    exec_q, coerced_usm_type = _get_indices_queue_usm_type(
         inds, ary.sycl_queue, ary.usm_type
     )
 
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
             vals = dpt.asarray(
-                vals, dtype=ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+                vals,
+                dtype=ary.dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
             )
         else:
             exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    coerced_usm_type,
+                    vals.usm_type,
+                )
+            )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
@@ -1088,7 +1120,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
             "be associated with the same queue."
         )
 
-    inds = _prepare_indices_arrays(inds, exec_q, vals_usm_type)
+    inds = _prepare_indices_arrays(inds, exec_q, coerced_usm_type)
 
     ind0 = inds[0]
     ary_sh = ary.shape
