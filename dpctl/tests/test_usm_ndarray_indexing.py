@@ -447,7 +447,7 @@ def test_integer_indexing_numpy_array():
     y = x[ii]
     assert isinstance(y, dpt.usm_ndarray)
     assert y.shape == ii.shape
-    assert dpt.all(dpt.asarray(ii, sycl_queue=q) == y)
+    assert dpt.all(x[1:3] == y)
 
 
 def test_boolean_indexing_numpy_array():
