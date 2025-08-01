@@ -756,20 +756,28 @@ def _extract_impl(ary, ary_mask, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
-    if not isinstance(ary_mask, dpt.usm_ndarray):
-        raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        dst_usm_type = dpctl.utils.get_coerced_usm_type(
+            (ary.usm_type, ary_mask.usm_type)
         )
-    dst_usm_type = dpctl.utils.get_coerced_usm_type(
-        (ary.usm_type, ary_mask.usm_type)
-    )
-    exec_q = dpctl.utils.get_execution_queue(
-        (ary.sycl_queue, ary_mask.sycl_queue)
-    )
-    if exec_q is None:
-        raise dpctl.utils.ExecutionPlacementError(
-            "arrays have different associated queues. "
-            "Use `y.to_device(x.device)` to migrate."
+        exec_q = dpctl.utils.get_execution_queue(
+            (ary.sycl_queue, ary_mask.sycl_queue)
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        dst_usm_type = ary.usm_type
+        exec_q = ary.sycl_queue
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=dst_usm_type, sycl_queue=exec_q
+        )
+    else:
+        raise TypeError(
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
         )
     ary_nd = ary.ndim
     pp = normalize_axis_index(operator.index(axis), ary_nd)
@@ -837,35 +845,40 @@ def _nonzero_impl(ary):
     return res
 
 
-def _validate_indices(inds, queue_list, usm_type_list):
+def _get_indices_queue_usm_type(inds, queue, usm_type):
     """
-    Utility for validating indices are usm_ndarray of integral dtype or Python
-    integers. At least one must be an array.
+    Utility for validating indices are NumPy ndarray or usm_ndarray of integral
+    dtype or Python integers. At least one must be an array.
 
     For each array, the queue and usm type are appended to `queue_list` and
     `usm_type_list`, respectively.
     """
-    any_usmarray = False
+    queues = [queue]
+    usm_types = [usm_type]
+    any_array = False
     for ind in inds:
-        if isinstance(ind, dpt.usm_ndarray):
-            any_usmarray = True
+        if isinstance(ind, (np.ndarray, dpt.usm_ndarray)):
+            any_array = True
             if ind.dtype.kind not in "ui":
                 raise IndexError(
                     "arrays used as indices must be of integer (or boolean) "
                     "type"
                 )
-            queue_list.append(ind.sycl_queue)
-            usm_type_list.append(ind.usm_type)
+            if isinstance(ind, dpt.usm_ndarray):
+                queues.append(ind.sycl_queue)
+                usm_types.append(ind.usm_type)
         elif not isinstance(ind, Integral):
             raise TypeError(
-                "all elements of `ind` expected to be usm_ndarrays "
-                f"or integers, found {type(ind)}"
+                "all elements of `ind` expected to be usm_ndarrays, "
+                f"NumPy arrays, or integers, found {type(ind)}"
             )
-    if not any_usmarray:
+    if not any_array:
         raise TypeError(
-            "at least one element of `inds` expected to be a usm_ndarray"
+            "at least one element of `inds` expected to be an array"
         )
-    return inds
+    usm_type = dpctl.utils.get_coerced_usm_type(usm_types)
+    q = dpctl.utils.get_execution_queue(queues)
+    return q, usm_type
 
 
 def _prepare_indices_arrays(inds, q, usm_type):
@@ -922,18 +935,12 @@ def _take_multi_index(ary, inds, p, mode=0):
         raise ValueError(
             "Invalid value for mode keyword, only 0 or 1 is supported"
         )
-    queues_ = [
-        ary.sycl_queue,
-    ]
-    usm_types_ = [
-        ary.usm_type,
-    ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
 
-    _validate_indices(inds, queues_, usm_types_)
-    res_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-    exec_q = dpctl.utils.get_execution_queue(queues_)
+    exec_q, res_usm_type = _get_indices_queue_usm_type(
+        inds, ary.sycl_queue, ary.usm_type
+    )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
@@ -942,8 +949,7 @@ def _take_multi_index(ary, inds, p, mode=0):
             "be associated with the same queue."
         )
 
-    if len(inds) > 1:
-        inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
+    inds = _prepare_indices_arrays(inds, exec_q, res_usm_type)
 
     ind0 = inds[0]
     ary_sh = ary.shape
@@ -976,21 +982,51 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         raise TypeError(
             f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary)}"
         )
-    if not isinstance(ary_mask, dpt.usm_ndarray):
+    if isinstance(ary_mask, dpt.usm_ndarray):
+        exec_q = dpctl.utils.get_execution_queue(
+            (
+                ary.sycl_queue,
+                ary_mask.sycl_queue,
+            )
+        )
+        coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+            (
+                ary.usm_type,
+                ary_mask.usm_type,
+            )
+        )
+        if exec_q is None:
+            raise dpctl.utils.ExecutionPlacementError(
+                "arrays have different associated queues. "
+                "Use `y.to_device(x.device)` to migrate."
+            )
+    elif isinstance(ary_mask, np.ndarray):
+        exec_q = ary.sycl_queue
+        coerced_usm_type = ary.usm_type
+        ary_mask = dpt.asarray(
+            ary_mask, usm_type=coerced_usm_type, sycl_queue=exec_q
+        )
+    else:
         raise TypeError(
-            f"Expecting type dpctl.tensor.usm_ndarray, got {type(ary_mask)}"
+            "Expecting type dpctl.tensor.usm_ndarray or numpy.ndarray, got "
+            f"{type(ary_mask)}"
         )
-    exec_q = dpctl.utils.get_execution_queue(
-        (
-            ary.sycl_queue,
-            ary_mask.sycl_queue,
-        )
-    )
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
-            vals = dpt.asarray(vals, dtype=ary.dtype, sycl_queue=exec_q)
+            vals = dpt.asarray(
+                vals,
+                dtype=ary.dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
+            )
         else:
             exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    coerced_usm_type,
+                    vals.usm_type,
+                )
+            )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "arrays have different associated queues. "
@@ -1005,7 +1041,12 @@ def _place_impl(ary, ary_mask, vals, axis=0):
         )
     mask_nelems = ary_mask.size
     cumsum_dt = dpt.int32 if mask_nelems < int32_t_max else dpt.int64
-    cumsum = dpt.empty(mask_nelems, dtype=cumsum_dt, device=ary_mask.device)
+    cumsum = dpt.empty(
+        mask_nelems,
+        dtype=cumsum_dt,
+        usm_type=coerced_usm_type,
+        device=ary_mask.device,
+    )
     exec_q = cumsum.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
@@ -1048,30 +1089,29 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
         raise ValueError(
             "Invalid value for mode keyword, only 0 or 1 is supported"
         )
-    if isinstance(vals, dpt.usm_ndarray):
-        queues_ = [ary.sycl_queue, vals.sycl_queue]
-        usm_types_ = [ary.usm_type, vals.usm_type]
-    else:
-        queues_ = [
-            ary.sycl_queue,
-        ]
-        usm_types_ = [
-            ary.usm_type,
-        ]
     if not isinstance(inds, (list, tuple)):
         inds = (inds,)
 
-    _validate_indices(inds, queues_, usm_types_)
+    exec_q, coerced_usm_type = _get_indices_queue_usm_type(
+        inds, ary.sycl_queue, ary.usm_type
+    )
 
-    vals_usm_type = dpctl.utils.get_coerced_usm_type(usm_types_)
-    exec_q = dpctl.utils.get_execution_queue(queues_)
     if exec_q is not None:
         if not isinstance(vals, dpt.usm_ndarray):
             vals = dpt.asarray(
-                vals, dtype=ary.dtype, usm_type=vals_usm_type, sycl_queue=exec_q
+                vals,
+                dtype=ary.dtype,
+                usm_type=coerced_usm_type,
+                sycl_queue=exec_q,
             )
         else:
             exec_q = dpctl.utils.get_execution_queue((exec_q, vals.sycl_queue))
+            coerced_usm_type = dpctl.utils.get_coerced_usm_type(
+                (
+                    coerced_usm_type,
+                    vals.usm_type,
+                )
+            )
     if exec_q is None:
         raise dpctl.utils.ExecutionPlacementError(
             "Can not automatically determine where to allocate the "
@@ -1080,8 +1120,7 @@ def _put_multi_index(ary, inds, p, vals, mode=0):
             "be associated with the same queue."
         )
 
-    if len(inds) > 1:
-        inds = _prepare_indices_arrays(inds, exec_q, vals_usm_type)
+    inds = _prepare_indices_arrays(inds, exec_q, coerced_usm_type)
 
     ind0 = inds[0]
     ary_sh = ary.shape

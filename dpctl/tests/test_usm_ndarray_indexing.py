@@ -440,6 +440,28 @@ def test_advanced_slice16():
     assert isinstance(y, dpt.usm_ndarray)
 
 
+def test_integer_indexing_numpy_array():
+    q = get_queue_or_skip()
+    ii = np.asarray([1, 2])
+    x = dpt.arange(10, dtype="i4", sycl_queue=q)
+    y = x[ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == ii.shape
+    assert dpt.all(x[1:3] == y)
+
+
+def test_boolean_indexing_numpy_array():
+    q = get_queue_or_skip()
+    ii = np.asarray(
+        [False, True, True, False, False, False, False, False, False, False]
+    )
+    x = dpt.arange(10, dtype="i4", sycl_queue=q)
+    y = x[ii]
+    assert isinstance(y, dpt.usm_ndarray)
+    assert y.shape == (2,)
+    assert dpt.all(x[1:3] == y)
+
+
 def test_boolean_indexing_validation():
     get_queue_or_skip()
     x = dpt.zeros(10, dtype="i4")
