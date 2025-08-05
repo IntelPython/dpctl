@@ -2769,7 +2769,7 @@ def test_setitem_copy_as_contig_alignment(dt):
 
 
 @pytest.mark.parametrize("dt", _all_dtypes)
-def test_asarray_property():
+def test_asarray_property(dt):
     q = get_queue_or_skip()
 
     dtype_ = dpt.dtype(dt)
