@@ -2781,3 +2781,7 @@ def test_asarray_property(dt):
     # test __array__ attribute
     x_cvt = np.asarray(x)
     np.testing.assert_array_equal(x_np, x_cvt)
+
+    # test that copy=False is not supported
+    with pytest.raises(TypeError):
+        np.asarray(x, copy=False)
