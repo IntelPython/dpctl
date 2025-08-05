@@ -2768,10 +2768,16 @@ def test_setitem_copy_as_contig_alignment(dt):
     assert dpt.all(x[1:, :] == vals)
 
 
+@pytest.mark.parametrize("dt", _all_dtypes)
 def test_asarray_property():
-    get_queue_or_skip()
+    q = get_queue_or_skip()
 
-    x = dpt.ones(11, dtype="i4")
+    dtype_ = dpt.dtype(dt)
+    n0, n1 = 8, 23
 
-    with pytest.raises(TypeError):
-        np.asarray(x)
+    x = dpt.eye(n0, n1, dtype=dtype_, sycl_queue=q)
+    x_np = np.eye(n0, n1, dtype=dt)
+
+    # test __array__ attribute
+    x_cvt = np.asarray(x)
+    np.testing.assert_array_equal(x_np, x_cvt)
