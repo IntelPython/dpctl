@@ -1585,20 +1585,35 @@ cdef class usm_ndarray:
         return usm_ndarray_repr(self)
 
     def __array__(self, dtype=None, /, *, copy=None):
-        """NumPy's array protocol method to disallow implicit conversion.
+        if copy is False:
+            raise TypeError("dpctl.tensors must copy data from device")
 
-        Without this definition, `numpy.asarray(usm_ar)` converts
-        usm_ndarray instance into NumPy array with data type `object`
-        and every element being 0d usm_ndarray.
-
-        https://github.com/IntelPython/dpctl/pull/1384#issuecomment-1707212972
-        """
-        raise TypeError(
-            "Implicit conversion to a NumPy array is not allowed. "
-            "Use `dpctl.tensor.asnumpy` to copy data from this "
-            "`dpctl.tensor.usm_ndarray` instance to NumPy array"
+        # it is assumed that copy=None requires a copy due to
+        # the change of a dpctl dtype to a NumPy dtype therefore
+        # not violating the NumPy standard for the __array__
+        # method.
+        
+        if self.size == 0:
+            # no data needs to be copied for zero sized array
+            return np.ndarray(self.shape, dtype=self.dtype)
+        nb = self.usm_data.nbytes
+        q = self.sycl_queue
+        hh = dpmem.MemoryUSMHost(nb, queue=q)
+        h = np.ndarray(nb, dtype="u1", buffer=hh).view(self.dtype)
+        itsz = self.itemsize
+        strides_bytes = tuple(si * itsz for si in self.strides)
+        offset = self._element_offset * itsz
+        # ensure that content of ary.usm_data is final
+        q.wait()
+        hh.copy_from_device(self.usm_data)
+        ndarray = np.ndarray(
+            self.shape,
+            dtype=self.dtype,
+            buffer=h,
+            strides=strides_bytes,
+            offset=offset,
         )
-
+        return ndarray if dtype is None else ndarray.astype(dtype)
 
 cdef usm_ndarray _real_view(usm_ndarray ary):
     """
