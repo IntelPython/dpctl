@@ -1592,7 +1592,7 @@ cdef class usm_ndarray:
         # the change of a dpctl dtype to a NumPy dtype therefore
         # not violating the NumPy standard for the __array__
         # method.
-        
+
         if self.size == 0:
             # no data needs to be copied for zero sized array
             return np.ndarray(self.shape, dtype=self.dtype)
