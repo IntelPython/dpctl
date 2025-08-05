@@ -18,20 +18,24 @@ import os
 import os.path
 import sys
 
-is_venv_win32 = (
-    sys.platform == "win32"
-    and sys.base_exec_prefix != sys.exec_prefix
-    and os.path.isfile(os.path.join(sys.exec_prefix, "pyvenv.cfg"))
+is_venv = sys.base_exec_prefix != sys.exec_prefix and os.path.isfile(
+    os.path.join(sys.exec_prefix, "pyvenv.cfg")
 )
 
-if is_venv_win32:  # pragma: no cover
-    # For virtual environments on Windows, add folder
-    # with DPC++ libraries to the DLL search path gh-1745
-    dll_dir = os.path.join(sys.exec_prefix, "Library", "bin")
-    if os.path.isdir(dll_dir):
-        os.add_dll_directory(dll_dir)
+if sys.platform == "win32":  # pragma: no cover
+    # Include folder containing DPCTLSyclInterface.dll to search path
+    os.add_dll_directory(os.path.dirname(__file__))
+    if is_venv:
+        # For virtual environments on Windows, add folder
+        # with DPC++ libraries to the DLL search path gh-1745
+        dll_dir = os.path.join(sys.exec_prefix, "Library", "bin")
+        if os.path.isdir(dll_dir):
+            os.add_dll_directory(dll_dir)
+            os.environ["PATH"] = os.pathsep.join(
+                [os.getenv("PATH", ""), dll_dir]
+            )
 
-del is_venv_win32
+del is_venv
 
 is_linux = sys.platform.startswith("linux")
 

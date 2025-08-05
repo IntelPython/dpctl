@@ -129,10 +129,6 @@ __all__ += [
     "utils",
 ]
 
-if hasattr(os, "add_dll_directory"):
-    # Include folder containing DPCTLSyclInterface.dll to search path
-    os.add_dll_directory(os.path.dirname(__file__))
-
 
 def get_include():
     r"""
