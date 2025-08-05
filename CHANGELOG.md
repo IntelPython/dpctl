@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* `dpctl.tensor.usm_ndarray` object allows implicit conversions to NumPy array changing implementation from [gh-1964](https://github.com/IntelPython/dpctl/pull/1964) for a more user-friendly behavior.
+
 ### Maintenance
 
 ## [0.20.2] - Jun. 26, 2025
