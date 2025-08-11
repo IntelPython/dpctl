@@ -110,7 +110,7 @@ jobs:
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29
 
       - name: Checkout repo
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
 
