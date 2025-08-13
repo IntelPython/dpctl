@@ -34,7 +34,7 @@ namespace tensor
 namespace py_internal
 {
 
-namespace
+namespace detail
 {
 template <typename fpT> struct ExtendedRealFPLess
 {
@@ -103,30 +103,30 @@ inline constexpr bool is_fp_v =
     (std::is_same_v<T, sycl::half> || std::is_same_v<T, float> ||
      std::is_same_v<T, double>);
 
-} // end of anonymous namespace
+} // end of namespace detail
 
 template <typename argTy> struct AscendingSorter
 {
-    using type = std::conditional_t<is_fp_v<argTy>,
-                                    ExtendedRealFPLess<argTy>,
+    using type = std::conditional_t<detail::is_fp_v<argTy>,
+                                    detail::ExtendedRealFPLess<argTy>,
                                     std::less<argTy>>;
 };
 
 template <typename T> struct AscendingSorter<std::complex<T>>
 {
-    using type = ExtendedComplexFPLess<std::complex<T>>;
+    using type = detail::ExtendedComplexFPLess<std::complex<T>>;
 };
 
 template <typename argTy> struct DescendingSorter
 {
-    using type = std::conditional_t<is_fp_v<argTy>,
-                                    ExtendedRealFPGreater<argTy>,
+    using type = std::conditional_t<detail::is_fp_v<argTy>,
+                                    detail::ExtendedRealFPGreater<argTy>,
                                     std::greater<argTy>>;
 };
 
 template <typename T> struct DescendingSorter<std::complex<T>>
 {
-    using type = ExtendedComplexFPGreater<std::complex<T>>;
+    using type = detail::ExtendedComplexFPGreater<std::complex<T>>;
 };
 
 } // end of namespace py_internal
