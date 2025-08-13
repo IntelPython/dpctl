@@ -51,23 +51,24 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
-      - name: Install conda-build
-        run: conda install conda-build -c conda-forge --override-channels
+      - name: Install rattler-build
+        run: conda install conda-build rattler-build -c conda-forge --override-channels
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+      - name: Create variant config
+        run: |
+          echo "python:\n- ${matrix.python}\n\nnumpy:\n - 2.0" > $GITHUB_WORKSPACE/conda-recipe/variant-config.yaml
       - name: Build conda package
         run: |
-          # use bootstrap channel to pull NumPy linked with OpenBLAS
-          CHANNELS="-c conda-forge --override-channels"
-          VERSIONS="--python ${{ matrix.python }} --numpy 2.0"
-          TEST="--no-test"
-          conda build \
-            $TEST \
-            $VERSIONS \
-            $CHANNELS \
-            conda-recipe
+          rattler-build build \
+            -r $GITHUB_WORKSPACE/conda-recipe/recipe.yaml \
+            -m $GITHUB_WORKSPACE/conda-recipe/variant-config.yaml \
+            --test skip \
+            --experimental \
+            --channel-priority strict \
+            -c ${{ env.INTEL_CHANNEL }} -c conda-forge
       - name: Upload artifact
         uses: actions/upload-artifact@v4.6.2
         with:
@@ -105,10 +106,10 @@ jobs:
           conda-remove-defaults: true
           python-version: ${{ matrix.python }}
 
-      - name: Install conda build
+      - name: Install rattler-build
         run: |
           conda activate
-          conda install -y conda-build
+          conda install -y conda-build rattler-build
           conda list -n base
 
       - name: Cache conda packages
@@ -129,13 +130,18 @@ jobs:
           echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
+      - name: Create variant config
+        shell: bash -l {0}
+        run: |
+          echo "python:\n- ${matrix.python}\n\nnumpy:\n - 2.0" > $GITHUB_WORKSPACE/conda-recipe/variant-config.yaml
+
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
           conda activate
           # TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
-          conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+          rattler-build build -r %GITHUB_WORKSPACE%\conda-recipe\recipe.yaml -m %GITHUB_WORKSPACE%\conda-recipe\variant-config.yaml --test skip --experimental --channel-priority strict -c conda-forge
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.6.2
