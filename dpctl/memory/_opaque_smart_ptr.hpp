@@ -39,7 +39,7 @@
 #include <exception>
 #include <iostream>
 
-namespace
+namespace detail
 {
 
 class USMDeleter
@@ -65,11 +65,11 @@ private:
     ::sycl::context _context;
 };
 
-} // end of anonymous namespace
+} // namespace detail
 
 void *OpaqueSmartPtr_Make(void *usm_ptr, const sycl::queue &q)
 {
-    USMDeleter _deleter(q);
+    detail::USMDeleter _deleter(q);
     auto sptr = new std::shared_ptr<void>(usm_ptr, std::move(_deleter));
 
     return reinterpret_cast<void *>(sptr);
