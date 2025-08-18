@@ -59,8 +59,9 @@ jobs:
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
       - name: Build conda package
         run: |
-          # use bootstrap channel to pull NumPy linked with OpenBLAS
-          CHANNELS="-c conda-forge --override-channels"
+          # use bootstrap channel to pull NumPy linked with
+          # TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
+          CHANNELS="-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels"
           VERSIONS="--python ${{ matrix.python }} --numpy 2.0"
           TEST="--no-test"
           conda build \
