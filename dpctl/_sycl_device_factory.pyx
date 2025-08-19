@@ -212,6 +212,8 @@ cpdef list get_composite_devices():
     Only available when `ZE_FLAT_DEVICE_HIERARCHY=COMBINED` is set in
     the environment, and only for specific Level Zero devices
     (i.e., those which expose multiple tiles as root devices).
+    To read more about `ZE_FLAT_DEVICE_HIERARCHY=COMBINED`,
+    see :ref:`env_var_ze_flat_device_hierarchy`.
 
     For more information, see:
     https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_composite_device.asciidoc
