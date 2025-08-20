@@ -849,8 +849,9 @@ The value of the variable is a bit-mask, with the following supported values:</p
 </div>
 </section>
 <section id="variable-ze-flat-device-hierarchy">
-<h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code><a class="headerlink" href="#variable-ze-flat-device-hierarchy" title="Permalink to this heading">¶</a></h2>
-<p>Allows users to define the device hierarchy model exposed by Level Zero driver implementation.</p>
+<span id="env-var-ze-flat-device-hierarchy"></span><h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code><a class="headerlink" href="#variable-ze-flat-device-hierarchy" title="Permalink to this heading">¶</a></h2>
+<p>Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
+Keep in mind <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_composite_devices.html#dpctl.get_composite_devices" title="dpctl.get_composite_devices"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.get_composite_devices</span></code></a> will only work while this is set to <code class="docutils literal notranslate"><span class="pre">COMBINED</span></code>.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -860,24 +861,24 @@ The value of the variable is a bit-mask, with the following supported values:</p
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COMBINED</span></code></p></td>
-<td><p>Enables all levels of tracing</p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. These root devices are component devices, which can be queried for their corresponding composite device, and the composite device can in turn be queried for components. Dedicated composite device APIs will return non-trivial results.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COMPOSITE</span></code></p></td>
-<td><p>Returns all devices that do not have a root-device.</p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a singular root device, with tiles accessible as sub-devices.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FLAT</span></code></p></td>
-<td><p>Returns all devices without sub-devices in a flat hierarchy. Enabled by default.</p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. Enabled by default.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Read more <cite>here &lt;https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy&gt;</cite> and <cite>here &lt;https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html&gt;</cite>.</p>
+<p>Read more <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy">about device hierarchy here</a> and <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html">here</a>.</p>
 </section>
 <section id="variable-ze-affinity-mask">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code><a class="headerlink" href="#variable-ze-affinity-mask" title="Permalink to this heading">¶</a></h2>
 <p>Allows users to mask specific devices from being used by SYCL applications.
 If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible. Etc.</p>
-<p>Read more <cite>here &lt;https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask&gt;</cite>.</p>
+<p>Read more about <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask">affinity masks here</a>.</p>
 </section>
 <section id="variable-ze-enable-pci-id-device-order">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_ENABLE_PCI_ID_DEVICE_ORDER</span></code><a class="headerlink" href="#variable-ze-enable-pci-id-device-order" title="Permalink to this heading">¶</a></h2>
