@@ -800,7 +800,10 @@
           <section id="environment-variables">
 <span id="user-guides-env-variables"></span><h1>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading">¶</a></h1>
 <p>Behavior of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is affected by <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md">environment variables</a> that
-affect DPC++ compiler runtime.</p>
+affect DPC++ compiler runtime.
+Other relevant environment variables that may not be documented here can be found in:
+- <a class="reference external" href="https://intel.github.io/llvm/EnvironmentVariables.html">Level Zero</a>
+- <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables">OneAPI</a></p>
 <section id="variable-oneapi-device-selector">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code><a class="headerlink" href="#variable-oneapi-device-selector" title="Permalink to this heading">¶</a></h2>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code> can be used to limit the choice of devices
@@ -921,9 +924,6 @@ If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of
 </tbody>
 </table>
 </div>
-<ul class="simple">
-<li><p><cite>OneAPI &lt;https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables&gt;</cite></p></li>
-</ul>
 </section>
 </section>
 

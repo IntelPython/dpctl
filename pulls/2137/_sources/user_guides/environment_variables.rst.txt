@@ -6,6 +6,10 @@ Environment variables
 
 Behavior of :py:mod:`dpctl` is affected by :dpcpp_envar:`environment variables <>` that
 affect DPC++ compiler runtime.
+Other relevant environment variables that may not be documented here can be found in:
+- `Level Zero <https://intel.github.io/llvm/EnvironmentVariables.html>`_
+- `OneAPI <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables>`_
+
 
 Variable ``ONEAPI_DEVICE_SELECTOR``
 -----------------------------------
@@ -106,8 +110,3 @@ Forces all shared allocations into device memory
       - Disabled. Default value.
     * - ``1``
       - Enabled.
-
--------------------------------
-Other relevant environment variables can be found here:
-- `Level Zero <https://intel.github.io/llvm/EnvironmentVariables.html>`
-- `OneAPI <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables>`
