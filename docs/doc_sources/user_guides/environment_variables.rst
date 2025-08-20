@@ -6,6 +6,12 @@ Environment variables
 
 Behavior of :py:mod:`dpctl` is affected by :dpcpp_envar:`environment variables <>` that
 affect DPC++ compiler runtime.
+Other relevant environment variables that may not be documented here can be found in:
+
+- `Level Zero <https://intel.github.io/llvm/EnvironmentVariables.html>`_
+
+- `OneAPI <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables>`_
+
 
 Variable ``ONEAPI_DEVICE_SELECTOR``
 -----------------------------------
@@ -50,3 +56,59 @@ The value of the variable is a bit-mask, with the following supported values:
       - Enables tracing of PI calls
     * - ``-1``
       - Enables all levels of tracing
+
+.. _env_var_ze_flat_device_hierarchy:
+
+Variable ``ZE_FLAT_DEVICE_HIERARCHY``
+--------------------------
+Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
+Keep in mind :py:mod:`dpctl.get_composite_devices` will only work while this is set to ``COMBINED``.
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``COMBINED``
+      - Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. These root devices are component devices, which can be queried for their corresponding composite device, and the composite device can in turn be queried for components. Dedicated composite device APIs will return non-trivial results.
+    * - ``COMPOSITE``
+      - Level Zero devices with multiple tiles will be exposed as a singular root device, with tiles accessible as sub-devices.
+    * - ``FLAT``
+      - Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. Enabled by default.
+
+Read more `about device hierarchy here <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy>`_ and `here <https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html>`_.
+
+Variable ``ZE_AFFINITY_MASK``
+-------------------------------
+Allows users to mask specific devices from being used by SYCL applications.
+If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible. Etc.
+
+Read more about `affinity masks here <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
+
+Variable ``ZE_ENABLE_PCI_ID_DEVICE_ORDER``
+-------------------------------
+Forces driver to report devices from lowest to highest PCI bus ID.
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``0``
+      - Disabled. Default value.
+    * - ``1``
+      - Enabled.
+
+Variable ``ZE_SHARED_FORCE_DEVICE_ALLOC``
+-------------------------------
+Forces all shared allocations into device memory
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``0``
+      - Disabled. Default value.
+    * - ``1``
+      - Enabled.
