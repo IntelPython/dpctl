@@ -81,7 +81,13 @@ Read more `about device hierarchy here <https://oneapi-src.github.io/level-zero-
 Variable ``ZE_AFFINITY_MASK``
 -------------------------------
 Allows users to mask specific devices from being used by SYCL applications.
-If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible. Etc.
+If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible.
+
+If we have ZE_FLAT_DEVICE_HIERARCHY set to FLAT, we can have an ZE_AFFINITY_MASK of “1” for our application to only see the second tile in the system as logical device #0.
+If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In FLAT mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
+Therefore, we could use the second tile in each of four dual-tile GPUs with ZE_AFFINITY_MASK=1,3,5,7.
+
+Additional examples to illustrate this are in the detailed documentation for ZE_AFFINITY_MASK.
 
 Read more about `affinity masks here <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
 
