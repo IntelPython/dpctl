@@ -886,6 +886,11 @@ If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_
 <p>If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">FLAT</span></code>, we can have a <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code> of “1” for our application to only see the second tile in the system as logical device #0.
 If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In <code class="docutils literal notranslate"><span class="pre">FLAT</span></code> mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
 Therefore, we could use the second tile in each of four dual-tile GPUs with <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK=1,3,5,7</span></code>.</p>
+<p>If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">COMBINED</span></code>, the way tiles and composite devices are exposed depends on the physical devices present and the value of <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code>:
+<strong>If all exposed tiles (as determined by ``ZE_AFFINITY_MASK``) belong to the same physical device:</strong>
+- That composite device is available to the application, and each tile is accessible as a component device of that composite device.</p>
+<p><strong>If the exposed tiles belong to different physical devices:</strong>
+- A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.</p>
 <p>Additional examples to illustrate this are in the detailed documentation for <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code>, read more about it in <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask">Level Zero Specification</a>.</p>
 </section>
 <section id="variable-ze-enable-pci-id-device-order">
