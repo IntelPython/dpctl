@@ -877,17 +877,16 @@ Keep in mind <a class="reference internal" href="../api_reference/dpctl/generate
 </tbody>
 </table>
 </div>
-<p>Read more <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy">about device hierarchy here</a> and <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html">here</a>.</p>
+<p>Read more about device hierarchy in <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy">Level Zero Specification</a> and <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html">Intel GPU article</a>.</p>
 </section>
 <section id="variable-ze-affinity-mask">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code><a class="headerlink" href="#variable-ze-affinity-mask" title="Permalink to this heading">¶</a></h2>
 <p>Allows users to mask specific devices from being used by SYCL applications.
-If we have ZE_FLAT_DEVICE_HIERARCHY set to COMPOSITE, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible.</p>
-<p>If we have ZE_FLAT_DEVICE_HIERARCHY set to FLAT, we can have an ZE_AFFINITY_MASK of “1” for our application to only see the second tile in the system as logical device #0.
-If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In FLAT mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
-Therefore, we could use the second tile in each of four dual-tile GPUs with ZE_AFFINITY_MASK=1,3,5,7.</p>
-<p>Additional examples to illustrate this are in the detailed documentation for ZE_AFFINITY_MASK.</p>
-<p>Read more about <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask">affinity masks here</a>.</p>
+If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">COMPOSITE</span></code>, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible.</p>
+<p>If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">FLAT</span></code>, we can have a <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code> of “1” for our application to only see the second tile in the system as logical device #0.
+If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In <code class="docutils literal notranslate"><span class="pre">FLAT</span></code> mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
+Therefore, we could use the second tile in each of four dual-tile GPUs with <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK=1,3,5,7</span></code>.</p>
+<p>Additional examples to illustrate this are in the detailed documentation for <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code>, read more about it in <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask">Level Zero Specification</a>.</p>
 </section>
 <section id="variable-ze-enable-pci-id-device-order">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_ENABLE_PCI_ID_DEVICE_ORDER</span></code><a class="headerlink" href="#variable-ze-enable-pci-id-device-order" title="Permalink to this heading">¶</a></h2>
