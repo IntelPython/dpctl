@@ -88,11 +88,11 @@ If the system has four dual-tile GPUs installed, this would be the second tile i
 Therefore, we could use the second tile in each of four dual-tile GPUs with ``ZE_AFFINITY_MASK=1,3,5,7``.
 
 If we have ``ZE_FLAT_DEVICE_HIERARCHY`` set to ``COMBINED``, the way tiles and composite devices are exposed depends on the physical devices present and the value of ``ZE_AFFINITY_MASK``:
-**If all exposed tiles (as determined by ``ZE_AFFINITY_MASK``) belong to the same physical device:**
-- That composite device is available to the application, and each tile is accessible as a component device of that composite device.
+| **If all exposed tiles (as determined by ``ZE_AFFINITY_MASK``) belong to the same physical device:**
+| - That composite device is available to the application, and each tile is accessible as a component device of that composite device.
 
-**If the exposed tiles belong to different physical devices:**
-- A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.
+| **If the exposed tiles belong to different physical devices:**
+| - A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.
 
 Additional examples to illustrate this are in the detailed documentation for ``ZE_AFFINITY_MASK``, read more about it in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
 
