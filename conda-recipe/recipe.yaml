@@ -1,0 +1,118 @@
+schema_version: 1
+
+context:
+  name: dpctl
+  git_repo_url: "https://github.com/IntelPython/dpctl.git"
+  latest_tag: ${{ git.latest_tag( git_repo_url ) }}
+  version: ${{ latest_tag }}
+  buildnumber: ${{ GIT_DESCRIBE_NUMBER }}
+  required_compiler_version: "2024.2.0"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  path: ..
+  use_gitignore: false
+
+build:
+  number: ${{buildnumber}}
+  script:
+    env:
+      WHEELS_OUTPUT_FOLDER: ${{ env.get("WHEELS_OUTPUT_FOLDER", default="") }}
+      OVERRIDE_INTEL_IPO: ${{ env.get("OVERRIDE_INTEL_IPO", default="") }}
+  
+requirements:
+    ignore_run_exports:
+      by_name:
+        - level-zero
+    # TODO: keep in sync with /pyproject.toml
+    build:
+      - ${{ compiler('cxx') }}
+      - ${{ stdlib('c') }}
+      - ${{ compiler('dpcpp') }} >= ${{ required_compiler_version }}
+    host:
+      - python
+      - pip >=24.0
+      - level-zero-devel >=1.16
+      - pybind11 >=2.12
+      - ${{ pin_compatible('intel-sycl-rt', lower_bound='x.x', upper_bound='x') }}
+      - ${{ pin_compatible('intel-cmplr-lib-rt', lower_bound='x.x', upper_bound='x') }}
+      # Ensure we are using latest version of setuptools, since we don't need
+      # editable environments for release.
+      - setuptools >=63.0
+      - wheel>=0.43
+      - python-build>=1.1
+      - scikit-build>=0.17.0
+      - if: linux
+        then:
+          - ninja>=1.11.1
+      - cmake>=3.29.0
+      - if: match(python, ">=3.13")
+        then:
+          - cython>=3.0.10,<3.1.0
+      - if: match(python, "<3.13")
+        then:
+          - cython>=3.0.10
+      - numpy>=1.23
+      # WARNING: check with doc how to upgrade
+      - versioneer==0.29
+      # versioneer dependency
+      - if: python < "3.11"
+        then:
+          - tomli
+    run:
+      - python
+      - ${{ pin_compatible('intel-sycl-rt', lower_bound='x.x', upper_bound='x') }}
+      - ${{ pin_compatible('intel-cmplr-lib-rt', lower_bound='x.x', upper_bound='x') }}
+      - numpy
+
+tests:
+  - script:
+    - if: linux
+      then:
+        - run_test.sh
+    - if: win
+      then:
+        - run_test.bat
+    files:
+      recipe:
+          - run_test.sh
+          - run_test.bat
+    requirements:
+      run:
+        - ${{ compiler('c') }}
+        - ${{ compiler('cxx') }}
+        - ${{ stdlib('c') }}
+        - if: match(python, ">=3.13")
+          then:
+            - cython>=3.0.10,<3.1.0
+        - if: match(python, "<3.13")
+          then:
+            - cython>=3.0.10
+        - setuptools
+        - pytest
+        - pytest-cov
+
+about:
+    homepage: https://github.com/IntelPython/dpctl.git
+    license: Apache-2.0
+    license_file: LICENSE
+    summary: 'A lightweight Python wrapper for a subset of SYCL API.'
+    description: |
+        <strong>LEGAL NOTICE: Use of this software package is subject to the
+        software license agreement (as set forth above, in the license section of
+        the installed Conda package and/or the README file) and all notices,
+        disclaimers or license terms for third party or open source software
+        included in or with the software.</strong>
+        <br/><br/>
+        EULA: <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">Apache-2.0</a>
+        <br/><br/>
+
+extra:
+    recipe-maintainers:
+        - ndgrigorian
+        - antonwolfy
+        - vtavana
+        - vlad-perevezentsev
