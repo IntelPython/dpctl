@@ -800,7 +800,12 @@
           <section id="environment-variables">
 <span id="user-guides-env-variables"></span><h1>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading">¶</a></h1>
 <p>Behavior of <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> is affected by <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md">environment variables</a> that
-affect DPC++ compiler runtime.</p>
+affect DPC++ compiler runtime.
+Other relevant environment variables that may not be documented here can be found in:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://intel.github.io/llvm/EnvironmentVariables.html">Level Zero</a></p></li>
+<li><p><a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables">OneAPI</a></p></li>
+</ul>
 <section id="variable-oneapi-device-selector">
 <h2>Variable <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code><a class="headerlink" href="#variable-oneapi-device-selector" title="Permalink to this heading">¶</a></h2>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code> can be used to limit the choice of devices
@@ -843,6 +848,92 @@ The value of the variable is a bit-mask, with the following supported values:</p
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
 <td><p>Enables all levels of tracing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="variable-ze-flat-device-hierarchy">
+<span id="env-var-ze-flat-device-hierarchy"></span><h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code><a class="headerlink" href="#variable-ze-flat-device-hierarchy" title="Permalink to this heading">¶</a></h2>
+<p>Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
+Keep in mind <a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_composite_devices.html#dpctl.get_composite_devices" title="dpctl.get_composite_devices"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.get_composite_devices</span></code></a> will only work while this is set to <code class="docutils literal notranslate"><span class="pre">COMBINED</span></code>.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">COMBINED</span></code></p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. These root devices are component devices, which can be queried for their corresponding composite device, and the composite device can in turn be queried for components. Dedicated composite device APIs will return non-trivial results.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">COMPOSITE</span></code></p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a singular root device, with tiles accessible as sub-devices.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FLAT</span></code></p></td>
+<td><p>Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. Enabled by default.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Read more about device hierarchy in <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy">Level Zero Specification</a> and <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html">Intel GPU article</a>.</p>
+</section>
+<section id="variable-ze-affinity-mask">
+<h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code><a class="headerlink" href="#variable-ze-affinity-mask" title="Permalink to this heading">¶</a></h2>
+<p>Allows users to mask specific devices from being used by SYCL applications.
+If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">COMPOSITE</span></code>, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible.</p>
+<p>If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">FLAT</span></code>, we can have a <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code> of “1” for our application to only see the second tile in the system as logical device #0.
+If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In <code class="docutils literal notranslate"><span class="pre">FLAT</span></code> mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
+Therefore, we could use the second tile in each of four dual-tile GPUs with <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK=1,3,5,7</span></code>.</p>
+<div class="line-block">
+<div class="line">If we have <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code> set to <code class="docutils literal notranslate"><span class="pre">COMBINED</span></code>, the way tiles and composite devices are exposed depends on the physical devices present and the value of <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code>:</div>
+<div class="line"><strong>If all exposed tiles (as determined by ``ZE_AFFINITY_MASK``) belong to the same physical device:</strong></div>
+<div class="line">- That composite device is available to the application, and each tile is accessible as a component device of that composite device.</div>
+</div>
+<div class="line-block">
+<div class="line"><strong>If the exposed tiles belong to different physical devices:</strong></div>
+<div class="line">- A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.</div>
+</div>
+<p>Additional examples to illustrate this are in the detailed documentation for <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code>, read more about it in <a class="reference external" href="https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask">Level Zero Specification</a>.</p>
+</section>
+<section id="variable-ze-enable-pci-id-device-order">
+<h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_ENABLE_PCI_ID_DEVICE_ORDER</span></code><a class="headerlink" href="#variable-ze-enable-pci-id-device-order" title="Permalink to this heading">¶</a></h2>
+<p>Forces driver to report devices from lowest to highest PCI bus ID.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Disabled. Default value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Enabled.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="variable-ze-shared-force-device-alloc">
+<h2>Variable <code class="docutils literal notranslate"><span class="pre">ZE_SHARED_FORCE_DEVICE_ALLOC</span></code><a class="headerlink" href="#variable-ze-shared-force-device-alloc" title="Permalink to this heading">¶</a></h2>
+<p>Forces all shared allocations into device memory</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Disabled. Default value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Enabled.</p></td>
 </tr>
 </tbody>
 </table>
@@ -909,6 +1000,10 @@ The value of the variable is a bit-mask, with the following supported values:</p
 <li><a class="reference internal" href="#variable-oneapi-device-selector">Variable <code class="docutils literal notranslate"><span class="pre">ONEAPI_DEVICE_SELECTOR</span></code></a></li>
 <li><a class="reference internal" href="#variable-sycl-cache-persistent">Variable <code class="docutils literal notranslate"><span class="pre">SYCL_CACHE_PERSISTENT</span></code></a></li>
 <li><a class="reference internal" href="#variable-sycl-pi-trace">Variable <code class="docutils literal notranslate"><span class="pre">SYCL_PI_TRACE</span></code></a></li>
+<li><a class="reference internal" href="#variable-ze-flat-device-hierarchy">Variable <code class="docutils literal notranslate"><span class="pre">ZE_FLAT_DEVICE_HIERARCHY</span></code></a></li>
+<li><a class="reference internal" href="#variable-ze-affinity-mask">Variable <code class="docutils literal notranslate"><span class="pre">ZE_AFFINITY_MASK</span></code></a></li>
+<li><a class="reference internal" href="#variable-ze-enable-pci-id-device-order">Variable <code class="docutils literal notranslate"><span class="pre">ZE_ENABLE_PCI_ID_DEVICE_ORDER</span></code></a></li>
+<li><a class="reference internal" href="#variable-ze-shared-force-device-alloc">Variable <code class="docutils literal notranslate"><span class="pre">ZE_SHARED_FORCE_DEVICE_ALLOC</span></code></a></li>
 </ul>
 </li>
 </ul>
