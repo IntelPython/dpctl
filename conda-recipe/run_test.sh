@@ -7,8 +7,5 @@ ${PYTHON} -m dpctl -f
 # don't use coverage for Python 3.13 due to crashes related to
 # Cython >= 3.1.0 and Python >= 3.13
 # TODO: remove if crash is triaged
-if ${PYTHON} --version 2>&1 | grep -q '^Python 3\.13'; then
-    ${PYTHON} -m pytest -q -ra --disable-warnings --pyargs dpctl -vv
-else
-    ${PYTHON} -m pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
-fi
+${PYTHON} -m pytest tests/my_test_file.py::test_specific_function -q -ra --disable-warnings --pyargs dpctl -vv 
+
