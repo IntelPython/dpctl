@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* `dpctl.tensor.usm_ndarray` object allows implicit conversions to NumPy array changing implementation from [gh-1964](https://github.com/IntelPython/dpctl/pull/1964) for a more user-friendly behavior [gh-2131](https://github.com/IntelPython/dpctl/pull/2131).
+
 ### Fixed
 
 ### Maintenance
