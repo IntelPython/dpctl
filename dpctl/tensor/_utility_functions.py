@@ -21,14 +21,14 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.tensor._tensor_reductions_impl as tri
 import dpctl.utils as du
-from dpctl.tensor._elementwise_common import (
+
+from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
+from ._scalar_utils import (
     _get_dtype,
     _get_queue_usm_type,
     _get_shape,
     _validate_dtype,
 )
-
-from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
 from ._type_utils import (
     _resolve_one_strong_one_weak_types,
     _resolve_one_strong_two_weak_types,
