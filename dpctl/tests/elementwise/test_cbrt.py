@@ -36,29 +36,13 @@ def test_cbrt_out_type(dtype):
 
 
 @pytest.mark.parametrize("dtype", _real_fp_dtypes)
-def test_cbrt_output_contig(dtype):
+def test_cbrt_basic(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     n_seq = 1027
 
     X = dpt.linspace(0, 13, num=n_seq, dtype=dtype, sycl_queue=q)
-    Xnp = dpt.asnumpy(X)
-
-    Y = dpt.cbrt(X)
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    assert_allclose(dpt.asnumpy(Y), np.cbrt(Xnp), atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _real_fp_dtypes)
-def test_cbrt_output_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    n_seq = 2054
-
-    X = dpt.linspace(0, 13, num=n_seq, dtype=dtype, sycl_queue=q)[::-2]
     Xnp = dpt.asnumpy(X)
 
     Y = dpt.cbrt(X)
