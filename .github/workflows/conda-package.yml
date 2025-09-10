@@ -221,15 +221,6 @@ jobs:
           . $CONDA/etc/profile.d/conda.sh
           conda activate ${{ env.TEST_ENV_NAME }}
           python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
-      - name: Install gdb
-        run: |
-          sudo apt-get update --fix-missing
-          sudo apt-get install -y gdb
-      - name: Run test_elementwise under gdb
-        run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
-          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
       - name: Create test temp dir
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
