@@ -31,6 +31,7 @@
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/rich_comparisons.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/sorting/merge_sort.hpp"
@@ -38,7 +39,6 @@
 
 #include "merge_sort.hpp"
 #include "py_sort_common.hpp"
-#include "rich_comparisons.hpp"
 
 namespace td_ns = dpctl::tensor::type_dispatch;
 
@@ -59,6 +59,7 @@ template <typename fnT, typename argTy> struct AscendingSortContigFactory
 {
     fnT get()
     {
+        using dpctl::tensor::rich_comparisons::AscendingSorter;
         using Comp = typename AscendingSorter<argTy>::type;
 
         using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
@@ -70,7 +71,9 @@ template <typename fnT, typename argTy> struct DescendingSortContigFactory
 {
     fnT get()
     {
+        using dpctl::tensor::rich_comparisons::DescendingSorter;
         using Comp = typename DescendingSorter<argTy>::type;
+
         using dpctl::tensor::kernels::stable_sort_axis1_contig_impl;
         return stable_sort_axis1_contig_impl<argTy, Comp>;
     }
