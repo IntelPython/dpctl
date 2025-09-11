@@ -35,11 +35,11 @@
 #include "kernels/sorting/searchsorted.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/rich_comparisons.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
-#include "rich_comparisons.hpp"
 #include "simplify_iteration_space.hpp"
 
 namespace py = pybind11;
@@ -76,6 +76,7 @@ struct LeftSideSearchSortedContigFactory
         {
             static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_contig_impl;
+            using dpctl::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -99,7 +100,9 @@ struct RightSideSearchSortedContigFactory
                       std::is_same_v<indTy, std::int64_t>)
         {
             static constexpr bool right_side_search(false);
+
             using dpctl::tensor::kernels::searchsorted_contig_impl;
+            using dpctl::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -132,6 +135,7 @@ struct LeftSideSearchSortedStridedFactory
         {
             static constexpr bool left_side_search(true);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
+            using dpctl::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 
@@ -156,6 +160,7 @@ struct RightSideSearchSortedStridedFactory
         {
             static constexpr bool right_side_search(false);
             using dpctl::tensor::kernels::searchsorted_strided_impl;
+            using dpctl::tensor::rich_comparisons::AscendingSorter;
 
             using Compare = typename AscendingSorter<argTy>::type;
 

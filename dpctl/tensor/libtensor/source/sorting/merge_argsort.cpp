@@ -30,11 +30,11 @@
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/rich_comparisons.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/sorting/merge_sort.hpp"
 #include "kernels/sorting/sort_impl_fn_ptr_t.hpp"
-#include "rich_comparisons.hpp"
 
 #include "merge_argsort.hpp"
 #include "py_argsort_common.hpp"
@@ -63,6 +63,7 @@ struct AscendingArgSortContigFactory
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
                       std::is_same_v<IndexTy, std::int32_t>)
         {
+            using dpctl::tensor::rich_comparisons::AscendingSorter;
             using Comp = typename AscendingSorter<argTy>::type;
 
             using dpctl::tensor::kernels::stable_argsort_axis1_contig_impl;
@@ -82,6 +83,7 @@ struct DescendingArgSortContigFactory
         if constexpr (std::is_same_v<IndexTy, std::int64_t> ||
                       std::is_same_v<IndexTy, std::int32_t>)
         {
+            using dpctl::tensor::rich_comparisons::DescendingSorter;
             using Comp = typename DescendingSorter<argTy>::type;
 
             using dpctl::tensor::kernels::stable_argsort_axis1_contig_impl;
