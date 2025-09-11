@@ -35,7 +35,6 @@
 #include "kernels/sorting/isin.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
-#include "utils/rich_comparisons.hpp"
 #include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
@@ -68,11 +67,7 @@ template <typename fnT, typename argTy> struct IsinContigFactory
     fnT get() const
     {
         using dpctl::tensor::kernels::isin_contig_impl;
-        using dpctl::tensor::rich_comparisons::AscendingSorter;
-
-        using Compare = typename AscendingSorter<argTy>::type;
-
-        return isin_contig_impl<argTy, Compare>;
+        return isin_contig_impl<argTy>;
     }
 };
 
@@ -88,11 +83,7 @@ template <typename fnT, typename argTy> struct IsinStridedFactory
     fnT get() const
     {
         using dpctl::tensor::kernels::isin_strided_impl;
-        using dpctl::tensor::rich_comparisons::AscendingSorter;
-
-        using Compare = typename AscendingSorter<argTy>::type;
-
-        return isin_strided_impl<argTy, Compare>;
+        return isin_strided_impl<argTy>;
     }
 };
 
