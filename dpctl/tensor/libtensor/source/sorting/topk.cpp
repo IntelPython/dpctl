@@ -41,10 +41,10 @@
 #include "utils/math_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/rich_comparisons.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 
-#include "rich_comparisons.hpp"
 #include "topk.hpp"
 
 namespace dpctl
@@ -110,15 +110,16 @@ sycl::event topk_caller(sycl::queue &exec_q,
         using dpctl::tensor::kernels::topk_merge_impl;
         if (largest) {
             using CompTy =
-                typename dpctl::tensor::py_internal::DescendingSorter<
+                typename dpctl::tensor::rich_comparisons::DescendingSorter<
                     argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
                 depends);
         }
         else {
-            using CompTy = typename dpctl::tensor::py_internal::AscendingSorter<
-                argTy>::type;
+            using CompTy =
+                typename dpctl::tensor::rich_comparisons::AscendingSorter<
+                    argTy>::type;
             return topk_merge_impl<argTy, IndexTy, CompTy>(
                 exec_q, iter_nelems, axis_nelems, k, arg_cp, vals_cp, inds_cp,
                 depends);

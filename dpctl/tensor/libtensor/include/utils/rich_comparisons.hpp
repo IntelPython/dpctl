@@ -31,7 +31,7 @@ namespace dpctl
 {
 namespace tensor
 {
-namespace py_internal
+namespace rich_comparisons
 {
 
 namespace detail
@@ -129,6 +129,6 @@ template <typename T> struct DescendingSorter<std::complex<T>>
     using type = detail::ExtendedComplexFPGreater<std::complex<T>>;
 };
 
-} // end of namespace py_internal
+} // end of namespace rich_comparisons
 } // end of namespace tensor
 } // end of namespace dpctl
