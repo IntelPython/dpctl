@@ -34,6 +34,7 @@
 #include "kernels/dpctl_tensor_types.hpp"
 #include "kernels/sorting/search_sorted_detail.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/rich_comparisons.hpp"
 
 namespace dpctl
 {
@@ -47,8 +48,7 @@ using dpctl::tensor::ssize_t;
 template <typename T,
           typename HayIndexerT,
           typename NeedlesIndexerT,
-          typename OutIndexerT,
-          typename Compare>
+          typename OutIndexerT>
 struct IsinFunctor
 {
 private:
@@ -78,6 +78,8 @@ public:
 
     void operator()(sycl::id<1> id) const
     {
+        using Compare =
+            typename dpctl::tensor::rich_comparisons::AscendingSorter<T>::type;
         static constexpr Compare comp{};
 
         const std::size_t i = id[0];
@@ -115,7 +117,7 @@ typedef sycl::event (*isin_contig_impl_fp_ptr_t)(
 
 template <typename T> class isin_contig_impl_krn;
 
-template <typename T, typename Compare>
+template <typename T>
 sycl::event isin_contig_impl(sycl::queue &exec_q,
                              const bool invert,
                              const std::size_t hay_nelems,
@@ -148,9 +150,9 @@ sycl::event isin_contig_impl(sycl::queue &exec_q,
         static constexpr TrivialIndexerT out_indexer{};
 
         const auto fnctr =
-            IsinFunctor<T, TrivialIndexerT, TrivialIndexerT, TrivialIndexerT,
-                        Compare>(invert, hay_tp, needles_tp, out_tp, hay_nelems,
-                                 hay_indexer, needles_indexer, out_indexer);
+            IsinFunctor<T, TrivialIndexerT, TrivialIndexerT, TrivialIndexerT>(
+                invert, hay_tp, needles_tp, out_tp, hay_nelems, hay_indexer,
+                needles_indexer, out_indexer);
 
         cgh.parallel_for<KernelName>(gRange, fnctr);
     });
@@ -176,7 +178,7 @@ typedef sycl::event (*isin_strided_impl_fp_ptr_t)(
 
 template <typename T> class isin_strided_impl_krn;
 
-template <typename T, typename Compare>
+template <typename T>
 sycl::event isin_strided_impl(
     sycl::queue &exec_q,
     const bool invert,
@@ -224,7 +226,7 @@ sycl::event isin_strided_impl(
                                       out_strides);
 
         const auto fnctr =
-            IsinFunctor<T, HayIndexerT, NeedlesIndexerT, OutIndexerT, Compare>(
+            IsinFunctor<T, HayIndexerT, NeedlesIndexerT, OutIndexerT>(
                 invert, hay_tp, needles_tp, out_tp, hay_nelems, hay_indexer,
                 needles_indexer, out_indexer);
         using KernelName = class isin_strided_impl_krn<T>;
