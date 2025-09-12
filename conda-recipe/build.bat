@@ -7,7 +7,7 @@ set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
 if DEFINED OVERRIDE_INTEL_IPO (
-  if "%OVERRIDE_INTEL_IPO%"!="" (
+  if NOT "%OVERRIDE_INTEL_IPO%"=="" (
     set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
   )
 )
