@@ -70,16 +70,11 @@ requirements:
 
 tests:
   - script:
-    - if: linux
-      then:
-        - run_test.sh
-    - if: win
-      then:
-        - run_test.bat
-    files:
-      recipe:
-          - run_test.sh
-          - run_test.bat
+      interpreter: bash
+      content: |
+        python -c "import dpctl; print(dpctl.__version__)"
+        python -m dpctl -f
+        python -m pytest -q -ra --disable-warnings --cov dpctl --cov-report term-missing --pyargs dpctl -vv
     requirements:
       run:
         - ${{ compiler('c') }}
