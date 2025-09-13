@@ -14,15 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+
 import setuptools
 from Cython.Build import build_ext
 
 import dpctl
 
+
+def get_includes():
+    # path to dpctl/include
+    dpctl_incl_dir = dpctl.get_include()
+    # path to folder where __init__.pxd resides
+    dpctl_pxd_dir = os.path.dirname(os.path.dirname(dpctl_incl_dir))
+    return [dpctl_incl_dir, dpctl_pxd_dir]
+
+
 ext = setuptools.Extension(
     "_cython_api",
     ["_cython_api.pyx"],
-    include_dirs=[dpctl.get_include()],
+    include_dirs=get_includes(),
     language="c++",
 )
 
