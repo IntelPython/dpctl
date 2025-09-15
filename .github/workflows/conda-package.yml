@@ -444,7 +444,7 @@ jobs:
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          anaconda --token $ANACONDA_TOKEN --verbose upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
+          anaconda --token ${{ env.ANACONDA_TOKEN }} --verbose upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
 
       - name: Upload Wheels
         env:
