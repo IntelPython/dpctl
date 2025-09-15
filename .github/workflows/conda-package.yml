@@ -416,9 +416,7 @@ jobs:
 
   upload_linux:
     needs: test_linux
-    if: |
-      (github.repository == 'IntelPython/dpctl') &&
-      (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+    if: github.repository == 'IntelPython/dpctl'
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     strategy:
@@ -446,7 +444,7 @@ jobs:
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
+          anaconda --token $ANACONDA_TOKEN --verbose upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
 
       - name: Upload Wheels
         env:
