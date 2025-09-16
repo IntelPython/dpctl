@@ -1,4 +1,3 @@
-
 REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
 set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
@@ -65,5 +64,5 @@ for /f %%f in ('dir /b /S .\dist') do (
 :: Copy wheel package
 if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
     copy dist\dpctl*.whl %WHEELS_OUTPUT_FOLDER%
-    if errorlevel 1 exit 1
+    if %ERRORLEVEL% neq 0 exit 1
 )
