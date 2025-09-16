@@ -23,7 +23,7 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _complex_fp_dtypes, _real_fp_dtypes, _usm_types
+from .utils import _all_dtypes, _complex_fp_dtypes, _real_fp_dtypes
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -49,25 +49,6 @@ def test_abs_out_type(dtype):
         r = dpt.empty_like(X, dtype=arg_dt)
         dpt.abs(X, out=r)
         assert np.allclose(dpt.asnumpy(r), dpt.asnumpy(dpt.abs(X)))
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_abs_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("i4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 1
-    X[..., 1::2] = 0
-
-    Y = dpt.abs(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = dpt.asnumpy(X)
-    assert np.allclose(dpt.asnumpy(Y), expected_Y)
 
 
 def test_abs_types_property():

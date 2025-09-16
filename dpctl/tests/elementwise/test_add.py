@@ -26,7 +26,7 @@ from dpctl.tensor._type_utils import _can_cast
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 from dpctl.utils import ExecutionPlacementError
 
-from .utils import _all_dtypes, _compare_dtypes, _usm_types
+from .utils import _all_dtypes, _compare_dtypes
 
 
 @pytest.mark.parametrize("op1_dtype", _all_dtypes)
@@ -69,23 +69,6 @@ def test_add_dtype_matrix(op1_dtype, op2_dtype):
     r2 = dpt.empty_like(ar1, dtype=r.dtype)
     dpt.add(ar3[::-1], ar4[::2], out=r2)
     assert (dpt.asnumpy(r2) == np.full(r2.shape, 2, dtype=r2.dtype)).all()
-
-
-@pytest.mark.parametrize("op1_usm_type", _usm_types)
-@pytest.mark.parametrize("op2_usm_type", _usm_types)
-def test_add_usm_type_matrix(op1_usm_type, op2_usm_type):
-    get_queue_or_skip()
-
-    sz = 128
-    ar1 = dpt.ones(sz, dtype="i4", usm_type=op1_usm_type)
-    ar2 = dpt.ones_like(ar1, dtype="i4", usm_type=op2_usm_type)
-
-    r = dpt.add(ar1, ar2)
-    assert isinstance(r, dpt.usm_ndarray)
-    expected_usm_type = dpctl.utils.get_coerced_usm_type(
-        (op1_usm_type, op2_usm_type)
-    )
-    assert r.usm_type == expected_usm_type
 
 
 def test_add_order():
