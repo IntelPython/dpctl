@@ -443,6 +443,7 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        if: ${{ env.ANACONDA_TOKEN != '' }}
         run: |
           anaconda --token ${{ env.ANACONDA_TOKEN }} --verbose upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
 
