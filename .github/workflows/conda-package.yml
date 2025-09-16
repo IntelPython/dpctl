@@ -445,12 +445,17 @@ jobs:
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          # remove when anaconda-client 1.13.1 is available
+          ANACONDA_CLIENT_FORCE_STANDALONE: true
+        if: ${{ env.ANACONDA_TOKEN != '' }}
         run: |
-          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
 
       - name: Upload Wheels
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+          # remove when anaconda-client 1.13.1 is available
+          ANACONDA_CLIENT_FORCE_STANDALONE: true
         run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
 
   upload_windows:
