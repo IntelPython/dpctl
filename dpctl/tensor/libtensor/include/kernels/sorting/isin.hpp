@@ -25,9 +25,7 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstddef>
-#include <cstdint>
 #include <sycl/sycl.hpp>
 #include <vector>
 
@@ -94,9 +92,8 @@ public:
 
         // lower_bound returns the first pos such that bool(hay[pos] <
         // needle_v) is false, i.e. needle_v <= hay[pos]
-        pos = static_cast<std::size_t>(
-            search_sorted_detail::lower_bound_indexed_impl(
-                hay_tp, zero, hay_nelems, needle_v, comp, hay_indexer));
+        pos = search_sorted_detail::lower_bound_indexed_impl(
+            hay_tp, zero, hay_nelems, needle_v, comp, hay_indexer);
         bool out = (pos == hay_nelems ? false : hay_tp[pos] == needle_v);
         out_tp[out_indexer(i)] = (invert) ? !out : out;
     }
