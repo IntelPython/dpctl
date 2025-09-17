@@ -1493,7 +1493,10 @@
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">invert</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`invert` must be `True` or `False`, got </span><span class="si">{</span><span class="n">invert</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;`invert` keyword argument must be of boolean type, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">invert</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">x_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
     <span class="n">test_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
