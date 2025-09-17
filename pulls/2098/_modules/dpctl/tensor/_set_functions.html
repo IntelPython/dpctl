@@ -1492,8 +1492,8 @@
     <span class="n">du</span><span class="o">.</span><span class="n">validate_usm_type</span><span class="p">(</span><span class="n">res_usm_type</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sycl_dev</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
 
-    <span class="k">if</span> <span class="n">invert</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`invert` must be `True` or `False`, got </span><span class="si">{</span><span class="n">invert</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">invert</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`invert` must be `True` or `False`, got </span><span class="si">{</span><span class="n">invert</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">x_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
     <span class="n">test_dt</span> <span class="o">=</span> <span class="n">_get_dtype</span><span class="p">(</span><span class="n">test_elements</span><span class="p">,</span> <span class="n">sycl_dev</span><span class="p">)</span>
