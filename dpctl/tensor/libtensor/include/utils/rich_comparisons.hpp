@@ -24,8 +24,11 @@
 
 #pragma once
 
-#include "sycl/sycl.hpp"
+#include <cmath>
+#include <complex>
 #include <type_traits>
+
+#include "sycl/sycl.hpp"
 
 namespace dpctl
 {
