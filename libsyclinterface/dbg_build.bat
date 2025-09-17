@@ -3,7 +3,7 @@ dpcpp.exe --version >nul 2>&1
 if errorlevel 1 (
     set ERRORLEVEL=
     call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
-    if errorlevel 1 exit 1
+    if %ERRORLEVEL% neq 0 exit 1
 )
 @REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
 set ERRORLEVEL=
@@ -31,13 +31,13 @@ cmake -G Ninja ^
     "-DCMAKE_LINKER:PATH=%DPCPP_HOME%\bin\lld-link.exe" ^
     "-DDPCTL_BUILD_CAPI_TESTS=ON" ^
     ".."
-if errorlevel 1 exit 1
+if %ERRORLEVEL% neq 0 exit 1
 
 ninja -n
-if errorlevel 1 exit 1
+if %ERRORLEVEL% neq 0 exit 1
 @REM ninja check
 @REM IF %ERRORLEVEL% NEQ 0 exit /b 1
 ninja install
-if errorlevel 1 exit 1
+if %ERRORLEVEL% neq 0 exit 1
 
 cd ..
