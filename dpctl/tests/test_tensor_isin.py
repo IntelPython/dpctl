@@ -208,8 +208,12 @@ def test_isin_empty_inputs():
 
 
 def test_isin_validation():
+    get_queue_or_skip()
     with pytest.raises(ExecutionPlacementError):
         dpt.isin(1, 1)
+    not_bool = dict()
+    with pytest.raises(ValueError):
+        dpt.isin(dpt.ones([1]), dpt.ones([1]), invert=not_bool)
 
 
 def test_isin_special_floating_point_vals():
