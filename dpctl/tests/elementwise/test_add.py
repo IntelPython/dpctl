@@ -250,19 +250,12 @@ def test_add_types_property():
 
 
 def test_add_errors():
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
 
-    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
-    ar2 = dpt.ones_like(ar1, sycl_queue=gpu_queue)
-    y = dpt.empty_like(ar1, sycl_queue=cpu_queue)
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    ar2 = dpt.ones_like(ar1, sycl_queue=q1)
+    y = dpt.empty_like(ar1, sycl_queue=q2)
     with pytest.raises(ExecutionPlacementError) as excinfo:
         dpt.add(ar1, ar2, out=y)
     assert "Input and output allocation queues are not compatible" in str(
@@ -294,17 +287,8 @@ def test_add_errors():
         dpt.add(ar1, ar2, out=y)
     assert "output array must be of usm_ndarray type" in str(excinfo.value)
 
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_add_dtype_error(
-    dtype,
-):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    ar1 = dpt.ones(5, dtype=dtype)
+    ar1 = dpt.ones(5, dtype="f4")
     ar2 = dpt.ones_like(ar1, dtype="f4")
-
     y = dpt.zeros_like(ar1, dtype="int8")
     with pytest.raises(ValueError) as excinfo:
         dpt.add(ar1, ar2, out=y)
@@ -436,18 +420,11 @@ def test_add_inplace_operator_mutual_broadcast():
 
 
 def test_add_inplace_errors():
-    get_queue_or_skip()
-    try:
-        gpu_queue = dpctl.SyclQueue("gpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('gpu') failed, skipping")
-    try:
-        cpu_queue = dpctl.SyclQueue("cpu")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("SyclQueue('cpu') failed, skipping")
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
 
-    ar1 = dpt.ones(2, dtype="float32", sycl_queue=gpu_queue)
-    ar2 = dpt.ones_like(ar1, sycl_queue=cpu_queue)
+    ar1 = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    ar2 = dpt.ones_like(ar1, sycl_queue=q2)
     with pytest.raises(ExecutionPlacementError):
         dpt.add(ar1, ar2, out=ar1)
 

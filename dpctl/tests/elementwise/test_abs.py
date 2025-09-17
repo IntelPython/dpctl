@@ -15,11 +15,13 @@
 #  limitations under the License.
 
 import itertools
+import re
 import warnings
 
 import numpy as np
 import pytest
 
+import dpctl
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
@@ -183,3 +185,44 @@ def test_abs_alignment(dtype):
 
     dpt.abs(x[:-1], out=r[1:])
     assert np.allclose(dpt.asnumpy(r[1:]), dpt.asnumpy(r2))
+
+
+def test_abs_errors():
+    q1 = get_queue_or_skip()
+    q2 = dpctl.SyclQueue()
+
+    x = dpt.ones(2, dtype="float32", sycl_queue=q1)
+    y = dpt.empty_like(x, sycl_queue=q2)
+    with pytest.raises(dpctl.utils.ExecutionPlacementError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "Input and output allocation queues are not compatible" in str(
+        excinfo.value
+    )
+
+    x = dpt.ones(2, dtype="float32")
+    y = dpt.empty(3, dtype=x.dtype)
+    with pytest.raises(ValueError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "The shape of input and output arrays are inconsistent" in str(
+        excinfo.value
+    )
+
+    x = np.ones(2, dtype="float32")
+    with pytest.raises(TypeError) as excinfo:
+        dpt.abs(x)
+    assert re.match(
+        "Expected dpctl.tensor.usm_ndarray, got.*",
+        str(excinfo.value),
+    )
+
+    x = dpt.ones(2, dtype="float32")
+    y = np.empty(x.shape, dtype=x.dtype)
+    with pytest.raises(TypeError) as excinfo:
+        dpt.abs(x, out=y)
+    assert "output array must be of usm_ndarray type" in str(excinfo.value)
+
+    x = dpt.ones(5, dtype="f4")
+    y = dpt.zeros_like(x, dtype="int8")
+    with pytest.raises(ValueError) as excinfo:
+        dpt.abs(x, out=y)
+    assert re.match("Output array of type.*is needed", str(excinfo.value))
