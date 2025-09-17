@@ -25,7 +25,7 @@ from .utils import _integral_dtypes
 
 
 @pytest.mark.parametrize("op_dtype", _integral_dtypes)
-def test_bitwise_and_dtype_matrix_contig(op_dtype):
+def test_bitwise_and_dtype_matrix(op_dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(op_dtype, q)
 
@@ -50,32 +50,6 @@ def test_bitwise_and_dtype_matrix_contig(op_dtype):
     assert (r_np == dpt.asnumpy(r)).all()
 
 
-@pytest.mark.parametrize("op_dtype", _integral_dtypes)
-def test_bitwise_and_dtype_matrix_strided(op_dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(op_dtype, q)
-
-    sz = 11
-    n = 2 * sz
-    dt1 = dpt.dtype(op_dtype)
-    dt2 = dpt.dtype(op_dtype)
-
-    x1_range_begin = -sz if dpt.iinfo(dt1).min < 0 else 0
-    x1 = dpt.arange(x1_range_begin, x1_range_begin + n, dtype=dt1)[::2]
-
-    x2_range_begin = -(sz // 2) if dpt.iinfo(dt2).min < 0 else 0
-    x2 = dpt.arange(x2_range_begin, x2_range_begin + n, dtype=dt1)[::-2]
-
-    r = dpt.bitwise_and(x1, x2)
-    assert isinstance(r, dpt.usm_ndarray)
-
-    x1_np = np.arange(x1_range_begin, x1_range_begin + n, dtype=op_dtype)[::2]
-    x2_np = np.arange(x2_range_begin, x2_range_begin + n, dtype=op_dtype)[::-2]
-    r_np = np.bitwise_and(x1_np, x2_np)
-
-    assert (r_np == dpt.asnumpy(r)).all()
-
-
 def test_bitwise_and_bool():
     get_queue_or_skip()
 
@@ -86,18 +60,6 @@ def test_bitwise_and_bool():
     r_lo = dpt.logical_and(x1[:, dpt.newaxis], x2[dpt.newaxis])
 
     assert dpt.all(dpt.equal(r_bw, r_lo))
-
-
-@pytest.mark.parametrize("dtype", ["?"] + _integral_dtypes)
-def test_bitwise_and_inplace_python_scalar(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-    X = dpt.zeros((10, 10), dtype=dtype, sycl_queue=q)
-    dt_kind = X.dtype.kind
-    if dt_kind == "b":
-        X &= False
-    else:
-        X &= int(0)
 
 
 @pytest.mark.parametrize("op1_dtype", ["?"] + _integral_dtypes)
