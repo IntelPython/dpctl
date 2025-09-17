@@ -212,7 +212,7 @@ def test_isin_validation():
     with pytest.raises(ExecutionPlacementError):
         dpt.isin(1, 1)
     not_bool = dict()
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         dpt.isin(dpt.ones([1]), dpt.ones([1]), invert=not_bool)
 
 

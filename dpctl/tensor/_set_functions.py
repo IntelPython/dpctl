@@ -698,8 +698,11 @@ def isin(
     du.validate_usm_type(res_usm_type, allow_none=False)
     sycl_dev = exec_q.sycl_device
 
-    if invert not in [True, False]:
-        raise ValueError(f"`invert` must be `True` or `False`, got {invert}")
+    if not isinstance(invert, bool):
+        raise TypeError(
+            "`invert` keyword argument must be of boolean type, "
+            f"got {type(invert)}"
+        )
 
     x_dt = _get_dtype(x, sycl_dev)
     test_dt = _get_dtype(test_elements, sycl_dev)
