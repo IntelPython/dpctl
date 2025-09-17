@@ -25,9 +25,9 @@ rem fix the issue with IntelLLVM integration with cmake on Windows
 if EXIST "%PLATFORM_DIR%" (
   dir "%PLATFORM_DIR%\%FN%"
   copy /Y "%PLATFORM_DIR%\%FN%" .
-  if errorlevel 1 exit 1
+  if %ERRORLEVEL% neq 0 exit 1
   copy /Y ".github\workflows\Windows-IntelLLVM_%PATCHED_CMAKE_VERSION%.cmake" "%PLATFORM_DIR%\%FN%"
-  if errorlevel 1 exit 1
+  if %ERRORLEVEL% neq 0 exit 1
 )
 
 set "CC=icx"
