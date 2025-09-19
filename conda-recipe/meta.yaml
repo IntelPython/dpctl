@@ -29,8 +29,8 @@ requirements:
         - pip >=24.0
         - level-zero-devel >=1.16
         - pybind11 >=2.12
-        - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
-        - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+        - intel-sycl-rt 2025.3.0 intel_99
+        - intel-cmplr-lib-rt 2025.3.0 intel_99
         # Ensure we are using latest version of setuptools, since we don't need
         # editable environments for release.
         - setuptools >=69
@@ -49,8 +49,8 @@ requirements:
         - tomli # [py<311]
     run:
         - python
-        - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
-        - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+        - intel-sycl-rt 2025.3.0 intel_99
+        - intel-cmplr-lib-rt 2025.3.0 intel_99
         - numpy
 
 test:
