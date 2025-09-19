@@ -49,8 +49,8 @@ requirements:
         - tomli # [py<311]
     run:
         - python
-        - intel-sycl-rt 2025.3.0 intel_99
-        - intel-cmplr-lib-rt 2025.3.0 intel_99
+        - intel-sycl-rt 2025.3.0 intel_93
+        - intel-cmplr-lib-rt 2025.3.0 intel_93
         - numpy
 
 test:
