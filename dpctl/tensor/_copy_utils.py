@@ -26,6 +26,7 @@ import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
 from dpctl.tensor._data_types import _get_dtype
 from dpctl.tensor._device import normalize_queue_device
+from dpctl.tensor._tensor_accumulation_impl import mask_positions
 from dpctl.tensor._type_utils import _dtype_supported_by_device_impl
 
 from ._numpy_helper import normalize_axis_index
@@ -792,7 +793,7 @@ def _extract_impl(ary, ary_mask, axis=0):
     exec_q = cumsum.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
-    mask_count = ti.mask_positions(
+    mask_count = mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_evs
     )
     dst_shape = ary.shape[:pp] + (mask_count,) + ary.shape[pp + mask_nd :]
@@ -828,9 +829,7 @@ def _nonzero_impl(ary):
     )
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
-    mask_count = ti.mask_positions(
-        ary, cumsum, sycl_queue=exec_q, depends=dep_evs
-    )
+    mask_count = mask_positions(ary, cumsum, sycl_queue=exec_q, depends=dep_evs)
     indexes_dt = ti.default_device_index_type(exec_q.sycl_device)
     indexes = dpt.empty(
         (ary.ndim, mask_count),
@@ -1050,7 +1049,7 @@ def _place_impl(ary, ary_mask, vals, axis=0):
     exec_q = cumsum.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     dep_ev = _manager.submitted_events
-    mask_count = ti.mask_positions(
+    mask_count = mask_positions(
         ary_mask, cumsum, sycl_queue=exec_q, depends=dep_ev
     )
     expected_vals_shape = (

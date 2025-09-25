@@ -114,6 +114,9 @@ install(DIRECTORY
     FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 
+# find Python before enabling pybind11
+find_package(Python REQUIRED COMPONENTS Development.Module)
+
 # Define CMAKE_INSTALL_xxx: LIBDIR, INCLUDEDIR
 include(GNUInstallDirs)
 

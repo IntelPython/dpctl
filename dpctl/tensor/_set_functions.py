@@ -26,6 +26,7 @@ from ._scalar_utils import (
     _get_shape,
     _validate_dtype,
 )
+from ._tensor_accumulation_impl import mask_positions
 from ._tensor_elementwise_impl import _not_equal, _subtract
 from ._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
@@ -34,7 +35,6 @@ from ._tensor_impl import (
     _linspace_step,
     _take,
     default_device_index_type,
-    mask_positions,
 )
 from ._tensor_sorting_impl import (
     _argsort_ascending,

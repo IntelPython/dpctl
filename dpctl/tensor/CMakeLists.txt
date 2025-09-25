@@ -171,6 +171,7 @@ set(_accumulator_sources
 )
 set(_tensor_accumulation_impl_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/tensor_accumulation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/accumulators.cpp
     ${_accumulator_sources}
 )
 

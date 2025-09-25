@@ -20,6 +20,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils
+from dpctl.tensor._tensor_accumulation_impl import mask_positions
 
 from ._copy_utils import (
     _extract_impl,
@@ -413,9 +414,7 @@ def place(arr, mask, vals):
     cumsum = dpt.empty(mask.size, dtype="i8", sycl_queue=exec_q)
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
     deps_ev = _manager.submitted_events
-    nz_count = ti.mask_positions(
-        mask, cumsum, sycl_queue=exec_q, depends=deps_ev
-    )
+    nz_count = mask_positions(mask, cumsum, sycl_queue=exec_q, depends=deps_ev)
     if nz_count == 0:
         return
     if vals.size == 0:

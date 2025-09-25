@@ -24,6 +24,7 @@ import dpctl
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dputils
+from dpctl.tensor._tensor_accumulation_impl import _cumsum_1d
 
 from ._copy_utils import _broadcast_strides
 from ._numpy_helper import normalize_axis_index, normalize_axis_tuple
@@ -908,7 +909,7 @@ def repeat(x, repeats, /, *, axis=None):
                 sycl_queue=exec_q,
             )
             # _cumsum_1d synchronizes so `depends` ends here safely
-            res_axis_size = ti._cumsum_1d(
+            res_axis_size = _cumsum_1d(
                 rep_buf, cumsum, sycl_queue=exec_q, depends=[copy_ev]
             )
             if axis is not None:
@@ -940,7 +941,7 @@ def repeat(x, repeats, /, *, axis=None):
                 usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-            res_axis_size = ti._cumsum_1d(
+            res_axis_size = _cumsum_1d(
                 repeats, cumsum, sycl_queue=exec_q, depends=dep_evs
             )
             if axis is not None:

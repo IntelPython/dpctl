@@ -24,12 +24,29 @@
 //===----------------------------------------------------------------------===//
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
+#include "accumulators.hpp"
 #include "accumulators/accumulators_common.hpp"
 
 namespace py = pybind11;
 
+namespace py_int = dpctl::tensor::py_internal;
+
+using py_int::py_cumsum_1d;
+using py_int::py_mask_positions;
+
 PYBIND11_MODULE(_tensor_accumulation_impl, m)
 {
+    py_int::populate_mask_positions_dispatch_vectors();
+    py_int::populate_cumsum_1d_dispatch_vectors();
+
     dpctl::tensor::py_internal::init_accumulator_functions(m);
+
+    m.def("mask_positions", &py_mask_positions, "", py::arg("mask"),
+          py::arg("cumsum"), py::arg("sycl_queue"),
+          py::arg("depends") = py::list());
+
+    m.def("_cumsum_1d", &py_cumsum_1d, "", py::arg("src"), py::arg("cumsum"),
+          py::arg("sycl_queue"), py::arg("depends") = py::list());
 }
