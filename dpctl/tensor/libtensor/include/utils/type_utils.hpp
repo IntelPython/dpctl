@@ -25,6 +25,7 @@
 #pragma once
 #include <complex>
 #include <cstddef>
+#include <cstdint>
 #include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <type_traits>
@@ -55,26 +56,39 @@ template <typename T> inline constexpr bool is_complex_v = is_complex<T>::value;
 
 template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
 {
-    if constexpr (std::is_same<dstTy, srcTy>::value) {
+    if constexpr (std::is_same_v<dstTy, srcTy>) {
         return v;
     }
-    else if constexpr (std::is_same_v<dstTy, bool> && is_complex<srcTy>::value)
-    {
-        // bool(complex_v) == (complex_v.real() != 0) && (complex_v.imag() !=0)
-        return (convert_impl<bool, typename srcTy::value_type>(v.real()) ||
-                convert_impl<bool, typename srcTy::value_type>(v.imag()));
+    else if constexpr (std::is_same_v<dstTy, bool>) {
+        if constexpr (is_complex_v<srcTy>) {
+            // bool(complex_v) ==
+            //     (complex_v.real() != 0) && (complex_v.imag() !=0)
+            return (convert_impl<bool, typename srcTy::value_type>(v.real()) ||
+                    convert_impl<bool, typename srcTy::value_type>(v.imag()));
+        }
+        else {
+            return static_cast<dstTy>(v != srcTy{0});
+        }
     }
-    else if constexpr (is_complex<srcTy>::value && !is_complex<dstTy>::value) {
+    else if constexpr (std::is_same_v<srcTy, bool>) {
+        const std::uint8_t &u = sycl::bit_cast<std::uint8_t>(v);
+        if constexpr (is_complex_v<dstTy>) {
+            return (u == 0) ? dstTy{} : dstTy{1, 0};
+        }
+        else {
+            return (u == 0) ? dstTy{} : dstTy{1};
+        }
+    }
+    else if constexpr (is_complex_v<srcTy> && !is_complex_v<dstTy>) {
         // real_t(complex_v) == real_t(complex_v.real())
         return convert_impl<dstTy, typename srcTy::value_type>(v.real());
     }
-    else if constexpr (!std::is_integral<srcTy>::value &&
-                       !std::is_same<dstTy, bool>::value &&
-                       std::is_integral<dstTy>::value &&
-                       std::is_unsigned<dstTy>::value)
+    else if constexpr (!std::is_integral_v<srcTy> &&
+                       !std::is_same_v<dstTy, bool> &&
+                       std::is_integral_v<dstTy> && std::is_unsigned_v<dstTy>)
     {
         // first cast to signed variant, the cast to unsigned one
-        using signedT = typename std::make_signed<dstTy>::type;
+        using signedT = typename std::make_signed_t<dstTy>;
         return static_cast<dstTy>(convert_impl<signedT, srcTy>(v));
     }
     else {
