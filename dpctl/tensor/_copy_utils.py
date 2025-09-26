@@ -742,9 +742,6 @@ def astype(
             order=copy_order,
             buffer_ctor_kwargs={"queue": usm_ary.sycl_queue},
         )
-    # see #2121
-    if ary_dtype == dpt.bool:
-        usm_ary = dpt.not_equal(usm_ary, 0, order=copy_order)
     _copy_from_usm_ndarray_to_usm_ndarray(R, usm_ary)
     return R
 
