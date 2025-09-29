@@ -20,7 +20,6 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: C",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
@@ -55,7 +54,7 @@ keywords = [
   "oneapi",
   "dpcpp"
 ]
-license = {text = "Apache 2.0"}
+license = "Apache-2.0"
 name = "dpctl"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9"
