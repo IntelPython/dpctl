@@ -71,6 +71,12 @@ template <typename dstTy, typename srcTy> dstTy convert_impl(const srcTy &v)
         }
     }
     else if constexpr (std::is_same_v<srcTy, bool>) {
+        // C++ interprets a byte of storage behind bool by only
+        // testing is least significant bit, leading to both
+        // 0x00 and 0x02 interpreted as False, while 0x01 and 0xFF
+        // interpreted as True. NumPy's interpretation of underlying
+        // storage is different: any bit set is interpreted as True,
+        // no bits set as False, see gh-2121
         const std::uint8_t &u = sycl::bit_cast<std::uint8_t>(v);
         if constexpr (is_complex_v<dstTy>) {
             return (u == 0) ? dstTy{} : dstTy{1, 0};
