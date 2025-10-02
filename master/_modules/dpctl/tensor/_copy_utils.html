@@ -1527,9 +1527,6 @@
             <span class="n">order</span><span class="o">=</span><span class="n">copy_order</span><span class="p">,</span>
             <span class="n">buffer_ctor_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;queue&quot;</span><span class="p">:</span> <span class="n">usm_ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">},</span>
         <span class="p">)</span>
-    <span class="c1"># see #2121</span>
-    <span class="k">if</span> <span class="n">ary_dtype</span> <span class="o">==</span> <span class="n">dpt</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
-        <span class="n">usm_ary</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">usm_ary</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">copy_order</span><span class="p">)</span>
     <span class="n">_copy_from_usm_ndarray_to_usm_ndarray</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">usm_ary</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">R</span></div>
 
