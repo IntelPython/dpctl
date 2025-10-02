@@ -101,7 +101,7 @@ public:
         const ssize_t &src_offset = offsets.get_first_offset();
         const ssize_t &dst_offset = offsets.get_second_offset();
 
-        CastFnT fn{};
+        static constexpr CastFnT fn{};
         dst_[dst_offset] = fn(src_[src_offset]);
     }
 };
@@ -237,9 +237,9 @@ public:
 
         static constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
 
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (!enable_sg_loadstore || is_complex<srcT>::value ||
-                      is_complex<dstT>::value)
+        using dpctl::tensor::type_utils::is_complex_v;
+        if constexpr (!enable_sg_loadstore || is_complex_v<srcT> ||
+                      is_complex_v<dstT>)
         {
             std::uint16_t sgSize = ndit.get_sub_group().get_local_range()[0];
             const std::size_t gid = ndit.get_global_linear_id();
