@@ -1,4 +1,4 @@
-find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
+find_package(Python REQUIRED COMPONENTS NumPy)
 
 # -t is to only Cythonize sources with timestamps newer than existing CXX files (if present)
 # -w is to set working directory (and correctly set __pyx_f[] array of filenames)
