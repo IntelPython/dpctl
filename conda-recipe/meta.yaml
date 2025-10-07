@@ -17,6 +17,8 @@ build:
         - OVERRIDE_INTEL_IPO  # [win]
     ignore_run_exports:
         - level-zero
+    missing_dso_whitelist:
+        - $RPATH/DPCTLSyclInterface.dll  # [win]
 
 requirements:
     # TODO: keep in sync with /pyproject.toml
