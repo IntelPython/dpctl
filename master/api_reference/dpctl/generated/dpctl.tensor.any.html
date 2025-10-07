@@ -799,14 +799,14 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference internal" href="dpctl.tensor.usm_ndarray.html#dpctl.tensor.usm_ndarray" title="dpctl.tensor.usm_ndarray"><em>usm_ndarray</em></a>) – Input array.</p></li>
-<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>,</em><em>...</em><em>]</em><em>]</em><em>]</em>) – Axis (or axes)
+<li><p><strong>axis</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>,</em><em>...</em><em>]</em><em>]</em><em>]</em>) – Axis (or axes)
 along which to perform a logical OR reduction.
 When <cite>axis</cite> is <cite>None</cite>, a logical OR reduction
 is performed over all dimensions of <cite>x</cite>.
 If <cite>axis</cite> is negative, the axis is counted from
 the last dimension to the first.
 Default: <cite>None</cite>.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If <cite>True</cite>, the reduced axes are included
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – If <cite>True</cite>, the reduced axes are included
 in the result as singleton dimensions, and the result is
 broadcastable to the input array shape.
 If <cite>False</cite>, the reduced axes are not included in the result.

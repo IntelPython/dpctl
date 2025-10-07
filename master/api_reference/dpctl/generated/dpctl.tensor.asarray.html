@@ -810,7 +810,7 @@ Python scalars.</p></li>
 <code class="docutils literal notranslate"><span class="pre">obj</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>copy</strong> (<cite>bool</cite>, optional) – boolean indicating whether or not to copy the
 input. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, always creates a copy. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the
-need to copy raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, tries to reuse
+need to copy raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, tries to reuse
 existing memory allocations if possible, but allows to perform
 a copy otherwise. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>order</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>, optional) – memory layout of the output array. Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code></p></li>
@@ -826,7 +826,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">&quot;devi
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
 for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
 <code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
-If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
+If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
 imply the same underlying SYCL queue to be used. If both are
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
 used for allocation and population. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>

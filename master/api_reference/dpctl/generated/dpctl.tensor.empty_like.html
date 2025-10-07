@@ -816,7 +816,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">&quot;devi
 <li><p><strong>sycl_queue</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, optional) – The SYCL queue to use
 for output array allocation and copying. <code class="docutils literal notranslate"><span class="pre">sycl_queue</span></code> and
 <code class="docutils literal notranslate"><span class="pre">device</span></code> are complementary arguments, i.e. use one or another.
-If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
+If both are specified, a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> is raised unless both
 imply the same underlying SYCL queue to be used. If both are
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, a cached queue targeting default-selected device is
 used for allocation. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
