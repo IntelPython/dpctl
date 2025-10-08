@@ -4,15 +4,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev] - XXX. XX, XXXX
+## [0.21.0] - Oct. 03, 2025
+
+This release features the addition of new function `tensor.isin`, indexing of `tensor.usm_ndarray` with `numpy.ndarray`, and support for building `dpctl` for specific CUDA architectures.
+
+Improvements were also made to the build time and binary size of the project, and to the build driver script, making it more convenient when building for CUDA or AMD devices.
 
 ### Added
 
+* Added `tensor.isin` per future Python Array API specification version [gh-2098](https://github.com/IntelPython/dpctl/pull/2098)
+* `numpy.ndarrays` are now permitted when indexing on `tensor.usm_ndarray` [gh-2128](https://github.com/IntelPython/dpctl/pull/2128)
+
 ### Changed
+
+* Made a number of constexpr variables inline or static throughout the project, especially in headers, to reduce binary size and improve build time [gh-2094](https://github.com/IntelPython/dpctl/pull/2094), [gh-2107](https://github.com/IntelPython/dpctl/pull/2107)
+* `DPCTL_TARGET_CUDA` and `DPCTL_TARGET_HIP` now permit specifying the CUDA or HIP architectures [gh-2096](https://github.com/IntelPython/dpctl/pull/2096), [gh-2099](https://github.com/IntelPython/dpctl/pull/2099)
+* Extended `build_locally.py` build driver script to permit `--target-cuda` and `--target-hip` options, which match the behavior of `DPCTL_TARGET_CUDA` and `DPCTL_TARGET_HIP` [gh-2109](https://github.com/IntelPython/dpctl/pull/2109)
+* Improved `tensor.asnumpy` and `tensor.to_numpy` for size-0 arrays [gh-2120](https://github.com/IntelPython/dpctl/pull/2120)
+* Permit type casting size-0 `tensor.usm_ndarray` to arbitrary dtype via `tensor.usm_ndarray` constructor's `buffer` keyword (i.e., using the original memory as the buffer for the new size-0 array's underlying memory) [gh-2123](https://github.com/IntelPython/dpctl/pull/2123)
 
 ### Fixed
 
+* Fixed `tensor.asarray` failing when given `device` keyword with an input array of a dtype not supported by `device` [gh-2097](https://github.com/IntelPython/dpctl/pull/2097)
+* Fixes undefined behavior in radix sort algorithm and avoids call to sorting algorithms when calling `tensor.sort` and `tensor.argsort` on size-1 arrays, or along a size-1 axis [gh-2106](https://github.com/IntelPython/dpctl/pull/2106)
+* Fixed incorrect results when calling `dpt.astype` on `tensor.usm_ndarray` constructed from a boolean view into a `numpy.ndarray` [gh-2122](https://github.com/IntelPython/dpctl/pull/2122)
+* Fixed `dpctl` imported in virtual environment on Windows failing to see devices or find DLLs [gh-2130](https://github.com/IntelPython/dpctl/pull/2130)
+* Fixed Cythonization failure when testing the ability to create `dpctl` Cython API extensions with an editable install [gh-2147](https://github.com/IntelPython/dpctl/pull/2147)
+
 ### Maintenance
+
+* Revert restricting Cython to below 3.1.0 when building dpctl for Python 3.13 [gh-2118](https://github.com/IntelPython/dpctl/pull/2118)
+* Add a link to `tensor.DLDeviceType` documentation from `__dlpack_device__` docstring [gh-2127](https://github.com/IntelPython/dpctl/pull/2127)
+* Update pybind11 to 3.0.1 [gh-2145](https://github.com/IntelPython/dpctl/pull/2145)
+* Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
+[gh-2043](https://github.com/IntelPython/dpctl/pull/2043),
+[gh-2044](https://github.com/IntelPython/dpctl/pull/2044),
+[gh-2065](https://github.com/IntelPython/dpctl/pull/2065),
+[gh-2066](https://github.com/IntelPython/dpctl/pull/2066),
+[gh-2068](https://github.com/IntelPython/dpctl/pull/2068),
+[gh-2070](https://github.com/IntelPython/dpctl/pull/2070)
+[gh-2088](https://github.com/IntelPython/dpctl/pull/2088),
+[gh-2104](https://github.com/IntelPython/dpctl/pull/2104),
+[gh-2151](https://github.com/IntelPython/dpctl/pull/2151),
+[gh-2154](https://github.com/IntelPython/dpctl/pull/2154),
+[gh-2155](https://github.com/IntelPython/dpctl/pull/2155)
 
 ## [0.20.2] - Jun. 26, 2025
 
