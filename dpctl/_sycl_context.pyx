@@ -59,7 +59,7 @@ _logger = logging.getLogger(__name__)
 cdef class SyclContextCreationError(Exception):
     """
     A ``SyclContextCreationError`` exception is raised
-    when :class:`.SyclContext` could not created.
+    when :class:`.SyclContext` could not be created.
     """
     pass
 

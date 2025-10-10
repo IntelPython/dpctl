@@ -128,7 +128,7 @@ __all__ = [
 cdef class SyclDeviceCreationError(Exception):
     """
     A ``SyclDeviceCreationError`` exception is raised when
-    :class:`.SyclDevice` instance could not created.
+    :class:`.SyclDevice` instance could not be created.
     """
     pass
 
