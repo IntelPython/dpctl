@@ -46,7 +46,7 @@ for filter_str in ["cpu", "gpu"]:
         continue
 
 if not queues:
-    print("No queues could not created, nothing to do.")
+    print("No queues could be created, nothing to do.")
     exit(0)
 
 opt_params_list = []

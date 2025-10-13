@@ -161,7 +161,7 @@ def test_order_manager():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not created for default-selected device")
+        pytest.skip("Queue could not be created for default-selected device")
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
     assert isinstance(_mngr.num_host_task_events, int)
