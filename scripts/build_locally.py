@@ -33,72 +33,55 @@ def run(
     target_cuda=None,
     target_hip=None,
 ):
-    build_system = None
-
-    if "linux" in sys.platform:
-        build_system = "Ninja"
-    elif sys.platform in ["win32", "cygwin"]:
-        build_system = "Ninja"
-    else:
-        assert False, sys.platform + " not supported"
-
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    cmake_args = [
-        sys.executable,
-        "setup.py",
-        "develop",
-    ]
-    if cmake_executable:
-        cmake_args += [
-            "--cmake-executable=" + cmake_executable,
-        ]
-    cmake_args += [
-        "--build-type=" + build_type,
-        "--generator=" + build_system,
-        "--",
-        "-DCMAKE_C_COMPILER:PATH=" + c_compiler,
-        "-DCMAKE_CXX_COMPILER:PATH=" + cxx_compiler,
-        "-DDPCTL_ENABLE_L0_PROGRAM_CREATION=" + ("ON" if level_zero else "OFF"),
-        "-DDPCTL_ENABLE_GLOG:BOOL=" + ("ON" if use_glog else "OFF"),
-    ]
-    if verbose:
-        cmake_args += [
-            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
-        ]
-    if cmake_opts:
-        cmake_args += cmake_opts.split()
-    if target_cuda is not None:
-        if not target_cuda.strip():
-            raise ValueError(
-                "--target-cuda can not be an empty string. "
-                "Use --target-cuda=<arch> or --target-cuda"
-            )
-        if any(opt.startswith("-DDPCTL_TARGET_CUDA=") for opt in cmake_args):
-            raise ValueError(
-                "Both --target-cuda and -DDPCTL_TARGET_CUDA in --cmake-opts "
-                "were specified. Please use only one method "
-                "to avoid ambiguity"
-            )
-        cmake_args += [
-            f"-DDPCTL_TARGET_CUDA={target_cuda}",
-        ]
-    if target_hip is not None:
-        if not target_hip.strip():
-            raise ValueError(
-                "--target-hip requires an architecture (e.g., gfx90a)"
-            )
-        if any(opt.startswith("-DDPCTL_TARGET_HIP=") for opt in cmake_args):
-            raise ValueError(
-                "Both --target-hip and -DDPCTL_TARGET_HIP in --cmake-opts "
-                "were specified. Please use only one method "
-                "to avoid ambiguity"
-            )
-        cmake_args += [
-            f"-DDPCTL_TARGET_HIP={target_hip}",
-        ]
-    subprocess.check_call(
-        cmake_args, shell=False, cwd=setup_dir, env=os.environ
+    env = os.environ.copy()
+
+    cmake_args = []
+    if c_compiler:
+        cmake_args.append(f"-DCMAKE_C_COMPILER:PATH={c_compiler}")
+    if cxx_compiler:
+        cmake_args.append(f"-DCMAKE_CXX_COMPILER:PATH={cxx_compiler}")
+
+    cmake_args.append(f"-DCMAKE_BUILD_TYPE={build_type}")
+    cmake_args.append(
+        f"-DDPCTL_ENABLE_L0_PROGRAM_CREATION={'ON' if level_zero else 'OFF'}"
     )
+    cmake_args.append(f"-DDPCTL_ENABLE_GLOG={'ON' if use_glog else 'OFF'}")
+
+    if verbose:
+        cmake_args.append("-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
+
+    if cmake_executable:
+        cmake_args.append(f"-DCMAKE_EXECUTABLE:PATH={cmake_executable}")
+
+    if target_cuda:
+        if not target_cuda.strip():
+            raise ValueError("--target-cuda cannot be empty")
+        cmake_args.append(f"-DDPCTL_TARGET_CUDA={target_cuda}")
+
+    if target_hip:
+        if not target_hip.strip():
+            raise ValueError("--target_hip cannot be empty")
+        cmake_args.append(f"-DDPCTL_TARGET_HIP={target_hip}")
+
+    env["CMAKE_ARGS"] = " ".join(cmake_args)
+
+    # build the Cmake extensions in-place
+    build_cmd = [sys.executable, "setup.py", "build_ext", "--inplace"]
+    subprocess.check_call(build_cmd, cwd=setup_dir, env=env)
+
+    # editable install with pip
+    cmd = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--no-build-isolation",
+        "--editable",
+        ".",
+    ]
+
+    subprocess.check_call(cmd, cwd=setup_dir, env=env)
 
 
 if __name__ == "__main__":
