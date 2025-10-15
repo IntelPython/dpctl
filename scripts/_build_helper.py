@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2025 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -121,7 +121,8 @@ def install_editable(setup_dir, env):
     )
 
 
-def clean_build_dir(build_dir):
-    if os.path.exists(build_dir):
-        print(f"Cleaning build directory: {build_dir}")
-        shutil.rmtree(build_dir)
+def clean_build_dir(setup_dir):
+    target = os.path.join(setup_dir or os.getcwd(), "_skbuild")
+    if os.path.exists(target):
+        print(f"Cleaning build directory: {target}")
+        shutil.rmtree(target)
