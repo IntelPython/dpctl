@@ -43,7 +43,7 @@ def resolve_compilers(
     if oneapi or (
         c_compiler is None and cxx_compiler is None and compiler_root is None
     ):
-        return "icx", ("icpx" if is_linux else "icx"), None
+        return "icx", ("icpx" if is_linux else "icx")
 
     if not compiler_root or not os.path.exists(compiler_root):
         raise RuntimeError(
@@ -66,7 +66,7 @@ def resolve_compilers(
         )
         if not os.path.exists(path):
             raise RuntimeError(f"{opt_name} value {name} not found")
-    return c_compiler, cxx_compiler, compiler_root
+    return c_compiler, cxx_compiler
 
 
 def make_cmake_args(

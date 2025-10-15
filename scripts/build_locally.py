@@ -141,7 +141,7 @@ def main():
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    c_compiler, cxx_compiler, compiler_root = resolve_compilers(
+    c_compiler, cxx_compiler = resolve_compilers(
         args.oneapi, args.c_compiler, args.cxx_compiler, args.compiler_root
     )
 
