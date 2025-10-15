@@ -122,13 +122,8 @@ def parse_args():
     )
 
     p.add_argument(
-        "--build-dir",
-        default="build",
-        help="CMake build directory (default: build)",
-    )
-    p.add_argument(
         "--clean",
-        action="store_false",
+        action="store_true",
         help="Remove build dir before rebuild (default: False)",
     )
     p.add_argument(
@@ -145,7 +140,6 @@ def main():
         err(f"{sys.platform} not supported")
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    build_dir = os.path.join(setup_dir, args.build_dir)
 
     c_compiler, cxx_compiler, compiler_root = resolve_compilers(
         args.oneapi, args.c_compiler, args.cxx_compiler, args.compiler_root
@@ -153,7 +147,7 @@ def main():
 
     # clean build dir if --clean set
     if args.clean:
-        clean_build_dir(build_dir)
+        clean_build_dir(setup_dir)
 
     if args.no_level_zero and args.target_level_zero:
         err("Cannot combine --no-level-zero and --target-level-zero")
