@@ -70,25 +70,20 @@ def resolve_compilers(
 
 
 def make_cmake_args(
-    build_type="Release",
     c_compiler=None,
     cxx_compiler=None,
     level_zero=True,
     glog=False,
-    generator=None,
     verbose=False,
     other_opts="",
 ):
     args = [
-        f"-DCMAKE_BUILD_TYPE={build_type}",
         f"-DCMAKE_C_COMPILER:PATH={c_compiler}" if c_compiler else "",
         f"-DCMAKE_CXX_COMPILER:PATH={cxx_compiler}" if cxx_compiler else "",
         f"-DDPCTL_ENABLE_L0_PROGRAM_CREATION={'ON' if level_zero else 'OFF'}",
         f"-DDPTL_ENABLE_GLOG:BOOL={'ON' if glog else 'OFF'}",
     ]
 
-    if generator:
-        args.append(f"-G{generator}")
     if verbose:
         args.append("-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
     if other_opts:
@@ -97,9 +92,18 @@ def make_cmake_args(
     return " ".join(filter(None, args))
 
 
-def build_extension(setup_dir, env):
+def build_extension(
+    setup_dir, env, cmake_executable=None, generator=None, build_type=None
+):
+    cmd = [sys.executable, "setup.py", "build_ext", "--inplace"]
+    if cmake_executable:
+        cmd.append(f"--cmake-executable={cmake_executable}")
+    if generator:
+        cmd.append(f"--generator={generator}")
+    if build_type:
+        cmd.append(f"--build-type={build_type}")
     run(
-        [sys.executable, "setup.py", "build_ext", "--inplace"],
+        cmd,
         env=env,
         cwd=setup_dir,
     )
