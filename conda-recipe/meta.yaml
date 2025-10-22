@@ -28,6 +28,7 @@ requirements:
         - {{ compiler('dpcpp') }} >={{ required_compiler_version }}
     host:
         - python
+        - python-gil     # [py>=314]
         - pip >=24.0
         - level-zero-devel >=1.16
         - pybind11 >=2.12
@@ -51,6 +52,7 @@ requirements:
         - tomli # [py<311]
     run:
         - python
+        - python-gil     # [py>=314]
         - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
         - numpy
