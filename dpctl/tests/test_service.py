@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for miscellaneous functions.
-"""
+"""Defines unit test cases for miscellaneous functions."""
 
 import ctypes
 import ctypes.util

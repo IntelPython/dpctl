@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the SyclQueue class.
-"""
+"""Defines unit test cases for the SyclQueue class."""
 
 import ctypes
 import sys

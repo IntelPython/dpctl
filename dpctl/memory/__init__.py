@@ -15,17 +15,17 @@
 # limitations under the License.
 
 """
-    **Data Parallel Control Memory** provides Python objects for untyped USM
-    memory container of bytes for each kind of USM pointers: shared pointers,
-    device pointers and host pointers.
+**Data Parallel Control Memory** provides Python objects for untyped USM
+memory container of bytes for each kind of USM pointers: shared pointers,
+device pointers and host pointers.
 
-    Shared and host pointers are accessible from both host and a device,
-    while device pointers are only accessible from device.
+Shared and host pointers are accessible from both host and a device,
+while device pointers are only accessible from device.
 
-    Python objects corresponding to shared and host pointers implement
-    Python simple buffer protocol. It is therefore possible to use these
-    objects to maniputalate USM memory using NumPy or `bytearray`,
-    `memoryview`, or `array.array` classes.
+Python objects corresponding to shared and host pointers implement
+Python simple buffer protocol. It is therefore possible to use these
+objects to maniputalate USM memory using NumPy or `bytearray`,
+`memoryview`, or `array.array` classes.
 
 """
 from ._memory import (

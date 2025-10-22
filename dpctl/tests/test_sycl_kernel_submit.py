@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Defines unit test cases for kernel submission to a sycl::queue.
-"""
+"""Defines unit test cases for kernel submission to a sycl::queue."""
 
 import ctypes
 import os

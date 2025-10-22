@@ -15,11 +15,11 @@
 # limitations under the License.
 
 """
-    **Data Parallel Control (dpctl)** is a Python abstraction layer over SYCL.
+**Data Parallel Control (dpctl)** is a Python abstraction layer over SYCL.
 
-    Dpctl implements a subset of SYCL's API providing wrappers for the
-    SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 <>` of
-    the :sycl_spec_2020:`SYCL 2020 spec <>`.
+Dpctl implements a subset of SYCL's API providing wrappers for the
+SYCL runtime classes described in :sycl_runtime_classes:`Section 4.6 <>` of
+the :sycl_spec_2020:`SYCL 2020 spec <>`.
 """
 __author__ = "Intel Corp."
 

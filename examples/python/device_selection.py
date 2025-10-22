@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Examples illustrating SYCL device selection features provided by dpctl.
-"""
+"""Examples illustrating SYCL device selection features provided by dpctl."""
 
 import dpctl
 
