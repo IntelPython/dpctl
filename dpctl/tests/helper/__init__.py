@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Helper module for dpctl/tests
-"""
+"""Helper module for dpctl/tests"""
 
 from ._helper import (
     create_invalid_capsule,

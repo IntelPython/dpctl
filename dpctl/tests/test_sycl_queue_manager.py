@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Defines unit test cases for the dpctl._sycl_queue_manager module.
-"""
+"""Defines unit test cases for the dpctl._sycl_queue_manager module."""
 
 import pytest
 

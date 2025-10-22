@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Defines unit test cases for the _sycl_device_factory module
-"""
+"""Defines unit test cases for the _sycl_device_factory module"""
 
 import pytest
 

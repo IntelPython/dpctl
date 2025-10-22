@@ -14,8 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-""" The module provides helper functions to generate API documentation for
-    dpctl and its members.
+"""The module provides helper functions to generate API documentation for
+dpctl and its members.
 """
 
 import argparse

@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Defines unit test cases for the Memory classes in _memory.pyx.
-"""
+"""Defines unit test cases for the Memory classes in _memory.pyx."""
 
 import numpy as np
 import pytest
