@@ -1,0 +1,6 @@
+﻿dpctl.tensor.isin
+=================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: isin
