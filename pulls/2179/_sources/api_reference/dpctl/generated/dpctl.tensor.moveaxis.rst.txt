@@ -1,6 +1,0 @@
-﻿dpctl.tensor.moveaxis
-=====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: moveaxis
