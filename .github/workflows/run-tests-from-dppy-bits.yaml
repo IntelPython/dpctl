@@ -27,7 +27,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         experimental: [false]
         runner: [ubuntu-22.04, ubuntu-24.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -78,7 +78,7 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         experimental: [false]
         runner: [windows-latest]
 
