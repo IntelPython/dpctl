@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.tobytes
-====================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMShared.tobytes
