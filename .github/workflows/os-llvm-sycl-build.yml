@@ -146,7 +146,8 @@ jobs:
         shell: bash -l {0}
         run: |
           source set_allvars.sh
-          CC=clang CXX=clang++ python setup.py develop -G Ninja
+          CC=clang CXX=clang++ python setup.py build_ext --inplace --generator=Ninja
+          python -m pip install -e . --no-build-isolation
 
       - name: Run lsplatforms
         shell: bash -l {0}
