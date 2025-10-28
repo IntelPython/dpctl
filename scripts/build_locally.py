@@ -161,12 +161,10 @@ def main():
         level_zero_enabled = True
 
     cmake_args = make_cmake_args(
-        build_type=args.build_type,
         c_compiler=c_compiler,
         cxx_compiler=cxx_compiler,
         level_zero=level_zero_enabled,
         glog=args.glog,
-        generator=args.generator,
         verbose=args.verbose,
         other_opts=args.cmake_opts,
     )
@@ -198,7 +196,13 @@ def main():
 
     print("[build_locally] Building extensions in-place...")
 
-    build_extension(setup_dir, env)
+    build_extension(
+        setup_dir,
+        env,
+        cmake_executable=args.cmake_executable,
+        generator=args.generator,
+        build_type=args.build_type,
+    )
     if not args.skip_editable:
         install_editable(setup_dir, env)
     else:

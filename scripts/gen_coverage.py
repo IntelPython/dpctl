@@ -80,6 +80,16 @@ def parse_args():
     )
 
     p.add_argument(
+        "--generator", type=str, default="Ninja", help="CMake generator"
+    )
+    p.add_argument(
+        "--cmake-executable",
+        type=str,
+        default=None,
+        help="Path to CMake executable used by build",
+    )
+
+    p.add_argument(
         "--cmake-opts",
         type=str,
         default="",
@@ -149,7 +159,6 @@ def main():
         level_zero_enabled = True
 
     cmake_args = make_cmake_args(
-        build_type="Coverage",
         c_compiler=c_compiler,
         cxx_compiler=cxx_compiler,
         level_zero=level_zero_enabled,
@@ -169,27 +178,21 @@ def main():
         warn("Ignoring pre-existing CMAKE_ARGS in environment")
         del env["CMAKE_ARGS"]
 
-    if args.bin_llvm:
-        llvm_cov = os.path.join(args.bin_llvm, "llvm-cov")
-        llvm_profdata = os.path.join(args.bin_llvm, "llvm-profdata")
-        env = os.environ.copy()
-        if not (os.path.isfile(llvm_cov) and os.access(llvm_cov, os.X_OK)):
-            err(f"Cannot find executable llvm-cov in {args.bin_llvm}")
-        if not (
-            os.path.isfile(llvm_profdata) and os.access(llvm_profdata, os.X_OK)
-        ):
-            err(f"Cannot find executable llvm-profdata in {args.bin_llvm}")
-        env["PATH"] = f"{args.bin_llvm}:{env.get('PATH', '')}"
-        env["LLVM_TOOLS_HOME"] = args.bin_llvm
-        cmake_args += f" -DLLVM_TOOLS_HOME={args.bin_llvm}"
-        cmake_args += f" -DLLVM_PROFDATA={llvm_profdata}"
-        cmake_args += f" -DLLVM_COV={llvm_cov}"
-
     env["CMAKE_ARGS"] = cmake_args
+
+    if args.bin_llvm:
+        env["PATH"] = ":".join((env.get("PATH", ""), args.bin_llvm))
+        env["LLVM_TOOLS_HOME"] = args.bin_llvm
 
     print(f"[gen_coverage] Using CMake args:\n {env['CMAKE_ARGS']}")
 
-    build_extension(setup_dir, env)
+    build_extension(
+        setup_dir,
+        env,
+        cmake_executable=args.cmake_executable,
+        generator=args.generator,
+        build_type="Coverage",
+    )
     install_editable(setup_dir, env)
 
     cmake_build_dir = (
