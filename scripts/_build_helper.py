@@ -35,40 +35,6 @@ def err(msg: str):
     print(f"[build_locally][error] {msg}", file=sys.stderr)
 
 
-def resolve_compilers(
-    oneapi: bool, c_compiler: str, cxx_compiler: str, compiler_root: str
-):
-    is_linux = "linux" in sys.platform
-
-    if oneapi or (
-        c_compiler is None and cxx_compiler is None and compiler_root is None
-    ):
-        return "icx", ("icpx" if is_linux else "icx")
-
-    if not compiler_root or not os.path.exists(compiler_root):
-        raise RuntimeError(
-            "--compiler-root option must be set when using non-default DPC++ "
-            "layout"
-        )
-
-    # default values
-    if c_compiler is None:
-        c_compiler = "icx"
-    if cxx_compiler is None:
-        cxx_compiler = "icpx" if is_linux else "icx"
-
-    for name, opt_name in (
-        (c_compiler, "--c-compiler"),
-        (cxx_compiler, "--cxx-compiler"),
-    ):
-        path = (
-            name if os.path.exists(name) else os.path.join(compiler_root, name)
-        )
-        if not os.path.exists(path):
-            raise RuntimeError(f"{opt_name} value {name} not found")
-    return c_compiler, cxx_compiler
-
-
 def make_cmake_args(
     c_compiler=None,
     cxx_compiler=None,
