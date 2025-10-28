@@ -28,68 +28,32 @@ from _build_helper import (  # noqa: E402
     build_extension,
     clean_build_dir,
     err,
+    get_output,
     install_editable,
     make_cmake_args,
+    resolve_compilers,
     run,
     warn,
 )
 
 
-def find_bin_llvm(compiler_name):
-    icx_path = subprocess.check_output(["which", compiler_name])
-    bin_dir = os.path.dirname(icx_path)
-    compiler_dir = os.path.join(bin_dir.decode("utf-8"), "compiler")
+def find_bin_llvm(compiler):
+    if os.path.isabs(compiler):
+        bin_dir = os.path.dirname(compiler)
+    else:
+        compiler_path = get_output(["which", compiler])
+        if not compiler_path:
+            raise RuntimeError(f"Compiler {compiler} not found in PATH")
+        bin_dir = os.path.dirname(compiler_path)
+    compiler_dir = os.path.join(bin_dir, "compiler")
     if os.path.exists(compiler_dir):
         bin_llvm = compiler_dir
     else:
         bin_dir = os.path.dirname(bin_dir)
-        bin_llvm = os.path.join(bin_dir.decode("utf-8"), "bin-llvm")
-    assert os.path.exists(bin_llvm)
+        bin_llvm = os.path.join(bin_dir, "bin-llvm")
+    if not os.path.exists(bin_llvm):
+        raise RuntimeError(f"--bin-llvm value {bin_llvm} not found")
     return bin_llvm
-
-
-def resolve_compilers(
-    oneapi: bool,
-    c_compiler: str,
-    cxx_compiler: str,
-    compiler_root: str,
-    bin_llvm: str = None,
-):
-    is_linux = "linux" in sys.platform
-
-    if oneapi or (
-        c_compiler is None
-        and cxx_compiler is None
-        and compiler_root is None
-        and bin_llvm is None
-    ):
-        return "icx", ("icpx" if is_linux else "icx"), find_bin_llvm("icx")
-
-    if not compiler_root or not os.path.exists(compiler_root):
-        raise RuntimeError(
-            "--compiler-root option must be set when using non-default DPC++ "
-            "layout"
-        )
-
-    # default values
-    if c_compiler is None:
-        c_compiler = "icx"
-    if cxx_compiler is None:
-        cxx_compiler = "icpx" if is_linux else "icx"
-    if bin_llvm is None:
-        bin_llvm = find_bin_llvm(c_compiler)
-
-    for name, opt_name in (
-        (c_compiler, "--c-compiler"),
-        (cxx_compiler, "--cxx-compiler"),
-        (bin_llvm, "--bin-llvm"),
-    ):
-        path = (
-            name if os.path.exists(name) else os.path.join(compiler_root, name)
-        )
-        if not os.path.exists(path):
-            raise RuntimeError(f"{opt_name} value {name} not found")
-    return c_compiler, cxx_compiler, bin_llvm
 
 
 def parse_args():
@@ -177,13 +141,13 @@ def main():
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    c_compiler, cxx_compiler, bin_llvm = resolve_compilers(
+    c_compiler, cxx_compiler = resolve_compilers(
         args.oneapi,
         args.c_compiler,
         args.cxx_compiler,
         args.compiler_root,
-        args.bin_llvm,
     )
+    bin_llvm = find_bin_llvm(c_compiler)
 
     if args.clean:
         clean_build_dir(setup_dir)
@@ -246,6 +210,12 @@ def main():
         .decode("utf-8")
         .strip("\n")
     )
+
+    cmake_build_dir = get_output(
+        ["find", "_skbuild", "-name", "cmake-build"],
+        cwd=setup_dir,
+    )
+
     print(f"[gen_coverage] Found CMake build dir: {cmake_build_dir}")
 
     run(

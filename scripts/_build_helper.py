@@ -20,10 +20,61 @@ import subprocess
 import sys
 
 
-def run(cmd, env=None, cwd=None):
+def resolve_compilers(
+    oneapi: bool,
+    c_compiler: str,
+    cxx_compiler: str,
+    compiler_root: str,
+):
+    is_linux = "linux" in sys.platform
+
+    if oneapi or (
+        c_compiler is None and cxx_compiler is None and compiler_root is None
+    ):
+        return "icx", ("icpx" if is_linux else "icx")
+
+    if (
+        (c_compiler is None or not os.path.isabs(c_compiler))
+        and (cxx_compiler is None or not os.path.isabs(cxx_compiler))
+        and (not compiler_root or not os.path.exists(compiler_root))
+    ):
+        raise RuntimeError(
+            "--compiler-root option must be set when using non-default DPC++ "
+            "layout unless absolute paths are provided for both compilers"
+        )
+
+    # default values
+    if c_compiler is None:
+        c_compiler = "icx"
+    if cxx_compiler is None:
+        cxx_compiler = "icpx" if is_linux else "icx"
+
+    for name, opt_name in (
+        (c_compiler, "--c-compiler"),
+        (cxx_compiler, "--cxx-compiler"),
+    ):
+        if os.path.isabs(name):
+            path = name
+        else:
+            path = os.path.join(compiler_root, name)
+        if not os.path.exists(path):
+            raise RuntimeError(f"{opt_name} value {name} not found")
+    return c_compiler, cxx_compiler
+
+
+def run(cmd: list[str], env: dict[str, str] = None, cwd: str = None):
     print("+", " ".join(cmd))
     subprocess.check_call(
         cmd, env=env or os.environ.copy(), cwd=cwd or os.getcwd()
+    )
+
+
+def get_output(cmd: list[str], cwd: str = None):
+    print("+", " ".join(cmd))
+    return (
+        subprocess.check_output(cmd, cwd=cwd or os.getcwd())
+        .decode("utf-8")
+        .strip("\n")
     )
 
 
@@ -36,12 +87,12 @@ def err(msg: str, script: str):
 
 
 def make_cmake_args(
-    c_compiler=None,
-    cxx_compiler=None,
-    level_zero=True,
-    glog=False,
-    verbose=False,
-    other_opts="",
+    c_compiler: str = None,
+    cxx_compiler: str = None,
+    level_zero: bool = True,
+    glog: bool = False,
+    verbose: bool = False,
+    other_opts: str = None,
 ):
     args = [
         f"-DCMAKE_C_COMPILER:PATH={c_compiler}" if c_compiler else "",
@@ -59,7 +110,11 @@ def make_cmake_args(
 
 
 def build_extension(
-    setup_dir, env, cmake_executable=None, generator=None, build_type=None
+    setup_dir: str,
+    env: dict[str, str],
+    cmake_executable: str = None,
+    generator: str = None,
+    build_type: str = None,
 ):
     cmd = [sys.executable, "setup.py", "build_ext", "--inplace"]
     if cmake_executable:
@@ -75,7 +130,7 @@ def build_extension(
     )
 
 
-def install_editable(setup_dir, env):
+def install_editable(setup_dir: str, env: dict[str, str]):
     run(
         [
             sys.executable,
@@ -91,7 +146,7 @@ def install_editable(setup_dir, env):
     )
 
 
-def clean_build_dir(setup_dir):
+def clean_build_dir(setup_dir: str = None):
     target = os.path.join(setup_dir or os.getcwd(), "_skbuild")
     if os.path.exists(target):
         print(f"Cleaning build directory: {target}")
