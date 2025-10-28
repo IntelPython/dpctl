@@ -27,12 +27,12 @@ def run(cmd, env=None, cwd=None):
     )
 
 
-def warn(msg: str):
-    print(f"[build_locally][error] {msg}", file=sys.stderr)
+def warn(msg: str, script: str):
+    print(f"[{script}][warning] {msg}", file=sys.stderr)
 
 
-def err(msg: str):
-    print(f"[build_locally][error] {msg}", file=sys.stderr)
+def err(msg: str, script: str):
+    print(f"[{script}][error] {msg}", file=sys.stderr)
 
 
 def make_cmake_args(

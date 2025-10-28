@@ -173,7 +173,7 @@ def parse_args():
 def main():
     is_linux = "linux" in sys.platform
     if not is_linux:
-        err(f"{sys.platform} not supported")
+        err(f"{sys.platform} not supported", "gen_coverage")
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -189,7 +189,10 @@ def main():
         clean_build_dir(setup_dir)
 
     if args.no_level_zero and args.target_level_zero:
-        err("Cannot combine --no-level-zero and --target-level-zero")
+        err(
+            "Cannot combine --no-level-zero and --target-level-zero",
+            "gen_coverage",
+        )
 
     # Level Zero state (on unless explicitly disabled)
     if args.no_level_zero:
@@ -216,7 +219,7 @@ def main():
     env = os.environ.copy()
 
     if "CMAKE_ARGS" in env and env["CMAKE_ARGS"].strip():
-        warn("Ignoring pre-existing CMAKE_ARGS in environment")
+        warn("Ignoring pre-existing CMAKE_ARGS in environment", "gen_coverage")
         del env["CMAKE_ARGS"]
 
     if bin_llvm:

@@ -170,7 +170,7 @@ def parse_args():
 
 def main():
     if sys.platform not in ["cygwin", "win32", "linux"]:
-        err(f"{sys.platform} not supported")
+        err(f"{sys.platform} not supported", "build_locally")
     args = parse_args()
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -183,7 +183,10 @@ def main():
         clean_build_dir(setup_dir)
 
     if args.no_level_zero and args.target_level_zero:
-        err("Cannot combine --no-level-zero and --target-level-zero")
+        err(
+            "Cannot combine --no-level-zero and --target-level-zero",
+            "build_locally",
+        )
 
     # Level Zero state (on unless explicitly disabled)
     if args.no_level_zero:
@@ -204,7 +207,7 @@ def main():
 
     # handle architecture conflicts
     if args.target_hip is not None and not args.target_hip.strip():
-        err("--target-hip requires an explicit architecture")
+        err("--target-hip requires an explicit architecture", "build_locally")
 
     # CUDA/HIP targets
     if args.target_cuda:
@@ -221,7 +224,7 @@ def main():
 
     # ignore pre-existing CMAKE_ARGS for determinism in build driver
     if "CMAKE_ARGS" in env and env["CMAKE_ARGS"].strip():
-        warn("Ignoring pre-existing CMAKE_ARGS in environment")
+        warn("Ignoring pre-existing CMAKE_ARGS in environment", "build_locally")
         del env["CMAKE_ARGS"]
 
     env["CMAKE_ARGS"] = cmake_args
