@@ -169,11 +169,23 @@ def main():
         warn("Ignoring pre-existing CMAKE_ARGS in environment")
         del env["CMAKE_ARGS"]
 
-    env["CMAKE_ARGS"] = cmake_args
-
     if args.bin_llvm:
-        env["PATH"] = ":".join((env.get("PATH", ""), args.bin_llvm))
+        llvm_cov = os.path.join(args.bin_llvm, "llvm-cov")
+        llvm_profdata = os.path.join(args.bin_llvm, "llvm-profdata")
+        env = os.environ.copy()
+        if not (os.path.isfile(llvm_cov) and os.access(llvm_cov, os.X_OK)):
+            err(f"Cannot find executable llvm-cov in {args.bin_llvm}")
+        if not (
+            os.path.isfile(llvm_profdata) and os.access(llvm_profdata, os.X_OK)
+        ):
+            err(f"Cannot find executable llvm-profdata in {args.bin_llvm}")
+        env["PATH"] = f"{args.bin_llvm}:{env.get('PATH', '')}"
         env["LLVM_TOOLS_HOME"] = args.bin_llvm
+        cmake_args += f" -DLLVM_TOOLS_HOME={args.bin_llvm}"
+        cmake_args += f" -DLLVM_PROFDATA={llvm_profdata}"
+        cmake_args += f" -DLLVM_COV={llvm_cov}"
+
+    env["CMAKE_ARGS"] = cmake_args
 
     print(f"[gen_coverage] Using CMake args:\n {env['CMAKE_ARGS']}")
 
