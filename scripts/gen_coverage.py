@@ -295,7 +295,7 @@ def main():
 
         run(
             [
-                os.path.join(args.bin_llvm or "", "llvm-profdata"),
+                os.path.join(bin_llvm, "llvm-profdata"),
                 "merge",
                 "-sparse",
                 env["LLVM_PROFILE_FILE"],
@@ -307,7 +307,7 @@ def main():
         with open("dpctl_pytest.lcov", "w") as fh:
             subprocess.check_call(
                 [
-                    os.path.join(args.bin_llvm or "", "llvm-cov"),
+                    os.path.join(bin_llvm, "llvm-cov"),
                     "export",
                     "-format=lcov",
                     "-ignore-filename-regex=/tmp/icpx*",
