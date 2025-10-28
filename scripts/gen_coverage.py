@@ -170,25 +170,6 @@ def parse_args():
     return p.parse_args()
 
 
-def find_objects(setup_dir):
-    objects = []
-    sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(".", r"\.")
-    regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
-    regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
-
-    def is_py_ext(fn):
-        return re.match(regexp1, fn) or re.match(regexp2, fn)
-
-    for root, _, files in os.walk(os.path.join(setup_dir, "dpctl")):
-        for file in files:
-            if not file.endswith(".so"):
-                continue
-            if is_py_ext(file) or "DPCTLSyclInterface" in file:
-                objects.extend(["-object", os.path.join(root, file)])
-            print("[gen_coverage] Using objects:", objects)
-            return objects
-
-
 def main():
     is_linux = "linux" in sys.platform
     if not is_linux:
@@ -290,7 +271,27 @@ def main():
         ]
         run(pytest_cmd, env=env, cwd=setup_dir)
 
-        objects = find_objects(setup_dir)
+        def find_objects():
+            objects = []
+            sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(
+                ".", r"\."
+            )
+            regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
+            regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
+
+            def is_py_ext(fn):
+                return re.match(regexp1, fn) or re.match(regexp2, fn)
+
+            for root, _, files in os.walk("dpctl"):
+                for file in files:
+                    if not file.endswith(".so"):
+                        continue
+                    if is_py_ext(file) or "DPCTLSyclInterface" in file:
+                        objects.extend(["-object", os.path.join(root, file)])
+            print("Using objects: ", objects)
+            return objects
+
+        objects = find_objects()
         instr_profile_fn = "dpctl_pytest.profdata"
 
         run(
