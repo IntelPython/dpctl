@@ -118,13 +118,20 @@ def parse_args():
 
     p.add_argument(
         "--gtest-config",
+        type=str,
         help="Path to GTestConfig.cmake file for a custom GTest installation",
     )
     p.add_argument(
         "--bin-llvm",
+        type=str,
         help="Path to folder where llvm-cov/llvm-profdata can be found",
     )
-    p.add_argument("--skip-pytest", dest="run_pytest", action="store_false")
+    p.add_argument(
+        "--skip-pytest",
+        dest="run_pytest",
+        action="store_false",
+        help="Skip running pytest and coverage generation",
+    )
     p.add_argument(
         "--clean",
         action="store_true",

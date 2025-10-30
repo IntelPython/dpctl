@@ -97,6 +97,7 @@ def parse_args():
 
     p.add_argument(
         "--doxyrest-root",
+        type=str,
         help=(
             "Path to Doxyrest installation to use to generate Sphinx docs"
             + "for libsyclinterface"

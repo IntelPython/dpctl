@@ -36,10 +36,16 @@ def parse_args():
     p = argparse.ArgumentParser(description="Local dpctl build driver")
 
     p.add_argument(
-        "--c-compiler", default=None, help="Path or name of C compiler"
+        "--c-compiler",
+        type=str,
+        default=None,
+        help="Path or name of C compiler",
     )
     p.add_argument(
-        "--cxx-compiler", default=None, help="Path or name of C++ compiler"
+        "--cxx-compiler",
+        type=str,
+        default=None,
+        help="Path or name of C++ compiler",
     )
     p.add_argument(
         "--compiler-root",
