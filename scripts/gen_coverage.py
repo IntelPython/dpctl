@@ -26,14 +26,14 @@ sys.path.insert(0, os.path.abspath("scripts"))
 
 from _build_helper import (  # noqa: E402
     build_extension,
+    capture_cmd_output,
     clean_build_dir,
     err,
-    get_output,
     install_editable,
+    log_cmake_args,
     make_cmake_args,
     resolve_compilers,
     run,
-    warn,
 )
 
 
@@ -41,7 +41,7 @@ def find_bin_llvm(compiler):
     if os.path.isabs(compiler):
         bin_dir = os.path.dirname(compiler)
     else:
-        compiler_path = get_output(["which", compiler])
+        compiler_path = capture_cmd_output(["which", compiler])
         if not compiler_path:
             raise RuntimeError(f"Compiler {compiler} not found in PATH")
         bin_dir = os.path.dirname(compiler_path)
@@ -180,30 +180,25 @@ def main():
         verbose=args.verbose,
     )
 
-    cmake_args += " -DDPCTL_GENERATE_COVERAGE=ON"
-    cmake_args += " -DDPCTL_BUILD_CAPI_TESTS=ON"
-    cmake_args += f" -DDPCTL_COVERAGE_REPORT_OUTPUT={setup_dir}"
+    cmake_args += ["-DDPCTL_GENERATE_COVERAGE=ON"]
+    cmake_args += ["-DDPCTL_BUILD_CAPI_TESTS=ON"]
+    cmake_args += [f"-DDPCTL_COVERAGE_REPORT_OUTPUT={setup_dir}"]
 
     if args.gtest_config:
-        cmake_args += " -DCMAKE_PREFIX_PATH={args.gtest_config}"
+        cmake_args += [f"-DCMAKE_PREFIX_PATH={args.gtest_config}"]
 
     env = os.environ.copy()
-
-    if "CMAKE_ARGS" in env and env["CMAKE_ARGS"].strip():
-        warn("Ignoring pre-existing CMAKE_ARGS in environment", "gen_coverage")
-        del env["CMAKE_ARGS"]
 
     if bin_llvm:
         env["PATH"] = ":".join((env.get("PATH", ""), bin_llvm))
         env["LLVM_TOOLS_HOME"] = bin_llvm
 
-    env["CMAKE_ARGS"] = cmake_args
-
-    print(f"[gen_coverage] Using CMake args:\n {env['CMAKE_ARGS']}")
+    log_cmake_args(cmake_args, "gen_coverage")
 
     build_extension(
         setup_dir,
         env,
+        cmake_args,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Coverage",
@@ -218,7 +213,7 @@ def main():
         .strip("\n")
     )
 
-    cmake_build_dir = get_output(
+    cmake_build_dir = capture_cmd_output(
         ["find", "_skbuild", "-name", "cmake-build"],
         cwd=setup_dir,
     )

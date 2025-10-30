@@ -69,7 +69,7 @@ def run(cmd: list[str], env: dict[str, str] = None, cwd: str = None):
     )
 
 
-def get_output(cmd: list[str], cwd: str = None):
+def capture_cmd_output(cmd: list[str], cwd: str = None):
     print("+", " ".join(cmd))
     return (
         subprocess.check_output(cmd, cwd=cwd or os.getcwd())
@@ -78,12 +78,12 @@ def get_output(cmd: list[str], cwd: str = None):
     )
 
 
-def warn(msg: str, script: str):
-    print(f"[{script}][warning] {msg}", file=sys.stderr)
-
-
 def err(msg: str, script: str):
     print(f"[{script}][error] {msg}", file=sys.stderr)
+
+
+def log_cmake_args(cmake_args: list[str], script: str):
+    print(f"[{script}] Using CMake args:\n{' '.join(cmake_args)}")
 
 
 def make_cmake_args(
@@ -106,12 +106,13 @@ def make_cmake_args(
     if other_opts:
         args.extend(other_opts.split())
 
-    return " ".join(filter(None, args))
+    return args
 
 
 def build_extension(
     setup_dir: str,
     env: dict[str, str],
+    cmake_args: list[str],
     cmake_executable: str = None,
     generator: str = None,
     build_type: str = None,
@@ -123,6 +124,9 @@ def build_extension(
         cmd.append(f"--generator={generator}")
     if build_type:
         cmd.append(f"--build-type={build_type}")
+    if cmake_args:
+        cmd.append("--")
+        cmd += cmake_args
     run(
         cmd,
         env=env,

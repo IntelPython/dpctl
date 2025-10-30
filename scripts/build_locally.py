@@ -26,9 +26,9 @@ from _build_helper import (  # noqa: E402
     clean_build_dir,
     err,
     install_editable,
+    log_cmake_args,
     make_cmake_args,
     resolve_compilers,
-    warn,
 )
 
 
@@ -184,30 +184,25 @@ def main():
 
     # CUDA/HIP targets
     if args.target_cuda:
-        cmake_args += f" -DDPCTL_TARGET_CUDA={args.target_cuda}"
+        cmake_args += [f"-DDPCTL_TARGET_CUDA={args.target_cuda}"]
     if args.target_hip:
-        cmake_args += f" -DDPCTL_TARGET_HIP={args.target_hip}"
+        cmake_args += [f"-DDPCTL_TARGET_HIP={args.target_hip}"]
 
-    cmake_args += (
-        " -DDPCTL_ENABLE_L0_PROGRAM_CREATION="
+    cmake_args += [
+        "-DDPCTL_ENABLE_L0_PROGRAM_CREATION="
         f"{'ON' if level_zero_enabled else 'OFF'}"
-    )
+    ]
 
-    env = os.environ.copy()
-
-    # ignore pre-existing CMAKE_ARGS for determinism in build driver
-    if "CMAKE_ARGS" in env and env["CMAKE_ARGS"].strip():
-        warn("Ignoring pre-existing CMAKE_ARGS in environment", "build_locally")
-        del env["CMAKE_ARGS"]
-
-    env["CMAKE_ARGS"] = cmake_args
-    print(f"[build_locally] CMake args:\n {cmake_args}")
+    log_cmake_args(cmake_args, "build_locally")
 
     print("[build_locally] Building extensions in-place...")
+
+    env = os.environ.copy()
 
     build_extension(
         setup_dir,
         env,
+        cmake_args,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type=args.build_type,

@@ -24,14 +24,14 @@ sys.path.insert(0, os.path.abspath("scripts"))
 
 from _build_helper import (  # noqa: E402
     build_extension,
+    capture_cmd_output,
     clean_build_dir,
     err,
-    get_output,
     install_editable,
+    log_cmake_args,
     make_cmake_args,
     resolve_compilers,
     run,
-    warn,
 )
 
 
@@ -151,31 +151,26 @@ def main():
         verbose=args.verbose,
     )
 
-    cmake_args += " -DDPCTL_GENERATE_DOCS=ON"
+    cmake_args += ["-DDPCTL_GENERATE_DOCS=ON"]
 
     if args.doxyrest_root:
-        cmake_args += " -DDPCTL_ENABLE_DOXYREST=ON"
-        cmake_args += f" -DDoxyrest_DIR={args.doxyrest_root}"
+        cmake_args += ["-DDPCTL_ENABLE_DOXYREST=ON"]
+        cmake_args += [f"-DDoxyrest_DIR={args.doxyrest_root}"]
+
+    log_cmake_args(cmake_args, "gen_docs")
 
     env = os.environ.copy()
-
-    if "CMAKE_ARGS" in env and env["CMAKE_ARGS"].strip():
-        warn("Ignoring pre-existing CMAKE_ARGS in environment", "gen_docs")
-        del env["CMAKE_ARGS"]
-
-    env["CMAKE_ARGS"] = cmake_args
-
-    print(f"[gen_docs] Using CMake args:\n {env['CMAKE_ARGS']}")
 
     build_extension(
         setup_dir,
         env,
+        cmake_args,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Release",
     )
     install_editable(setup_dir, env)
-    cmake_build_dir = get_output(
+    cmake_build_dir = capture_cmd_output(
         ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
     )
 
