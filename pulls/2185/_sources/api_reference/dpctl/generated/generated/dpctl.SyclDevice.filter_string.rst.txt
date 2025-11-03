@@ -1,0 +1,6 @@
+dpctl.SyclDevice.filter\_string
+===============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.filter_string
