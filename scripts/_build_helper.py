@@ -79,7 +79,7 @@ def capture_cmd_output(cmd: list[str], cwd: str = None):
 
 
 def err(msg: str, script: str):
-    print(f"[{script}][error] {msg}", file=sys.stderr)
+    raise RuntimeError(f"[{script}] error: {msg}")
 
 
 def log_cmake_args(cmake_args: list[str], script: str):
@@ -150,8 +150,18 @@ def install_editable(setup_dir: str, env: dict[str, str]):
     )
 
 
-def clean_build_dir(setup_dir: str = None):
-    target = os.path.join(setup_dir or os.getcwd(), "_skbuild")
+def clean_build_dir(setup_dir: str):
+    if (
+        not isinstance(setup_dir, str)
+        or not setup_dir
+        or not os.path.isdir(setup_dir)
+    ):
+        raise RuntimeError(f"Invalid setup directory provided: '{setup_dir}'")
+    target = os.path.join(setup_dir, "_skbuild")
     if os.path.exists(target):
         print(f"Cleaning build directory: {target}")
-        shutil.rmtree(target)
+        try:
+            shutil.rmtree(target)
+        except Exception as e:
+            print(f"Failed to remove build directory: '{target}'")
+            raise e
