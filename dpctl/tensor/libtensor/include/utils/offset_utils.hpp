@@ -51,7 +51,7 @@ namespace detail
 
 struct sink_t
 {
-    sink_t(){};
+    sink_t() {};
     template <class T> sink_t(T &&){};
 };
 

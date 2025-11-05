@@ -114,7 +114,7 @@ public:
         : src_(src), size_(sz), local_scans_(local_scans)
     {
     }
-    ~stack_t(){};
+    ~stack_t() {};
 
     T *get_src_ptr() const { return src_; }
 
@@ -140,7 +140,7 @@ public:
           local_stride_(local_stride)
     {
     }
-    ~stack_strided_t(){};
+    ~stack_strided_t() {};
 
     T *get_src_ptr() const { return src_; }
 

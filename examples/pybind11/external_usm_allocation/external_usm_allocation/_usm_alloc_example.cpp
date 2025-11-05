@@ -49,7 +49,7 @@ struct DMatrix
         : n_(rows), m_(columns), q_(q), alloc_(q), vec_(n_ * m_, alloc_)
     {
     }
-    ~DMatrix(){};
+    ~DMatrix() {};
     DMatrix(const DMatrix &) = default;
     DMatrix(DMatrix &&) = default;
 
