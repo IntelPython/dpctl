@@ -72,11 +72,6 @@ def parse_args():
         help="Disable Level Zero backend (deprecated: use --target-level-zero "
         "OFF)",
     )
-    p.add_argument(
-        "--target-level-zero",
-        action="store_true",
-        help="Enable Level Zero backend explicitly",
-    )
 
     p.add_argument(
         "--generator", type=str, default="Ninja", help="CMake generator"
@@ -130,19 +125,8 @@ def main():
     if args.clean:
         clean_build_dir(setup_dir)
 
-    if args.no_level_zero and args.target_level_zero:
-        err(
-            "Cannot combine --no-level-zero and --target-level-zero",
-            "gen_coverage",
-        )
-
     # Level Zero state (on unless explicitly disabled)
-    if args.no_level_zero:
-        level_zero_enabled = False
-    elif args.target_level_zero:
-        level_zero_enabled = True
-    else:
-        level_zero_enabled = True
+    level_zero_enabled = False if args.no_level_zero else True
 
     cmake_args = make_cmake_args(
         c_compiler=c_compiler,
