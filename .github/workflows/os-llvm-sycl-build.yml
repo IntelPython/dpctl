@@ -146,8 +146,8 @@ jobs:
         shell: bash -l {0}
         run: |
           source set_allvars.sh
-          CC=clang CXX=clang++ python setup.py build_ext --inplace --generator=Ninja
-          python -m pip install -e . --no-build-isolation
+          python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
+              --compiler-root=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin || exit 1
 
       - name: Run lsplatforms
         shell: bash -l {0}
