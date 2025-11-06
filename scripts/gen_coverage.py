@@ -21,10 +21,7 @@ import subprocess
 import sys
 import sysconfig
 
-# add scripts dir to Python path so we can import _build_helper
-sys.path.insert(0, os.path.abspath("scripts"))
-
-from _build_helper import (  # noqa: E402
+from _build_helper import (
     build_extension,
     capture_cmd_output,
     clean_build_dir,
