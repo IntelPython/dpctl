@@ -203,11 +203,8 @@ To check the code coverage for your code, follow these steps:
     coverage html
     ```
 
-    The code coverage builds the C sources with debug symbols. For this
-    reason, the coverage script builds the package in `develop` mode of
-    `setup.py`.
-
-    The coverage results for the C and Python sources are printed to the
+    The code coverage builds the C sources with debug symbols, and the
+    coverage results for the C and Python sources are printed to the
     terminal during the build (`libsyclinterface`) and pytest execution (Python).
     The detailed coverage reports for the `libsyclinterface` library are saved to the
     `dpctl-c-api-coverage` directory. The Python coverage reports are saved to
