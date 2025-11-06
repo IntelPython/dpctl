@@ -14,9 +14,14 @@ oneMKL.
 
 > **NOTE:** Make sure oneAPI is activated, $ONEAPI_ROOT must be set.
 
-To compile the example, run:
+To compile the example on Linux, run:
+```bash
+CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja
 ```
-python setup.py develop
+
+On Windows, run:
+```bash
+CC=icx CXX=icx python setup.py build_ext --inplace -G Ninja
 ```
 
 ## Running
