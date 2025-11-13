@@ -75,8 +75,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
-          python scripts/gen_docs.py --c-compiler=$(which icx) --cxx-compiler=$(which icpx) \
-              --doxyrest-root=`pwd`/doxyrest-2.1.2-linux-amd64 --verbose || exit 1
+          python scripts/gen_docs.py --doxyrest-root=`pwd`/doxyrest-2.1.2-linux-amd64 --verbose || exit 1
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
           pushd "$(find _skbuild -name cmake-build)" || exit 1
           cmake --build . --target Sphinx || exit 1

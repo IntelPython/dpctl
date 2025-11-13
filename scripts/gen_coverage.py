@@ -87,8 +87,7 @@ def parse_args():
         dest="no_level_zero",
         action="store_true",
         default=False,
-        help="Disable Level Zero backend (deprecated: use --target-level-zero "
-        "OFF)",
+        help="Disable Level Zero backend",
     )
 
     p.add_argument(

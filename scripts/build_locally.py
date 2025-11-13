@@ -94,8 +94,7 @@ def parse_args():
         dest="no_level_zero",
         action="store_true",
         default=False,
-        help="Disable Level Zero backend (deprecated: use --target-level-zero "
-        "OFF)",
+        help="Disable Level Zero backend",
     )
 
     p.add_argument(
@@ -168,11 +167,6 @@ def main():
         cmake_args += [f"-DDPCTL_TARGET_CUDA={args.target_cuda}"]
     if args.target_hip:
         cmake_args += [f"-DDPCTL_TARGET_HIP={args.target_hip}"]
-
-    cmake_args += [
-        "-DDPCTL_ENABLE_L0_PROGRAM_CREATION="
-        f"{'ON' if level_zero_enabled else 'OFF'}"
-    ]
 
     log_cmake_args(cmake_args, "build_locally")
 
