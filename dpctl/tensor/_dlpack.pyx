@@ -88,6 +88,17 @@ cdef extern from "dlpack/dlpack.h" nogil:
         kDLBfloat
         kDLComplex
         kDLBool
+        kDLFloat8_e3m4
+        kDLFloat8_e4m3
+        kDLFloat8_e4m3b11fnuz
+        kDLFloat8_e4m3fn
+        kDLFloat8_e4m3fnuz
+        kDLFloat8_e5m2
+        kDLFloat8_e5m2fnuz
+        kDLFloat8_e8m0fnu
+        kDLFloat6_e2m3fn
+        kDLFloat6_e3m2fn
+        kDLFloat4_e2m1fn
 
     ctypedef struct DLDataType:
         uint8_t code
