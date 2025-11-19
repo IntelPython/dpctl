@@ -125,7 +125,6 @@ __all__ += [
 __all__ += [
     "memory",
     "program",
-    "tensor",
     "utils",
 ]
 
