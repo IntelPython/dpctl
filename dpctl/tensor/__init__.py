@@ -23,6 +23,9 @@ on arrays in conformance with Python Array API standard.
 [ArrayAPI] https://data-apis.org/array-api
 """
 
+# import for deprecation warning
+import warnings as _warnings
+
 from dpctl.tensor._copy_utils import asnumpy, astype, copy, from_numpy, to_numpy
 from dpctl.tensor._ctors import (
     arange,
@@ -207,6 +210,14 @@ from ._set_functions import (
 from ._sorting import argsort, sort, top_k
 from ._testing import allclose
 from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
+
+# deprecation warning for the dpctl.tensor module
+_warnings.warn(
+    "dpctl.tensor is deprecated since dpctl 0.21.1 and will be removed in a "
+    "future release. Install dpnp and use 'import dpnp.tensor' instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 __all__ = [
     "Device",
@@ -397,3 +408,17 @@ __all__ = [
     "sycl_device_to_dldevice",
     "isin",
 ]
+
+
+def __getattr__(name: str):  # pragma: no cover
+    # per-attribute access deprecation notices per PEP 562
+    if name in __all__:
+        _warnings.warn(
+            f"dpctl.tensor.{name} is deprecated; dpctl.tensor is deprecated "
+            "since dpctl 0.21.1 and will be removed in a future release. "
+            "Install dpnp and use 'import dpnp.tensor' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return globals()[name]
+    raise AttributeError(f"module 'dpctl.tensor' has no attribute '{name}'")
