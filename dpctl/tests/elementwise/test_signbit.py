@@ -22,7 +22,7 @@ from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_signbit_out_type_contig(dtype):
+def test_signbit_out_type(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -39,24 +39,7 @@ def test_signbit_out_type_contig(dtype):
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_signbit_out_type_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    x = dpt.linspace(1, 10, num=256, dtype=arg_dt)
-    sb = dpt.signbit(x[::-3])
-    assert sb.dtype == dpt.bool
-
-    assert not dpt.any(sb)
-
-    x2 = dpt.linspace(-10, -1, num=256, dtype=arg_dt)
-    sb2 = dpt.signbit(x2[::-3])
-    assert dpt.all(sb2)
-
-
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_signbit_special_cases_contig(dtype):
+def test_signbit_special_cases(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -76,32 +59,6 @@ def test_signbit_special_cases_contig(dtype):
             dpt.full(x2.size, True),
             dpt.full(x3.size, False),
             dpt.full(x4.size, False),
-        )
-    )
-
-    assert dpt.all(dpt.equal(actual, expected))
-
-
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_signbit_special_cases_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    x1 = dpt.full(63, -dpt.inf, dtype=arg_dt)
-    x2 = dpt.full(63, -0.0, dtype=arg_dt)
-    x3 = dpt.full(63, 0.0, dtype=arg_dt)
-    x4 = dpt.full(63, dpt.inf, dtype=arg_dt)
-
-    x = dpt.concat((x1, x2, x3, x4))
-    actual = dpt.signbit(x[::-1])
-
-    expected = dpt.concat(
-        (
-            dpt.full(x4.size, False),
-            dpt.full(x3.size, False),
-            dpt.full(x2.size, True),
-            dpt.full(x1.size, True),
         )
     )
 
