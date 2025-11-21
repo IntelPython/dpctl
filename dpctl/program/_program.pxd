@@ -49,9 +49,11 @@ cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
     binary file.
     """
     cdef DPCTLSyclKernelBundleRef _program_ref
+    cdef bint _is_sycl_source
 
     @staticmethod
-    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref)
+    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref,
+                               bint _is_sycl_source)
     cdef  DPCTLSyclKernelBundleRef get_program_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
@@ -59,3 +61,6 @@ cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
 cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
 cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL,
                                  unicode copts=*)
+cpdef create_program_from_sycl_source(SyclQueue q, unicode source,
+                                      list headers=*, list registered_names=*,
+                                      list copts=*)
