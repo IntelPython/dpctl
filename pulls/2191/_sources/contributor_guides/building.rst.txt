@@ -129,14 +129,16 @@ To develop, run:
 
         .. code-block:: bash
 
-            python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+            python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+            python -m pip install -e .
 
     .. tab-item:: Windows
         :sync: win
 
         .. code-block:: bat
 
-            python setup.py develop -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+            python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+            python -m pip install -e .
 
 
 Developing can be streamlined using the driver script:
@@ -169,7 +171,8 @@ the relevant CMake variables, for example:
 
 .. code-block:: bash
 
-    python setup.py develop -- -G Ninja -DCMAKE_C_COMPILER:PATH=$(which clang) -DCMAKE_CXX_COMPILER:PATH=$(which clang++)
+    python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=$(which clang) -DCMAKE_CXX_COMPILER:PATH=$(which clang++)
+    python -m pip install -e .
 
 
 Or you can use the driver script:
