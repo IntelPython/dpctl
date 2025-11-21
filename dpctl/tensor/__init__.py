@@ -213,7 +213,9 @@ from ._type_utils import can_cast, finfo, iinfo, isdtype, result_type
 # deprecation warning for the dpctl.tensor module
 _warnings.warn(
     "dpctl.tensor is deprecated since dpctl 0.21.1 and will be removed in a "
-    "future release. Install dpnp and use 'import dpnp.tensor' instead.",
+    "future release. The functionality will be moved to separate package, dpnp "
+    "(see: https://github.com/IntelPython/dpnp). After that, use "
+    "'import dpnp.tensor' instead.",
     DeprecationWarning,
     stacklevel=2,
 )
@@ -413,8 +415,10 @@ def __getattr__(name: str):  # pragma: no cover
     if name in __all__:
         _warnings.warn(
             f"dpctl.tensor.{name} is deprecated; dpctl.tensor is deprecated "
-            "since dpctl 0.21.1 and will be removed in a future release. "
-            "Install dpnp and use 'import dpnp.tensor' instead.",
+            "since dpctl 0.21.1 and will be removed in a future release. The "
+            "functionality will be moved to separate package, dpnp (see: "
+            "https://github.com/IntelPython/dpnp). After that, use 'import "
+            "dpnp.tensor' instead.",
             DeprecationWarning,
             stacklevel=2,
         )
