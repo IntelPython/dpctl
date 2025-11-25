@@ -86,6 +86,8 @@ class DLDeviceType(IntEnum):
             Qualcomm Hexagon DSP
         ``kDLMAIA``:
             Microsoft MAIA device
+        ``kDLTrn``:
+            AWS Trainium device
     """
     kDLCPU = c_dlpack.device_CPU
     kDLCUDA = c_dlpack.device_CUDA
@@ -101,6 +103,7 @@ class DLDeviceType(IntEnum):
     kDLWebGPU = c_dlpack.device_WebGPU
     kDLHexagon = c_dlpack.device_Hexagon
     kDLMAIA = c_dlpack.device_MAIA
+    kDLTrn = c_dlpack.device_Trn
 
 
 cdef class InternalUSMArrayError(Exception):

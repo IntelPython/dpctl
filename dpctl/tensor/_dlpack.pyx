@@ -36,7 +36,7 @@ from .._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclUSMRef,
 )
-from ._usmarray cimport USM_ARRAY_C_CONTIGUOUS, USM_ARRAY_WRITABLE, usm_ndarray
+from ._usmarray cimport USM_ARRAY_WRITABLE, usm_ndarray
 
 import ctypes
 
@@ -76,6 +76,7 @@ cdef extern from "dlpack/dlpack.h" nogil:
         kDLWebGPU
         kDLHexagon
         kDLMAIA
+        kDLTrn
 
     ctypedef struct DLDevice:
         DLDeviceType device_type
@@ -88,6 +89,17 @@ cdef extern from "dlpack/dlpack.h" nogil:
         kDLBfloat
         kDLComplex
         kDLBool
+        kDLFloat8_e3m4
+        kDLFloat8_e4m3
+        kDLFloat8_e4m3b11fnuz
+        kDLFloat8_e4m3fn
+        kDLFloat8_e4m3fnuz
+        kDLFloat8_e5m2
+        kDLFloat8_e5m2fnuz
+        kDLFloat8_e8m0fnu
+        kDLFloat6_e2m3fn
+        kDLFloat6_e3m2fn
+        kDLFloat4_e2m1fn
 
     ctypedef struct DLDataType:
         uint8_t code
@@ -254,7 +266,6 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
-    cdef int flags = 0
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
     cdef Py_ssize_t si = 1
@@ -269,22 +280,21 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
         raise MemoryError(
             "to_dlpack_capsule: Could not allocate memory for DLManagedTensor"
         )
-    shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
-    if shape_strides_ptr is NULL:
-        stdlib.free(dlm_tensor)
-        raise MemoryError(
-            "to_dlpack_capsule: Could not allocate memory for shape/strides"
-        )
-    shape_ptr = usm_ary.get_shape()
-    for i in range(nd):
-        shape_strides_ptr[i] = shape_ptr[i]
-    strides_ptr = usm_ary.get_strides()
-    flags = usm_ary.flags_
-    if strides_ptr:
+    if nd > 0:
+        shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+        if shape_strides_ptr is NULL:
+            stdlib.free(dlm_tensor)
+            raise MemoryError(
+                "to_dlpack_capsule: Could not allocate memory for shape/strides"
+            )
+        shape_ptr = usm_ary.get_shape()
         for i in range(nd):
-            shape_strides_ptr[nd + i] = strides_ptr[i]
-    else:
-        if not (flags & USM_ARRAY_C_CONTIGUOUS):
+            shape_strides_ptr[i] = shape_ptr[i]
+        strides_ptr = usm_ary.get_strides()
+        if strides_ptr:
+            for i in range(nd):
+                shape_strides_ptr[nd + i] = strides_ptr[i]
+        else:
             si = 1
             for i in range(0, nd):
                 shape_strides_ptr[nd + i] = si
@@ -300,11 +310,8 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     dl_tensor.data = <void*>(data_ptr - byte_offset)
     dl_tensor.ndim = nd
     dl_tensor.byte_offset = <uint64_t>byte_offset
-    dl_tensor.shape = &shape_strides_ptr[0]
-    if strides_ptr is NULL:
-        dl_tensor.strides = NULL
-    else:
-        dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.shape = &shape_strides_ptr[0] if nd > 0 else NULL
+    dl_tensor.strides = &shape_strides_ptr[nd] if nd > 0 else NULL
     dl_tensor.device.device_type = kDLOneAPI
     dl_tensor.device.device_id = device_id
     dl_tensor.dtype.lanes = <uint16_t>1
@@ -384,24 +391,24 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
             "to_dlpack_versioned_capsule: Could not allocate memory "
             "for DLManagedTensorVersioned"
         )
-    shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
-    if shape_strides_ptr is NULL:
-        stdlib.free(dlmv_tensor)
-        raise MemoryError(
-            "to_dlpack_versioned_capsule: Could not allocate memory "
-            "for shape/strides"
-        )
-    # this can be a separate function for handling shapes and strides
-    shape_ptr = usm_ary.get_shape()
-    for i in range(nd):
-        shape_strides_ptr[i] = shape_ptr[i]
-    strides_ptr = usm_ary.get_strides()
-    flags = usm_ary.flags_
-    if strides_ptr:
+    if nd > 0:
+        shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
+        if shape_strides_ptr is NULL:
+            stdlib.free(dlmv_tensor)
+            raise MemoryError(
+                "to_dlpack_versioned_capsule: Could not allocate memory "
+                "for shape/strides"
+            )
+        # this can be a separate function for handling shapes and strides
+        shape_ptr = usm_ary.get_shape()
         for i in range(nd):
-            shape_strides_ptr[nd + i] = strides_ptr[i]
-    else:
-        if not (flags & USM_ARRAY_C_CONTIGUOUS):
+            shape_strides_ptr[i] = shape_ptr[i]
+        strides_ptr = usm_ary.get_strides()
+        flags = usm_ary.flags_
+        if strides_ptr:
+            for i in range(nd):
+                shape_strides_ptr[nd + i] = strides_ptr[i]
+        else:
             si = 1
             for i in range(0, nd):
                 shape_strides_ptr[nd + i] = si
@@ -419,11 +426,8 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
     dl_tensor.data = <void*>(data_ptr - byte_offset)
     dl_tensor.ndim = nd
     dl_tensor.byte_offset = <uint64_t>byte_offset
-    dl_tensor.shape = &shape_strides_ptr[0]
-    if strides_ptr is NULL:
-        dl_tensor.strides = NULL
-    else:
-        dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.shape = &shape_strides_ptr[0] if nd > 0 else NULL
+    dl_tensor.strides = &shape_strides_ptr[nd] if nd > 0 else NULL
     dl_tensor.device.device_type = kDLOneAPI
     dl_tensor.device.device_id = device_id
     dl_tensor.dtype.lanes = <uint16_t>1
@@ -503,10 +507,9 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
             "for DLManagedTensorVersioned"
         )
 
-    is_c_contiguous = npy_ary.flags["C"]
     shape = npy_ary.ctypes.shape_as(ctypes.c_int64)
     strides = npy_ary.ctypes.strides_as(ctypes.c_int64)
-    if not is_c_contiguous:
+    if nd > 0:
         if npy_ary.size != 1:
             for i in range(nd):
                 if shape[i] != 1 and strides[i] % itemsize != 0:
@@ -517,18 +520,14 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
                         "itemsize"
                     )
         shape_strides_ptr = <int64_t *>stdlib.malloc((sizeof(int64_t) * 2) * nd)
-    else:
-        # no need to pass strides in this case
-        shape_strides_ptr = <int64_t *>stdlib.malloc(sizeof(int64_t) * nd)
-    if shape_strides_ptr is NULL:
-        stdlib.free(dlmv_tensor)
-        raise MemoryError(
-            "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
-            "for shape/strides"
-        )
-    for i in range(nd):
-        shape_strides_ptr[i] = shape[i]
-        if not is_c_contiguous:
+        if shape_strides_ptr is NULL:
+            stdlib.free(dlmv_tensor)
+            raise MemoryError(
+                "numpy_to_dlpack_versioned_capsule: Could not allocate memory "
+                "for shape/strides"
+            )
+        for i in range(nd):
+            shape_strides_ptr[i] = shape[i]
             shape_strides_ptr[nd + i] = strides[i] // itemsize
 
     writable_flag = npy_ary.flags["W"]
@@ -540,11 +539,8 @@ cpdef numpy_to_dlpack_versioned_capsule(ndarray npy_ary, bint copied):
     dl_tensor.data = <void *> npy_ary.data
     dl_tensor.ndim = nd
     dl_tensor.byte_offset = <uint64_t>byte_offset
-    dl_tensor.shape = &shape_strides_ptr[0]
-    if is_c_contiguous:
-        dl_tensor.strides = NULL
-    else:
-        dl_tensor.strides = &shape_strides_ptr[nd]
+    dl_tensor.shape = &shape_strides_ptr[0] if nd > 0 else NULL
+    dl_tensor.strides = &shape_strides_ptr[nd] if nd > 0 else NULL
     dl_tensor.device.device_type = kDLCPU
     dl_tensor.device.device_id = 0
     dl_tensor.dtype.lanes = <uint16_t>1
@@ -816,12 +812,8 @@ cpdef object from_dlpack_capsule(object py_caps):
             raise BufferError(
                 "Can not import DLPack tensor with lanes != 1"
             )
-        offset_min = 0
-        if dl_tensor.strides is NULL:
-            for i in range(dl_tensor.ndim):
-                sz = sz * dl_tensor.shape[i]
-            offset_max = sz - 1
-        else:
+        if dl_tensor.ndim > 0:
+            offset_min = 0
             offset_max = 0
             for i in range(dl_tensor.ndim):
                 stride_i = dl_tensor.strides[i]
@@ -876,15 +868,17 @@ cpdef object from_dlpack_capsule(object py_caps):
                     (<c_dpctl.SyclQueue>q).get_queue_ref(),
                     memory_owner=tmp
                 )
+
         py_shape = list()
-        for i in range(dl_tensor.ndim):
-            py_shape.append(dl_tensor.shape[i])
-        if (dl_tensor.strides is NULL):
-            py_strides = None
-        else:
+        if (dl_tensor.shape is not NULL):
+            for i in range(dl_tensor.ndim):
+                py_shape.append(dl_tensor.shape[i])
+        if (dl_tensor.strides is not NULL):
             py_strides = list()
             for i in range(dl_tensor.ndim):
                 py_strides.append(dl_tensor.strides[i])
+        else:
+            py_strides = None
         if (dl_tensor.dtype.code == kDLUInt):
             ary_dt = np.dtype("u" + str(element_bytesize))
         elif (dl_tensor.dtype.code == kDLInt):
