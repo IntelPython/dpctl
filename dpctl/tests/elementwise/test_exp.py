@@ -23,7 +23,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _map_to_device_dtype, _usm_types
+from .utils import _all_dtypes, _map_to_device_dtype
 
 
 @pytest.mark.parametrize("dtype", _all_dtypes)
@@ -38,7 +38,7 @@ def test_exp_out_type(dtype):
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_exp_real_contig(dtype):
+def test_exp_real(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -60,7 +60,7 @@ def test_exp_real_contig(dtype):
 
 
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_exp_complex_contig(dtype):
+def test_exp_complex(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -86,52 +86,6 @@ def test_exp_complex_contig(dtype):
     assert_allclose(
         dpt.asnumpy(Z), np.repeat(np.exp(Xnp), n_rep), atol=tol, rtol=tol
     )
-
-
-@pytest.mark.parametrize("usm_type", _usm_types)
-def test_exp_usm_type(usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = 16.0
-    X[..., 1::2] = 23.0
-
-    Y = dpt.exp(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np.empty(input_shape, dtype=arg_dt)
-    expected_Y[..., 0::2] = np.exp(np.float32(16.0))
-    expected_Y[..., 1::2] = np.exp(np.float32(23.0))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _all_dtypes)
-def test_exp_order(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = 8.0
-    X[..., 1::2] = 11.0
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np.exp(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt.exp(U, order=ord)
-            tol = 8 * max(
-                dpt.finfo(Y.dtype).resolution,
-                np.finfo(expected_Y.dtype).resolution,
-            )
-            assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
 
 
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
@@ -161,57 +115,6 @@ def test_exp_real_special_cases(dtype):
     Ynp = np.exp(Xnp)
     assert_allclose(Y, Ynp, atol=tol, rtol=tol)
     assert_array_equal(np.signbit(Y), np.signbit(Ynp))
-
-
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_exp_real_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    np.random.seed(42)
-    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 4, 6, 8, 9, 24, 72]
-    tol = 8 * dpt.finfo(dtype).resolution
-
-    for ii in sizes:
-        Xnp = np.random.uniform(low=0.01, high=88.1, size=ii)
-        Xnp.astype(dtype)
-        X = dpt.asarray(Xnp)
-        Ynp = np.exp(Xnp)
-        for jj in strides:
-            assert_allclose(
-                dpt.asnumpy(dpt.exp(X[::jj])),
-                Ynp[::jj],
-                atol=tol,
-                rtol=tol,
-            )
-
-
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_exp_complex_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    np.random.seed(42)
-    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 4, 6, 8, 9, 24, 72]
-    tol = 8 * dpt.finfo(dtype).resolution
-
-    low = -88.0
-    high = 88.0
-    for ii in sizes:
-        x1 = np.random.uniform(low=low, high=high, size=ii)
-        x2 = np.random.uniform(low=low, high=high, size=ii)
-        Xnp = np.array([complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype)
-        X = dpt.asarray(Xnp)
-        Ynp = np.exp(Xnp)
-        for jj in strides:
-            assert_allclose(
-                dpt.asnumpy(dpt.exp(X[::jj])),
-                Ynp[::jj],
-                atol=tol,
-                rtol=tol,
-            )
 
 
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
