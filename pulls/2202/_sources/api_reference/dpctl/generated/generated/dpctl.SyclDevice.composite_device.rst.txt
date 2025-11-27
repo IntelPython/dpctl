@@ -1,0 +1,6 @@
+dpctl.SyclDevice.composite\_device
+==================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.composite_device
