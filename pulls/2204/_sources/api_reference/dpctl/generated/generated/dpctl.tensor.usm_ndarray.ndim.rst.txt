@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.ndim
+==============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.ndim
