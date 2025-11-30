@@ -1,6 +1,0 @@
-﻿dpctl.tensor.searchsorted
-=========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: searchsorted
