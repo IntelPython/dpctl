@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.1] - Nov. 29, 2025
+
+This release is made to distribute `dpctl` for Python 3.14. Only the non-free-threaded version of Python is supported as of this release.
+
+Additionally, as of this release, the `dpctl.tensor` module is now deprecated, and all tensor functionality will be moved to [`dpnp`](https://github.com/IntelPython/dpnp).
+
+### Maintenance
+
+* Added Python 3.14 and `python-gil` to package metadata, as free-threaded Python is not yet supported [gh-2173](https://github.com/IntelPython/dpctl/pull/2173)
+
+### Deprecated
+
+* Deprecated `dpctl.tensor` module pending move to `dpnp` [gh-2191](https://github.com/IntelPython/dpctl/pull/2191)
+
 ## [0.21.0] - Oct. 03, 2025
 
 This release features the addition of new function `tensor.isin`, indexing of `tensor.usm_ndarray` with `numpy.ndarray`, and support for building `dpctl` for specific CUDA architectures.
