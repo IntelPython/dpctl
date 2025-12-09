@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.nbytes
+===================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMDevice.nbytes
