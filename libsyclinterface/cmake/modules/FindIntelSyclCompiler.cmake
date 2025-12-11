@@ -108,8 +108,12 @@ if(${clangxx_result} MATCHES "0")
         ${VERSION_STRING}
     )
 
+    message(STATUS "IntelSyclCompiler version: ${IntelSyclCompiler_VERSION}")
+    message(STATUS "IntelSyclCompiler_VERSION_LIST: ${IntelSyclCompiler_VERSION_LIST}")
+
     # Split out the version into major, minor an patch
     string(REPLACE "." ";" IntelSyclCompiler_VERSION_LIST1 "${IntelSyclCompiler_VERSION}")
+    message(STATUS "IntelSyclCompiler_VERSION_LIST1: ${IntelSyclCompiler_VERSION_LIST1}")
     list(GET IntelSyclCompiler_VERSION_LIST1 0 IntelSyclCompiler_VERSION_MAJOR)
     list(GET IntelSyclCompiler_VERSION_LIST1 1 IntelSyclCompiler_VERSION_MINOR)
     list(GET IntelSyclCompiler_VERSION_LIST1 2 IntelSyclCompiler_VERSION_PATCH)
