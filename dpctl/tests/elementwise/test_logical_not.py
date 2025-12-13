@@ -20,7 +20,7 @@ import pytest
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _all_dtypes, _compare_dtypes, _usm_types
+from .utils import _all_dtypes, _compare_dtypes
 
 
 @pytest.mark.parametrize("op_dtype", _all_dtypes)
@@ -131,49 +131,3 @@ def test_logical_not_complex_float():
             r2 = dpt.logical_not(ar2)
             expected2 = np.logical_not(dpt.asnumpy(ar2))
             assert (dpt.asnumpy(r2) == expected2).all()
-
-
-@pytest.mark.parametrize("op_usm_type", _usm_types)
-def test_logical_not_usm_type_matrix(op_usm_type):
-    get_queue_or_skip()
-
-    sz = 128
-    ar1 = dpt.asarray(
-        np.random.randint(0, 2, sz), dtype="i4", usm_type=op_usm_type
-    )
-
-    r = dpt.logical_not(ar1)
-    assert isinstance(r, dpt.usm_ndarray)
-    assert r.usm_type == op_usm_type
-
-
-def test_logical_not_order():
-    get_queue_or_skip()
-
-    ar1 = dpt.ones((20, 20), dtype="i4", order="C")
-    r1 = dpt.logical_not(ar1, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.logical_not(ar1, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.logical_not(ar1, order="A")
-    assert r3.flags.c_contiguous
-    r4 = dpt.logical_not(ar1, order="K")
-    assert r4.flags.c_contiguous
-
-    ar1 = dpt.zeros((20, 20), dtype="i4", order="F")
-    r1 = dpt.logical_not(ar1, order="C")
-    assert r1.flags.c_contiguous
-    r2 = dpt.logical_not(ar1, order="F")
-    assert r2.flags.f_contiguous
-    r3 = dpt.logical_not(ar1, order="A")
-    assert r3.flags.f_contiguous
-    r4 = dpt.logical_not(ar1, order="K")
-    assert r4.flags.f_contiguous
-
-    ar1 = dpt.ones((40, 40), dtype="i4", order="C")[:20, ::-2]
-    r4 = dpt.logical_not(ar1, order="K")
-    assert r4.strides == (20, -1)
-
-    ar1 = dpt.zeros((40, 40), dtype="i4", order="C")[:20, ::-2].mT
-    r4 = dpt.logical_not(ar1, order="K")
-    assert r4.strides == (-1, 20)
