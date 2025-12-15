@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -112,7 +112,7 @@ jobs:
           conda list -n base
 
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -198,7 +198,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -336,7 +336,7 @@ jobs:
         run: Get-Content -Path .\lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -560,7 +560,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
@@ -692,7 +692,7 @@ jobs:
           fetch-depth: 0
       - name: Cache array API tests
         id: cache-array-api-tests
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           ARRAY_CACHE: 3
         with:
@@ -740,7 +740,7 @@ jobs:
         run: |
           echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
       - name: Cache conda packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           CACHE_NUMBER: 3  # Increase to reset cache
         with:
