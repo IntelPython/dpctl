@@ -10,12 +10,19 @@ on:
     - cron: '28 2 * * 6' # Saturday at 02:28 UTC
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   autoupdate:
     name: Autoupdate
 
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    permissions:
+      # Needed to create a PR with autoupdate changes
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout DPNP repo
