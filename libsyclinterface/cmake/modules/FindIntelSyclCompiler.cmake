@@ -100,6 +100,10 @@ if(${clangxx_result} MATCHES "0")
         MATH(EXPR IDX "${IDX}+1")
     endforeach()
     list(GET IntelSyclCompiler_VERSION_LIST 0 VERSION_STRING)
+    if("${VERSION_STRING}" MATCHES "Intel SYCL compiler Nightly")
+        # Handle nightly build version string
+        list(GET IntelSyclCompiler_VERSION_LIST 1 VERSION_STRING)
+    endif()
 
     # Get the dpcpp version
     string(REGEX MATCH
