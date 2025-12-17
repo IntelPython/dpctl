@@ -582,10 +582,10 @@ def test_flip_multiple_axes(data):
     assert_array_equal(Ynp, dpt.asnumpy(Y))
 
 
-def test_roll_empty():
+def test_roll_scalar():
     q = get_queue_or_skip()
 
-    Xnp = np.empty([])
+    Xnp = np.ones([], dtype="f4")
     X = dpt.asarray(Xnp, sycl_queue=q)
 
     Y = dpt.roll(X, 1)
