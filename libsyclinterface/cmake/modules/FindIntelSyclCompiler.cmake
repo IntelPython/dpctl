@@ -102,13 +102,13 @@ if(${clangxx_result} MATCHES "0")
             # Match 'clang version xx.x.x'
             string(REGEX MATCH "^.*clang version [0-9]+\\.[0-9]+\\.[0-9]+.*$" _clang_match "${X}")
             if(_clang_match)
-                string(REGEX REPLACE "^.*clang version ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${X}")
+                string(REGEX REPLACE "^.*clang version ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${_clang_match}")
             endif()
 
             # Match 'Intel(R) oneAPI DPC++/C++ Compiler xxxx.x.x (...)'
             string(REGEX MATCH "^.*Intel\\(R\\) oneAPI DPC\\+\\+\\/C\\+\\+ Compiler [0-9]+\\.[0-9]+\\.[0-9]+.*$" _oneapi_match "${X}")
             if(_oneapi_match)
-                string(REGEX REPLACE "^.*Intel\\(R\\) oneAPI DPC\\+\\+\\/C\\+\\+ Compiler ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${X}")
+                string(REGEX REPLACE "^.*Intel\\(R\\) oneAPI DPC\\+\\+\\/C\\+\\+ Compiler ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${_oneapi_match}")
             endif()
         endif()
         math(EXPR IDX "${IDX}+1")
