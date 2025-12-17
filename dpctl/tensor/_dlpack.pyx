@@ -316,8 +316,8 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
                 stdlib.free(shape_strides_ptr)
                 stdlib.free(dlm_tensor)
                 raise BufferError(
-                    "to_dlpack_capsule: Could not reconstruct strides "
-                    "for non-contiguous tensor"
+                    "to_dlpack_capsule: Invalid array encountered "
+                    "when building strides"
                 )
 
             strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
@@ -444,8 +444,8 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
                 stdlib.free(shape_strides_ptr)
                 stdlib.free(dlmv_tensor)
                 raise BufferError(
-                    "to_dlpack_versioned_capsule: Could not reconstruct "
-                    "strides for non-contiguous tensor"
+                    "to_dlpack_versioned_capsule: Invalid array encountered "
+                    "when building strides"
                 )
 
             strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
