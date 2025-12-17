@@ -664,6 +664,45 @@ def test_dlpack_capsule_readonly_array_to_kdlcpu():
     assert not y1.flags["W"]
 
 
+def test_to_dlpack_capsule_c_and_f_contig():
+    try:
+        x = dpt.asarray(np.random.rand(2, 3))
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    cap = _dlp.to_dlpack_capsule(x)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert np.allclose(dpt.asnumpy(x), dpt.asnumpy(y))
+    assert x.strides == y.strides
+
+    x_f = x.T
+    cap = _dlp.to_dlpack_capsule(x_f)
+    yf = _dlp.from_dlpack_capsule(cap)
+    assert np.allclose(dpt.asnumpy(x_f), dpt.asnumpy(yf))
+    assert x_f.strides == yf.strides
+    del cap
+
+
+def test_to_dlpack_versioned_capsule_c_and_f_contig():
+    try:
+        x = dpt.asarray(np.random.rand(2, 3))
+        max_supported_ver = _dlp.get_build_dlpack_version()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+
+    cap = x.__dlpack__(max_version=max_supported_ver)
+    y = _dlp.from_dlpack_capsule(cap)
+    assert np.allclose(dpt.asnumpy(x), dpt.asnumpy(y))
+    assert x.strides == y.strides
+
+    x_f = x.T
+    cap = x_f.__dlpack__(max_version=max_supported_ver)
+    yf = _dlp.from_dlpack_capsule(cap)
+    assert np.allclose(dpt.asnumpy(x_f), dpt.asnumpy(yf))
+    assert x_f.strides == yf.strides
+    del cap
+
+
 def test_used_dlpack_capsule_from_numpy():
     get_queue_or_skip()
 

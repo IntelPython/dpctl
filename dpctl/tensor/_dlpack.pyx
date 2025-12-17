@@ -36,7 +36,12 @@ from .._backend cimport (
     DPCTLSyclDeviceRef,
     DPCTLSyclUSMRef,
 )
-from ._usmarray cimport USM_ARRAY_WRITABLE, usm_ndarray
+from ._usmarray cimport (
+    USM_ARRAY_C_CONTIGUOUS,
+    USM_ARRAY_F_CONTIGUOUS,
+    USM_ARRAY_WRITABLE,
+    usm_ndarray,
+)
 
 import ctypes
 
@@ -266,6 +271,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
+    cdef int flags = 0
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
     cdef Py_ssize_t si = 1
@@ -291,14 +297,29 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
         for i in range(nd):
             shape_strides_ptr[i] = shape_ptr[i]
         strides_ptr = usm_ary.get_strides()
+        flags = usm_ary.flags_
         if strides_ptr:
             for i in range(nd):
                 shape_strides_ptr[nd + i] = strides_ptr[i]
         else:
-            si = 1
-            for i in range(0, nd):
-                shape_strides_ptr[nd + i] = si
-                si = si * shape_ptr[i]
+            if flags & USM_ARRAY_C_CONTIGUOUS:
+                si = 1
+                for i in range(nd - 1, -1, -1):
+                    shape_strides_ptr[nd + i] = si
+                    si = si * shape_ptr[i]
+            elif flags & USM_ARRAY_F_CONTIGUOUS:
+                si = 1
+                for i in range(0, nd):
+                    shape_strides_ptr[nd + i] = si
+                    si = si * shape_ptr[i]
+            else:
+                stdlib.free(shape_strides_ptr)
+                stdlib.free(dlm_tensor)
+                raise BufferError(
+                    "to_dlpack_capsule: Invalid array encountered "
+                    "when building strides"
+                )
+
             strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
 
     ary_dt = usm_ary.dtype
@@ -409,10 +430,24 @@ cpdef to_dlpack_versioned_capsule(usm_ndarray usm_ary, bint copied):
             for i in range(nd):
                 shape_strides_ptr[nd + i] = strides_ptr[i]
         else:
-            si = 1
-            for i in range(0, nd):
-                shape_strides_ptr[nd + i] = si
-                si = si * shape_ptr[i]
+            if flags & USM_ARRAY_C_CONTIGUOUS:
+                si = 1
+                for i in range(nd - 1, -1, -1):
+                    shape_strides_ptr[nd + i] = si
+                    si = si * shape_ptr[i]
+            elif flags & USM_ARRAY_F_CONTIGUOUS:
+                si = 1
+                for i in range(0, nd):
+                    shape_strides_ptr[nd + i] = si
+                    si = si * shape_ptr[i]
+            else:
+                stdlib.free(shape_strides_ptr)
+                stdlib.free(dlmv_tensor)
+                raise BufferError(
+                    "to_dlpack_versioned_capsule: Invalid array encountered "
+                    "when building strides"
+                )
+
             strides_ptr = <Py_ssize_t *>&shape_strides_ptr[nd]
 
     # this can all be a function for building the dl_tensor
