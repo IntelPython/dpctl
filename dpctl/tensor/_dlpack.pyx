@@ -271,6 +271,7 @@ cpdef to_dlpack_capsule(usm_ndarray usm_ary):
     cdef int64_t *shape_strides_ptr = NULL
     cdef int i = 0
     cdef int device_id = -1
+    cdef int flags = 0
     cdef Py_ssize_t element_offset = 0
     cdef Py_ssize_t byte_offset = 0
     cdef Py_ssize_t si = 1
