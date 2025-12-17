@@ -95,24 +95,26 @@ execute_process(
 if(${clangxx_result} MATCHES "0")
     string(REPLACE "\n" ";" IntelSyclCompiler_VERSION_LIST "${clangxx_ver}")
     set(IDX 0)
+    set(IntelSyclCompiler_VERSION "")
     foreach(X ${IntelSyclCompiler_VERSION_LIST})
         message(STATUS "dpcpp ver[${IDX}]: ${X}")
-        MATH(EXPR IDX "${IDX}+1")
+        if("x${IntelSyclCompiler_VERSION}" STREQUAL "x")
+            # Match 'clang version xx.x.x'
+            string(REGEX MATCH "^.*clang version [0-9]+\\.[0-9]+\\.[0-9]+.*$" _clang_match "${X}")
+            if(_clang_match)
+                string(REGEX REPLACE "^.*clang version ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${X}")
+            endif()
+
+            # Match 'Intel(R) oneAPI DPC++/C++ Compiler xxxx.x.x (...)'
+            string(REGEX MATCH "^.*Intel\\(R\\) oneAPI DPC\\+\\+\\/C\\+\\+ Compiler [0-9]+\\.[0-9]+\\.[0-9]+.*$" _oneapi_match "${X}")
+            if(_oneapi_match)
+                string(REGEX REPLACE "^.*Intel\\(R\\) oneAPI DPC\\+\\+\\/C\\+\\+ Compiler ([0-9]+\\.[0-9]+\\.[0-9]+).*$" "\\1" IntelSyclCompiler_VERSION "${X}")
+            endif()
+        endif()
+        math(EXPR IDX "${IDX}+1")
     endforeach()
-    list(GET IntelSyclCompiler_VERSION_LIST 0 VERSION_STRING)
-    if("${VERSION_STRING}" MATCHES "Intel SYCL compiler Nightly")
-        # Handle nightly build version string
-        list(GET IntelSyclCompiler_VERSION_LIST 1 VERSION_STRING)
-    endif()
 
-    # Get the dpcpp version
-    string(REGEX MATCH
-        "[0-9]+\.[0-9]+\.[0-9]+"
-        IntelSyclCompiler_VERSION
-        ${VERSION_STRING}
-    )
-
-    # Split out the version into major, minor an patch
+    # Split out the version into major, minor and patch
     string(REPLACE "." ";" IntelSyclCompiler_VERSION_LIST1 "${IntelSyclCompiler_VERSION}")
     list(GET IntelSyclCompiler_VERSION_LIST1 0 IntelSyclCompiler_VERSION_MAJOR)
     list(GET IntelSyclCompiler_VERSION_LIST1 1 IntelSyclCompiler_VERSION_MINOR)
