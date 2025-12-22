@@ -124,6 +124,14 @@ cdef object _as_zero_dim_ndarray(object usm_ary):
     return view
 
 
+cdef inline void _check_0d_scalar_conversion(object usm_ary) except *:
+    "Raise TypeError if array cannot be converted to a Python scalar"
+    if (usm_ary.ndim != 0):
+        raise TypeError(
+            "only 0-dimensional arrays can be converted to Python scalars"
+        )
+
+
 cdef int _copy_writable(int lhs_flags, int rhs_flags):
     "Copy the WRITABLE flag to lhs_flags from rhs_flags"
     return (lhs_flags & ~USM_ARRAY_WRITABLE) | (rhs_flags & USM_ARRAY_WRITABLE)
@@ -1147,6 +1155,7 @@ cdef class usm_ndarray:
 
     def __float__(self):
         if self.size == 1:
+            _check_0d_scalar_conversion(self)
             view = _as_zero_dim_ndarray(self)
             return view.__float__()
 
@@ -1156,6 +1165,7 @@ cdef class usm_ndarray:
 
     def __complex__(self):
         if self.size == 1:
+            _check_0d_scalar_conversion(self)
             view = _as_zero_dim_ndarray(self)
             return view.__complex__()
 
@@ -1165,6 +1175,7 @@ cdef class usm_ndarray:
 
     def __int__(self):
         if self.size == 1:
+            _check_0d_scalar_conversion(self)
             view = _as_zero_dim_ndarray(self)
             return view.__int__()
 
