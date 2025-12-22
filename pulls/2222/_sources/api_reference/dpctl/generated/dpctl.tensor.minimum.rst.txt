@@ -1,0 +1,10 @@
+﻿dpctl.tensor.minimum
+====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: minimum
+    :no-value:
+
+
