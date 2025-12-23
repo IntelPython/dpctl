@@ -304,7 +304,7 @@ class TestCopyScalar:
             pytest.skip("No SYCL devices available")
         Y = np.arange(1, X.size + 1, dtype=dtype)
         X.usm_data.copy_from_host(Y.view("|u1"))
-        Y.shape = tuple()
+        Y = Y.reshape(())
         # Non-0D numeric arrays must not be convertible to Python scalars
         if len(shape) != 0:
             assert_raises_regex(TypeError, "only 0-dimensional arrays", func, X)
@@ -319,7 +319,7 @@ class TestCopyScalar:
             pytest.skip("No SYCL devices available")
         Y = np.arange(1, X.size + 1, dtype=dtype)
         X.usm_data.copy_from_host(Y.view("|u1"))
-        Y.shape = tuple()
+        Y = Y.reshape(())
         assert getattr(X, "__bool__")() == getattr(Y, "__bool__")()
 
     @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
@@ -330,7 +330,7 @@ class TestCopyScalar:
             pytest.skip("No SYCL devices available")
         Y = np.arange(1, X.size + 1, dtype=dtype)
         X.usm_data.copy_from_host(Y.view("|u1"))
-        Y.shape = tuple()
+        Y = Y.reshape(())
         if len(shape) != 0:
             assert_raises_regex(
                 TypeError, "only 0-dimensional arrays", getattr(X, method)
