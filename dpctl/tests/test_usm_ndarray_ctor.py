@@ -20,6 +20,7 @@ from math import prod
 
 import numpy as np
 import pytest
+from numpy.testing import assert_raises_regex
 
 import dpctl
 import dpctl.memory as dpm
@@ -282,34 +283,42 @@ def test_properties(dt):
         V.mT
 
 
-@pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
-def test_copy_scalar_with_func(func, shape, dtype):
-    try:
-        X = dpt.usm_ndarray(shape, dtype=dtype)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype)
-    X.usm_data.copy_from_host(Y.view("|u1"))
-    Y.shape = tuple()
-    assert func(X) == func(Y)
+class TestCopyScalar:
+    @pytest.mark.parametrize("func", [bool, float, int, complex])
+    def test_copy_scalar_with_func(self, func, shape, dtype):
+        try:
+            X = dpt.usm_ndarray(shape, dtype=dtype)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+        Y = np.arange(1, X.size + 1, dtype=dtype)
+        X.usm_data.copy_from_host(Y.view("|u1"))
+        Y = Y.reshape(())
+        # Non-0D numeric arrays must not be convertible to Python scalars
+        if len(shape) != 0:
+            assert_raises_regex(TypeError, "only 0-dimensional arrays", func, X)
+        else:
+            # 0D arrays are allowed to convert
+            assert func(X) == func(Y)
 
-
-@pytest.mark.parametrize(
-    "method", ["__bool__", "__float__", "__int__", "__complex__"]
-)
-@pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
-@pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
-def test_copy_scalar_with_method(method, shape, dtype):
-    try:
-        X = dpt.usm_ndarray(shape, dtype=dtype)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
-    Y = np.arange(1, X.size + 1, dtype=dtype)
-    X.usm_data.copy_from_host(Y.view("|u1"))
-    Y.shape = tuple()
-    assert getattr(X, method)() == getattr(Y, method)()
+    @pytest.mark.parametrize(
+        "method", ["__bool__", "__float__", "__int__", "__complex__"]
+    )
+    def test_copy_scalar_with_method(self, method, shape, dtype):
+        try:
+            X = dpt.usm_ndarray(shape, dtype=dtype)
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+        Y = np.arange(1, X.size + 1, dtype=dtype)
+        X.usm_data.copy_from_host(Y.view("|u1"))
+        Y = Y.reshape(())
+        if len(shape) != 0:
+            assert_raises_regex(
+                TypeError, "only 0-dimensional arrays", getattr(X, method)
+            )
+        else:
+            assert getattr(X, method)() == getattr(Y, method)()
 
 
 @pytest.mark.parametrize("func", [bool, float, int, complex])
