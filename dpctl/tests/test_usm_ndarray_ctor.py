@@ -286,18 +286,8 @@ def test_properties(dt):
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize("dtype", ["|b1", "|u2", "|f4", "|i8"])
 class TestCopyScalar:
-    def test_copy_bool_scalar_with_func(self, shape, dtype):
-        try:
-            X = dpt.usm_ndarray(shape, dtype=dtype)
-        except dpctl.SyclDeviceCreationError:
-            pytest.skip("No SYCL devices available")
-        Y = np.arange(1, X.size + 1, dtype=dtype)
-        X.usm_data.copy_from_host(Y.view("|u1"))
-        Y.shape = tuple()
-        assert bool(X) == bool(Y)
-
-    @pytest.mark.parametrize("func", [float, int, complex])
-    def test_copy_numeric_scalar_with_func(self, func, shape, dtype):
+    @pytest.mark.parametrize("func", [bool, float, int, complex])
+    def test_copy_scalar_with_func(self, func, shape, dtype):
         try:
             X = dpt.usm_ndarray(shape, dtype=dtype)
         except dpctl.SyclDeviceCreationError:
@@ -312,18 +302,10 @@ class TestCopyScalar:
             # 0D arrays are allowed to convert
             assert func(X) == func(Y)
 
-    def test_copy_bool_scalar_with_method(self, shape, dtype):
-        try:
-            X = dpt.usm_ndarray(shape, dtype=dtype)
-        except dpctl.SyclDeviceCreationError:
-            pytest.skip("No SYCL devices available")
-        Y = np.arange(1, X.size + 1, dtype=dtype)
-        X.usm_data.copy_from_host(Y.view("|u1"))
-        Y = Y.reshape(())
-        assert getattr(X, "__bool__")() == getattr(Y, "__bool__")()
-
-    @pytest.mark.parametrize("method", ["__float__", "__int__", "__complex__"])
-    def test_copy_numeric_scalar_with_method(self, method, shape, dtype):
+    @pytest.mark.parametrize(
+        "method", ["__bool__", "__float__", "__int__", "__complex__"]
+    )
+    def test_copy_scalar_with_method(self, method, shape, dtype):
         try:
             X = dpt.usm_ndarray(shape, dtype=dtype)
         except dpctl.SyclDeviceCreationError:

@@ -1140,6 +1140,7 @@ cdef class usm_ndarray:
 
     def __bool__(self):
         if self.size == 1:
+            _check_0d_scalar_conversion(self)
             view = _as_zero_dim_ndarray(self)
             return view.__bool__()
 

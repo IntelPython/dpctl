@@ -1430,11 +1430,12 @@ def test_nonzero_f_contig():
     mask = dpt.zeros((5, 5), dtype="?", order="F")
     mask[2, 3] = True
 
-    expected_res = (2, 3)
-    res = dpt.nonzero(mask)
+    expected_res = np.nonzero(dpt.asnumpy(mask))
+    result = dpt.nonzero(mask)
 
-    assert expected_res == res
-    assert mask[res]
+    for exp, res in zip(expected_res, result):
+        assert_array_equal(dpt.asnumpy(res), exp)
+    assert dpt.all(mask[result])
 
 
 def test_nonzero_compacting():
@@ -1448,11 +1449,12 @@ def test_nonzero_compacting():
     mask[3, 2, 1] = True
     mask_view = mask[..., :3]
 
-    expected_res = (3, 2, 1)
-    res = dpt.nonzero(mask_view)
+    expected_res = np.nonzero(dpt.asnumpy(mask_view))
+    result = dpt.nonzero(mask_view)
 
-    assert expected_res == res
-    assert mask_view[res]
+    for exp, res in zip(expected_res, result):
+        assert_array_equal(dpt.asnumpy(res), exp)
+    assert dpt.all(mask_view[result])
 
 
 def test_assign_scalar():

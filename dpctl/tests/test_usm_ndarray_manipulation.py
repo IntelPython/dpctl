@@ -1438,11 +1438,11 @@ def test_tile_size_1():
     # test for gh-1627 behavior
     res = dpt.tile(x1, reps)
     assert x1.shape == res.shape
-    assert x1 == res
+    assert_array_equal(dpt.asnumpy(x1), dpt.asnumpy(res))
 
     res = dpt.tile(x2, reps)
     assert x2.shape == res.shape
-    assert x2 == res
+    assert_array_equal(dpt.asnumpy(x2), dpt.asnumpy(res))
 
 
 def test_tile_prepends_axes():
