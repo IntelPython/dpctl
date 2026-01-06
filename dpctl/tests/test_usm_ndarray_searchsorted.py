@@ -285,7 +285,7 @@ def test_searchsorted_validation():
         x1 = dpt.arange(10, dtype="i4")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("Default device could not be created")
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         dpt.searchsorted(x1, None)
     with pytest.raises(TypeError):
         dpt.searchsorted(x1, x1, sorter=dict())
