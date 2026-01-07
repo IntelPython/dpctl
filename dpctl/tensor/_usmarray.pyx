@@ -219,7 +219,9 @@ cdef class usm_ndarray:
             Offset of the array element with all zero indexes relative to the
             start of the provided `buffer` in elements. The argument is ignored
             if the ``buffer`` value is a string and the memory is allocated by
-            the constructor. Default: ``0``.
+            the constructor. If the ``buffer`` value is another
+            :class:`dpctl.tensor.usm_ndarray` instance, the provided offset is
+            added to the offset of the provided array. Default: ``0``.
         order ({"C", "F"}, optional):
             The memory layout of the array when constructing using a new
             allocation. Value ``"C"`` corresponds to C-contiguous, or row-major
@@ -379,9 +381,15 @@ cdef class usm_ndarray:
                     "".format(buffer)
                 )
         elif isinstance(buffer, usm_ndarray):
+            if not buffer.flags.contiguous:
+                self._cleanup()
+                raise ValueError(
+                    "When buffer is usm_ndarray, it must be contiguous."
+                )
             if not buffer.flags.writable:
                 writable_flag = 0
             _buffer = buffer.usm_data
+            _offset += buffer._element_offset
         else:
             self._cleanup()
             raise ValueError("buffer='{}' was not understood.".format(buffer))
