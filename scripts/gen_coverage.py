@@ -185,14 +185,6 @@ def main():
     )
     install_editable(setup_dir, env)
 
-    cmake_build_dir = (
-        subprocess.check_output(
-            ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
-        )
-        .decode("utf-8")
-        .strip("\n")
-    )
-
     cmake_build_dir = capture_cmd_output(
         ["find", "_skbuild", "-name", "cmake-build"],
         cwd=setup_dir,
