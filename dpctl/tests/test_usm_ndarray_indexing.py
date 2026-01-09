@@ -1435,7 +1435,7 @@ def test_nonzero_f_contig():
 
     for exp, res in zip(expected_res, result):
         assert_array_equal(dpt.asnumpy(res), exp)
-    assert dpt.all(mask[result])
+    assert dpt.asnumpy(mask[result]).all()
 
 
 def test_nonzero_compacting():
@@ -1454,7 +1454,7 @@ def test_nonzero_compacting():
 
     for exp, res in zip(expected_res, result):
         assert_array_equal(dpt.asnumpy(res), exp)
-    assert dpt.all(mask_view[result])
+    assert dpt.asnumpy(mask_view[result]).all()
 
 
 def test_assign_scalar():
