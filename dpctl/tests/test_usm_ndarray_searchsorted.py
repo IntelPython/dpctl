@@ -395,21 +395,17 @@ def test_searchsorted_strided_scalar_needle():
     _check(hay_stack, needles, needles_np)
 
 
+@pytest.mark.parametrize(
+    "py_zero",
+    [bool(0), int(0), float(0), complex(0), np.float32(0), ctypes.c_int(0)],
+)
 @pytest.mark.parametrize("dt", _all_dtypes)
-def test_searchsorted_py_scalars(dt):
+def test_searchsorted_py_scalars(py_zero, dt):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dt, q)
 
     x = dpt.zeros(10, dtype=dt, sycl_queue=q)
-    py_zeros = (
-        bool(0),
-        int(0),
-        float(0),
-        complex(0),
-        np.float32(0),
-        ctypes.c_int(0),
-    )
-    for sc in py_zeros:
-        r1 = dpt.searchsorted(x, sc)
-        assert isinstance(r1, dpt.usm_ndarray)
-        assert r1.shape == ()
+
+    r1 = dpt.searchsorted(x, py_zero)
+    assert isinstance(r1, dpt.usm_ndarray)
+    assert r1.shape == ()
