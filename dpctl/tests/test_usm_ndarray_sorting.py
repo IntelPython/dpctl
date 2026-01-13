@@ -18,6 +18,7 @@ import itertools
 
 import numpy as np
 import pytest
+from numpy.testing import assert_array_equal
 
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
@@ -345,19 +346,19 @@ def test_radix_sort_size_1_axis():
 
     x1 = dpt.ones((), dtype="i1")
     r1 = dpt.sort(x1, kind="radixsort")
-    assert r1 == x1
+    assert_array_equal(dpt.asnumpy(r1), dpt.asnumpy(x1))
 
     x2 = dpt.ones([1], dtype="i1")
     r2 = dpt.sort(x2, kind="radixsort")
-    assert r2 == x2
+    assert_array_equal(dpt.asnumpy(r2), dpt.asnumpy(x2))
 
     x3 = dpt.reshape(dpt.arange(10, dtype="i1"), (10, 1))
     r3 = dpt.sort(x3, kind="radixsort")
-    assert dpt.all(r3 == x3)
+    assert dpt.asnumpy(r3 == x3).all()
 
     x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
     r4 = dpt.sort(x4, axis=0, kind="radixsort")
-    assert dpt.all(r4 == x4)
+    assert dpt.asnumpy(r4 == x4).all()
 
 
 def test_radix_argsort_size_1_axis():
@@ -369,12 +370,12 @@ def test_radix_argsort_size_1_axis():
 
     x2 = dpt.ones([1], dtype="i1")
     r2 = dpt.argsort(x2, kind="radixsort")
-    assert r2 == 0
+    assert dpt.asnumpy(r2 == 0).all()
 
     x3 = dpt.reshape(dpt.arange(10, dtype="i1"), (10, 1))
     r3 = dpt.argsort(x3, kind="radixsort")
-    assert dpt.all(r3 == 0)
+    assert dpt.asnumpy(r3 == 0).all()
 
     x4 = dpt.reshape(dpt.arange(10, dtype="i1"), (1, 10))
     r4 = dpt.argsort(x4, axis=0, kind="radixsort")
-    assert dpt.all(r4 == 0)
+    assert dpt.asnumpy(r4 == 0).all()

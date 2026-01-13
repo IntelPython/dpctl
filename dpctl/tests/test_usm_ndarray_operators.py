@@ -129,7 +129,7 @@ def test_mat_ops(namespace):
 @pytest.mark.parametrize("namespace", [dpt, Dummy()])
 def test_comp_ops(namespace):
     try:
-        X = dpt.ones(1, dtype="u8")
+        X = dpt.asarray(1, dtype="u8")
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
     X._set_namespace(namespace)
