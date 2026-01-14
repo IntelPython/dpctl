@@ -829,7 +829,12 @@ def repeat(x, repeats, /, *, axis=None):
         if repeats.size == 1:
             scalar = True
             # bring the single element to the host
-            repeats = int(repeats)
+            if repeats.ndim == 0:
+                repeats = int(repeats)
+            else:
+                # Get the single element explicitly
+                # since non-0D arrays can not be converted to scalars
+                repeats = int(repeats[0])
             if repeats < 0:
                 raise ValueError("`repeats` elements must be positive")
         else:
