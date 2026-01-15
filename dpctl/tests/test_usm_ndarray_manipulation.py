@@ -1342,6 +1342,21 @@ def test_repeat_strided_repeats():
     assert dpt.all(res == x)
 
 
+def test_repeat_size1_repeats():
+    get_queue_or_skip()
+
+    x = dpt.arange(5, dtype="i4")
+    expected_res = dpt.repeat(x, 2)
+    # 0D repeats
+    reps_0d = dpt.asarray(2, dtype="i8")
+    res = dpt.repeat(x, reps_0d)
+    assert dpt.all(res == expected_res)
+    # 1D repeats
+    reps_1d = dpt.asarray([2], dtype="i8")
+    res = dpt.repeat(x, reps_1d)
+    assert dpt.all(res == expected_res)
+
+
 def test_repeat_arg_validation():
     get_queue_or_skip()
 
