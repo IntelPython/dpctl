@@ -1,0 +1,6 @@
+dpctl.SyclDevice.device\_type
+=============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.device_type
