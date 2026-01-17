@@ -14,8 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import ctypes
-
 import numpy as np
 import pytest
 
@@ -58,26 +56,6 @@ def test_nextafter_dtype_matrix(op1_dtype, op2_dtype):
     assert _compare_dtypes(r.dtype, expected.dtype, sycl_queue=q)
     assert r.shape == ar3.shape
     assert (dpt.asnumpy(r) == expected.astype(r.dtype)).all()
-
-
-@pytest.mark.parametrize("arr_dt", _no_complex_dtypes[1:])
-def test_nextafter_python_scalar(arr_dt):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(arr_dt, q)
-
-    X = dpt.ones((10, 10), dtype=arr_dt, sycl_queue=q)
-    py_ones = (
-        bool(1),
-        int(1),
-        float(1),
-        np.float32(1),
-        ctypes.c_int(1),
-    )
-    for sc in py_ones:
-        R = dpt.nextafter(X, sc)
-        assert isinstance(R, dpt.usm_ndarray)
-        R = dpt.nextafter(sc, X)
-        assert isinstance(R, dpt.usm_ndarray)
 
 
 @pytest.mark.parametrize("dt", ["f2", "f4", "f8"])

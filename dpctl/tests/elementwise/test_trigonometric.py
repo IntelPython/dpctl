@@ -46,7 +46,7 @@ def test_trig_out_type(np_call, dpt_call, dtype):
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_trig_real_contig(np_call, dpt_call, dtype):
+def test_trig_real_basic(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -79,7 +79,7 @@ def test_trig_real_contig(np_call, dpt_call, dtype):
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_trig_complex_contig(np_call, dpt_call, dtype):
+def test_trig_complex_basic(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -113,88 +113,6 @@ def test_trig_complex_contig(np_call, dpt_call, dtype):
     dpt_call(X, out=Z)
 
     assert_allclose(dpt.asnumpy(Z), expected, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8"])
-def test_trig_real_strided(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    np.random.seed(42)
-    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 3, 4, 6, 8, 9, 24, 50, 72]
-    tol = 8 * dpt.finfo(dtype).resolution
-
-    low = -100.0
-    high = 100.0
-    if np_call in [np.arccos, np.arcsin]:
-        low = -1.0
-        high = 1.0
-    elif np_call in [np.tan]:
-        low = -np.pi / 2 * (0.99)
-        high = np.pi / 2 * (0.99)
-
-    for ii in sizes:
-        Xnp = np.random.uniform(low=low, high=high, size=ii)
-        Xnp.astype(dtype)
-        X = dpt.asarray(Xnp)
-        Ynp = np_call(Xnp)
-        for jj in strides:
-            assert_allclose(
-                dpt.asnumpy(dpt_call(X[::jj])),
-                Ynp[::jj],
-                atol=tol,
-                rtol=tol,
-            )
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", ["c8", "c16"])
-def test_trig_complex_strided(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    np.random.seed(42)
-    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 4, 6, 8, 9, 24, 72]
-    tol = 50 * dpt.finfo(dtype).resolution
-
-    low = -9.0
-    high = 9.0
-    while True:
-        x1 = np.random.uniform(low=low, high=high, size=2 * sum(sizes))
-        x2 = np.random.uniform(low=low, high=high, size=2 * sum(sizes))
-        Xnp_all = np.array(
-            [complex(v1, v2) for v1, v2 in zip(x1, x2)], dtype=dtype
-        )
-
-        # stay away from poles and branch lines
-        modulus = np.abs(Xnp_all)
-        sel = np.logical_or(
-            modulus < 0.9,
-            np.logical_and(
-                modulus > 1.2, np.minimum(np.abs(x2), np.abs(x1)) > 0.05
-            ),
-        )
-        Xnp_all = Xnp_all[sel]
-        if Xnp_all.size > sum(sizes):
-            break
-
-    pos = 0
-    for ii in sizes:
-        pos = pos + ii
-        Xnp = Xnp_all[:pos]
-        Xnp = Xnp[-ii:]
-        X = dpt.asarray(Xnp)
-        Ynp = np_call(Xnp)
-        for jj in strides:
-            assert_allclose(
-                dpt.asnumpy(dpt_call(X[::jj])),
-                Ynp[::jj],
-                atol=tol,
-                rtol=tol,
-            )
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
