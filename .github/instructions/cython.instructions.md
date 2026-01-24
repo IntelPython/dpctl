@@ -7,19 +7,16 @@ applyTo:
 
 # Cython Instructions
 
-See [dpctl/AGENTS.md](/dpctl/AGENTS.md) for conventions and patterns.
+See `dpctl/AGENTS.md` for full conventions.
 
-## Quick Reference
-
-### Required Directives (after license header)
+## Required Directives (after license)
 ```cython
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
 ```
 
-### Key Rules
-- `cimport` for C-level declarations, `import` for Python
-- Store C refs as `_*_ref`, clean up in `__dealloc__`
+## Key Rules
+- `cimport` for C-level, `import` for Python-level
+- Store C refs as `_*_ref`, clean up in `__dealloc__` with NULL check
 - Use `with nogil:` for blocking C operations
-- Check NULL before using C API returns

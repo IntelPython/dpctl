@@ -7,19 +7,17 @@ applyTo:
 
 # C API Instructions
 
-See [libsyclinterface/AGENTS.md](/libsyclinterface/AGENTS.md) for conventions.
+See `libsyclinterface/AGENTS.md` for conventions.
 
-## Quick Reference
-
-### Naming
+## Naming
 `DPCTL<ClassName>_<MethodName>` (e.g., `DPCTLDevice_Create`)
 
-### Ownership annotations (from `Support/MemOwnershipAttrs.h`)
+## Ownership annotations (see `include/syclinterface/Support/MemOwnershipAttrs.h`)
 - `__dpctl_give` - caller must free
 - `__dpctl_take` - function takes ownership
 - `__dpctl_keep` - function only observes
 
-### Key Rules
+## Key Rules
 - Annotate all parameters and returns
 - Return NULL on failure
 - Use `DPCTL_API` for exports

@@ -10,9 +10,10 @@
 ## Architecture
 
 ```
-Python API  →  Cython Bindings  →  C API  →  C++ Kernels  →  SYCL Runtime
-   dpctl/       _sycl_*.pyx      libsycl-    libtensor/
-                                 interface/
+Python API  →  Cython Bindings  →  C API           →  SYCL Runtime
+   dpctl/       _sycl_*.pyx       libsyclinterface/
+
+dpctl.tensor  →  pybind11  →  C++ Kernels (libtensor/)  →  SYCL Runtime
 ```
 
 ## Directory Guide
@@ -23,19 +24,21 @@ Python API  →  Cython Bindings  →  C API  →  C++ Kernels  →  SYCL Runtim
 | `dpctl/tensor/` | [dpctl/tensor/AGENTS.md](dpctl/tensor/AGENTS.md) | Array API tensor operations |
 | `dpctl/tensor/libtensor/` | [dpctl/tensor/libtensor/AGENTS.md](dpctl/tensor/libtensor/AGENTS.md) | C++ SYCL kernels |
 | `dpctl/memory/` | [dpctl/memory/AGENTS.md](dpctl/memory/AGENTS.md) | USM memory management |
+| `dpctl/program/` | [dpctl/program/AGENTS.md](dpctl/program/AGENTS.md) | SYCL kernel compilation |
+| `dpctl/utils/` | [dpctl/utils/AGENTS.md](dpctl/utils/AGENTS.md) | Utility functions |
 | `dpctl/tests/` | [dpctl/tests/AGENTS.md](dpctl/tests/AGENTS.md) | Test suite |
 | `libsyclinterface/` | [libsyclinterface/AGENTS.md](libsyclinterface/AGENTS.md) | C API layer |
 
 ## Code Style
 
-Style tools and configuration are defined in:
-- **Python/Cython:** `.pre-commit-config.yaml` (black, isort, flake8, cython-lint)
+Configuration files (do not hardcode versions - check these files):
+- **Python/Cython:** `.pre-commit-config.yaml`
 - **C/C++:** `.clang-format`
-- **Linting config:** `.flake8`
+- **Linting:** `.flake8`
 
 ## License Header
 
-All source files require Apache 2.0 header with Intel copyright. See existing files for format.
+All source files require Apache 2.0 header with Intel copyright. Reference existing files for exact format.
 
 ## Quick Reference
 
@@ -43,9 +46,9 @@ All source files require Apache 2.0 header with Intel copyright. See existing fi
 import dpctl
 import dpctl.tensor as dpt
 
-q = dpctl.SyclQueue("gpu")                    # Create queue
-x = dpt.ones((100, 100), dtype="f4", device=q) # Create array
-np_array = dpt.asnumpy(x)                      # Transfer to host
+q = dpctl.SyclQueue("gpu")                          # Create queue
+x = dpt.ones((100, 100), dtype="f4", sycl_queue=q)  # Create array
+np_array = dpt.asnumpy(x)                           # Transfer to host
 ```
 
 ## Key Concepts
@@ -53,3 +56,4 @@ np_array = dpt.asnumpy(x)                      # Transfer to host
 - **Queue:** Execution context binding device + context
 - **USM:** Unified Shared Memory (device/shared/host types)
 - **Filter string:** Device selector syntax `"backend:device_type:num"`
+- **Array API:** Python standard for array operations (https://data-apis.org/array-api/)

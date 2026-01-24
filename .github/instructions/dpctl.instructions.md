@@ -10,17 +10,17 @@ applyTo:
 
 # DPCTL General Instructions
 
-See [/AGENTS.md](/AGENTS.md) for project overview and architecture.
+See `AGENTS.md` at repository root for project overview and architecture.
+Each major directory has its own `AGENTS.md` with specific conventions.
 
 ## Key References
 
-- **Code style:** See `.pre-commit-config.yaml` for tool versions, `.clang-format` for C++ style
-- **License:** Apache 2.0 with Intel copyright - see existing files for header format
-- **Directory guides:** Each major directory has its own `AGENTS.md`
+- **Code style:** `.pre-commit-config.yaml`, `.clang-format`, `.flake8`
+- **License:** Apache 2.0 with Intel copyright - match existing file headers
 
 ## Critical Rules
 
-1. **Device compatibility:** Not all devices support fp64/fp16 - check capabilities
-2. **Queue consistency:** All arrays in an operation must share compatible queues
-3. **Resource cleanup:** Always clean up C resources in `__dealloc__`
+1. **Device compatibility:** Not all devices support fp64/fp16 - never assume availability
+2. **Queue consistency:** Arrays in same operation must share compatible queues
+3. **Resource cleanup:** Clean up C resources in `__dealloc__` with NULL check
 4. **NULL checks:** Always check C API returns before use

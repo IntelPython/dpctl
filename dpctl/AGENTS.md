@@ -13,12 +13,14 @@ Python/Cython wrappers for SYCL runtime objects: Device, Queue, Context, Event, 
 | `_sycl_context.pyx` | `SyclContext` wrapping `sycl::context` |
 | `_sycl_event.pyx` | `SyclEvent` wrapping `sycl::event` |
 | `_sycl_platform.pyx` | `SyclPlatform` wrapping `sycl::platform` |
+| `_sycl_device_factory.pyx` | Device enumeration and selection |
+| `_sycl_queue_manager.pyx` | Queue management utilities |
 | `_backend.pxd` | C API declarations from libsyclinterface |
 | `enum_types.py` | Python enums for SYCL types |
 
 ## Cython Conventions
 
-### Required Directives
+### Required Directives (after license header)
 ```cython
 # distutils: language = c++
 # cython: language_level=3
@@ -40,7 +42,7 @@ cdef class SyclDevice:
 
 ### Key Rules
 - Store C references as `_*_ref` attributes
-- Always clean up in `__dealloc__`
+- Always clean up in `__dealloc__` with NULL check
 - Use `with nogil:` for blocking C calls
 - Check NULL before using C API returns
 

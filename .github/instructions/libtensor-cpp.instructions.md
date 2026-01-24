@@ -6,15 +6,11 @@ applyTo:
 
 # C++ SYCL Kernel Instructions
 
-See [dpctl/tensor/libtensor/AGENTS.md](/dpctl/tensor/libtensor/AGENTS.md) for patterns and structure.
+See `dpctl/tensor/libtensor/AGENTS.md` for patterns and directory structure.
 
-## Quick Reference
-
-### Type dispatch
-See `include/utils/type_dispatch_building.hpp` for the 14 supported types.
-
-### Key Rules
-- Kernel class names must be unique
+## Key Rules
+- Kernel class names must be globally unique
 - Use `if constexpr` for compile-time type branching
 - Complex types don't support vectorization
 - Return `nullptr` from factory for unsupported types
+- Check `include/kernels/elementwise_functions/common.hpp` for base patterns

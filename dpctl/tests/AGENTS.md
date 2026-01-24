@@ -9,25 +9,22 @@ pytest-based test suite for dpctl functionality.
 | File | Purpose |
 |------|---------|
 | `conftest.py` | Fixtures and pytest configuration |
-| `helper/_helper.py` | Test utilities |
-| `elementwise/utils.py` | Dtype lists for parametrization |
+| `helper/_helper.py` | `get_queue_or_skip()`, `skip_if_dtype_not_supported()` |
+| `elementwise/utils.py` | Dtype and USM type lists for parametrization |
 
-## Essential Fixtures
+## Essential Helpers
 
 From `helper/_helper.py`:
 ```python
 get_queue_or_skip()           # Create queue or skip test
-skip_if_dtype_not_supported() # Skip if device lacks dtype
+skip_if_dtype_not_supported() # Skip if device lacks dtype (fp64/fp16)
 ```
 
-## Standard Dtype Lists
+## Dtype/USM Lists
 
-Defined in `elementwise/utils.py`:
+**Do not hardcode** - import from `elementwise/utils.py`:
 ```python
-_integral_dtypes = ["i1", "u1", "i2", "u2", "i4", "u4", "i8", "u8"]
-_real_fp_dtypes = ["f2", "f4", "f8"]
-_complex_fp_dtypes = ["c8", "c16"]
-_usm_types = ["device", "shared", "host"]
+from .utils import _all_dtypes, _usm_types, _no_complex_dtypes
 ```
 
 ## Test Pattern
@@ -45,7 +42,7 @@ def test_operation(dtype):
 
 ## Coverage Requirements
 
-- All supported dtypes
-- All USM types (device, shared, host)
-- Memory orders (C, F) where applicable
-- Edge cases: empty arrays, scalars, broadcasting
+- All supported dtypes (see `elementwise/utils.py`)
+- All USM types: device, shared, host
+- Memory orders: C, F where applicable
+- Edge cases: empty arrays, 0-d arrays (scalars), broadcasting
