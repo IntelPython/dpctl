@@ -1,6 +1,0 @@
-﻿dpctl.tensor.argsort
-====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: argsort
