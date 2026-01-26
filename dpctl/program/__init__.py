@@ -20,6 +20,7 @@ from either an OpenCL program represented as a string or a SPIR-V binary
 file.
 
 """
+
 from ._program import (
     SyclKernel,
     SyclProgram,

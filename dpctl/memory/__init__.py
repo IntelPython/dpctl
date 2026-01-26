@@ -28,6 +28,7 @@ objects to maniputalate USM memory using NumPy or `bytearray`,
 `memoryview`, or `array.array` classes.
 
 """
+
 from ._memory import (
     MemoryUSMDevice,
     MemoryUSMHost,
