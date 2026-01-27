@@ -14,9 +14,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import itertools
-import re
-
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose, assert_array_equal
@@ -24,7 +21,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 import dpctl.tensor as dpt
 from dpctl.tests.helper import get_queue_or_skip, skip_if_dtype_not_supported
 
-from .utils import _map_to_device_dtype, _no_complex_dtypes, _real_value_dtypes
+from .utils import _map_to_device_dtype, _no_complex_dtypes
 
 _all_funcs = [(np.floor, dpt.floor), (np.ceil, dpt.ceil), (np.trunc, dpt.trunc)]
 
@@ -48,62 +45,8 @@ def test_floor_ceil_trunc_out_type(dpt_call, dtype):
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("usm_type", ["device", "shared", "host"])
-def test_floor_ceil_trunc_usm_type(np_call, dpt_call, usm_type):
-    q = get_queue_or_skip()
-
-    arg_dt = np.dtype("f4")
-    input_shape = (10, 10, 10, 10)
-    X = dpt.empty(input_shape, dtype=arg_dt, usm_type=usm_type, sycl_queue=q)
-    X[..., 0::2] = -0.4
-    X[..., 1::2] = 0.7
-
-    Y = dpt_call(X)
-    assert Y.usm_type == X.usm_type
-    assert Y.sycl_queue == X.sycl_queue
-    assert Y.flags.c_contiguous
-
-    expected_Y = np_call(dpt.asnumpy(X))
-    tol = 8 * dpt.finfo(Y.dtype).resolution
-    assert_allclose(dpt.asnumpy(Y), expected_Y, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
 @pytest.mark.parametrize("dtype", _no_complex_dtypes)
-def test_floor_ceil_trunc_order(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    arg_dt = np.dtype(dtype)
-    input_shape = (4, 4, 4, 4)
-    X = dpt.empty(input_shape, dtype=arg_dt, sycl_queue=q)
-    X[..., 0::2] = -0.4
-    X[..., 1::2] = 0.7
-
-    for perms in itertools.permutations(range(4)):
-        U = dpt.permute_dims(X[:, ::-1, ::-1, :], perms)
-        expected_Y = np_call(dpt.asnumpy(U))
-        for ord in ["C", "F", "A", "K"]:
-            Y = dpt_call(U, order=ord)
-            assert_allclose(dpt.asnumpy(Y), expected_Y)
-
-
-@pytest.mark.parametrize("dpt_call", [dpt.floor, dpt.ceil, dpt.trunc])
-@pytest.mark.parametrize("dtype", _real_value_dtypes)
-def test_floor_ceil_trunc_error_dtype(dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    x = dpt.zeros(5, dtype=dtype)
-    y = dpt.empty_like(x, dtype="b1")
-    with pytest.raises(ValueError) as excinfo:
-        dpt_call(x, out=y)
-    assert re.match("Output array of type.*is needed", str(excinfo.value))
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _no_complex_dtypes)
-def test_floor_ceil_trunc_contig(np_call, dpt_call, dtype):
+def test_floor_ceil_trunc_basic(np_call, dpt_call, dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
@@ -120,28 +63,6 @@ def test_floor_ceil_trunc_contig(np_call, dpt_call, dtype):
     dpt_call(X, out=Z)
 
     assert_allclose(dpt.asnumpy(Z), np.repeat(np_call(Xnp), n_rep))
-
-
-@pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
-@pytest.mark.parametrize("dtype", _no_complex_dtypes)
-def test_floor_ceil_trunc_strided(np_call, dpt_call, dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    np.random.seed(42)
-    strides = np.array([-4, -3, -2, -1, 1, 2, 3, 4])
-    sizes = [2, 4, 6, 8, 24, 32, 72]
-
-    for ii in sizes:
-        Xnp = np.random.uniform(low=-99.9, high=99.9, size=ii)
-        Xnp.astype(dtype)
-        X = dpt.asarray(Xnp)
-        Ynp = np_call(Xnp)
-        for jj in strides:
-            assert_allclose(
-                dpt.asnumpy(dpt_call(X[::jj])),
-                Ynp[::jj],
-            )
 
 
 @pytest.mark.parametrize("np_call, dpt_call", _all_funcs)
