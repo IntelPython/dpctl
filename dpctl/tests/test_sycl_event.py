@@ -16,12 +16,12 @@
 
 """Defines unit test cases for the SyclEvent class."""
 
+import numpy as np
 import pytest
 
 import dpctl
 import dpctl.memory as dpctl_mem
 import dpctl.program as dpctl_prog
-import dpctl.tensor as dpt
 from dpctl import event_status_type as esty
 
 from .helper import create_invalid_capsule
@@ -41,13 +41,15 @@ def produce_event(profiling=False):
     addKernel = prog.get_sycl_kernel("add")
 
     n = 1024 * 1024
-    a = dpt.arange(n, dtype="i", sycl_queue=q)
-    args = [a.usm_data]
+    a = np.arange(n, dtype="i")
+    a_usm = dpctl_mem.MemoryUSMDevice(a.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=a_usm, src=a, count=a.nbytes)
+    args = [a_usm]
 
     r = [n]
-    ev = q.submit(addKernel, args, r)
+    ev2 = q.submit(addKernel, args, r, dEvents=[ev1])
 
-    return ev
+    return ev2
 
 
 def test_create_default_event():
@@ -162,16 +164,19 @@ def test_get_wait_list():
     sinKernel = prog.get_sycl_kernel("sin_k")
 
     n = 1024 * 1024
-    a = dpt.arange(n, dtype="f", sycl_queue=q)
-    args = [a.usm_data]
+    a = np.arange(n, dtype="f")
+    a_usm = dpctl_mem.MemoryUSMDevice(a.nbytes, queue=q)
+    ev_1 = q.memcpy_async(dest=a_usm, src=a, count=a.nbytes)
+
+    args = [a_usm]
 
     r = [n]
-    ev_1 = q.submit(addKernel, args, r)
-    ev_2 = q.submit(sqrtKernel, args, r, dEvents=[ev_1])
-    ev_3 = q.submit(sinKernel, args, r, dEvents=[ev_2])
+    ev_2 = q.submit(addKernel, args, r, dEvents=[ev_1])
+    ev_3 = q.submit(sqrtKernel, args, r, dEvents=[ev_2])
+    ev_4 = q.submit(sinKernel, args, r, dEvents=[ev_3])
 
     try:
-        wait_list = ev_3.get_wait_list()
+        wait_list = ev_4.get_wait_list()
     except ValueError:
         pytest.fail("Failed to get a list of waiting events from SyclEvent")
     # FIXME: Due to an issue in underlying runtime the list returns is always
