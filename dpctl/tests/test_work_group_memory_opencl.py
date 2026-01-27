@@ -20,7 +20,6 @@ import numpy as np
 import pytest
 
 import dpctl
-import dpctl.tensor
 
 ocl_kernel_src = """
 __kernel void local_mem_kernel(__global float *input, __global float *output,
@@ -51,30 +50,30 @@ def test_submit_work_group_memory_opencl():
     local_size = 16
     global_size = local_size * 8
 
-    x_dev = dpctl.memory.MemoryUSMDevice(global_size * 4, queue=q)
-    y_dev = dpctl.memory.MemoryUSMDevice(global_size * 4, queue=q)
-
     x = np.ones(global_size, dtype="float32")
     y = np.zeros(global_size, dtype="float32")
-    q.memcpy(x_dev, x, x_dev.nbytes)
-    q.memcpy(y_dev, y, y_dev.nbytes)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=x_usm, src=x, count=x.nbytes)
 
     try:
-        q.submit(
+        ev2 = q.submit(
             kernel,
             [
-                x_dev,
-                y_dev,
+                x_usm,
+                y_usm,
                 dpctl.WorkGroupMemory(local_size * x.itemsize),
             ],
             [global_size],
             [local_size],
+            dEvents=[ev1],
         )
-        q.wait()
     except dpctl._sycl_queue.SyclKernelSubmitError:
-        pytest.fail("Foo")
         pytest.skip(f"Kernel submission to {q.sycl_device} failed")
 
-    q.memcpy(y, y_dev, y_dev.nbytes)
+    ev3 = q.memcpy_async(dest=y, src=y_usm, count=y.nbytes, dEvents=[ev2])
+    ev3.wait()
 
     assert np.all(x == y)
