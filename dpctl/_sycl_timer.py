@@ -134,9 +134,10 @@ class SyclTimer:
         ``device_timer`` keyword argument controls the type of tasks submitted.
         With ``"queue_barrier"`` value, queue barrier tasks are used. With
         ``"order_manager"`` value, a single empty body task is inserted
-        and order manager (used by all `dpctl.tensor` operations) is used to
-        order these tasks so that they fence operations performed within
-        timer's context.
+        and order manager is used to order these tasks so that they fence
+        operations performed within the timer's context. This requires that
+        the order manager is used to order all tasks submitted to the queue
+        within the timer's context.
 
         Timing offloading operations that do not use the order manager with
         the timer that uses ``"order_manager"`` as ``device_timer`` value
