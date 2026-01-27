@@ -1,6 +1,0 @@
-﻿dpctl.tensor.flip
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: flip
