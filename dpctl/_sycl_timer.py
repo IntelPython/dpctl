@@ -260,12 +260,11 @@ class SyclTimer:
 
                 device = tensor.Device.create_device(q)
                 timer = dpctl.SyclTimer()
+                x = np.linspace(-4, 4, num=10**6, dtype="float32")
 
                 with timer(q):
-                    x = tensor.linspace(-4, 4, num=10**6, dtype="float32")
-                    e = tensor.exp(-0.5 * tensor.square(x))
-                    s = tensor.sin(2.3 * x + 0.11)
-                    f = e * s
+                    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+                    q.memcpy(dest=x_usm, src=x, count=x.nbytes)
 
                 host_dt, device_dt = timer.dt
 
