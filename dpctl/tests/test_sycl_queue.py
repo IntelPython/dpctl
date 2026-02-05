@@ -244,7 +244,7 @@ def test_cpython_api_SyclQueue_GetQueueRef():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
-        pytest.skip("Can not defaul-construct SyclQueue")
+        pytest.skip("Can not default-construct SyclQueue")
     mod = sys.modules[q.__class__.__module__]
     # get capsule storign SyclQueue_GetQueueRef function ptr
     q_ref_fn_cap = mod.__pyx_capi__["SyclQueue_GetQueueRef"]
