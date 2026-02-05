@@ -18,22 +18,12 @@
 A collection of utility functions.
 """
 
-from ._compute_follows_data import (
-    ExecutionPlacementError,
-    get_coerced_usm_type,
-    get_execution_queue,
-    validate_usm_type,
-)
 from ._intel_device_info import intel_device_info
 from ._onetrace_context import onetrace_enabled
 from ._order_manager import SequentialOrderManager
 
 __all__ = [
-    "get_execution_queue",
-    "get_coerced_usm_type",
-    "validate_usm_type",
     "onetrace_enabled",
     "intel_device_info",
-    "ExecutionPlacementError",
     "SequentialOrderManager",
 ]
