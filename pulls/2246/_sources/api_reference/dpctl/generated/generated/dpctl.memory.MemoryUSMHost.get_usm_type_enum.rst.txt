@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.get\_usm\_type\_enum
+===============================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMHost.get_usm_type_enum
