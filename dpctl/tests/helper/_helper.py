@@ -49,30 +49,3 @@ def get_queue_or_skip(args=tuple()):
     except dpctl.SyclQueueCreationError:
         pytest.skip(f"Queue could not be created from {args}")
     return q
-
-
-def skip_if_dtype_not_supported(dt, q_or_dev):
-    import dpctl.tensor as dpt
-
-    dt = dpt.dtype(dt)
-    if type(q_or_dev) is dpctl.SyclQueue:
-        dev = q_or_dev.sycl_device
-    elif type(q_or_dev) is dpctl.SyclDevice:
-        dev = q_or_dev
-    else:
-        raise TypeError(
-            "Expected dpctl.SyclQueue or dpctl.SyclDevice, "
-            f"got {type(q_or_dev)}"
-        )
-    dev_has_dp = dev.has_aspect_fp64
-    if dev_has_dp is False and dt in [dpt.float64, dpt.complex128]:
-        pytest.skip(
-            f"{dev.name} does not support double precision floating point types"
-        )
-    dev_has_hp = dev.has_aspect_fp16
-    if dev_has_hp is False and dt in [
-        dpt.float16,
-    ]:
-        pytest.skip(
-            f"{dev.name} does not support half precision floating point type"
-        )
