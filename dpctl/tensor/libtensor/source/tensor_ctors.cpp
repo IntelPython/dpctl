@@ -101,8 +101,8 @@ using dpctl::tensor::py_internal::usm_ndarray_full;
 using dpctl::tensor::py_internal::usm_ndarray_zeros;
 
 /* ============== Advanced Indexing ============= */
-using dpctl::tensor::py_internal::usm_ndarray_put;
-using dpctl::tensor::py_internal::usm_ndarray_take;
+using dpctl::tensor::py_internal::py_put;
+using dpctl::tensor::py_internal::py_take;
 
 using dpctl::tensor::py_internal::py_extract;
 using dpctl::tensor::py_internal::py_mask_positions;
@@ -324,7 +324,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("fill_value"), py::arg("dst"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_take", &usm_ndarray_take,
+    m.def("_take", &py_take,
           "Takes elements at usm_ndarray indices `ind` and axes starting "
           "at axis `axis_start` from array `src` and copies them "
           "into usm_ndarray `dst` synchronously."
@@ -333,7 +333,7 @@ PYBIND11_MODULE(_tensor_impl, m)
           py::arg("mode"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 
-    m.def("_put", &usm_ndarray_put,
+    m.def("_put", &py_put,
           "Puts elements at usm_ndarray indices `ind` and axes starting "
           "at axis `axis_start` into array `dst` from "
           "usm_ndarray `val` synchronously."
