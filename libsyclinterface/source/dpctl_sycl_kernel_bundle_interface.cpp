@@ -866,6 +866,15 @@ namespace syclex = sycl::ext::oneapi::experimental;
 #endif
 #endif
 
+bool DPCTLKernelBundle_CreateFromSYCLSource_Available()
+{
+#if (SUPPORTS_SYCL_COMPILATION > 0)
+    return true;
+#else
+    return false;
+#endif
+}
+
 #if (SUPPORTS_SYCL_COMPILATION > 0)
 // The property for registering names was renamed between DPC++ versions 2025.1
 // and 2025.2. The original name was `registered_kernel_names`, the new name is
@@ -945,8 +954,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
 
         registered_names_property_t RegisteredNames;
         for (const std::string &Name :
-             *reinterpret_cast<kernel_name_list_t *>(Names))
-        {
+             *reinterpret_cast<kernel_name_list_t *>(Names)) {
             RegisteredNames.add(Name);
         }
 

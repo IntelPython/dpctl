@@ -28,12 +28,14 @@ from ._program import (
     create_program_from_source,
     create_program_from_spirv,
     create_program_from_sycl_source,
+    is_sycl_source_compilation_available,
 )
 
 __all__ = [
     "create_program_from_source",
     "create_program_from_spirv",
     "create_program_from_sycl_source",
+    "is_sycl_source_compilation_available",
     "SyclKernel",
     "SyclProgram",
     "SyclProgramCompilationError",

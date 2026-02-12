@@ -50,6 +50,7 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernelBundle_CreateFromOCLSource,
     DPCTLKernelBundle_CreateFromSpirv,
     DPCTLKernelBundle_CreateFromSYCLSource,
+    DPCTLKernelBundle_CreateFromSYCLSource_Available,
     DPCTLKernelBundle_Delete,
     DPCTLKernelBundle_GetKernel,
     DPCTLKernelBundle_GetSyclKernel,
@@ -72,6 +73,7 @@ from dpctl._backend cimport (  # noqa: E211, E402;
 __all__ = [
     "create_program_from_source",
     "create_program_from_spirv",
+    "is_sycl_source_compilation_available",
     "SyclKernel",
     "SyclProgram",
     "SyclProgramCompilationError",
@@ -82,6 +84,17 @@ cdef class SyclProgramCompilationError(Exception):
        built from either a SPIR-V binary file or a string source.
     """
     pass
+
+
+cpdef bint is_sycl_source_compilation_available():
+    """Returns True if dpctl was built with compiler that supports the DPC++
+       `kernel_compiler` extension API used by
+       :func:`create_program_from_sycl_source`.
+
+       Device support is separate; callers should also check
+       ``q.sycl_device.can_compile('sycl')`` (or similar) for specific devices.
+    """
+    return DPCTLKernelBundle_CreateFromSYCLSource_Available()
 
 
 cdef class SyclKernel:
