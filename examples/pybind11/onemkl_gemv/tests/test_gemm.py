@@ -25,7 +25,15 @@ from sycl_gemm import (
 )
 
 import dpctl
-import dpctl.tensor as dpt
+import dpctl.memory as dpm
+
+
+def _real_dtype_for_device(q: dpctl.SyclQueue) -> np.dtype:
+    """
+    If the device supports fp64, return np.float64, else np.float32.
+    """
+    _fp64 = q.sycl_device.has_aspect_fp64
+    return np.float64 if _fp64 else np.float32
 
 
 def test_gemv():
@@ -33,13 +41,37 @@ def test_gemv():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-    Mnp, vnp = np.random.randn(5, 3), np.random.randn(3)
-    M = dpt.asarray(Mnp, sycl_queue=q)
-    v = dpt.asarray(vnp, sycl_queue=q)
-    r = dpt.empty((5,), dtype=v.dtype, sycl_queue=q)
-    hev, ev = gemv(q, M, v, r, [])
+
+    dtype = _real_dtype_for_device(q)
+
+    Mnp = np.random.randn(5, 3).astype(dtype, copy=False)
+    vnp = np.random.randn(3).astype(dtype, copy=False)
+
+    M = dpm.MemoryUSMDevice(Mnp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=M, src=Mnp, count=Mnp.nbytes)
+
+    v = dpm.MemoryUSMDevice(vnp.nbytes, queue=q)
+    ev2 = q.memcpy_async(dest=v, src=vnp, count=vnp.nbytes)
+
+    rnp = np.empty((5,), dtype=dtype)
+    r = dpm.MemoryUSMDevice(rnp.nbytes, queue=q)
+
+    hev, ev3 = gemv(
+        q,
+        M,
+        v,
+        r,
+        5,
+        3,
+        np.dtype(Mnp.dtype),
+        3,
+        [ev1, ev2],
+    )
+
+    ev4 = q.memcpy_async(dest=rnp, src=r, count=rnp.nbytes, dEvents=[ev3])
+    ev4.wait()
     hev.wait()
-    rnp = dpt.asnumpy(r)
+
     assert np.allclose(rnp, Mnp @ vnp)
 
 
@@ -48,13 +80,27 @@ def test_sub():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-    anp, bnp = np.random.randn(5), np.random.randn(5)
-    a = dpt.asarray(anp, sycl_queue=q)
-    b = dpt.asarray(bnp, sycl_queue=q)
-    r = dpt.empty((5,), dtype=b.dtype, sycl_queue=q)
-    hev, ev = sub(q, a, b, r, [])
+
+    dtype = _real_dtype_for_device(q)
+
+    anp = np.random.randn(5).astype(dtype, copy=False)
+    bnp = np.random.randn(5).astype(dtype, copy=False)
+
+    a = dpm.MemoryUSMDevice(anp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=a, src=anp, count=anp.nbytes)
+
+    b = dpm.MemoryUSMDevice(bnp.nbytes, queue=q)
+    ev2 = q.memcpy_async(dest=b, src=bnp, count=bnp.nbytes)
+
+    rnp = np.empty((5,), dtype=dtype)
+    r = dpm.MemoryUSMDevice(rnp.nbytes, queue=q)
+
+    hev, ev3 = sub(q, a, b, r, 5, np.dtype(anp.dtype), [ev1, ev2])
+
+    ev4 = q.memcpy_async(dest=rnp, src=r, count=rnp.nbytes, dEvents=[ev3])
+    ev4.wait()
     hev.wait()
-    rnp = dpt.asnumpy(r)
+
     assert np.allclose(rnp + bnp, anp)
 
 
@@ -63,13 +109,38 @@ def test_axpby():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-    xnp, pnp = np.random.randn(5), np.random.randn(5)
-    x = dpt.asarray(xnp, sycl_queue=q)
-    p = dpt.asarray(pnp, sycl_queue=q)
-    hev, ev = axpby_inplace(q, 0.5, x, -0.7, p, [])
+
+    dtype = _real_dtype_for_device(q)
+
+    xnp = np.random.randn(5).astype(dtype, copy=False)
+    pnp = np.random.randn(5).astype(dtype, copy=False)
+
+    x = dpm.MemoryUSMDevice(xnp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=x, src=xnp, count=xnp.nbytes)
+
+    p = dpm.MemoryUSMDevice(pnp.nbytes, queue=q)
+    ev2 = q.memcpy_async(dest=p, src=pnp, count=pnp.nbytes)
+
+    alpha = 0.5
+    beta = -0.7
+
+    hev, ev3 = axpby_inplace(
+        q,
+        alpha,
+        x,
+        beta,
+        p,
+        5,
+        np.dtype(xnp.dtype),
+        [ev1, ev2],
+    )
+
+    rnp = np.empty((5,), dtype=dtype)
+    ev4 = q.memcpy_async(dest=rnp, src=p, count=rnp.nbytes, dEvents=[ev3])
+    ev4.wait()
     hev.wait()
-    rnp = dpt.asnumpy(p)
-    assert np.allclose(rnp, 0.5 * xnp - 0.7 * pnp)
+
+    assert np.allclose(rnp, alpha * xnp + beta * pnp)
 
 
 def test_dot():
@@ -77,10 +148,20 @@ def test_dot():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-    anp, bnp = np.random.randn(5), np.random.randn(5)
-    a = dpt.asarray(anp, sycl_queue=q)
-    b = dpt.asarray(bnp, sycl_queue=q)
-    dot_res = dot_blocking(q, a, b)
+
+    dtype = _real_dtype_for_device(q)
+
+    anp = np.random.randn(5).astype(dtype, copy=False)
+    bnp = np.random.randn(5).astype(dtype, copy=False)
+
+    a = dpm.MemoryUSMDevice(anp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=a, src=anp, count=anp.nbytes)
+
+    b = dpm.MemoryUSMDevice(bnp.nbytes, queue=q)
+    ev2 = q.memcpy_async(dest=b, src=bnp, count=bnp.nbytes)
+
+    dot_res = dot_blocking(q, a, b, 5, np.dtype(anp.dtype), [ev1, ev2])
+
     assert np.allclose(dot_res, np.dot(anp, bnp))
 
 
@@ -89,7 +170,13 @@ def test_norm_squared():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created")
-    anp = np.random.randn(5)
-    a = dpt.asarray(anp, sycl_queue=q)
-    dot_res = norm_squared_blocking(q, a)
+
+    dtype = _real_dtype_for_device(q)
+
+    anp = np.random.randn(5).astype(dtype, copy=False)
+    a = dpm.MemoryUSMDevice(anp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=a, src=anp, count=anp.nbytes)
+
+    dot_res = norm_squared_blocking(q, a, 5, np.dtype(anp.dtype), [ev1])
+
     assert np.allclose(dot_res, np.dot(anp, anp))

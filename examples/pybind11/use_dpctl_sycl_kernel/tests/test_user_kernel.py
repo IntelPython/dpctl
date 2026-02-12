@@ -23,8 +23,8 @@ import pytest
 import use_kernel as uk
 
 import dpctl
-import dpctl.program as dpm
-import dpctl.tensor as dpt
+import dpctl.memory as dpmem
+import dpctl.program as dppr
 
 
 def _get_spv_path():
@@ -45,7 +45,7 @@ def test_kernel_can_be_found():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dpm.create_program_from_spirv(q, il, "")
+    pr = dppr.create_program_from_spirv(q, il, "")
     assert pr.has_sycl_kernel("double_it")
 
 
@@ -57,14 +57,20 @@ def test_kernel_submit_through_extension():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dpm.create_program_from_spirv(q, il, "")
+    pr = dppr.create_program_from_spirv(q, il, "")
     krn = pr.get_sycl_kernel("double_it")
     assert krn.num_args == 2
 
-    x = dpt.arange(0, stop=13, step=1, dtype="i4", sycl_queue=q)
-    y = dpt.zeros_like(x)
+    x = np.arange(0, stop=13, step=1, dtype="i4")
+    y = np.empty_like(x)
 
-    q.wait()
-    uk.submit_custom_kernel(q, krn, x, y, [])
+    x_usm = dpmem.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpmem.MemoryUSMDevice(y.nbytes, queue=q)
 
-    assert np.array_equal(dpt.asnumpy(y), np.arange(0, 26, step=2, dtype="i4"))
+    ev = q.memcpy_async(dest=x_usm, src=x, count=x_usm.nbytes)
+
+    uk.submit_custom_kernel(q, krn, x_usm, y_usm, [ev])
+
+    q.memcpy(dest=y, src=y_usm, count=y.nbytes)
+
+    assert np.array_equal(y, np.arange(0, 26, step=2, dtype="i4"))
