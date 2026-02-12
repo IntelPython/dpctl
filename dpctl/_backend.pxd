@@ -484,6 +484,8 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef void DPCTLKernelBuildLog_Delete(DPCTLKernelBuildLogRef Ref)
     cdef const char *DPCTLKernelBuildLog_Get(DPCTLKernelBuildLogRef)
 
+    cdef bool DPCTLKernelBundle_CreateFromSYCLSource_Available()
+
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         const DPCTLSyclContextRef Ctx,
         const DPCTLSyclDeviceRef Dev,
