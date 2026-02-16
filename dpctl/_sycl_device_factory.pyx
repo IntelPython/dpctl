@@ -439,10 +439,25 @@ cdef class _DefaultDeviceCache:
         return _copy
 
 
+# no default, as would share a single mutable instance across threads and
+# concurrent access to the cache would not be thread-safe. Using ContextVar
+# without a default ensures each context gets its own instance.
 _global_default_device_cache = ContextVar(
     "global_default_device_cache",
-    default=_DefaultDeviceCache()
 )
+
+
+cdef _DefaultDeviceCache _get_default_device_cache():
+    """
+    Factory function to get or create a default device cache for the current
+    context
+    """
+    try:
+        return _global_default_device_cache.get()
+    except LookupError:
+        cache = _DefaultDeviceCache()
+        _global_default_device_cache.set(cache)
+        return cache
 
 
 cpdef SyclDevice _cached_default_device():
@@ -453,7 +468,7 @@ cpdef SyclDevice _cached_default_device():
             A cached default-selected SYCL device.
 
     """
-    cdef _DefaultDeviceCache _cache = _global_default_device_cache.get()
+    cdef _DefaultDeviceCache _cache = _get_default_device_cache()
     d_, changed_ = _cache.get_or_create()
     if changed_:
         _global_default_device_cache.set(_cache)
