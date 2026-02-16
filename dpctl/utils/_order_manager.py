@@ -16,7 +16,7 @@ class _SequentialOrderManager:
     def __init__(self):
         self._state = _OrderManager(16)
 
-    def __dealloc__(self):
+    def __del__(self):
         _local = self._state
         SyclEvent.wait_for(_local.get_submitted_events())
         SyclEvent.wait_for(_local.get_host_task_events())
@@ -71,24 +71,31 @@ class SyclQueueToOrderManagerMap:
     def __init__(self):
         self._map = ContextVar(
             "global_order_manager_map",
-            default=defaultdict(_SequentialOrderManager),
+            # no default to avoid sharing a single defaultdict
+            # across threads
         )
+
+    def _get_map(self):
+        """
+        Factory method to get or create a default device queue cache for the
+        current context
+        """
+        try:
+            return self._map.get()
+        except LookupError:
+            m = defaultdict(_SequentialOrderManager)
+            self._map.set(m)
+            return m
 
     def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
         """Get order manager for given SyclQueue"""
-        _local = self._map.get()
         if not isinstance(q, SyclQueue):
             raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
-        if q in _local:
-            return _local[q]
-        else:
-            v = _local[q]
-            _local[q] = v
-            return v
+        return self._get_map()[q]
 
     def clear(self):
         """Clear content of internal dictionary"""
-        _local = self._map.get()
+        _local = self._get_map()
         for v in _local.values():
             v.wait()
         _local.clear()

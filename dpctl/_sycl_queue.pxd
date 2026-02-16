@@ -43,6 +43,7 @@ cdef public api class _SyclQueue [
     cdef DPCTLSyclQueueRef _queue_ref
     cdef SyclContext _context
     cdef SyclDevice _device
+    cdef object __weakref__
 
 
 cdef public api class SyclQueue (_SyclQueue) [
