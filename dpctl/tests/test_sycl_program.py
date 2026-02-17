@@ -18,10 +18,26 @@
 
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
+import dpctl.memory as dpm
 import dpctl.program as dpctl_prog
+
+
+def _get_opencl_queue_or_skip():
+    try:
+        return dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("No OpenCL queue is available")
+
+
+def _skip_if_no_sycl_source_compilation(q):
+    if not dpctl.program.is_sycl_source_compilation_available():
+        pytest.skip("SYCL source compilation extension not available")
+    if not q.get_sycl_device().can_compile("sycl"):
+        pytest.skip("SYCL source compilation not supported")
 
 
 def get_spirv_abspath(fn):
@@ -266,13 +282,8 @@ def test_create_program_from_invalid_src_ocl():
 
 
 def test_create_program_from_sycl_source():
-    try:
-        q = dpctl.SyclQueue("opencl")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No OpenCL queue is available")
-
-    if not q.get_sycl_device().can_compile("sycl"):
-        pytest.skip("SYCL source compilation not supported")
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
 
     sycl_source = """
     #include <sycl/sycl.hpp>
@@ -376,13 +387,8 @@ def test_create_program_from_sycl_source():
 
 
 def test_create_program_from_invalid_src_sycl():
-    try:
-        q = dpctl.SyclQueue("opencl")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No OpenCL queue is available")
-
-    if not q.get_sycl_device().can_compile("sycl"):
-        pytest.skip("SYCL source compilation not supported")
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
 
     sycl_source = """
     #include <sycl/sycl.hpp>
@@ -410,3 +416,75 @@ def test_create_program_from_invalid_src_sycl():
     except dpctl_prog.SyclProgramCompilationError as prog_error:
         print(str(prog_error))
         assert "error: expected ';' at end of declaration" in str(prog_error)
+
+
+def test_sycl_source_compilation_is_available_returns_bool():
+    v = dpctl.program.is_sycl_source_compilation_available()
+    assert type(v) is bool
+
+
+def test_sycl_source_vector_add_correctness():
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+    #include "math_ops.hpp"
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op(in1[globalID], in2[globalID]);
+    }
+    """
+
+    header_content = """
+    int math_op(int a, int b){
+        return a + b;
+    }
+    """
+
+    prog = dpctl.program.create_program_from_sycl_source(
+        q,
+        sycl_source,
+        headers=[("math_ops.hpp", header_content)],
+        registered_names=[],
+        copts=["-fno-fast-math"],
+    )
+
+    kernel = prog.get_sycl_kernel("vector_add")
+
+    local_size = 16
+    global_size = local_size * 8
+
+    in1 = np.arange(global_size, dtype=np.int32)
+    in2 = (np.arange(global_size, dtype=np.int32) * 3 - 7).astype(np.int32)
+    out = np.empty(global_size, dtype=np.int32)
+    expected = (in1 + in2).astype(np.int32)
+
+    in1_usm = dpm.MemoryUSMDevice(in1.nbytes, queue=q)
+    in2_usm = dpm.MemoryUSMDevice(in2.nbytes, queue=q)
+    out_usm = dpm.MemoryUSMDevice(out.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=in1_usm, src=in1, count=in1.nbytes)
+    ev2 = q.memcpy_async(dest=in2_usm, src=in2, count=in2.nbytes)
+
+    try:
+        ev3 = q.submit(
+            kernel,
+            [in1_usm, in2_usm, out_usm],
+            [global_size],
+            [local_size],
+            dEvents=[ev1, ev2],
+        )
+    except dpctl._sycl_queue.SyclKernelSubmitError:
+        pytest.skip(f"Kernel submission to {q.sycl_device} failed")
+
+    ev4 = q.memcpy_async(dest=out, src=out_usm, count=out.nbytes, dEvents=[ev3])
+    ev4.wait()
+    assert np.array_equal(out, expected)
