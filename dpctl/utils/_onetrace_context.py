@@ -48,23 +48,17 @@ def onetrace_enabled():
 
         .. code-block:: python
 
-            import dpctl.tensor as dpt
+            import use_kernel as eg
+
+            import dpctl.memory as dpmem
             from dpctl.utils import onetrace_enabled
+
+            x_dev = dpmem.MemoryUSMDevice(1024)
 
             # onetrace output reporting on execution of the kernel
             # should be seen, starting with "Device Timeline"
             with onetrace_enabled():
-                a = dpt.arange(100, dtype='int16')
-
-        Sample output:
-
-        .. code-block:: text
-
-            >>> with onetrace_enabled():
-            ...     a = dpt.arange(100, dtype='int16')
-            ...
-            Device Timeline (queue: 0x555aee86bed0): dpctl::tensor::kernels::constructors::linear_sequence_step_kernel<short>[SIMD32 {1; 1; 1} {100; 1; 1}]<1.1> [ns] = 44034325658 (append) 44034816544 (submit) 44036296752 (start) 44036305918 (end)
-            >>>
+                eg.run_kernel(x_dev)
     """
     global _UNCHECKED
 
