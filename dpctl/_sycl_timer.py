@@ -254,11 +254,9 @@ class SyclTimer:
             .. code-block:: python
 
                 import dpctl
-                from dpctl import tensor
 
                 q = dpctl.SyclQueue(property="enable_profiling")
 
-                device = tensor.Device.create_device(q)
                 timer = dpctl.SyclTimer()
                 x = np.linspace(-4, 4, num=10**6, dtype="float32")
 
