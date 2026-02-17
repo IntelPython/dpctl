@@ -47,7 +47,7 @@ jobs:
 
       - name: Install dpctl
         run: |
-          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler
 
       - name: Smoke test
         run: |
@@ -106,7 +106,7 @@ jobs:
 
       - name: Install dpctl
         run: |
-          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler
 
       # intel-opencl-rt is not being installed when running conda install dpctl, so do it manually
       - name: Install intel-opencl-rt
