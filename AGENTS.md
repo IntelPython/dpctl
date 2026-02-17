@@ -1,59 +1,47 @@
 # AGENTS.md - AI Agent Guide for DPCTL
 
-## Overview
+## Purpose
 
-**DPCTL** (Data Parallel Control) is a Python SYCL binding library for heterogeneous computing. It provides Python wrappers for SYCL runtime objects and implements the Python Array API standard for tensor operations.
+This file is the top-level entry point for AI agents working in `IntelPython/dpctl`.
+Use it to orient quickly, then follow directory-level `AGENTS.md` files for implementation details and local conventions.
 
-- **License:** Apache 2.0 (see `LICENSE`)
-- **Copyright:** Intel Corporation
+## Repository Scope
 
-## Architecture
+DPCTL provides Python bindings for SYCL runtime objects and supporting infrastructure.
+
+High-level stack:
 
 ```
-Python API  →  Cython Bindings  →  C API           →  SYCL Runtime
-   dpctl/       _sycl_*.pyx       libsyclinterface/
-
-dpctl.tensor  →  pybind11  →  C++ Kernels (libtensor/)  →  SYCL Runtime
+Python API  ->  Cython Bindings  ->  C API (libsyclinterface)  ->  SYCL Runtime
 ```
+
+## How to Work in This Repo
+
+1. Identify the directory you are changing.
+2. Read the nearest `AGENTS.md` for that directory.
+3. Keep changes local and minimal; avoid unrelated refactors.
+4. Validate behavior with targeted tests before broad test runs.
 
 ## Directory Guide
 
-| Directory | AGENTS.md | Purpose |
-|-----------|-----------|---------|
-| `dpctl/` | [dpctl/AGENTS.md](dpctl/AGENTS.md) | Core SYCL bindings (Device, Queue, Context) |
-| `dpctl/tensor/` | [dpctl/tensor/AGENTS.md](dpctl/tensor/AGENTS.md) | Array API tensor operations |
-| `dpctl/tensor/libtensor/` | [dpctl/tensor/libtensor/AGENTS.md](dpctl/tensor/libtensor/AGENTS.md) | C++ SYCL kernels |
-| `dpctl/memory/` | [dpctl/memory/AGENTS.md](dpctl/memory/AGENTS.md) | USM memory management |
-| `dpctl/program/` | [dpctl/program/AGENTS.md](dpctl/program/AGENTS.md) | SYCL kernel compilation |
-| `dpctl/utils/` | [dpctl/utils/AGENTS.md](dpctl/utils/AGENTS.md) | Utility functions |
-| `dpctl/tests/` | [dpctl/tests/AGENTS.md](dpctl/tests/AGENTS.md) | Test suite |
-| `libsyclinterface/` | [libsyclinterface/AGENTS.md](libsyclinterface/AGENTS.md) | C API layer |
+| Directory | Guide | Notes |
+|-----------|-------|-------|
+| `dpctl/` | `dpctl/AGENTS.md` | Core SYCL Python bindings and Cython patterns |
+| `dpctl/memory/` | `dpctl/memory/AGENTS.md` | USM memory model and ownership rules |
+| `dpctl/program/` | `dpctl/program/AGENTS.md` | Program/kernel compilation APIs |
+| `dpctl/utils/` | `dpctl/utils/AGENTS.md` | Queue and utility validation helpers |
+| `dpctl/tests/` | `dpctl/tests/AGENTS.md` | Test conventions and coverage expectations |
+| `libsyclinterface/` | `libsyclinterface/AGENTS.md` | C API contracts and ABI-safe patterns |
 
-## Code Style
+## Global Constraints
 
-Configuration files (do not hardcode versions - check these files):
-- **Python/Cython:** `.pre-commit-config.yaml`
-- **C/C++:** `.clang-format`
-- **Linting:** `.flake8`
+- Match existing Apache 2.0 + Intel header style for source files.
+- Respect style tooling from `.pre-commit-config.yaml`, `.clang-format`, and `.flake8`.
+- Do not assume all devices support fp64/fp16.
+- Preserve queue/device compatibility checks and explicit error paths.
+- Keep memory/resource cleanup explicit and safe.
 
-## License Header
+## Notes on GitHub Copilot Instructions
 
-All source files require Apache 2.0 header with Intel copyright. Reference existing files for exact format.
-
-## Quick Reference
-
-```python
-import dpctl
-import dpctl.tensor as dpt
-
-q = dpctl.SyclQueue("gpu")                          # Create queue
-x = dpt.ones((100, 100), dtype="f4", sycl_queue=q)  # Create array
-np_array = dpt.asnumpy(x)                           # Transfer to host
-```
-
-## Key Concepts
-
-- **Queue:** Execution context binding device + context
-- **USM:** Unified Shared Memory (device/shared/host types)
-- **Filter string:** Device selector syntax `"backend:device_type:num"`
-- **Array API:** Python standard for array operations (https://data-apis.org/array-api/)
+Files under `.github/instructions/*.instructions.md` are entry points for Copilot behavior.
+They should stay concise and reference authoritative `AGENTS.md` files rather than duplicating full guidance.
