@@ -8,32 +8,10 @@ User guides
 
 * oneAPI :ref:`execution model <oneapi_programming_model_intro>` in Python
 
-* :ref:`Protocol <dpctl_tensor_dlpack_support>` for exchanging USM allocations using DLPack
-
 * :ref:`Environment variables <user_guides_env_variables>` affecting :mod:`dpctl`
 
 
 .. Further topics:
-   ## Where dpctl.tensor goes beyond array API
-
-      - support for float16
-      - support for out= keyword
-      - Support for combining basic and advanced indexing
-      - Additional API functions:
-            - dpt.place
-            - dpt.put
-            - dpt.extract
-            - Extended dpt.take
-            - dpt.cbrt
-            - dpt.rsqrt
-            - dpt.reciprocal
-            - dpt.cumulative_logsumexp
-            - dpt.reduce_hypot
-            - dpt.allclose
-         - Mutability tutorial
-            - 0D arrays, no scalars
-            - array is mutable, pitfalls and best practices
-
    ## Using tools to understand performance
 
       - Getting unitrace

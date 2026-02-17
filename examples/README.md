@@ -10,8 +10,6 @@ inspect the heterogeneous [platform],
 query [properties](device_descriptors) of created devices,
 and construct [queues] to specify execution placement of offloaded computation.
 
-Additionally, `dpctl.tensor` submodule allows to create ND-arrays on devices and manipulate them using `dpctl.tensor` library of array computation operations specified in [Python Array API standard](array_api).
-
 Examples of this functionality are located in the [python](python) folder.
 
 ## Cython
