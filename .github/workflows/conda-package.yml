@@ -25,6 +25,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -45,9 +49,9 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
@@ -61,22 +65,31 @@ jobs:
         run: |
           # use bootstrap channel to pull NumPy linked with OpenBLAS
           CHANNELS="-c conda-forge --override-channels"
-          VERSIONS="--python ${{ matrix.python }} --numpy 2.0"
           TEST="--no-test"
-          conda build \
-            $TEST \
-            $VERSIONS \
-            $CHANNELS \
-            conda-recipe
+          if [ -n "${{ matrix.python_spec }}" ]; then
+            conda build \
+              $TEST \
+              --python "${{ matrix.python_spec }}" \
+              --numpy 2.0 \
+              $CHANNELS \
+              conda-recipe
+          else
+            conda build \
+              $TEST \
+              --python ${{ matrix.python }} \
+              --numpy 2.0 \
+              $CHANNELS \
+              conda-recipe
+          fi
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.conda
       - name: Upload wheels artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   build_windows:
@@ -89,6 +102,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -118,9 +135,9 @@ jobs:
         with:
           path: /home/runner/conda_pkgs_dir
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Store conda paths as envs
@@ -134,18 +151,23 @@ jobs:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
           # TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
-          conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+          set "PYTHON_VER=${{ matrix.python_spec }}"
+          if "%PYTHON_VER%" NEQ "" (
+            conda build --no-test --python "%PYTHON_VER%" --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+          ) else (
+            conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+          )
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.conda
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
@@ -156,6 +178,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -170,7 +196,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
       - name: Add conda to system path
         run: echo $CONDA/bin >> $GITHUB_PATH
       - name: Install conda-index
@@ -191,7 +217,11 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python="${PYTHON_VER}" $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -203,16 +233,20 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-${{hashFiles('lockfile') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install dpctl
         run: |
           export CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export TEST_DEPENDENCIES="pytest cython setuptools"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python="${PYTHON_VER}" ${CHANNELS}
           # Test installed packages
           conda list -n ${{ env.TEST_ENV_NAME }}
       - name: Smoke test
@@ -252,6 +286,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -271,7 +309,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
@@ -327,7 +365,9 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
-          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
+           SET "PYTHON_VER=${{ matrix.python_spec }}"
+           IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
+          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python="%PYTHON_VER%" -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} --only-deps --dry-run > lockfile
 
       - name: Display lockfile content
         shell: pwsh
@@ -340,9 +380,9 @@ jobs:
         with:
           path: /home/runner/conda_pkgs_dir
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-${{hashFiles('lockfile') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install opencl_rt
@@ -360,8 +400,10 @@ jobs:
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
              SET PACKAGE_VERSION=%%F
           )
+           SET "PYTHON_VER=${{ matrix.python_spec }}"
+           IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
           SET TEST_DEPENDENCIES=pytest"<8" cython setuptools
-          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python=${{ matrix.python }} -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python="%PYTHON_VER%" -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
 
       - name: Report content of test environment
         shell: cmd /C CALL {0}
@@ -422,16 +464,20 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
     steps:
       - name: Download conda artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
 
       - name: Download wheel artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client -c conda-forge --override-channels
@@ -469,16 +515,20 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
     steps:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
 
       - name: Download wheel artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
