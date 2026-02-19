@@ -16,10 +16,11 @@
 
 import time
 
+import numpy as np
 import pytest
 
 import dpctl
-import dpctl.tensor as dpt
+from dpctl.utils import SequentialOrderManager
 
 
 @pytest.fixture
@@ -33,26 +34,74 @@ def profiling_queue():
     return q
 
 
-@pytest.mark.parametrize(
-    "device_timer", [None, "queue_barrier", "order_manager"]
-)
+@pytest.mark.parametrize("device_timer", [None, "queue_barrier"])
 def test_sycl_timer_queue_barrier(profiling_queue, device_timer):
-    dev = dpt.Device.create_device(profiling_queue)
-
     timer = dpctl.SyclTimer(
         host_timer=time.perf_counter, device_timer=device_timer, time_scale=1e3
     )
+    x = np.linspace(0, 1, num=10**6)
+    res = np.empty_like(x)
 
-    with timer(dev.sycl_queue):
-        x = dpt.linspace(0, 1, num=10**6, device=dev)
-        y = 3.0 - dpt.square(x - 0.5)
-        z = dpt.sort(y)
-        res1 = z[-1]
-        res2 = dpt.max(y)
+    with timer(profiling_queue):
+        # round-trip through USM device memory into new NumPy array
+        x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=profiling_queue)
+        e1 = profiling_queue.memcpy_async(
+            dest=x_usm,
+            src=x,
+            count=x.nbytes,
+        )
+        e2 = profiling_queue.memcpy_async(
+            dest=res,
+            src=x_usm,
+            count=res.nbytes,
+            dEvents=[e1],
+        )
 
+    e2.wait()
     host_dt, device_dt = timer.dt
 
-    assert dpt.all(res1 == res2)
+    assert np.all(res == x)
+    assert host_dt > 0
+    assert device_dt > 0
+
+
+def test_sycl_timer_order_manager(profiling_queue):
+    q = profiling_queue
+    timer = dpctl.SyclTimer(
+        host_timer=time.perf_counter,
+        device_timer="order_manager",
+        time_scale=1e3,
+    )
+
+    om = SequentialOrderManager[q]
+
+    x = np.linspace(0, 1, num=10**6)
+    res = np.empty_like(x)
+
+    with timer(q):
+        x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+        e1 = q.memcpy_async(
+            dest=x_usm,
+            src=x,
+            count=x.nbytes,
+            dEvents=om.submitted_events,
+        )
+        ht1 = q._submit_keep_args_alive((x_usm, x), [e1])
+        om.add_event_pair(ht1, e1)
+        e2 = q.memcpy_async(
+            dest=res,
+            src=x_usm,
+            count=res.nbytes,
+            dEvents=om.submitted_events,
+        )
+        ht2 = q._submit_keep_args_alive((res, x_usm), [e2])
+        om.add_event_pair(ht2, e2)
+
+    e2.wait()
+    ht2.wait()
+    host_dt, device_dt = timer.dt
+
+    assert np.all(res == x)
     assert host_dt > 0
     assert device_dt > 0
 
@@ -66,35 +115,38 @@ def test_sycl_timer_accumulation(profiling_queue):
         time_scale=1e3,
     )
 
-    # initial condition
-    x = dpt.linspace(0, 1, num=10**6, sycl_queue=q)
+    om = SequentialOrderManager[q]
 
-    aitkens_data = [
-        x,
-    ]
+    x = np.linspace(0, 1, num=10**6)
+    res = np.empty_like(x)
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
 
-    # 16 iterations of Aitken's accelerated Newton's method
-    # x <- x - f(x)/f'(x) for f(x) = x - cos(x)
-    for _ in range(16):
-        # only time Newton step
+    # repeat round-trip several times to exercise timer accumulation
+    for _ in range(8):
         with timer(q):
-            s = dpt.sin(x)
-            x = (dpt.cos(x) + x * s) / (1 + s)
-        aitkens_data.append(x)
-        aitkens_data = aitkens_data[-3:]
-        if len(aitkens_data) == 3:
-            # apply Aitkens acceleration
-            d1 = aitkens_data[-1] - aitkens_data[-2]
-            d2 = aitkens_data[-2] - aitkens_data[-3]
-            if not dpt.any(d1 == d2):
-                x = aitkens_data[-1] - dpt.square(d1) / (d1 - d2)
+            depends = om.submitted_events
+            e1 = q.memcpy_async(
+                dest=x_usm,
+                src=x,
+                count=x.nbytes,
+                dEvents=depends,
+            )
+            ht1 = q._submit_keep_args_alive((x_usm, x), [e1])
+            om.add_event_pair(ht1, e1)
+            e2 = q.memcpy_async(
+                dest=res,
+                src=x_usm,
+                count=res.nbytes,
+                dEvents=[e1],
+            )
+            ht2 = q._submit_keep_args_alive((res, x_usm), [e2])
+            om.add_event_pair(ht2, e2)
+    e2.wait()
+    ht2.wait()
+    assert np.all(res == x)
 
-    # Total time for 16 iterations
     dev_dt = timer.dt.device_dt
     assert dev_dt > 0
-
-    # check convergence
-    assert dpt.max(x) - dpt.min(x) < 1e-5
 
 
 def test_sycl_timer_validation():

@@ -45,8 +45,6 @@
 #include "dpctl/_sycl_queue_api.h"
 #include "dpctl/memory/_memory.h"
 #include "dpctl/memory/_memory_api.h"
-#include "dpctl/tensor/_usmarray.h"
-#include "dpctl/tensor/_usmarray_api.h"
 #include "dpctl/program/_program.h"
 #include "dpctl/program/_program_api.h"
 
@@ -68,7 +66,6 @@ static inline void import_dpctl(void)
     import_dpctl___sycl_event();
     import_dpctl___sycl_queue();
     import_dpctl__memory___memory();
-    import_dpctl__tensor___usmarray();
     import_dpctl__program___program();
     return;
 }

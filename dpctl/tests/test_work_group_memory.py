@@ -18,10 +18,10 @@
 
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
-import dpctl.tensor
 
 
 def get_spirv_abspath(fn):
@@ -67,24 +67,30 @@ def test_submit_work_group_memory():
     local_size = 16
     global_size = local_size * 8
 
-    x = dpctl.tensor.ones(global_size, dtype="int32")
-    y = dpctl.tensor.zeros(global_size, dtype="int32")
-    x.sycl_queue.wait()
-    y.sycl_queue.wait()
+    x = np.ones(global_size, dtype="float32")
+    y = np.zeros(global_size, dtype="float32")
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=x_usm, src=x, count=x.nbytes)
 
     try:
-        q.submit(
+        ev2 = q.submit(
             kernel,
             [
-                x.usm_data,
-                y.usm_data,
+                x_usm,
+                y_usm,
                 dpctl.WorkGroupMemory("i4", local_size),
             ],
             [global_size],
             [local_size],
+            dEvents=[ev1],
         )
-        q.wait()
     except dpctl._sycl_queue.SyclKernelSubmitError:
         pytest.skip(f"Kernel submission to {q.sycl_device} failed")
 
-    assert dpctl.tensor.all(x == y)
+    ev3 = q.memcpy_async(dest=y, src=y_usm, count=y.nbytes, dEvents=[ev2])
+    ev3.wait()
+
+    assert np.all(x == y)

@@ -10,12 +10,6 @@ computers using industry-standard :sycl_execution_model:`SYCL execution model <>
 facilitated by :sycl_spec_2020:`SYCL 2020 standard <>`-compliant
 Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>`.
 
-:py:mod:`dpctl` provides a reference data-parallel implementation of
-array library :py:mod:`dpctl.tensor` conforming to Python Array API specification.
-The implementation adheres to a programming model affording clear control
-over the compute device where array computations and memory allocations
-take place.
-
 .. grid:: 2
     :gutter: 3
 

@@ -18,10 +18,26 @@
 
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
+import dpctl.memory as dpm
 import dpctl.program as dpctl_prog
+
+
+def _get_opencl_queue_or_skip():
+    try:
+        return dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("No OpenCL queue is available")
+
+
+def _skip_if_no_sycl_source_compilation(q):
+    if not dpctl.program.is_sycl_source_compilation_available():
+        pytest.skip("SYCL source compilation extension not available")
+    if not q.get_sycl_device().can_compile("sycl"):
+        pytest.skip("SYCL source compilation not supported")
 
 
 def get_spirv_abspath(fn):
@@ -80,8 +96,7 @@ def _check_cpython_api_SyclProgram_Make(sycl_prog):
     make_prog_fn = callable_maker(make_prog_fn_ptr)
 
     p2 = make_prog_fn(sycl_prog.addressof_ref())
-    assert p2.has_sycl_kernel("add")
-    assert p2.has_sycl_kernel("axpy")
+    return p2
 
 
 def _check_cpython_api_SyclKernel_GetKernelRef(krn):
@@ -186,7 +201,9 @@ def _check_multi_kernel_program(prog):
         assert type(cmsgsz) is int
 
     _check_cpython_api_SyclProgram_GetKernelBundleRef(prog)
-    _check_cpython_api_SyclProgram_Make(prog)
+    p2 = _check_cpython_api_SyclProgram_Make(prog)
+    assert p2.has_sycl_kernel("add")
+    assert p2.has_sycl_kernel("axpy")
 
 
 def test_create_program_from_source_ocl():
@@ -262,3 +279,212 @@ def test_create_program_from_invalid_src_ocl():
     }"
     with pytest.raises(dpctl_prog.SyclProgramCompilationError):
         dpctl_prog.create_program_from_source(q, invalid_oclSrc)
+
+
+def test_create_program_from_sycl_source():
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+    #include "math_ops.hpp"
+    #include "math_template_ops.hpp"
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op(in1[globalID],in2[globalID]);
+    }
+
+    template<typename T>
+    SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add_template(T* in1, T* in2, T* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op_template(in1[globalID], in2[globalID]);
+    }
+    """
+
+    header_content = """
+    int math_op(int a, int b){
+        return a + b;
+    }
+    """
+
+    header2_content = """
+    template<typename T>
+    T math_op_template(T a, T b){
+        return a + b;
+    }
+    """
+
+    prog = dpctl.program.create_program_from_sycl_source(
+        q,
+        sycl_source,
+        headers=[
+            ("math_ops.hpp", header_content),
+            ("math_template_ops.hpp", header2_content),
+        ],
+        registered_names=["vector_add_template<int>"],
+        copts=["-fno-fast-math"],
+    )
+
+    assert type(prog) is dpctl_prog.SyclProgram
+
+    assert type(prog.addressof_ref()) is int
+    assert prog.has_sycl_kernel("vector_add")
+    regularKernel = prog.get_sycl_kernel("vector_add")
+
+    # DPC++ version 2025.1 supports compilation of SYCL template kernels, but
+    # does not yet support referencing them with the unmangled name.
+    hasTemplateName = prog.has_sycl_kernel("vector_add_template<int>")
+    hasMangledName = prog.has_sycl_kernel(
+        "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"
+    )
+    assert hasTemplateName or hasMangledName
+
+    if hasTemplateName:
+        templateKernel = prog.get_sycl_kernel("vector_add_template<int>")
+    else:
+        templateKernel = prog.get_sycl_kernel(
+            "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"
+        )
+
+    assert "vector_add" == regularKernel.get_function_name()
+    assert type(regularKernel.addressof_ref()) is int
+    assert type(templateKernel.addressof_ref()) is int
+
+    for krn in [regularKernel, templateKernel]:
+        _check_cpython_api_SyclKernel_GetKernelRef(krn)
+        _check_cpython_api_SyclKernel_Make(krn)
+
+        assert 3 == krn.get_num_args()
+        na = krn.num_args
+        assert na == krn.get_num_args()
+        wgsz = krn.work_group_size
+        assert type(wgsz) is int
+        pwgszm = krn.preferred_work_group_size_multiple
+        assert type(pwgszm) is int
+        pmsz = krn.private_mem_size
+        assert type(pmsz) is int
+        vmnsg = krn.max_num_sub_groups
+        assert type(vmnsg) is int
+        v = krn.max_sub_group_size
+        assert type(v) is int
+        cmnsg = krn.compile_num_sub_groups
+        assert type(cmnsg) is int
+        cmsgsz = krn.compile_sub_group_size
+        assert type(cmsgsz) is int
+
+    _check_cpython_api_SyclProgram_GetKernelBundleRef(prog)
+
+
+def test_create_program_from_invalid_src_sycl():
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id()
+        out[globalID] = in1[globalID] + in2[globalID];
+    }
+    """
+    try:
+        _ = dpctl.program.create_program_from_sycl_source(
+            q,
+            sycl_source,
+            headers=[],
+            registered_names=[],
+            copts=[],
+        )
+        assert False
+    except dpctl_prog.SyclProgramCompilationError as prog_error:
+        print(str(prog_error))
+        assert "error: expected ';' at end of declaration" in str(prog_error)
+
+
+def test_sycl_source_compilation_is_available_returns_bool():
+    v = dpctl.program.is_sycl_source_compilation_available()
+    assert type(v) is bool
+
+
+def test_sycl_source_vector_add_correctness():
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+    #include "math_ops.hpp"
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op(in1[globalID], in2[globalID]);
+    }
+    """
+
+    header_content = """
+    int math_op(int a, int b){
+        return a + b;
+    }
+    """
+
+    prog = dpctl.program.create_program_from_sycl_source(
+        q,
+        sycl_source,
+        headers=[("math_ops.hpp", header_content)],
+        registered_names=[],
+        copts=["-fno-fast-math"],
+    )
+
+    kernel = prog.get_sycl_kernel("vector_add")
+
+    local_size = 16
+    global_size = local_size * 8
+
+    in1 = np.arange(global_size, dtype=np.int32)
+    in2 = (np.arange(global_size, dtype=np.int32) * 3 - 7).astype(np.int32)
+    out = np.empty(global_size, dtype=np.int32)
+    expected = (in1 + in2).astype(np.int32)
+
+    in1_usm = dpm.MemoryUSMDevice(in1.nbytes, queue=q)
+    in2_usm = dpm.MemoryUSMDevice(in2.nbytes, queue=q)
+    out_usm = dpm.MemoryUSMDevice(out.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=in1_usm, src=in1, count=in1.nbytes)
+    ev2 = q.memcpy_async(dest=in2_usm, src=in2, count=in2.nbytes)
+
+    try:
+        ev3 = q.submit(
+            kernel,
+            [in1_usm, in2_usm, out_usm],
+            [global_size],
+            [local_size],
+            dEvents=[ev1, ev2],
+        )
+    except dpctl._sycl_queue.SyclKernelSubmitError:
+        pytest.skip(f"Kernel submission to {q.sycl_device} failed")
+
+    ev4 = q.memcpy_async(dest=out, src=out_usm, count=out.nbytes, dEvents=[ev3])
+    ev4.wait()
+    assert np.array_equal(out, expected)

@@ -110,19 +110,13 @@ A context is an entity that is associated with the state of device as managed by
 backend. The context is required to map unified address space pointer to the device
 where it was allocated unambiguously.
 
-In order for two DPC++-based Python extensions to share USM allocations, e.g.
-as part of :ref:`DLPack exchange <dpctl_tensor_dlpack_support>`, they each must use
-the `same` SYCL context when submitting for execution programs that would access this
-allocation.
+In order for two DPC++-based Python extensions to share USM allocations, they each
+must use the `same` SYCL context when submitting for execution programs that would
+access this allocation.
 
 Since ``sycl::context`` is dynamically constructed by each extension  sharing a USM allocation,
 in general, requires sharing the ``sycl::context`` along with the USM pointer, as it is done
 in ``__sycl_usm_array_interface__`` :ref:`attribute <suai_attribute>`.
-
-Since DLPack itself does not provide for storing of the ``sycl::context``, the proper
-working of :func:`dpctl.tensor.from_dlpack` function is only supported for devices of those
-platforms that support default platform context SYCL extension `sycl_ext_oneapi_default_platform_context`_,
-and only of those allocations that are bound to this default context.
 
 To query where a particular device ``dev`` belongs to a platform that implements
 the default context, check whether ``dev.sycl_platform.default_context`` returns an instance
@@ -159,12 +153,6 @@ use the default platform context associated with the platform given device is a 
 Even through ``q1`` and ``q2`` instances of :class:`dpctl.SyclQueue` target the same device and use the same context
 they do not compare equal, since they correspond to two independent scheduling entities.
 
-.. note::
-   :class:`dpctl.tensor.usm_ndarray` objects one associated with ``q1`` and another associated with ``q2``
-   could not be combined in a call to the same function that implements
-   :ref:`compute-follows-data <dpctl_tensor_compute_follows_data>` programming model in :mod:`dpctl.tensor`.
-
-
 Event
 -----
 
@@ -177,11 +165,6 @@ SYCL event can be used to synchronize execution of the associated task with exec
 
 Methods :meth:`dpctl.SyclQueue.submit_async` and :meth:`dpctl.SyclQueue.memcpy_async` return
 :class:`dpctl.SyclEvent` instances.
-
-.. note::
-   At this point, :mod:`dpctl.tensor` does not provide public API for accessing SYCL events associated with
-   submission of computation tasks implementing operations on :class:`dpctl.tensor.usm_ndarray` objects.
-
 
 Unified Shared Memory
 ---------------------
