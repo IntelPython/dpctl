@@ -3,11 +3,14 @@
 ``__sycl_usm_array_interface__`` attribute
 ==========================================
 
+``__sycl_usm_array_interface__`` is a Python attribute designed to support extensions
+that implement arrays with underlying USM allocations.
+
 Python objects representing USM allocations, such as :py:class:`dpctl.memory.MemoryUSMDevice`,
-:py:class:`dpctl.memory.MemoryUSMShared`, :py:class:`dpctl.memory.MemoryUSMHost`,
-or :py:class:`dpctl.tensor.usm_ndarray`, distinguish themselves from other Python objects
-by providing the ``__sycl_usm_array_interface__`` attribute describing the allocation in a
-Python dictionary with the following fields:
+:py:class:`dpctl.memory.MemoryUSMShared` or :py:class:`dpctl.memory.MemoryUSMHost`,
+distinguish themselves from other Python objects by providing the
+``__sycl_usm_array_interface__`` attribute describing the allocation in a Python dictionary
+with the following fields:
 
 ``"shape"``
     a tuple of integers describing dimensions of an N-dimensional array
