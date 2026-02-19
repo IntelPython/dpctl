@@ -182,6 +182,8 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: ubuntu-22.04
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -290,6 +292,8 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: windows-latest
         experimental: [false]
         runner: [windows-latest]
     continue-on-error: ${{ matrix.experimental }}
