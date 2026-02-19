@@ -117,15 +117,15 @@ jobs:
         with:
           miniforge-variant: Miniforge3
           miniforge-version: latest
-          activate-environment: build
+          auto-activate: true
+          activate-environment: base
           channels: conda-forge
           conda-remove-defaults: true
           python-version: ${{ matrix.python }}
 
       - name: Install conda build
         run: |
-          conda activate
-          conda install -y conda-build
+          conda install -n base -y conda-build
           conda list -n base
 
       - name: Cache conda packages
@@ -150,7 +150,6 @@ jobs:
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
-          conda activate
           # TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
           $PYTHON_SPEC = "${{ matrix.python_spec }}"
           if ($PYTHON_SPEC -ne "") {
@@ -538,8 +537,8 @@ jobs:
           miniforge-version: latest
           channels: conda-forge
           conda-remove-defaults: true
-          auto-activate-base: true
-          activate-environment: ""
+          auto-activate: true
+          activate-environment: base
 
       - name: Install anaconda-client
         run: conda install anaconda-client -c conda-forge --override-channels
