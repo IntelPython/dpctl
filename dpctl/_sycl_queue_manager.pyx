@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 import logging
 from contextvars import ContextVar
@@ -74,10 +75,25 @@ cdef class _DeviceDefaultQueueCache:
         return _copy
 
 
+# no default, as would share a single mutable instance across threads and
+# concurrent access to the cache would not be thread-safe. Using ContextVar
+# without a default ensures each context gets its own instance.
 _global_device_queue_cache = ContextVar(
     "global_device_queue_cache",
-    default=_DeviceDefaultQueueCache()
 )
+
+
+cdef _DeviceDefaultQueueCache _get_device_queue_cache():
+    """
+    Factory function to get or create a default device queue cache for the
+    current context
+    """
+    try:
+        return _global_device_queue_cache.get()
+    except LookupError:
+        cache = _DeviceDefaultQueueCache()
+        _global_device_queue_cache.set(cache)
+        return cache
 
 
 cpdef object get_device_cached_queue(object key):
@@ -96,7 +112,7 @@ cpdef object get_device_cached_queue(object key):
         TypeError: If the input key is not one of the accepted types.
 
     """
-    _cache = _global_device_queue_cache.get()
+    _cache = _get_device_queue_cache()
     q_, changed_ = _cache.get_or_create(key)
     if changed_:
         _global_device_queue_cache.set(_cache)

@@ -28,6 +28,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
         experimental: [false]
         runner: [ubuntu-22.04, ubuntu-24.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -47,7 +51,11 @@ jobs:
 
       - name: Install dpctl
         run: |
-          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+          PYTHON_SPEC="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_SPEC}" ]; then
+            PYTHON_SPEC="${{ matrix.python }}"
+          fi
+          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="${PYTHON_SPEC}"
 
       - name: Smoke test
         run: |
@@ -79,6 +87,10 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
         experimental: [false]
         runner: [windows-latest]
 
@@ -106,7 +118,9 @@ jobs:
 
       - name: Install dpctl
         run: |
-          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+          SET "PYTHON_SPEC=${{ matrix.python_spec }}"
+          IF "%PYTHON_SPEC%"=="" SET "PYTHON_SPEC=${{ matrix.python }}"
+          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="%PYTHON_SPEC%"
 
       # intel-opencl-rt is not being installed when running conda install dpctl, so do it manually
       - name: Install intel-opencl-rt
