@@ -1,6 +1,0 @@
-﻿dpctl.tensor.isdtype
-====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: isdtype

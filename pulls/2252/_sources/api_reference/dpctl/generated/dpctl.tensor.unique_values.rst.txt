@@ -1,6 +1,0 @@
-﻿dpctl.tensor.unique\_values
-===========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: unique_values

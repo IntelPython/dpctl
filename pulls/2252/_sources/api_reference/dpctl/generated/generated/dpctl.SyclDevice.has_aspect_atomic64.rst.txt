@@ -1,6 +1,0 @@
-dpctl.SyclDevice.has\_aspect\_atomic64
-======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.has_aspect_atomic64
