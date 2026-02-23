@@ -1,6 +1,6 @@
+import threading
 import weakref
 from collections import defaultdict
-from contextvars import ContextVar
 
 from .._sycl_event import SyclEvent
 from .._sycl_queue import SyclQueue
@@ -65,26 +65,28 @@ class _SequentialOrderManager:
 
 
 class SyclQueueToOrderManagerMap:
-    """Utility class used to ensure sequential ordering of offloaded tasks
-    when passed to order manager."""
+    """
+    Utility class used to ensure sequential ordering of offloaded tasks
+    when passed to order manager.
+
+    Maintains a thread-local dictionary mapping SyclQueue instances to
+    _SequentialOrderManager instances.
+    """
 
     def __init__(self):
-        self._map = ContextVar(
-            "global_order_manager_map",
-            # no default to avoid sharing a single defaultdict
-            # across threads
-        )
+        # each thread gets its own dictionary of order managers
+        self._tls = threading.local()
 
     def _get_map(self):
         """
-        Factory method to get or create a default device queue cache for the
-        current context
+        Factory method to get or create an order manager map for the
+        current thread.
         """
         try:
-            return self._map.get()
-        except LookupError:
+            return self._tls.order_manager_map
+        except AttributeError:
             m = defaultdict(_SequentialOrderManager)
-            self._map.set(m)
+            self._tls.order_manager_map = m
             return m
 
     def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
