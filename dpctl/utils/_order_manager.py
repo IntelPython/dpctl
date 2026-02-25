@@ -65,8 +65,8 @@ class _SequentialOrderManager:
 
 
 class SyclQueueToOrderManagerMap:
-    """Utility class to ensure sequential ordering of offloaded
-    tasks issued by dpctl.tensor functions"""
+    """Utility class used to ensure sequential ordering of offloaded tasks
+    when passed to order manager."""
 
     def __init__(self):
         self._map = ContextVar(

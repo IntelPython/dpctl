@@ -16,8 +16,6 @@
       - Unified Shared Memory operations
     * - :py:mod:`dpctl.program`
       - Support for working with SYCL kernels
-    * - :py:mod:`dpctl.tensor`
-      - Array library conforming to Python Array API specification
     * - :py:mod:`dpctl.utils`
       - A collection of utility functions
 

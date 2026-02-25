@@ -213,7 +213,6 @@ def main():
             "--pyargs",
             "dpctl",
             "-vv",
-            "--ignore=dpctl/tensor/libtensor/tests",
             "--no-sycl-interface-test",
         ]
         run(pytest_cmd, env=env, cwd=setup_dir)

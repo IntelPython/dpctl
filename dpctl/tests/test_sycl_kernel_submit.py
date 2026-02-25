@@ -23,22 +23,21 @@ import numpy as np
 import pytest
 
 import dpctl
-import dpctl.memory as dpctl_mem
+import dpctl.memory as dpm
 import dpctl.program as dpctl_prog
-import dpctl.tensor as dpt
 from dpctl._sycl_queue import kernel_arg_type
 
 
 @pytest.mark.parametrize(
     "ctype_str,dtype,ctypes_ctor",
     [
-        ("short", dpt.dtype("i2"), ctypes.c_short),
-        ("int", dpt.dtype("i4"), ctypes.c_int),
-        ("unsigned int", dpt.dtype("u4"), ctypes.c_uint),
-        ("long", dpt.dtype(np.longlong), ctypes.c_longlong),
-        ("unsigned long", dpt.dtype(np.ulonglong), ctypes.c_ulonglong),
-        ("float", dpt.dtype("f4"), ctypes.c_float),
-        ("double", dpt.dtype("f8"), ctypes.c_double),
+        ("short", np.dtype("i2"), ctypes.c_short),
+        ("int", np.dtype("i4"), ctypes.c_int),
+        ("unsigned int", np.dtype("u4"), ctypes.c_uint),
+        ("long", np.dtype(np.longlong), ctypes.c_longlong),
+        ("unsigned long", np.dtype(np.ulonglong), ctypes.c_ulonglong),
+        ("float", np.dtype("f4"), ctypes.c_float),
+        ("double", np.dtype("f8"), ctypes.c_double),
     ],
 )
 def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
@@ -46,7 +45,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         q = dpctl.SyclQueue("opencl", property="enable_profiling")
     except dpctl.SyclQueueCreationError:
         pytest.skip("OpenCL queue could not be created")
-    if dtype == dpt.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
         pytest.skip(
             "Device does not support double precision floating point type"
         )
@@ -66,19 +65,25 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
     n_elems = 1024 * 512
     lws = 128
     if dtype.kind in "ui":
-        n_elems = min(n_elems, dpt.iinfo(dtype).max)
+        n_elems = min(n_elems, np.iinfo(dtype).max)
         n_elems = (n_elems // lws) * lws
-    a = dpt.arange(n_elems, dtype=dtype, sycl_queue=q)
-    b = dpt.arange(n_elems, stop=0, step=-1, dtype=dtype, sycl_queue=q)
-    c = dpt.zeros(n_elems, dtype=dtype, sycl_queue=q)
+    a = np.arange(n_elems, dtype=dtype)
+    b = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
+    c = np.zeros(n_elems, dtype=dtype)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+    c_usm = dpm.MemoryUSMDevice(c.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=a_usm, src=a, count=a.nbytes)
+    ev2 = q.memcpy_async(dest=b_usm, src=b, count=b.nbytes)
+
+    dpctl.SyclEvent.wait_for([ev1, ev2])
 
     d = 2
-    args = [a.usm_data, b.usm_data, c.usm_data, ctypes_ctor(d)]
+    args = [a_usm, b_usm, c_usm, ctypes_ctor(d)]
 
     assert n_elems % lws == 0
-
-    b_np = dpt.asnumpy(b)
-    a_np = dpt.asnumpy(a)
 
     for r in (
         [
@@ -87,14 +92,15 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         [2, n_elems],
         [2, 2, n_elems],
     ):
-        c[:] = 0
+        c_usm.memset()
         timer = dpctl.SyclTimer()
         with timer(q):
             q.submit(axpyKernel, args, r).wait()
-            ref_c = a_np * np.array(d, dtype=dtype) + b_np
+            ref_c = a * np.array(d, dtype=dtype) + b
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
-        assert np.allclose(dpt.asnumpy(c), ref_c), "Failed for {}".format(r)
+        q.memcpy(c, c_usm, c.nbytes)
+        assert np.allclose(c, ref_c), "Failed for {}".format(r)
 
     for gr, lr in (
         (
@@ -106,16 +112,15 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         ([2, n_elems], [2, lws // 2]),
         ([2, 2, n_elems], [2, 2, lws // 4]),
     ):
-        c[:] = 0
+        c_usm.memset()
         timer = dpctl.SyclTimer()
         with timer(q):
             q.submit(axpyKernel, args, gr, lr, [dpctl.SyclEvent()]).wait()
-            ref_c = a_np * np.array(d, dtype=dtype) + b_np
+            ref_c = a * np.array(d, dtype=dtype) + b
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
-        assert np.allclose(dpt.asnumpy(c), ref_c), "Failed for {}, {}".formatg(
-            r, lr
-        )
+        q.memcpy(c, c_usm, c.nbytes)
+        assert np.allclose(c, ref_c), "Failed for {}, {}".format(gr, lr)
 
 
 def test_submit_async():
@@ -124,23 +129,27 @@ def test_submit_async():
     except dpctl.SyclQueueCreationError:
         pytest.skip("OpenCL queue could not be created")
     oclSrc = (
-        "kernel void kern1(global unsigned int *res, unsigned int mod) {"
+        "kernel void kern1("
+        "   global unsigned int *res_base, ulong res_off, unsigned int mod) {"
         "   size_t unused_sum = 0;"
         "   size_t i = 0; "
         "   for (i = 0; i < 4000; i++) { "
         "       unused_sum += i;"
         "   } "
+        "   global unsigned int *res = res_base + (size_t)res_off;"
         "   size_t index = get_global_id(0);"
         "   int ri = (index % mod);"
         "   res[index] = (ri * ri) % mod;"
         "}"
         " "
-        "kernel void kern2(global unsigned int *res, unsigned int mod) {"
+        "kernel void kern2("
+        "   global unsigned int *res_base, ulong res_off, unsigned int mod) {"
         "   size_t unused_sum = 0;"
         "   size_t i = 0; "
         "   for (i = 0; i < 4000; i++) { "
         "       unused_sum += i;"
         "   } "
+        "   global unsigned int *res = res_base + (size_t)res_off;"
         "   size_t index = get_global_id(0);"
         "   int ri = (index % mod);"
         "   int ri2 = (ri * ri) % mod;"
@@ -148,9 +157,13 @@ def test_submit_async():
         "}"
         " "
         "kernel void kern3("
-        "   global unsigned int *res, global unsigned int *arg1, "
-        "   global unsigned int *arg2)"
+        "   global unsigned int *res_base, ulong res_off,"
+        "   global unsigned int *arg1_base, ulong arg1_off,"
+        "   global unsigned int *arg2_base, ulong arg2_off)"
         "{"
+        "   global unsigned int *res = res_base + (size_t)res_off;"
+        "   global unsigned int *arg1 = arg1_base + (size_t)arg1_off;"
+        "   global unsigned int *arg2 = arg2_base + (size_t)arg2_off;"
         "   size_t index = get_global_id(0);"
         "   size_t i = 0; "
         "   size_t unused_sum = 0;"
@@ -177,10 +190,10 @@ def test_submit_async():
     n = f * 1024
     n_alloc = 4 * n
 
-    X = dpt.empty((3, n_alloc), dtype="u4", usm_type="device", sycl_queue=q)
-    first_row = dpctl_mem.as_usm_memory(X[0])
-    second_row = dpctl_mem.as_usm_memory(X[1])
-    third_row = dpctl_mem.as_usm_memory(X[2])
+    x = np.empty((3, n_alloc), dtype="u4")
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+
+    e1 = q.memcpy_async(dest=x_usm, src=x, count=x.nbytes)
 
     p1, p2 = 17, 27
 
@@ -189,26 +202,39 @@ def test_submit_async():
         e1 = q.submit_async(
             kern1Kernel,
             [
-                first_row,
+                x_usm,
+                ctypes.c_ulonglong(0),
                 ctypes.c_uint(p1),
             ],
             [
                 n,
             ],
+            None,
+            [e1],
         )
         e2 = q.submit_async(
             kern2Kernel,
             [
-                second_row,
+                x_usm,
+                ctypes.c_ulonglong(n_alloc),
                 ctypes.c_uint(p2),
             ],
             [
                 n,
             ],
+            None,
+            [e1],
         )
         e3 = q.submit_async(
             kern3Kernel,
-            [third_row, first_row, second_row],
+            [
+                x_usm,
+                ctypes.c_ulonglong(2 * n_alloc),
+                x_usm,
+                ctypes.c_ulonglong(0),
+                x_usm,
+                ctypes.c_ulonglong(n_alloc),
+            ],
             [
                 n,
             ],
@@ -218,9 +244,7 @@ def test_submit_async():
         e3_st = e3.execution_status
         e2_st = e2.execution_status
         e1_st = e1.execution_status
-        ht_e = q._submit_keep_args_alive(
-            [first_row, second_row, third_row], [e1, e2, e3]
-        )
+        ht_e = q._submit_keep_args_alive([x_usm], [e1, e2, e3])
         are_complete = [
             e == status_complete
             for e in (
@@ -240,14 +264,13 @@ def test_submit_async():
                 break
 
     assert async_detected, "No evidence of async submission detected, unlucky?"
-    Xnp = dpt.asnumpy(X)
-    Xref = np.empty((3, n), dtype="u4")
+    q.memcpy(dest=x, src=x_usm, count=x.nbytes)
+    x_ref = np.empty((3, n), dtype="u4")
     for i in range(n):
-        Xref[0, i] = (i * i) % p1
-        Xref[1, i] = (i * i * i) % p2
-        Xref[2, i] = min(Xref[0, i], Xref[1, i])
-
-    assert np.array_equal(Xnp[:, :n], Xref[:, :n])
+        x_ref[0, i] = (i * i) % p1
+        x_ref[1, i] = (i * i * i) % p2
+        x_ref[2, i] = min(x_ref[0, i], x_ref[1, i])
+    assert np.array_equal(x[:, :n], x_ref[:, :n])
 
 
 def _check_kernel_arg_type_instance(kati):
@@ -303,19 +326,20 @@ def test_submit_local_accessor_arg():
     krn = prog.get_sycl_kernel("_ZTS14SyclKernel_SLMIlE")
     lws = 32
     gws = lws * 10
-    x = dpt.ones(gws, dtype="i8")
-    x.sycl_queue.wait()
+    x = np.ones(gws, dtype="i8")
+    res = np.empty_like(x)
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+    q.memcpy(dest=x_usm, src=x, count=x.nbytes)
     try:
         e = q.submit(
             krn,
-            [x.usm_data, dpctl.LocalAccessor("i8", (lws,))],
+            [x_usm, dpctl.LocalAccessor("i8", (lws,))],
             [gws],
             [lws],
         )
         e.wait()
     except dpctl._sycl_queue.SyclKernelSubmitError:
         pytest.skip(f"Kernel submission failed for device {q.sycl_device}")
-    expected = dpt.arange(1, x.size + 1, dtype=x.dtype, device=x.device) * (
-        2 * lws
-    )
-    assert dpt.all(x == expected)
+    q.memcpy(dest=res, src=x_usm, count=x.nbytes)
+    expected = np.arange(1, x.size + 1, dtype=x.dtype) * (2 * lws)
+    assert np.all(res == expected)
