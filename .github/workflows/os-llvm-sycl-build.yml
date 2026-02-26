@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.13.0
+        uses: styfle/cancel-workflow-action@3155a141048f8f89c06b4cdae32e7853e97536bc # 0.13.0
         with:
           access_token: ${{ github.token }}
 
@@ -33,7 +33,7 @@ jobs:
 
       - name: Cache sycl bundle
         id: cache-sycl-bundle
-        uses: actions/cache@v5
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             /home/runner/work/sycl_bundle
@@ -99,7 +99,7 @@ jobs:
           fi
 
       - name: Setup Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.12'
           architecture: x64
@@ -110,7 +110,7 @@ jobs:
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29
 
       - name: Checkout repo
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
