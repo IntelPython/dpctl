@@ -1,0 +1,10 @@
+﻿dpctl.tensor.square
+===================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: square
+    :no-value:
+
+

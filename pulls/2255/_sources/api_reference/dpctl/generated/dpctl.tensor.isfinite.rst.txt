@@ -1,0 +1,10 @@
+﻿dpctl.tensor.isfinite
+=====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: isfinite
+    :no-value:
+
+
