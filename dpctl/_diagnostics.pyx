@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 """ Implements developer utilities.
 """
@@ -60,6 +61,10 @@ def _shutdown_logger():
 def syclinterface_diagnostics(verbosity="warning", log_dir=None):
     """Context manager that activate verbosity of DPCTLSyclInterface
     function calls.
+
+    .. warning::
+        This context manager modifies the ``DPCTL_VERBOSITY`` environment
+        variable and should only be used from a single thread.
     """
     _allowed_verbosity = ["warning", "error"]
     if verbosity not in _allowed_verbosity:

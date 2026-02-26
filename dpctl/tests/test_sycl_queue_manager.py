@@ -24,8 +24,10 @@ import dpctl
 def test__DeviceDefaultQueueCache():
     import copy
 
-    from dpctl._sycl_queue_manager import _global_device_queue_cache as cache
-    from dpctl._sycl_queue_manager import get_device_cached_queue
+    from dpctl._sycl_queue_manager import (
+        _global_device_queue_cache,
+        get_device_cached_queue,
+    )
 
     try:
         d = dpctl.SyclDevice()
@@ -33,10 +35,9 @@ def test__DeviceDefaultQueueCache():
         pytest.skip("Could not create default device")
 
     q1 = get_device_cached_queue(d)
-    cache_copy = copy.copy(cache.get())
-    q2, changed = cache_copy.get_or_create(d)
+    cache_copy = copy.copy(_global_device_queue_cache)
+    q2 = cache_copy.get_or_create(d)
 
-    assert not changed
     assert q1 == q2
     q3 = get_device_cached_queue(d.filter_string)
     assert q3 == q1

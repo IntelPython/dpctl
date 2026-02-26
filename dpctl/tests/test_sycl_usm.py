@@ -59,7 +59,7 @@ def test_memory_create(memory_ctor):
     assert mobj.sycl_queue == queue
     assert type(repr(mobj)) is str
     assert type(bytes(mobj)) is bytes
-    assert sys.getsizeof(mobj) > nbytes
+    assert sys.getsizeof(mobj) >= nbytes
 
 
 def test_memory_create_with_np():

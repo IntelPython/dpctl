@@ -17,9 +17,10 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 import logging
-from contextvars import ContextVar
+import threading
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 
@@ -33,13 +34,14 @@ _logger = logging.getLogger(__name__)
 
 cdef class _DeviceDefaultQueueCache:
     cdef dict __device_queue_map__
+    cdef object _cache_lock
 
     def __cinit__(self):
         self.__device_queue_map__ = dict()
+        self._cache_lock = threading.Lock()
 
     def get_or_create(self, key):
-        """Return instance of SyclQueue and indicator if cache
-        has been modified"""
+        """Return cached SyclQueue for given key, creating it if needed."""
         if (
             isinstance(key, tuple)
             and len(key) == 2
@@ -56,32 +58,34 @@ cdef class _DeviceDefaultQueueCache:
             ctx_dev = q.sycl_context, q.sycl_device
         else:
             raise TypeError
-        if ctx_dev in self.__device_queue_map__:
-            return self.__device_queue_map__[ctx_dev], False
-        if q is None:
-            q = SyclQueue(*ctx_dev)
-        self.__device_queue_map__[ctx_dev] = q
-        return q, True
+        with self._cache_lock:
+            if ctx_dev in self.__device_queue_map__:
+                return self.__device_queue_map__[ctx_dev]
+            if q is None:
+                q = SyclQueue(*ctx_dev)
+            self.__device_queue_map__[ctx_dev] = q
+            return q
 
-    cdef _update_map(self, dev_queue_map):
+    def _update_map(self, dev_queue_map):
         self.__device_queue_map__.update(dev_queue_map)
 
     def __copy__(self):
         cdef _DeviceDefaultQueueCache _copy = _DeviceDefaultQueueCache.__new__(
             _DeviceDefaultQueueCache
         )
-        _copy._update_map(self.__device_queue_map__)
+        # lock must be held to avoid race conditions on map state
+        with self._cache_lock:
+            _copy._update_map(self.__device_queue_map__.copy())
         return _copy
 
 
-_global_device_queue_cache = ContextVar(
-    "global_device_queue_cache",
-    default=_DeviceDefaultQueueCache()
-)
+# all threads share the same cached default
+_global_device_queue_cache = _DeviceDefaultQueueCache()
 
 
 cpdef object get_device_cached_queue(object key):
-    """Returns a cached queue associated with given device.
+    """
+    Returns a cached queue associated with given device.
 
     Args:
         key : Either a 2-tuple consisting of a :class:`dpctl.SyclContext` and
@@ -96,8 +100,4 @@ cpdef object get_device_cached_queue(object key):
         TypeError: If the input key is not one of the accepted types.
 
     """
-    _cache = _global_device_queue_cache.get()
-    q_, changed_ = _cache.get_or_create(key)
-    if changed_:
-        _global_device_queue_cache.set(_cache)
-    return q_
+    return _global_device_queue_cache.get_or_create(key)

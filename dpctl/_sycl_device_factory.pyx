@@ -17,8 +17,10 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
-""" This module implements several device creation helper functions:
+"""
+This module implements several device creation helper functions:
 
   - wrapper functions to create a SyclDevice from the standard SYCL
     device selector classes.
@@ -46,7 +48,7 @@ from ._backend cimport (  # noqa: E211
     _device_type,
 )
 
-from contextvars import ContextVar
+import threading
 
 from ._sycl_device import SyclDeviceCreationError
 from .enum_types import backend_type
@@ -286,7 +288,8 @@ cpdef int get_num_devices(
 
 
 cpdef cpp_bool has_cpu_devices():
-    """ A helper function to check if there are any SYCL CPU devices available.
+    """
+    A helper function to check if there are any SYCL CPU devices available.
 
     Returns:
         bool:
@@ -298,7 +301,8 @@ cpdef cpp_bool has_cpu_devices():
 
 
 cpdef cpp_bool has_gpu_devices():
-    """ A helper function to check if there are any SYCL GPU devices available.
+    """
+    A helper function to check if there are any SYCL GPU devices available.
 
     Returns:
         bool:
@@ -310,7 +314,8 @@ cpdef cpp_bool has_gpu_devices():
 
 
 cpdef cpp_bool has_accelerator_devices():
-    """ A helper function to check if there are any SYCL Accelerator devices
+    """
+    A helper function to check if there are any SYCL Accelerator devices
     available.
 
     Returns:
@@ -325,7 +330,8 @@ cpdef cpp_bool has_accelerator_devices():
 
 
 cpdef SyclDevice select_accelerator_device():
-    """A wrapper for ``sycl::device{sycl::accelerator_selector_v}`` constructor.
+    """
+    A wrapper for ``sycl::device{sycl::accelerator_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -347,7 +353,8 @@ cpdef SyclDevice select_accelerator_device():
 
 
 cpdef SyclDevice select_cpu_device():
-    """A wrapper for ``sycl::device{sycl::cpu_selector_v}`` constructor.
+    """
+    A wrapper for ``sycl::device{sycl::cpu_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -369,7 +376,8 @@ cpdef SyclDevice select_cpu_device():
 
 
 cpdef SyclDevice select_default_device():
-    """A wrapper for ``sycl::device{sycl::default_selector_v}`` constructor.
+    """
+    A wrapper for ``sycl::device{sycl::default_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -391,7 +399,8 @@ cpdef SyclDevice select_default_device():
 
 
 cpdef SyclDevice select_gpu_device():
-    """A wrapper for ``sycl::device{sycl::gpu_selector_v}`` constructor.
+    """
+    A wrapper for ``sycl::device{sycl::gpu_selector_v}`` constructor.
 
     Returns:
         dpctl.SyclDevice:
@@ -414,46 +423,45 @@ cpdef SyclDevice select_gpu_device():
 
 cdef class _DefaultDeviceCache:
     cdef dict __device_map__
+    cdef object _cache_lock
 
     def __cinit__(self):
         self.__device_map__ = dict()
+        self._cache_lock = threading.Lock()
 
-    cdef get_or_create(self):
-        """Return instance of SyclDevice and indicator if cache
-        has been modified"""
-        key = 0
-        if key in self.__device_map__:
-            return self.__device_map__[key], False
-        dev = select_default_device()
-        self.__device_map__[key] = dev
-        return dev, True
+    def get_or_create(self):
+        """Return cached default SyclDevice, creating it if needed."""
+        with self._cache_lock:
+            key = 0
+            if key in self.__device_map__:
+                return self.__device_map__[key]
+            dev = select_default_device()
+            self.__device_map__[key] = dev
+            return dev
 
-    cdef _update_map(self, dev_map):
+    def _update_map(self, dev_map):
         self.__device_map__.update(dev_map)
 
     def __copy__(self):
         cdef _DefaultDeviceCache _copy = _DefaultDeviceCache.__new__(
             _DefaultDeviceCache)
-        _copy._update_map(self.__device_map__)
+        # lock must be held to avoid race conditions on map state
+        with self._cache_lock:
+            _copy._update_map(self.__device_map__.copy())
         return _copy
 
 
-_global_default_device_cache = ContextVar(
-    "global_default_device_cache",
-    default=_DefaultDeviceCache()
-)
+# all threads share the same cached default
+_global_default_device_cache = _DefaultDeviceCache()
 
 
 cpdef SyclDevice _cached_default_device():
-    """Returns a cached device selected by default selector.
+    """
+    Returns a cached device selected by default selector.
 
     Returns:
         dpctl.SyclDevice:
             A cached default-selected SYCL device.
 
     """
-    cdef _DefaultDeviceCache _cache = _global_default_device_cache.get()
-    d_, changed_ = _cache.get_or_create()
-    if changed_:
-        _global_default_device_cache.set(_cache)
-    return d_
+    return _global_default_device_cache.get_or_create()
