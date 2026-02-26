@@ -1,0 +1,10 @@
+﻿dpctl.tensor.cos
+================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: cos
+    :no-value:
+
+

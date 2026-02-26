@@ -1,0 +1,6 @@
+dpctl.SyclQueue.mem\_advise
+===========================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.mem_advise
