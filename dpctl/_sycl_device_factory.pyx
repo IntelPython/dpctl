@@ -445,7 +445,9 @@ cdef class _DefaultDeviceCache:
     def __copy__(self):
         cdef _DefaultDeviceCache _copy = _DefaultDeviceCache.__new__(
             _DefaultDeviceCache)
-        _copy._update_map(self.__device_map__)
+        # lock must be held to avoid race conditions on map state
+        with self._cache_lock:
+            _copy._update_map(self.__device_map__.copy())
         return _copy
 
 

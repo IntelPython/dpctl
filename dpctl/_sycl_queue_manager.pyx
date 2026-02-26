@@ -73,7 +73,9 @@ cdef class _DeviceDefaultQueueCache:
         cdef _DeviceDefaultQueueCache _copy = _DeviceDefaultQueueCache.__new__(
             _DeviceDefaultQueueCache
         )
-        _copy._update_map(self.__device_queue_map__)
+        # lock must be held to avoid race conditions on map state
+        with self._cache_lock:
+            _copy._update_map(self.__device_queue_map__.copy())
         return _copy
 
 
