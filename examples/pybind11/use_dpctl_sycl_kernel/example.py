@@ -16,11 +16,12 @@
 
 # coding: utf-8
 
+import numpy as np
 import use_kernel as eg
 
 import dpctl
+import dpctl.memory as dpmem
 import dpctl.program as dppr
-import dpctl.tensor as dpt
 
 # create execution queue, targeting default selected device
 q = dpctl.SyclQueue()
@@ -38,10 +39,18 @@ krn = pr.get_sycl_kernel("double_it")
 assert krn.num_args == 2
 
 # Construct the argument, and allocate memory for the result
-x = dpt.arange(0, stop=13, step=1, dtype="i4", sycl_queue=q)
-y = dpt.empty_like(x)
+x = np.arange(0, stop=13, step=1, dtype="i4")
+y = np.empty_like(x)
+x_dev = dpmem.MemoryUSMDevice(x.nbytes, queue=q)
+y_dev = dpmem.MemoryUSMDevice(y.nbytes, queue=q)
 
-eg.submit_custom_kernel(q, krn, src=x, dst=y)
+# Copy input data to the device
+q.memcpy(dest=x_dev, src=x, count=x.nbytes)
+
+eg.submit_custom_kernel(q, krn, src=x_dev, dst=y_dev)
+
+# Copy result data back to host
+q.memcpy(dest=y, src=y_dev, count=y.nbytes)
 
 # output the result
-print(dpt.asnumpy(y))
+print(y)

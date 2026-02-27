@@ -29,7 +29,7 @@
 #include "dpctl_capi.h"
 // clang-format on
 
-PyObject *py_is_usm_ndarray(PyObject *self_unused, PyObject *args)
+PyObject *py_is_sycl_queue(PyObject *self_unused, PyObject *args)
 {
     PyObject *arg = NULL;
     PyObject *res = NULL;
@@ -43,7 +43,7 @@ PyObject *py_is_usm_ndarray(PyObject *self_unused, PyObject *args)
         return NULL;
     }
 
-    check = PyObject_TypeCheck(arg, &PyUSMArrayType);
+    check = PyObject_TypeCheck(arg, &PySyclQueueType);
     if (check == -1) {
         PyErr_SetString(PyExc_RuntimeError, "Type check failed");
         return NULL;
@@ -55,35 +55,36 @@ PyObject *py_is_usm_ndarray(PyObject *self_unused, PyObject *args)
     return res;
 }
 
-PyObject *py_usm_ndarray_ndim(PyObject *self_unused, PyObject *args)
+PyObject *py_check_queue_ref(PyObject *self_unused, PyObject *args)
 {
     PyObject *arg = NULL;
-    struct PyUSMArrayObject *array = NULL;
     PyObject *res = NULL;
     int status = -1;
-    int ndim = -1;
+    struct PySyclQueueObject *q_obj = NULL;
+    DPCTLSyclQueueRef qref = NULL;
 
     (void)(self_unused); // avoid unused arguments warning
-    status = PyArg_ParseTuple(args, "O!", &PyUSMArrayType, &arg);
+    status = PyArg_ParseTuple(args, "O!", &PySyclQueueType, &arg);
     if (!status) {
-        PyErr_SetString(
-            PyExc_TypeError,
-            "Expecting single argument of type dpctl.tensor.usm_ndarray");
+        PyErr_SetString(PyExc_TypeError,
+                        "Expecting single argument of type dpctl.SyclQueue");
         return NULL;
     }
 
-    array = (struct PyUSMArrayObject *)arg;
-    ndim = UsmNDArray_GetNDim(array);
+    q_obj = (struct PySyclQueueObject *)arg;
+    qref = SyclQueue_GetQueueRef((struct PySyclQueueObject *)arg);
 
-    res = PyLong_FromLong(ndim);
+    res = (qref != NULL) ? Py_True : Py_False;
+    Py_INCREF(res);
+
     return res;
 }
 
 static PyMethodDef CExtMethods[] = {
-    {"is_usm_ndarray", py_is_usm_ndarray, METH_VARARGS,
-     "Checks if input object is an usm_ndarray instance"},
-    {"usm_ndarray_ndim", py_usm_ndarray_ndim, METH_VARARGS,
-     "Get ndim property of an usm_ndarray instance"},
+    {"is_sycl_queue", py_is_sycl_queue, METH_VARARGS,
+     "Checks if input object is a dpctl.SyclQueue instance"},
+    {"check_queue_ref", py_check_queue_ref, METH_VARARGS,
+     "Checks that queue ref obtained via C-API is not NULL"},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 

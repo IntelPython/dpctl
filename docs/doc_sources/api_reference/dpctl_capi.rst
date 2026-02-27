@@ -29,10 +29,6 @@ Exported typedefs
 
 .. c:struct:: Py_MemoryType
 
-.. c:struct:: PyUSMArrayObject
-
-.. c:struct:: PyUSMArrayType
-
 .. c:struct:: PySyclKernelObject
 
 .. c:struct:: PySyclKernelType
@@ -162,117 +158,6 @@ API for :c:struct:`Py_MemoryObject`
     :returns: Returns opaque pointer to `std::shared_ptr<void>` which manages the USM allocation,
         or a `nullptr` if the USM allocation represented by `o` is not managed by the smart
         pointer.
-
-API for :c:struct:`PyUSMArrayObject`
-------------------------------------
-
-.. c:function:: char * UsmNDArray_GetData(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Pointer to array element referred to by all-zeros multi-index.
-
-.. c:function:: int UsmNDArray_GetNDim(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Number of indices required to uniquely specify element of this array
-
-    The returned value is also known as array dimensionality or array rank.
-
-.. c:function:: Py_ssize_t * UsmNDArray_GetShape(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Pointer to array of sizes of array along each dimension.
-
-    The array has at least as many elements as returned by :c:func:`UsmNDArray_GetNDim`
-    applied to input object ``arr``.
-
-.. c:function:: Py_ssize_t * UsmNDArray_GetStrides(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Pointer to array of strides of array along each dimension.
-    :returns: NULL if array is C- or F-contiguous.
-
-    The array has at least as many elements as returned by :c:func:`UsmNDArray_GetNDim`
-    applied to input object ``arr``.
-
-.. c:function:: int UsmNDarray_GetTypenum(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: An integer encoding the type of array elements.
-
-    The encoding is consistent with that integral values corresponding to enums
-    used by :py:mod:`numpy`. See `NumPy Dtype C-API <https://numpy.org/doc/stable/reference/c-api/dtype.html#enumerated-types>`_.
-
-.. c:function:: int UsmNDarray_GetElementSize(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Size of single element of the array in bytes.
-
-.. c:function:: int UsmNDarray_GetFlags(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: An integer encoding flags attribute of the array.
-
-    The flag encodes whether the array is C-contiguous, F-contiguous,
-    whether it is read-only, or can be modified.
-
-.. c:function:: DPCTLSyclQueueRef UsmNDarray_GetQueueRef(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: A borrowed instance of :c:struct:`DPCTLSyclQueueRef`
-
-    The returned value corresponds to ``sycl::queue`` associated with underlying
-    USM allocation.
-
-.. c:function:: Py_ssize_t UsmNDArray_GetOffset(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Offset of zero multi-index array element from the beginning of
-              the USM allocation.
-
-.. c:function:: PyObject * UsmNDArray_GetUSMData(struct PyUSMArrayObject *arr)
-
-    :param arr: Input object
-    :returns: Python memory object underlying input array `arr`.
-
-.. c:function:: void UsmNDArray_SetWritableFlag(struct PyUSMArrayObject *arr, int flag)
-
-    :param arr: Input object
-    :param flags: Whether to set writable flag of the array to read-only, or to writable.
-
-    Non-zero value of ``flag`` parameter sets the array flag bit to writable, a zero-value
-    of ``flag`` parameter sets the flag bit of the array to read-only.
-
-.. c:function:: PyObject * UsmNDArray_MakeSimpleFromMemory(int nd, const Py_ssize_t *shape, int typenum, struct Py_MemoryObject *mobj, Py_ssize_t offset, char order)
-
-    :param nd: Dimensionality of array
-    :param shape: Array with array sizes for each dimension
-    :param typenum: Integer encoding type of array elements
-    :param mobj: Python USM memory object
-    :param offset: Offset to zero multi-index array element from the beginning of USM allocation
-    :param order: Memory layout of the array ('C' for C-contiguous or row-major layout, 'F' for F-contiguous or column-major layout)
-    :returns: :py:class:`usm_ndarray` instance with contiguous memory layout.
-
-.. c:function:: PyObject * UsmNDArray_MakeSimpleFromPtr(size_t nelems, int typenum, DPCTLSyclUSMRef ptr, DPCTLSyclQueueRef QRef, PyObject *owner)
-
-    :param nelems: Number of elements in one-dimensional array
-    :param typenum: Integer encoding type of array elements
-    :param ptr: Opaque pointer to USM allocation
-    :param QRef: Instance representing ``sycl::queue`` to be associated with output array
-    :param owner: Python object responsible for deallocation of USM memory
-    :return: One-dimensional :py:class:`usm_ndarray` instance with contiguous memory layout.
-
-.. c:function:: PyObject * UsmNDArray_MakeFromPtr(int nd, const Py_ssize_t *shape, int typenum, const Py_ssize_t *strides, DPCTLSyclUSMRef ptr, DPCTLSyclQueueRef QRef, Py_ssize_t offset, PyObject *owner)
-
-    :param nd: Number of axis in output array
-    :param shape: Array of dimensional along each axis
-    :param typenum: Integer encoding type of array elements
-    :param stride: Array of strides for each axis
-    :param ptr: Opaque pointer to USM allocation
-    :param QRef: Instance representing ``sycl::queue`` to be associated with output array
-    :param offset: Offset to zero multi-index array element from the beginning of USM allocation
-    :param owner: Python object responsible for deallocation of USM memory
-    :returns: Instance of :py:class:`usm_ndarray` constructed from input parameters
 
 API for :c:struct:`PySyclKernelObject`
 --------------------------------------

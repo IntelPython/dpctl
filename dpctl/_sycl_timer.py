@@ -134,9 +134,10 @@ class SyclTimer:
         ``device_timer`` keyword argument controls the type of tasks submitted.
         With ``"queue_barrier"`` value, queue barrier tasks are used. With
         ``"order_manager"`` value, a single empty body task is inserted
-        and order manager (used by all `dpctl.tensor` operations) is used to
-        order these tasks so that they fence operations performed within
-        timer's context.
+        and order manager is used to order these tasks so that they fence
+        operations performed within the timer's context. This requires that
+        the order manager is used to order all tasks submitted to the queue
+        within the timer's context.
 
         Timing offloading operations that do not use the order manager with
         the timer that uses ``"order_manager"`` as ``device_timer`` value
@@ -253,18 +254,15 @@ class SyclTimer:
             .. code-block:: python
 
                 import dpctl
-                from dpctl import tensor
 
                 q = dpctl.SyclQueue(property="enable_profiling")
 
-                device = tensor.Device.create_device(q)
                 timer = dpctl.SyclTimer()
+                x = np.linspace(-4, 4, num=10**6, dtype="float32")
 
                 with timer(q):
-                    x = tensor.linspace(-4, 4, num=10**6, dtype="float32")
-                    e = tensor.exp(-0.5 * tensor.square(x))
-                    s = tensor.sin(2.3 * x + 0.11)
-                    f = e * s
+                    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+                    q.memcpy(dest=x_usm, src=x, count=x.nbytes)
 
                 host_dt, device_dt = timer.dt
 
