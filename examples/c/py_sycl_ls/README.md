@@ -3,7 +3,7 @@
 ## Building
 
 ```bash
-python setup.py build_ext --inplace
+python -m pip install .
 ```
 
 ## Testing
