@@ -25,7 +25,7 @@ find_package(Dpctl REQUIRED)
 
 set(py_module_name _external_usm_alloc)
 set(_sources
-  external_usm_allocation/_usm_alloc_example.cpp
+  src/external_usm_allocation/_usm_alloc_example.cpp
 )
 pybind11_add_module(${py_module_name}
     MODULE

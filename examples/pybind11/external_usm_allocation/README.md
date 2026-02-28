@@ -13,7 +13,7 @@ To build the example, run:
 
 ```bash
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
-CXX=icpx CC=icx python setup.py build_ext --inplace
+CXX=icpx CC=icx python -m pip install .
 python -m pytest tests
 python example.py
 ```
