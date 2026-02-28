@@ -13,7 +13,6 @@ __pycache__/
 
 # CMake build and local install directory
 build
-_skbuild
 build_cmake
 install
 
@@ -104,3 +103,6 @@ dpctl/resources/cmake
 
 # asv artifacts
 *.asv*
+
+# generated _version.py
+dpctl/_version.py

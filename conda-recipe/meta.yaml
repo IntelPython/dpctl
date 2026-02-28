@@ -48,8 +48,6 @@ requirements:
         - {{ dep|replace('_','-') }}
         {% endif %}
         {% endfor %}
-        # versioneer dependency
-        - tomli # [py<311]
     run:
         - python
         - python-gil     # [py>=314]

@@ -333,15 +333,15 @@ endif()
 install(TARGETS
     DPCTLSyclInterface
     LIBRARY
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl
+    DESTINATION dpctl
     ARCHIVE
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl
+    DESTINATION dpctl
     RUNTIME
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl
+    DESTINATION dpctl
 )
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
+    DESTINATION dpctl/include
     FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 

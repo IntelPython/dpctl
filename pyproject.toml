@@ -1,17 +1,11 @@
 [build-system]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 requires = [
   # TODO: keep in sync with [project.dependencies]
-  "wheel>=0.43",
-  "build>=1.1",
-  "setuptools>=63.0.0",
-  "scikit-build>=0.17.0",
-  "ninja>=1.11.1; platform_system!='Windows'",
-  "cmake>=3.29.0",
+  "scikit-build-core>=0.8.0",
+  "setuptools_scm>=8.0.0",
   "cython>=3.0.10",
-  "numpy >=1.23",
-  # WARNING: check with doc how to upgrade
-  "versioneer[toml]==0.29"
+  "numpy >=1.23"
 ]
 
 [project]
@@ -57,7 +51,7 @@ keywords = [
 license = "Apache-2.0"
 name = "dpctl"
 readme = {file = "README.md", content-type = "text/markdown"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
@@ -119,6 +113,8 @@ multi_line_output = 3
 skip = ["dpctl/_version.py"]
 use_parentheses = true
 
+[tool.pytest]
+
 [tool.pytest.ini.options]
 addopts = [
   "--junitxml=junit.xml",
@@ -142,9 +138,13 @@ norecursedirs = [
   "conda-recipe"
 ]
 
-[tool.versioneer]
-VCS = "git"
-parentdir_prefix = "dpctl-"
-style = "pep440"
-versionfile_build = "dpctl/_version.py"
-versionfile_source = "dpctl/_version.py"
+# build configuation
+[tool.scikit-build]
+build-dir = "build/{wheel_tag}"
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+sdist.include = ["dpctl/_version.py"]
+wheel.packages = ["dpctl"]
+
+[tool.setuptools_scm]
+version_scheme = "only-version"
+write_to = "dpctl/_version.py"

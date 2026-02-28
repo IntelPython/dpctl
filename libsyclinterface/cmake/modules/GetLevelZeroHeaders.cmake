@@ -25,14 +25,15 @@
 # LEVEL_ZERO_INCLUDE_DIR
 
 function(get_level_zero_headers)
+    set(LZ_DIR "${CMAKE_CURRENT_BINARY_DIR}/level-zero")
 
-    if(EXISTS level-zero)
+    if(EXISTS ${LZ_DIR})
       # Update the checkout
         execute_process(
             COMMAND ${GIT_EXECUTABLE} fetch
             RESULT_VARIABLE result
             ERROR_VARIABLE error
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+            WORKING_DIRECTORY ${LZ_DIR}
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
         )
@@ -48,6 +49,7 @@ function(get_level_zero_headers)
             COMMAND ${GIT_EXECUTABLE} clone https://github.com/oneapi-src/level-zero.git
             RESULT_VARIABLE result
             ERROR_VARIABLE error
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
         )
@@ -65,7 +67,7 @@ function(get_level_zero_headers)
         RESULT_VARIABLE result
         OUTPUT_VARIABLE latest_tag
         ERROR_VARIABLE error
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+        WORKING_DIRECTORY ${LZ_DIR}
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_STRIP_TRAILING_WHITESPACE
     )
@@ -81,7 +83,7 @@ function(get_level_zero_headers)
         COMMAND ${GIT_EXECUTABLE} checkout ${latest_tag}
         RESULT_VARIABLE result
         ERROR_VARIABLE error
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+        WORKING_DIRECTORY ${LZ_DIR}
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_STRIP_TRAILING_WHITESPACE
     )
@@ -95,7 +97,7 @@ function(get_level_zero_headers)
     # Populate the path to the headers
     find_path(LEVEL_ZERO_INCLUDE_DIR
         NAMES zet_api.h
-        PATHS ${CMAKE_BINARY_DIR}/level-zero/include
+        PATHS ${LZ_DIR}/include
         NO_DEFAULT_PATH
         NO_CMAKE_ENVIRONMENT_PATH
         NO_CMAKE_PATH
@@ -110,5 +112,7 @@ function(get_level_zero_headers)
             "Level zero headers downloaded to: ${LEVEL_ZERO_INCLUDE_DIR}"
         )
     endif()
+
+    set(LEVEL_ZERO_INCLUDE_DIR ${LEVEL_ZERO_INCLUDE_DIR} PARENT_SCOPE)
 
 endfunction(get_level_zero_headers)

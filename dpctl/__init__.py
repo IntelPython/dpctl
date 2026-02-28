@@ -60,7 +60,11 @@ from ._sycl_queue import (
 )
 from ._sycl_queue_manager import get_device_cached_queue
 from ._sycl_timer import SyclTimer
-from ._version import get_versions
+
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = "0.0.0.unknown"
 from .enum_types import (
     backend_type,
     device_type,
@@ -140,6 +144,4 @@ def get_include():
     return os.path.join(os.path.dirname(__file__), "include")
 
 
-__version__ = get_versions()["version"]
-del get_versions
 del _init_helper
