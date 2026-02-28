@@ -37,17 +37,6 @@ else:
     extra_link_args = ["-fPIC"]
 
 setup(
-    name="py_sycl_ls",
-    version="0.0.1",
-    description="An example of C extension calling SYCLInterface routines",
-    long_description="""
-    Example of using SYCLInterface.
-
-    See README.md for more details.
-    """,
-    license="Apache 2.0",
-    author="Intel Corporation",
-    url="https://github.com/IntelPython/dpctl",
     ext_modules=[
         Extension(
             name="py_sycl_ls._py_sycl_ls",
