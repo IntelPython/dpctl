@@ -11,12 +11,12 @@ written in Cython.
 
 To build the example on Linux, run:
 ```bash
-CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja
+CC=icx CXX=icpx python pip install .
 ```
 
 On Windows, run:
 ```bash
-CC=icx CXX=icx python setup.py build_ext --inplace -G Ninja
+CC=icx CXX=icx python pip install .
 ```
 
 ## Testing
