@@ -47,8 +47,6 @@ requirements:
         - {{ dep|replace('_','-') }}
         {% endif %}
         {% endfor %}
-        # versioneer dependency
-        - tomli # [py<311]
     run:
         - python
         - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}

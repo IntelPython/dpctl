@@ -1,5 +1,7 @@
 find_package(Python REQUIRED COMPONENTS NumPy)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+
 # -t is to only Cythonize sources with timestamps newer than existing CXX files (if present)
 # -w is to set working directory (and correctly set __pyx_f[] array of filenames)
 set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
@@ -164,18 +166,18 @@ function(build_dpctl_ext _trgt _src _dest)
         LIBRARY DESTINATION ${_dest})
     install(FILES
         ${_generated_api_h}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
+        DESTINATION dpctl/include/${_dest}
         OPTIONAL)
     install(FILES
         ${_generated_public_h}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include/${_dest}
+        DESTINATION dpctl/include/${_dest}
         OPTIONAL)
     if (DPCTL_GENERATE_COVERAGE)
         get_filename_component(_original_src_dir ${_src} DIRECTORY)
         file(RELATIVE_PATH _rel_dir ${CMAKE_SOURCE_DIR} ${_original_src_dir})
         install(FILES
             ${_generated_src}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/${_rel_dir}
+            DESTINATION ${_rel_dir}
         )
     endif()
 
