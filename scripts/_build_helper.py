@@ -109,45 +109,33 @@ def make_cmake_args(
     return args
 
 
-def build_extension(
+def build_and_install(
     setup_dir: str,
     env: dict[str, str],
     cmake_args: list[str],
-    cmake_executable: str = None,
     generator: str = None,
     build_type: str = None,
+    editable: bool = True,
 ):
-    cmd = [sys.executable, "setup.py", "build_ext", "--inplace"]
-    if cmake_executable:
-        cmd.append(f"--cmake-executable={cmake_executable}")
-    if generator:
-        cmd.append(f"--generator={generator}")
-    if build_type:
-        cmd.append(f"--build-type={build_type}")
     if cmake_args:
-        cmd.append("--")
-        cmd += cmake_args
-    run(
-        cmd,
-        env=env,
-        cwd=setup_dir,
-    )
+        env["CMAKE_ARGS"] = " ".join(cmake_args)
+    if generator:
+        env["CMAKE_GENERATOR"] = generator
+    if build_type:
+        env["CMAKE_BUILD_TYPE"] = build_type
+    cmd = [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--no-build-isolation",
+    ]
+    if editable:
+        cmd.append("-e")
 
+    cmd.append(".")
 
-def install_editable(setup_dir: str, env: dict[str, str]):
-    run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "-e",
-            ".",
-            "--no-build-isolation",
-        ],
-        env=env,
-        cwd=setup_dir,
-    )
+    run(cmd, env=env, cwd=setup_dir)
 
 
 def clean_build_dir(setup_dir: str):
@@ -157,11 +145,12 @@ def clean_build_dir(setup_dir: str):
         or not os.path.isdir(setup_dir)
     ):
         raise RuntimeError(f"Invalid setup directory provided: '{setup_dir}'")
-    target = os.path.join(setup_dir, "_skbuild")
+
+    target = os.path.join(setup_dir, "build")
     if os.path.exists(target):
         print(f"Cleaning build directory: {target}")
-        try:
-            shutil.rmtree(target)
-        except Exception as e:
-            print(f"Failed to remove build directory: '{target}'")
-            raise e
+    try:
+        shutil.rmtree(target)
+    except Exception as e:
+        print(f"Failed to remove build directory: '{target}'")
+        raise e

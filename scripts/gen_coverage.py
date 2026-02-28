@@ -22,11 +22,10 @@ import sys
 import sysconfig
 
 from _build_helper import (
-    build_extension,
+    build_and_install,
     capture_cmd_output,
     clean_build_dir,
     err,
-    install_editable,
     log_cmake_args,
     make_cmake_args,
     resolve_compilers,
@@ -175,20 +174,17 @@ def main():
 
     log_cmake_args(cmake_args, "gen_coverage")
 
-    build_extension(
+    env["SKBUILD_BUILD_DIR"] = "build/coverage"
+
+    build_and_install(
         setup_dir,
         env,
         cmake_args,
-        cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Coverage",
     )
-    install_editable(setup_dir, env)
 
-    cmake_build_dir = capture_cmd_output(
-        ["find", "_skbuild", "-name", "cmake-build"],
-        cwd=setup_dir,
-    )
+    cmake_build_dir = os.path.join(setup_dir, "build/coverage")
 
     print(f"[gen_coverage] Found CMake build dir: {cmake_build_dir}")
 

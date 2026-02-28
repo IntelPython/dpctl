@@ -20,11 +20,9 @@ import subprocess
 import sys
 
 from _build_helper import (
-    build_extension,
-    capture_cmd_output,
+    build_and_install,
     clean_build_dir,
     err,
-    install_editable,
     log_cmake_args,
     make_cmake_args,
     resolve_compilers,
@@ -141,18 +139,16 @@ def main():
 
     env = os.environ.copy()
 
-    build_extension(
+    env["SKBUILD_BUILD_DIR"] = "build/docs"
+
+    build_and_install(
         setup_dir,
         env,
         cmake_args,
-        cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Release",
     )
-    install_editable(setup_dir, env)
-    cmake_build_dir = capture_cmd_output(
-        ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
-    )
+    cmake_build_dir = os.path.join(setup_dir, "build/docs")
 
     print(f"[gen_docs] Found CMake build dir: {cmake_build_dir}")
 
@@ -163,7 +159,7 @@ def main():
 
     generated_doc_dir = (
         subprocess.check_output(
-            ["find", "_skbuild", "-name", "index.html"], cwd=setup_dir
+            ["find", "build/docs", "-name", "index.html"], cwd=setup_dir
         )
         .decode("utf-8")
         .strip("\n")
