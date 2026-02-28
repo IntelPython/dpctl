@@ -168,7 +168,7 @@ if (DPCTL_ENABLE_DOXYREST)
 endif()
 
 # Set the location where the generated docs are saved
-set(DOC_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/docs)
+set(DOC_OUTPUT_DIR docs)
 
 # set(INDEX_NO_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_no_doxyrest.rst.in)
 # set(INDEX_DOXYREST_IN ${CMAKE_CURRENT_SOURCE_DIR}/index_doxyrest.rst.in)

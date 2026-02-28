@@ -47,8 +47,6 @@ requirements:
         - {{ dep|replace('_','-') }}
         {% endif %}
         {% endfor %}
-        # versioneer dependency
-        - tomli # [py<311]
         - opencl-headers >=2025.06.13 # [win]
     run:
         - python
