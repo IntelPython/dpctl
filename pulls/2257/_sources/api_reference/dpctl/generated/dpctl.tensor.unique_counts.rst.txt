@@ -1,6 +1,0 @@
-﻿dpctl.tensor.unique\_counts
-===========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: unique_counts

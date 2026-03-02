@@ -1,6 +1,0 @@
-﻿dpctl.tensor.full\_like
-=======================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: full_like

@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.reference\_obj
-===========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMShared.reference_obj
