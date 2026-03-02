@@ -1,0 +1,6 @@
+﻿dpctl.tensor.allclose
+=====================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: allclose
