@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.sycl\_queue
-======================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMHost.sycl_queue
