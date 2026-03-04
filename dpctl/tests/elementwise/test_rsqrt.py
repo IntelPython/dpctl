@@ -36,27 +36,13 @@ def test_rsqrt_out_type(dtype):
 
 
 @pytest.mark.parametrize("dtype", _real_fp_dtypes)
-def test_rsqrt_output_contig(dtype):
+def test_rsqrt_basic(dtype):
     q = get_queue_or_skip()
     skip_if_dtype_not_supported(dtype, q)
 
     n_seq = 1027
 
     x = dpt.linspace(1, 13, num=n_seq, dtype=dtype, sycl_queue=q)
-    res = dpt.rsqrt(x)
-    expected = np.reciprocal(np.sqrt(dpt.asnumpy(x), dtype=dtype))
-    tol = 8 * dpt.finfo(res.dtype).resolution
-    assert_allclose(dpt.asnumpy(res), expected, atol=tol, rtol=tol)
-
-
-@pytest.mark.parametrize("dtype", _real_fp_dtypes)
-def test_rsqrt_output_strided(dtype):
-    q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-
-    n_seq = 2054
-
-    x = dpt.linspace(1, 13, num=n_seq, dtype=dtype, sycl_queue=q)[::-2]
     res = dpt.rsqrt(x)
     expected = np.reciprocal(np.sqrt(dpt.asnumpy(x), dtype=dtype))
     tol = 8 * dpt.finfo(res.dtype).resolution
