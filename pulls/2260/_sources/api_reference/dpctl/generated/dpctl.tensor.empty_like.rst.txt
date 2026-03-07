@@ -1,0 +1,6 @@
+﻿dpctl.tensor.empty\_like
+========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: empty_like

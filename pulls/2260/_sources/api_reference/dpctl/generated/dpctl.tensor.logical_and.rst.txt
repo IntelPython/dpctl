@@ -1,0 +1,10 @@
+﻿dpctl.tensor.logical\_and
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: logical_and
+    :no-value:
+
+
