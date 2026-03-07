@@ -1,6 +1,0 @@
-﻿dpctl.tensor.broadcast\_to
-==========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: broadcast_to
