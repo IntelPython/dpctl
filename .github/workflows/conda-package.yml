@@ -104,12 +104,11 @@ jobs:
           miniforge-version: latest
           activate-environment: build
           channels: conda-forge
-          conda-remove-defaults: true
           python-version: ${{ matrix.python }}
 
       - name: Install conda build
         run: |
-          conda install -y conda-build
+          conda install -n base -y conda-build
           conda list -n base
 
       - name: Cache conda packages
@@ -278,7 +277,6 @@ jobs:
         with:
           miniforge-version: latest
           channels: conda-forge
-          conda-remove-defaults: true
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
 
@@ -486,7 +484,6 @@ jobs:
         with:
           miniforge-version: latest
           channels: conda-forge
-          conda-remove-defaults: true
           activate-environment: upload
 
       - name: Install anaconda-client
@@ -830,7 +827,6 @@ jobs:
           run-post: false
           channel-priority: "disabled"
           channels: conda-forge
-          conda-remove-defaults: true
           python-version: '3.11'
 
       - name: Install anaconda-client
