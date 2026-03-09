@@ -1,0 +1,10 @@
+﻿dpctl.tensor.signbit
+====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: signbit
+    :no-value:
+
+
