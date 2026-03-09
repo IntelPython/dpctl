@@ -487,7 +487,6 @@ jobs:
           miniforge-version: latest
           channels: conda-forge
           conda-remove-defaults: true
-          auto-activate: true
           activate-environment: upload
 
       - name: Install anaconda-client
