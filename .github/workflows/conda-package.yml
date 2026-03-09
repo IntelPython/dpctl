@@ -82,6 +82,9 @@ jobs:
   build_windows:
     runs-on: windows-latest
     timeout-minutes: 150
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
 
     strategy:
       matrix:
@@ -98,17 +101,15 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:
-          miniforge-variant: Miniforge3
           miniforge-version: latest
-          auto-activate: true
-          activate-environment: base
+          activate-environment: build
           channels: conda-forge
           conda-remove-defaults: true
           python-version: ${{ matrix.python }}
 
       - name: Install conda build
         run: |
-          conda install -n base -y conda-build
+          conda install -y conda-build
           conda list -n base
 
       - name: Cache conda packages
@@ -464,6 +465,9 @@ jobs:
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
     runs-on: windows-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
     strategy:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
@@ -483,8 +487,7 @@ jobs:
           miniforge-version: latest
           channels: conda-forge
           conda-remove-defaults: true
-          auto-activate: true
-          activate-environment: base
+          activate-environment: upload
 
       - name: Install anaconda-client
         run: conda install anaconda-client -c conda-forge --override-channels
