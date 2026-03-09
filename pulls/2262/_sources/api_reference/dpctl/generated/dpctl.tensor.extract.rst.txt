@@ -1,0 +1,6 @@
+﻿dpctl.tensor.extract
+====================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: extract
