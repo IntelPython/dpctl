@@ -5,6 +5,7 @@ requires = [
   "scikit-build-core>=0.8.0",
   "setuptools_scm>=8.0.0",
   "cython>=3.0.10",
+  "cython-cmake",
   "numpy >=1.23"
 ]
 
