@@ -41,5 +41,3 @@ set_source_files_properties(${_generated_cy_src}
   COMPILE_OPTIONS "${_combined_options}"
 )
 target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
-
-set(ignoreMe "${SKBUILD}")
