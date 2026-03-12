@@ -16,12 +16,12 @@ oneMKL.
 
 To compile the example on Linux, run:
 ```bash
-CC=icx CXX=icpx python pip install .
+CC=icx CXX=icpx python -m pip install .
 ```
 
 On Windows, run:
 ```bash
-CC=icx CXX=icx python pip install .
+CC=icx CXX=icx python -m pip install .
 ```
 
 ## Running
