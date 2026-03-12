@@ -7,7 +7,7 @@
 
 To build on Linux, run:
 ```bash
-pip install -e . \
+python -m pip install -e . \
      -Ccmake.define.CMAKE_C_COMPILER:PATH=icx \
      -Ccmake.define.CMAKE_CXX_COMPILER:PATH=icpx \
      -Ccmake.define.TBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
@@ -18,7 +18,7 @@ pip install -e . \
 
 To build on Windows, run:
 ```bash
-pip install -e . \
+python -m pip install -e . \
      -Ccmake.define.CMAKE_C_COMPILER:PATH=icx \
      -Ccmake.define.CMAKE_CXX_COMPILER:PATH=icx \
      -Ccmake.define.TBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
