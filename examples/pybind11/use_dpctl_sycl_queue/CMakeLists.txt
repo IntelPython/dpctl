@@ -24,13 +24,8 @@ find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
 set(py_module_name _use_queue_device)
-set(_sources use_queue_device/_example.cpp)
-pybind11_add_module(${py_module_name}
-    MODULE
-    ${_sources}
-)
+set(_sources src/use_queue_device/_example.cpp)
+pybind11_add_module(${py_module_name} MODULE ${_sources})
 add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_sources})
 target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
-install(TARGETS ${py_module_name}
-  DESTINATION use_queue_device
-)
+install(TARGETS ${py_module_name} DESTINATION use_queue_device)
