@@ -12,7 +12,7 @@ Pybind11 extensions.
 To build the extension, run:
 ```
 source /opt/intel/oneapi/compiler/latest/env/vars.sh
-CXX=icpx python setup.py build_ext --inplace
+CXX=icpx python -m pip install .
 python -m pytest tests
 python example.py
 ```

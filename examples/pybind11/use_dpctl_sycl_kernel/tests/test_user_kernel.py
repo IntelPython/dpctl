@@ -29,8 +29,7 @@ import dpctl.program as dppr
 
 def _get_spv_path():
     uk_dir = os.path.dirname(os.path.abspath(uk.__file__))
-    proj_dir = os.path.dirname(uk_dir)
-    return os.path.join(proj_dir, "resource", "double_it.spv")
+    return os.path.join(uk_dir, "resource", "double_it.spv")
 
 
 def test_spv_file_exists():
