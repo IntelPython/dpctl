@@ -1,11 +1,10 @@
 find_package(Python REQUIRED COMPONENTS NumPy)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
 # -t is to only Cythonize sources with timestamps newer than existing CXX files (if present)
 # -w is to set working directory (and correctly set __pyx_f[] array of filenames)
-set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
+set(CYTHON_ARGS -t -w "${CMAKE_SOURCE_DIR}")
 find_package(Cython REQUIRED)
+include(UseCython)
 
 if(WIN32)
     string(CONCAT WARNING_FLAGS
@@ -108,8 +107,7 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 function(build_dpctl_ext _trgt _src _dest)
     set(options SYCL)
     cmake_parse_arguments(BUILD_DPCTL_EXT "${options}" "RELATIVE_PATH" "" ${ARGN})
-    add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
-    set(_cythonize_trgt "${_trgt}_cythonize_pyx")
+    cython_transpile(${_src} LANGUAGE CXX OUTPUT_VARIABLE _generated_src)
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
