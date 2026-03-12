@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22...3.27 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.29 FATAL_ERROR)
 
 project(example_use_mkl_gemm VERSION 0.1 LANGUAGES CXX
   DESCRIPTION "Example of using Python wrapper to oneMKL function")
@@ -27,12 +27,10 @@ FetchContent_MakeAvailable(pybind11)
 find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
-find_package(TBB REQUIRED)
-
 set(MKL_ARCH "intel64")
 set(MKL_LINK "dynamic")
 set(MKL_THREADING "tbb_thread")
-set(MKL_INTERFACE "ilp64")
+set(MKL_INTERFACE "lp64")
 find_package(MKL REQUIRED)
 
 set(py_module_name _onemkl)
@@ -65,5 +63,3 @@ target_compile_options(standalone_cpp
 )
 target_include_directories(standalone_cpp PUBLIC sycl_gemm)
 target_link_libraries(standalone_cpp PRIVATE MKL::MKL_SYCL)
-
-set(ignoreMe "${SKBUILD}")
