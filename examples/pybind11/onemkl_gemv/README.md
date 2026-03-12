@@ -7,24 +7,24 @@
 
 To build on Linux, run:
 ```bash
-python setup.py build_ext --inplace -- -G "Ninja" \
-     -DCMAKE_C_COMPILER:PATH=icx \
-     -DCMAKE_CXX_COMPILER:PATH=icpx \
-     -DTBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
-     -DMKL_LIBRARY_DIR=${CONDA_PREFIX}/lib \
-     -DMKL_INCLUDE_DIR=${CONDA_PREFIX}/include \
-     -DTBB_INCLUDE_DIR=${CONDA_PREFIX}/include
+pip install -e . \
+     -Ccmake.define.CMAKE_C_COMPILER:PATH=icx \
+     -Ccmake.define.CMAKE_CXX_COMPILER:PATH=icpx \
+     -Ccmake.define.TBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
+     -Ccmake.define.MKL_LIBRARY_DIR=${CONDA_PREFIX}/lib \
+     -Ccmake.define.MKL_INCLUDE_DIR=${CONDA_PREFIX}/include \
+     -Ccmake.define.TBB_INCLUDE_DIR=${CONDA_PREFIX}/include
 ```
 
 To build on Windows, run:
 ```bash
-python setup.py build_ext --inplace -- -G "Ninja" \
-     -DCMAKE_C_COMPILER:PATH=icx \
-     -DCMAKE_CXX_COMPILER:PATH=icx \
-     -DTBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
-     -DMKL_LIBRARY_DIR=${CONDA_PREFIX}/lib \
-     -DMKL_INCLUDE_DIR=${CONDA_PREFIX}/include \
-     -DTBB_INCLUDE_DIR=${CONDA_PREFIX}/include
+pip install -e . \
+     -Ccmake.define.CMAKE_C_COMPILER:PATH=icx \
+     -Ccmake.define.CMAKE_CXX_COMPILER:PATH=icx \
+     -Ccmake.define.TBB_LIBRARY_DIR=$CONDA_PREFIX/lib \
+     -Ccmake.define.MKL_LIBRARY_DIR=${CONDA_PREFIX}/lib \
+     -Ccmake.define.MKL_INCLUDE_DIR=${CONDA_PREFIX}/include \
+     -Ccmake.define.TBB_INCLUDE_DIR=${CONDA_PREFIX}/include
 ```
 
 ## Running
