@@ -19,6 +19,7 @@ build-backend = "scikit_build_core.build"
 requires = [
   "scikit-build-core>=0.8.0",
   "cython>=3.0.10",
+  "cython-cmake",
   "numpy"
 ]
 

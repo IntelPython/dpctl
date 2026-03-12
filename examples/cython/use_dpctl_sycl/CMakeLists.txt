@@ -19,13 +19,14 @@ find_package(Python REQUIRED COMPONENTS Development.Module NumPy)
 find_package(Dpctl REQUIRED)
 
 # -w is to set working directory (and correctly set __pyx_f[] array of filenames)
-set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
+set(CYTHON_ARGS -t -w "${CMAKE_SOURCE_DIR}")
 find_package(Cython REQUIRED)
+include(UseCython)
 
 set(py_module_name _cython_api)
 
 set(_cy_source use_dpctl_sycl/_cython_api.pyx)
-add_cython_target(${py_module_name} ${_cy_source} CXX OUTPUT_VAR _generated_cy_src)
+cython_transpile(${_cy_source} LANGUAGE CXX OUTPUT_VARIABLE _generated_cy_src)
 Python_add_library(${py_module_name} MODULE WITH_SOABI ${_generated_cy_src})
 add_sycl_to_target(TARGET ${py_module_name} SOURCES ${_generated_cy_src})
 target_include_directories(${py_module_name} PUBLIC include ${Dpctl_INCLUDE_DIRS})
@@ -33,14 +34,12 @@ target_link_libraries(${py_module_name} PRIVATE Python::NumPy)
 
 install(TARGETS ${py_module_name} DESTINATION use_dpctl_sycl)
 
-foreach(_src_fn ${_sources})
-    get_source_file_property(_compile_options ${_src_fn} COMPILE_OPTIONS)
-    set(_combined_options ${_compile_options} "-O3")
-    set_source_files_properties(${_src_fn}
-        PROPERTIES
-        COMPILE_OPTIONS "${_combined_options}"
-    )
-endforeach()
+get_source_file_property(_compile_options ${_generated_cy_src} COMPILE_OPTIONS)
+set(_combined_options ${_compile_options} "-O3")
+set_source_files_properties(${_generated_cy_src}
+  PROPERTIES
+  COMPILE_OPTIONS "${_combined_options}"
+)
 target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
 
 set(ignoreMe "${SKBUILD}")
