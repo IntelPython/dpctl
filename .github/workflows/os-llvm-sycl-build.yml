@@ -14,11 +14,11 @@ jobs:
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
-      DRIVER_PATH: 2025-WW27
-      OCLCPUEXP_FN: oclcpuexp-2025.20.6.0.04_224945_rel.tar.gz
-      TBB_URL: https://github.com/oneapi-src/oneTBB/releases/download/v2022.2.0/
-      TBB_INSTALL_DIR: oneapi-tbb-2022.2.0
-      TBB_FN: oneapi-tbb-2022.2.0-lin.tgz
+      DRIVER_PATH: 2025-WW45
+      OCLCPUEXP_FN: oclcpuexp-2025.21.10.0.10_160000_rel.tar.gz
+      TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2022.3.0/
+      TBB_INSTALL_DIR: oneapi-tbb-2022.3.0
+      TBB_FN: oneapi-tbb-2022.3.0-lin.tgz
 
     steps:
       - name: Cancel Previous Runs
@@ -30,6 +30,11 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo apt install hwloc
+
+      - name: Install lld
+        shell: bash -l {0}
+        run: |
+          sudo apt install lld
 
       - name: Cache sycl bundle
         id: cache-sycl-bundle
