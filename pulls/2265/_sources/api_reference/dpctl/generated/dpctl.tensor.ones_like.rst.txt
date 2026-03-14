@@ -1,6 +1,0 @@
-﻿dpctl.tensor.ones\_like
-=======================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: ones_like
