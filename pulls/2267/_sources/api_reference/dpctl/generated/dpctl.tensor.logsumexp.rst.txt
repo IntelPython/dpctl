@@ -1,6 +1,0 @@
-﻿dpctl.tensor.logsumexp
-======================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: logsumexp

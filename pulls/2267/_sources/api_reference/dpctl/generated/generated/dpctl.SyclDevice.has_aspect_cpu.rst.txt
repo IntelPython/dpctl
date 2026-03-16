@@ -1,6 +1,0 @@
-dpctl.SyclDevice.has\_aspect\_cpu
-=================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.has_aspect_cpu
