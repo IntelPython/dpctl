@@ -1,0 +1,10 @@
+﻿dpctl.tensor.nextafter
+======================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: nextafter
+    :no-value:
+
+
