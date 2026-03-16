@@ -1,0 +1,10 @@
+﻿dpctl.tensor.bitwise\_invert
+============================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: bitwise_invert
+    :no-value:
+
+

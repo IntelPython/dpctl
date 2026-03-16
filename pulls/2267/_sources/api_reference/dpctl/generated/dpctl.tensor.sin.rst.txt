@@ -1,0 +1,10 @@
+﻿dpctl.tensor.sin
+================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: sin
+    :no-value:
+
+
