@@ -1,0 +1,6 @@
+﻿dpctl.tensor.unique\_inverse
+============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: unique_inverse

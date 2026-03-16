@@ -1,0 +1,10 @@
+﻿dpctl.tensor.tan
+================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: tan
+    :no-value:
+
+

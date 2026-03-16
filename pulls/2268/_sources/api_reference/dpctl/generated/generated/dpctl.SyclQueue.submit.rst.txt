@@ -1,0 +1,6 @@
+dpctl.SyclQueue.submit
+======================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.submit
