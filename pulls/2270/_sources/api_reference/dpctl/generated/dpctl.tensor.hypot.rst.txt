@@ -1,0 +1,10 @@
+﻿dpctl.tensor.hypot
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: hypot
+    :no-value:
+
+
