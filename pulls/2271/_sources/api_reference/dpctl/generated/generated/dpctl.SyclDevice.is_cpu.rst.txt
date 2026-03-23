@@ -1,0 +1,6 @@
+dpctl.SyclDevice.is\_cpu
+========================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.is_cpu
