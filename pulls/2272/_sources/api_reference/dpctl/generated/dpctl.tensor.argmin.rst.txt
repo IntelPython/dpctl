@@ -1,0 +1,6 @@
+﻿dpctl.tensor.argmin
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: argmin
