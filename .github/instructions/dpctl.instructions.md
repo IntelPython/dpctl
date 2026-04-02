@@ -21,6 +21,6 @@ Each major directory has its own `AGENTS.md` with specific conventions.
 ## Critical Rules
 
 1. **Device compatibility:** Not all devices support fp64/fp16 - never assume availability
-2. **Queue consistency:** Arrays in same operation must share compatible queues
+2. **Queue consistency:** Memory operations must use compatible queues
 3. **Resource cleanup:** Clean up C resources in `__dealloc__` with NULL check
 4. **NULL checks:** Always check C API returns before use

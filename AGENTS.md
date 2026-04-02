@@ -29,8 +29,8 @@ Python API  ->  Cython Bindings  ->  C API (libsyclinterface)  ->  SYCL Runtime
 | `dpctl/` | `dpctl/AGENTS.md` | Core SYCL Python bindings and Cython patterns |
 | `dpctl/memory/` | `dpctl/memory/AGENTS.md` | USM memory model and ownership rules |
 | `dpctl/program/` | `dpctl/program/AGENTS.md` | Program/kernel compilation APIs |
-| `dpctl/utils/` | `dpctl/utils/AGENTS.md` | Queue and utility validation helpers |
-| `dpctl/tests/` | `dpctl/tests/AGENTS.md` | Test conventions and coverage expectations |
+| `dpctl/utils/` | `dpctl/utils/AGENTS.md` | Device info, ordering, and profiling utilities |
+| `dpctl/tests/` | `dpctl/tests/AGENTS.md` | Test conventions for SYCL objects and memory APIs |
 | `libsyclinterface/` | `libsyclinterface/AGENTS.md` | C API contracts and ABI-safe patterns |
 
 ## Global Constraints

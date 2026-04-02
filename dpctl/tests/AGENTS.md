@@ -2,41 +2,39 @@
 
 ## Purpose
 
-pytest-based test suite for dpctl functionality.
+pytest-based test suite for dpctl SYCL runtime objects and USM memory functionality.
+
+**Note:** The `dpctl/tensor` module has been removed; focus testing on SYCL objects and memory APIs.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `conftest.py` | Fixtures and pytest configuration |
-| `helper/_helper.py` | `get_queue_or_skip()`, `skip_if_dtype_not_supported()` |
+| `helper/_helper.py` | `get_queue_or_skip()` (queue creation helper) |
 
 ## Essential Helpers
 
 From `helper/_helper.py`:
 ```python
 get_queue_or_skip()           # Create queue or skip test
-skip_if_dtype_not_supported() # Skip if device lacks dtype (fp64/fp16)
 ```
 
-## Test Pattern
+## Test Pattern (SYCL objects)
 
 ```python
-@pytest.mark.parametrize("dtype", ["f2", "f4", "f8", "c8", "c16", ...])
-def test_operation(dtype):
+def test_device_creation():
     q = get_queue_or_skip()
-    skip_if_dtype_not_supported(dtype, q)
-    # ... test logic and assertions
+    dev = q.sycl_device
+    # ... test device properties and methods
+
+def test_usm_allocation():
+    q = get_queue_or_skip()
+    # Test USM memory allocation for supported data types
+    # ...
 ```
-
-## Coverage Requirements
-
-- All supported dtypes
-- All USM types: device, shared, host
-- Memory orders: C, F where applicable
-- Edge cases: empty arrays, 0-d arrays (scalars), broadcasting
 
 ## Critical Rules
 
-1. **Device compatibility:** Not all devices support fp64/fp16 - never assume availability
-2. **Queue consistency:** Arrays in same operation must share compatible queues
+1. **Device compatibility:** Not all devices support fp64/fp16 – verify support before testing float64/complex128 memory operations.
+2. **Queue consistency:** Memory allocations and operations must use compatible queues.
