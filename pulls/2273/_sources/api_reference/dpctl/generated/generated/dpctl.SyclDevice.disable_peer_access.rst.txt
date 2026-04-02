@@ -1,0 +1,6 @@
+dpctl.SyclDevice.disable\_peer\_access
+======================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.disable_peer_access
