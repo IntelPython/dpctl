@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
+#include <vector>
 
 #if defined(SYCL_EXT_ONEAPI_WORK_GROUP_MEMORY) ||                              \
     defined(SYCL_EXT_ONEAPI_RAW_KERNEL_ARG)
@@ -691,6 +692,70 @@ DPCTLQueue_MemcpyWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 
     return wrap<event>(new event(ev));
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_CopyData(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                    void *Dest,
+                    const void *Src,
+                    size_t Count)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q) {
+        sycl::event ev;
+        try {
+            // Bind queue::copy with uint8_t so Count is interpreted as bytes.
+            ev = Q->copy(static_cast<const std::uint8_t *>(Src),
+                         static_cast<std::uint8_t *>(Dest), Count);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef passed to copy was NULL.", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_CopyDataWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                              void *Dest,
+                              const void *Src,
+                              size_t Count,
+                              const DPCTLSyclEventRef *DepEvents,
+                              size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q) {
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+
+            // Bind queue::copy with uint8_t so Count is interpreted as bytes.
+            auto ev =
+                Q->copy(static_cast<const std::uint8_t *>(Src),
+                        static_cast<std::uint8_t *>(Dest), Count, dep_events);
+            return wrap<event>(new event(std::move(ev)));
+        } catch (const std::exception &ex) {
+            error_handler(ex, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    else {
+        error_handler("QRef passed to copy was NULL.", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
 }
 
 __dpctl_give DPCTLSyclEventRef
