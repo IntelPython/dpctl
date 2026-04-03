@@ -797,6 +797,8 @@
 <dt class="sig sig-object py" id="dpctl.SyclQueue.copy_async">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">copy_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.copy_async" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dest</span></code> asynchronously.</p>
+<p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::copy</span></code> instantiated for
+byte-sized elements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

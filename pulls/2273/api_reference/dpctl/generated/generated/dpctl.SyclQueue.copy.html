@@ -797,6 +797,8 @@
 <dt class="sig sig-object py" id="dpctl.SyclQueue.copy">
 <span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dest</span></code> and wait.</p>
+<p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::copy</span></code> instantiated for
+byte-sized elements.</p>
 <p>This is a synchronizing variant corresponding to
 <a class="reference internal" href="dpctl.SyclQueue.copy_async.html#dpctl.SyclQueue.copy_async" title="dpctl.SyclQueue.copy_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.copy_async()</span></code></a>.</p>
 </dd></dl>
