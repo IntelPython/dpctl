@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dev] - XXX. XX, XXXX
 
 ### Added
+* `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 
 ### Changed
 
