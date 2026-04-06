@@ -1,6 +1,0 @@
-﻿dpctl.has\_gpu\_devices
-=======================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: has_gpu_devices

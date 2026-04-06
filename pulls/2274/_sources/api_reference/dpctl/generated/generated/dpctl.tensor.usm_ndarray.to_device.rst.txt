@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.to\_device
-====================================
-
-.. currentmodule:: dpctl.tensor
-
-.. automethod:: usm_ndarray.to_device
