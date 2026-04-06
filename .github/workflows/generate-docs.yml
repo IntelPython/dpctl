@@ -146,7 +146,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
+        uses: mshick/add-pr-comment@64b8e914979889d746c99dea15a76e77ef64580a # v3.10.0.8.3.10.0
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpctl/pulls/${{ env.PR_NUM }}/index.html
@@ -155,7 +155,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
+        uses: mshick/add-pr-comment@64b8e914979889d746c99dea15a76e77ef64580a # v3.10.0.8.3.10.0
         with:
           message: |
             Deleted rendered PR docs from intelpython.github.com/dpctl, latest should be updated shortly. :crossed_fingers:
