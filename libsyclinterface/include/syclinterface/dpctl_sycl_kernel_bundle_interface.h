@@ -247,6 +247,16 @@ DPCTL_API const char *
 DPCTLKernelBuildLog_Get(__dpctl_keep DPCTLKernelBuildLogRef);
 
 /*!
+ * @brief Return True if the DPCTLKernelBundle_CreateFromSYCLSource function is
+ * available, else False.
+ *
+ * @ingroup KernelBundleInterface
+ */
+
+DPCTL_API
+bool DPCTLKernelBundle_CreateFromSYCLSource_Available();
+
+/*!
  * @brief Create a SYCL kernel bundle from an SYCL kernel source string.
  *
  * @param    Ctx            An opaque pointer to a sycl::context
