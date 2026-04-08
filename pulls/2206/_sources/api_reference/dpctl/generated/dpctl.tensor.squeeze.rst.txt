@@ -1,6 +1,0 @@
-﻿dpctl.tensor.squeeze
-====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: squeeze

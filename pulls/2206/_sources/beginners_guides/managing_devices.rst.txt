@@ -240,19 +240,17 @@ of ``ONEAPI_DEVICE_SELECTOR`` as explained earlier.
 
 Some users may find it convenient to always use a default-selected device, but control
 which device that may be by setting this environment variable.
-For example, the following script:
+For example:
 
 .. code-block:: python
-    :caption: Sample array computation script "run.py"
+    :caption: Basic sample script "run.py"
 
-    from dpctl import tensor as dpt
+    import dpctl
 
-    gamma = 0.34
-    x = dpt.linspace(0, 2*dpt.pi, num=10**6)
-    f = dpt.sin(gamma * x) * dpt.exp(-x)
+    NBYTES = 10**6 * 4
 
-    int_approx = dpt.sum(f)
-    print(f"Approximate value of integral: {int_approx} running on {x.device}" )
+    x = dpctl.memory.MemoryUSMDevice(NBYTES, dtype="float32")
+    print(f"Allocated {NBYTES} bytes of USM on {x.device}" )
 
 This script may be executed on a CPU, or GPU as follows:
 
@@ -260,11 +258,11 @@ This script may be executed on a CPU, or GPU as follows:
 
     # execute on CPU device
     ONEAPI_DEVICE_SELECTOR=*:cpu python run.py
-    #   Output: Approximate value of integral: 48328.99708167 running on Device(opencl:cpu:0)
+    #   Output: Allocated 4000000 bytes of USM on Device(opencl:cpu:0)
 
     # execute on GPU device
     ONEAPI_DEVICE_SELECTOR=*:gpu python run.py
-    #   Output: Approximate value of integral: 48329. running on Device(level_zero:gpu:0)
+    #   Output: Allocated 4000000 bytes of USM on Device(level_zero:gpu:0)
 
 
 .. _beginners_guide_device_info:

@@ -15,10 +15,10 @@
     <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclQueue.name" href="dpctl.SyclQueue.name.html"><link rel="prev" title="dpctl.SyclQueue.has_enable_profiling" href="dpctl.SyclQueue.has_enable_profiling.html">
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
-    <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.09.25 -->
-        <title>dpctl.SyclQueue.is_in_order - Data Parallel Control (dpctl) 0.22.0dev0 documentation</title>
+    <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
+        <title>dpctl.SyclQueue.is_in_order - Data Parallel Control (dpctl) 0.22.0dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/doxyrest-pygments.css?v=ff3f4257" />
@@ -174,7 +174,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.22.0dev0 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.22.0dev1 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -198,7 +198,7 @@
     <img class="sidebar-logo" src="../../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.22.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.22.0dev1 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -211,14 +211,11 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../beginners_guides/index.html">Beginner’s guides</a><input aria-label="Toggle navigation of Beginner’s guides" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../beginners_guides/installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../beginners_guides/managing_devices.html">Managing devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../beginners_guides/tensor_intro.html">Intro to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../beginners_guides/misc.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../user_guides/index.html">User guides</a><input aria-label="Toggle navigation of User guides" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../user_guides/basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../user_guides/execution_model.html">oneAPI programming model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../user_guides/dlpack.html">DLPack exchange of USM allocated arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../user_guides/environment_variables.html">Environment variables</a></li>
 </ul>
 </li>
@@ -454,263 +451,34 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../tensor.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.tensor</span></code></a><input aria-label="Toggle navigation of dpctl.tensor" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.creation_functions.html">Array creation functions</a><input aria-label="Toggle navigation of Array creation functions" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.arange.html">dpctl.tensor.arange</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.asarray.html">dpctl.tensor.asarray</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.empty.html">dpctl.tensor.empty</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.empty_like.html">dpctl.tensor.empty_like</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.eye.html">dpctl.tensor.eye</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.from_dlpack.html">dpctl.tensor.from_dlpack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.full.html">dpctl.tensor.full</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.full_like.html">dpctl.tensor.full_like</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.linspace.html">dpctl.tensor.linspace</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.meshgrid.html">dpctl.tensor.meshgrid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.ones.html">dpctl.tensor.ones</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.ones_like.html">dpctl.tensor.ones_like</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.tril.html">dpctl.tensor.tril</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.triu.html">dpctl.tensor.triu</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.zeros.html">dpctl.tensor.zeros</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.zeros_like.html">dpctl.tensor.zeros_like</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.from_numpy.html">dpctl.tensor.from_numpy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.copy.html">dpctl.tensor.copy</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../libsyclinterface/index.html">C Library SyclInterface</a><input aria-label="Toggle navigation of C Library SyclInterface" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/index.html">libsyclinterface</a><input aria-label="Toggle navigation of libsyclinterface" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_DeviceManager.html">Device class helper functions</a><input aria-label="Toggle navigation of Device class helper functions" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.usm_ndarray.html">USM array object</a><input aria-label="Toggle navigation of USM array object" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../dpctl.tensor.usm_ndarray.html">dpctl.tensor.usm_ndarray</a><input aria-label="Toggle navigation of dpctl.tensor.usm_ndarray" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.to_device.html">dpctl.tensor.usm_ndarray.to_device</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.T.html">dpctl.tensor.usm_ndarray.T</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.device.html">dpctl.tensor.usm_ndarray.device</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.dtype.html">dpctl.tensor.usm_ndarray.dtype</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.flags.html">dpctl.tensor.usm_ndarray.flags</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.imag.html">dpctl.tensor.usm_ndarray.imag</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.itemsize.html">dpctl.tensor.usm_ndarray.itemsize</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.mT.html">dpctl.tensor.usm_ndarray.mT</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.nbytes.html">dpctl.tensor.usm_ndarray.nbytes</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.ndim.html">dpctl.tensor.usm_ndarray.ndim</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.real.html">dpctl.tensor.usm_ndarray.real</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.shape.html">dpctl.tensor.usm_ndarray.shape</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.size.html">dpctl.tensor.usm_ndarray.size</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.strides.html">dpctl.tensor.usm_ndarray.strides</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.sycl_context.html">dpctl.tensor.usm_ndarray.sycl_context</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.sycl_device.html">dpctl.tensor.usm_ndarray.sycl_device</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.sycl_queue.html">dpctl.tensor.usm_ndarray.sycl_queue</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.usm_data.html">dpctl.tensor.usm_ndarray.usm_data</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.usm_type.html">dpctl.tensor.usm_ndarray.usm_type</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__dlpack_device__.html">dpctl.tensor.usm_ndarray.__dlpack_device__</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__dlpack__.html">dpctl.tensor.usm_ndarray.__dlpack__</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__.html">dpctl.tensor.usm_ndarray.__sycl_usm_array_interface__</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._pointer.html">dpctl.tensor.usm_ndarray._pointer</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._element_offset.html">dpctl.tensor.usm_ndarray._element_offset</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor.usm_ndarray._byte_bounds.html">dpctl.tensor.usm_ndarray._byte_bounds</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="../../flags.html"><code class="docutils literal notranslate"><span class="pre">Flags</span></code> class</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.data_type_functions.html">Data type functions</a><input aria-label="Toggle navigation of Data type functions" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.astype.html">dpctl.tensor.astype</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.can_cast.html">dpctl.tensor.can_cast</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.finfo.html">dpctl.tensor.finfo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.iinfo.html">dpctl.tensor.iinfo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.isdtype.html">dpctl.tensor.isdtype</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.result_type.html">dpctl.tensor.result_type</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../tensor.data_types.html">Data types</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.elementwise_functions.html">Element-wise functions</a><input aria-label="Toggle navigation of Element-wise functions" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.abs.html">dpctl.tensor.abs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.acos.html">dpctl.tensor.acos</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.acosh.html">dpctl.tensor.acosh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.add.html">dpctl.tensor.add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.angle.html">dpctl.tensor.angle</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.asin.html">dpctl.tensor.asin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.asinh.html">dpctl.tensor.asinh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.atan.html">dpctl.tensor.atan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.atan2.html">dpctl.tensor.atan2</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.atanh.html">dpctl.tensor.atanh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_and.html">dpctl.tensor.bitwise_and</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_left_shift.html">dpctl.tensor.bitwise_left_shift</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_invert.html">dpctl.tensor.bitwise_invert</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_or.html">dpctl.tensor.bitwise_or</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_right_shift.html">dpctl.tensor.bitwise_right_shift</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.bitwise_xor.html">dpctl.tensor.bitwise_xor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.cbrt.html">dpctl.tensor.cbrt</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.ceil.html">dpctl.tensor.ceil</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.clip.html">dpctl.tensor.clip</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.conj.html">dpctl.tensor.conj</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.copysign.html">dpctl.tensor.copysign</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.cos.html">dpctl.tensor.cos</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.cosh.html">dpctl.tensor.cosh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.divide.html">dpctl.tensor.divide</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.equal.html">dpctl.tensor.equal</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.exp.html">dpctl.tensor.exp</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.exp2.html">dpctl.tensor.exp2</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.expm1.html">dpctl.tensor.expm1</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.floor.html">dpctl.tensor.floor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.floor_divide.html">dpctl.tensor.floor_divide</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.greater.html">dpctl.tensor.greater</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.greater_equal.html">dpctl.tensor.greater_equal</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.hypot.html">dpctl.tensor.hypot</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.imag.html">dpctl.tensor.imag</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.isfinite.html">dpctl.tensor.isfinite</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.isinf.html">dpctl.tensor.isinf</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.isnan.html">dpctl.tensor.isnan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.less.html">dpctl.tensor.less</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.less_equal.html">dpctl.tensor.less_equal</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.log.html">dpctl.tensor.log</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.log1p.html">dpctl.tensor.log1p</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.log2.html">dpctl.tensor.log2</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.log10.html">dpctl.tensor.log10</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logaddexp.html">dpctl.tensor.logaddexp</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logical_and.html">dpctl.tensor.logical_and</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logical_not.html">dpctl.tensor.logical_not</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logical_or.html">dpctl.tensor.logical_or</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logical_xor.html">dpctl.tensor.logical_xor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.maximum.html">dpctl.tensor.maximum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.minimum.html">dpctl.tensor.minimum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.multiply.html">dpctl.tensor.multiply</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.negative.html">dpctl.tensor.negative</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.nextafter.html">dpctl.tensor.nextafter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.not_equal.html">dpctl.tensor.not_equal</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.positive.html">dpctl.tensor.positive</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.pow.html">dpctl.tensor.pow</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.real.html">dpctl.tensor.real</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.remainder.html">dpctl.tensor.remainder</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.reciprocal.html">dpctl.tensor.reciprocal</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.round.html">dpctl.tensor.round</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.rsqrt.html">dpctl.tensor.rsqrt</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sign.html">dpctl.tensor.sign</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.signbit.html">dpctl.tensor.signbit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sin.html">dpctl.tensor.sin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sinh.html">dpctl.tensor.sinh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.square.html">dpctl.tensor.square</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sqrt.html">dpctl.tensor.sqrt</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.subtract.html">dpctl.tensor.subtract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.tan.html">dpctl.tensor.tan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.tanh.html">dpctl.tensor.tanh</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.trunc.html">dpctl.tensor.trunc</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.indexing_functions.html">Indexing functions</a><input aria-label="Toggle navigation of Indexing functions" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.extract.html">dpctl.tensor.extract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.place.html">dpctl.tensor.place</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.put.html">dpctl.tensor.put</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.put_along_axis.html">dpctl.tensor.put_along_axis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.take.html">dpctl.tensor.take</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.take_along_axis.html">dpctl.tensor.take_along_axis</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.inspection.html">Inspection API</a><input aria-label="Toggle navigation of Inspection API" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.__array_api_version__.html">dpctl.tensor.__array_api_version__</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.__array_namespace_info__.html">dpctl.tensor.__array_namespace_info__</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../dpctl.tensor._array_api.Info.html">dpctl.tensor._array_api.Info</a><input aria-label="Toggle navigation of dpctl.tensor._array_api.Info" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor._array_api.Info.capabilities.html">dpctl.tensor._array_api.Info.capabilities</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor._array_api.Info.default_device.html">dpctl.tensor._array_api.Info.default_device</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor._array_api.Info.default_dtypes.html">dpctl.tensor._array_api.Info.default_dtypes</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor._array_api.Info.devices.html">dpctl.tensor._array_api.Info.devices</a></li>
-<li class="toctree-l5"><a class="reference internal" href="dpctl.tensor._array_api.Info.dtypes.html">dpctl.tensor._array_api.Info.dtypes</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.linear_algebra.html">Linear algebra functions</a><input aria-label="Toggle navigation of Linear algebra functions" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.matmul.html">dpctl.tensor.matmul</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.matrix_transpose.html">dpctl.tensor.matrix_transpose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.tensordot.html">dpctl.tensor.tensordot</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.vecdot.html">dpctl.tensor.vecdot</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.manipulation_functions.html">Array manipulation functions</a><input aria-label="Toggle navigation of Array manipulation functions" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.broadcast_arrays.html">dpctl.tensor.broadcast_arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.broadcast_to.html">dpctl.tensor.broadcast_to</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.concat.html">dpctl.tensor.concat</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.expand_dims.html">dpctl.tensor.expand_dims</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.flip.html">dpctl.tensor.flip</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.moveaxis.html">dpctl.tensor.moveaxis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.permute_dims.html">dpctl.tensor.permute_dims</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.repeat.html">dpctl.tensor.repeat</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.reshape.html">dpctl.tensor.reshape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.roll.html">dpctl.tensor.roll</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.squeeze.html">dpctl.tensor.squeeze</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.stack.html">dpctl.tensor.stack</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.tile.html">dpctl.tensor.tile</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.unstack.html">dpctl.tensor.unstack</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.searching_functions.html">Searching functions</a><input aria-label="Toggle navigation of Searching functions" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.argmax.html">dpctl.tensor.argmax</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.argmin.html">dpctl.tensor.argmin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.count_nonzero.html">dpctl.tensor.count_nonzero</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.nonzero.html">dpctl.tensor.nonzero</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.searchsorted.html">dpctl.tensor.searchsorted</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.where.html">dpctl.tensor.where</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.set_functions.html">Set Functions</a><input aria-label="Toggle navigation of Set Functions" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.isin.html">dpctl.tensor.isin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.unique_all.html">dpctl.tensor.unique_all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.unique_counts.html">dpctl.tensor.unique_counts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.unique_inverse.html">dpctl.tensor.unique_inverse</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.unique_values.html">dpctl.tensor.unique_values</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.sorting_functions.html">Sorting functions</a><input aria-label="Toggle navigation of Sorting functions" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.argsort.html">dpctl.tensor.argsort</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sort.html">dpctl.tensor.sort</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.top_k.html">dpctl.tensor.top_k</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.statistical_functions.html">Statistical Functions</a><input aria-label="Toggle navigation of Statistical Functions" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.max.html">dpctl.tensor.max</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.mean.html">dpctl.tensor.mean</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.min.html">dpctl.tensor.min</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.prod.html">dpctl.tensor.prod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.std.html">dpctl.tensor.std</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.sum.html">dpctl.tensor.sum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.var.html">dpctl.tensor.var</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.logsumexp.html">dpctl.tensor.logsumexp</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.reduce_hypot.html">dpctl.tensor.reduce_hypot</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../tensor.utility_functions.html">Utility functions</a><input aria-label="Toggle navigation of Utility functions" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.all.html">dpctl.tensor.all</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.any.html">dpctl.tensor.any</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.allclose.html">dpctl.tensor.allclose</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../dpctl.tensor.diff.html">dpctl.tensor.diff</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../../tensor.constants.html">Constants</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../libsyclinterface/index.html">C Library SyclInterface</a><input aria-label="Toggle navigation of C Library SyclInterface" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/index.html">libsyclinterface</a><input aria-label="Toggle navigation of libsyclinterface" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_DeviceManager.html">Device class helper functions</a><input aria-label="Toggle navigation of Device class helper functions" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_PlatformManager.html">Platform class helper functions</a><input aria-label="Toggle navigation of Platform class helper functions" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_PlatformManager.html">Platform class helper functions</a><input aria-label="Toggle navigation of Platform class helper functions" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../libsyclinterface/generated/page_todo.html">Todo List</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/global.html">Global Namespace</a><input aria-label="Toggle navigation of Global Namespace" class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl.html">namespace dpctl</a><input aria-label="Toggle navigation of namespace dpctl" class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a><input aria-label="Toggle navigation of namespace dpctl::syclinterface" class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_accelerator_selector.html">class dpctl::syclinterface::dpctl_accelerator_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_accelerator_selector" class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/global.html">Global Namespace</a><input aria-label="Toggle navigation of Global Namespace" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl.html">namespace dpctl</a><input aria-label="Toggle navigation of namespace dpctl" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a><input aria-label="Toggle navigation of namespace dpctl::syclinterface" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_accelerator_selector.html">class dpctl::syclinterface::dpctl_accelerator_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_accelerator_selector" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_cpu_selector.html">class dpctl::syclinterface::dpctl_cpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_cpu_selector" class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_cpu_selector.html">class dpctl::syclinterface::dpctl_cpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_cpu_selector" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_default_selector.html">class dpctl::syclinterface::dpctl_default_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_default_selector" class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_default_selector.html">class dpctl::syclinterface::dpctl_default_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_default_selector" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_device_selector.html">class dpctl::syclinterface::dpctl_device_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_device_selector" class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_device_selector.html">class dpctl::syclinterface::dpctl_device_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_device_selector" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_filter_selector.html">class dpctl::syclinterface::dpctl_filter_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_filter_selector" class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_filter_selector.html">class dpctl::syclinterface::dpctl_filter_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_filter_selector" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_gpu_selector.html">class dpctl::syclinterface::dpctl_gpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_gpu_selector" class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_gpu_selector.html">class dpctl::syclinterface::dpctl_gpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_gpu_selector" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -727,10 +495,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -745,7 +513,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/building.html">Building from the Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
@@ -895,7 +663,7 @@ to support out-of-order execution.</p>
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=3f4bac4d"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=9b332854"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>
