@@ -1,0 +1,10 @@
+﻿dpctl.tensor.logical\_xor
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: logical_xor
+    :no-value:
+
+
