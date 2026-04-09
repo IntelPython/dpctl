@@ -278,7 +278,7 @@ T custom_inclusive_scan_over_group(GroupT &&wg,
         // The w/s adds SYCL atomic fence, since the explicit memory fence
         // prevents reordering/elimination, while it will add slight overhead.
         T __scan_val = identity;
-        sycl::atomic_fence(sycl::memory_order::seq_cst,
+        sycl::atomic_fence(sycl::memory_order::relaxed,
                            sycl::memory_scope::work_item);
         if (in_bounds) {
             __scan_val = local_mem_acc[(offset + lane_id) * max_sgSize - 1];
