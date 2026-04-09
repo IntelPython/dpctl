@@ -1,6 +1,0 @@
-﻿dpctl.tensor.permute\_dims
-==========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: permute_dims

@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.sycl\_context
-=======================================
-
-.. currentmodule:: dpctl.tensor
-
-.. autoattribute:: usm_ndarray.sycl_context
