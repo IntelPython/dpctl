@@ -1,0 +1,10 @@
+﻿dpctl.tensor.bitwise\_xor
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: bitwise_xor
+    :no-value:
+
+
