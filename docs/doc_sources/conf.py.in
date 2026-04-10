@@ -143,9 +143,12 @@ if generate_multiversion == "ON":
     # POPULATE LINKS TO OTHER VERSIONS
     html_context["versions"] = list()
 
-    # Populate the list of documented versions from the doc_versions.tx
+    # Populate the list of documented versions from the doc_versions.txt
     versions = []
-    with open("doc_versions.txt", "r") as doc_versions:
+
+    conf_dir = os.path.dirname(os.path.abspath(__file__))
+    versions_file = os.path.join(conf_dir, "..", "doc_versions.txt")
+    with open(versions_file, "r") as doc_versions:
         while True:
             version = doc_versions.readline().strip()
             if not version:
