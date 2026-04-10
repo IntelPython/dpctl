@@ -163,3 +163,15 @@ if generate_multiversion == "ON":
         html_context["versions"].append(
             (version, DOC_SITE_NAME + version + "/index.html")
         )
+
+    html_sidebars = {
+        "**": [
+            "sidebar/scroll-start.html",
+            "sidebar/brand.html",
+            "sidebar/search.html",
+            "versions.html",
+            "sidebar/navigation.html",
+            "sidebar/ethical-ads.html",
+            "sidebar/scroll-end.html",
+        ]
+    }
