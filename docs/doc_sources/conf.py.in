@@ -164,6 +164,10 @@ if generate_multiversion == "ON":
             (version, DOC_SITE_NAME + version + "/index.html")
         )
 
+    if html_context["current_version"] not in versions:
+        html_context["current_version"] = "latest"
+
+    # override furo sidebar when multiversion is on to add the version dropdown
     html_sidebars = {
         "**": [
             "sidebar/scroll-start.html",
