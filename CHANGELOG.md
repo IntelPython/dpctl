@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [dev] - XXX. XX, XXXX
 
+### Removed
+
+* Removed previously deprecated `dpctl.tensor` submodule, with all tensor functionality migrated to [`dpnp`](https://github.com/IntelPython/dpnp) [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
+* Removed `cython/usm_memory` example which couldn't be reasonably rewritten without `dpctl.tensor` [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
+
 ### Added
 
 ### Changed
@@ -17,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Maintenance
 
 * Enabled multiversion documentation for `dpctl` using a custom drop-down for version selection and a `--multiversion` option for documentation build helper script [gh-2276](https://github.com/IntelPython/dpctl/pull/2276)
+
+* Updated examples to remove use of `dpctl.tensor`, opting to simplify the examples and rely on `dpctl.memory` objects which wrap USM allocations [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
 
 ## [0.21.1] - Nov. 29, 2025
 
