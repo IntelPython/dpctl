@@ -1747,12 +1747,12 @@ cdef class WorkGroupMemory:
     def is_available():
         return DPCTLWorkGroupMemory_Available()
 
-    property _ref:
+    @property
+    def _ref(self):
         """Returns the address of the C API ``DPCTLWorkGroupMemoryRef``
         pointer as a ``size_t``.
         """
-        def __get__(self):
-            return <size_t>self._mem_ref
+        return <size_t>self._mem_ref
 
 
 cdef class _RawKernelArg:
@@ -1842,9 +1842,9 @@ cdef class RawKernelArg:
     def is_available():
         return DPCTLRawKernelArg_Available()
 
-    property _ref:
+    @property
+    def _ref(self):
         """Returns the address of the C API ``DPCTLRawKernelArgRef`` pointer
         as a ``size_t``.
         """
-        def __get__(self):
-            return <size_t>self._arg_ref
+        return <size_t>self._arg_ref

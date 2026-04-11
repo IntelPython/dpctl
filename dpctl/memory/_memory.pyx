@@ -290,63 +290,63 @@ cdef class _Memory:
         buffer.strides = &buffer.itemsize
         buffer.suboffsets = NULL                # for pointer arrays only
 
-    property nbytes:
+    @property
+    def nbytes(self):
         """Extent of this USM buffer in bytes."""
-        def __get__(self):
-            return self.nbytes
+        return self.nbytes
 
-    property size:
+    @property
+    def size(self):
         """Extent of this USM buffer in bytes."""
-        def __get__(self):
-            return self.nbytes
+        return self.nbytes
 
-    property _pointer:
+    @property
+    def _pointer(self):
         """
         USM pointer at the start of this buffer
         represented as Python integer.
         """
-        def __get__(self):
-            return <size_t>(self._memory_ptr)
+        return <size_t>(self._memory_ptr)
 
-    property _context:
+    @property
+    def _context(self):
         """:class:`dpctl.SyclContext` the USM pointer is bound to. """
-        def __get__(self):
-            return self.queue.get_sycl_context()
+        return self.queue.get_sycl_context()
 
-    property _queue:
+    @property
+    def _queue(self):
         """
         :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
         USM allocation is bound to and :class:`dpctl.SyclDevice` it was
         allocated on.
         """
-        def __get__(self):
-            return self.queue
+        return self.queue
 
-    property reference_obj:
+    @property
+    def reference_obj(self):
         """
         Reference to the Python object owning this USM buffer.
         """
-        def __get__(self):
-            return self.refobj
+        return self.refobj
 
-    property sycl_context:
+    @property
+    def sycl_context(self):
         """:class:`dpctl.SyclContext` the USM pointer is bound to."""
-        def __get__(self):
-            return self.queue.get_sycl_context()
+        return self.queue.get_sycl_context()
 
-    property sycl_device:
+    @property
+    def sycl_device(self):
         """:class:`dpctl.SyclDevice` the USM pointer is bound to."""
-        def __get__(self):
-            return self.queue.get_sycl_device()
+        return self.queue.get_sycl_device()
 
-    property sycl_queue:
+    @property
+    def sycl_queue(self):
         """
         :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
         USM allocation is bound to and :class:`dpctl.SyclDevice` it was
         allocated on.
         """
-        def __get__(self):
-            return self.queue
+        return self.queue
 
     def __repr__(self):
         return (
@@ -370,7 +370,8 @@ cdef class _Memory:
     def __reduce__(self):
         return _to_memory, (self.copy_to_host(), self.get_usm_type())
 
-    property __sycl_usm_array_interface__:
+    @property
+    def __sycl_usm_array_interface__(self):
         """
         Dictionary encoding information about USM allocation.
 
@@ -396,17 +397,16 @@ cdef class _Memory:
                 Queue associated with this class instance.
 
         """
-        def __get__(self):
-            cdef dict iface = {
-                "data": (<size_t>(<void *>self._memory_ptr),
-                         True),  # bool(self.writable)),
-                "shape": (self.nbytes,),
-                "strides": None,
-                "typestr": "|u1",
-                "version": 1,
-                "syclobj": self.queue
-            }
-            return iface
+        cdef dict iface = {
+            "data": (<size_t>(<void *>self._memory_ptr),
+                     True),  # bool(self.writable)),
+            "shape": (self.nbytes,),
+            "strides": None,
+            "typestr": "|u1",
+            "version": 1,
+            "syclobj": self.queue,
+        }
+        return iface
 
     def get_usm_type(self, syclobj=None):
         """
