@@ -137,15 +137,18 @@ if generate_multiversion == "ON":
         html_context = dict()
     html_context["display_lower_left"] = True
     templates_path = ["_templates"]
-    html_context["current_version"] = version
+    html_context["current_version"] = release
     html_context["version"] = version
 
     # POPULATE LINKS TO OTHER VERSIONS
     html_context["versions"] = list()
 
-    # Populate the list of documented versions from the doc_versions.tx
+    # Populate the list of documented versions from the doc_versions.txt
     versions = []
-    with open("doc_versions.txt", "r") as doc_versions:
+
+    conf_dir = os.path.dirname(os.path.abspath(__file__))
+    versions_file = os.path.join(conf_dir, "..", "doc_versions.txt")
+    with open(versions_file, "r") as doc_versions:
         while True:
             version = doc_versions.readline().strip()
             if not version:
@@ -160,3 +163,19 @@ if generate_multiversion == "ON":
         html_context["versions"].append(
             (version, DOC_SITE_NAME + version + "/index.html")
         )
+
+    if html_context["current_version"] not in versions:
+        html_context["current_version"] = "latest"
+
+    # override furo sidebar when multiversion is on to add the version dropdown
+    html_sidebars = {
+        "**": [
+            "sidebar/scroll-start.html",
+            "sidebar/brand.html",
+            "sidebar/search.html",
+            "versions.html",
+            "sidebar/navigation.html",
+            "sidebar/ethical-ads.html",
+            "sidebar/scroll-end.html",
+        ]
+    }

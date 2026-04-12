@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Maintenance
 
+* Enabled multiversion documentation for `dpctl` using a custom drop-down for version selection and a `--multiversion` option for documentation build helper script [gh-2276](https://github.com/IntelPython/dpctl/pull/2276)
+
 ## [0.21.1] - Nov. 29, 2025
 
 This release is made to distribute `dpctl` for Python 3.14. Only the non-free-threaded version of Python is supported as of this release.

@@ -1,22 +1,12 @@
-{% if READTHEDOCS or display_lower_left %}
-{# Add rst-badge after rst-versions for small badge style. #}
-  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
-    <span class="rst-current-version" data-toggle="rst-current-version">
-      <span class="fa fa-book"> Other versions</span>
-      v: {{ current_version }}
-      <span class="fa fa-caret-down"></span>
-    </span>
-    <div class="rst-other-versions">
-      {% if versions|length >= 1 %}
-      <dl>
-        <dt>{{ _('Versions') }}</dt>
-        {% for slug, url in versions %}
-          {% if slug == current_version %} <strong> {% endif %}
-          <dd><a href="{{ url }}">{{ slug }}</a></dd>
-          {% if slug == current_version %} </strong> {% endif %}
-        {% endfor %}
-      </dl>
-      {% endif %}
-    </div>
-  </div>
+{% if display_lower_left %}
+<div class="sidebar-versions" style="padding: 1em; border-top: 1px solid var (--color-sidebar-brand-text);">
+  <strong>Docs Version</strong>
+  <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
+    {% for slug, url in versions %}
+    <option value="{{ url }}" {% if slug==current_version %}selected{% endif %}>
+      {{ slug }}
+    </option>
+    {% endfor %}
+  </select>
+</div>
 {% endif %}
