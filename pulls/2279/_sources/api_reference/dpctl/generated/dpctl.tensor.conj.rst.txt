@@ -1,0 +1,10 @@
+﻿dpctl.tensor.conj
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: conj
+    :no-value:
+
+
