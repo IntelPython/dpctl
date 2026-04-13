@@ -1,6 +1,0 @@
-dpctl.SyclDevice.max\_clock\_frequency
-======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.max_clock_frequency
