@@ -19,10 +19,11 @@
 import ctypes
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
-import dpctl.tensor
+import dpctl.memory as dpm
 
 
 def get_spirv_abspath(fn):
@@ -73,27 +74,33 @@ def launch_raw_arg_kernel(raw):
     local_size = 16
     global_size = local_size * 8
 
-    x = dpctl.tensor.ones(global_size, dtype="int32")
-    y = dpctl.tensor.zeros(global_size, dtype="int32")
-    x.sycl_queue.wait()
-    y.sycl_queue.wait()
+    x = np.ones(global_size, dtype="i4")
+    y = np.zeros_like(x)
+
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpm.MemoryUSMDevice(y.nbytes, queue=q)
+
+    ev1 = q.memcpy_async(dest=x_usm, src=x, count=x.nbytes)
 
     try:
-        q.submit(
+        ev2 = q.submit(
             kernel,
             [
-                x.usm_data,
-                y.usm_data,
+                x_usm,
+                y_usm,
                 raw,
             ],
             [global_size],
             [local_size],
+            dEvents=[ev1],
         )
-        q.wait()
     except dpctl._sycl_queue.SyclKernelSubmitError:
         pytest.skip(f"Kernel submission to {q.sycl_device} failed")
 
-    assert dpctl.tensor.all(y == 9)
+    ev3 = q.memcpy_async(dest=y, src=y_usm, count=y.nbytes, dEvents=[ev2])
+    ev3.wait()
+
+    assert np.all(y == 9)
 
 
 def test_submit_raw_kernel_arg_pointer():

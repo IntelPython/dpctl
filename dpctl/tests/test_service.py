@@ -219,24 +219,6 @@ def test_main_library():
     assert "DPCTLSyclInterface" in output
 
 
-def test_tensor_includes():
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "--tensor-includes"],
-        capture_output=True,
-    )
-    assert res.returncode == 0
-    assert res.stdout
-    flags = res.stdout.decode("utf-8")
-    res = subprocess.run(
-        [sys.executable, "-m", "dpctl", "--tensor-include-dir"],
-        capture_output=True,
-    )
-    assert res.returncode == 0
-    assert res.stdout
-    dir = res.stdout.decode("utf-8")
-    assert flags == "-I " + dir
-
-
 def test_main_library_dir():
     res = subprocess.run(
         [sys.executable, "-m", "dpctl", "--library-dir"], capture_output=True

@@ -21,7 +21,7 @@
 /// \file
 /// This file implements Pybind11-generated extension exposing functions that
 /// take dpctl Python objects, such as dpctl.SyclQueue, dpctl.SyclDevice, and
-/// dpctl.tensor.usm_ndarray as arguments.
+/// dpctl.memory._Memory derived types as arguments.
 ///
 //===----------------------------------------------------------------------===//
 
