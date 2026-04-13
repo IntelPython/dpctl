@@ -29,12 +29,11 @@ classes](https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.ht
 
 `dpctl` features classes for [SYCL Unified Shared Memory
 (USM)](https://link.springer.com/chapter/10.1007/978-1-4842-5574-2_6)
-management and implements a tensor library conforming to [Python Array
-API](https://data-apis.org/array-api/latest/) standard.
+management.
 
 The library helps authors of Python native extensions written
 in C, Cython, or pybind11 to access `dpctl` objects representing SYCL
-devices, queues, memory, and tensors.
+devices, queues, and memory.
 
 `Dpctl` is the core part of a larger family of [data-parallel Python
 libraries and tools](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)

@@ -222,11 +222,10 @@ def main():
             sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(
                 ".", r"\."
             )
-            regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
-            regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
+            regexp = re.compile(r"^^_device_queries" + sfx_regexp)
 
             def is_py_ext(fn):
-                return re.match(regexp1, fn) or re.match(regexp2, fn)
+                return re.match(regexp, fn)
 
             for root, _, files in os.walk("dpctl"):
                 for file in files:
