@@ -1,0 +1,10 @@
+﻿dpctl.tensor.expm1
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: expm1
+    :no-value:
+
+

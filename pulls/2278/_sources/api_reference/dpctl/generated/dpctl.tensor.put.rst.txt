@@ -1,0 +1,6 @@
+﻿dpctl.tensor.put
+================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: put
