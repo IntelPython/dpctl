@@ -31,6 +31,4 @@ User guides
    :hidden:
 
    basic_concepts
-   execution_model
-   dlpack
    environment_variables
