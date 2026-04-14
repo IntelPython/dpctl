@@ -4,26 +4,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [dev] - XXX. XX, XXXX
+## [0.22.0] - Apr. 14, 2026
+
+The highlight of this release is the full migration of `dpctl.tensor` submodule to sister project [`dpnp`](https://github.com/IntelPython/dpnp), shrinking the size of the package tremendously, by between 93% and 96%. The `__sycl_usm_array_interface__` is still supported, with `dpctl` serving as curator of the protocol.
+
+
+Additionally, `dpctl` build scripts were updated, removing use of `python setup.py develop` and `python setup.py install`, and `dpctl` [documentation page](https://intelpython.github.io/dpctl/latest/index.html) now supports a version dropdown.
+
+**NOTE**: Changes below which reference `tensor` were added to the `tensor` submodule prior to release, and therefore are included in the migrated `tensor` submodule in [`dpnp`](https://github.com/IntelPython/dpnp). They are included here for transparency and continuity of the submodule's history in the changelog.
 
 ### Removed
 
+* Removed support for Python 3.9 [gh-2180](https://github.com/IntelPython/dpctl/pull/2180)
 * Removed previously deprecated `dpctl.tensor` submodule, with all tensor functionality migrated to [`dpnp`](https://github.com/IntelPython/dpnp) [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
-* Removed `cython/usm_memory` example which couldn't be reasonably rewritten without `dpctl.tensor` [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
 
 ### Added
 
+* Various options to build scripts (i.e., `--clean`). Options can be seen by calling `--help`, for example, `python scripts/build_locally.py --help` from the repository root [gh-2172](https://github.com/IntelPython/dpctl/pull/2172)
+* Added multiversioned documentation for `dpctl` using a custom drop-down for version selection and a `--multiversion` option for documentation build helper script [gh-2276](https://github.com/IntelPython/dpctl/pull/2276)
+
 ### Changed
 
-* Disallowed scalar conversion for non-0D `tensor.usm_ndarray` per Python Array API specification [gh-2223](https://github.com/IntelPython/dpctl/pull/2223)
+* Improved performance of `tensor.astype` for boolean arrays [gh-2158](https://github.com/IntelPython/dpctl/pull/2158)
+* Updated `tensor` DLPack version to v1.2 [gh-2193](https://github.com/IntelPython/dpctl/pull/2193), [gh-2219](https://github.com/IntelPython/dpctl/pull/2219)
+* Changed how libsyclinterface find Intel SYCL compiler to account for changes in versioning of the Intel SYCL Nightly compiler [gh-2211](https://github.com/IntelPython/dpctl/pull/2211)
+* Disallowed scalar conversion for non-0D `tensor.usm_ndarray` per Python Array API specification [gh-2223](https://github.com/IntelPython/dpctl/pull/2223), [gh-2229](https://github.com/IntelPython/dpctl/pull/2229)
 
 ### Fixed
 
+* Fixed a CMake warning from pybind11 [gh-2162](https://github.com/IntelPython/dpctl/pull/2162)
+* Fixed a false positive warning for missing `DPCTLSyclInterface.dll` when building `dpctl` Conda package on Windows [gh-2167](https://github.com/IntelPython/dpctl/pull/2167)
+* Fixed typos in `SyclContextCreationError` and `SyclDeviceCreationError` exception text [gh-2169](https://github.com/IntelPython/dpctl/pull/2169)
+* Fixed undefined behavior in a `tensor.roll` test [gh-2220](https://github.com/IntelPython/dpctl/pull/2220)
+* Added a work-around for a bug in the Intel Graphics Compiler that could cause `tensor.cumulative_logsumexp` to return incorrect results [gh-2275](https://github.com/IntelPython/dpctl/pull/2275)
+
 ### Maintenance
 
-* Enabled multiversion documentation for `dpctl` using a custom drop-down for version selection and a `--multiversion` option for documentation build helper script [gh-2276](https://github.com/IntelPython/dpctl/pull/2276)
-* Updated examples to remove use of `dpctl.tensor`, opting to simplify the examples and rely on `dpctl.memory` objects which wrap USM allocations [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
+* Resolved license deprecation warnings when building `dpctl` in-place [gh-2160](https://github.com/IntelPython/dpctl/pull/2160)
+* Removed unnecessary CMake patching logic in Windows build script [gh-2163](https://github.com/IntelPython/dpctl/pull/2163)
+* Updated documentation and build scripts to remove use of `python setup.py develop` and `python setup.py install` throughout the project, as they were deprecated and are no longer supported [gh-2172](https://github.com/IntelPython/dpctl/pull/2172), [gh-2227](https://github.com/IntelPython/dpctl/pull/2227)
+* Updated examples to remove use of `dpctl.tensor`, opting to simplify the examples and rely on `dpctl.memory` objects which wrap USM allocations. Examples which could not be reasonably rewritten were removed [gh-2245](https://github.com/IntelPython/dpctl/pull/2245)
 * Removed deprecated property syntax from Cython files [gh-2277](https://github.com/IntelPython/dpctl/pull/2277)
+* Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
+[gh-2188](https://github.com/IntelPython/dpctl/pull/2188),
+[gh-2189](https://github.com/IntelPython/dpctl/pull/2189),
+[gh-2221](https://github.com/IntelPython/dpctl/pull/2221),
+[gh-2255](https://github.com/IntelPython/dpctl/pull/2255),
+[gh-2262](https://github.com/IntelPython/dpctl/pull/2262),
+[gh-2264](https://github.com/IntelPython/dpctl/pull/2264)
 
 ## [0.21.1] - Nov. 29, 2025
 
