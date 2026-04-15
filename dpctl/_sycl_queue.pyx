@@ -431,14 +431,12 @@ cdef int _parse_queue_properties(object prop) except *:
                 res = res | _queue_property_type._DEFAULT_PROPERTY
             else:
                 raise ValueError(
-                    (
-                        "queue property '{}' is not understood, "
-                        "expecting 'in_order', 'enable_profiling', or 'default'"
-                    ).format(prop)
+                    f"queue property '{prop}' is not understood, expecting "
+                    "'in_order', 'enable_profiling', or 'default'"
                 )
         else:
             raise ValueError(
-                "queue property '{}' is not understood.".format(prop)
+                f"queue property '{prop}' is not understood."
             )
     return res
 
@@ -648,7 +646,7 @@ cdef class SyclQueue(_SyclQueue):
         if len(args) > 2:
             raise TypeError(
                 "SyclQueue constructor takes 0, 1, or 2 positinal arguments, "
-                "but {} were given.".format(len(args))
+                f"but {len(args)} were given."
             )
         props = _parse_queue_properties(
             kwargs.pop("property", _queue_property_type._DEFAULT_PROPERTY)
@@ -676,22 +674,22 @@ cdef class SyclQueue(_SyclQueue):
                 status = self._init_queue_from_capsule(arg)
             else:
                 raise TypeError(
-                    "Positional argument {} is not a filter string or a "
-                    "SyclDevice".format(arg)
+                    f"Positional argument {arg} is not a filter string or a "
+                    "SyclDevice"
                 )
         else:
             ctx, dev = args
             if not isinstance(ctx, SyclContext):
                 raise TypeError(
                     "SyclQueue constructor with two positional arguments "
-                    "expected SyclContext as its first argument, but got {}."
-                    .format(type(ctx))
+                    "expected SyclContext as its first argument, but got "
+                    f"{type(ctx)}."
                 )
             if not isinstance(dev, SyclDevice):
                 raise TypeError(
                     "SyclQueue constructor with two positional arguments "
-                    "expected SyclDevice as its second argument, but got {}."
-                    .format(type(dev))
+                    "expected SyclDevice as its second argument, but got "
+                    f"{type(dev)}."
                 )
             status = self._init_queue_from_context_and_device(
                 <SyclContext>ctx, <SyclDevice>dev, props
@@ -699,8 +697,7 @@ cdef class SyclQueue(_SyclQueue):
         if status < 0:
             if status == -1:
                 raise SyclQueueCreationError(
-                    "Device filter selector string '{}' is not understood."
-                    .format(arg)
+                    f"Device filter selector string '{arg}' is not understood."
                 )
             elif status == -2 or status == -8:
                 default_dev_error = (
@@ -708,24 +705,24 @@ cdef class SyclQueue(_SyclQueue):
                 )
                 raise SyclQueueCreationError(
                     default_dev_error if (len_args == 0) else
-                    "SYCL Device '{}' could not be created.".format(arg)
+                    f"SYCL Device '{arg}' could not be created."
                 )
             elif status == -3 or status == -7:
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created " +
                     "by default constructor" if len_args == 0 else
-                    "from '{}'.".format(arg)
+                    f"from '{arg}'."
                 )
             elif status == -4 or status == -6:
                 if len_args == 2:
                     arg = args
                 raise SyclQueueCreationError(
-                    "SYCL Queue failed to be created from '{}'.".format(arg)
+                    f"SYCL Queue failed to be created from '{arg}'."
                 )
             elif status == -5:
                 raise TypeError(
-                    "Input capsule {} contains a null pointer or could not "
-                    "be renamed".format(arg)
+                    f"Input capsule {arg} contains a null pointer or could not "
+                    "be renamed"
                 )
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
@@ -1546,12 +1543,10 @@ cdef class SyclQueue(_SyclQueue):
             if en_prof:
                 prop.append("enable_profiling")
             return (
-                "<dpctl."
-                + self.__name__
-                + " at {}, property={}>".format(hex(id(self)), prop)
+                f"<dpctl.{self.__name__} at {hex(id(self))}, property={prop}>"
             )
         else:
-            return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
+            return f"<dpctl.{self.__name__} at {hex(id(self))}>"
 
     def __hash__(self):
         """

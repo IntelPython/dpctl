@@ -314,7 +314,7 @@ def test_suai_non_contig_1D(memory_ctor):
     try:
         buf = memory_ctor(32)
     except Exception:
-        pytest.skip("{} could not be allocated".format(memory_ctor.__name__))
+        pytest.skip(f"{memory_ctor.__name__} could not be allocated")
     host_canary = np.full((buf.nbytes,), 77, dtype="|u1")
     buf.copy_from_host(host_canary)
     n1d = 10
@@ -344,7 +344,7 @@ def test_suai_non_contig_2D(memory_ctor):
     try:
         buf = memory_ctor(20)
     except Exception:
-        pytest.skip("{} could not be allocated".format(memory_ctor.__name__))
+        pytest.skip(f"{memory_ctor.__name__} could not be allocated")
     host_canary = np.arange(20, dtype="|u1")
     buf.copy_from_host(host_canary)
     shape_2d = (2, 2)
@@ -497,7 +497,7 @@ def test_with_constructor(memory_ctor):
     try:
         buf = memory_ctor(64)
     except Exception:
-        pytest.skip("{} could not be allocated".format(memory_ctor.__name__))
+        pytest.skip(f"{memory_ctor.__name__} could not be allocated")
     # reuse queue from buffer's SUAI
     v = View(buf, shape=(64,), strides=(1,), offset=0)
     check_view(v)

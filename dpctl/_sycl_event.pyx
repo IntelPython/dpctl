@@ -201,15 +201,15 @@ cdef class SyclEvent(_SyclEvent):
                 raise ValueError("Event failed to be created.")
             elif (ret == -2):
                 raise TypeError(
-                    "Input capsule {} contains a null pointer or could not be"
-                    " renamed".format(arg)
+                    f"Input capsule {arg} contains a null pointer or could not "
+                    "be renamed"
                 )
             elif (ret == -3):
                 raise ValueError(
                     "Internal Error: Could not create a copy of a sycl event."
                 )
             raise ValueError(
-                "Unrecognized error code ({}) encountered.".format(ret)
+                f"Unrecognized error code ({ret}) encountered."
             )
 
     cdef DPCTLSyclEventRef get_event_ref(self):
