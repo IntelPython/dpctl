@@ -787,8 +787,7 @@ cdef class MemoryUSMShared(_Memory):
                         "Zero-copy operation is not possible with "
                         "copy=False. "
                         "Either use copy=True, or use a constructor "
-                        f"appropriate for "
-                        f"type '{self.get_usm_type()}'"
+                        f"appropriate for type '{self.get_usm_type()}'"
                     )
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):

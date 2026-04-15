@@ -682,7 +682,7 @@ cdef class SyclQueue(_SyclQueue):
             if not isinstance(ctx, SyclContext):
                 raise TypeError(
                     "SyclQueue constructor with two positional arguments "
-                    f"expected SyclContext as its first argument, but got "
+                    "expected SyclContext as its first argument, but got "
                     f"{type(ctx)}."
                 )
             if not isinstance(dev, SyclDevice):

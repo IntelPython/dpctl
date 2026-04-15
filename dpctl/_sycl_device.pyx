@@ -1716,7 +1716,6 @@ cdef class SyclDevice(_SyclDevice):
                     print(
                         f"{len(sd)} sub-devices were created with respective "
                         f"#EUs being {[d.max_compute_units for d in sd]}"
-                        )
                     )
                 except Exception:
                     print("Device partitioning by affinity was not successful.")
