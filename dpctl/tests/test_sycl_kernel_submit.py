@@ -100,7 +100,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
         q.memcpy(c, c_usm, c.nbytes)
-        assert np.allclose(c, ref_c), "Failed for {}".format(r)
+        assert np.allclose(c, ref_c), f"Failed for {r}"
 
     for gr, lr in (
         (
@@ -120,7 +120,7 @@ def test_create_program_from_source(ctype_str, dtype, ctypes_ctor):
         host_dt, device_dt = timer.dt
         assert type(host_dt) is float and type(device_dt) is float
         q.memcpy(c, c_usm, c.nbytes)
-        assert np.allclose(c, ref_c), "Failed for {}, {}".format(gr, lr)
+        assert np.allclose(c, ref_c), f"Failed for {gr}, {lr}"
 
 
 def test_submit_async():

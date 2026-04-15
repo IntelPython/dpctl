@@ -150,7 +150,7 @@ def test_channeling_device_properties(capsys):
     for pr in ["backend", "name", "driver_version"]:
         assert getattr(q, pr) == getattr(
             dev, pr
-        ), "Mismatch found for property {}".format(pr)
+        ), f"Mismatch found for property {pr}"
 
 
 def test_queue_submit_barrier(valid_filter):

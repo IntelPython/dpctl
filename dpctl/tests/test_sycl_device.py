@@ -83,9 +83,7 @@ def test_filter_string(valid_filter):
     dev_id = device.filter_string
     assert (
         dpctl.SyclDevice(dev_id) == device
-    ), "Reconstructed device is different, ({}, {})".format(
-        valid_filter, dev_id
-    )
+    ), f"Reconstructed device is different, ({valid_filter}, {dev_id})"
 
 
 def test_filter_string_property():

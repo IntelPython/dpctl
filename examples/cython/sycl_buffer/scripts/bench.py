@@ -62,9 +62,9 @@ def run_offload(selector_string, X):
         return Skipped(
             f"Skipping run for {selector_string}, queue could nor be created"
         )
-    return "SYCL({}) result: {}".format(
-        q.sycl_device.name,
-        sb.columnwise_total(X, queue=q),
+    return (
+        f"SYCL({q.sycl_device.name}) result: "
+        f"{sb.columnwise_total(X, queue=q)}"
     )
 
 
@@ -77,16 +77,15 @@ print("=" * 10 + " Executing warm-up " + "=" * 10)
 print("NumPy result: ", X.sum(axis=0))
 
 for ss in ["opencl:cpu", "opencl:gpu", "level_zero:gpu"]:
-    print("Result for '" + ss + "': {}".format(run_offload(ss, X)))
+    print(f"Result for '{ss}': {run_offload(ss, X)}")
 
 print("=" * 10 + " Running bechmarks " + "=" * 10)
 
 for ss in ["opencl:cpu", "opencl:gpu", "level_zero:gpu"]:
-    print("Timing offload to '" + ss + "': {}".format(bench_offload(ss, X)))
+    print(f"Timing offload to '{ss}': {bench_offload(ss, X)}")
 
 
 print(
-    "Times for NumPy: {}".format(
-        timeit.repeat(stmt="X.sum(axis=0)", number=100, globals=globals())
-    )
+    "Times for NumPy: "
+    f"{timeit.repeat(stmt='X.sum(axis=0)', number=100, globals=globals())}"
 )

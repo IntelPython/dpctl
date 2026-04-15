@@ -165,9 +165,8 @@ cdef class _USMBufferData:
 
         if ary_version != 1:
             raise ValueError(("__sycl_usm_array_interface__ is malformed:"
-                              " dict('version': {}) is unexpected."
-                              " The only recognized version is 1.").format(
-                                  ary_version))
+                              f" dict('version': {ary_version}) is unexpected."
+                              " The only recognized version is 1."))
         if not ary_data_tuple or len(ary_data_tuple) != 2:
             raise ValueError("__sycl_usm_array_interface__ is malformed:"
                              " 'data' field is required, and must be a tuple"
@@ -181,10 +180,9 @@ cdef class _USMBufferData:
         if (QRef is NULL):
             raise ValueError("__sycl_usm_array_interface__ is malformed:"
                              " 'data' field is not consistent with 'syclobj'"
-                             " field, the pointer {} is not bound to"
-                             " SyclContext derived from"
-                             " dict('syclobj': {}).".format(
-                                 hex(arr_data_ptr), ary_syclobj))
+                             f" field, the pointer {hex(arr_data_ptr)} is not "
+                             "bound to SyclContext derived from "
+                             f"dict('syclobj': {ary_syclobj}).")
         # shape must be present
         if ary_shape is None or not (
                 isinstance(ary_shape, collections.abc.Sized) and
@@ -204,7 +202,7 @@ cdef class _USMBufferData:
         except TypeError as e:
             raise ValueError(
                 "__sycl_usm_array_interface__ is malformed:"
-                " dict('typestr': {}) is unexpected. ".format(ary_typestr)
+                f" dict('typestr': {ary_typestr}) is unexpected."
             ) from e
 
         if (ary_strides is None or (

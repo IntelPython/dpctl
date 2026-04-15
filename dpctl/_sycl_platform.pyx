@@ -181,7 +181,7 @@ cdef class SyclPlatform(_SyclPlatform):
             + ", "
             + self.vendor
             + ", "
-            + self.version + "] at {}>".format(hex(id(self)))
+            + self.version + f"] at {hex(id(self))}>"
         )
 
     def __cinit__(self, arg=None):

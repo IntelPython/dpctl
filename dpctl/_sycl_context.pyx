@@ -321,11 +321,11 @@ cdef class SyclContext(_SyclContext):
                 )
             elif (ret == -6):
                 raise TypeError(
-                    "Input capsule {} contains a null pointer or could not be"
-                    " renamed".format(arg)
+                    f"Input capsule {arg} contains a null pointer or could not "
+                    "be renamed"
                 )
             raise ValueError(
-                "Unrecognized error code ({}) encountered.".format(ret)
+                f"Unrecognized error code ({ret}) encountered."
             )
 
     cdef bool equals(self, SyclContext ctxt):
@@ -471,12 +471,10 @@ cdef class SyclContext(_SyclContext):
         """
         cdef size_t n = self.device_count
         if n == 1:
-            return ("<dpctl." + self.__name__ + " at {}>".format(hex(id(self))))
+            return f"<dpctl.{self.__name__} at {hex(id(self))}>"
         else:
             return (
-                "<dpctl."
-                + self.__name__
-                + " for {} devices at {}>".format(n, hex(id(self)))
+                f"<dpctl.{self.__name__} for {n} devices at {hex(id(self))}>"
             )
 
     def _get_capsule(self):

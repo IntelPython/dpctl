@@ -410,7 +410,7 @@ cdef class SyclDevice(_SyclDevice):
             if ret == -1:
                 raise SyclDeviceCreationError(
                     "Could not create a SyclDevice with the selector string "
-                    "'{selector_string}'".format(selector_string=arg)
+                    f"'{arg}'"
                 )
         elif isinstance(arg, _SyclDevice):
             ret = self._init_from__SyclDevice(arg)
@@ -1577,7 +1577,7 @@ cdef class SyclDevice(_SyclDevice):
             + ", "
             + " "
             + self.name
-            + "] at {}>".format(hex(id(self)))
+            + f"] at {hex(id(self))}>"
         )
 
     def __hash__(self):
@@ -1651,7 +1651,7 @@ cdef class SyclDevice(_SyclDevice):
         counts_buff = <size_t *> malloc((<size_t> ncounts) * sizeof(size_t))
         if counts_buff is NULL:
             raise MemoryError(
-                "Allocation of counts array of size {} failed.".format(ncounts)
+                f"Allocation of counts array of size {ncounts} failed."
             )
         for i in range(ncounts):
             counts_buff[i] = counts[i]
@@ -1714,9 +1714,8 @@ cdef class SyclDevice(_SyclDevice):
                 try:
                     sd = cpu_d.create_sub_devices(partition="numa")
                     print(
-                        "{0} sub-devices were created with respective "
-                        "#EUs being {1}".format(
-                            len(sd), [d.max_compute_units for d in sd]
+                        f"{len(sd)} sub-devices were created with respective "
+                        f"#EUs being {[d.max_compute_units for d in sd]}"
                         )
                     )
                 except Exception:
@@ -1785,9 +1784,7 @@ cdef class SyclDevice(_SyclDevice):
                 )
             else:
                 raise ValueError(
-                    "Partition affinity domain {} is not understood.".format(
-                        partition
-                    )
+                    f"Partition affinity domain {partition} is not understood."
                 )
             return self.create_sub_devices_by_affinity(domain_type)
         elif isinstance(partition, collections.abc.Sized) and isinstance(
