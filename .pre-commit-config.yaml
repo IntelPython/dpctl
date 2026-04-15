@@ -1,5 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+exclude: "docs/_legacy/"
 repos:
 -   repo: https://github.com/PyCQA/bandit
     rev: '1.9.4'
@@ -46,9 +47,10 @@ repos:
     rev: v2.4.1
     hooks:
     - id: codespell
-      args: ["-L", "nd,hart,elemente,wirth"]
+      args: ["-L", "ba,som,xWindows"]  # ignore some variable names
       additional_dependencies:
       - tomli
+      exclude: "docs/doxyrest-config.lua.in"
 -   repo: https://github.com/psf/black
     rev: 26.3.1
     hooks:
