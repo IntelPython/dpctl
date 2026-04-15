@@ -1,0 +1,6 @@
+dpctl.SyclContext.get\_devices
+==============================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclContext.get_devices
