@@ -601,7 +601,6 @@ string specifying the affinity domain, or a collection of integers.</p>
     <span class="nb">print</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span><span class="si">}</span><span class="s2"> sub-devices were created with respective &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;#EUs being </span><span class="si">{</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">sd</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
     <span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device partitioning by affinity was not successful.&quot;</span><span class="p">)</span>
