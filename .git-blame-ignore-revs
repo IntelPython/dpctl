@@ -20,3 +20,6 @@ b37657e6ad9af16eaec2982d8e2397acd2af2881
 
 # Add new linters and rules to pre-commit
 5cf074899f226726d07026db9899bb7632d8c1de
+
+# Transition from clang-format 18 to clang-format 22
+759dcdc80d0d99790205e87bdd7c5d4f2e93a1ff
