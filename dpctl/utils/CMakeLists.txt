@@ -57,7 +57,7 @@ foreach(python_module_name ${_pybind11_targets})
             ${_dpctl_sycl_target_link_options}
         )
     endif()
-    # TODO: update source so they refernece individual libraries instead of
+    # TODO: update source so they reference individual libraries instead of
     #   dpctl4pybind11.hpp. It will allow to simplify dependency tree
     target_link_libraries(${python_module_name} PRIVATE DpctlCAPI)
     if (DPCTL_WITH_REDIST)

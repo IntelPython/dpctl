@@ -111,15 +111,17 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "Processing c-api-coverage"
-          export DPCTL_LCOV_FN=$(find _skbuild -name dpctl.lcov)
-          grep "/tmp" $DPCTL_LCOV_FN
+          DPCTL_LCOV_FN=$(find _skbuild -name dpctl.lcov)
+          export DPCTL_LCOV_FN
+          grep "/tmp" "$DPCTL_LCOV_FN"
           coveralls-lcov -v -n \
-              $DPCTL_LCOV_FN > dpctl-c-api-coverage.json
+              "$DPCTL_LCOV_FN" > dpctl-c-api-coverage.json
           echo "Processing pytest-coverage"
-          export DPCTL_PYTEST_LCOV=$(find . -name dpctl_pytest.lcov)
-          grep "/tmp" $DPCTL_PYTEST_LCOV
+          DPCTL_PYTEST_LCOV=$(find . -name dpctl_pytest.lcov)
+          export DPCTL_PYTEST_LCOV
+          grep "/tmp" "$DPCTL_PYTEST_LCOV"
           coveralls-lcov -v -n \
-              $DPCTL_PYTEST_LCOV > pytest-dpctl-c-api-coverage.json
+              "$DPCTL_PYTEST_LCOV" > pytest-dpctl-c-api-coverage.json
           echo "Merging JSON files"
           python -c "import json; \
               fh1 = open('dpctl-c-api-coverage.json', 'r'); \
@@ -132,7 +134,7 @@ jobs:
           # merge combined file with coverage data and upload
           ls -lh dpctl-c-api-coverage.json pytest-dpctl-c-api-coverage.json \
                combined-dpctl-c-api-coverage.json \
-               $(find _skbuild -name dpctl.lcov) $(find . -name dpctl_pytest.lcov)
+               "$DPCTL_LCOV_FN" "$DPCTL_PYTEST_LCOV"
           echo "Merging combined files with coverage data"
           coveralls --service=github --merge=combined-dpctl-c-api-coverage.json
         env:

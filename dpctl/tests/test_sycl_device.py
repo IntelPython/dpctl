@@ -192,7 +192,7 @@ def test_supported_aspect(supported_aspect):
         assert getattr(d_wa, "has_aspect_" + supported_aspect)
     except dpctl.SyclDeviceCreationError:
         # ValueError may be raised if no device with
-        # requested aspect charateristics is available
+        # requested aspect characteristics is available
         assert not has_it
 
 
@@ -405,7 +405,7 @@ def test_peer_device_arg_validation(method):
         dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
-    bad_dev = dict()
+    bad_dev = {}
     callable = getattr(dev, method)
     with pytest.raises(TypeError):
         callable(bad_dev)

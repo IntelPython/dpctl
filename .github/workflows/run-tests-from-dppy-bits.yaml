@@ -35,11 +35,11 @@ jobs:
     steps:
       - name: Construct channels line
         run: |
-          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $GITHUB_ENV
+          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> "$GITHUB_ENV"
 
       - name: Display channels line
         run: |
-          echo ${{ env.CHANNELS }}
+          echo "${{ env.CHANNELS }}"
 
       - name: Set pkgs_dirs
         run: |
@@ -47,27 +47,27 @@ jobs:
 
       - name: Install dpctl
         run: |
-          conda create -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
+          conda create -n "${{ env.TEST_ENV_NAME }}" -c dppy/label/dev "${{ env.CHANNELS }}" dpctl pytest pytest-cov cython setuptools c-compiler cxx-compiler
 
       - name: Smoke test
         run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
           python -m dpctl -f
 
       - name: Create test temp dir
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
-        run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
+        run: mkdir -p "${GITHUB_WORKSPACE}/test_tmp"
 
       - name: Run tests
         working-directory: ${{ github.workspace }}/test_tmp
         env:
           SYCL_CACHE_PERSISTENT: 1
         run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -v --pyargs $MODULE_NAME
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
+          python -m pytest -v --pyargs "${{ env.MODULE_NAME }}"
 
 
   test_windows:
@@ -94,7 +94,7 @@ jobs:
 
       - name: Display channels line
         run: |
-          echo ${{ env.CHANNELS }}
+          echo "${{ env.CHANNELS }}"
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3.3.0
         with:

@@ -24,7 +24,7 @@ least one component.
 ``Backend`` specifies the desired backend of targeted devices, while
 ``DeviceType`` specifies the type of targeted devices.
 ``RelativeDeviceNumber`` refers to the number of the device that matches
-any other given requirements, starting from `0` to marking the
+any other given requirements, starting from 0 to marking the
 "first device that matches the requirements".
 
 Attempting to use a non-conforming string in places where filter selector

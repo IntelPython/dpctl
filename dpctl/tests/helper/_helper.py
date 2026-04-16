@@ -43,7 +43,7 @@ def create_invalid_capsule():
     return ctor(id(ctor), b"invalid", 0)
 
 
-def get_queue_or_skip(args=tuple()):
+def get_queue_or_skip(args=()):
     try:
         q = dpctl.SyclQueue(*args)
     except dpctl.SyclQueueCreationError:

@@ -75,7 +75,7 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
-          python scripts/gen_docs.py --doxyrest-root=`pwd`/doxyrest-2.1.2-linux-amd64 --verbose --multiversion --clean || exit 1
+          python scripts/gen_docs.py --doxyrest-root="$(pwd)/doxyrest-2.1.2-linux-amd64" --verbose --multiversion --clean || exit 1
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
           mv "$(find _skbuild -type d -path "*/cmake-install/docs/docs" | head -n 1)" ~/docs
           git clean -dfx
@@ -87,9 +87,9 @@ jobs:
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
           git fetch tokened_docs
           git checkout --track tokened_docs/gh-pages
-          echo `pwd`
+          pwd
           cd master
-          git rm -rf *
+          git rm -rf ./*
           mv ~/docs/* . || exit 1
           git add .
           git config --global user.name 'github-actions[doc-deploy-bot]'
@@ -112,10 +112,10 @@ jobs:
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
           git fetch tokened_docs
           git checkout --track tokened_docs/gh-pages
-          echo `pwd`
-          [ -d pulls/${PR_NUM} ] && git rm -rf pulls/${PR_NUM}
-          mkdir -p pulls/${PR_NUM}
-          cd pulls/${PR_NUM}
+          pwd
+          [ -d "pulls/${PR_NUM}" ] && git rm -rf "pulls/${PR_NUM}"
+          mkdir -p "pulls/${PR_NUM}"
+          cd "pulls/${PR_NUM}"
           mv ~/docs/* .
           git add .
           git config --global user.name 'github-actions[doc-deploy-bot]'
@@ -131,10 +131,10 @@ jobs:
           git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
           git fetch tokened_docs
           git checkout --track tokened_docs/gh-pages
-          echo `pwd`
+          pwd
           ls
           [ -d pulls ] && ls pulls && echo "This is pull/${PR_NUM}"
-          [ -d pulls/${PR_NUM} ] && git rm -rf pulls/${PR_NUM}
+          [ -d "pulls/${PR_NUM}" ] && git rm -rf "pulls/${PR_NUM}"
           git config --global user.name 'github-actions[doc-deploy-bot]'
           git config --global user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
           git commit -m "Removing docs for closed pull request ${PR_NUM}"

@@ -1,4 +1,4 @@
-//===--- test_service.cpp - Test cases for sevice functions  ===//
+//===--- test_service.cpp - Test cases for service functions  ===//
 //
 //                      Data Parallel Control (dpctl)
 //

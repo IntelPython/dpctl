@@ -190,7 +190,7 @@ class SyclTimer:
         self.queue = None
         self.host_times = []
         self.bracketing_events = []
-        self._context_data = list()
+        self._context_data = []
         if device_timer is None:
             device_timer = "queue_barrier"
         if device_timer == "queue_barrier":

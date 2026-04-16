@@ -211,7 +211,7 @@ AMD build
 
     python scripts/build_locally.py --verbose --target-hip=<arch>
 
-Note that the `oneAPI for AMD GPUs` plugin requires the architecture be specified and only
+Note that the oneAPI for AMD GPUs plugin requires the architecture be specified and only
 one architecture can be specified at a time.
 
 To determine the architecture code (``<arch>``) for your AMD GPU, run:

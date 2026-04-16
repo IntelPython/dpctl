@@ -101,7 +101,7 @@ def test_memory_without_context():
 def test_memory_cpu_context():
     mobj = _create_memory()
 
-    # type respective to the context in which
+    # USM type respective to the context in which
     # memory was created
     usm_type = mobj.get_usm_type()
     assert usm_type == "shared"
@@ -110,9 +110,9 @@ def test_memory_cpu_context():
         cpu_queue = dpctl.SyclQueue("cpu")
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue('cpu') failed, skip further testing")
-    # type as view from CPU queue
+    # USM type as view from CPU queue
     usm_type = mobj.get_usm_type(cpu_queue)
-    # type can be unknown if current queue is
+    # USM type can be unknown if current queue is
     # not in the same SYCL context
     assert usm_type in ["unknown", "shared"]
 
@@ -265,7 +265,7 @@ def test_usm_type_exceptions():
     with pytest.raises(TypeError):
         m.get_usm_type(syclobj=Ellipsis)
     with pytest.raises(TypeError):
-        m.get_usm_type_enum(syclobj=list())
+        m.get_usm_type_enum(syclobj=[])
 
 
 def test_sycl_usm_array_interface(memory_ctor):
@@ -419,7 +419,7 @@ def test_suai_invalid_suai():
     # data validation
     def invalid_data(suai_iface):
         "Set data to invalid"
-        suai_iface["data"] = tuple()
+        suai_iface["data"] = ()
         return suai_iface
 
     v = View(
@@ -439,7 +439,7 @@ def test_suai_invalid_suai():
     with pytest.raises(ValueError):
         MemoryUSMShared(v)
 
-    # typestr validation
+    # validate typestring
     def invalid_typestr(suai_iface):
         suai_iface["typestr"] = "invalid"
         return suai_iface

@@ -4,10 +4,10 @@ option(DPCTL_ENABLE_DOXYREST
     OFF
 )
 
-# Option to add verion links to the side bar. This option is primarily
+# Option to add version links to the side bar. This option is primarily
 # intended to generate dpctl's docs for our github.io page.
 option(DPCTL_USE_MULTIVERSION_TEMPLATE
-    "Enable adding verion links to side bar"
+    "Enable adding version links to side bar"
     OFF
 )
 

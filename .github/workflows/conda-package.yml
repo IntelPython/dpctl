@@ -50,13 +50,13 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
       - name: Install conda-build
         run: conda install conda-build -c conda-forge --override-channels
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
-          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
       - name: Build conda package
         run: |
           # use bootstrap channel to pull NumPy linked with OpenBLAS
@@ -64,9 +64,9 @@ jobs:
           VERSIONS="--python ${{ matrix.python }} --numpy 2.0"
           TEST="--no-test"
           conda build \
-            $TEST \
-            $VERSIONS \
-            $CHANNELS \
+            "$TEST" \
+            "$VERSIONS" \
+            "$CHANNELS" \
             conda-recipe
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -126,8 +126,8 @@ jobs:
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
-          echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> $GITHUB_ENV
-          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
+          echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
+          echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
 
       - name: Build conda package
         env:
@@ -163,16 +163,16 @@ jobs:
     steps:
       - name: Construct channels line
         run: |
-          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $GITHUB_ENV
+          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> "$GITHUB_ENV"
       - name: Display channels line
         run: |
-          echo ${{ env.CHANNELS }}
+          echo "${{ env.CHANNELS }}"
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
       - name: Install conda-index
         # Needed to be able to run conda index
         run: |
@@ -180,18 +180,20 @@ jobs:
           conda install conda-index -c conda-forge --override-channels
       - name: Create conda channel
         run: |
-          mkdir -p $GITHUB_WORKSPACE/channel/linux-64
-          conda index $GITHUB_WORKSPACE/channel || exit 1
-          mv ${PACKAGE_NAME}-*.conda $GITHUB_WORKSPACE/channel/linux-64 || exit 1
-          conda index $GITHUB_WORKSPACE/channel || exit 1
+          mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          mv "${PACKAGE_NAME}"-*.conda "$GITHUB_WORKSPACE/channel/linux-64" || exit 1
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
           # Test channel
-          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
+          conda search "$PACKAGE_NAME" -c "$GITHUB_WORKSPACE/channel" --override-channels --info --json > "$GITHUB_WORKSPACE/ver.json"
           cat ver.json
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          conda create -n "${{ env.TEST_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" python=${{ matrix.python }} "$CHANNELS" --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -209,16 +211,19 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install dpctl
         run: |
-          export CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          export TEST_DEPENDENCIES="pytest pytest-cov cython setuptools"
-          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n ${{ env.TEST_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} ${TEST_DEPENDENCIES} python=${{ matrix.python }} ${CHANNELS}
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS
+          TEST_DEPENDENCIES="pytest pytest-cov cython setuptools"
+          export TEST_DEPENDENCIES
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          conda create -n "${{ env.TEST_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" "${TEST_DEPENDENCIES}" python=${{ matrix.python }} "${CHANNELS}"
           # Test installed packages
-          conda list -n ${{ env.TEST_ENV_NAME }}
+          conda list -n "${{ env.TEST_ENV_NAME }}"
       - name: Smoke test
         run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
           python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
       - name: Install gdb
         run: |
@@ -226,21 +231,21 @@ jobs:
           sudo apt-get install -y gdb
       - name: Run test_elementwise under gdb
         run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
-          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args ${CONDA_PREFIX}/bin/python -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
+          gdb --batch -ex r -ex 'info sharedlibrary' -ex 'set print elements 1000' -ex bt --args "${CONDA_PREFIX}/bin/python" -m pytest -q -ra --disable-warnings --pyargs dpctl.tests.elementwise.test_trigonometric::test_trig_order -vv || true
       - name: Create test temp dir
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
-        run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
+        run: mkdir -p "${GITHUB_WORKSPACE}/test_tmp"
       - name: Run tests
         working-directory: ${{ github.workspace }}/test_tmp
         env:
           SYCL_CACHE_PERSISTENT: 1
         run: |
-          . $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.TEST_ENV_NAME }}
-          python -m pytest -v --pyargs $MODULE_NAME
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
+          python -m pytest -v --pyargs "${{ env.MODULE_NAME }}"
 
   test_windows:
     needs: build_windows
@@ -266,7 +271,7 @@ jobs:
 
       - name: Display channels line
         run: |
-          echo ${{ env.CHANNELS }}
+          echo "${{ env.CHANNELS }}"
 
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -366,8 +371,8 @@ jobs:
       - name: Report content of test environment
         shell: cmd /C CALL {0}
         run: |
-          echo "Value of CONDA enviroment variable was: " %CONDA%
-          echo "Value of CONDA_PREFIX enviroment variable was: " %CONDA_PREFIX%
+          echo "Value of CONDA environment variable was: " %CONDA%
+          echo "Value of CONDA_PREFIX environment variable was: " %CONDA_PREFIX%
           conda info && conda list -n ${{ env.TEST_ENV_NAME }}
 
       - name: Configure Intel OpenCL CPU RT
@@ -436,9 +441,9 @@ jobs:
       - name: Install anaconda-client
         run: conda install anaconda-client -c conda-forge --override-channels
       - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
       - name: Package version
-        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> "$GITHUB_ENV"
 
       - name: Upload
         env:
@@ -447,14 +452,14 @@ jobs:
           ANACONDA_CLIENT_FORCE_STANDALONE: true
         if: ${{ env.ANACONDA_TOKEN != '' }}
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${PACKAGE_NAME}-*.conda
+          anaconda --token "${{ env.ANACONDA_TOKEN }}" upload --user dppy --label dev "${{ env.PACKAGE_NAME }}"-*.conda
 
       - name: Upload Wheels
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
           # remove when anaconda-client 1.13.1 is available
           ANACONDA_CLIENT_FORCE_STANDALONE: true
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+        run: anaconda --token "${{ env.ANACONDA_TOKEN }}" upload --user dppy --label dev "${{ env.PACKAGE_NAME }}"-*.whl --version "${{ env.PACKAGE_VERSION }}"
 
   upload_windows:
     needs: test_windows
@@ -491,18 +496,18 @@ jobs:
 
       - name: Package version
         shell: bash -el {0}
-        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> "$GITHUB_ENV"
 
       - name: Upload
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.conda
+          anaconda --token "${{ env.ANACONDA_TOKEN }}" upload --user dppy --label dev "${{ env.PACKAGE_NAME }}"-*.conda
 
       - name: Upload Wheels
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+        run: anaconda --token "${{ env.ANACONDA_TOKEN }}" upload --user dppy --label dev "${{ env.PACKAGE_NAME }}"-*.whl --version "${{ env.PACKAGE_VERSION }}"
 
   test_examples_linux:
     needs: build_linux
@@ -521,7 +526,7 @@ jobs:
     steps:
       - name: Construct channels line
         run: |
-          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $GITHUB_ENV
+          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> "$GITHUB_ENV"
       - name: Display channels line
         run: |
           echo ${{ env.CHANNELS }}
@@ -539,21 +544,23 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
-        run: echo $CONDA/bin >> $GITHUB_PATH
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
       - name: Create conda channel
         run: |
-          mkdir -p $GITHUB_WORKSPACE/channel/linux-64
-          conda index $GITHUB_WORKSPACE/channel || exit 1
-          mv ${PACKAGE_NAME}-*.conda $GITHUB_WORKSPACE/channel/linux-64 || exit 1
-          conda index $GITHUB_WORKSPACE/channel || exit 1
+          mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          mv "${{ env.PACKAGE_NAME }}"-*.conda "$GITHUB_WORKSPACE/channel/linux-64" || exit 1
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
           # Test channel
-          conda search $PACKAGE_NAME -c $GITHUB_WORKSPACE/channel --override-channels --info --json > $GITHUB_WORKSPACE/ver.json
+          conda search "$PACKAGE_NAME" -c "$GITHUB_WORKSPACE/channel" --override-channels --info --json > "$GITHUB_WORKSPACE/ver.json"
           cat ver.json
       - name: Collect dependencies
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
-          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} $PACKAGE_NAME=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          conda create -n "${{ env.EXAMPLES_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" python=${{ matrix.python }} "$CHANNELS" --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -574,96 +581,93 @@ jobs:
         env:
           DPCPP_CMPLR: "dpcpp_linux-64>=2025.0"
         run: |
-          CHANNELS="${{ env.CHANNELS }}"
-          . $CONDA/etc/profile.d/conda.sh
+          export CHANNELS="${{ env.CHANNELS }}"
+          . "$CONDA/etc/profile.d/conda.sh"
           DPCTL_DEPENDS="$(python -c "${VER_SCRIPT1} ${VER_SCRIPT3}")"
           echo "Dpctl dependencies: ${DPCTL_DEPENDS}"
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} "setuptools<72.2.0" $CHANNELS
+          conda create -n "${{ env.EXAMPLES_ENV_NAME }}" -y pytest python="${{ matrix.python }}" "setuptools<72.2.0" "$CHANNELS"
           echo "Environment created"
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
+          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y cmake ninja "$CHANNELS" || exit 1
           echo "Cmake and Ninja installed"
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
+          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y pybind11 cython scikit-build "$CHANNELS" || exit 1
           echo "scikit-build installed"
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp \
+          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y mkl-dpcpp \
               mkl-devel-dpcpp dpcpp_cpp_rt "${DPCTL_DEPENDS}" \
-              $CHANNELS || exit 1
+              "$CHANNELS" || exit 1
           echo "IPL installed"
-          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 \
-              ${{ env.DPCPP_CMPLR }} "${DPCTL_DEPENDS}" \
+          conda create -y -n "${{ env.BUILD_ENV_NAME }}" "$CHANNELS" gcc_linux-64 gxx_linux-64 \
+              "${{ env.DPCPP_CMPLR }}" "${DPCTL_DEPENDS}" \
               "sysroot_linux-64>=2.28"
           echo "Compiler installed"
-          conda list -n ${{ env.BUILD_ENV_NAME }}
+          conda list -n "${{ env.BUILD_ENV_NAME }}"
       - name: Install dpctl
         shell: bash -l {0}
         run: |
-          source $CONDA/etc/profile.d/conda.sh
+          source "$CONDA/etc/profile.d/conda.sh"
           CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels"
-          export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp || exit 1
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y "${CHANNELS}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" dpnp || exit 1
       - name: Build and run examples of pybind11 extensions
         shell: bash -l {0}
         run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.EXAMPLES_ENV_NAME }}
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
           conda list
           cd examples/pybind11
-          for d in $(find . -maxdepth 1 -type d -not -path ".")
-          do
-            pushd $d
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
             conda activate --stack build_env
             CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
             conda deactivate
-            if [ -e tests ]
-            then
-               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python -m pytest tests || exit 1
+            if [ -e tests ]; then
+               LD_LIBRARY_PATH="${CONDA_PREFIX}/lib" python -m pytest tests || exit 1
             else
-               LD_LIBRARY_PATH=${CONDA_PREFIX}/lib python example.py || exit 1
+               LD_LIBRARY_PATH="${CONDA_PREFIX}/lib" python example.py || exit 1
             fi
-            popd
-          done
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
       - name: Build and run examples of Cython extensions
         shell: bash -l {0}
         run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.EXAMPLES_ENV_NAME }}
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
           conda list
           cd examples/cython
-          for d in $(find . -maxdepth 1 -type d -not -path ".")
-          do
-            pushd $d
-            conda activate --stack ${{ env.BUILD_ENV_NAME }}
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
+            conda activate --stack "${{ env.BUILD_ENV_NAME }}"
             CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja  || exit 1
             conda deactivate
             python -m pytest tests || exit 1
-            popd
-          done
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
       - name: Build and run examples of C-extensions
         shell: bash -l {0}
         run: |
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.EXAMPLES_ENV_NAME }}
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
           conda list
           cd examples/c
-          for d in $(find . -maxdepth 1 -type d -not -path ".")
-          do
-            pushd $d
-            conda activate --stack ${{ env.BUILD_ENV_NAME }}
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
+            conda activate --stack "${{ env.BUILD_ENV_NAME }}"
             python setup.py build_ext --inplace || exit 1
             conda deactivate
             python -m pytest tests || exit 1
-            popd
-          done
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
       - name: Run Python examples
         shell: bash -l {0}
         run: |
           cd examples/python
-          source $CONDA/etc/profile.d/conda.sh
-          conda activate ${{ env.EXAMPLES_ENV_NAME }}
-          for script in $(find . \( -not -name "_*" -and -name "*.py" \))
-          do
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
+          while IFS= read -r script; do
             echo "Executing ${script}"
-            python ${script} || exit 1
-          done
+            python "${script}" || exit 1
+          done < <(find . \( -not -name "_*" -and -name "*.py" \))
 
   cleanup_packages:
     name: Clean up anaconda packages

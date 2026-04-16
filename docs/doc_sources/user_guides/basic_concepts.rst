@@ -111,7 +111,7 @@ backend. The context is required to map unified address space pointer to the dev
 where it was allocated unambiguously.
 
 In order for two DPC++-based Python extensions to share USM allocations, they each
-must use the `same` SYCL context when submitting for execution programs that would
+must use the *same* SYCL context when submitting for execution programs that would
 access this allocation.
 
 Since ``sycl::context`` is dynamically constructed by each extension  sharing a USM allocation,
