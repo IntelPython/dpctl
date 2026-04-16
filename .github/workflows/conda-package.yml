@@ -185,8 +185,9 @@ jobs:
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export CHANNELS
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          export PACKAGE_VERSION
-          conda create -n "${{ env.TEST_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" python=${{ matrix.python }} "$CHANNELS" --only-deps --dry-run > lockfile
+            export PACKAGE_VERSION
+            # shellcheck disable=SC2086
+          conda create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -210,7 +211,8 @@ jobs:
           export TEST_DEPENDENCIES
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           export PACKAGE_VERSION
-          conda create -n "${{ env.TEST_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" "${TEST_DEPENDENCIES}" python=${{ matrix.python }} "${CHANNELS}"
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} $TEST_DEPENDENCIES python=${{ matrix.python }} $CHANNELS
           # Test installed packages
           conda list -n "${{ env.TEST_ENV_NAME }}"
       - name: Smoke test
@@ -553,7 +555,8 @@ jobs:
           export CHANNELS
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           export PACKAGE_VERSION
-          conda create -n "${{ env.EXAMPLES_ENV_NAME }}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" python=${{ matrix.python }} "$CHANNELS" --only-deps --dry-run > lockfile
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -577,20 +580,26 @@ jobs:
           export CHANNELS="${{ env.CHANNELS }}"
           . "$CONDA/etc/profile.d/conda.sh"
           DPCTL_DEPENDS="$(python -c "${VER_SCRIPT1} ${VER_SCRIPT3}")"
+          export DPCTL_DEPENDS
           echo "Dpctl dependencies: ${DPCTL_DEPENDS}"
-          conda create -n "${{ env.EXAMPLES_ENV_NAME }}" -y pytest python="${{ matrix.python }}" "setuptools<72.2.0" "$CHANNELS"
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} "setuptools<72.2.0" $CHANNELS
           echo "Environment created"
-          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y cmake ninja "$CHANNELS" || exit 1
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
           echo "Cmake and Ninja installed"
-          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y pybind11 cython scikit-build "$CHANNELS" || exit 1
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
           echo "scikit-build installed"
-          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y mkl-dpcpp \
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp \
               mkl-devel-dpcpp dpcpp_cpp_rt "${DPCTL_DEPENDS}" \
-              "$CHANNELS" || exit 1
+              $CHANNELS || exit 1
           echo "IPL installed"
-          conda create -y -n "${{ env.BUILD_ENV_NAME }}" "$CHANNELS" gcc_linux-64 gxx_linux-64 \
-              "${{ env.DPCPP_CMPLR }}" "${DPCTL_DEPENDS}" \
-              "sysroot_linux-64>=2.28"
+          # shellcheck disable=SC2086
+          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 \
+              ${{ env.DPCPP_CMPLR }} ${DPCTL_DEPENDS} \
+              sysroot_linux-64>=2.28
           echo "Compiler installed"
           conda list -n "${{ env.BUILD_ENV_NAME }}"
       - name: Install dpctl
@@ -601,7 +610,8 @@ jobs:
           export CHANNELS
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           export PACKAGE_VERSION
-          conda install -n "${{ env.EXAMPLES_ENV_NAME }}" -y "${CHANNELS}" "${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION}" dpnp || exit 1
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y $CHANNELS ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} dpnp || exit 1
       - name: Build and run examples of pybind11 extensions
         shell: bash -l {0}
         run: |
