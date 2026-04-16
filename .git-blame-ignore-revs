@@ -17,3 +17,6 @@ b37657e6ad9af16eaec2982d8e2397acd2af2881
 
 # Add cython-lint to pre-commit config
 0ce1aef210ffb88b7d2ea3a89e861486498f652f
+
+# Add new linters and rules to pre-commit
+5cf074899f226726d07026db9899bb7632d8c1de
