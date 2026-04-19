@@ -1,0 +1,11 @@
+.. index:: pair: group; Platform class helper functions
+.. _doxid-d5/dcf/group___platform_manager:
+
+Platform class helper functions
+===============================
+
+.. toctree::
+	:hidden:
+
+Helper functions for ``sycl::platform`` objects that do not directly map to any ``sycl::platform`` member function.
+
