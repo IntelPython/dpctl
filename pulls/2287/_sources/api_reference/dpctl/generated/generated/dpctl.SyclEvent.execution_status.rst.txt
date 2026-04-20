@@ -1,6 +1,0 @@
-dpctl.SyclEvent.execution\_status
-=================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclEvent.execution_status
