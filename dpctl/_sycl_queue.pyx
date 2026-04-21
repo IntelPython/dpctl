@@ -1703,25 +1703,28 @@ cdef class WorkGroupMemory:
             raise RuntimeError("Workgroup memory extension not available")
 
         if not (0 < len(args) < 3):
-            raise TypeError("WorkGroupMemory constructor takes 1 or 2 "
-                            f"arguments, but {len(args)} were given")
+            raise TypeError(
+                "WorkGroupMemory constructor takes 1 or 2 arguments, but "
+                f"{len(args)} were given"
+            )
 
         if len(args) == 1:
             if not isinstance(args[0], numbers.Integral):
-                raise TypeError("WorkGroupMemory single argument constructor"
-                                "expects first argument to be `int`",
-                                f"but got {type(args[0])}")
+                raise TypeError(
+                    "WorkGroupMemory single argument constructor expects "
+                    f"first argument to be `int` but got {type(args[0])}"
+                )
             nbytes = <size_t>(args[0])
         else:
             if not isinstance(args[0], str):
                 raise TypeError(
-                    "WorkGroupMemory constructor expects first"
-                    f"argument to be `str`, but got {type(args[0])}"
+                    "WorkGroupMemory constructor expects first argument to be "
+                    f"`str`, but got {type(args[0])}"
                 )
             if not isinstance(args[1], numbers.Integral):
                 raise TypeError(
-                    "WorkGroupMemory constructor expects second"
-                    f"argument to be `int`, but got {type(args[1])}"
+                    "WorkGroupMemory constructor expects second argument to "
+                    f"be `int`, but got {type(args[1])}"
                 )
             dtype = <str>(args[0])
             count = <size_t>(args[1])
@@ -1800,14 +1803,16 @@ cdef class RawKernelArg:
             raise RuntimeError("Raw kernel arg extension not available")
 
         if not (0 < len(args) < 3):
-            raise TypeError("RawKernelArg constructor takes 1 or 2 "
-                            f"arguments, but {len(args)} were given")
+            raise TypeError(
+                "RawKernelArg constructor takes 1 or 2 arguments, but "
+                f"{len(args)} were given"
+            )
 
         if len(args) == 1:
             if not _is_buffer(args[0]):
-                raise TypeError("RawKernelArg single argument constructor"
-                                "expects argument to be buffer",
-                                f"but got {type(args[0])}")
+                raise TypeError(
+                    "RawKernelArg single argument constructor expects "
+                    f"argument to be buffer but got {type(args[0])}")
 
             ret_code = PyObject_GetBuffer(args[0], &(_buffer),
                                           PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
@@ -1819,11 +1824,15 @@ cdef class RawKernelArg:
             _is_buf = True
         else:
             if not isinstance(args[0], numbers.Integral):
-                raise TypeError("RawKernelArg constructor expects first"
-                                "argument to be `int`, but got {type(args[0])}")
+                raise TypeError(
+                    "RawKernelArg constructor expects first argument to be "
+                    f"`int`, but got {type(args[0])}"
+                )
             if not isinstance(args[1], numbers.Integral):
-                raise TypeError("RawKernelArg constructor expects second"
-                                "argument to be `int`, but got {type(args[1])}")
+                raise TypeError(
+                    "RawKernelArg constructor expects second argument to be "
+                    f"`int`, but got {type(args[1])}"
+                )
 
             _is_buf = False
             count = args[0]
