@@ -416,7 +416,7 @@ cdef class _DefaultDeviceCache:
     cdef dict __device_map__
 
     def __cinit__(self):
-        self.__device_map__ = dict()
+        self.__device_map__ = {}
 
     cdef get_or_create(self):
         """Return instance of SyclDevice and indicator if cache

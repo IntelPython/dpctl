@@ -70,7 +70,7 @@ def test_create_event_from_capsule():
 
 def test_invalid_constructor_arg():
     with pytest.raises(TypeError):
-        dpctl.SyclEvent(list())
+        dpctl.SyclEvent([])
 
 
 def test_wait_with_event():

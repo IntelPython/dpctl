@@ -1210,7 +1210,7 @@ cdef class SyclDevice(_SyclDevice):
         sg_sizes = DPCTLDevice_GetSubGroupSizes(
             self._device_ref, &sg_sizes_len)
         if (sg_sizes is not NULL and sg_sizes_len > 0):
-            res = list()
+            res = []
             for i in range(sg_sizes_len):
                 res.append(sg_sizes[i])
             DPCTLSize_t_Array_Delete(sg_sizes)

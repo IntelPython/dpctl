@@ -61,7 +61,7 @@ def test_intel_device_info():
 
 
 def test_intel_device_info_validation():
-    invalid_device = dict()
+    invalid_device = {}
     with pytest.raises(TypeError):
         dpctl.utils.intel_device_info(invalid_device)
 

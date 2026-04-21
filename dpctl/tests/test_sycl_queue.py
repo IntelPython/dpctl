@@ -209,7 +209,7 @@ def test_queue_invalid_property():
     with pytest.raises(ValueError):
         dpctl.SyclQueue(property=4.5)
     with pytest.raises(ValueError):
-        dpctl.SyclQueue(property=["abc", tuple()])
+        dpctl.SyclQueue(property=["abc", ()])
 
 
 def test_queue_capsule():
@@ -345,13 +345,13 @@ def test_queue_memops():
     q.prefetch(m1, 512)
     q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
-        q.memcpy(m1, list(), 512)
+        q.memcpy(m1, [], 512)
     with pytest.raises(TypeError):
-        q.memcpy(list(), m2, 512)
+        q.memcpy([], m2, 512)
     with pytest.raises(TypeError):
-        q.prefetch(list(), 512)
+        q.prefetch([], 512)
     with pytest.raises(TypeError):
-        q.mem_advise(list(), 512, 0)
+        q.mem_advise([], 512, 0)
 
 
 @pytest.fixture(scope="session")
