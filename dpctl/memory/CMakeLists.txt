@@ -2,6 +2,17 @@
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_memory.pyx)
 get_filename_component(_trgt ${_cy_file} NAME_WLE)
 build_dpctl_ext(${_trgt} ${_cy_file} "dpctl/memory" SYCL RELATIVE_PATH "..")
+
+target_sources(${_trgt} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory_pool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory_pool_registry.cpp
+)
+
+add_sycl_to_target(TARGET ${_trgt} SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory_pool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/memory_pool_registry.cpp
+)
+
 # _memory include _opaque_smart_ptr.hpp
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)

@@ -30,59 +30,42 @@
 #error "C++ is required to compile this file"
 #endif
 
+#include "memory_pool.hpp"
+#include "memory_pool_registry.hpp"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 #include "syclinterface/dpctl_sycl_types.h"
 #include <memory>
+#include <stddef.h>
 #include <sycl/sycl.hpp>
 #include <utility>
 
-#include <exception>
-#include <iostream>
-
-namespace detail
+void *OpaqueSmartPtr_Make(void *usm_ptr, size_t nbytes, const sycl::queue &q)
 {
+    auto ctx = q.get_context();
+    auto dev = q.get_device();
 
-class USMDeleter
-{
-public:
-    USMDeleter() = delete;
-    USMDeleter(const USMDeleter &) = default;
-    USMDeleter(USMDeleter &&) = default;
-    USMDeleter(const ::sycl::queue &queue) : _context(queue.get_context()) {}
-    USMDeleter(const ::sycl::context &context) : _context(context) {}
-    template <typename T> void operator()(T *ptr) const
-    {
-        try {
-            ::sycl::free(ptr, _context);
-        } catch (const std::exception &e) {
-            std::cout << "Call to sycl::free caught an exception: " << e.what()
-                      << std::endl;
-            // std::terminate();
-        }
+    auto type = sycl::get_pointer_type(usm_ptr, ctx);
+    if (type == sycl::usm::alloc::unknown) {
+        throw std::invalid_argument(
+            "Pointer is not a USM pointer in this context");
     }
 
-private:
-    ::sycl::context _context;
-};
+    auto pool = dpctl::memory::MemoryPoolRegistry::get_pool(ctx, dev, type);
+    dpctl::memory::USMPoolDeleter _deleter(pool, nbytes);
 
-} // namespace detail
-
-void *OpaqueSmartPtr_Make(void *usm_ptr, const sycl::queue &q)
-{
-    detail::USMDeleter _deleter(q);
     auto sptr = new std::shared_ptr<void>(usm_ptr, std::move(_deleter));
 
     return reinterpret_cast<void *>(sptr);
 }
 
-void *OpaqueSmartPtr_Make(void *usm_ptr, DPCTLSyclQueueRef QRef)
+void *OpaqueSmartPtr_Make(void *usm_ptr, size_t nbytes, DPCTLSyclQueueRef QRef)
 {
     sycl::queue *q_ptr = dpctl::syclinterface::unwrap<sycl::queue>(QRef);
 
     // make a copy of queue
     sycl::queue q{*q_ptr};
 
-    void *res = OpaqueSmartPtr_Make(usm_ptr, q);
+    void *res = OpaqueSmartPtr_Make(usm_ptr, nbytes, q);
 
     return res;
 }

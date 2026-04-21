@@ -89,7 +89,7 @@ __all__ = [
 include "_sycl_usm_array_interface_utils.pxi"
 
 cdef extern from "_opaque_smart_ptr.hpp":
-    void * OpaqueSmartPtr_Make(void *, DPCTLSyclQueueRef) nogil
+    void * OpaqueSmartPtr_Make(void *, size_t nbytes, DPCTLSyclQueueRef) nogil
     void * OpaqueSmartPtr_Copy(void *) nogil
     void OpaqueSmartPtr_Delete(void *) nogil
     void * OpaqueSmartPtr_Get(void *) nogil
@@ -222,7 +222,7 @@ cdef class _Memory:
 
             if (p):
                 self._memory_ptr = p
-                self._opaque_ptr = OpaqueSmartPtr_Make(p, QRef)
+                self._opaque_ptr = OpaqueSmartPtr_Make(p, <size_t>nbytes, QRef)
                 self.nbytes = nbytes
                 self.queue = queue
             else:
@@ -745,7 +745,7 @@ cdef class _Memory:
         if memory_owner is None:
             _mem._memory_ptr = USMRef
             # assume ownership of USM allocation via smart pointer
-            _mem._opaque_ptr = OpaqueSmartPtr_Make(<void *>USMRef, QRef)
+            _mem._opaque_ptr = OpaqueSmartPtr_Make(<void *>USMRef, <size_t>nbytes, QRef)
             _mem.refobj = None
         else:
             _mem._memory_ptr = USMRef
