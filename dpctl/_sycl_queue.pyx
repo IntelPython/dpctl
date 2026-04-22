@@ -488,9 +488,8 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         src_is_buf = True
     else:
         raise TypeError(
-             "Parameter `src` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
+             "Parameter `src` should have either type `dpctl.memory._Memory` "
+             "or a type that supports Python buffer protocol"
         )
 
     if isinstance(dst, _Memory):
@@ -508,9 +507,8 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         dst_is_buf = True
     else:
         raise TypeError(
-             "Parameter `dst` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
+             "Parameter `dst` should have either type `dpctl.memory._Memory` "
+             "or a type that supports Python buffer protocol"
         )
 
     if dep_events_count == 0 or dep_events is NULL:
@@ -1592,7 +1590,8 @@ cdef class SyclQueue(_SyclQueue):
         else:
             raise TypeError(
                 "dependent_events must either None, or a sequence of "
-                ":class:`dpctl.SyclEvent` objects")
+                "`dpctl.SyclEvent` objects"
+            )
         if nDE > 0:
             depEvents = (
                 <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
