@@ -30,19 +30,27 @@ def usm_allocation():
     """
     # allocate USM-shared byte-buffer
     ms = dpmem.MemoryUSMShared(16)
+    print(f"USM-shared buffer allocated with size: {len(ms)}")
 
     # allocate USM-device byte-buffer
     md = dpmem.MemoryUSMDevice(16)
+    print(f"USM-device buffer allocated with size: {len(md)}")
 
     # allocate USM-host byte-buffer
     mh = dpmem.MemoryUSMHost(16)
+    print(f"USM-host buffer allocated with size: {len(mh)}")
 
     # specify alignment
     mda = dpmem.MemoryUSMDevice(128, alignment=16)
+    print(f"16-byte aligned USM-device buffer allocated with size: {len(mda)}")
 
     # allocate using given queue,
     # i.e. on the device and bound to the context stored in the queue
     mdq = dpmem.MemoryUSMDevice(256, queue=mda.sycl_queue)
+    print(
+        "USM-device buffers share the same queue: "
+        f"{mdq.sycl_queue == mda.sycl_queue}"
+    )
 
     # information about device associate with USM buffer
     print("Allocation performed on device:")
@@ -82,7 +90,7 @@ def usm_host_access():
     # USM-device buffer is not host accessible
     md = dpmem.MemoryUSMDevice(16)
     try:
-        mdv = memoryview(md)
+        memoryview(md)
     except Exception as e:
         print("")
         print(
