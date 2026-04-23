@@ -89,7 +89,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
 
 /*!
- * @brief Deletes the DPCTLSyclProgramRef pointer.
+ * @brief Deletes the DPCTLSyclPlatformRef pointer.
  *
  * @param    PRef           An opaque pointer to a sycl::platform.
  * @ingroup PlatformInterface

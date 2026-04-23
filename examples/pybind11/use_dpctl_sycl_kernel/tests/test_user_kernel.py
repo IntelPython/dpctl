@@ -45,7 +45,7 @@ def test_kernel_can_be_found():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dppr.create_program_from_spirv(q, il, "")
+    pr = dppr.create_kernel_bundle_from_spirv(q, il, "")
     assert pr.has_sycl_kernel("double_it")
 
 
@@ -57,7 +57,7 @@ def test_kernel_submit_through_extension():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dppr.create_program_from_spirv(q, il, "")
+    pr = dppr.create_kernel_bundle_from_spirv(q, il, "")
     krn = pr.get_sycl_kernel("double_it")
     assert krn.num_args == 2
 

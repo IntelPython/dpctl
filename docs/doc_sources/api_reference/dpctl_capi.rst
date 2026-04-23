@@ -33,9 +33,9 @@ Exported typedefs
 
 .. c:struct:: PySyclKernelType
 
-.. c:struct:: PySyclProgramObject
+.. c:struct:: PySyclKernelBundleObject
 
-.. c:struct:: PySyclProgramType
+.. c:struct:: PySyclKernelBundleType
 
 To check whether a particular Python object is an instance of :py:class:`dpctl.SyclQueue`:
 
@@ -176,19 +176,19 @@ API for :c:struct:`PySyclKernelObject`
     the caller remains responsible for freeing ``KRef`` as appropriate.
 
 
-API for :c:struct:`PySyclProgramObject`
+API for :c:struct:`PySyclKernelBundleObject`
 ---------------------------------------
 
-.. c:function:: DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(struct PySyclProgramObject *prog)
+.. c:function:: DPCTLSyclKernelBundleRef SyclKernelBundle_GetKernelBundleRef(struct PySyclKernelBundleObject *prog)
 
     :param prog: Input object
     :returns: borrowed instance of :c:struct:`DPCTLSyclKernelBundleRef` corresponding
         to ``sycl::kernel_bundle<sycl::bundle_state::executable>``
 
-.. c:function:: struct PySyclProgramObject * SyclProgram_Make(DPCTLSyclKernelBundleRef KBRef)
+.. c:function:: struct PySyclKernelBundleObject * SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef)
 
     :param KBRef: instance of :c:struct:`DPCTLSyclKernelBundleRef`
-    :returns: new Python object of type :c:struct:`PySyclProgramType`
+    :returns: new Python object of type :c:struct:`PySyclKernelBundleType`
 
     Note that function does not change the ownership of the ``KBRef`` instance and
     the caller remains responsible for freeing ``KBRef`` as appropriate.

@@ -20,6 +20,8 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     :toctree: generated
     :nosignatures:
 
+    create_kernel_bundle_from_source
+    create_kernel_bundle_from_spirv
     create_program_from_source
     create_program_from_spirv
 
@@ -27,11 +29,11 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     :toctree: generated
     :nosignatures:
 
-    SyclProgram
+    SyclKernelBundle
     SyclKernel
 
 .. autosummary::
     :toctree: generated
     :nosignatures:
 
-    SyclProgramCompilationError
+    SyclKernelBundleCompilationError
