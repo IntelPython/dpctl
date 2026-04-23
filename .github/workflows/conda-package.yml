@@ -509,7 +509,7 @@ jobs:
     runs-on:  ${{ matrix.runner }}
     strategy:
       matrix:
-        python: ['3.11']
+        python: ['3.14']
         experimental: [false]
         runner: [ubuntu-22.04]
     continue-on-error: ${{ matrix.experimental }}

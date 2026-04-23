@@ -41,6 +41,7 @@ def usm_allocation():
     print(f"USM-host buffer allocated with size: {len(mh)}")
 
     # specify alignment
+    # TODO: add alignment check
     mda = dpmem.MemoryUSMDevice(128, alignment=16)
     print(f"16-byte aligned USM-device buffer allocated with size: {len(mda)}")
 
