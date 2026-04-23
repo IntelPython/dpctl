@@ -18,14 +18,17 @@
 # cython: language_level=3
 # cython: linetrace=True
 
-"""Implements a Python interface for SYCL's program and kernel runtime classes.
+"""Implements a Python interface for SYCL's kernel bundle and kernel runtime
+classes.
 
-The module also provides functions to create a SYCL program from either
-a OpenCL source string or a SPIR-V binary file.
+The module also provides functions to create a SYCL kernel bundle from either
+an OpenCL source string or a SPIR-V binary file.
 
 """
 
 from libc.stdint cimport uint32_t
+
+import warnings
 
 from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_Copy,
@@ -51,14 +54,14 @@ from dpctl._backend cimport (  # noqa: E211, E402;
 )
 
 __all__ = [
-    "create_program_from_source",
-    "create_program_from_spirv",
+    "create_kernel_bundle_from_source",
+    "create_kernel_bundle_from_spirv",
     "SyclKernel",
-    "SyclProgram",
-    "SyclProgramCompilationError",
+    "SyclKernelBundle",
+    "SyclKernelBundleCompilationError",
 ]
 
-cdef class SyclProgramCompilationError(Exception):
+cdef class SyclKernelBundleCompilationError(Exception):
     """This exception is raised when a ``sycl::kernel_bundle`` could not be
        built from either a SPIR-V binary file or a string source.
     """
@@ -185,38 +188,38 @@ cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef, const char *name):
         return SyclKernel._create(copied_KRef, name.decode("utf-8"))
 
 
-cdef class SyclProgram:
+cdef class SyclKernelBundle:
     """ Wraps a ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object
     created using SYCL interoperability layer with underlying backends. Only the
     OpenCL and Level-Zero backends are currently supported.
 
-    SyclProgram exposes the C API from ``dpctl_sycl_kernel_bundle_interface.h``.
-    A SyclProgram can be created from either a source string or a SPIR-V
-    binary file.
+    SyclKernelBundle exposes the C API from
+    ``dpctl_sycl_kernel_bundle_interface.h``. A SyclKernelBundle can be
+    created from either a source string or a SPIR-V binary file.
     """
 
     @staticmethod
-    cdef SyclProgram _create(DPCTLSyclKernelBundleRef KBRef):
-        cdef SyclProgram ret = SyclProgram.__new__(SyclProgram)
-        ret._program_ref = KBRef
+    cdef SyclKernelBundle _create(DPCTLSyclKernelBundleRef KBRef):
+        cdef SyclKernelBundle ret = SyclKernelBundle.__new__(SyclKernelBundle)
+        ret._kernel_bundle_ref = KBRef
         return ret
 
     def __dealloc__(self):
-        DPCTLKernelBundle_Delete(self._program_ref)
+        DPCTLKernelBundle_Delete(self._kernel_bundle_ref)
 
-    cdef DPCTLSyclKernelBundleRef get_program_ref(self):
-        return self._program_ref
+    cdef DPCTLSyclKernelBundleRef get_kernel_bundle_ref(self):
+        return self._kernel_bundle_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
         return SyclKernel._create(
-            DPCTLKernelBundle_GetKernel(self._program_ref, name),
+            DPCTLKernelBundle_GetKernel(self._kernel_bundle_ref, name),
             kernel_name
         )
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
-        return DPCTLKernelBundle_HasKernel(self._program_ref, name)
+        return DPCTLKernelBundle_HasKernel(self._kernel_bundle_ref, name)
 
     def addressof_ref(self):
         """Returns the address of the C API DPCTLSyclKernelBundleRef pointer
@@ -224,14 +227,35 @@ cdef class SyclProgram:
 
         Returns:
             The address of the ``DPCTLSyclKernelBundleRef`` pointer used to
-            create this :class:`dpctl.SyclProgram` object cast to a ``size_t``.
+            create this :class:`dpctl.SyclKernelBundle` object cast to a
+            ``size_t``.
         """
-        return int(<size_t>self._program_ref)
+        return int(<size_t>self._kernel_bundle_ref)
 
 
-cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
+cdef api DPCTLSyclKernelBundleRef SyclKernelBundle_GetKernelBundleRef(
+    SyclKernelBundle kb
+):
+    """ C-API function to access opaque kernel bundle reference from
+    Python object of type :class:`dpctl.program.SyclKernelBundle`.
     """
-        Creates a Sycl interoperability program from an OpenCL source string.
+    return kb.get_kernel_bundle_ref()
+
+
+cdef api SyclKernelBundle SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef):
+    """
+    C-API function to create :class:`dpctl.program.SyclKernelBundle`
+    instance from opaque ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+    reference.
+    """
+    cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
+    return SyclKernelBundle._create(copied_KBRef)
+
+
+cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
+    """
+        Creates a Sycl interoperability kernel bundle from an OpenCL source
+        string.
 
         We use the ``DPCTLKernelBundle_CreateFromOCLSource()`` C API function
         to create a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
@@ -241,21 +265,21 @@ cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
         Parameters:
             q (:class:`dpctl.SyclQueue`)
                 The :class:`dpctl.SyclQueue` for which the
-                :class:`.SyclProgram` is going to be built.
+                :class:`.SyclKernelBundle` is going to be built.
             src (str)
                 Source string for an OpenCL program.
             copts (str, optional)
                 Optional compilation flags that will be used
-                when compiling the program. Default: ``""``.
+                when compiling the kernel bundle. Default: ``""``.
 
         Returns:
-            program (:class:`.SyclProgram`)
-                A :class:`.SyclProgram` object wrapping the
+            kernel_bundle (:class:`.SyclKernelBundle`)
+                A :class:`.SyclKernelBundle` object wrapping the
                 ``sycl::kernel_bundle<sycl::bundle_state::executable>``
                 returned by the C API.
 
         Raises:
-            SyclProgramCompilationError
+            SyclKernelBundleCompilationError
                 If a SYCL kernel bundle could not be created.
     """
 
@@ -269,15 +293,16 @@ cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
     KBref = DPCTLKernelBundle_CreateFromOCLSource(CRef, DRef, Src, COpts)
 
     if KBref is NULL:
-        raise SyclProgramCompilationError()
+        raise SyclKernelBundleCompilationError()
 
-    return SyclProgram._create(KBref)
+    return SyclKernelBundle._create(KBref)
 
 
-cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
-                                str copts=""):
+cpdef create_kernel_bundle_from_spirv(
+    SyclQueue q, const unsigned char[:] IL, str copts=""
+):
     """
-        Creates a Sycl interoperability program from an SPIR-V binary.
+        Creates a Sycl interoperability kernel bundle from an SPIR-V binary.
 
         We use the :c:func:`DPCTLKernelBundle_CreateFromOCLSpirv` C API function
         to create a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
@@ -286,21 +311,21 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
         Parameters:
             q (:class:`dpctl.SyclQueue`)
                 The :class:`dpctl.SyclQueue` for which the
-                :class:`.SyclProgram` is going to be built.
+                :class:`.SyclKernelBundle` is going to be built.
             IL (bytes)
                 SPIR-V binary IL file for an OpenCL program.
             copts (str, optional)
                 Optional compilation flags that will be used
-                when compiling the program. Default: ``""``.
+                when compiling the kernel bundle. Default: ``""``.
 
         Returns:
-            program (:class:`.SyclProgram`)
-                A :class:`.SyclProgram` object wrapping the
+            kernel_bundle (:class:`.SyclKernelBundle`)
+                A :class:`.SyclKernelBundle` object wrapping the
                 ``sycl::kernel_bundle<sycl::bundle_state::executable>``
                 returned by the C API.
 
         Raises:
-            SyclProgramCompilationError
+            SyclKernelBundleCompilationError
                 If a SYCL kernel bundle could not be created.
     """
 
@@ -315,25 +340,36 @@ cpdef create_program_from_spirv(SyclQueue q, const unsigned char[:] IL,
         CRef, DRef, <const void*>dIL, length, COpts
     )
     if KBref is NULL:
-        raise SyclProgramCompilationError()
+        raise SyclKernelBundleCompilationError()
 
-    return SyclProgram._create(KBref)
+    return SyclKernelBundle._create(KBref)
 
 
-cdef api DPCTLSyclKernelBundleRef SyclProgram_GetKernelBundleRef(
-    SyclProgram pro
+cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
+    """This function is a deprecated alias for
+    :func:`dpctl.program.create_kernel_bundle_from_source`.
+    New code should use :func:`dpctl.program.create_kernel_bundle_from_source`.
+    """
+    warnings.warn(
+        "create_program_from_source is deprecated and will be removed in a "
+        "future release. Use create_kernel_bundle_from_source instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return create_kernel_bundle_from_source(q, src, copts)
+
+
+cpdef create_program_from_spirv(
+    SyclQueue q, const unsigned char[:] IL, str copts=""
 ):
-    """ C-API function to access opaque kernel bundle reference from
-    Python object of type :class:`dpctl.program.SyclKernel`.
+    """This function is a deprecated alias for
+    :func:`dpctl.program.create_kernel_bundle_from_spirv`.
+    New code should use :func:`dpctl.program.create_kernel_bundle_from_spirv`.
     """
-    return pro.get_program_ref()
-
-
-cdef api SyclProgram SyclProgram_Make(DPCTLSyclKernelBundleRef KBRef):
-    """
-    C-API function to create :class:`dpctl.program.SyclProgram`
-    instance from opaque ``sycl::kernel_bundle<sycl::bundle_state::executable>``
-    reference.
-    """
-    cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
-    return SyclProgram._create(copied_KBRef)
+    warnings.warn(
+        "create_program_from_spirv is deprecated and will be removed in a "
+        "future release. Use create_kernel_bundle_from_spirv instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return create_kernel_bundle_from_spirv(q, IL, copts)
