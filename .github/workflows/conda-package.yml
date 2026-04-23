@@ -662,7 +662,7 @@ jobs:
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
             echo "Executing ${script}"
-            python ${script} || exit 1
+            python ${script} --run all || exit 1
           done
 
   cleanup_packages:
