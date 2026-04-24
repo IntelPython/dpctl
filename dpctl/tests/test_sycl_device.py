@@ -405,7 +405,7 @@ def test_peer_device_arg_validation(method):
         dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
-    bad_dev = dict()
+    bad_dev = {}
     callable = getattr(dev, method)
     with pytest.raises(TypeError):
         callable(bad_dev)
