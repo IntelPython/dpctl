@@ -1,0 +1,107 @@
+.. _user_guides_env_variables:
+
+#####################
+Environment variables
+#####################
+
+Behavior of :py:mod:`dpctl` is affected by :dpcpp_envar:`environment variables <>` that
+affect DPC++ compiler runtime.
+Other relevant environment variables that may not be documented here can be found in:
+
+- `Level Zero <https://intel.github.io/llvm/EnvironmentVariables.html>`_
+
+- `OneAPI <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#environment-variables>`_
+
+
+Variable ``ONEAPI_DEVICE_SELECTOR``
+-----------------------------------
+
+The variable ``ONEAPI_DEVICE_SELECTOR`` can be used to limit the choice of devices
+available to :py:mod:`dpctl`. Please refer to
+:ref:`Managing Devices <beginners_guide_oneapi_device_selector>` for detailed
+description and :ref:`uses <beginners_guide_oneapi_device_selector_usecase>`.
+
+Variable ``SYCL_PI_TRACE``
+--------------------------
+
+Setting this debugging variable enables specific levels of tracing for SYCL Programming Interfaces (PI).
+The value of the variable is a bit-mask, with the following supported values:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``1``
+      - Enables tracing of PI plugins/devices discovery
+    * - ``2``
+      - Enables tracing of PI calls
+    * - ``-1``
+      - Enables all levels of tracing
+
+.. _env_var_ze_flat_device_hierarchy:
+
+Variable ``ZE_FLAT_DEVICE_HIERARCHY``
+--------------------------
+Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
+Keep in mind :py:mod:`dpctl.get_composite_devices` will only work while this is set to ``COMBINED``.
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``COMBINED``
+      - Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. These root devices are component devices, which can be queried for their corresponding composite device, and the composite device can in turn be queried for components. Dedicated composite device APIs will return non-trivial results.
+    * - ``COMPOSITE``
+      - Level Zero devices with multiple tiles will be exposed as a singular root device, with tiles accessible as sub-devices.
+    * - ``FLAT``
+      - Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. Enabled by default.
+
+Read more about device hierarchy in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy>`_ and `Intel GPU article <https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html>`_.
+
+Variable ``ZE_AFFINITY_MASK``
+-------------------------------
+Allows users to mask specific devices from being used by SYCL applications.
+If we have ``ZE_FLAT_DEVICE_HIERARCHY`` set to ``COMPOSITE``, we can have an AFFINITY of “1” for our application to only see device #1 - making system devices 0, and 2+, invisible.
+
+If we have ``ZE_FLAT_DEVICE_HIERARCHY`` set to ``FLAT``, we can have a ``ZE_AFFINITY_MASK`` of “1” for our application to only see the second tile in the system as logical device #0.
+If the system has four dual-tile GPUs installed, this would be the second tile in the first GPU. In ``FLAT`` mode, the numbers use a system-wide-sub-device-number from a flat numbering perspective.
+Therefore, we could use the second tile in each of four dual-tile GPUs with ``ZE_AFFINITY_MASK=1,3,5,7``.
+
+| If we have ``ZE_FLAT_DEVICE_HIERARCHY`` set to ``COMBINED``, the way tiles and composite devices are exposed depends on the physical devices present and the value of ``ZE_AFFINITY_MASK``:
+| **If all exposed tiles (as determined by ``ZE_AFFINITY_MASK``) belong to the same physical device:**
+| - That composite device is available to the application, and each tile is accessible as a component device of that composite device.
+
+| **If the exposed tiles belong to different physical devices:**
+| - A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.
+
+Additional examples to illustrate this are in the detailed documentation for ``ZE_AFFINITY_MASK``, read more about it in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
+
+Variable ``ZE_ENABLE_PCI_ID_DEVICE_ORDER``
+-------------------------------
+Forces driver to report devices from lowest to highest PCI bus ID.
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``0``
+      - Disabled. Default value.
+    * - ``1``
+      - Enabled.
+
+Variable ``ZE_SHARED_FORCE_DEVICE_ALLOC``
+-------------------------------
+Forces all shared allocations into device memory
+
+.. list-table::
+    :header-rows: 1
+
+    * - Value
+      - Description
+    * - ``0``
+      - Disabled. Default value.
+    * - ``1``
+      - Enabled.
