@@ -43,21 +43,6 @@ namespace dpctl
 namespace detail
 {
 
-// Lookup a type according to its size, and return a value corresponding to the
-// NumPy typenum.
-template <typename Concrete> constexpr int platform_typeid_lookup()
-{
-    return -1;
-}
-
-template <typename Concrete, typename T, typename... Ts, typename... Ints>
-constexpr int platform_typeid_lookup(int I, Ints... Is)
-{
-    return sizeof(Concrete) == sizeof(T)
-               ? I
-               : platform_typeid_lookup<Concrete, Ts...>(Is...);
-}
-
 class dpctl_capi
 {
 public:
