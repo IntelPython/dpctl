@@ -1,6 +1,6 @@
+import threading
 import weakref
 from collections import defaultdict
-from contextvars import ContextVar
 
 from .._sycl_event import SyclEvent
 from .._sycl_queue import SyclQueue
@@ -16,7 +16,7 @@ class _SequentialOrderManager:
     def __init__(self):
         self._state = _OrderManager(16)
 
-    def __dealloc__(self):
+    def __del__(self):
         _local = self._state
         SyclEvent.wait_for(_local.get_submitted_events())
         SyclEvent.wait_for(_local.get_host_task_events())
@@ -65,30 +65,39 @@ class _SequentialOrderManager:
 
 
 class SyclQueueToOrderManagerMap:
-    """Utility class used to ensure sequential ordering of offloaded tasks
-    when passed to order manager."""
+    """
+    Utility class used to ensure sequential ordering of offloaded tasks
+    when passed to order manager.
+
+    Maintains a thread-local dictionary mapping SyclQueue instances to
+    _SequentialOrderManager instances.
+    """
 
     def __init__(self):
-        self._map = ContextVar(
-            "global_order_manager_map",
-            default=defaultdict(_SequentialOrderManager),
-        )
+        # each thread gets its own dictionary of order managers
+        self._tls = threading.local()
+
+    def _get_map(self):
+        """
+        Factory method to get or create an order manager map for the
+        current thread.
+        """
+        try:
+            return self._tls.order_manager_map
+        except AttributeError:
+            m = defaultdict(_SequentialOrderManager)
+            self._tls.order_manager_map = m
+            return m
 
     def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
         """Get order manager for given SyclQueue"""
-        _local = self._map.get()
         if not isinstance(q, SyclQueue):
             raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
-        if q in _local:
-            return _local[q]
-        else:
-            v = _local[q]
-            _local[q] = v
-            return v
+        return self._get_map()[q]
 
     def clear(self):
         """Clear content of internal dictionary"""
-        _local = self._map.get()
+        _local = self._get_map()
         for v in _local.values():
             v.wait()
         _local.clear()

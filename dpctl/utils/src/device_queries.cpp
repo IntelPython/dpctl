@@ -132,7 +132,7 @@ std::uint32_t py_intel_memory_bus_width(const sycl::device &d)
 
 }; // namespace
 
-PYBIND11_MODULE(_device_queries, m)
+PYBIND11_MODULE(_device_queries, m, py::mod_gil_not_used())
 {
     m.def("intel_device_info_device_id", &py_intel_device_id,
           "Get ext_intel_device_id for the device, zero if not an intel device",

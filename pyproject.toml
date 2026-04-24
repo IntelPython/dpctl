@@ -29,6 +29,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Free Threading :: 2 - Beta",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
   "Operating System :: Microsoft :: Windows",
@@ -60,7 +61,7 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
+coverage = ["Cython", "pytest", "coverage", "tomli"]
 docs = [
   "Cython",
   "graphviz",
