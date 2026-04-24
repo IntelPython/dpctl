@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.1] - Apr. 24, 2026
+
+This is a bug-fix release which fixes a memory leak in `dpctl.RawKernelArg` [gh-2294](https://github.com/IntelPython/dpctl/pull/2294).
+
 ## [0.22.0] - Apr. 14, 2026
 
 The highlight of this release is the full migration of `dpctl.tensor` submodule to sister project [`dpnp`](https://github.com/IntelPython/dpnp), shrinking the size of the package tremendously, by between 93% and 96%. The `__sycl_usm_array_interface__` is still supported, with `dpctl` serving as curator of the protocol.
