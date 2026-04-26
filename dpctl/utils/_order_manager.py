@@ -112,13 +112,12 @@ class SyclQueueToOrderManagerMap:
         self, q: SyclQueue
     ) -> Union[_SequentialOrderManager, _NoOpOrderManager]:
         """Get order manager for given SyclQueue"""
+        if not isinstance(q, SyclQueue):
+            raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
         if q.is_in_order:
             # we don't need to cache the NoOpOrderManager since it's stateless
             return _NoOpOrderManager(q)
-
         _local = self._map.get()
-        if not isinstance(q, SyclQueue):
-            raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
         if q in _local:
             return _local[q]
         else:
