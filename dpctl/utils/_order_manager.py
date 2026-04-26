@@ -64,6 +64,39 @@ class _SequentialOrderManager:
         return res
 
 
+class _NoOpOrderManager:
+    """Dummy order manager used when queue is in-order."""
+
+    def __init__(self, q: SyclQueue):
+        self._queue = q
+
+    def add_event_pair(self, _host_task_ev, _comp_ev):
+        pass
+
+    @property
+    def num_host_task_events(self):
+        return 0
+
+    @property
+    def num_submitted_events(self):
+        return 0
+
+    @property
+    def host_task_events(self):
+        return []
+
+    @property
+    def submitted_events(self):
+        return []
+
+    def wait(self):
+        # to imitate SequentialOrderManager, wait on the in-order queue
+        self._queue.wait()
+
+    def __copy__(self):
+        return _NoOpOrderManager(self._queue)
+
+
 class SyclQueueToOrderManagerMap:
     """Utility class used to ensure sequential ordering of offloaded tasks
     when passed to order manager."""
@@ -76,6 +109,10 @@ class SyclQueueToOrderManagerMap:
 
     def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
         """Get order manager for given SyclQueue"""
+        if q.is_in_order:
+            # we don't need to cache the NoOpOrderManager since it's stateless
+            return _NoOpOrderManager(q)
+
         _local = self._map.get()
         if not isinstance(q, SyclQueue):
             raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
