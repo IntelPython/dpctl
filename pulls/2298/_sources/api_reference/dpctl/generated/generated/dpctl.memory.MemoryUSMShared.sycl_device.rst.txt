@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMShared.sycl\_device
+=========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMShared.sycl_device
