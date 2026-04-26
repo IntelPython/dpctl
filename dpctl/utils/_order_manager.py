@@ -1,6 +1,7 @@
 import weakref
 from collections import defaultdict
 from contextvars import ContextVar
+from typing import Union
 
 from .._sycl_event import SyclEvent
 from .._sycl_queue import SyclQueue
@@ -107,7 +108,9 @@ class SyclQueueToOrderManagerMap:
             default=defaultdict(_SequentialOrderManager),
         )
 
-    def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
+    def __getitem__(
+        self, q: SyclQueue
+    ) -> Union[_SequentialOrderManager, _NoOpOrderManager]:
         """Get order manager for given SyclQueue"""
         if q.is_in_order:
             # we don't need to cache the NoOpOrderManager since it's stateless
