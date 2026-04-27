@@ -40,6 +40,7 @@ __all__ = [
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
     "SyclProgram",
+    "SyclProgramCompilationError",
 ]
 
 
@@ -54,4 +55,15 @@ def __getattr__(name):
             stacklevel=2,
         )
         return SyclKernelBundle
+    if name == "SyclProgramCompilationError":
+        from warnings import warn
+
+        warn(
+            "dpctl.program.SyclProgramCompilationError is deprecated and will "
+            "be removed in a future release. Use "
+            "dpctl.program.SyclKernelBundleCompilationError instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return SyclKernelBundleCompilationError
     raise AttributeError(f"module {__name__} has no attribute {name}")
