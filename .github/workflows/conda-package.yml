@@ -508,7 +508,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        python: ['3.11']
+        python: ['3.14']
         experimental: [false]
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -662,7 +662,7 @@ jobs:
           for script in $(find . \( -not -name "_*" -and -name "*.py" \))
           do
             echo "Executing ${script}"
-            python ${script} || exit 1
+            python ${script} --run all || exit 1
           done
 
   cleanup_packages:
