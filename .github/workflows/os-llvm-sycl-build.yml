@@ -59,28 +59,35 @@ jobs:
           cd sycl_bundle
           if [[ "${USE_LATEST_SYCLOS:-0}" -eq "1" ]]; then
               # get list of shas and tags from remote, filter nightly tags and reverse order
-              export LLVM_TAGS=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | \
+              LLVM_TAGS=$(git -c 'versionsort.suffix=-' ls-remote --tags --sort='v:refname' https://github.com/intel/llvm.git | \
                           grep 'refs/tags/nightly-' | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }')
+              export LLVM_TAGS
               # initialize
               unset DEPLOY_NIGHTLY_TAG
               unset DEPLOY_NIGHTLY_TAG_SHA
 
               # go through tags and find the most recent one where nighly build binary is available
               while IFS= read -r NEXT_LLVM_TAG; do
-                  export NEXT_LLVM_TAG_SHA=$(echo ${NEXT_LLVM_TAG} | awk '{print $1}')
-                  export NEXT_NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))" \
-                                              $(echo ${NEXT_LLVM_TAG} | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}'))
-                  if [[ `wget -S --spider ${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz  2>&1 | grep 'HTTP/1.1 200 OK'` ]];
+                  NEXT_LLVM_TAG_SHA=$(echo "${NEXT_LLVM_TAG}" | awk '{print $1}')
+                  export NEXT_LLVM_TAG_SHA
+                  NEXT_NIGHTLY_TAG=$(python3 -c "import sys, urllib.parse as ul; print(ul.quote_plus(sys.argv[1]))" \
+                                      "$(echo "${NEXT_LLVM_TAG}" | awk '{gsub(/^refs\/tags\//, "", $2)} {print $2}')")
+                  export NEXT_NIGHTLY_TAG
+                  if wget -S --spider "${DOWNLOAD_URL_PREFIX}/${NEXT_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz" 2>&1 | grep -q 'HTTP/1.1 200 OK';
                   then
-                      export DEPLOY_NIGHTLY_TAG=${NEXT_NIGHTLY_TAG}
-                      export DEPLOY_LLVM_TAG_SHA=${NEXT_LLVM_TAG_SHA}
+                      DEPLOY_NIGHTLY_TAG="${NEXT_NIGHTLY_TAG}"
+                      export DEPLOY_NIGHTLY_TAG
+                      DEPLOY_LLVM_TAG_SHA="${NEXT_LLVM_TAG_SHA}"
+                      export DEPLOY_LLVM_TAG_SHA
                       break
                   fi
               done <<< "${LLVM_TAGS}"
           else
               # Use latest known to work tag instead
-              export DEPLOY_NIGHTLY_TAG="sycl-nightly%2F20230606"
-              export DEPLOY_LLVM_TAG_SHA=f44d0133d4b0077298f034697a1f3818ff1d6134
+              DEPLOY_NIGHTLY_TAG="sycl-nightly%2F20230606"
+              export DEPLOY_NIGHTLY_TAG
+              DEPLOY_LLVM_TAG_SHA=f44d0133d4b0077298f034697a1f3818ff1d6134
+              export DEPLOY_LLVM_TAG_SHA
           fi
 
           [[ -n "${DEPLOY_NIGHTLY_TAG}" ]] || exit 1
@@ -90,16 +97,20 @@ jobs:
           if [[ -f bundle_id.txt && ( "$(cat bundle_id.txt)" == "${DEPLOY_LLVM_TAG_SHA}" ) ]]; then
               echo "Using cached download of ${DEPLOY_LLVM_TAG_SHA}"
           else
-              rm -rf ${ARTIFACT_NAME}.tar.gz
-              wget ${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz && echo ${DEPLOY_LLVM_TAG_SHA} > bundle_id.txt || rm -rf bundle_id.txt
-              [ -f ${OCLCPUEXP_FN} ] || wget ${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN} || rm -rf bundle_id.txt
-              [ -f ${TBB_FN} ] || wget ${TBB_URL}/${TBB_FN} || rm -rf bundle_id.txt
+              rm -rf "${ARTIFACT_NAME}.tar.gz"
+              if wget "${DOWNLOAD_URL_PREFIX}/${DEPLOY_NIGHTLY_TAG}/${ARTIFACT_NAME}.tar.gz"; then
+                echo "${DEPLOY_LLVM_TAG_SHA}" > bundle_id.txt
+              else
+                rm -rf bundle_id.txt
+              fi
+              [ -f "${OCLCPUEXP_FN}" ] || wget "${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN}" || rm -rf bundle_id.txt
+              [ -f "${TBB_FN}" ] || wget "${TBB_URL}/${TBB_FN}" || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
               mkdir -p dpcpp_compiler
-              tar xf ${ARTIFACT_NAME}.tar.gz -C dpcpp_compiler
+              tar xf "${ARTIFACT_NAME}.tar.gz" -C dpcpp_compiler
               mkdir -p oclcpuexp
-              [ -d oclcpuexp/x64 ] || tar xf ${OCLCPUEXP_FN} -C oclcpuexp
-              [ -d ${TBB_INSTALL_DIR}/lib ] || tar xf ${TBB_FN}
+              [ -d oclcpuexp/x64 ] || tar xf "${OCLCPUEXP_FN}" -C oclcpuexp
+              [ -d "${TBB_INSTALL_DIR}/lib" ] || tar xf "${TBB_FN}"
               cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
 
@@ -152,7 +163,7 @@ jobs:
         run: |
           source set_allvars.sh
           python scripts/build_locally.py --c-compiler=clang --cxx-compiler=clang++ \
-              --compiler-root=${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin || exit 1
+              --compiler-root="${SYCL_BUNDLE_FOLDER}/dpcpp_compiler/bin" || exit 1
 
       - name: Run lsplatforms
         shell: bash -l {0}

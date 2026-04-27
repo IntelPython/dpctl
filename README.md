@@ -57,7 +57,7 @@ To get the library from the latest oneAPI release, follow the
 instructions from Intel(R) [oneAPI installation
 guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html).
 
-> **NOTE:** You need to install the Intel(R) oneAPI AI Analytics Tookit to get
+> **NOTE:** You need to install the Intel(R) oneAPI AI Analytics Toolkit to get
 >IDP and `dpctl`.
 
 

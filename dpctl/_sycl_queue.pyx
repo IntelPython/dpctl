@@ -1788,7 +1788,7 @@ cdef class RawKernelArg:
             Variadic argument, see class documentation.
 
     Raises:
-        TypeError: In case of incorrect arguments given to constructurs,
+        TypeError: In case of incorrect arguments given to constructors,
                    unexpected types of input arguments.
     """
     def __cinit__(self, *args):

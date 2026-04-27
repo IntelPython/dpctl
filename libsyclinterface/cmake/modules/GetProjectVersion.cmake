@@ -45,7 +45,7 @@ function(get_version)
     if(NOT result EQUAL 0)
         message(WARNING
             "Something went wrong when executing \"git describe\". "
-            "Seting all version values to 0."
+            "Setting all version values to 0."
         )
         set(VERSION_MAJOR 0     PARENT_SCOPE)
         set(VERSION_MINOR 0     PARENT_SCOPE)
@@ -63,7 +63,7 @@ function(get_version)
     else()
         message(WARNING
             "The last git tag does not use proper semantic versioning. "
-            "Seting all version values to 0."
+            "Setting all version values to 0."
         )
         set(VERSION_MAJOR 0     PARENT_SCOPE)
         set(VERSION_MINOR 0     PARENT_SCOPE)
@@ -86,7 +86,7 @@ function(get_version)
     if(NOT result EQUAL 0)
         message(WARNING
             "Something went wrong when executing \"git describe\". "
-            "Seting all version values to 0."
+            "Setting all version values to 0."
         )
         set(VERSION_MAJOR 0     PARENT_SCOPE)
         set(VERSION_MINOR 0     PARENT_SCOPE)

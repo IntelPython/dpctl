@@ -5,7 +5,7 @@ if errorlevel 1 (
     call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
     if %ERRORLEVEL% neq 0 exit 1
 )
-@REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reseted.
+@REM conda uses %ERRORLEVEL% but FPGA scripts can set it. So it should be reset.
 set ERRORLEVEL=
 
 rmdir /S /Q build

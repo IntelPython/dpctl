@@ -1,4 +1,4 @@
-//===---------  DllExport.h - Decalres dllexport for Windows     -*-C++-*- ===//
+//===---------  DllExport.h - Declares dllexport for Windows     -*-C++-*- ===//
 //
 //                      Data Parallel Control (dpctl)
 //

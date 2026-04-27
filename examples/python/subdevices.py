@@ -35,7 +35,7 @@ def subdivide_root_cpu_device():
     """
     Create root CPU device, and equally partition it
     into smaller CPU devices 4 execution units each,
-    and then further parition those subdevice into
+    and then further partition those sub-devices into
     smaller sub-devices
     """
     cpu_d = dpctl.SyclDevice("cpu")
@@ -84,7 +84,7 @@ def create_subdevice_queue():
     cpu_count = cpu_d.max_compute_units
     sub_devs = cpu_d.create_sub_devices(partition=cpu_count // 2)
     multidevice_ctx = dpctl.SyclContext(sub_devs)
-    # create a SyclQueue for each sub-device, using commont
+    # create a SyclQueue for each sub-device, using common
     # multi-device context
     q0, q1 = [dpctl.SyclQueue(multidevice_ctx, d) for d in sub_devs]
     # for each sub-device allocate 26 bytes

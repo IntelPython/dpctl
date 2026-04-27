@@ -1691,7 +1691,7 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(DVRef)
 
     def create_sub_devices(self, **kwargs):
-        """create_sub_devices(partition=parition_spec)
+        """create_sub_devices(partition=partition_spec)
         Creates a list of sub-devices by partitioning a root device based on the
         provided partition specifier.
 
@@ -1755,12 +1755,12 @@ cdef class SyclDevice(_SyclDevice):
         """
         if "partition" not in kwargs:
             raise TypeError(
-                "create_sub_devices(partition=parition_spec) is expected."
+                "create_sub_devices(partition=partition_spec) is expected."
             )
         partition = kwargs.pop("partition")
         if kwargs:
             raise TypeError(
-                "create_sub_devices(partition=parition_spec) is expected."
+                "create_sub_devices(partition=partition_spec) is expected."
             )
         if isinstance(partition, int) and partition >= 0:
             return self.create_sub_devices_equally(partition)

@@ -39,7 +39,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @{
  */
 
-// Declares a set of types abd functions to deal with vectors of
+// Declares a set of types and functions to deal with vectors of
 // DPCTLSyclPlatformRef. Refer dpctl_vector_macros.h
 DPCTL_DECLARE_VECTOR(Platform)
 
