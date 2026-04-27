@@ -265,7 +265,7 @@ def test_usm_type_exceptions():
     with pytest.raises(TypeError):
         m.get_usm_type(syclobj=Ellipsis)
     with pytest.raises(TypeError):
-        m.get_usm_type_enum(syclobj=list())
+        m.get_usm_type_enum(syclobj=[])
 
 
 def test_sycl_usm_array_interface(memory_ctor):
@@ -419,7 +419,7 @@ def test_suai_invalid_suai():
     # data validation
     def invalid_data(suai_iface):
         "Set data to invalid"
-        suai_iface["data"] = tuple()
+        suai_iface["data"] = ()
         return suai_iface
 
     v = View(

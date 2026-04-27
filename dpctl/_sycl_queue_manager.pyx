@@ -35,7 +35,7 @@ cdef class _DeviceDefaultQueueCache:
     cdef dict __device_queue_map__
 
     def __cinit__(self):
-        self.__device_queue_map__ = dict()
+        self.__device_queue_map__ = {}
 
     def get_or_create(self, key):
         """Return instance of SyclQueue and indicator if cache

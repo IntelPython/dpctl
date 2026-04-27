@@ -135,6 +135,7 @@ def main():
         cxx_compiler=cxx_compiler,
         level_zero=level_zero_enabled,
         verbose=args.verbose,
+        other_opts=args.cmake_opts,
     )
 
     cmake_args += ["-DDPCTL_GENERATE_DOCS=ON"]

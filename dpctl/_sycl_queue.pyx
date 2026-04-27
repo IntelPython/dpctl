@@ -1753,7 +1753,7 @@ cdef class WorkGroupMemory:
 
 
 cdef class _RawKernelArg:
-    def __dealloc(self):
+    def __dealloc__(self):
         if(self._arg_ref):
             DPCTLRawKernelArg_Delete(self._arg_ref)
 
