@@ -599,7 +599,7 @@ jobs:
           source $CONDA/etc/profile.d/conda.sh
           CHANNELS="-c $GITHUB_WORKSPACE/channel -c dppy/label/dev -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels"
           export PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ${CHANNELS} dpctl=${PACKAGE_VERSION} dpnp || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ${CHANNELS} dpctl=${PACKAGE_VERSION} || exit 1
       - name: Build and run examples of pybind11 extensions
         shell: bash -l {0}
         run: |
