@@ -19,7 +19,7 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     strategy:
@@ -126,8 +126,7 @@ jobs:
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
-          :: TODO: roll back use of Intel channel when 2025.1 is available on conda-forge
-          conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels conda-recipe
+          conda build --no-test --python ${{ matrix.python }} --numpy 2.0 -c conda-forge --override-channels conda-recipe
 
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -150,7 +149,7 @@ jobs:
       matrix:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         experimental: [false]
-        runner: [ubuntu-22.04]
+        runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
@@ -235,7 +234,7 @@ jobs:
 
   test_windows:
     needs: build_windows
-    runs-on:  ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     defaults:
       run:
@@ -408,7 +407,7 @@ jobs:
     if: |
       (github.repository == 'IntelPython/dpctl') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       matrix:
@@ -493,12 +492,12 @@ jobs:
 
   test_examples_linux:
     needs: build_linux
-    runs-on:  ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
         python: ['3.11']
         experimental: [false]
-        runner: [ubuntu-22.04]
+        runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 60
     env:
@@ -562,7 +561,8 @@ jobs:
       - name: Install example requirements
         shell: bash -ex -l {0}
         env:
-          DPCPP_CMPLR: "dpcpp_linux-64>=2025.0"
+          # TODO: unpin when 2026.0 is available on conda-forge
+          DPCPP_CMPLR: "dpcpp_linux-64>=2025.0,<2026.0"
         run: |
           export CHANNELS="${{ env.CHANNELS }}"
           . "$CONDA/etc/profile.d/conda.sh"
@@ -585,8 +585,8 @@ jobs:
           echo "IPL installed"
           # shellcheck disable=SC2086
           conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS gcc_linux-64 gxx_linux-64 \
-              ${{ env.DPCPP_CMPLR }} ${DPCTL_DEPENDS} \
-              sysroot_linux-64>=2.28
+              "${{ env.DPCPP_CMPLR }}" "${DPCTL_DEPENDS}" \
+              "sysroot_linux-64>=2.28"
           echo "Compiler installed"
           conda list -n "${{ env.BUILD_ENV_NAME }}"
       - name: Install dpctl
@@ -598,7 +598,7 @@ jobs:
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           export PACKAGE_VERSION
           # shellcheck disable=SC2086
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y $CHANNELS ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} dpnp || exit 1
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y $CHANNELS ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} || exit 1
       - name: Build and run examples of pybind11 extensions
         shell: bash -l {0}
         run: |
