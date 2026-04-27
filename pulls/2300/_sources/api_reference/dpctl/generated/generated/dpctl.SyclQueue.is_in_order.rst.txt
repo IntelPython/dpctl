@@ -1,6 +1,0 @@
-dpctl.SyclQueue.is\_in\_order
-=============================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclQueue.is_in_order
