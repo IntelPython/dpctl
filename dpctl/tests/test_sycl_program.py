@@ -147,15 +147,15 @@ def _check_cpython_api_SyclKernel_Make(krn):
     assert krn.work_group_size == k3.work_group_size
 
 
-def _check_multi_kernel_program(prog):
-    assert type(prog) is dpctl_prog.SyclKernelBundle
+def _check_multi_kernel_program(kb):
+    assert type(kb) is dpctl_prog.SyclKernelBundle
 
-    assert type(prog.addressof_ref()) is int
-    assert prog.has_sycl_kernel("add")
-    assert prog.has_sycl_kernel("axpy")
+    assert type(kb.addressof_ref()) is int
+    assert kb.has_sycl_kernel("add")
+    assert kb.has_sycl_kernel("axpy")
 
-    addKernel = prog.get_sycl_kernel("add")
-    axpyKernel = prog.get_sycl_kernel("axpy")
+    addKernel = kb.get_sycl_kernel("add")
+    axpyKernel = kb.get_sycl_kernel("axpy")
 
     assert "add" == addKernel.get_function_name()
     assert "axpy" == axpyKernel.get_function_name()
@@ -185,8 +185,8 @@ def _check_multi_kernel_program(prog):
         cmsgsz = krn.compile_sub_group_size
         assert type(cmsgsz) is int
 
-    _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(prog)
-    _check_cpython_api_SyclKernelBundle_Make(prog)
+    _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(kb)
+    _check_cpython_api_SyclKernelBundle_Make(kb)
 
 
 def test_create_kernel_bundle_from_source_ocl():
@@ -203,8 +203,8 @@ def test_create_kernel_bundle_from_source_ocl():
         q = dpctl.SyclQueue("opencl")
     except dpctl.SyclQueueCreationError:
         pytest.skip("No OpenCL queue is available")
-    prog = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
-    _check_multi_kernel_program(prog)
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    _check_multi_kernel_program(kb)
 
 
 def test_create_kernel_bundle_from_spirv_ocl():
@@ -215,8 +215,8 @@ def test_create_kernel_bundle_from_spirv_ocl():
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
-    prog = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
-    _check_multi_kernel_program(prog)
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
+    _check_multi_kernel_program(kb)
 
 
 def test_create_kernel_bundle_from_spirv_l0():
@@ -227,8 +227,8 @@ def test_create_kernel_bundle_from_spirv_l0():
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
-    prog = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
-    _check_multi_kernel_program(prog)
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
+    _check_multi_kernel_program(kb)
 
 
 @pytest.mark.xfail(
@@ -248,8 +248,8 @@ def test_create_kernel_bundle_from_source_l0():
         size_t index = get_global_id(0);                                   \
         c[index] = a[index] + d*b[index];                                  \
     }"
-    prog = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
-    _check_multi_kernel_program(prog)
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    _check_multi_kernel_program(kb)
 
 
 def test_create_kernel_bundle_from_invalid_src_ocl():

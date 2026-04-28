@@ -37,8 +37,8 @@ def produce_event(profiling=False):
         q = dpctl.SyclQueue("opencl:cpu", property="enable_profiling")
     else:
         q = dpctl.SyclQueue("opencl:cpu")
-    prog = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
-    addKernel = prog.get_sycl_kernel("add")
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    addKernel = kb.get_sycl_kernel("add")
 
     n = 1024 * 1024
     a = np.arange(n, dtype="i")
@@ -158,10 +158,10 @@ def test_get_wait_list():
             size_t index = get_global_id(0);                               \
             a[index] = sin(a[index]);                                      \
         }"
-    prog = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
-    addKernel = prog.get_sycl_kernel("add_k")
-    sqrtKernel = prog.get_sycl_kernel("sqrt_k")
-    sinKernel = prog.get_sycl_kernel("sin_k")
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    addKernel = kb.get_sycl_kernel("add_k")
+    sqrtKernel = kb.get_sycl_kernel("sqrt_k")
+    sinKernel = kb.get_sycl_kernel("sin_k")
 
     n = 1024 * 1024
     a = np.arange(n, dtype="f")

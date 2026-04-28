@@ -62,8 +62,8 @@ def test_submit_work_group_memory():
     spirv_file = get_spirv_abspath("work-group-memory-kernel.spv")
     with open(spirv_file, "br") as spv:
         spv_bytes = spv.read()
-    prog = dpctl.program.create_kernel_bundle_from_spirv(q, spv_bytes)
-    kernel = prog.get_sycl_kernel("__sycl_kernel_local_mem_kernel")
+    kb = dpctl.program.create_kernel_bundle_from_spirv(q, spv_bytes)
+    kernel = kb.get_sycl_kernel("__sycl_kernel_local_mem_kernel")
     local_size = 16
     global_size = local_size * 8
 
