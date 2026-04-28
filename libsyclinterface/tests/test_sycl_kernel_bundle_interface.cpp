@@ -69,7 +69,8 @@ struct TestDPCTLSyclKernelBundleInterface
             spirvFile.seekg(0, std::ios::beg);
             spirvFile.read(spirvBuffer.data(), spirvFileSize);
             KBRef = DPCTLKernelBundle_CreateFromSpirv(
-                CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr);
+                CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr, 0,
+                nullptr);
         }
     }
 
@@ -132,18 +133,21 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
     const void *null_spirv = nullptr;
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     // Null context
-    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
-                                Null_CRef, Null_DRef, null_spirv, 0, nullptr));
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(
+            Null_CRef, Null_DRef, null_spirv, 0, nullptr, 0, nullptr));
     ASSERT_TRUE(KBRef == nullptr);
 
     // Null device
-    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
-                                CRef, Null_DRef, null_spirv, 0, nullptr));
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(CRef, Null_DRef, null_spirv,
+                                                  0, nullptr, 0, nullptr));
     ASSERT_TRUE(KBRef == nullptr);
 
     // Null IL
-    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
-                                CRef, DRef, null_spirv, 0, nullptr));
+    EXPECT_NO_FATAL_FAILURE(
+        KBRef = DPCTLKernelBundle_CreateFromSpirv(CRef, DRef, null_spirv, 0,
+                                                  nullptr, 0, nullptr));
     ASSERT_TRUE(KBRef == nullptr);
 }
 
@@ -350,8 +354,8 @@ TEST_F(TestKernelBundleUnsupportedBackend, CheckCreateFromSpirv)
     spirvFile.close();
 
     DPCTLSyclKernelBundleRef KBRef = nullptr;
-    EXPECT_NO_FATAL_FAILURE(
-        KBRef = DPCTLKernelBundle_CreateFromSpirv(
-            CRef, DRef, spirvBuffer.data(), spirvFileSize, nullptr));
+    EXPECT_NO_FATAL_FAILURE(KBRef = DPCTLKernelBundle_CreateFromSpirv(
+                                CRef, DRef, spirvBuffer.data(), spirvFileSize,
+                                nullptr, 0, nullptr));
     ASSERT_TRUE(KBRef == nullptr);
 }
