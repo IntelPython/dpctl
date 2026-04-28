@@ -1,0 +1,6 @@
+﻿dpctl.program.create\_kernel\_bundle\_from\_spirv
+=================================================
+
+.. currentmodule:: dpctl.program
+
+.. autofunction:: create_kernel_bundle_from_spirv
