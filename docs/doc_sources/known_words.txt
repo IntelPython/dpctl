@@ -59,6 +59,7 @@ SyclQueue
 SyclContext
 SyclEvent
 SyclKernel
+SyclKernelBundle
 SyclProgram
 SyclPlatform
 dtype

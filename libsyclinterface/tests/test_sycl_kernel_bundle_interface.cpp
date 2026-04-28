@@ -147,7 +147,7 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
     ASSERT_TRUE(KBRef == nullptr);
 }
 
-TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullKernelBundle)
 {
 
     DPCTLSyclKernelBundleRef NullRef = nullptr;
@@ -168,7 +168,7 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernel)
     EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(NullKernel));
 }
 
-TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullKernelBundle)
 {
     DPCTLSyclKernelBundleRef NullRef = nullptr;
     DPCTLSyclKernelRef KRef = nullptr;

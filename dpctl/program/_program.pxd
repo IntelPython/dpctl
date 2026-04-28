@@ -40,22 +40,32 @@ cdef api class SyclKernel [object PySyclKernelObject, type PySyclKernelType]:
     cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name)
 
 
-cdef api class SyclProgram [object PySyclProgramObject, type PySyclProgramType]:
+cdef api class SyclKernelBundle [
+    object PySyclKernelBundleObject, type PySyclKernelBundleType
+]:
     """
     Wraps a sycl::kernel_bundle<sycl::bundle_state::executable> object created
     by using SYCL interoperability layer for OpenCL and Level-Zero backends.
-    SyclProgram exposes the C API from dpctl_sycl_kernel_bundle_interface.h.
-    A SyclProgram can be created from either a source string or a SPIR-V
+    SyclKernelBundle exposes the C API from
+    dpctl_sycl_kernel_bundle_interface.h.
+    A SyclKernelBundle can be created from either a source string or a SPIR-V
     binary file.
     """
-    cdef DPCTLSyclKernelBundleRef _program_ref
+    cdef DPCTLSyclKernelBundleRef _kernel_bundle_ref
 
     @staticmethod
-    cdef  SyclProgram _create (DPCTLSyclKernelBundleRef pref)
-    cdef  DPCTLSyclKernelBundleRef get_program_ref (self)
+    cdef  SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref)
+    cdef  DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
+cpdef create_kernel_bundle_from_source (
+    SyclQueue q, unicode source, unicode copts=*
+)
+cpdef create_kernel_bundle_from_spirv (
+    SyclQueue q, const unsigned char[:] IL, unicode copts=*
+)
 cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
-cpdef create_program_from_spirv (SyclQueue q, const unsigned char[:] IL,
-                                 unicode copts=*)
+cpdef create_program_from_spirv (
+    SyclQueue q, const unsigned char[:] IL, unicode copts=*
+)

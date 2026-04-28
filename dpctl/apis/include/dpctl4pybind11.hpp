@@ -59,7 +59,7 @@ public:
     PyTypeObject *PyMemoryUSMDeviceType_;
     PyTypeObject *PyMemoryUSMSharedType_;
     PyTypeObject *PyMemoryUSMHostType_;
-    PyTypeObject *PySyclProgramType_;
+    PyTypeObject *PySyclKernelBundleType_;
     PyTypeObject *PySyclKernelType_;
 
     DPCTLSyclDeviceRef (*SyclDevice_GetDeviceRef_)(PySyclDeviceObject *);
@@ -89,9 +89,10 @@ public:
     DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
     PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef, const char *);
 
-    DPCTLSyclKernelBundleRef (*SyclProgram_GetKernelBundleRef_)(
-        PySyclProgramObject *);
-    PySyclProgramObject *(*SyclProgram_Make_)(DPCTLSyclKernelBundleRef);
+    DPCTLSyclKernelBundleRef (*SyclKernelBundle_GetKernelBundleRef_)(
+        PySyclKernelBundleObject *);
+    PySyclKernelBundleObject *(*SyclKernelBundle_Make_)(
+        DPCTLSyclKernelBundleRef);
 
     bool PySyclDevice_Check_(PyObject *obj) const
     {
@@ -113,9 +114,9 @@ public:
     {
         return PyObject_TypeCheck(obj, PySyclKernelType_) != 0;
     }
-    bool PySyclProgram_Check_(PyObject *obj) const
+    bool PySyclKernelBundle_Check_(PyObject *obj) const
     {
-        return PyObject_TypeCheck(obj, PySyclProgramType_) != 0;
+        return PyObject_TypeCheck(obj, PySyclKernelBundleType_) != 0;
     }
 
     ~dpctl_capi()
@@ -165,7 +166,7 @@ private:
           Py_SyclQueueType_(nullptr), PySyclQueueType_(nullptr),
           Py_MemoryType_(nullptr), PyMemoryUSMDeviceType_(nullptr),
           PyMemoryUSMSharedType_(nullptr), PyMemoryUSMHostType_(nullptr),
-          PySyclProgramType_(nullptr), PySyclKernelType_(nullptr),
+          PySyclKernelBundleType_(nullptr), PySyclKernelType_(nullptr),
           SyclDevice_GetDeviceRef_(nullptr), SyclDevice_Make_(nullptr),
           SyclContext_GetContextRef_(nullptr), SyclContext_Make_(nullptr),
           SyclEvent_GetEventRef_(nullptr), SyclEvent_Make_(nullptr),
@@ -174,8 +175,9 @@ private:
           Memory_GetContextRef_(nullptr), Memory_GetQueueRef_(nullptr),
           Memory_GetNumBytes_(nullptr), Memory_Make_(nullptr),
           SyclKernel_GetKernelRef_(nullptr), SyclKernel_Make_(nullptr),
-          SyclProgram_GetKernelBundleRef_(nullptr), SyclProgram_Make_(nullptr),
-          default_sycl_queue_{}, default_usm_memory_{}, as_usm_memory_{}
+          SyclKernelBundle_GetKernelBundleRef_(nullptr),
+          SyclKernelBundle_Make_(nullptr), default_sycl_queue_{},
+          default_usm_memory_{}, as_usm_memory_{}
 
     {
         // Import Cython-generated C-API for dpctl
@@ -198,7 +200,7 @@ private:
         this->PyMemoryUSMDeviceType_ = &PyMemoryUSMDeviceType;
         this->PyMemoryUSMSharedType_ = &PyMemoryUSMSharedType;
         this->PyMemoryUSMHostType_ = &PyMemoryUSMHostType;
-        this->PySyclProgramType_ = &PySyclProgramType;
+        this->PySyclKernelBundleType_ = &PySyclKernelBundleType;
         this->PySyclKernelType_ = &PySyclKernelType;
 
         // SyclDevice API
@@ -228,8 +230,9 @@ private:
         // dpctl.program API
         this->SyclKernel_GetKernelRef_ = SyclKernel_GetKernelRef;
         this->SyclKernel_Make_ = SyclKernel_Make;
-        this->SyclProgram_GetKernelBundleRef_ = SyclProgram_GetKernelBundleRef;
-        this->SyclProgram_Make_ = SyclProgram_Make;
+        this->SyclKernelBundle_GetKernelBundleRef_ =
+            SyclKernelBundle_GetKernelBundleRef;
+        this->SyclKernelBundle_Make_ = SyclKernelBundle_Make;
 
         // create shared pointers to python objects used in type-casters
         // for dpctl::memory::usm_memory
@@ -484,7 +487,7 @@ public:
 
 /* This type caster associates
  * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
- * :class:`dpctl.program.SyclProgram` for the purposes of generation of
+ * :class:`dpctl.program.SyclKernelBundle` for the purposes of generation of
  * Python bindings by pybind11.
  */
 template <>
@@ -495,10 +498,10 @@ public:
     {
         PyObject *source = src.ptr();
         auto const &api = ::dpctl::detail::dpctl_capi::get();
-        if (api.PySyclProgram_Check_(source)) {
+        if (api.PySyclKernelBundle_Check_(source)) {
             DPCTLSyclKernelBundleRef KBRef =
-                api.SyclProgram_GetKernelBundleRef_(
-                    reinterpret_cast<PySyclProgramObject *>(source));
+                api.SyclKernelBundle_GetKernelBundleRef_(
+                    reinterpret_cast<PySyclKernelBundleObject *>(source));
             value = std::make_unique<
                 sycl::kernel_bundle<sycl::bundle_state::executable>>(
                 *(reinterpret_cast<
@@ -508,7 +511,7 @@ public:
         }
         else {
             throw py::type_error("Input is of unexpected type, expected "
-                                 "dpctl.program.SyclProgram");
+                                 "dpctl.program.SyclKernelBundle");
         }
     }
 
@@ -517,13 +520,13 @@ public:
                        handle)
     {
         auto const &api = ::dpctl::detail::dpctl_capi::get();
-        auto tmp = api.SyclProgram_Make_(
+        auto tmp = api.SyclKernelBundle_Make_(
             reinterpret_cast<DPCTLSyclKernelBundleRef>(&src));
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
-                      _("dpctl.program.SyclProgram"));
+                      _("dpctl.program.SyclKernelBundle"));
 };
 
 /* This type caster associates

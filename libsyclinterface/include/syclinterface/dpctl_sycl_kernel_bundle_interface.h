@@ -20,8 +20,8 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This header declares a C API to create Sycl interoperability programs for
-/// OpenCL and Level Zero driver API.
+/// This header declares a C API to create Sycl kernel bundles for OpenCL and
+/// Level Zero backends.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -70,7 +70,7 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
  * @param    Dev            An opaque pointer to a sycl::device
  * @param    Source         OpenCL source string
  * @param    CompileOpts    Extra compiler flags (refer Sycl spec.)
- * @return   A new SyclKernelBundleRef pointer if the program creation
+ * @return   A new SyclKernelBundleRef pointer if the kernel bundle creation
  * succeeded, else returns NULL.
  * @ingroup KernelBundleInterface
  */
@@ -82,8 +82,8 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
     __dpctl_keep const char *CompileOpts);
 
 /*!
- * @brief Returns the SyclKernel with given name from the program, if not found
- * then return NULL.
+ * @brief Returns the SyclKernel with given name from the kernel bundle, if
+ * not found then return NULL.
  *
  * @param    KBRef          Opaque pointer to a sycl::kernel_bundle
  * @param    KernelName     Name of kernel
@@ -96,8 +96,8 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                             __dpctl_keep const char *KernelName);
 
 /*!
- * @brief Return True if a SyclKernel with given name exists in the program, if
- * not found then returns False.
+ * @brief Return True if a SyclKernel with given name exists in the kernel
+ * bundle, if not found then returns False.
  *
  * @param    KBRef          Opaque pointer to a sycl::kernel_bundle
  * @param    KernelName     Name of kernel
