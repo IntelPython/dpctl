@@ -18,6 +18,7 @@
 
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
@@ -262,3 +263,40 @@ def test_create_kernel_bundle_from_invalid_src_ocl():
     }"
     with pytest.raises(dpctl_prog.SyclKernelBundleCompilationError):
         dpctl_prog.create_kernel_bundle_from_source(q, invalid_oclSrc)
+
+
+def test_create_kernel_bundle_with_spec_const():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+
+    spec_id = 0
+    sp = dpctl_prog.SpecializationConstant(spec_id, "i4", 42)
+
+    spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
+    with open(spirv_file, "br") as spv:
+        spv_bytes = spv.read()
+
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(
+        q, spv_bytes, specializations=[sp]
+    )
+    kernel = kb.get_sycl_kernel("_ZTS20BasicSpecConstKernel")
+
+    n = 128
+    x = np.ones(n, dtype="i4")
+    y = np.zeros_like(x)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    e1 = q.memcpy_async(x_usm, x, x.nbytes)
+    e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
+    e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
+
+    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+
+    e3.wait()
+    ht_e.wait()
+
+    assert np.all(y == 43)
