@@ -431,6 +431,10 @@ cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
 
 
 cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
+    ctypedef struct _spec_const "DPCTLSpecConst":
+        uint32_t id
+        size_t size
+        const void *value
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSpirv(
         const DPCTLSyclContextRef Ctx,
         const DPCTLSyclDeviceRef Dev,
