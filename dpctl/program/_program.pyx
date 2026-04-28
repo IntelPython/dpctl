@@ -36,6 +36,7 @@ from cpython.buffer cimport (
 )
 from cpython.bytes cimport PyBytes_FromStringAndSize
 from libc.stdint cimport uint32_t
+from libc.stdlib cimport free, malloc
 from libc.string cimport memcmp
 
 import warnings
@@ -469,7 +470,10 @@ cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
 
 
 cpdef create_kernel_bundle_from_spirv(
-    SyclQueue q, const unsigned char[:] IL, str copts=""
+    SyclQueue q,
+    const unsigned char[:] IL,
+    str copts="",
+    list specializations=None,
 ):
     """
         Creates a Sycl interoperability kernel bundle from an SPIR-V binary.
@@ -487,7 +491,9 @@ cpdef create_kernel_bundle_from_spirv(
             copts (str, optional)
                 Optional compilation flags that will be used
                 when compiling the kernel bundle. Default: ``""``.
-
+            specializations (list, optional)
+                A list of :class:`.SpecializationConstant` objects to be used
+                when creating the kernel bundle. Default: ``None``.
         Returns:
             kernel_bundle (:class:`.SyclKernelBundle`)
                 A :class:`.SyclKernelBundle` object wrapping the
@@ -506,11 +512,44 @@ cpdef create_kernel_bundle_from_spirv(
     cdef size_t length = IL.shape[0]
     cdef bytes bCOpts = copts.encode("utf8")
     cdef const char *COpts = <const char*>bCOpts
-    KBref = DPCTLKernelBundle_CreateFromSpirv(
-        CRef, DRef, <const void*>dIL, length, COpts
-    )
-    if KBref is NULL:
-        raise SyclKernelBundleCompilationError()
+    cdef size_t num_spconsts
+    cdef _spec_const *spconsts
+    cdef SpecializationConstant spconst
+
+    if specializations is not None:
+        num_spconsts = len(specializations)
+        spconsts = <_spec_const *>(
+            malloc(num_spconsts * sizeof(_spec_const))
+        )
+        if spconsts == NULL:
+            raise MemoryError(
+                "Failed to allocate memory for specialization constants."
+            )
+        for i, spconst in enumerate(specializations):
+            if not isinstance(spconst, SpecializationConstant):
+                free(spconsts)
+                raise TypeError(
+                    "All items in specializations must be of type "
+                    f"`SpecializationConstant`, got {type(spconst)}"
+                )
+            spconsts[i] = spconst._spec_const
+    else:
+        num_spconsts = 0
+        spconsts = NULL
+    try:
+        KBref = DPCTLKernelBundle_CreateFromSpirv(
+            CRef,
+            DRef,
+            <const void*>dIL,
+            length, COpts,
+            num_spconsts,
+            spconsts,
+        )
+        if KBref is NULL:
+            raise SyclKernelBundleCompilationError()
+    finally:
+        if spconsts != NULL:
+            free(spconsts)
 
     return SyclKernelBundle._create(KBref)
 
