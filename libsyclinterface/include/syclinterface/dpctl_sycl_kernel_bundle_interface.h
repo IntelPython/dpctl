@@ -35,6 +35,13 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+typedef struct DPCTLSpecConstTy
+{
+    uint32_t id;
+    size_t size;
+    const void *value;
+} DPCTLSpecConst;
+
 /**
  * @defgroup KernelBundleInterface Kernel_bundle class C wrapper
  */

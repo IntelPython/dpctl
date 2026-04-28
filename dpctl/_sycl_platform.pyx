@@ -236,7 +236,7 @@ cdef class SyclPlatform(_SyclPlatform):
           and filter string for each device is printed.
 
         Args:
-            verbosity (Literal[0, 1, 2], optional):.
+            verbosity (Literal[0, 1, 2], optional):
                 The verbosity controls how much information is printed by the
                 function. Value ``0`` is the lowest level set by default and
                 ``2`` is the highest level to print the most verbose output.
