@@ -92,3 +92,25 @@ def test_order_manager():
         _passed = True
     finally:
         assert _passed
+
+
+def test_no_op_order_manager():
+    try:
+        q = dpctl.SyclQueue(property=("in_order",))
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+    assert q.is_in_order
+    _mngr = dpctl.utils.SequentialOrderManager[q]
+    assert _mngr.num_host_task_events == 0
+    assert _mngr.num_submitted_events == 0
+    assert isinstance(_mngr.submitted_events, list)
+    assert len(_mngr.submitted_events) == 0
+    assert isinstance(_mngr.host_task_events, list)
+    assert len(_mngr.host_task_events) == 0
+    _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+    _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+    _mngr.add_event_pair(dpctl.SyclEvent(), [dpctl.SyclEvent()])
+    # waits on queue
+    _mngr.wait()
+    cpy = _mngr.__copy__()
+    del cpy
