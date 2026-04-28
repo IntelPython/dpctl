@@ -440,7 +440,9 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
         const DPCTLSyclDeviceRef Dev,
         const void *IL,
         size_t Length,
-        const char *CompileOpts)
+        const char *CompileOpts,
+        size_t NumSpecConsts,
+        const _spec_const *SpecConsts)
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
         const DPCTLSyclContextRef Ctx,
         const DPCTLSyclDeviceRef Dev,
