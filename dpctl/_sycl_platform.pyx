@@ -415,19 +415,27 @@ cdef class SyclPlatform(_SyclPlatform):
                 DTy = _device_type._ACCELERATOR
             elif dty_str == "all":
                 DTy = _device_type._ALL_DEVICES
+            elif dty_str == "automatic":
+                DTy = _device_type._AUTOMATIC
             elif dty_str == "cpu":
                 DTy = _device_type._CPU
+            elif dty_str == "custom":
+                DTy = _device_type._CUSTOM
             elif dty_str == "gpu":
                 DTy = _device_type._GPU
             else:
                 DTy = _device_type._UNKNOWN_DEVICE
         elif isinstance(device_type, device_type_t):
-            if device_type == device_type_t.all:
-                DTy = _device_type._ALL_DEVICES
-            elif device_type == device_type_t.accelerator:
+            if device_type == device_type_t.accelerator:
                 DTy = _device_type._ACCELERATOR
+            elif device_type == device_type_t.all:
+                DTy = _device_type._ALL_DEVICES
+            elif device_type == device_type_t.automatic:
+                DTy = _device_type._AUTOMATIC
             elif device_type == device_type_t.cpu:
                 DTy = _device_type._CPU
+            elif device_type == device_type_t.custom:
+                DTy = _device_type._CUSTOM
             elif device_type == device_type_t.gpu:
                 DTy = _device_type._GPU
             else:
