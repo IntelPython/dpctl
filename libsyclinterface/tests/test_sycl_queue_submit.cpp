@@ -242,7 +242,8 @@ struct TestQueueSubmit : public ::testing::Test
         auto CRef = DPCTLQueue_GetContext(QRef);
 
         KBRef = DPCTLKernelBundle_CreateFromSpirv(
-            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
+            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr, 0,
+            nullptr);
         DPCTLDevice_Delete(DRef);
         DPCTLDeviceSelector_Delete(DSRef);
     }
@@ -282,7 +283,8 @@ struct TestQueueSubmitFP64 : public ::testing::Test
         auto CRef = DPCTLQueue_GetContext(QRef);
 
         KBRef = DPCTLKernelBundle_CreateFromSpirv(
-            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr);
+            CRef, DRef, spirvBuffer_.data(), spirvFileSize_, nullptr, 0,
+            nullptr);
         DPCTLDeviceSelector_Delete(DSRef);
     }
 
