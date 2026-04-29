@@ -1,6 +1,0 @@
-﻿dpctl.tensor.tile
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: tile

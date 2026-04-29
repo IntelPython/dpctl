@@ -1,6 +1,0 @@
-﻿dpctl.tensor.tril
-=================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: tril

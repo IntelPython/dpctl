@@ -1,6 +1,0 @@
-﻿dpctl.tensor.iinfo
-==================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: iinfo
