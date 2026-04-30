@@ -282,8 +282,8 @@ cdef class SpecializationConstant:
       If the constructor is invoked with a single variadic argument, the
       argument is expected to either expose the Python buffer protocol or be
       coercible to a NumPy array. If the argument is coercible to a NumPy array
-      or is one, it must have a supported data type (bool, integral, floating
-      point, or void). The specialization constant will be constructed from the
+      or is one, it must have a supported data type (bool, integral, or
+      floating point). The specialization constant will be constructed from the
       data in the buffer
 
     - ``SpecializationConstant(spec_id, dtype, obj)``
@@ -291,7 +291,7 @@ cdef class SpecializationConstant:
     argument is a string, it is interpreted as a NumPy ``dtype`` string and the
     second argument will be coerced to a NumPy array with that data type.
     The data type specified by the first argument must be a supported data
-    type (bool, integral, floating point, or void).
+    type (bool, integral, or floating point).
 
     - ``SpecializationConstant(spec_id, nbytes, raw_ptr)``
       If the constructor is invoked with two variadic arguments where both are
@@ -360,13 +360,13 @@ cdef class SpecializationConstant:
             )
 
         if isinstance(target_obj, np.ndarray):
-            if target_obj.dtype.kind not in ("b", "i", "u", "f", "c", "V"):
+            if target_obj.dtype.kind not in ("b", "i", "u", "f", "c"):
                 raise TypeError(
                     "Coercion of input to buffer resulted in an unsupported "
                     f"data type '{target_obj.dtype}'. When coercing objects, "
                     "`SpecializationConstant` expects the data to coerce to a "
-                    "supported type: bool, integral, real or complex floating "
-                    "point, or void. To pass arbitrary data, use a "
+                    "supported type: bool, integral, or real or complex "
+                    "floating point. To pass arbitrary data, use a "
                     "`memoryview` or `bytes` object, or pass the pointer and "
                     "size directly."
                 )
