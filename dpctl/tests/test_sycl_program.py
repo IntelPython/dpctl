@@ -300,3 +300,44 @@ def test_create_kernel_bundle_with_spec_const():
     ht_e.wait()
 
     assert np.all(y == 43)
+
+
+def test_create_kernel_bundle_with_composite_spec_const():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+
+    # composite specialization constants are separated into individual
+    # specialization constants with unique spec_ids
+    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 10)
+    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 2.5)
+    sp3 = dpctl_prog.SpecializationConstant(2, "?", 1)
+
+    spirv_file = get_spirv_abspath("specialization_constant_composite.spv")
+    with open(spirv_file, "br") as spv:
+        spv_bytes = spv.read()
+
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(
+        q, spv_bytes, specializations=[sp1, sp2, sp3]
+    )
+    kernel = kb.get_sycl_kernel("_ZTS21StructSpecConstKernel")
+
+    n = 128
+    x = np.ones(n, dtype="f4")
+    y = np.zeros_like(x)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    e1 = q.memcpy_async(x_usm, x, x.nbytes)
+    e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
+    e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
+
+    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+
+    e3.wait()
+    ht_e.wait()
+
+    # 1.0 * 10 + 2.5 = 12.5
+    assert np.all(y == 12.5)
