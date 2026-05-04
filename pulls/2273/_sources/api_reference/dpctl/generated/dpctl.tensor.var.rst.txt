@@ -1,6 +1,0 @@
-﻿dpctl.tensor.var
-================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: var

@@ -1,6 +1,0 @@
-﻿dpctl.tensor.from\_numpy
-========================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: from_numpy

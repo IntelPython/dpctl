@@ -1,6 +1,0 @@
-﻿dpctl.tensor.take\_along\_axis
-==============================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: take_along_axis

@@ -1,6 +1,0 @@
-﻿dpctl.tensor.repeat
-===================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: repeat

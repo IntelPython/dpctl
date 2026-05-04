@@ -1,6 +1,0 @@
-﻿dpctl.tensor.eye
-================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: eye

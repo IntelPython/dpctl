@@ -1,6 +1,0 @@
-﻿dpctl.tensor.asarray
-====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: asarray

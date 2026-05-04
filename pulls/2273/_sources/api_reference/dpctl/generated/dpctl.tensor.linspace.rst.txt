@@ -1,6 +1,0 @@
-﻿dpctl.tensor.linspace
-=====================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: linspace

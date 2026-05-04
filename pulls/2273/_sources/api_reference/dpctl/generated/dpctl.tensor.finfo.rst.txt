@@ -1,6 +1,0 @@
-﻿dpctl.tensor.finfo
-==================
-
-.. currentmodule:: dpctl.tensor
-
-.. autofunction:: finfo

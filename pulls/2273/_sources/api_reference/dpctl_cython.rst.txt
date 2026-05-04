@@ -30,10 +30,6 @@ Locations of Cython declaration files in the package installation layout are as 
     program/__init__.pxd
     program/_program.pxd
 
-    tensor/__init__.pxd
-    tensor/_usmarray.pxd
-    tensor/_dlpack.pxd
-
 File ``_backend.pxd`` redefines symbols from :ref:`DPCTLSyclInterface library <libsyclinterface>` for Cython.
 
 File ``sycl.pxd`` provides casters from opaque types in "DPCTLSyclInterface" C library to SYCL C++ object pointers.

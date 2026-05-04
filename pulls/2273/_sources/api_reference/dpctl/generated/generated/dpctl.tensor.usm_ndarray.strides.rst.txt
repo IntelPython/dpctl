@@ -1,6 +1,0 @@
-dpctl.tensor.usm\_ndarray.strides
-=================================
-
-.. currentmodule:: dpctl.tensor
-
-.. autoattribute:: usm_ndarray.strides

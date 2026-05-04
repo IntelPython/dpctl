@@ -27,11 +27,6 @@ Working with devices
 
 * :ref:`Managing devices <beginners_guide_managing_devices>`
 
-Introduction to array library
------------------------------
-
-* :ref:`Getting started <beginners_guide_tensor_intro>` with :mod:`dpctl.tensor`
-
 Miscellaneous
 -------------
 
@@ -43,5 +38,4 @@ Miscellaneous
 
     installation
     managing_devices
-    tensor_intro
     misc
