@@ -37,30 +37,25 @@ namespace py = pybind11;
 
 void submit_custom_kernel(sycl::queue &q,
                           sycl::kernel &krn,
-                          dpctl::tensor::usm_ndarray x,
-                          dpctl::tensor::usm_ndarray y,
+                          dpctl::memory::usm_memory x,
+                          dpctl::memory::usm_memory y,
                           const std::vector<sycl::event> &depends = {})
 {
-    if (x.get_ndim() != 1 || !x.is_c_contiguous() || y.get_ndim() != 1 ||
-        !y.is_c_contiguous())
-    {
-        throw py::value_error(
-            "src and dst arguments must be 1D and contiguous.");
+    const std::size_t nbytes_x = x.get_nbytes();
+    const std::size_t nbytes_y = y.get_nbytes();
+
+    if (nbytes_x != nbytes_y) {
+        throw py::value_error("src and dst arguments must have equal nbytes.");
+    }
+    if (nbytes_x % sizeof(std::int32_t) != 0) {
+        throw py::value_error("src and dst must be interpretable as int32 "
+                              "(nbytes must be a multiple of 4).");
     }
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
-    if (x.get_typenum() != api.UAR_INT32_ || y.get_typenum() != api.UAR_INT32_)
-    {
-        throw py::value_error(
-            "src and dst arguments must have int32 element data types.");
-    }
+    auto *x_data = reinterpret_cast<std::int32_t *>(x.get_pointer());
+    auto *y_data = reinterpret_cast<std::int32_t *>(y.get_pointer());
 
-    size_t n_x = x.get_size();
-    size_t n_y = y.get_size();
-
-    if (n_x != n_y) {
-        throw py::value_error("src and dst arguments must have equal size.");
-    }
+    const std::size_t n_elems = nbytes_x / sizeof(std::int32_t);
 
     if (!dpctl::utils::queues_are_compatible(q, {x.get_queue(), y.get_queue()}))
     {
@@ -68,14 +63,11 @@ void submit_custom_kernel(sycl::queue &q,
             "Execution queue is not compatible with allocation queues");
     }
 
-    void *x_data = x.get_data<void>();
-    void *y_data = y.get_data<void>();
-
     sycl::event e = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
         cgh.set_arg(0, x_data);
         cgh.set_arg(1, y_data);
-        cgh.parallel_for(sycl::range<1>(n_x), krn);
+        cgh.parallel_for(sycl::range<1>(n_elems), krn);
     });
 
     e.wait();

@@ -105,7 +105,7 @@ def intel_device_info(dev, /):
         if mbw:
             res["memory_bus_width"] = mbw
         return res
-    return dict()
+    return {}
 
 
 __all__ = [

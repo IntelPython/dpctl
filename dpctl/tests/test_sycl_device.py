@@ -83,9 +83,7 @@ def test_filter_string(valid_filter):
     dev_id = device.filter_string
     assert (
         dpctl.SyclDevice(dev_id) == device
-    ), "Reconstructed device is different, ({}, {})".format(
-        valid_filter, dev_id
-    )
+    ), f"Reconstructed device is different, ({valid_filter}, {dev_id})"
 
 
 def test_filter_string_property():
@@ -407,7 +405,7 @@ def test_peer_device_arg_validation(method):
         dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No default device available")
-    bad_dev = dict()
+    bad_dev = {}
     callable = getattr(dev, method)
     with pytest.raises(TypeError):
         callable(bad_dev)

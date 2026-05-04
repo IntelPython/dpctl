@@ -33,11 +33,6 @@ foreach(python_module_name ${_pybind11_targets})
         target_link_options(${python_module_name} PRIVATE --offload-compress)
     endif()
 
-    target_include_directories(${python_module_name}
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/libtensor/source/
-    )
     target_link_options(${python_module_name} PRIVATE ${_linker_options})
     if(DPCTL_GENERATE_COVERAGE)
         if(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS)

@@ -158,6 +158,7 @@ def main():
         cxx_compiler=cxx_compiler,
         level_zero=level_zero_enabled,
         verbose=args.verbose,
+        other_opts=args.cmake_opts,
     )
 
     cmake_args += ["-DDPCTL_GENERATE_COVERAGE=ON"]
@@ -213,7 +214,6 @@ def main():
             "--pyargs",
             "dpctl",
             "-vv",
-            "--ignore=dpctl/tensor/libtensor/tests",
             "--no-sycl-interface-test",
         ]
         run(pytest_cmd, env=env, cwd=setup_dir)
@@ -223,11 +223,10 @@ def main():
             sfx_regexp = sysconfig.get_config_var("EXT_SUFFIX").replace(
                 ".", r"\."
             )
-            regexp1 = re.compile(r"^_tensor_.*impl" + sfx_regexp)
-            regexp2 = re.compile(r"^^_device_queries" + sfx_regexp)
+            regexp = re.compile(r"^^_device_queries" + sfx_regexp)
 
             def is_py_ext(fn):
-                return re.match(regexp1, fn) or re.match(regexp2, fn)
+                return re.match(regexp, fn)
 
             for root, _, files in os.walk("dpctl"):
                 for file in files:

@@ -205,5 +205,4 @@ target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
 add_subdirectory(program)
 add_subdirectory(memory)
-add_subdirectory(tensor)
 add_subdirectory(utils)

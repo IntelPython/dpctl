@@ -19,9 +19,6 @@ The "Dpctl" package exports the following variables:
     * - ``Dpctl_INCLUDE_DIR``
       - Location of headers for using :py:mod:`dpctl` in extensions
 
-    * - ``Dpctl_TENSOR_INCLUDE_DIR``
-      - Location of headers implementing SYCL kernels powering :py:mod:`dpctl.tensor`
-
 An example of "CMakeLists.txt" file for building an extension could be found in
 `examples/pybind11 <examples_pybind11_>`_ folder in the project repository, or
 in `sample-data-parallel-extensions <sample_dp_exts_>`_ repository.

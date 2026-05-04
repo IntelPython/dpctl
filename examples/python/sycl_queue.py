@@ -21,7 +21,7 @@ def create_default_queue():
     """Create a queue from default selector."""
     q = dpctl.SyclQueue()
     # Queue is out-of-order by default
-    print("Queue {} is in order: {}".format(q, q.is_in_order))
+    print(f"Queue {q} is in order: {q.is_in_order}")
 
 
 def create_queue_from_filter_selector():
@@ -31,7 +31,7 @@ def create_queue_from_filter_selector():
     Create in-order queue with profiling enabled.
     """
     q = dpctl.SyclQueue("gpu,cpu", property=("in_order", "enable_profiling"))
-    print("Queue {} is in order: {}".format(q, q.is_in_order))
+    print(f"Queue {q} is in order: {q.is_in_order}")
     # display the device used
     print("Device targeted by the queue:")
     q.sycl_device.print_device_info()
@@ -45,8 +45,8 @@ def create_queue_from_device():
     q = dpctl.SyclQueue(cpu_d, property="enable_profiling")
     assert q.sycl_device == cpu_d
     print(
-        "Number of devices in SyclContext " "associated with the queue: ",
-        q.sycl_context.device_count,
+        "Number of devices in SyclContext associated with the queue: "
+        f"{q.sycl_context.device_count}"
     )
 
 
@@ -64,8 +64,8 @@ def create_queue_from_subdevice():
     q = dpctl.SyclQueue(sub_devs[0])
     # a single-device context is created automatically
     print(
-        "Number of devices in SyclContext " "associated with the queue: ",
-        q.sycl_context.device_count,
+        "Number of devices in SyclContext associated with the queue: "
+        f"{q.sycl_context.device_count}"
     )
 
 
@@ -83,8 +83,8 @@ def create_queue_from_subdevice_multidevice_context():
     ctx = dpctl.SyclContext(sub_devs)
     q = dpctl.SyclQueue(ctx, sub_devs[0], property="enable_profiling")
     print(
-        "Number of devices in SyclContext " "associated with the queue: ",
-        q.sycl_context.device_count,
+        "Number of devices in SyclContext associated with the queue: "
+        f"{q.sycl_context.device_count}"
     )
 
 

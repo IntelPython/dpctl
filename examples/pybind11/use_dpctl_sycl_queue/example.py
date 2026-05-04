@@ -29,9 +29,9 @@ global_mem_size = eg.get_device_global_mem_size(q.sycl_device)
 local_mem_size = eg.get_device_local_mem_size(q.sycl_device)
 
 print(f"EU count returned by Pybind11 extension {eu_count}")
-print("EU count computed by dpctl {}".format(q.sycl_device.max_compute_units))
-print("Device's global memory size:  {} bytes".format(global_mem_size))
-print("Device's local memory size:  {} bytes".format(local_mem_size))
+print(f"EU count computed by dpctl {q.sycl_device.max_compute_units}")
+print(f"Device's global memory size:  {global_mem_size} bytes")
+print(f"Device's local memory size:  {local_mem_size} bytes")
 
 print("")
 print("Computing modular reduction using SYCL on a NumPy array")

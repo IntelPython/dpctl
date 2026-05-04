@@ -34,7 +34,8 @@ jobs:
 
       - name: Install latest Intel OneAPI
         run: |
-          sudo apt install intel-oneapi-compiler-dpcpp-cpp
+          # TODO: drop 2025.3 requirement when coverage build segfault is resolved
+          sudo apt install intel-oneapi-compiler-dpcpp-cpp-2025.3
           sudo apt install intel-oneapi-tbb
           sudo apt install intel-oneapi-umf
           sudo apt install hwloc
@@ -51,12 +52,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: '3.12'
+          python-version: '3.14'
           architecture: x64
 
       - name: Cache Gtest
         id: cache-gtest
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: |
             /home/runner/work/googletest-1.15.2/install

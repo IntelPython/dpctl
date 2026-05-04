@@ -22,7 +22,7 @@
 /// \file
 /// This file implements Pybind11-generated extension exposing functions that
 /// take dpctl Python objects, such as dpctl.SyclQueue, dpctl.SyclDevice, and
-/// dpctl.tensor.usm_ndarray as arguments.
+/// dpctl.memory.MemoryUSMDevice/Shared/Host as arguments.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -30,7 +30,9 @@
 #include <sycl/sycl.hpp>
 #include <oneapi/mkl.hpp>
 #include "cg_solver.hpp"
+#include <cstdint>
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <pybind11/complex.h>
 #include "dpctl4pybind11.hpp"
@@ -40,27 +42,45 @@ namespace py = pybind11;
 
 using dpctl::utils::keep_args_alive;
 
+namespace
+{
+
+void validate_usm_nbytes(const dpctl::memory::usm_memory &mem,
+                         std::size_t required_nbytes,
+                         const char *arg_name)
+{
+    const std::size_t nbytes = mem.get_nbytes();
+    if (nbytes < required_nbytes) {
+        throw py::value_error(std::string(arg_name) +
+                              " does not have enough bytes for the requested "
+                              "shape/dtype");
+    }
+}
+
+void validate_positive_sizes(std::int64_t n, std::int64_t m)
+{
+    if (n < 0 || m < 0) {
+        throw py::value_error("Dimensions must be non-negative");
+    }
+}
+
+} // end anonymous namespace
+
 std::pair<sycl::event, sycl::event>
 py_gemv(sycl::queue &q,
-        dpctl::tensor::usm_ndarray matrix,
-        dpctl::tensor::usm_ndarray vector,
-        dpctl::tensor::usm_ndarray result,
+        dpctl::memory::usm_memory matrix,
+        dpctl::memory::usm_memory vector,
+        dpctl::memory::usm_memory result,
+        std::int64_t n,
+        std::int64_t m,
+        py::dtype dtype,
+        std::int64_t lda,
         const std::vector<sycl::event> &depends = {})
 {
-    if (matrix.get_ndim() != 2 || vector.get_ndim() != 1 ||
-        result.get_ndim() != 1)
-    {
-        throw std::runtime_error(
-            "Inconsistent dimensions, expecting matrix and a vector");
-    }
+    validate_positive_sizes(n, m);
 
-    py::ssize_t n = matrix.get_shape(0); // get 0-th element of the shape
-    py::ssize_t m = matrix.get_shape(1);
-
-    py::ssize_t v_dim = vector.get_shape(0);
-    py::ssize_t r_dim = result.get_shape(0);
-    if (v_dim != m || r_dim != n) {
-        throw std::runtime_error("Inconsistent shapes.");
+    if (lda < m) {
+        throw py::value_error("lda must be >= number of columns (m)");
     }
 
     if (!dpctl::utils::queues_are_compatible(
@@ -70,74 +90,60 @@ py_gemv(sycl::queue &q,
             "USM allocations are not compatible with the execution queue.");
     }
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    const py::ssize_t itemsize = dtype.itemsize();
 
-    if (!((matrix.is_c_contiguous()) &&
-          (vector.is_c_contiguous() || vector.is_f_contiguous()) &&
-          (result.is_c_contiguous() || result.is_f_contiguous())))
-    {
-        throw std::runtime_error("Arrays must be contiguous.");
-    }
+    validate_usm_nbytes(matrix,
+                        static_cast<std::size_t>(n) *
+                            static_cast<std::size_t>(lda) * itemsize,
+                        "Amatrix");
+    validate_usm_nbytes(vector, static_cast<std::size_t>(m) * itemsize, "xvec");
+    validate_usm_nbytes(result, static_cast<std::size_t>(n) * itemsize,
+                        "resvec");
 
-    int mat_typenum = matrix.get_typenum();
-    int v_typenum = vector.get_typenum();
-    int r_typenum = result.get_typenum();
-
-    if ((mat_typenum != v_typenum) || (r_typenum != v_typenum) ||
-        !((v_typenum == api.UAR_DOUBLE_) || (v_typenum == api.UAR_FLOAT_) ||
-          (v_typenum == api.UAR_CDOUBLE_) || (v_typenum == api.UAR_CFLOAT_)))
-    {
-        std::cout << "Found: [" << mat_typenum << ", " << v_typenum << ", "
-                  << r_typenum << "]" << std::endl;
-        std::cout << "Expected: [" << UAR_DOUBLE << ", " << UAR_FLOAT << ", "
-                  << UAR_CDOUBLE << ", " << UAR_CFLOAT << "]" << std::endl;
-        throw std::runtime_error(
-            "Only real and complex floating point arrays are supported.");
-    }
-
-    char *mat_typeless_ptr = matrix.get_data();
-    char *v_typeless_ptr = vector.get_data();
-    char *r_typeless_ptr = result.get_data();
+    char *mat_typeless_ptr = matrix.get_pointer();
+    char *v_typeless_ptr = vector.get_pointer();
+    char *r_typeless_ptr = result.get_pointer();
 
     sycl::event res_ev;
-    if (v_typenum == api.UAR_DOUBLE_) {
+    const char dtype_char = dtype.char_();
+    if (dtype_char == 'd') {
         using T = double;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
-            reinterpret_cast<T *>(mat_typeless_ptr), m,
+            reinterpret_cast<T *>(mat_typeless_ptr), lda,
             reinterpret_cast<T *>(v_typeless_ptr), 1, T(0),
             reinterpret_cast<T *>(r_typeless_ptr), 1, depends);
         res_ev = gemv_ev;
     }
-    else if (v_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
-            reinterpret_cast<T *>(mat_typeless_ptr), m,
+            reinterpret_cast<T *>(mat_typeless_ptr), lda,
             reinterpret_cast<T *>(v_typeless_ptr), 1, T(0),
             reinterpret_cast<T *>(r_typeless_ptr), 1, depends);
         res_ev = gemv_ev;
     }
-    else if (v_typenum == api.UAR_CDOUBLE_) {
+    else if (dtype_char == 'D') {
         using T = std::complex<double>;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
-            reinterpret_cast<T *>(mat_typeless_ptr), m,
+            reinterpret_cast<T *>(mat_typeless_ptr), lda,
             reinterpret_cast<T *>(v_typeless_ptr), 1, T(0),
             reinterpret_cast<T *>(r_typeless_ptr), 1, depends);
         res_ev = gemv_ev;
     }
-    else if (v_typenum == api.UAR_CFLOAT_) {
+    else if (dtype_char == 'F') {
         using T = std::complex<float>;
         sycl::event gemv_ev = oneapi::mkl::blas::row_major::gemv(
             q, oneapi::mkl::transpose::nontrans, n, m, T(1),
-            reinterpret_cast<T *>(mat_typeless_ptr), m,
+            reinterpret_cast<T *>(mat_typeless_ptr), lda,
             reinterpret_cast<T *>(v_typeless_ptr), 1, T(0),
             reinterpret_cast<T *>(r_typeless_ptr), 1, depends);
         res_ev = gemv_ev;
     }
     else {
-        throw std::runtime_error("Type dispatch ran into trouble.");
+        throw std::runtime_error("Unsupported data type for gemv.");
     }
 
     sycl::event ht_event =
@@ -165,22 +171,15 @@ sycl::event sub_impl(sycl::queue q,
 
 // out_r = in_v1 - in_v2
 std::pair<sycl::event, sycl::event>
-py_sub(sycl::queue q,
-       dpctl::tensor::usm_ndarray in_v1,
-       dpctl::tensor::usm_ndarray in_v2,
-       dpctl::tensor::usm_ndarray out_r,
+py_sub(sycl::queue &q,
+       dpctl::memory::usm_memory in_v1,
+       dpctl::memory::usm_memory in_v2,
+       dpctl::memory::usm_memory out_r,
+       std::int64_t n,
+       py::dtype dtype,
        const std::vector<sycl::event> &depends = {})
 {
-    if (in_v1.get_ndim() != 1 || in_v2.get_ndim() != 1 || out_r.get_ndim() != 1)
-    {
-        throw std::runtime_error("Inconsistent dimensions, expecting vectors");
-    }
-
-    py::ssize_t n = in_v1.get_shape(0); // get length of the vector
-
-    if (n != in_v2.get_shape(0) || n != out_r.get_shape(0)) {
-        throw std::runtime_error("Vectors must have the same length");
-    }
+    validate_positive_sizes(n, 0);
 
     if (!dpctl::utils::queues_are_compatible(
             q, {in_v1.get_queue(), in_v2.get_queue(), out_r.get_queue()}))
@@ -189,56 +188,40 @@ py_sub(sycl::queue q,
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    const py::ssize_t itemsize = dtype.itemsize();
 
-    if (!((in_v1.is_c_contiguous() || in_v1.is_f_contiguous()) &&
-          (in_v2.is_c_contiguous() || in_v2.is_f_contiguous()) &&
-          (out_r.is_c_contiguous() || out_r.is_f_contiguous())))
-    {
-        throw std::runtime_error("Vectors must be contiguous.");
-    }
+    validate_usm_nbytes(in_v1, static_cast<std::size_t>(n) * itemsize, "in1");
+    validate_usm_nbytes(in_v2, static_cast<std::size_t>(n) * itemsize, "in2");
+    validate_usm_nbytes(out_r, static_cast<std::size_t>(n) * itemsize, "out");
 
-    int in_v1_typenum = in_v1.get_typenum();
-    int in_v2_typenum = in_v2.get_typenum();
-    int out_r_typenum = out_r.get_typenum();
-
-    if ((in_v2_typenum != in_v1_typenum) || (out_r_typenum != in_v1_typenum) ||
-        !((in_v1_typenum == api.UAR_DOUBLE_) ||
-          (in_v1_typenum == api.UAR_FLOAT_) ||
-          (in_v1_typenum == api.UAR_CDOUBLE_) ||
-          (in_v1_typenum == api.UAR_CFLOAT_)))
-    {
-        throw std::runtime_error(
-            "Only real and complex floating point arrays are supported.");
-    }
-
-    const char *in_v1_typeless_ptr = in_v1.get_data();
-    const char *in_v2_typeless_ptr = in_v2.get_data();
-    char *out_r_typeless_ptr = out_r.get_data();
+    const char *in_v1_typeless_ptr = in_v1.get_pointer();
+    const char *in_v2_typeless_ptr = in_v2.get_pointer();
+    char *out_r_typeless_ptr = out_r.get_pointer();
 
     sycl::event res_ev;
-    if (out_r_typenum == api.UAR_DOUBLE_) {
+    const char dtype_char = dtype.char_();
+    if (dtype_char == 'd') {
         using T = double;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
-    else if (out_r_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
-    else if (out_r_typenum == api.UAR_CDOUBLE_) {
+    else if (dtype_char == 'D') {
         using T = std::complex<double>;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
-    else if (out_r_typenum == api.UAR_CFLOAT_) {
+    else if (dtype_char == 'F') {
         using T = std::complex<float>;
         res_ev = sub_impl<T>(q, n, in_v1_typeless_ptr, in_v2_typeless_ptr,
                              out_r_typeless_ptr, depends);
     }
     else {
-        throw std::runtime_error("Type dispatch ran into trouble.");
+        throw std::runtime_error("Unsupported data type for sub.");
     }
 
     sycl::event ht_event = keep_args_alive(q, {in_v1, in_v2, out_r}, {res_ev});
@@ -274,72 +257,53 @@ sycl::event axpby_inplace_impl(sycl::queue q,
 std::pair<sycl::event, sycl::event>
 py_axpby_inplace(sycl::queue q,
                  py::object a,
-                 dpctl::tensor::usm_ndarray x,
+                 dpctl::memory::usm_memory x,
                  py::object b,
-                 dpctl::tensor::usm_ndarray y,
+                 dpctl::memory::usm_memory y,
+                 std::int64_t n,
+                 py::dtype dtype,
                  const std::vector<sycl::event> &depends = {})
 {
-
-    if (x.get_ndim() != 1 || y.get_ndim() != 1) {
-        throw std::runtime_error("Inconsistent dimensions, expecting vectors");
-    }
-
-    py::ssize_t n = x.get_shape(0); // get length of the vector
-
-    if (n != y.get_shape(0)) {
-        throw std::runtime_error("Vectors must have the same length");
-    }
+    validate_positive_sizes(n, 0);
 
     if (!dpctl::utils::queues_are_compatible(q, {x.get_queue(), y.get_queue()}))
     {
         throw std::runtime_error(
             "USM allocation is not bound to the context in execution queue");
     }
-    auto const &api = dpctl::detail::dpctl_capi::get();
 
-    if (!((x.is_c_contiguous() || x.is_f_contiguous()) &&
-          (y.is_c_contiguous() || y.is_f_contiguous())))
-    {
-        throw std::runtime_error("Vectors must be contiguous.");
-    }
+    const py::ssize_t itemsize = dtype.itemsize();
 
-    int x_typenum = x.get_typenum();
-    int y_typenum = y.get_typenum();
+    validate_usm_nbytes(x, static_cast<std::size_t>(n) * itemsize, "x");
+    validate_usm_nbytes(y, static_cast<std::size_t>(n) * itemsize, "y");
 
-    if ((x_typenum != y_typenum) ||
-        !((x_typenum == api.UAR_DOUBLE_) || (x_typenum == api.UAR_FLOAT_) ||
-          (x_typenum == api.UAR_CDOUBLE_) || (x_typenum == api.UAR_CFLOAT_)))
-    {
-        throw std::runtime_error(
-            "Only real and complex floating point arrays are supported.");
-    }
-
-    const char *x_typeless_ptr = x.get_data();
-    char *y_typeless_ptr = y.get_data();
+    const char *x_typeless_ptr = x.get_pointer();
+    char *y_typeless_ptr = y.get_pointer();
 
     sycl::event res_ev;
-    if (x_typenum == api.UAR_DOUBLE_) {
+    const char dtype_char = dtype.char_();
+    if (dtype_char == 'd') {
         using T = double;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
-    else if (x_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
-    else if (x_typenum == api.UAR_CDOUBLE_) {
+    else if (dtype_char == 'D') {
         using T = std::complex<double>;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
-    else if (x_typenum == api.UAR_CFLOAT_) {
+    else if (dtype_char == 'F') {
         using T = std::complex<float>;
         res_ev = axpby_inplace_impl<T>(q, n, a, x_typeless_ptr, b,
                                        y_typeless_ptr, depends);
     }
     else {
-        throw std::runtime_error("Type dispatch ran into trouble.");
+        throw std::runtime_error("Unsupported data type for axpby_inplace.");
     }
 
     sycl::event ht_event = keep_args_alive(q, {x, y}, {res_ev});
@@ -374,89 +338,64 @@ T complex_norm_squared_blocking_impl(
                                                             depends);
 }
 
-py::object py_norm_squared_blocking(sycl::queue q,
-                                    dpctl::tensor::usm_ndarray r,
+py::object py_norm_squared_blocking(sycl::queue &q,
+                                    dpctl::memory::usm_memory r,
+                                    std::int64_t n,
+                                    py::dtype dtype,
                                     const std::vector<sycl::event> depends = {})
 {
-    if (r.get_ndim() != 1) {
-        throw std::runtime_error("Expecting a vector");
-    }
-
-    py::ssize_t n = r.get_shape(0); // get length of the vector
-
-    int r_flags = r.get_flags();
-
-    if (!(r.is_c_contiguous() || r.is_f_contiguous())) {
-        throw std::runtime_error("Vector must be contiguous.");
-    }
+    validate_positive_sizes(n, 0);
 
     if (!dpctl::utils::queues_are_compatible(q, {r.get_queue()})) {
         throw std::runtime_error(
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    const py::ssize_t itemsize = dtype.itemsize();
+    validate_usm_nbytes(r, static_cast<std::size_t>(n) * itemsize, "r");
 
-    int r_typenum = r.get_typenum();
-    if ((r_typenum != api.UAR_DOUBLE_) && (r_typenum != api.UAR_FLOAT_) &&
-        (r_typenum != api.UAR_CDOUBLE_) && (r_typenum != api.UAR_CFLOAT_))
-    {
-        throw std::runtime_error(
-            "Only real and complex floating point arrays are supported.");
-    }
-
-    const char *r_typeless_ptr = r.get_data();
+    const char *r_typeless_ptr = r.get_pointer();
     py::object res;
+    const char dtype_char = dtype.char_();
 
-    if (r_typenum == api.UAR_DOUBLE_) {
+    if (dtype_char == 'd') {
         using T = double;
         T n_sq = norm_squared_blocking_impl<T>(q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
-    else if (r_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         T n_sq = norm_squared_blocking_impl<T>(q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
-    else if (r_typenum == api.UAR_CDOUBLE_) {
+    else if (dtype_char == 'D') {
         using T = std::complex<double>;
         double n_sq = complex_norm_squared_blocking_impl<double>(
             q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
-    else if (r_typenum == api.UAR_CFLOAT_) {
+    else if (dtype_char == 'F') {
         using T = std::complex<float>;
         float n_sq = complex_norm_squared_blocking_impl<float>(
             q, n, r_typeless_ptr, depends);
         res = py::float_(n_sq);
     }
     else {
-        throw std::runtime_error("Type dispatch ran into trouble.");
+        throw std::runtime_error(
+            "Unsupported data type for norm_squared_blocking.");
     }
 
     return res;
 }
 
 py::object py_dot_blocking(sycl::queue q,
-                           dpctl::tensor::usm_ndarray v1,
-                           dpctl::tensor::usm_ndarray v2,
+                           dpctl::memory::usm_memory v1,
+                           dpctl::memory::usm_memory v2,
+                           std::int64_t n,
+                           py::dtype dtype,
                            const std::vector<sycl::event> &depends = {})
 {
-    if (v1.get_ndim() != 1 || v2.get_ndim() != 1) {
-        throw std::runtime_error("Expecting two vectors");
-    }
-
-    py::ssize_t n = v1.get_shape(0); // get length of the vector
-
-    if (n != v2.get_shape(0)) {
-        throw std::runtime_error("Length of vectors are not the same");
-    }
-
-    if (!(v1.is_c_contiguous() || v1.is_f_contiguous()) ||
-        !(v2.is_c_contiguous() || v2.is_f_contiguous()))
-    {
-        throw std::runtime_error("Vectors must be contiguous.");
-    }
+    validate_positive_sizes(n, 0);
 
     if (!dpctl::utils::queues_are_compatible(q,
                                              {v1.get_queue(), v2.get_queue()}))
@@ -465,25 +404,17 @@ py::object py_dot_blocking(sycl::queue q,
             "USM allocation is not bound to the context in execution queue");
     }
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    const py::ssize_t itemsize = dtype.itemsize();
 
-    int v1_typenum = v1.get_typenum();
-    int v2_typenum = v2.get_typenum();
+    validate_usm_nbytes(v1, static_cast<std::size_t>(n) * itemsize, "v1");
+    validate_usm_nbytes(v2, static_cast<std::size_t>(n) * itemsize, "v2");
 
-    if ((v1_typenum != v2_typenum) ||
-        ((v1_typenum != api.UAR_DOUBLE_) && (v1_typenum != api.UAR_FLOAT_) &&
-         (v1_typenum != api.UAR_CDOUBLE_) && (v1_typenum != api.UAR_CFLOAT_)))
-    {
-        throw py::value_error(
-            "Data types of vectors must be the same. "
-            "Only real and complex floating types are supported.");
-    }
-
-    const char *v1_typeless_ptr = v1.get_data();
-    const char *v2_typeless_ptr = v2.get_data();
+    const char *v1_typeless_ptr = v1.get_pointer();
+    const char *v2_typeless_ptr = v2.get_pointer();
     py::object res;
+    const char dtype_char = dtype.char_();
 
-    if (v1_typenum == api.UAR_DOUBLE_) {
+    if (dtype_char == 'd') {
         using T = double;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
@@ -494,7 +425,7 @@ py::object py_dot_blocking(sycl::queue q,
         sycl::free(res_usm, q);
         res = py::float_(res_v);
     }
-    else if (v1_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
@@ -505,7 +436,7 @@ py::object py_dot_blocking(sycl::queue q,
         sycl::free(res_usm, q);
         res = py::float_(res_v);
     }
-    else if (v1_typenum == api.UAR_CDOUBLE_) {
+    else if (dtype_char == 'D') {
         using T = std::complex<double>;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
@@ -516,7 +447,7 @@ py::object py_dot_blocking(sycl::queue q,
         sycl::free(res_usm, q);
         res = py::cast(res_v);
     }
-    else if (v1_typenum == api.UAR_CFLOAT_) {
+    else if (dtype_char == 'F') {
         using T = std::complex<float>;
         T *res_usm = sycl::malloc_device<T>(1, q);
         sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
@@ -528,48 +459,22 @@ py::object py_dot_blocking(sycl::queue q,
         res = py::cast(res_v);
     }
     else {
-        throw std::runtime_error("Type dispatch ran into trouble.");
+        throw std::runtime_error("Unsupported data type for dot_blocking.");
     }
 
     return res;
 }
 
 int py_cg_solve(sycl::queue exec_q,
-                dpctl::tensor::usm_ndarray Amat,
-                dpctl::tensor::usm_ndarray bvec,
-                dpctl::tensor::usm_ndarray xvec,
+                dpctl::memory::usm_memory Amat,
+                dpctl::memory::usm_memory bvec,
+                dpctl::memory::usm_memory xvec,
+                std::int64_t n,
+                py::dtype dtype,
                 double rs_tol,
                 const std::vector<sycl::event> &depends = {})
 {
-    if (Amat.get_ndim() != 2 || bvec.get_ndim() != 1 || xvec.get_ndim() != 1) {
-        throw py::value_error("Expecting a matrix and two vectors");
-    }
-
-    py::ssize_t n0 = Amat.get_shape(0);
-    py::ssize_t n1 = Amat.get_shape(1);
-
-    if (n0 != n1) {
-        throw py::value_error("Matrix must be square.");
-    }
-
-    if (n0 != bvec.get_shape(0) || n0 != xvec.get_shape(0)) {
-        throw py::value_error(
-            "Dimensions of the matrix and vectors are not consistent.");
-    }
-
-    bool all_contig = (Amat.is_c_contiguous()) && (bvec.is_c_contiguous()) &&
-                      (xvec.is_c_contiguous());
-    if (!all_contig) {
-        throw py::value_error("All inputs must be C-contiguous");
-    }
-
-    int A_typenum = Amat.get_typenum();
-    int b_typenum = bvec.get_typenum();
-    int x_typenum = xvec.get_typenum();
-
-    if (A_typenum != b_typenum || A_typenum != x_typenum) {
-        throw py::value_error("All arrays must have the same type");
-    }
+    validate_positive_sizes(n, 0);
 
     if (!dpctl::utils::queues_are_compatible(
             exec_q, {Amat.get_queue(), bvec.get_queue(), xvec.get_queue()}))
@@ -578,33 +483,41 @@ int py_cg_solve(sycl::queue exec_q,
             "USM allocation queues are not the same as the execution queue");
     }
 
-    const char *A_ch = Amat.get_data();
-    const char *b_ch = bvec.get_data();
-    char *x_ch = xvec.get_data();
+    const auto itemsize = dtype.itemsize();
 
-    auto const &api = dpctl::detail::dpctl_capi::get();
+    validate_usm_nbytes(Amat,
+                        static_cast<std::size_t>(n) *
+                            static_cast<std::size_t>(n) * itemsize,
+                        "Amat");
+    validate_usm_nbytes(bvec, static_cast<std::size_t>(n) * itemsize, "bvec");
+    validate_usm_nbytes(xvec, static_cast<std::size_t>(n) * itemsize, "xvec");
 
-    if (A_typenum == api.UAR_DOUBLE_) {
+    const char *A_ch = Amat.get_pointer();
+    const char *b_ch = bvec.get_pointer();
+    char *x_ch = xvec.get_pointer();
+    const char dtype_char = dtype.char_();
+
+    if (dtype_char == 'd') {
         using T = double;
         int iters = cg_solver::cg_solve<T>(
-            exec_q, n0, reinterpret_cast<const T *>(A_ch),
+            exec_q, n, reinterpret_cast<const T *>(A_ch),
             reinterpret_cast<const T *>(b_ch), reinterpret_cast<T *>(x_ch),
             depends, static_cast<T>(rs_tol));
 
         return iters;
     }
-    else if (A_typenum == api.UAR_FLOAT_) {
+    else if (dtype_char == 'f') {
         using T = float;
         int iters = cg_solver::cg_solve<T>(
-            exec_q, n0, reinterpret_cast<const T *>(A_ch),
+            exec_q, n, reinterpret_cast<const T *>(A_ch),
             reinterpret_cast<const T *>(b_ch), reinterpret_cast<T *>(x_ch),
             depends, static_cast<T>(rs_tol));
 
         return iters;
     }
     else {
-        throw std::runtime_error(
-            "Unsupported data type. Use single or double precision.");
+        throw std::runtime_error("Unsupported data type for cg_solve. Use "
+                                 "single or double precision.");
     }
 }
 
@@ -612,21 +525,27 @@ PYBIND11_MODULE(_onemkl, m)
 {
     m.def("gemv", &py_gemv, "Uses oneMKL to compute dot(matrix, vector)",
           py::arg("exec_queue"), py::arg("Amatrix"), py::arg("xvec"),
-          py::arg("resvec"), py::arg("depends") = py::list());
-    m.def("sub", &py_sub, "Subtraction: out = v1 - v2", py::arg("exec_queue"),
-          py::arg("in1"), py::arg("in2"), py::arg("out"),
+          py::arg("resvec"), py::arg("nrows"), py::arg("ncols"),
+          py::arg("dtype"), py::arg("lda") = -1,
           py::arg("depends") = py::list());
+    m.def("sub", &py_sub, "Subtraction: out = v1 - v2", py::arg("exec_queue"),
+          py::arg("in1"), py::arg("in2"), py::arg("out"), py::arg("nelems"),
+          py::arg("dtype"), py::arg("depends") = py::list());
     m.def("axpby_inplace", &py_axpby_inplace, "y = a * x + b * y",
           py::arg("exec_queue"), py::arg("a"), py::arg("x"), py::arg("b"),
-          py::arg("y"), py::arg("depends") = py::list());
+          py::arg("y"), py::arg("nelems"), py::arg("dtype"),
+          py::arg("depends") = py::list());
     m.def("norm_squared_blocking", &py_norm_squared_blocking, "norm(r)**2",
-          py::arg("exec_queue"), py::arg("r"), py::arg("depends") = py::list());
+          py::arg("exec_queue"), py::arg("r"), py::arg("nelems"),
+          py::arg("dtype"), py::arg("depends") = py::list());
     m.def("dot_blocking", &py_dot_blocking, "<v1, v2>", py::arg("exec_queue"),
-          py::arg("v1"), py::arg("v2"), py::arg("depends") = py::list());
+          py::arg("v1"), py::arg("v2"), py::arg("nelems"), py::arg("dtype"),
+          py::arg("depends") = py::list());
 
     m.def("cpp_cg_solve", &py_cg_solve,
           "Dispatch to call C++ implementation of cg_solve",
           py::arg("exec_queue"), py::arg("Amat"), py::arg("bvec"),
-          py::arg("xvec"), py::arg("rs_squared_tolerance") = py::float_(1e-20),
+          py::arg("xvec"), py::arg("n"), py::arg("dtype"),
+          py::arg("rs_squared_tolerance") = py::float_(1e-20),
           py::arg("depends") = py::list());
 }

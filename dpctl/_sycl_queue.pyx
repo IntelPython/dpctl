@@ -433,14 +433,12 @@ cdef int _parse_queue_properties(object prop) except *:
                 res = res | _queue_property_type._DEFAULT_PROPERTY
             else:
                 raise ValueError(
-                    (
-                        "queue property '{}' is not understood, "
-                        "expecting 'in_order', 'enable_profiling', or 'default'"
-                    ).format(prop)
+                    f"queue property '{prop}' is not understood, expecting "
+                    "'in_order', 'enable_profiling', or 'default'"
                 )
         else:
             raise ValueError(
-                "queue property '{}' is not understood.".format(prop)
+                f"queue property '{prop}' is not understood."
             )
     return res
 
@@ -492,9 +490,8 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         src_is_buf = True
     else:
         raise TypeError(
-             "Parameter `src` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
+             "Parameter `src` should have either type `dpctl.memory._Memory` "
+             "or a type that supports Python buffer protocol"
         )
 
     if isinstance(dst, _Memory):
@@ -512,9 +509,8 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         dst_is_buf = True
     else:
         raise TypeError(
-             "Parameter `dst` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
+             "Parameter `dst` should have either type `dpctl.memory._Memory` "
+             "or a type that supports Python buffer protocol"
         )
 
     if dep_events_count == 0 or dep_events is NULL:
@@ -726,7 +722,7 @@ cdef class SyclQueue(_SyclQueue):
         if len(args) > 2:
             raise TypeError(
                 "SyclQueue constructor takes 0, 1, or 2 positinal arguments, "
-                "but {} were given.".format(len(args))
+                f"but {len(args)} were given."
             )
         props = _parse_queue_properties(
             kwargs.pop("property", _queue_property_type._DEFAULT_PROPERTY)
@@ -754,22 +750,22 @@ cdef class SyclQueue(_SyclQueue):
                 status = self._init_queue_from_capsule(arg)
             else:
                 raise TypeError(
-                    "Positional argument {} is not a filter string or a "
-                    "SyclDevice".format(arg)
+                    f"Positional argument {arg} is not a filter string or a "
+                    "SyclDevice"
                 )
         else:
             ctx, dev = args
             if not isinstance(ctx, SyclContext):
                 raise TypeError(
                     "SyclQueue constructor with two positional arguments "
-                    "expected SyclContext as its first argument, but got {}."
-                    .format(type(ctx))
+                    "expected SyclContext as its first argument, but got "
+                    f"{type(ctx)}."
                 )
             if not isinstance(dev, SyclDevice):
                 raise TypeError(
                     "SyclQueue constructor with two positional arguments "
-                    "expected SyclDevice as its second argument, but got {}."
-                    .format(type(dev))
+                    "expected SyclDevice as its second argument, but got "
+                    f"{type(dev)}."
                 )
             status = self._init_queue_from_context_and_device(
                 <SyclContext>ctx, <SyclDevice>dev, props
@@ -777,8 +773,7 @@ cdef class SyclQueue(_SyclQueue):
         if status < 0:
             if status == -1:
                 raise SyclQueueCreationError(
-                    "Device filter selector string '{}' is not understood."
-                    .format(arg)
+                    f"Device filter selector string '{arg}' is not understood."
                 )
             elif status == -2 or status == -8:
                 default_dev_error = (
@@ -786,24 +781,24 @@ cdef class SyclQueue(_SyclQueue):
                 )
                 raise SyclQueueCreationError(
                     default_dev_error if (len_args == 0) else
-                    "SYCL Device '{}' could not be created.".format(arg)
+                    f"SYCL Device '{arg}' could not be created."
                 )
             elif status == -3 or status == -7:
                 raise SyclQueueCreationError(
                     "SYCL Context could not be created " +
                     "by default constructor" if len_args == 0 else
-                    "from '{}'.".format(arg)
+                    f"from '{arg}'."
                 )
             elif status == -4 or status == -6:
                 if len_args == 2:
                     arg = args
                 raise SyclQueueCreationError(
-                    "SYCL Queue failed to be created from '{}'.".format(arg)
+                    f"SYCL Queue failed to be created from '{arg}'."
                 )
             elif status == -5:
                 raise TypeError(
-                    "Input capsule {} contains a null pointer or could not "
-                    "be renamed".format(arg)
+                    f"Input capsule {arg} contains a null pointer or could not "
+                    "be renamed"
                 )
 
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
@@ -1700,12 +1695,10 @@ cdef class SyclQueue(_SyclQueue):
             if en_prof:
                 prop.append("enable_profiling")
             return (
-                "<dpctl."
-                + self.__name__
-                + " at {}, property={}>".format(hex(id(self)), prop)
+                f"<dpctl.{self.__name__} at {hex(id(self))}, property={prop}>"
             )
         else:
-            return "<dpctl." + self.__name__ + " at {}>".format(hex(id(self)))
+            return f"<dpctl.{self.__name__} at {hex(id(self))}>"
 
     def __hash__(self):
         """
@@ -1751,7 +1744,8 @@ cdef class SyclQueue(_SyclQueue):
         else:
             raise TypeError(
                 "dependent_events must either None, or a sequence of "
-                ":class:`dpctl.SyclEvent` objects")
+                "`dpctl.SyclEvent` objects"
+            )
         if nDE > 0:
             depEvents = (
                 <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
@@ -1862,25 +1856,28 @@ cdef class WorkGroupMemory:
             raise RuntimeError("Workgroup memory extension not available")
 
         if not (0 < len(args) < 3):
-            raise TypeError("WorkGroupMemory constructor takes 1 or 2 "
-                            f"arguments, but {len(args)} were given")
+            raise TypeError(
+                "WorkGroupMemory constructor takes 1 or 2 arguments, but "
+                f"{len(args)} were given"
+            )
 
         if len(args) == 1:
             if not isinstance(args[0], numbers.Integral):
-                raise TypeError("WorkGroupMemory single argument constructor"
-                                "expects first argument to be `int`",
-                                f"but got {type(args[0])}")
+                raise TypeError(
+                    "WorkGroupMemory single argument constructor expects "
+                    f"first argument to be `int` but got {type(args[0])}"
+                )
             nbytes = <size_t>(args[0])
         else:
             if not isinstance(args[0], str):
                 raise TypeError(
-                    "WorkGroupMemory constructor expects first"
-                    f"argument to be `str`, but got {type(args[0])}"
+                    "WorkGroupMemory constructor expects first argument to be "
+                    f"`str`, but got {type(args[0])}"
                 )
             if not isinstance(args[1], numbers.Integral):
                 raise TypeError(
-                    "WorkGroupMemory constructor expects second"
-                    f"argument to be `int`, but got {type(args[1])}"
+                    "WorkGroupMemory constructor expects second argument to "
+                    f"be `int`, but got {type(args[1])}"
                 )
             dtype = <str>(args[0])
             count = <size_t>(args[1])
@@ -1901,16 +1898,16 @@ cdef class WorkGroupMemory:
     def is_available():
         return DPCTLWorkGroupMemory_Available()
 
-    property _ref:
+    @property
+    def _ref(self):
         """Returns the address of the C API ``DPCTLWorkGroupMemoryRef``
         pointer as a ``size_t``.
         """
-        def __get__(self):
-            return <size_t>self._mem_ref
+        return <size_t>self._mem_ref
 
 
 cdef class _RawKernelArg:
-    def __dealloc(self):
+    def __dealloc__(self):
         if(self._arg_ref):
             DPCTLRawKernelArg_Delete(self._arg_ref)
 
@@ -1959,14 +1956,16 @@ cdef class RawKernelArg:
             raise RuntimeError("Raw kernel arg extension not available")
 
         if not (0 < len(args) < 3):
-            raise TypeError("RawKernelArg constructor takes 1 or 2 "
-                            f"arguments, but {len(args)} were given")
+            raise TypeError(
+                "RawKernelArg constructor takes 1 or 2 arguments, but "
+                f"{len(args)} were given"
+            )
 
         if len(args) == 1:
             if not _is_buffer(args[0]):
-                raise TypeError("RawKernelArg single argument constructor"
-                                "expects argument to be buffer",
-                                f"but got {type(args[0])}")
+                raise TypeError(
+                    "RawKernelArg single argument constructor expects "
+                    f"argument to be buffer but got {type(args[0])}")
 
             ret_code = PyObject_GetBuffer(args[0], &(_buffer),
                                           PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
@@ -1978,11 +1977,15 @@ cdef class RawKernelArg:
             _is_buf = True
         else:
             if not isinstance(args[0], numbers.Integral):
-                raise TypeError("RawKernelArg constructor expects first"
-                                "argument to be `int`, but got {type(args[0])}")
+                raise TypeError(
+                    "RawKernelArg constructor expects first argument to be "
+                    f"`int`, but got {type(args[0])}"
+                )
             if not isinstance(args[1], numbers.Integral):
-                raise TypeError("RawKernelArg constructor expects second"
-                                "argument to be `int`, but got {type(args[1])}")
+                raise TypeError(
+                    "RawKernelArg constructor expects second argument to be "
+                    f"`int`, but got {type(args[1])}"
+                )
 
             _is_buf = False
             count = args[0]
@@ -1996,9 +1999,9 @@ cdef class RawKernelArg:
     def is_available():
         return DPCTLRawKernelArg_Available()
 
-    property _ref:
+    @property
+    def _ref(self):
         """Returns the address of the C API ``DPCTLRawKernelArgRef`` pointer
         as a ``size_t``.
         """
-        def __get__(self):
-            return <size_t>self._arg_ref
+        return <size_t>self._arg_ref

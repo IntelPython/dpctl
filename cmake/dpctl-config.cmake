@@ -8,15 +8,12 @@
 #   True if DPCTL was found.
 # ``Dpctl_INCLUDE_DIR``
 #   The include directory needed to use dpctl.
-# ``Dpctl_TENSOR_INCLUDE_DIR``
-#   The include directory for tensor kernels implementation.
 # ``Dpctl_VERSION``
 #   The version of dpctl found.
 #
 # The module will also explicitly define two cache variables:
 #
 # ``Dpctl_INCLUDE_DIR``
-# ``Dpctl_TENSOR_INCLUDE_DIR``
 #
 
 if(NOT Dpctl_FOUND)
@@ -46,11 +43,6 @@ find_path(Dpctl_INCLUDE_DIR
   )
 get_filename_component(_dpctl_dir ${_dpctl_include_dir} DIRECTORY)
 
-find_path(Dpctl_TENSOR_INCLUDE_DIR
-  kernels utils
-  PATHS "${_dpctl_dir}/tensor/libtensor/include"
-  )
-
 set(Dpctl_INCLUDE_DIRS ${Dpctl_INCLUDE_DIR})
 
 # handle the QUIETLY and REQUIRED arguments and set Dpctl_FOUND to TRUE if
@@ -58,9 +50,8 @@ set(Dpctl_INCLUDE_DIRS ${Dpctl_INCLUDE_DIR})
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Dpctl
                                   REQUIRED_VARS
-                                    Dpctl_INCLUDE_DIR Dpctl_TENSOR_INCLUDE_DIR
-                                  VERSION_VAR Dpctl_VERSION
+                                    Dpctl_INCLUDE_DIR VERSION_VAR
+                                  Dpctl_VERSION
                                   )
 
 mark_as_advanced(Dpctl_INCLUDE_DIR)
-mark_as_advanced(Dpctl_TENSOR_INCLUDE_DIR)

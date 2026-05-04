@@ -75,13 +75,10 @@ jobs:
           source /opt/intel/oneapi/setvars.sh
           wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
           tar xf doxyrest-2.1.2-linux-amd64.tar.xz
-          python scripts/gen_docs.py --doxyrest-root=`pwd`/doxyrest-2.1.2-linux-amd64 --verbose || exit 1
+          python scripts/gen_docs.py --doxyrest-root=`pwd`/doxyrest-2.1.2-linux-amd64 --verbose --multiversion --clean || exit 1
           python -c "import dpctl; print(dpctl.__version__)" || exit 1
-          pushd "$(find _skbuild -name cmake-build)" || exit 1
-          cmake --build . --target Sphinx || exit 1
-          mv ../cmake-install/docs/docs ~/docs
+          mv "$(find _skbuild -type d -path "*/cmake-install/docs/docs" | head -n 1)" ~/docs
           git clean -dfx
-          popd
           git reset --hard
       - name: Publish docs
         if: ${{ !github.event.pull_request && github.ref == 'refs/heads/master' }}
@@ -101,7 +98,7 @@ jobs:
           git push tokened_docs gh-pages
       - name: Save built docs as an artifact
         if: ${{ github.event.pull_request && github.event.pull_request.head.repo.fork && github.event.action != 'closed'}}
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.PACKAGE_NAME }} rendered documentation
           path: ~/docs
@@ -146,7 +143,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action != 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
+        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
         with:
           message: |
             View rendered docs @ https://intelpython.github.io/dpctl/pulls/${{ env.PR_NUM }}/index.html
@@ -155,7 +152,7 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork && github.event.action == 'closed' }}
         env:
           PR_NUM: ${{ github.event.number }}
-        uses: mshick/add-pr-comment@ffd016c7e151d97d69d21a843022fd4cd5b96fe5 # v3.9.0.8.3.9.0
+        uses: mshick/add-pr-comment@8e4927817251f1ff60c001f04568532b38e0b4a0 # v3.11.0.8.3.11.0
         with:
           message: |
             Deleted rendered PR docs from intelpython.github.com/dpctl, latest should be updated shortly. :crossed_fingers:

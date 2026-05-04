@@ -96,6 +96,12 @@ def parse_args():
     )
 
     p.add_argument(
+        "--multiversion",
+        action="store_true",
+        help="Enable multiversion sidebar links in docs (default: False)",
+    )
+
+    p.add_argument(
         "--clean",
         action="store_true",
         help="Remove build dir before rebuild (default: False)",
@@ -129,6 +135,7 @@ def main():
         cxx_compiler=cxx_compiler,
         level_zero=level_zero_enabled,
         verbose=args.verbose,
+        other_opts=args.cmake_opts,
     )
 
     cmake_args += ["-DDPCTL_GENERATE_DOCS=ON"]
@@ -136,6 +143,9 @@ def main():
     if args.doxyrest_root:
         cmake_args += ["-DDPCTL_ENABLE_DOXYREST=ON"]
         cmake_args += [f"-DDoxyrest_DIR={args.doxyrest_root}"]
+
+    if args.multiversion:
+        cmake_args += ["-DDPCTL_USE_MULTIVERSION_TEMPLATE=ON"]
 
     log_cmake_args(cmake_args, "gen_docs")
 

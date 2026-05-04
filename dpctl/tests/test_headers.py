@@ -1,7 +1,6 @@
 import pytest
 
 import dpctl
-import dpctl.tensor as dpt
 
 
 @pytest.fixture(scope="session")
@@ -44,9 +43,9 @@ def dpctl_c_extension(tmp_path_factory):
 
 def test_c_headers(dpctl_c_extension):
     try:
-        x = dpt.empty(10)
+        q = dpctl.SyclQueue()
     except (dpctl.SyclDeviceCreationError, dpctl.SyclQueueCreationError):
         pytest.skip()
 
-    assert dpctl_c_extension.is_usm_ndarray(x)
-    assert dpctl_c_extension.usm_ndarray_ndim(x) == x.ndim
+    assert dpctl_c_extension.is_sycl_queue(q)
+    assert dpctl_c_extension.check_queue_ref(q)

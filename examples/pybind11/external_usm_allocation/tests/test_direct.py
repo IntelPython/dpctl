@@ -17,10 +17,10 @@
 # coding: utf-8
 
 import external_usm_allocation as eua
+import numpy as np
 
 import dpctl
 import dpctl.memory as dpm
-import dpctl.tensor as dpt
 
 
 def test_direct():
@@ -30,8 +30,11 @@ def test_direct():
     mbuf = eua.make_zeroed_device_memory(nb, q)
 
     assert isinstance(mbuf, dpm.MemoryUSMDevice)
-    assert mbuf.nbytes == 2 * 30
+    assert mbuf.nbytes == nb
     assert mbuf.sycl_queue == q
 
-    x = dpt.usm_ndarray(30, dtype="i2", buffer=mbuf)
-    assert dpt.all(x == dpt.zeros(30, dtype="i2", sycl_queue=q))
+    x = np.empty(30, dtype="i2")
+    assert x.nbytes == nb
+
+    q.memcpy(dest=x, src=mbuf, count=nb)
+    assert np.all(x == 0)

@@ -49,6 +49,5 @@ Supported values for ``DeviceType`` are:
 
 Filter selector strings can be used as arguments to constructors of
 :py:class:`dpctl.SyclDevice`, :py:class:`dpctl.SyclContext`,
-:py:class:`dpctl.SyclPlatform`, :py:class:`dpctl.SyclQueue`,
-or :py:class:`dpctl.tensor.Device` classes, as well as values of
-``device`` keyword in :ref:`array creation functions <dpctl_tensor_creation_functions>`.
+:py:class:`dpctl.SyclPlatform`, or :py:class:`dpctl.SyclQueue`
+classes.

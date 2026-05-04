@@ -150,7 +150,7 @@ def test_channeling_device_properties(capsys):
     for pr in ["backend", "name", "driver_version"]:
         assert getattr(q, pr) == getattr(
             dev, pr
-        ), "Mismatch found for property {}".format(pr)
+        ), f"Mismatch found for property {pr}"
 
 
 def test_queue_submit_barrier(valid_filter):
@@ -209,7 +209,7 @@ def test_queue_invalid_property():
     with pytest.raises(ValueError):
         dpctl.SyclQueue(property=4.5)
     with pytest.raises(ValueError):
-        dpctl.SyclQueue(property=["abc", tuple()])
+        dpctl.SyclQueue(property=["abc", ()])
 
 
 def test_queue_capsule():
@@ -244,7 +244,7 @@ def test_cpython_api_SyclQueue_GetQueueRef():
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
-        pytest.skip("Can not defaul-construct SyclQueue")
+        pytest.skip("Can not default-construct SyclQueue")
     mod = sys.modules[q.__class__.__module__]
     # get capsule storign SyclQueue_GetQueueRef function ptr
     q_ref_fn_cap = mod.__pyx_capi__["SyclQueue_GetQueueRef"]
@@ -345,13 +345,13 @@ def test_queue_memops():
     q.prefetch(m1, 512)
     q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
-        q.memcpy(m1, list(), 512)
+        q.memcpy(m1, [], 512)
     with pytest.raises(TypeError):
-        q.memcpy(list(), m2, 512)
+        q.memcpy([], m2, 512)
     with pytest.raises(TypeError):
-        q.prefetch(list(), 512)
+        q.prefetch([], 512)
     with pytest.raises(TypeError):
-        q.mem_advise(list(), 512, 0)
+        q.mem_advise([], 512, 0)
 
 
 @pytest.fixture(scope="session")

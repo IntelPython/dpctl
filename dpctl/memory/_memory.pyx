@@ -146,8 +146,7 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
         res = MemoryUSMHost(len(b))
     else:
         raise ValueError(
-            "Unrecognized usm_kind={} stored in the "
-            "pickle".format(usm_kind)
+            f"Unrecognized usm_kind={usm_kind} stored in the pickle"
         )
     res.copy_from_host(b)
 
@@ -206,9 +205,8 @@ cdef class _Memory:
                         p = DPCTLmalloc_device(nbytes, QRef)
             else:
                 raise RuntimeError(
-                    "Pointer type '{}' is not recognized".format(
-                        ptr_type.decode("UTF-8")
-                    )
+                    f"Pointer type '{ptr_type.decode('UTF-8')}' is not "
+                    "recognized"
                 )
 
             if (p):
@@ -250,13 +248,13 @@ cdef class _Memory:
                 self.refobj = other
             else:
                 raise ValueError(
-                    "Argument {} does not correctly expose"
-                    "`__sycl_usm_array_interface__`.".format(other)
+                    f"Argument {other} does not correctly expose"
+                    "`__sycl_usm_array_interface__`."
                 )
         else:
             raise ValueError(
-                "Argument {} does not expose "
-                "`__sycl_usm_array_interface__`.".format(other)
+                f"Argument {other} does not expose "
+                "`__sycl_usm_array_interface__`."
             )
 
     def __dealloc__(self):
@@ -290,72 +288,68 @@ cdef class _Memory:
         buffer.strides = &buffer.itemsize
         buffer.suboffsets = NULL                # for pointer arrays only
 
-    property nbytes:
+    @property
+    def nbytes(self):
         """Extent of this USM buffer in bytes."""
-        def __get__(self):
-            return self.nbytes
+        return self.nbytes
 
-    property size:
+    @property
+    def size(self):
         """Extent of this USM buffer in bytes."""
-        def __get__(self):
-            return self.nbytes
+        return self.nbytes
 
-    property _pointer:
+    @property
+    def _pointer(self):
         """
         USM pointer at the start of this buffer
         represented as Python integer.
         """
-        def __get__(self):
-            return <size_t>(self._memory_ptr)
+        return <size_t>(self._memory_ptr)
 
-    property _context:
+    @property
+    def _context(self):
         """:class:`dpctl.SyclContext` the USM pointer is bound to. """
-        def __get__(self):
-            return self.queue.get_sycl_context()
+        return self.queue.get_sycl_context()
 
-    property _queue:
+    @property
+    def _queue(self):
         """
         :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
         USM allocation is bound to and :class:`dpctl.SyclDevice` it was
         allocated on.
         """
-        def __get__(self):
-            return self.queue
+        return self.queue
 
-    property reference_obj:
+    @property
+    def reference_obj(self):
         """
         Reference to the Python object owning this USM buffer.
         """
-        def __get__(self):
-            return self.refobj
+        return self.refobj
 
-    property sycl_context:
+    @property
+    def sycl_context(self):
         """:class:`dpctl.SyclContext` the USM pointer is bound to."""
-        def __get__(self):
-            return self.queue.get_sycl_context()
+        return self.queue.get_sycl_context()
 
-    property sycl_device:
+    @property
+    def sycl_device(self):
         """:class:`dpctl.SyclDevice` the USM pointer is bound to."""
-        def __get__(self):
-            return self.queue.get_sycl_device()
+        return self.queue.get_sycl_device()
 
-    property sycl_queue:
+    @property
+    def sycl_queue(self):
         """
         :class:`dpctl.SyclQueue` with :class:`dpctl.SyclContext` the
         USM allocation is bound to and :class:`dpctl.SyclDevice` it was
         allocated on.
         """
-        def __get__(self):
-            return self.queue
+        return self.queue
 
     def __repr__(self):
         return (
-            "<SYCL(TM) USM-{} allocation of {} bytes at {}>"
-            .format(
-                self.get_usm_type(),
-                self.nbytes,
-                hex(<object>(<size_t>self._memory_ptr))
-            )
+            f"<SYCL(TM) USM-{self.get_usm_type()} allocation of {self.nbytes} "
+            f"bytes at {hex(<object>(<size_t>self._memory_ptr))}>"
         )
 
     def __len__(self):
@@ -370,7 +364,8 @@ cdef class _Memory:
     def __reduce__(self):
         return _to_memory, (self.copy_to_host(), self.get_usm_type())
 
-    property __sycl_usm_array_interface__:
+    @property
+    def __sycl_usm_array_interface__(self):
         """
         Dictionary encoding information about USM allocation.
 
@@ -396,17 +391,16 @@ cdef class _Memory:
                 Queue associated with this class instance.
 
         """
-        def __get__(self):
-            cdef dict iface = {
-                "data": (<size_t>(<void *>self._memory_ptr),
-                         True),  # bool(self.writable)),
-                "shape": (self.nbytes,),
-                "strides": None,
-                "typestr": "|u1",
-                "version": 1,
-                "syclobj": self.queue
-            }
-            return iface
+        cdef dict iface = {
+            "data": (<size_t>(<void *>self._memory_ptr),
+                     True),  # bool(self.writable)),
+            "shape": (self.nbytes,),
+            "strides": None,
+            "typestr": "|u1",
+            "version": 1,
+            "syclobj": self.queue,
+        }
+        return iface
 
     def get_usm_type(self, syclobj=None):
         """
@@ -488,8 +482,8 @@ cdef class _Memory:
             host_buf = obj
         elif (<Py_ssize_t>len(host_buf) < self.nbytes):
             raise ValueError(
-                "Destination object is too small to accommodate {} bytes"
-                .format(self.nbytes)
+                f"Destination object is too small to accommodate {self.nbytes} "
+                "bytes"
             )
         # call kernel to copy from
         ERef = DPCTLQueue_Memcpy(
@@ -514,8 +508,8 @@ cdef class _Memory:
 
         if (buf_len > self.nbytes):
             raise ValueError(
-                "Source object is too large to be accommodated in {} bytes "
-                "buffer".format(self.nbytes)
+                "Source object is too large to be accommodated in "
+                f"{self.nbytes} bytes buffer"
             )
         # call kernel to copy from
         ERef = DPCTLQueue_Memcpy(
@@ -551,7 +545,7 @@ cdef class _Memory:
             if (src_buf.nbytes > self.nbytes):
                 raise ValueError(
                     "Source object is too large to "
-                    "be accommondated in {} bytes buffer".format(self.nbytes)
+                    f"be accommondated in {self.nbytes} bytes buffer"
                 )
 
             src_queue = src_buf.queue
@@ -788,13 +782,12 @@ cdef class MemoryUSMShared(_Memory):
                     self.copy_from_device(other)
                 else:
                     raise ValueError(
-                        "USM pointer in the argument {} is not a "
+                        f"USM pointer in the argument {other} is not a "
                         "USM shared pointer. "
                         "Zero-copy operation is not possible with "
                         "copy=False. "
                         "Either use copy=True, or use a constructor "
-                        "appropriate for "
-                        "type '{}'".format(other, self.get_usm_type())
+                        f"appropriate for type '{self.get_usm_type()}'"
                     )
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
@@ -840,13 +833,11 @@ cdef class MemoryUSMHost(_Memory):
                     self.copy_from_device(other)
                 else:
                     raise ValueError(
-                        "USM pointer in the argument {} is "
+                        f"USM pointer in the argument {other} is "
                         "not a USM host pointer. "
                         "Zero-copy operation is not possible with copy=False. "
                         "Either use copy=True, or use a constructor "
-                        "appropriate for type '{}'".format(
-                            other, self.get_usm_type()
-                        )
+                        f"appropriate for type '{self.get_usm_type()}'"
                     )
 
     def __getbuffer__(self, Py_buffer *buffer, int flags):
@@ -892,13 +883,11 @@ cdef class MemoryUSMDevice(_Memory):
                     self.copy_from_device(other)
                 else:
                     raise ValueError(
-                        "USM pointer in the argument {} is not "
+                        f"USM pointer in the argument {other} is not "
                         "a USM device pointer. "
                         "Zero-copy operation is not possible with copy=False. "
                         "Either use copy=True, or use a constructor "
-                        "appropriate for type '{}'".format(
-                            other, self.get_usm_type()
-                        )
+                        f"appropriate for type '{self.get_usm_type()}'"
                     )
 
 

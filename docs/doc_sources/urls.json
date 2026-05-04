@@ -16,7 +16,6 @@
     "sycl_queue": "https://sycl.readthedocs.io/en/latest/iface/queue.html",
     "sycl_runtime_classes": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_runtime_classes",
     "sycl_spec_2020": "https://www.khronos.org/registry/SYCL/specs/sycl-2020/html/sycl-2020.html",
-    "array_api": "https://data-apis.org/array-api/latest/",
     "dpcpp_compiler": "https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-compiler.html",
     "sycl_execution_model": "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html#_sycl_execution_model"
 }

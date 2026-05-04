@@ -61,8 +61,6 @@ SyclEvent
 SyclKernel
 SyclProgram
 SyclPlatform
-dlpack
-DLPack
 dtype
 ndarray
 usm
