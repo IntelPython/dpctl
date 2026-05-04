@@ -56,10 +56,13 @@ jobs:
           conda update -n base --all
       - name: Install conda-build
         run: |
-          conda install conda-build -c conda-forge --override-channels
+          conda install -n base conda-build -c conda-forge --override-channels
       - name: Show Conda info
         run: |
           conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -176,11 +179,18 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo "$CONDA/bin" >> "$GITHUB_PATH"
-      - name: Install conda-index
-        # Needed to be able to run conda index
+      - name: Update conda
         run: |
           conda update -n base --all
-          conda install conda-index -c conda-forge --override-channels
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index -c conda-forge --override-channels
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Create conda channel
         run: |
           mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
@@ -281,9 +291,21 @@ jobs:
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
 
+      - name: Update conda
+        run: |
+          conda update -n base --all
+
       - name: Install conda-index
         run: |
           conda install -n base conda-index
+
+      - name: Show Conda info
+        run: |
+          conda info --all
+
+      - name: List base environment packages
+        run: |
+          conda list -n base
 
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
