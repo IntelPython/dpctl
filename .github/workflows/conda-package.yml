@@ -51,8 +51,15 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Add conda to system path
         run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+      - name: Update conda
+        run: |
+          conda update -n base --all
       - name: Install conda-build
-        run: conda install conda-build -c conda-forge --override-channels
+        run: |
+          conda install conda-build -c conda-forge --override-channels
+      - name: Show Conda info
+        run: |
+          conda info --all
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -98,12 +105,12 @@ jobs:
           activate-environment: build
           channels: conda-forge
           python-version: ${{ matrix.python }}
-
-      - name: Install conda build
+      - name: Update conda
+        run: |
+          conda update -n base --all
+      - name: Install conda-build
         run: |
           conda install -n base -y conda-build
-          conda list -n base
-
       - name: Cache conda packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
@@ -115,13 +122,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
           echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
-
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
