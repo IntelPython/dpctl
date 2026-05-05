@@ -45,6 +45,11 @@ __all__ = [
     "SpecializationConstant",
 ]
 
+# add submodules
+__all__ += [
+    "utils",
+]
+
 
 def __getattr__(name):
     if name == "SyclProgram":
