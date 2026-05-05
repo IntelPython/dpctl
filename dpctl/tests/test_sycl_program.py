@@ -23,6 +23,7 @@ import pytest
 
 import dpctl
 import dpctl.program as dpctl_prog
+from dpctl.program.utils import parse_spirv_specializations
 
 
 def get_spirv_abspath(fn):
@@ -341,3 +342,49 @@ def test_create_kernel_bundle_with_composite_spec_const():
 
     # 1.0 * 10 + 2.5 = 12.5
     assert np.all(y == 12.5)
+
+
+def test_spirv_specializations_parser():
+    spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert len(spec_consts) == 1
+    assert spec_consts[0].dtype == "u4"
+
+    spirv_file = get_spirv_abspath("specialization_constant_composite.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert len(spec_consts) == 3
+    spec_const0, spec_const1, spec_const2 = spec_consts
+    assert spec_const0.dtype == "u4"
+    assert spec_const0.itemsize == 4
+    assert spec_const0.name == "unnamed_spec_const_0"
+    assert spec_const0.default_value == 1
+
+    assert spec_const1.dtype == "f4"
+    assert spec_const1.itemsize == 4
+    assert spec_const1.name == "unnamed_spec_const_1"
+    assert spec_const1.default_value == 0
+
+    # compiler translates bool to char
+    assert spec_const2.dtype == "u1"
+    assert spec_const2.itemsize == 1
+    assert spec_const2.name == "unnamed_spec_const_2"
+    assert spec_const2.default_value == 0
+
+
+def test_spirv_specializations_parser_no_spec_consts():
+    spirv_file = get_spirv_abspath("multi_kernel.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert not spec_consts
+
+
+def test_spirv_specializations_parser_invalid_spirv():
+    invalid_spv = b"\x00\x01\x02\x03\x04\x05"
+    with pytest.raises(ValueError):
+        parse_spirv_specializations(invalid_spv)
