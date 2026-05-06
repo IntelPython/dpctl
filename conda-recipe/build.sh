@@ -5,8 +5,10 @@ export LIBRARY_PATH="$LIBRARY_PATH:${BUILD_PREFIX}/lib"
 
 # Intel LLVM must cooperate with compiler and sysroot from conda
 echo "--gcc-toolchain=${BUILD_PREFIX} --sysroot=${BUILD_PREFIX}/${HOST}/sysroot -target ${HOST}" > icpx_for_conda.cfg
-export ICPXCFG="$(pwd)/icpx_for_conda.cfg"
-export ICXCFG="$(pwd)/icpx_for_conda.cfg"
+ICPXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICPXCFG
+ICXCFG="$(pwd)/icpx_for_conda.cfg"
+export ICXCFG
 
 read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
     | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"

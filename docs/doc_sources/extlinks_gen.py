@@ -19,7 +19,7 @@ import json
 
 def create_extlinks():
     """Reads a JSON file to create a dictionary of urls in the format supported
-    by the sphinx.ect.extlinks extension.
+    by the sphinx.ext.extlinks extension.
 
     Returns:
         dict: A dictionary that is understood by the extlinks Sphinx extension.

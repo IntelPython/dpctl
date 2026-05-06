@@ -142,11 +142,11 @@ private:
         {
             const bool initialized = Py_IsInitialized();
 #if PY_VERSION_HEX < 0x30d0000
-            const bool finilizing = _Py_IsFinalizing();
+            const bool finalizing = _Py_IsFinalizing();
 #else
-            const bool finilizing = Py_IsFinalizing();
+            const bool finalizing = Py_IsFinalizing();
 #endif
-            const bool guard = initialized && !finilizing;
+            const bool guard = initialized && !finalizing;
 
             if (guard) {
                 delete p;

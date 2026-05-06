@@ -310,7 +310,7 @@ For Intel GPU devices, additional architectural information can be access with :
 
     In [2]: d_gpu = dpctl.SyclDevice()
 
-    # Output for Iris Xe integerate GPU, with PCI ID 0x9a49
+    # Output for Iris Xe integrate GPU, with PCI ID 0x9a49
     # (corresponding decimal value: 39497)
     In [3]: dpctl.utils.intel_device_info(d_gpu)
     Out[3]:

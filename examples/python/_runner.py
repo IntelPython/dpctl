@@ -75,7 +75,7 @@ def run_examples(example_description, glbls_dict):
                 if has_nondefault_params(sgn):
                     if not args.quiet:
                         print(
-                            f"INFO: Skip exectution of {fn} as it "
+                            f"INFO: Skip execution of {fn} as it "
                             "requires arguments"
                         )
                 else:
