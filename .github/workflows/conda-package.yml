@@ -561,8 +561,7 @@ jobs:
       - name: Install example requirements
         shell: bash -ex -l {0}
         env:
-          # TODO: unpin when 2026.0 is available on conda-forge
-          DPCPP_CMPLR: "dpcpp_linux-64>=2025.0,<2026.0"
+          DPCPP_CMPLR: "dpcpp_linux-64>=2026.0"
         run: |
           export CHANNELS="${{ env.CHANNELS }}"
           . "$CONDA/etc/profile.d/conda.sh"
