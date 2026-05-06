@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.get\_usm\_type
-=========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMHost.get_usm_type
