@@ -4,5 +4,5 @@ The `dpctl` package provides Cython definition files for types it defines.
 
 Use `cimport dpctl as c_dpctl` or `cimport dpctl.memory as c_dpm` to use these definitions.
 
-Cython definition fille `dpctl.sycl` provides incomplete definitions of core SYCL runtime classes as
+Cython definition file `dpctl.sycl` provides incomplete definitions of core SYCL runtime classes as
 well as conversion routine between `SyclInterface` reference types and SYCL runtime classes.

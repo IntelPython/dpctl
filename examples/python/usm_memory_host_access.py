@@ -23,7 +23,7 @@ import dpctl.memory as dpmem
 
 # USM-shared and USM-host pointers are host-accessible,
 # meaning they are accessible from Python, therefore
-# they implement Pyton buffer protocol
+# they implement Python buffer protocol
 
 # allocate 1K of USM-shared buffer
 ms = dpmem.MemoryUSMShared(1024)

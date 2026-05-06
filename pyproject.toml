@@ -86,6 +86,12 @@ Repository = "https://github.com/IntelPython/dpctl.git"
 exclude = "dpctl/_version.py"
 line-length = 80
 
+[tool.codespell]
+builtin = "clear,rare,informal,names"
+check-filenames = true
+ignore-words-list = "nd"
+quiet-level = 3
+
 [tool.coverage.report]
 omit = [
   "dpctl/tests/*",
