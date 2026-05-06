@@ -753,7 +753,7 @@ mkdir<span class="w"> </span>build
 <span class="nb">pushd</span><span class="w"> </span>build<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 
 <span class="nv">INSTALL_PREFIX</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/../install
-rm<span class="w"> </span>-rf<span class="w"> </span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span>
+rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
 <span class="c1"># Values are set as appropriate for oneAPI DPC++ 2024.0</span>
 <span class="c1"># or later.</span>
