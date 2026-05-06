@@ -56,7 +56,7 @@ Intel(R) oneAPI :dpcpp_compiler:`DPC++ compiler <>`.
 
             Access API Reference
 
-    .. grid-item-card:: Contibutor Guides
+    .. grid-item-card:: Contributor Guides
 
         The contributing guidelines will suggest a process of
         contributing to :mod:`dpctl`.
