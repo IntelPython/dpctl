@@ -718,7 +718,7 @@ a <a class="reference internal" href="../api_reference/dpctl/filter_selector_str
 backend. The context is required to map unified address space pointer to the device
 where it was allocated unambiguously.</p>
 <p>In order for two DPC++-based Python extensions to share USM allocations, they each
-must use the <cite>same</cite> SYCL context when submitting for execution programs that would
+must use the <em>same</em> SYCL context when submitting for execution programs that would
 access this allocation.</p>
 <p>Since <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> is dynamically constructed by each extension  sharing a USM allocation,
 in general, requires sharing the <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> along with the USM pointer, as it is done

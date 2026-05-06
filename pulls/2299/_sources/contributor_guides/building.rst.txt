@@ -209,7 +209,7 @@ library.
     pushd build || exit 1
 
     INSTALL_PREFIX=$(pwd)/../install
-    rm -rf ${INSTALL_PREFIX}
+    rm -rf "${INSTALL_PREFIX}"
     export ONEAPI_ROOT=/opt/intel/oneapi
     # Values are set as appropriate for oneAPI DPC++ 2024.0
     # or later.
