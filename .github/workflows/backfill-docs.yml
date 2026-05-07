@@ -1,0 +1,124 @@
+name: Backfill documentation
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to backfill from'
+        required: true
+        type: string
+
+permissions: read-all
+
+env:
+  CHECK_CONFIG_SCRIPT: "import sys; from packaging.version import parse; print('true' if parse('0.17.0') <= parse(sys.argv[1]) < parse('0.22.0') else 'false')"
+
+jobs:
+  build-and-backfill:
+    name: Build and Backfill Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions:
+      contents: write
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Add Intel repository
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        run: |
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
+      - name: Install Intel OneAPI
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        run: |
+          sudo apt install intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install intel-oneapi-tbb
+          sudo apt install intel-oneapi-umf
+          sudo apt install hwloc
+      - name: Install Lua
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        run: |
+          sudo apt-get install liblua5.2-dev
+      - name: Install Doxygen
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        run: |
+          sudo apt-get install doxygen
+      - name: Install Ninja
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        run: |
+          sudo apt-get install ninja-build
+      - name: Setup Python
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.14'
+          architecture: x64
+      - name: Install sphinx dependencies
+        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
+        shell: bash -l {0}
+        run: |
+          pip install numpy cython setuptools">=70.1" scikit-build cmake sphinx"<7.2" pydot graphviz furo \
+                      sphinxcontrib-programoutput sphinxcontrib-googleanalytics sphinx-design \
+                      sphinxcontrib-jsmath sphinx-copybutton sphinxcontrib-spelling \
+                      versioneer[toml]==0.29
+      - name: Checkout repo at tag
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Inject new docs configuration
+        shell: bash -l {0}
+        run: |
+          NEEDS_CONFIG=$(python -c "${{ env.CHECK_CONFIG_SCRIPT }}" "${{ github.event.inputs.tag }}")
+
+          if [[ "${NEEDS_CONFIG}" == "true" ]]; then
+            git fetch origin master
+            git checkout origin/master -- docs/doc_sources/conf.py.in docs/doc_sources/_temples/versions.html docs/doc_versions.txt
+          else
+            echo "Version does not require docs config injection."
+          fi
+      - name: Build dpctl+docs
+        shell: bash -l {0}
+        run: |
+          # Ensure that SYCL libraries are on LD_LIBRARY_PATH
+          source /opt/intel/oneapi/setvars.sh
+          wget https://github.com/vovkos/doxyrest/releases/download/doxyrest-2.1.2/doxyrest-2.1.2-linux-amd64.tar.xz
+          tar xf doxyrest-2.1.2-linux-amd64.tar.xz
+          python setup.py build_ext --inplace --generator=Ninja --build-type=Release \
+              --                                                                     \
+              -DCMAKE_C_COMPILER:PATH="$(which icx)"                                 \
+              -DCMAKE_CXX_COMPILER:PATH="$(which icpx)"                              \
+              -DDPCTL_GENERATE_DOCS=ON                                               \
+              -DDPCTL_ENABLE_DOXYREST=ON                                             \
+              -DDPCTL_USE_MULTIVERSION_TEMPLATE=ON                                   \
+              -DDoxyrest_DIR="$(pwd)/doxyrest-2.1.2-linux-amd64"                     \
+              -DCMAKE_VERBOSE_MAKEFILE=ON
+          python -m pip install -e . --no-build-isolation
+          python -c "import dpctl; print(dpctl.__version__)" || exit 1
+          pushd "$(find _skbuild -name cmake-build)" || exit 1
+          cmake --build . --target Sphinx || exit 1
+          mv ../cmake-install/docs/docs ~/docs
+          git clean -dfx
+          popd
+          git reset --hard
+      - name: Publish docs
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+        shell: bash -l {0}
+        run: |
+          git remote add tokened_docs https://IntelPython:${{ secrets.GITHUB_TOKEN }}@github.com/IntelPython/dpctl.git
+          git fetch tokened_docs
+          git checkout --track tokened_docs/gh-pages
+          [ -d "${TAG}" ] || mkdir "${TAG}"
+           rm -rf "${TAG:?}/*"
+          mv ~/docs/* "${TAG}/" || exit 1
+          git add "${TAG}"
+          git config user.name 'github-actions[doc-deploy-bot]'
+          git config user.email 'github-actions[doc-deploy-bot]@users.noreply.github.com'
+          git commit -m "Docs backfilled for ${TAG}."
+          git push tokened_docs gh-pages
