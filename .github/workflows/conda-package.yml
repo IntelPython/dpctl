@@ -16,6 +16,7 @@ env:
   VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
   VER_SCRIPT3: "print(' '.join(map(lambda s: chr(34) + s + chr(34), [comp for comp in d['depends'] if 'dpcpp' in comp][1:])))"
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
+  CONDA_BUILD_VERSION: 26.3.0
 
 jobs:
   build_linux:
@@ -56,7 +57,7 @@ jobs:
           conda update -n base --all
       - name: Install conda-build
         run: |
-          conda install -n base conda-build -c conda-forge --override-channels
+          conda install -n base conda-build=${{ env.CONDA_BUILD_VERSION }} -c conda-forge --override-channels
       - name: Show Conda info
         run: |
           conda info --all
@@ -109,7 +110,7 @@ jobs:
           activate-environment: build
           channels: conda-forge
           python-version: ${{ matrix.python }}
-          conda-build-version: 26.3.0
+          conda-build-version: ${{ env.CONDA_BUILD_VERSION }}
       - name: Cache conda packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
