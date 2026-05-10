@@ -104,16 +104,12 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
+          auto-update-conda: true
           miniforge-version: latest
           activate-environment: build
           channels: conda-forge
           python-version: ${{ matrix.python }}
-      - name: Update conda
-        run: |
-          conda update -n base --all
-      - name: Install conda-build
-        run: |
-          conda install -n base -y conda-build
+          conda-build-version: 26.3.0
       - name: Cache conda packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
@@ -286,14 +282,11 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
+          auto-update-conda: true
           miniforge-version: latest
           channels: conda-forge
           activate-environment: ${{ env.TEST_ENV_NAME }}
           python-version: ${{ matrix.python }}
-
-      - name: Update conda
-        run: |
-          conda update -n base --all
 
       - name: Install conda-index
         run: |
