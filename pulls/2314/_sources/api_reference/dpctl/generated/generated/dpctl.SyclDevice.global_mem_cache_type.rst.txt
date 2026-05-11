@@ -1,0 +1,6 @@
+dpctl.SyclDevice.global\_mem\_cache\_type
+=========================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.global_mem_cache_type
