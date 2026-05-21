@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpctl.program.create_program_from_source" href="generated/dpctl.program.create_program_from_source.html"><link rel="prev" title="__sycl_usm_array_interface__ attribute" href="sycl_usm_array_interface.html">
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="dpctl.program.create_kernel_bundle_from_source" href="generated/dpctl.program.create_kernel_bundle_from_source.html"><link rel="prev" title="__sycl_usm_array_interface__ attribute" href="sycl_usm_array_interface.html">
         <link rel="prefetch" href="../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
@@ -461,11 +461,13 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
@@ -587,11 +589,17 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
 <span class="target" id="module-dpctl.program"></span><div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_source.html#dpctl.program.create_kernel_bundle_from_source" title="dpctl.program.create_kernel_bundle_from_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_kernel_bundle_from_source</span></code></a></p></td>
+<td><p>Creates a Sycl interoperability kernel bundle from an OpenCL source string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv" title="dpctl.program.create_kernel_bundle_from_spirv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_kernel_bundle_from_spirv</span></code></a></p></td>
+<td><p>Creates a Sycl interoperability kernel bundle from an SPIR-V binary.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.create_program_from_source.html#dpctl.program.create_program_from_source" title="dpctl.program.create_program_from_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_program_from_source</span></code></a></p></td>
-<td><p>Creates a Sycl interoperability program from an OpenCL source string.</p></td>
+<td><p>This function is a deprecated alias for <a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_source.html#dpctl.program.create_kernel_bundle_from_source" title="dpctl.program.create_kernel_bundle_from_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.program.create_kernel_bundle_from_source()</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.program.create_program_from_spirv.html#dpctl.program.create_program_from_spirv" title="dpctl.program.create_program_from_spirv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_program_from_spirv</span></code></a></p></td>
-<td><p>Creates a Sycl interoperability program from an SPIR-V binary.</p></td>
+<td><p>This function is a deprecated alias for <a class="reference internal" href="generated/dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv" title="dpctl.program.create_kernel_bundle_from_spirv"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.program.create_kernel_bundle_from_spirv()</span></code></a>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -599,7 +607,7 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyclProgram</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.SyclKernelBundle.html#dpctl.program.SyclKernelBundle" title="dpctl.program.SyclKernelBundle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyclKernelBundle</span></code></a></p></td>
 <td><p>Wraps a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code> object created using SYCL interoperability layer with underlying backends.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.program.SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyclKernel</span></code></a></p></td>
@@ -611,7 +619,7 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.SyclProgramCompilationError.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyclProgramCompilationError</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.program.SyclKernelBundleCompilationError.html#dpctl.program.SyclKernelBundleCompilationError" title="dpctl.program.SyclKernelBundleCompilationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SyclKernelBundleCompilationError</span></code></a></p></td>
 <td><p>This exception is raised when a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle</span></code> could not be built from either a SPIR-V binary file or a string source.</p></td>
 </tr>
 </tbody>
@@ -624,12 +632,12 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="generated/dpctl.program.create_program_from_source.html">
+          <a class="next-page" href="generated/dpctl.program.create_kernel_bundle_from_source.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.program.create_program_from_source</div>
+                <div class="title">dpctl.program.create_kernel_bundle_from_source</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
