@@ -45,8 +45,8 @@ def test_submit_work_group_memory_opencl():
     except dpctl.SyclQueueCreationError:
         pytest.skip("OpenCL queue could not be created")
 
-    prog = dpctl.program.create_program_from_source(q, ocl_kernel_src)
-    kernel = prog.get_sycl_kernel("local_mem_kernel")
+    kb = dpctl.program.create_kernel_bundle_from_source(q, ocl_kernel_src)
+    kernel = kb.get_sycl_kernel("local_mem_kernel")
     local_size = 16
     global_size = local_size * 8
 

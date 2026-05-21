@@ -23,16 +23,47 @@ file.
 
 from ._program import (
     SyclKernel,
-    SyclProgram,
-    SyclProgramCompilationError,
+    SyclKernelBundle,
+    SyclKernelBundleCompilationError,
+    create_kernel_bundle_from_source,
+    create_kernel_bundle_from_spirv,
     create_program_from_source,
     create_program_from_spirv,
 )
 
 __all__ = [
+    "create_kernel_bundle_from_source",
+    "create_kernel_bundle_from_spirv",
     "create_program_from_source",
     "create_program_from_spirv",
     "SyclKernel",
+    "SyclKernelBundle",
+    "SyclKernelBundleCompilationError",
     "SyclProgram",
     "SyclProgramCompilationError",
 ]
+
+
+def __getattr__(name):
+    if name == "SyclProgram":
+        from warnings import warn
+
+        warn(
+            "dpctl.program.SyclProgram is deprecated and will be removed in a "
+            "future release. Use dpctl.program.SyclKernelBundle instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return SyclKernelBundle
+    if name == "SyclProgramCompilationError":
+        from warnings import warn
+
+        warn(
+            "dpctl.program.SyclProgramCompilationError is deprecated and will "
+            "be removed in a future release. Use "
+            "dpctl.program.SyclKernelBundleCompilationError instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return SyclKernelBundleCompilationError
+    raise AttributeError(f"module {__name__} has no attribute {name}")

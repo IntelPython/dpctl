@@ -31,7 +31,7 @@ with open("resource/double_it.spv", "br") as fh:
     il = fh.read()
 
 # Build the program for the selected device
-pr = dppr.create_program_from_spirv(q, il, "")
+pr = dppr.create_kernel_bundle_from_spirv(q, il, "")
 assert pr.has_sycl_kernel("double_it")
 
 # Retrieve the kernel from the problem
