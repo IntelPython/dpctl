@@ -16,6 +16,7 @@ env:
   VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
   VER_SCRIPT3: "print(' '.join(map(lambda s: chr(34) + s + chr(34), [comp for comp in d['depends'] if 'dpcpp' in comp][1:])))"
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
+  CONDA_BUILD_VERSION: 26.3.0
 
 jobs:
   build_linux:
@@ -51,8 +52,18 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Add conda to system path
         run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+      - name: Update conda
+        run: |
+          conda update -n base --all
       - name: Install conda-build
-        run: conda install conda-build -c conda-forge --override-channels
+        run: |
+          conda install -n base conda-build=${{ env.CONDA_BUILD_VERSION }} -c conda-forge --override-channels
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
@@ -94,16 +105,12 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
+          auto-update-conda: true
           miniforge-version: latest
           activate-environment: build
           channels: conda-forge
           python-version: ${{ matrix.python }}
-
-      - name: Install conda build
-        run: |
-          conda install -n base -y conda-build
-          conda list -n base
-
+          conda-build-version: ${{ env.CONDA_BUILD_VERSION }}
       - name: Cache conda packages
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         env:
@@ -115,13 +122,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
       - name: Store conda paths as envs
         shell: bash -l {0}
         run: |
           echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> "$GITHUB_ENV"
-
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Build conda package
         env:
           OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
@@ -165,11 +176,18 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
       - name: Add conda to system path
         run: echo "$CONDA/bin" >> "$GITHUB_PATH"
-      - name: Install conda-index
-        # Needed to be able to run conda index
+      - name: Update conda
         run: |
           conda update -n base --all
-          conda install conda-index -c conda-forge --override-channels
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index -c conda-forge --override-channels
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
       - name: Create conda channel
         run: |
           mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
@@ -265,6 +283,7 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
+          auto-update-conda: true
           miniforge-version: latest
           channels: conda-forge
           activate-environment: ${{ env.TEST_ENV_NAME }}
@@ -273,6 +292,14 @@ jobs:
       - name: Install conda-index
         run: |
           conda install -n base conda-index
+
+      - name: Show Conda info
+        run: |
+          conda info --all
+
+      - name: List base environment packages
+        run: |
+          conda list -n base
 
       - name: Create conda channel with the artifact bit
         shell: cmd /C CALL {0}
