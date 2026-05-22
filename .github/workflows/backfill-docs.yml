@@ -25,7 +25,6 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Add Intel repository
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
             | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
@@ -33,22 +32,18 @@ jobs:
             | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt update
       - name: Install Intel OneAPI
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt install intel-oneapi-compiler-dpcpp-cpp
           sudo apt install intel-oneapi-tbb
           sudo apt install intel-oneapi-umf
           sudo apt install hwloc
       - name: Install Lua
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install liblua5.2-dev
       - name: Install Doxygen
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install doxygen
       - name: Install Ninja
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         run: |
           sudo apt-get install ninja-build
       - name: Setup Python
@@ -58,7 +53,6 @@ jobs:
           python-version: '3.14'
           architecture: x64
       - name: Install sphinx dependencies
-        if: ${{ !github.event.pull_request || github.event.action != 'closed' }}
         shell: bash -l {0}
         run: |
           pip install numpy cython setuptools">=70.1" scikit-build cmake sphinx"<7.2" pydot graphviz furo \
