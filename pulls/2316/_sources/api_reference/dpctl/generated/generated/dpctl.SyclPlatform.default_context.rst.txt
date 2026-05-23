@@ -1,0 +1,6 @@
+dpctl.SyclPlatform.default\_context
+===================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclPlatform.default_context
