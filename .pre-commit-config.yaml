@@ -54,7 +54,7 @@ repos:
       - tomli
       exclude: "docs/doxyrest-config.lua.in"
 -   repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
     -   id: black
         exclude: "versioneer.py|dpctl/_version.py"
