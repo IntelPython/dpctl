@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Implements various utilities for the dpctl.program module."""
+"""Implements various utilities for the dpctl.compiler module."""
 
 from dataclasses import dataclass
 from enum import IntEnum

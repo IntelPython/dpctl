@@ -1,7 +1,10 @@
 .. _dpctl_program_pyapi:
 
-:py:mod:`dpctl.program`
-=======================
+:py:mod:`dpctl.program` (deprecated)
+=====================================
+
+.. deprecated::
+   :py:mod:`dpctl.program` is deprecated. Use :py:mod:`dpctl.compiler` instead.
 
 :py:mod:`dpctl.program` provides a way to create a SYCL kernel
 from either an OpenCL* program source code represented as a string
@@ -20,20 +23,8 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     :toctree: generated
     :nosignatures:
 
-    create_kernel_bundle_from_source
-    create_kernel_bundle_from_spirv
     create_program_from_source
     create_program_from_spirv
-
-.. autosummary::
-    :toctree: generated
-    :nosignatures:
-
-    SyclKernelBundle
     SyclKernel
-
-.. autosummary::
-    :toctree: generated
-    :nosignatures:
-
-    SyclKernelBundleCompilationError
+    SyclProgram
+    SyclProgramCompilationError

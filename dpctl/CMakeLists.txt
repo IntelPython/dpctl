@@ -203,6 +203,6 @@ build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
-add_subdirectory(program)
+add_subdirectory(compiler)
 add_subdirectory(memory)
 add_subdirectory(utils)

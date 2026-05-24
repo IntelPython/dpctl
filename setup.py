@@ -25,9 +25,10 @@ skbuild.setup(
     url="https://github.com/IntelPython/dpctl",
     packages=[
         "dpctl",
+        "dpctl.compiler",
+        "dpctl.compiler.utils",
         "dpctl.memory",
         "dpctl.program",
-        "dpctl.program.utils",
         "dpctl.utils",
     ],
     package_data={
@@ -44,8 +45,9 @@ skbuild.setup(
             "include/syclinterface/Support/*.h",
             "include/dpctl/_sycl*.h",
             "include/dpctl/memory/_memory*.h",
-            "include/dpctl/program/_program*.h",
+            "include/dpctl/compiler/_compiler*.h",
             "*.pxd",
+            "compiler/*.pxd",
             "memory/*.pxd",
             "program/*.pxd",
         ]

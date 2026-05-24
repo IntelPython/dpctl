@@ -14,21 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# distutils: language = c++
-# cython: language_level=3
+"""
+**Data Parallel Control Compiler** provides a way to create a SYCL kernel
+from either an OpenCL program represented as a string or a SPIR-V binary
+file.
 
 """
-Declares the extension types and functions for the Cython API
-implemented in dpctl.compiler._compiler.pyx (deprecated, use dpctl.compiler
-instead).
-"""
 
-
-from dpctl.compiler._compiler cimport (
+from dpctl.compiler._compiler import (
+    SpecializationConstant,
     SyclKernel,
     SyclKernelBundle,
+    SyclKernelBundleCompilationError,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
-    create_program_from_source,
-    create_program_from_spirv,
 )
+
+__all__ = [
+    "create_kernel_bundle_from_source",
+    "create_kernel_bundle_from_spirv",
+    "SyclKernel",
+    "SyclKernelBundle",
+    "SyclKernelBundleCompilationError",
+    "SpecializationConstant",
+]
+
+# add submodules
+__all__ += [
+    "utils",
+]

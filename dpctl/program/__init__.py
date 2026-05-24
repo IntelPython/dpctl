@@ -15,60 +15,58 @@
 # limitations under the License.
 
 """
-**Data Parallel Control Program** provides a way to create a SYCL kernel
-from either an OpenCL program represented as a string or a SPIR-V binary
+**Data Parallel Control Program** (deprecated) provides a way to create a SYCL
+kernel from either an OpenCL program represented as a string or a SPIR-V binary
 file.
+
+.. deprecated::
+   The dpctl.program module is deprecated. Use dpctl.compiler instead.
 
 """
 
-from ._program import (
-    SpecializationConstant,
+import warnings
+
+from dpctl.compiler import (
     SyclKernel,
     SyclKernelBundle,
     SyclKernelBundleCompilationError,
-    create_kernel_bundle_from_source,
-    create_kernel_bundle_from_spirv,
+)
+from dpctl.program._program import (
     create_program_from_source,
     create_program_from_spirv,
 )
 
 __all__ = [
-    "create_kernel_bundle_from_source",
-    "create_kernel_bundle_from_spirv",
     "create_program_from_source",
     "create_program_from_spirv",
     "SyclKernel",
-    "SyclKernelBundle",
-    "SyclKernelBundleCompilationError",
     "SyclProgram",
     "SyclProgramCompilationError",
-    "SpecializationConstant",
 ]
 
-# add submodules
-__all__ += [
-    "utils",
-]
+
+warnings.warn(
+    "dpctl.program is deprecated and will be removed in a future release. "
+    "Use dpctl.compiler instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 def __getattr__(name):
     if name == "SyclProgram":
-        from warnings import warn
-
-        warn(
+        warnings.warn(
             "dpctl.program.SyclProgram is deprecated and will be removed in a "
-            "future release. Use dpctl.program.SyclKernelBundle instead.",
+            "future release. Use dpctl.compiler.SyclKernelBundle instead.",
             DeprecationWarning,
             stacklevel=2,
         )
         return SyclKernelBundle
     if name == "SyclProgramCompilationError":
-        from warnings import warn
-
-        warn(
+        warnings.warn(
             "dpctl.program.SyclProgramCompilationError is deprecated and will "
             "be removed in a future release. Use "
-            "dpctl.program.SyclKernelBundleCompilationError instead.",
+            "dpctl.compiler.SyclKernelBundleCompilationError instead.",
             DeprecationWarning,
             stacklevel=2,
         )

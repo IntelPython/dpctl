@@ -15,10 +15,10 @@
 # limitations under the License.
 
 """
-A collection of utility functions for dpctl.program module.
+A collection of utility functions for dpctl.compiler module.
 """
 
-from ._utils import parse_spirv_specializations
+from dpctl.compiler.utils._utils import parse_spirv_specializations
 
 __all__ = [
     "parse_spirv_specializations",

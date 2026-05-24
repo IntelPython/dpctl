@@ -17,10 +17,8 @@
 # distutils: language = c++
 # cython: language_level=3
 
-"""
-Declares the extension types and functions for the Cython API
-implemented in dpctl.compiler._compiler.pyx (deprecated, use dpctl.compiler
-instead).
+"""Declares the extension types and functions for the Cython API
+implemented in dpctl.compiler._compiler.pyx.
 """
 
 

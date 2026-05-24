@@ -19,14 +19,14 @@ Demonstrates how USM allocated memory can be accessed from the host in a
 Python program.
 """
 
-import dpctl.memory as dpmem
+import dpctl.memory as dpm
 
 # USM-shared and USM-host pointers are host-accessible,
 # meaning they are accessible from Python, therefore
 # they implement Python buffer protocol
 
 # allocate 1K of USM-shared buffer
-ms = dpmem.MemoryUSMShared(1024)
+ms = dpm.MemoryUSMShared(1024)
 
 # create memoryview into USM-shared buffer
 msv = memoryview(ms)
@@ -36,7 +36,7 @@ for i in range(len(ms)):
     ir = i % 256
     msv[i] = ir**2 % 256
 
-mh = dpmem.MemoryUSMHost(64)
+mh = dpm.MemoryUSMHost(64)
 mhv = memoryview(mh)
 
 # copy content of block of USM-shared buffer to
@@ -47,7 +47,7 @@ print("Byte-values of the USM-host buffer")
 print(list(mhv))
 
 # USM-device buffer is not host accessible
-md = dpmem.MemoryUSMDevice(16)
+md = dpm.MemoryUSMDevice(16)
 try:
     mdv = memoryview(md)
 except Exception as e:
