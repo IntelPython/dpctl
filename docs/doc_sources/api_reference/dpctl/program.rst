@@ -1,7 +1,10 @@
 .. _dpctl_program_pyapi:
 
-:py:mod:`dpctl.program`
-=======================
+:py:mod:`dpctl.program` (deprecated)
+=====================================
+
+.. deprecated::
+   :py:mod:`dpctl.program` is deprecated. Use :py:mod:`dpctl.compiler` instead.
 
 :py:mod:`dpctl.program` provides a way to create a SYCL kernel
 from an OpenCL* program source code represented as a string, SYCL
