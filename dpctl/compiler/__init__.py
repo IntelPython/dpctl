@@ -21,7 +21,7 @@ file.
 
 """
 
-from dpctl.compiler._program import (
+from dpctl.compiler._compiler import (
     SpecializationConstant,
     SyclKernel,
     SyclKernelBundle,
