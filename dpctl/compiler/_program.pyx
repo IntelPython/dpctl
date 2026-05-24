@@ -39,8 +39,6 @@ from libc.stdint cimport uint32_t
 from libc.stdlib cimport free, malloc
 from libc.string cimport memcmp
 
-import warnings
-
 from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_Copy,
     DPCTLKernel_Delete,
@@ -552,33 +550,3 @@ cpdef create_kernel_bundle_from_spirv(
             free(spconsts)
 
     return SyclKernelBundle._create(KBref)
-
-
-cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
-    """This function is a deprecated alias for
-    :func:`dpctl.program.create_kernel_bundle_from_source`.
-    New code should use :func:`dpctl.program.create_kernel_bundle_from_source`.
-    """
-    warnings.warn(
-        "create_program_from_source is deprecated and will be removed in a "
-        "future release. Use create_kernel_bundle_from_source instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return create_kernel_bundle_from_source(q, src, copts)
-
-
-cpdef create_program_from_spirv(
-    SyclQueue q, const unsigned char[:] IL, str copts=""
-):
-    """This function is a deprecated alias for
-    :func:`dpctl.program.create_kernel_bundle_from_spirv`.
-    New code should use :func:`dpctl.program.create_kernel_bundle_from_spirv`.
-    """
-    warnings.warn(
-        "create_program_from_spirv is deprecated and will be removed in a "
-        "future release. Use create_kernel_bundle_from_spirv instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return create_kernel_bundle_from_spirv(q, IL, copts)
