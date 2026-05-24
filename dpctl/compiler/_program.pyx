@@ -40,8 +40,6 @@ from libc.stdint cimport UINT32_MAX, uint32_t
 from libc.stdlib cimport free, malloc
 from libc.string cimport memcmp, memcpy
 
-import warnings
-
 from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLBuildOptionList_Append,
     DPCTLBuildOptionList_Create,
