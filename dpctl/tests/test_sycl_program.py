@@ -22,8 +22,8 @@ import numpy as np
 import pytest
 
 import dpctl
-import dpctl.program as dpctl_prog
-from dpctl.program.utils import parse_spirv_specializations
+import dpctl.compiler as dpc
+from dpctl.compiler.utils import parse_spirv_specializations
 
 
 def get_spirv_abspath(fn):
@@ -38,7 +38,7 @@ def _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(sycl_prog):
     import ctypes
     import sys
 
-    assert type(sycl_prog) is dpctl_prog.SyclKernelBundle
+    assert type(sycl_prog) is dpc.SyclKernelBundle
     mod = sys.modules[sycl_prog.__class__.__module__]
     # get capsule storing SyclKernelBundle_GetKernelBundleRef function ptr
     kb_ref_fn_cap = mod.__pyx_capi__["SyclKernelBundle_GetKernelBundleRef"]
@@ -65,7 +65,7 @@ def _check_cpython_api_SyclKernelBundle_Make(sycl_prog):
     import ctypes
     import sys
 
-    assert type(sycl_prog) is dpctl_prog.SyclKernelBundle
+    assert type(sycl_prog) is dpc.SyclKernelBundle
     mod = sys.modules[sycl_prog.__class__.__module__]
     # get capsule storing SyclKernelBundle_Make function ptr
     make_prog_fn_cap = mod.__pyx_capi__["SyclKernelBundle_Make"]
@@ -92,7 +92,7 @@ def _check_cpython_api_SyclKernel_GetKernelRef(krn):
     import ctypes
     import sys
 
-    assert type(krn) is dpctl_prog.SyclKernel
+    assert type(krn) is dpc.SyclKernel
     mod = sys.modules[krn.__class__.__module__]
     # get capsule storing SyclKernel_GetKernelRef function ptr
     k_ref_fn_cap = mod.__pyx_capi__["SyclKernel_GetKernelRef"]
@@ -118,7 +118,7 @@ def _check_cpython_api_SyclKernel_Make(krn):
     import ctypes
     import sys
 
-    assert type(krn) is dpctl_prog.SyclKernel
+    assert type(krn) is dpc.SyclKernel
     mod = sys.modules[krn.__class__.__module__]
     # get capsule storing SyclKernel_Make function ptr
     k_make_fn_cap = mod.__pyx_capi__["SyclKernel_Make"]
@@ -150,7 +150,7 @@ def _check_cpython_api_SyclKernel_Make(krn):
 
 
 def _check_multi_kernel_program(kb):
-    assert type(kb) is dpctl_prog.SyclKernelBundle
+    assert type(kb) is dpc.SyclKernelBundle
 
     assert type(kb.addressof_ref()) is int
     assert kb.has_sycl_kernel("add")
@@ -205,7 +205,7 @@ def test_create_kernel_bundle_from_source_ocl():
         q = dpctl.SyclQueue("opencl")
     except dpctl.SyclQueueCreationError:
         pytest.skip("No OpenCL queue is available")
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     _check_multi_kernel_program(kb)
 
 
@@ -217,7 +217,7 @@ def test_create_kernel_bundle_from_spirv_ocl():
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
-    kb = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv)
     _check_multi_kernel_program(kb)
 
 
@@ -229,7 +229,7 @@ def test_create_kernel_bundle_from_spirv_l0():
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
-    kb = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv)
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv)
     _check_multi_kernel_program(kb)
 
 
@@ -250,7 +250,7 @@ def test_create_kernel_bundle_from_source_l0():
         size_t index = get_global_id(0);                                   \
         c[index] = a[index] + d*b[index];                                  \
     }"
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     _check_multi_kernel_program(kb)
 
 
@@ -262,8 +262,8 @@ def test_create_kernel_bundle_from_invalid_src_ocl():
     invalid_oclSrc = "                                                     \
     kernel void add(                                                       \
     }"
-    with pytest.raises(dpctl_prog.SyclKernelBundleCompilationError):
-        dpctl_prog.create_kernel_bundle_from_source(q, invalid_oclSrc)
+    with pytest.raises(dpc.SyclKernelBundleCompilationError):
+        dpc.create_kernel_bundle_from_source(q, invalid_oclSrc)
 
 
 def test_create_kernel_bundle_with_spec_const():
@@ -273,15 +273,13 @@ def test_create_kernel_bundle_with_spec_const():
         pytest.skip("Could not create default queue")
 
     spec_id = 0
-    sp = dpctl_prog.SpecializationConstant(spec_id, "i4", 42)
+    sp = dpc.SpecializationConstant(spec_id, "i4", 42)
 
     spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
     with open(spirv_file, "br") as spv:
         spv_bytes = spv.read()
 
-    kb = dpctl_prog.create_kernel_bundle_from_spirv(
-        q, spv_bytes, specializations=[sp]
-    )
+    kb = dpc.create_kernel_bundle_from_spirv(q, spv_bytes, specializations=[sp])
     kernel = kb.get_sycl_kernel("_ZTS20BasicSpecConstKernel")
 
     n = 128
@@ -311,15 +309,15 @@ def test_create_kernel_bundle_with_composite_spec_const():
 
     # composite specialization constants are separated into individual
     # specialization constants with unique spec_ids
-    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 10)
-    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 2.5)
-    sp3 = dpctl_prog.SpecializationConstant(2, "?", 1)
+    sp1 = dpc.SpecializationConstant(0, "i4", 10)
+    sp2 = dpc.SpecializationConstant(1, "f4", 2.5)
+    sp3 = dpc.SpecializationConstant(2, "?", 1)
 
     spirv_file = get_spirv_abspath("specialization_constant_composite.spv")
     with open(spirv_file, "br") as spv:
         spv_bytes = spv.read()
 
-    kb = dpctl_prog.create_kernel_bundle_from_spirv(
+    kb = dpc.create_kernel_bundle_from_spirv(
         q, spv_bytes, specializations=[sp1, sp2, sp3]
     )
     kernel = kb.get_sycl_kernel("_ZTS21StructSpecConstKernel")

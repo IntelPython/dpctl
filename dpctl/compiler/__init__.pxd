@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2025 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@
 # distutils: language = c++
 # cython: language_level=3
 
-"""
-Declares the extension types and functions for the Cython API
-implemented in dpctl.compiler._program.pyx (deprecated, use dpctl.compiler
-instead).
+"""Declares the extension types and functions for the Cython API
+implemented in dpctl.compiler._program.pyx.
 """
 
 
