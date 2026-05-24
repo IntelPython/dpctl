@@ -68,7 +68,3 @@ cpdef create_kernel_bundle_from_spirv (
     unicode copts=*,
     list specializations=*,
 )
-cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
-cpdef create_program_from_spirv (
-    SyclQueue q, const unsigned char[:] IL, unicode copts=*
-)
