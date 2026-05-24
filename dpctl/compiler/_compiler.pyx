@@ -186,14 +186,14 @@ cdef class SyclKernel:
 
 cdef api DPCTLSyclKernelRef SyclKernel_GetKernelRef(SyclKernel ker):
     """ C-API function to access opaque kernel reference from
-    Python object of type :class:`dpctl.program.SyclKernel`.
+    Python object of type :class:`dpctl.compiler.SyclKernel`.
     """
     return ker.get_kernel_ref()
 
 
 cdef api SyclKernel SyclKernel_Make(DPCTLSyclKernelRef KRef, const char *name):
     """
-    C-API function to create :class:`dpctl.program.SyclKernel`
+    C-API function to create :class:`dpctl.compiler.SyclKernel`
     instance from opaque sycl kernel reference.
     """
     cdef DPCTLSyclKernelRef copied_KRef = DPCTLKernel_Copy(KRef)
@@ -252,14 +252,14 @@ cdef api DPCTLSyclKernelBundleRef SyclKernelBundle_GetKernelBundleRef(
     SyclKernelBundle kb
 ):
     """ C-API function to access opaque kernel bundle reference from
-    Python object of type :class:`dpctl.program.SyclKernelBundle`.
+    Python object of type :class:`dpctl.compiler.SyclKernelBundle`.
     """
     return kb.get_kernel_bundle_ref()
 
 
 cdef api SyclKernelBundle SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef):
     """
-    C-API function to create :class:`dpctl.program.SyclKernelBundle`
+    C-API function to create :class:`dpctl.compiler.SyclKernelBundle`
     instance from opaque ``sycl::kernel_bundle<sycl::bundle_state::executable>``
     reference.
     """
@@ -272,7 +272,7 @@ cdef class SpecializationConstant:
     SpecializationConstant(spec_id, *args)
 
     Python class representing SYCL specialization constants that can be used
-    when creating a :class:`dpctl.program.SyclKernelBundle` from SPIR-V.
+    when creating a :class:`dpctl.compiler.SyclKernelBundle` from SPIR-V.
 
     There are multiple ways to create a :class:`.SpecializationConstant`:
 
