@@ -32,7 +32,7 @@ from ._backend cimport (
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 from ._sycl_event cimport SyclEvent
-from .program._program cimport SyclKernel
+from .compiler._compiler cimport SyclKernel
 
 
 cdef public api class _SyclQueue [
