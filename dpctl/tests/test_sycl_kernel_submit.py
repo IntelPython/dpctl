@@ -23,8 +23,8 @@ import numpy as np
 import pytest
 
 import dpctl
+import dpctl.compiler as dpc
 import dpctl.memory as dpm
-import dpctl.program as dpctl_prog
 from dpctl._sycl_queue import kernel_arg_type
 
 
@@ -59,7 +59,7 @@ def test_create_kernel_bundle_from_source(ctype_str, dtype, ctypes_ctor):
         "   c[index] = d * a[index] + b[index];"
         "}"
     )
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     axpyKernel = kb.get_sycl_kernel("axpy")
 
     n_elems = 1024 * 512
@@ -174,14 +174,14 @@ def test_submit_async():
         "      (arg1[index] < arg2[index]) ? arg1[index] : arg2[index];"
         "}"
     )
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     kern1Kernel = kb.get_sycl_kernel("kern1")
     kern2Kernel = kb.get_sycl_kernel("kern2")
     kern3Kernel = kb.get_sycl_kernel("kern3")
 
-    assert isinstance(kern1Kernel, dpctl_prog.SyclKernel)
-    assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
-    assert isinstance(kern2Kernel, dpctl_prog.SyclKernel)
+    assert isinstance(kern1Kernel, dpc.SyclKernel)
+    assert isinstance(kern2Kernel, dpc.SyclKernel)
+    assert isinstance(kern2Kernel, dpc.SyclKernel)
 
     status_complete = dpctl.event_status_type.complete
 
@@ -322,7 +322,7 @@ def test_submit_local_accessor_arg():
     fn = get_spirv_abspath("local_accessor_kernel_inttys_fp32.spv")
     with open(fn, "br") as f:
         spirv_bytes = f.read()
-    kb = dpctl_prog.create_kernel_bundle_from_spirv(q, spirv_bytes)
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
     krn = kb.get_sycl_kernel("_ZTS14SyclKernel_SLMIlE")
     lws = 32
     gws = lws * 10

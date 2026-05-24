@@ -125,6 +125,7 @@ __all__ += [
 # add submodules
 __all__ += [
     "memory",
+    "compiler",
     "program",
     "utils",
 ]

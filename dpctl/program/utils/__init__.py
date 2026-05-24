@@ -15,11 +15,21 @@
 # limitations under the License.
 
 """
-A collection of utility functions for dpctl.program module.
+A collection of utility functions for dpctl.program module (deprecated, use
+dpctl.compiler.utils instead).
 """
 
-from ._utils import parse_spirv_specializations
+import warnings
+
+from dpctl.compiler.utils import parse_spirv_specializations
 
 __all__ = [
     "parse_spirv_specializations",
 ]
+
+warnings.warn(
+    "dpctl.program.utils is deprecated and will be removed in a future release."
+    " Use dpctl.compiler.utils instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)

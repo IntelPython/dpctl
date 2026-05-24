@@ -227,7 +227,7 @@ private:
         this->Memory_GetNumBytes_ = Memory_GetNumBytes;
         this->Memory_Make_ = Memory_Make;
 
-        // dpctl.program API
+        // dpctl.compiler API
         this->SyclKernel_GetKernelRef_ = SyclKernel_GetKernelRef;
         this->SyclKernel_Make_ = SyclKernel_Make;
         this->SyclKernelBundle_GetKernelBundleRef_ =
@@ -450,7 +450,7 @@ public:
 };
 
 /* This type caster associates ``sycl::kernel`` C++ class with
- * :class:`dpctl.program.SyclKernel` for the purposes of generation of
+ * :class:`dpctl.compiler.SyclKernel` for the purposes of generation of
  * Python bindings by pybind11.
  */
 template <> struct type_caster<sycl::kernel>
@@ -469,7 +469,7 @@ public:
         }
         else {
             throw py::type_error("Input is of unexpected type, expected "
-                                 "dpctl.program.SyclKernel");
+                                 "dpctl.compiler.SyclKernel");
         }
     }
 
@@ -482,12 +482,12 @@ public:
         return handle(reinterpret_cast<PyObject *>(tmp));
     }
 
-    DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.program.SyclKernel"));
+    DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.compiler.SyclKernel"));
 };
 
 /* This type caster associates
  * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
- * :class:`dpctl.program.SyclKernelBundle` for the purposes of generation of
+ * :class:`dpctl.compiler.SyclKernelBundle` for the purposes of generation of
  * Python bindings by pybind11.
  */
 template <>
@@ -511,7 +511,7 @@ public:
         }
         else {
             throw py::type_error("Input is of unexpected type, expected "
-                                 "dpctl.program.SyclKernelBundle");
+                                 "dpctl.compiler.SyclKernelBundle");
         }
     }
 
@@ -526,7 +526,7 @@ public:
     }
 
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
-                      _("dpctl.program.SyclKernelBundle"));
+                      _("dpctl.compiler.SyclKernelBundle"));
 };
 
 /* This type caster associates

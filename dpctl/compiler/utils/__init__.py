@@ -14,14 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# distutils: language = c++
-# cython: language_level=3
-
 """
-Declares the extension types and functions for the Cython API
-implemented in dpctl.compiler._program.pyx (deprecated, use dpctl.compiler
-instead).
+A collection of utility functions for dpctl.compiler module.
 """
 
+from dpctl.compiler.utils._utils import parse_spirv_specializations
 
-from dpctl.compiler._program cimport *
+__all__ = [
+    "parse_spirv_specializations",
+]

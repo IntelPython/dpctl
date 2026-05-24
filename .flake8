@@ -22,7 +22,7 @@ per-file-ignores =
     dpctl/_sycl_queue.pyx: E999, E225, E226, E227
     dpctl/_sycl_queue_manager.pyx: E999, E225
     dpctl/memory/_memory.pyx: E999, E225, E226, E227
-    dpctl/program/_program.pyx: E999, E225, E226, E227
+    dpctl/compiler/_program.pyx: E999, E225, E226, E227
     dpctl/tests/_cython_api.pyx: E999, E225, E227, E402
     dpctl/utils/_onetrace_context.py: E501, W505
     examples/cython/sycl_buffer/syclbuffer/_syclbuffer.pyx: E999, E225, E402
