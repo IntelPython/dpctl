@@ -27,33 +27,23 @@ file.
 import warnings
 
 from dpctl.compiler import (
-    SpecializationConstant,
     SyclKernel,
     SyclKernelBundle,
     SyclKernelBundleCompilationError,
-    create_kernel_bundle_from_source,
-    create_kernel_bundle_from_spirv,
+)
+from dpctl.program._program import (
     create_program_from_source,
     create_program_from_spirv,
 )
 
 __all__ = [
-    "create_kernel_bundle_from_source",
-    "create_kernel_bundle_from_spirv",
     "create_program_from_source",
     "create_program_from_spirv",
     "SyclKernel",
-    "SyclKernelBundle",
-    "SyclKernelBundleCompilationError",
     "SyclProgram",
     "SyclProgramCompilationError",
-    "SpecializationConstant",
 ]
 
-# add submodules
-__all__ += [
-    "utils",
-]
 
 warnings.warn(
     "dpctl.program is deprecated and will be removed in a future release. "

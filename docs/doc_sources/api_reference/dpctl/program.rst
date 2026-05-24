@@ -23,33 +23,8 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     :toctree: generated
     :nosignatures:
 
-    create_kernel_bundle_from_source
-    create_kernel_bundle_from_spirv
     create_program_from_source
     create_program_from_spirv
-
-.. autosummary::
-    :toctree: generated
-    :nosignatures:
-
-    SyclKernelBundle
     SyclKernel
-    SpecializationConstant
-
-.. autosummary::
-    :toctree: generated
-    :nosignatures:
-
-    SyclKernelBundleCompilationError
-
-:py:mod:`dpctl.program.utils`
------------------------------
-
-.. py:module:: dpctl.program.utils
-
-.. currentmodule:: dpctl.program.utils
-
-.. autofunction:: parse_spirv_specializations
-
-.. autoclass:: SpecializationConstantInfo
-    :members:
+    SyclProgram
+    SyclProgramCompilationError

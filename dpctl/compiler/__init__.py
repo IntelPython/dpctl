@@ -28,20 +28,14 @@ from dpctl.compiler._program import (
     SyclKernelBundleCompilationError,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
-    create_program_from_source,
-    create_program_from_spirv,
 )
 
 __all__ = [
     "create_kernel_bundle_from_source",
     "create_kernel_bundle_from_spirv",
-    "create_program_from_source",
-    "create_program_from_spirv",
     "SyclKernel",
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
-    "SyclProgram",
-    "SyclProgramCompilationError",
     "SpecializationConstant",
 ]
 
@@ -49,28 +43,3 @@ __all__ = [
 __all__ += [
     "utils",
 ]
-
-
-def __getattr__(name):
-    if name == "SyclProgram":
-        from warnings import warn
-
-        warn(
-            "dpctl.compiler.SyclProgram is deprecated and will be removed in a "
-            "future release. Use dpctl.compiler.SyclKernelBundle instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return SyclKernelBundle
-    if name == "SyclProgramCompilationError":
-        from warnings import warn
-
-        warn(
-            "dpctl.compiler.SyclProgramCompilationError is deprecated and will "
-            "be removed in a future release. Use "
-            "dpctl.compiler.SyclKernelBundleCompilationError instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return SyclKernelBundleCompilationError
-    raise AttributeError(f"module {__name__} has no attribute {name}")
