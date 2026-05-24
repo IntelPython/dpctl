@@ -1,0 +1,30 @@
+﻿dpctl.compiler.SpecializationConstant
+=====================================
+
+.. currentmodule:: dpctl.compiler
+
+
+
+.. autoclass:: SpecializationConstant
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SpecializationConstant.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SpecializationConstant.id
+      ~SpecializationConstant.size
+   
+   
