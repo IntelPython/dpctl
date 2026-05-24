@@ -1,12 +1,9 @@
-.. _dpctl_program_pyapi:
+.. _dpctl_compiler_pyapi:
 
-:py:mod:`dpctl.program` (deprecated)
-=====================================
+:py:mod:`dpctl.compiler`
+========================
 
-.. deprecated::
-   :py:mod:`dpctl.program` is deprecated. Use :py:mod:`dpctl.compiler` instead.
-
-:py:mod:`dpctl.program` provides a way to create a SYCL kernel
+:py:mod:`dpctl.compiler` provides a way to create a SYCL kernel
 from either an OpenCL* program source code represented as a string
 or a SPIR-V binary file.
 
@@ -15,9 +12,9 @@ It implements creation of interoperability
 as well as creation of individual ``sycl::kernel``, suitable for submission for
 execution via :py:meth:`dpctl.SyclQueue.submit`.
 
-.. py:module:: dpctl.program
+.. py:module:: dpctl.compiler
 
-.. currentmodule:: dpctl.program
+.. currentmodule:: dpctl.compiler
 
 .. autosummary::
     :toctree: generated
