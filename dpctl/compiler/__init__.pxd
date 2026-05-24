@@ -18,11 +18,11 @@
 # cython: language_level=3
 
 """Declares the extension types and functions for the Cython API
-implemented in dpctl.compiler._program.pyx.
+implemented in dpctl.compiler._compiler.pyx.
 """
 
 
-from dpctl.compiler._program cimport (
+from dpctl.compiler._compiler cimport (
     SyclKernel,
     SyclKernelBundle,
     create_kernel_bundle_from_source,
