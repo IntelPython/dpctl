@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020 Intel Corporation
+# Copyright 2020-2025 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,28 +15,21 @@
 # limitations under the License.
 
 """
-**Data Parallel Control Program** (deprecated) provides a way to create a SYCL
-kernel from either an OpenCL program represented as a string or a SPIR-V binary
+**Data Parallel Control Compiler** provides a way to create a SYCL kernel
+from either an OpenCL program represented as a string or a SPIR-V binary
 file.
-
-.. deprecated::
-   The dpctl.program module is deprecated. Use dpctl.compiler instead.
 
 """
 
-import warnings
-
-from dpctl.compiler import (
+from dpctl.compiler._program import (
     SpecializationConstant,
     SyclKernel,
     SyclKernelBundle,
     SyclKernelBundleCompilationError,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
-    create_kernel_bundle_from_sycl_source,
     create_program_from_source,
     create_program_from_spirv,
-    is_sycl_source_compilation_available,
 )
 
 __all__ = [
@@ -44,8 +37,6 @@ __all__ = [
     "create_kernel_bundle_from_spirv",
     "create_program_from_source",
     "create_program_from_spirv",
-    "create_kernel_bundle_from_sycl_source",
-    "is_sycl_source_compilation_available",
     "SyclKernel",
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
@@ -59,26 +50,23 @@ __all__ += [
     "utils",
 ]
 
-warnings.warn(
-    "dpctl.program is deprecated and will be removed in a future release. "
-    "Use dpctl.compiler instead.",
-    DeprecationWarning,
-    stacklevel=2,
-)
-
 
 def __getattr__(name):
     if name == "SyclProgram":
-        warnings.warn(
-            "dpctl.program.SyclProgram is deprecated and will be removed in a "
+        from warnings import warn
+
+        warn(
+            "dpctl.compiler.SyclProgram is deprecated and will be removed in a "
             "future release. Use dpctl.compiler.SyclKernelBundle instead.",
             DeprecationWarning,
             stacklevel=2,
         )
         return SyclKernelBundle
     if name == "SyclProgramCompilationError":
-        warnings.warn(
-            "dpctl.program.SyclProgramCompilationError is deprecated and will "
+        from warnings import warn
+
+        warn(
+            "dpctl.compiler.SyclProgramCompilationError is deprecated and will "
             "be removed in a future release. Use "
             "dpctl.compiler.SyclKernelBundleCompilationError instead.",
             DeprecationWarning,
