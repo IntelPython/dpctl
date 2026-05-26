@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-### Change
+### Changed
+* Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
 
 ### Fixed
 
