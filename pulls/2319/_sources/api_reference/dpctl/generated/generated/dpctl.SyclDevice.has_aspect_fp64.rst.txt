@@ -1,0 +1,6 @@
+dpctl.SyclDevice.has\_aspect\_fp64
+==================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.has_aspect_fp64
