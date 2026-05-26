@@ -92,7 +92,7 @@ def usm_host_access():
     md = dpmem.MemoryUSMDevice(16)
     try:
         memoryview(md)
-    except Exception as e:
+    except TypeError as e:
         print("")
         print(
             "An expected exception was raised during attempted construction of "
