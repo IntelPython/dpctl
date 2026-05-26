@@ -33,6 +33,13 @@ def _get_opencl_queue_or_skip():
         pytest.skip("No OpenCL queue is available")
 
 
+def _get_level_zero_queue_or_skip():
+    try:
+        return dpctl.SyclQueue("level_zero")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("No Level Zero queue is available")
+
+
 def _skip_if_no_sycl_source_compilation(q):
     if not dpctl.program.is_sycl_source_compilation_available():
         pytest.skip("SYCL source compilation extension not available")
@@ -216,19 +223,13 @@ def test_create_kernel_bundle_from_source_ocl():
         size_t index = get_global_id(0);                                   \
         c[index] = a[index] + d*b[index];                                  \
     }"
-    try:
-        q = dpctl.SyclQueue("opencl")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No OpenCL queue is available")
+    q = _get_opencl_queue_or_skip()
     kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
     _check_multi_kernel_program(kb)
 
 
 def test_create_kernel_bundle_from_spirv_ocl():
-    try:
-        q = dpctl.SyclQueue("opencl")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No OpenCL queue is available")
+    q = _get_opencl_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
@@ -237,10 +238,7 @@ def test_create_kernel_bundle_from_spirv_ocl():
 
 
 def test_create_kernel_bundle_from_spirv_l0():
-    try:
-        q = dpctl.SyclQueue("level_zero")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No Level-zero queue is available")
+    q = _get_level_zero_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
@@ -249,13 +247,10 @@ def test_create_kernel_bundle_from_spirv_l0():
 
 
 @pytest.mark.xfail(
-    reason="Level-zero backend does not support compilation from source"
+    reason="Level Zero backend does not support compilation from source"
 )
 def test_create_kernel_bundle_from_source_l0():
-    try:
-        q = dpctl.SyclQueue("level_zero")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No Level-zero queue is available")
+    q = _get_level_zero_queue_or_skip()
     oclSrc = "                                                             \
     kernel void add(global int* a, global int* b, global int* c) {         \
         size_t index = get_global_id(0);                                   \
@@ -270,10 +265,7 @@ def test_create_kernel_bundle_from_source_l0():
 
 
 def test_create_kernel_bundle_from_invalid_src_ocl():
-    try:
-        q = dpctl.SyclQueue("opencl")
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("No OpenCL queue is available")
+    q = _get_opencl_queue_or_skip()
     invalid_oclSrc = "                                                     \
     kernel void add(                                                       \
     }"
@@ -281,8 +273,11 @@ def test_create_kernel_bundle_from_invalid_src_ocl():
         dpctl_prog.create_kernel_bundle_from_source(q, invalid_oclSrc)
 
 
-def test_create_kernel_bundle_from_sycl_source():
-    q = _get_opencl_queue_or_skip()
+@pytest.mark.parametrize(
+    "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
+)
+def test_create_kernel_bundle_from_sycl_source(queue_selector):
+    q = queue_selector()
     _skip_if_no_sycl_source_compilation(q)
 
     sycl_source = """
@@ -386,8 +381,11 @@ def test_create_kernel_bundle_from_sycl_source():
     _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(prog)
 
 
-def test_create_kernel_bundle_from_invalid_src_sycl():
-    q = _get_opencl_queue_or_skip()
+@pytest.mark.parametrize(
+    "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
+)
+def test_create_kernel_bundle_from_invalid_src_sycl(queue_selector):
+    q = queue_selector()
     _skip_if_no_sycl_source_compilation(q)
 
     sycl_source = """
@@ -423,8 +421,11 @@ def test_sycl_source_compilation_is_available_returns_bool():
     assert type(v) is bool
 
 
-def test_sycl_source_vector_add_correctness():
-    q = _get_opencl_queue_or_skip()
+@pytest.mark.parametrize(
+    "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
+)
+def test_sycl_source_vector_add_correctness(queue_selector):
+    q = queue_selector()
     _skip_if_no_sycl_source_compilation(q)
 
     sycl_source = """
