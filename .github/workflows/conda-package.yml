@@ -522,7 +522,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        python: ['3.11']
+        python: ['3.14']
         experimental: [false]
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}
@@ -682,7 +682,7 @@ jobs:
           conda activate "${{ env.EXAMPLES_ENV_NAME }}"
           while IFS= read -r script; do
             echo "Executing ${script}"
-            python "${script}" || exit 1
+            python "${script}" --run all || exit 1
           done < <(find . \( -not -name "_*" -and -name "*.py" \))
 
   cleanup_packages:
