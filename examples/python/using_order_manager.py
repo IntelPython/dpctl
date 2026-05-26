@@ -134,7 +134,7 @@ def fork_join():
     assert np.all(
         arr[chunk:] == 20
     ), f"Expected all values in second chunk to be 20, got {arr[chunk:]}"
-    print(f"fork-join got what we expected: [{arr[0]}, ..., {arr[chunk]}, ...]")
+    print(f"fork_join got what we expected: [{arr[0]}, ..., {arr[chunk]}, ...]")
 
 
 def explicit_event_passing():
