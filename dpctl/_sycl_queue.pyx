@@ -461,13 +461,46 @@ cdef bint _is_buffer(object o):
     return PyObject_CheckBuffer(o)
 
 
-cdef DPCTLSyclEventRef _memcpy_impl(
+# Function pointer typedefs for the C API queue copy functions
+ctypedef DPCTLSyclEventRef (*queue_copy_fn)(
+    const DPCTLSyclQueueRef, void*, const void*, size_t
+)
+
+ctypedef DPCTLSyclEventRef (*queue_copy_with_events_fn)(
+    const DPCTLSyclQueueRef, void*, const void*, size_t,
+    const DPCTLSyclEventRef*, size_t
+)
+
+
+cdef size_t _get_dtype_size(str dtype) except *:
+    """
+    Parse numpy-style dtype string and return element size in bytes.
+    Supports: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8
+    """
+    if dtype == "i1" or dtype == "u1":
+        return 1
+    elif dtype == "i2" or dtype == "u2":
+        return 2
+    elif dtype == "i4" or dtype == "u4" or dtype == "f4":
+        return 4
+    elif dtype == "i8" or dtype == "u8" or dtype == "f8":
+        return 8
+    else:
+        raise ValueError(
+            f"Unrecognized dtype '{dtype}'. "
+            "Expected one of: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8"
+        )
+
+
+cdef DPCTLSyclEventRef _copy_memcpy_impl(
      SyclQueue q,
      object dst,
      object src,
      size_t byte_count,
      DPCTLSyclEventRef *dep_events,
-     size_t dep_events_count
+     size_t dep_events_count,
+     queue_copy_fn copy_fn,
+     queue_copy_with_events_fn copy_with_events_fn
 ) except *:
     cdef void *c_dst_ptr = NULL
     cdef void *c_src_ptr = NULL
@@ -514,9 +547,9 @@ cdef DPCTLSyclEventRef _memcpy_impl(
         )
 
     if dep_events_count == 0 or dep_events is NULL:
-        ERef = DPCTLQueue_Memcpy(q._queue_ref, c_dst_ptr, c_src_ptr, byte_count)
+        ERef = copy_fn(q._queue_ref, c_dst_ptr, c_src_ptr, byte_count)
     else:
-        ERef = DPCTLQueue_MemcpyWithEvents(
+        ERef = copy_with_events_fn(
             q._queue_ref,
             c_dst_ptr,
             c_src_ptr,
@@ -533,7 +566,7 @@ cdef DPCTLSyclEventRef _memcpy_impl(
     return ERef
 
 
-cdef DPCTLSyclEventRef _copy_impl(
+cdef DPCTLSyclEventRef _memcpy_impl(
      SyclQueue q,
      object dst,
      object src,
@@ -541,72 +574,29 @@ cdef DPCTLSyclEventRef _copy_impl(
      DPCTLSyclEventRef *dep_events,
      size_t dep_events_count
 ) except *:
-    cdef void *c_dst_ptr = NULL
-    cdef void *c_src_ptr = NULL
-    cdef DPCTLSyclEventRef ERef = NULL
-    cdef Py_buffer src_buf_view
-    cdef Py_buffer dst_buf_view
-    cdef bint src_is_buf = False
-    cdef bint dst_is_buf = False
-    cdef int ret_code = 0
+    return _copy_memcpy_impl(
+        q, dst, src, byte_count, dep_events, dep_events_count,
+        DPCTLQueue_Memcpy, DPCTLQueue_MemcpyWithEvents
+    )
 
-    if isinstance(src, _Memory):
-        c_src_ptr = <void*>(<_Memory>src).get_data_ptr()
-    elif _is_buffer(src):
-        ret_code = PyObject_GetBuffer(
-            src, &src_buf_view, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS
-        )
-        if ret_code != 0:  # pragma: no cover
-            raise RuntimeError("Could not access buffer")
-        c_src_ptr = src_buf_view.buf
-        src_is_buf = True
-    else:
-        raise TypeError(
-             "Parameter `src` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
-        )
 
-    if isinstance(dst, _Memory):
-        c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
-    elif _is_buffer(dst):
-        ret_code = PyObject_GetBuffer(
-            dst, &dst_buf_view,
-            PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS | PyBUF_WRITABLE
-        )
-        if ret_code != 0:  # pragma: no cover
-            if src_is_buf:
-                PyBuffer_Release(&src_buf_view)
-            raise RuntimeError("Could not access buffer")
-        c_dst_ptr = dst_buf_view.buf
-        dst_is_buf = True
-    else:
-        raise TypeError(
-             "Parameter `dst` should have either type "
-             "`dpctl.memory._Memory` or a type that "
-             "supports Python buffer protocol"
-        )
+cdef DPCTLSyclEventRef _copy_impl(
+     SyclQueue q,
+     object dst,
+     object src,
+     size_t count,
+     DPCTLSyclEventRef *dep_events,
+     size_t dep_events_count,
+     str dtype="u1"
+) except *:
+    # ``count`` is in elements of ``dtype`` (default "u1" => bytes).
+    cdef size_t element_size = _get_dtype_size(dtype)
+    cdef size_t byte_count = count * element_size
 
-    if dep_events_count == 0 or dep_events is NULL:
-        ERef = DPCTLQueue_CopyData(
-            q._queue_ref, c_dst_ptr, c_src_ptr, byte_count
-        )
-    else:
-        ERef = DPCTLQueue_CopyDataWithEvents(
-            q._queue_ref,
-            c_dst_ptr,
-            c_src_ptr,
-            byte_count,
-            dep_events,
-            dep_events_count
-        )
-
-    if src_is_buf:
-        PyBuffer_Release(&src_buf_view)
-    if dst_is_buf:
-        PyBuffer_Release(&dst_buf_view)
-
-    return ERef
+    return _copy_memcpy_impl(
+        q, dst, src, byte_count, dep_events, dep_events_count,
+        DPCTLQueue_CopyData, DPCTLQueue_CopyDataWithEvents
+    )
 
 
 cdef class _SyclQueue:
@@ -1480,17 +1470,17 @@ cdef class SyclQueue(_SyclQueue):
             )
             if depEvents is NULL:
                 raise MemoryError()
-            else:
+            try:
                 for idx, de in enumerate(dEvents):
                     if isinstance(de, SyclEvent):
                         depEvents[idx] = (<SyclEvent>de).get_event_ref()
                     else:
-                        free(depEvents)
                         raise TypeError(
                             "A sequence of dpctl.SyclEvent is expected"
                         )
-            ERef = _memcpy_impl(self, dest, src, count, depEvents, nDE)
-            free(depEvents)
+                ERef = _memcpy_impl(self, dest, src, count, depEvents, nDE)
+            finally:
+                free(depEvents)
 
         if (ERef is NULL):
             raise RuntimeError(
@@ -1499,33 +1489,17 @@ cdef class SyclQueue(_SyclQueue):
 
         return SyclEvent._create(ERef)
 
-    cpdef copy(self, dest, src, size_t count):
-        """Copy ``count`` bytes from ``src`` to ``dest`` and wait.
+    cpdef copy(self, dest, src, size_t count, str dtype="u1"):
+        """Copy ``count`` elements of type ``dtype`` from ``src`` to
+        ``dest`` and wait.
 
-        Internally, this dispatches ``sycl::queue::copy`` instantiated for
-        byte-sized elements.
+        Internally, this dispatches ``sycl::queue::copy``. The number of
+        bytes transferred is ``count`` multiplied by the size of ``dtype``.
+        The default ``dtype`` of ``"u1"`` (a single byte) makes the default
+        a byte-wise copy.
 
         This is a synchronizing variant corresponding to
         :meth:`dpctl.SyclQueue.copy_async`.
-        """
-        cdef DPCTLSyclEventRef ERef = NULL
-
-        ERef = _copy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
-        if (ERef is NULL):
-            raise RuntimeError(
-                "SyclQueue.copy operation encountered an error"
-            )
-        with nogil:
-            DPCTLEvent_Wait(ERef)
-        DPCTLEvent_Delete(ERef)
-
-    cpdef SyclEvent copy_async(
-        self, dest, src, size_t count, list dEvents=None
-    ):
-        """Copy ``count`` bytes from ``src`` to ``dest`` asynchronously.
-
-        Internally, this dispatches ``sycl::queue::copy`` instantiated for
-        byte-sized elements.
 
         Args:
             dest:
@@ -1535,9 +1509,51 @@ cdef class SyclQueue(_SyclQueue):
                 Source USM object or Python object supporting buffer
                 protocol.
             count (int):
-                Number of bytes to copy.
+                Number of elements to copy.
+            dtype (str, optional):
+                Data type string of the elements to copy. Determines the
+                element size used to convert ``count`` into a byte count.
+                Defaults to ``"u1"`` (one byte per element).
+                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+
+        ERef = _copy_impl(<SyclQueue>self, dest, src, count, NULL, 0, dtype)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.copy operation encountered an error"
+            )
+        with nogil:
+            DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
+
+    cpdef SyclEvent copy_async(
+        self, dest, src, size_t count, list dEvents=None, str dtype="u1"
+    ):
+        """Copy ``count`` elements of type ``dtype`` from ``src`` to
+        ``dest`` asynchronously.
+
+        Internally, this dispatches ``sycl::queue::copy``. The number of
+        bytes transferred is ``count`` multiplied by the size of ``dtype``.
+        The default ``dtype`` of ``"u1"`` (a single byte) makes the default
+        a byte-wise copy.
+
+        Args:
+            dest:
+                Destination USM object or Python object supporting
+                writable buffer protocol.
+            src:
+                Source USM object or Python object supporting buffer
+                protocol.
+            count (int):
+                Number of elements to copy.
             dEvents (List[dpctl.SyclEvent], optional):
                 Events that this copy depends on.
+            dtype (str, optional):
+                Data type string of the elements to copy. Determines the
+                element size used to convert ``count`` into a byte count.
+                Defaults to ``"u1"`` (one byte per element).
+                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8.
 
         Returns:
             dpctl.SyclEvent:
@@ -1548,7 +1564,7 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nDE = 0
 
         if dEvents is None:
-            ERef = _copy_impl(<SyclQueue>self, dest, src, count, NULL, 0)
+            ERef = _copy_impl(<SyclQueue>self, dest, src, count, NULL, 0, dtype)
         else:
             nDE = len(dEvents)
             depEvents = (
@@ -1556,17 +1572,17 @@ cdef class SyclQueue(_SyclQueue):
             )
             if depEvents is NULL:
                 raise MemoryError()
-            else:
+            try:
                 for idx, de in enumerate(dEvents):
                     if isinstance(de, SyclEvent):
                         depEvents[idx] = (<SyclEvent>de).get_event_ref()
                     else:
-                        free(depEvents)
                         raise TypeError(
                             "A sequence of dpctl.SyclEvent is expected"
                         )
-            ERef = _copy_impl(self, dest, src, count, depEvents, nDE)
-            free(depEvents)
+                ERef = _copy_impl(self, dest, src, count, depEvents, nDE, dtype)
+            finally:
+                free(depEvents)
 
         if (ERef is NULL):
             raise RuntimeError(

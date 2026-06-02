@@ -704,7 +704,7 @@ DPCTLQueue_CopyData(__dpctl_keep const DPCTLSyclQueueRef QRef,
     if (Q) {
         sycl::event ev;
         try {
-            // Bind queue::copy with uint8_t so Count is interpreted as bytes.
+            // Copy uint8_t elements (1 byte each), so Count is a byte count.
             ev = Q->copy(static_cast<const std::uint8_t *>(Src),
                          static_cast<std::uint8_t *>(Dest), Count);
         } catch (std::exception const &e) {
@@ -741,7 +741,7 @@ DPCTLQueue_CopyDataWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
                 }
             }
 
-            // Bind queue::copy with uint8_t so Count is interpreted as bytes.
+            // Copy uint8_t elements (1 byte each), so Count is a byte count.
             auto ev =
                 Q->copy(static_cast<const std::uint8_t *>(Src),
                         static_cast<std::uint8_t *>(Dest), Count, dep_events);
