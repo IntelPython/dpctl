@@ -95,7 +95,7 @@ std::uint32_t get_partition_max_sub_devices(const sycl::device &d)
     return d.get_info<sycl::info::device::partition_max_sub_devices>();
 }
 
-PYBIND11_MODULE(_use_queue_device, m)
+PYBIND11_MODULE(_use_queue_device, m, py::mod_gil_not_used())
 {
     m.def(
         "get_max_compute_units",
