@@ -141,7 +141,9 @@ public:
 
         static std::mutex init_mtx;
 
-        // release gil while holding lock
+        // initialization requires calls into Python C-API, so initializing
+        // thread must hold the GIL, while other threads must not block on the
+        // mutex while holding the GIL, as this creates a deadlock
         py::gil_scoped_release release;
         std::lock_guard<std::mutex> lock(init_mtx);
 

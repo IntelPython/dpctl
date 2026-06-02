@@ -186,7 +186,7 @@ public:
 
     void wait()
     {
-        // snapeshot events outside of mutex to avoid
+        // snapshot events outside of mutex to avoid
         // calling wait inside mutex
         std::vector<sycl::event> sub_copy;
         std::vector<sycl::event> ht_copy;
