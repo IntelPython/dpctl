@@ -572,8 +572,14 @@ jobs:
     strategy:
       matrix:
         python: ['3.14']
+        python_spec: ['']
         experimental: [false]
         runner: [ubuntu-latest]
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 60
     env:
@@ -599,7 +605,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (matrix.python_spec != '' && '3.14' || '3.14t') || matrix.python }}
       - name: Add conda to system path
         run: echo "$CONDA/bin" >> "$GITHUB_PATH"
       - name: Create conda channel
@@ -617,8 +623,13 @@ jobs:
           export CHANNELS
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           export PACKAGE_VERSION
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          export PYTHON_VER
           # shellcheck disable=SC2086
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} $CHANNELS --only-deps --dry-run > lockfile
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python="${PYTHON_VER}" $CHANNELS --only-deps --dry-run > lockfile
           cat lockfile
       - name: Set pkgs_dirs
         run: |
@@ -630,9 +641,9 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-${{hashFiles('lockfile') }}
           restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && matrix.python_spec == '' && 't' || '' }}-
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
       - name: Install example requirements
         shell: bash -ex -l {0}
@@ -644,8 +655,12 @@ jobs:
           DPCTL_DEPENDS="$(python -c "${VER_SCRIPT1} ${VER_SCRIPT3}")"
           export DPCTL_DEPENDS
           echo "Dpctl dependencies: ${DPCTL_DEPENDS}"
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
           # shellcheck disable=SC2086
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python=${{ matrix.python }} "setuptools<72.2.0" $CHANNELS
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python="${PYTHON_VER}" "setuptools<72.2.0" $CHANNELS
           echo "Environment created"
           # shellcheck disable=SC2086
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
