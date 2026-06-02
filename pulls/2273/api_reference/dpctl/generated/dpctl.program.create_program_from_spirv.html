@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="dpctl.program.SyclProgram" href="dpctl.program.SyclProgram.html"><link rel="prev" title="dpctl.program.create_program_from_source" href="dpctl.program.create_program_from_source.html">
+    <link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="dpctl.program.SyclKernelBundle" href="dpctl.program.SyclKernelBundle.html"><link rel="prev" title="dpctl.program.create_program_from_source" href="dpctl.program.create_program_from_source.html">
         <link rel="prefetch" href="../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
@@ -214,12 +214,52 @@
       latest
     </option>
     
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" >
+      0.22.0
+    </option>
+    
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
       0.21.1
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -463,11 +503,13 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">dpctl.program.create_program_from_spirv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
@@ -582,33 +624,9 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.create_program_from_spirv">
 <span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_program_from_spirv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_program_from_spirv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a Sycl interoperability program from an SPIR-V binary.</p>
-<p>We use the <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function
-to create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
-object from an compiled SPIR-V binary file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>) – The <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> for which the
-<a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> is going to be built.</p></li>
-<li><p><strong>IL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><em>bytes</em></a>) – SPIR-V binary IL file for an OpenCL program.</p></li>
-<li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Optional compilation flags that will be used
-when compiling the program. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>program (<a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a>)</dt><dd><p>A <a class="reference internal" href="dpctl.program.SyclProgram.html#dpctl.program.SyclProgram" title="dpctl.program.SyclProgram"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclProgram</span></code></a> object wrapping the
-<code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
-returned by the C API.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpctl.program.SyclProgramCompilationError.html#dpctl.program.SyclProgramCompilationError" title="dpctl.program.SyclProgramCompilationError"><strong>SyclProgramCompilationError</strong></a> – If a SYCL kernel bundle could not be created.</p>
-</dd>
-</dl>
+<dd><p>This function is a deprecated alias for
+<a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv" title="dpctl.program.create_kernel_bundle_from_spirv"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.program.create_kernel_bundle_from_spirv()</span></code></a>.
+New code should use <a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv" title="dpctl.program.create_kernel_bundle_from_spirv"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.program.create_kernel_bundle_from_spirv()</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -618,12 +636,12 @@ returned by the C API.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.program.SyclProgram.html">
+          <a class="next-page" href="dpctl.program.SyclKernelBundle.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.program.SyclProgram</div>
+                <div class="title">dpctl.program.SyclKernelBundle</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

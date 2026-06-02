@@ -214,12 +214,52 @@
       latest
     </option>
     
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" >
+      0.22.0
+    </option>
+    
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
       0.21.1
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -463,11 +503,13 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api_reference/dpctl/program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../api_reference/dpctl/utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
@@ -720,7 +762,7 @@ a <a class="reference internal" href="../api_reference/dpctl/filter_selector_str
 backend. The context is required to map unified address space pointer to the device
 where it was allocated unambiguously.</p>
 <p>In order for two DPC++-based Python extensions to share USM allocations, they each
-must use the <cite>same</cite> SYCL context when submitting for execution programs that would
+must use the <em>same</em> SYCL context when submitting for execution programs that would
 access this allocation.</p>
 <p>Since <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> is dynamically constructed by each extension  sharing a USM allocation,
 in general, requires sharing the <code class="docutils literal notranslate"><span class="pre">sycl::context</span></code> along with the USM pointer, as it is done

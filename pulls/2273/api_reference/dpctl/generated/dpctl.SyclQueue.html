@@ -214,12 +214,52 @@
       latest
     </option>
     
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" >
+      0.22.0
+    </option>
+    
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
       0.21.1
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -463,11 +503,13 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
@@ -698,10 +740,10 @@ The argument can be either “default”, “in_order”,
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.addressof_ref.html#dpctl.SyclQueue.addressof_ref" title="dpctl.SyclQueue.addressof_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addressof_ref</span></code></a>()</p></td>
 <td><p>Returns the address of the C API <code class="docutils literal notranslate"><span class="pre">DPCTLSyclQueueRef</span></code> pointer as integral value of type <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.copy.html#dpctl.SyclQueue.copy" title="dpctl.SyclQueue.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(dest, src, count)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.copy.html#dpctl.SyclQueue.copy" title="dpctl.SyclQueue.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(dest, src, count[, dtype])</p></td>
 <td><p>Copy <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dest</span></code> and wait.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html#dpctl.SyclQueue.copy_async" title="dpctl.SyclQueue.copy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_async</span></code></a>(dest, src, count[, dEvents])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html#dpctl.SyclQueue.copy_async" title="dpctl.SyclQueue.copy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_async</span></code></a>(dest, src, count[, dEvents, dtype])</p></td>
 <td><p>Copy <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dest</span></code> asynchronously.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
