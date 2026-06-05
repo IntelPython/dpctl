@@ -18,7 +18,7 @@
 # cython: language_level=3
 
 """ The file declares several helper functions to create SyclDevice objects
-from SYCL standard device_selectors, to get a list of SyclDevices for a
+from SYCL standard device_selectors, to get a tuple of SyclDevices for a
 specific backend or device_type.
 """
 
@@ -31,8 +31,8 @@ cpdef SyclDevice select_accelerator_device()
 cpdef SyclDevice select_cpu_device()
 cpdef SyclDevice select_default_device()
 cpdef SyclDevice select_gpu_device()
-cpdef list get_devices(backend=*, device_type=*)
-cpdef list get_composite_devices()
+cpdef tuple get_devices(backend=*, device_type=*)
+cpdef tuple get_composite_devices()
 cpdef int get_num_devices(backend=*, device_type=*)
 cpdef cpp_bool has_gpu_devices()
 cpdef cpp_bool has_cpu_devices()
