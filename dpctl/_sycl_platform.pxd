@@ -45,4 +45,4 @@ cdef class SyclPlatform(_SyclPlatform):
     cdef bool equals(self, SyclPlatform)
 
 
-cpdef list get_platforms()
+cpdef tuple get_platforms()
