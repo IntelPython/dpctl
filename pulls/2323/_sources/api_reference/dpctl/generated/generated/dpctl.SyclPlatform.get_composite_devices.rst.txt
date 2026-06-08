@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.get\_composite\_devices
-==========================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclPlatform.get_composite_devices
