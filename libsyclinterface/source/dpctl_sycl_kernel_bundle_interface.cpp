@@ -137,7 +137,7 @@ typedef cl_int (*clBuildProgramFT)(cl_program,
                                    void (*)(cl_program, void *),
                                    void *);
 const char *clBuildProgram_Name = "clBuildProgram";
-clBuildProgramFT get_clBuldProgram()
+clBuildProgramFT get_clBuildProgram()
 {
     static auto st_clBuildProgramF =
         cl_loader::get().getSymbol<clBuildProgramFT>(clBuildProgram_Name);
@@ -186,6 +186,16 @@ clSetProgramSpecializationConstantFT get_clSetProgramSpecializationConstant()
     return st_clSetProgramSpecializationConstantF;
 }
 
+typedef cl_int (*clReleaseProgramFT)(cl_program);
+const char *clReleaseProgram_Name = "clReleaseProgram";
+clReleaseProgramFT get_clReleaseProgram()
+{
+    static auto st_clReleaseProgramF =
+        cl_loader::get().getSymbol<clReleaseProgramFT>(clReleaseProgram_Name);
+
+    return st_clReleaseProgramF;
+}
+
 DPCTLSyclKernelBundleRef
 _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
                                     const context &ctx,
@@ -197,8 +207,12 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
 
     // Last two pointers are notification function pointer and user-data pointer
     // that can be passed to the notification function.
-    auto clBuildProgramF = get_clBuldProgram();
+    auto clBuildProgramF = get_clBuildProgram();
     if (clBuildProgramF == nullptr) {
+        auto clReleaseProgramF = get_clReleaseProgram();
+        if (clReleaseProgramF) {
+            clReleaseProgramF(clProgram);
+        }
         return nullptr;
     }
     cl_int build_status =
@@ -208,6 +222,10 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
         error_handler("clBuildProgram failed: " +
                           _GetErrorCode_ocl_impl(build_status),
                       __FILE__, __func__, __LINE__);
+        auto clReleaseProgramF = get_clReleaseProgram();
+        if (clReleaseProgramF) {
+            clReleaseProgramF(clProgram);
+        }
         return nullptr;
     }
 
@@ -287,6 +305,12 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
             error_handler("clSetProgramSpecializationConstant is not available "
                           "in the OpenCL implementation.",
                           __FILE__, __func__, __LINE__);
+
+            auto clReleaseProgramF = get_clReleaseProgram();
+            if (clReleaseProgramF) {
+                clReleaseProgramF(clProgram);
+            }
+
             return nullptr;
         }
     }
