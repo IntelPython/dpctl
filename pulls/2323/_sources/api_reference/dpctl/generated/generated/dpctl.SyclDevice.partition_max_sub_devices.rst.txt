@@ -1,0 +1,6 @@
+dpctl.SyclDevice.partition\_max\_sub\_devices
+=============================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.partition_max_sub_devices
