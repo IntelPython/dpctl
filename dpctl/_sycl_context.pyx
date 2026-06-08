@@ -388,12 +388,12 @@ cdef class SyclContext(_SyclContext):
 
     def get_devices(self):
         """
-        Returns the list of :class:`dpctl.SyclDevice` objects associated with
+        Returns a tuple of :class:`dpctl.SyclDevice` objects associated with
         :class:`dpctl.SyclContext` instance.
 
         Returns:
-            list:
-                A :obj:`list` of :class:`dpctl.SyclDevice` objects
+            tuple:
+                A :obj:`tuple` of :class:`dpctl.SyclDevice` objects
                 that belong to this context.
 
         Raises:
@@ -415,7 +415,7 @@ cdef class SyclContext(_SyclContext):
             DRef = DPCTLDeviceVector_GetAt(DVRef, i)
             devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
-        return devices
+        return tuple(devices)
 
     @property
     def device_count(self):
