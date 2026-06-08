@@ -153,7 +153,7 @@ cdef class SyclContext(_SyclContext):
             sub_devices = cpu_d.create_sub_devices(partition=2)
             # Create a context common to all the sub-devices.
             ctx = dpctl.SyclContext(sub_devices)
-            assert(len(ctx.get_devices) == len(sub_devices))
+            assert(len(ctx.get_devices()) == len(sub_devices))
 
     - Invoking the constructor with a named ``PyCapsule`` with name
       **"SyclContextRef"** that carries a pointer to a ``sycl::context``
