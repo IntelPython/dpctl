@@ -22,6 +22,8 @@ from enum import IntEnum
 import numpy as np
 
 
+# these constants come from the SPIR-V spec:
+# https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html
 class SpirvOpCode(IntEnum):
     OpName = 5
     OpTypeBool = 20
