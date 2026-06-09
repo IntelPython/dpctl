@@ -106,6 +106,11 @@ def parse_spirv_specializations(
 
         if word_count == 0:
             raise ValueError(f"Invalid SPIR-V instruction at word index {i}")
+        if i + word_count > len(words):
+            raise ValueError(
+                f"Invalid SPIR-V instruction at offset {i} (extends beyond "
+                "buffer)"
+            )
 
         if opcode == SpirvOpCode.OpFunction:
             # everything following is not relevant to specialization constant
@@ -173,12 +178,14 @@ def parse_spirv_specializations(
         dtype_str = type_info["dtype"]
         raw_default = defaults.get(target_id)
         default_value = None
-        if isinstance(raw_default, bytes):
+        if isinstance(raw_default, bool):
+            default_value = raw_default
+        elif isinstance(raw_default, bytes) and dtype_str != "unknown_type":
             try:
                 default_value = np.frombuffer(raw_default, dtype=dtype_str)[
                     0
                 ].item()
-            except Exception:
+            except (ValueError, TypeError):
                 default_value = None
 
         result.append(
