@@ -22,7 +22,7 @@
 
   - wrapper functions to create a SyclDevice from the standard SYCL
     device selector classes.
-  - functions to return a list of devices based on a specified device_type or
+  - functions to return a tuple of devices based on a specified device_type or
     backend_type combination.
 """
 
@@ -133,7 +133,7 @@ cdef _device_type _enum_to_dpctl_sycl_device_ty(DTy):
         return _device_type._UNKNOWN_DEVICE
 
 
-cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
+cdef tuple _get_devices(DPCTLDeviceVectorRef DVRef):
     cdef list devices = []
     cdef size_t nelems = 0
     if DVRef:
@@ -143,12 +143,14 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
             D = SyclDevice._create(DRef)
             devices.append(D)
 
-    return devices
+    return tuple(devices)
 
 
-cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
+cpdef tuple get_devices(
+    backend=backend_type.all, device_type=device_type_t.all
+):
     """
-    Returns a list of :class:`dpctl.SyclDevice` instances selected based on
+    Returns a tuple of :class:`dpctl.SyclDevice` instances selected based on
     the given :class:`dpctl.device_type` and :class:`dpctl.backend_type` values.
 
     The function is analogous to ``sycl::devices::get_devices()``, but with an
@@ -167,15 +169,15 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
             "gpu", "cpu", "accelerator", or "all".
             Default: ``dpctl.device_type.all``.
     Returns:
-        list:
-            A list of available :class:`dpctl.SyclDevice` instances that
+        Tuple[:class:`dpctl.SyclDevice`]:
+            A tuple of available :class:`dpctl.SyclDevice` instances that
             satisfy the provided :class:`dpctl.backend_type` and
             :class:`dpctl.device_type` values.
     """
     cdef _backend_type BTy = _backend_type._ALL_BACKENDS
     cdef _device_type DTy = _device_type._ALL_DEVICES
     cdef DPCTLDeviceVectorRef DVRef = NULL
-    cdef list devices
+    cdef tuple devices
 
     if isinstance(backend, str):
         BTy = _string_to_dpctl_sycl_backend_ty(backend)
@@ -204,9 +206,9 @@ cpdef list get_devices(backend=backend_type.all, device_type=device_type_t.all):
     return devices
 
 
-cpdef list get_composite_devices():
+cpdef tuple get_composite_devices():
     """
-    Returns a list of the available composite :class:`dpctl.SyclDevice`
+    Returns a tuple of the available composite :class:`dpctl.SyclDevice`
     instances.
 
     Only available when `ZE_FLAT_DEVICE_HIERARCHY=COMBINED` is set in
@@ -219,11 +221,11 @@ cpdef list get_composite_devices():
     https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_composite_device.asciidoc
 
     Returns:
-        list:
-            A list of available composite :class:`dpctl.SyclDevice` instances.
+        Tuple[:class:`dpctl.SyclDevice`]:
+            A tuple of available composite :class:`dpctl.SyclDevice` instances.
     """
     cdef DPCTLDeviceVectorRef DVRef = NULL
-    cdef list composite_devices
+    cdef tuple composite_devices
 
     DVRef = DPCTLDeviceMgr_GetCompositeDevices()
     composite_devices = _get_devices(DVRef)

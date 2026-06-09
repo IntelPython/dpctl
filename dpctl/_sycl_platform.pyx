@@ -378,7 +378,7 @@ cdef class SyclPlatform(_SyclPlatform):
 
     def get_devices(self, device_type=device_type_t.all):
         """
-        Returns the list of :class:`dpctl.SyclDevice` objects associated with
+        Returns a tuple of :class:`dpctl.SyclDevice` objects associated with
         :class:`dpctl.SyclPlatform` instance selected based on
         the given :class:`dpctl.device_type`.
 
@@ -391,8 +391,8 @@ cdef class SyclPlatform(_SyclPlatform):
                 Default: ``dpctl.device_type.all``.
 
         Returns:
-            list:
-                A :obj:`list` of :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of :class:`dpctl.SyclDevice` objects
                 that belong to this platform.
 
         Raises:
@@ -455,16 +455,16 @@ cdef class SyclPlatform(_SyclPlatform):
             devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
 
-        return devices
+        return tuple(devices)
 
     def get_composite_devices(self):
         """
-        Returns the list of composite :class:`dpctl.SyclDevice` objects
+        Returns a tuple of composite :class:`dpctl.SyclDevice` objects
         associated with :class:`dpctl.SyclPlatform` instance.
 
         Returns:
-            list:
-                A :obj:`list` of composite :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of composite :class:`dpctl.SyclDevice` objects
                 that belong to this platform.
 
         Raises:
@@ -487,7 +487,7 @@ cdef class SyclPlatform(_SyclPlatform):
             composite_devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
 
-        return composite_devices
+        return tuple(composite_devices)
 
 
 def lsplatform(verbosity=0):
@@ -596,13 +596,13 @@ def lsplatform(verbosity=0):
     DPCTLPlatformVector_Delete(PVRef)
 
 
-cpdef list get_platforms():
+cpdef tuple get_platforms():
     """
-    Returns a list of all available SYCL platforms on the system.
+    Returns a tuple of all available SYCL platforms on the system.
 
     Returns:
-        List[:class:`.SyclPlatform`]:
-            A list of SYCL platforms on the system.
+        Tuple[:class:`.SyclPlatform`]:
+            A tuple of SYCL platforms on the system.
     """
     cdef list platforms = []
     cdef DPCTLPlatformVectorRef PVRef = NULL
@@ -617,4 +617,4 @@ cpdef list get_platforms():
             platforms.append(P)
 
     DPCTLPlatformVector_Delete(PVRef)
-    return platforms
+    return tuple(platforms)
