@@ -37,3 +37,15 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     :nosignatures:
 
     SyclKernelBundleCompilationError
+
+:py:mod:`dpctl.program.utils`
+-----------------------------
+
+.. py:module:: dpctl.program.utils
+
+.. currentmodule:: dpctl.program.utils
+
+.. autofunction:: parse_spirv_specializations
+
+.. autoclass:: SpecializationConstantInfo
+    :members:
