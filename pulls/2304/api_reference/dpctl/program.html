@@ -185,7 +185,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -615,7 +615,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
@@ -668,6 +668,57 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
 </tbody>
 </table>
 </div>
+<section id="module-dpctl.program.utils">
+<span id="dpctl-program-utils"></span><h2><a class="reference internal" href="#module-dpctl.program.utils" title="dpctl.program.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program.utils</span></code></a><a class="headerlink" href="#module-dpctl.program.utils" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dpctl.program.utils.parse_spirv_specializations">
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.utils.</span></span><span class="sig-name descname"><span class="pre">parse_spirv_specializations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spv_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.14)"><span class="pre">bytearray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#memoryview" title="(in Python v3.14)"><span class="pre">memoryview</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">dpctl.program.utils._utils.SpecializationConstantInfo</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/dpctl/program/utils/_utils.html#parse_spirv_specializations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.program.utils.parse_spirv_specializations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses SPIR-V byte stream to extract information about specializations,
+including the specialization IDs, types, names, and default values.</p>
+<p>Note that the dtype information may be imprecise, as the compiler may
+choose to, for example, represent a bool as char, or may represent both
+signed and unsigned integers as unsigned integer bit buckets of the same
+length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spv_bytes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><em>bytes</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytearray" title="(in Python v3.14)"><em>bytearray</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#memoryview" title="(in Python v3.14)"><em>memoryview</em></a>) – the SPIR-V byte stream.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>a tuple of parsed constants and their information represented by
+<cite>SpecializationConstantInfo</cite> objects, sorted by their
+specialization IDs. The length of the tuple is equal to the number
+of specialization constants found. Each
+<cite>SpecializationConstantInfo</cite> object contains the following
+attributes:</p>
+<ul class="simple">
+<li><p><cite>spec_id</cite> (int): The specialization ID.</p></li>
+<li><p><cite>dtype</cite> (str): A NumPy style string representing the data type.</p></li>
+<li><dl class="simple">
+<dt><cite>itemsize</cite> (int): The size of the specialization constant in</dt><dd><p>bytes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>name</cite> (str): The variable name. If not preserved in the binary,</dt><dd><p>a default name in the format <cite>unnamed_spec_const_{spec_id}</cite> is
+used.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>default_value</cite> (int | float | bool | None): The default value of</dt><dd><p>the specialization constant. If not specified, <cite>None</cite> is used.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[SpecializationConstantInfo]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
         </article>
@@ -713,8 +764,30 @@ execution via <a class="reference internal" href="generated/generated/dpctl.Sycl
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><ul>
+<li><a class="reference internal" href="#module-dpctl.program.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program.utils</span></code></a><ul>
+<li><a class="reference internal" href="#dpctl.program.utils.parse_spirv_specializations"><code class="docutils literal notranslate"><span class="pre">parse_spirv_specializations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
