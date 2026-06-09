@@ -4,7 +4,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ struct DMatrix
         : n_(rows), m_(columns), q_(q), alloc_(q), vec_(n_ * m_, alloc_)
     {
     }
-    ~DMatrix(){};
+    ~DMatrix() {};
     DMatrix(const DMatrix &) = default;
     DMatrix(DMatrix &&) = default;
 

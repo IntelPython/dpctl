@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
 #else
                 const bool finalizing = Py_IsFinalizing();
 #endif
-                // if the main thread has not finilized the interpreter yet
+                // if the main thread has not finalized the interpreter yet
                 if (initialized && !finalizing) {
                     PyGILState_STATE gstate;
                     gstate = PyGILState_Ensure();

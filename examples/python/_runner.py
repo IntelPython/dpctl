@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ def run_examples(example_description, glbls_dict):
                 if has_nondefault_params(sgn):
                     if not args.quiet:
                         print(
-                            f"INFO: Skip exectution of {fn} as it "
+                            f"INFO: Skip execution of {fn} as it "
                             "requires arguments"
                         )
                 else:

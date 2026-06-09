@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
     ASSERT_TRUE(KBRef == nullptr);
 }
 
-TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullKernelBundle)
 {
 
     DPCTLSyclKernelBundleRef NullRef = nullptr;
@@ -168,7 +168,7 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernel)
     EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(NullKernel));
 }
 
-TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullProgram)
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkGetKernelNullKernelBundle)
 {
     DPCTLSyclKernelBundleRef NullRef = nullptr;
     DPCTLSyclKernelRef KRef = nullptr;

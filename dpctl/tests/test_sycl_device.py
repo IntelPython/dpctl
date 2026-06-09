@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ def test_supported_aspect(supported_aspect):
         assert getattr(d_wa, "has_aspect_" + supported_aspect)
     except dpctl.SyclDeviceCreationError:
         # ValueError may be raised if no device with
-        # requested aspect charateristics is available
+        # requested aspect characteristics is available
         assert not has_it
 
 

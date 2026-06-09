@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2025 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ def launch_raw_arg_kernel(raw):
     spirv_file = get_spirv_abspath("raw-arg-kernel.spv")
     with open(spirv_file, "br") as spv:
         spv_bytes = spv.read()
-    prog = dpctl.program.create_program_from_spirv(q, spv_bytes)
-    kernel = prog.get_sycl_kernel("__sycl_kernel_raw_arg_kernel")
+    kb = dpctl.program.create_kernel_bundle_from_spirv(q, spv_bytes)
+    kernel = kb.get_sycl_kernel("__sycl_kernel_raw_arg_kernel")
     local_size = 16
     global_size = local_size * 8
 

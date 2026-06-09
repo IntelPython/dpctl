@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2020 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ __dpctl_give DPCTLSyclPlatformRef DPCTLPlatform_CreateFromSelector(
     __dpctl_keep const DPCTLSyclDeviceSelectorRef DSRef);
 
 /*!
- * @brief Deletes the DPCTLSyclProgramRef pointer.
+ * @brief Deletes the DPCTLSyclPlatformRef pointer.
  *
  * @param    PRef           An opaque pointer to a sycl::platform.
  * @ingroup PlatformInterface

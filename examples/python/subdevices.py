@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ def subdivide_root_cpu_device():
     """
     Create root CPU device, and equally partition it
     into smaller CPU devices 4 execution units each,
-    and then further parition those subdevice into
+    and then further partition those sub-devices into
     smaller sub-devices
     """
     cpu_d = dpctl.SyclDevice("cpu")
@@ -43,7 +43,11 @@ def subdivide_root_cpu_device():
         "cpu_d is "
         + ("a root device." if is_root_device(cpu_d) else "not a root device.")
     )
-    sub_devs = cpu_d.create_sub_devices(partition=4)
+    try:
+        sub_devs = cpu_d.create_sub_devices(partition=4)
+    except dpctl.SyclSubDeviceCreationError:
+        print("Device partitioning was not successful.")
+        return
     print("Sub-device #EU: ", [d.max_compute_units for d in sub_devs])
     print("Sub-device is_root: ", [is_root_device(d) for d in sub_devs])
     print(
@@ -70,7 +74,7 @@ def subdivide_by_affinity(affinity="numa"):
             f"{len(sub_devs)} sub-devices were created with respective #EUs "
             f"being {[d.max_compute_units for d in sub_devs]}"
         )
-    except Exception:
+    except dpctl.SyclSubDeviceCreationError:
         print("Device partitioning by affinity was not successful.")
 
 
@@ -82,9 +86,13 @@ def create_subdevice_queue():
     """
     cpu_d = dpctl.SyclDevice("cpu")
     cpu_count = cpu_d.max_compute_units
-    sub_devs = cpu_d.create_sub_devices(partition=cpu_count // 2)
+    try:
+        sub_devs = cpu_d.create_sub_devices(partition=cpu_count // 2)
+    except dpctl.SyclSubDeviceCreationError:
+        print("Device partitioning was not successful.")
+        return
     multidevice_ctx = dpctl.SyclContext(sub_devs)
-    # create a SyclQueue for each sub-device, using commont
+    # create a SyclQueue for each sub-device, using common
     # multi-device context
     q0, q1 = [dpctl.SyclQueue(multidevice_ctx, d) for d in sub_devs]
     # for each sub-device allocate 26 bytes

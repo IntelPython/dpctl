@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1788,7 +1788,7 @@ cdef class RawKernelArg:
             Variadic argument, see class documentation.
 
     Raises:
-        TypeError: In case of incorrect arguments given to constructurs,
+        TypeError: In case of incorrect arguments given to constructors,
                    unexpected types of input arguments.
     """
     def __cinit__(self, *args):

@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2022 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ def test_kernel_can_be_found():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dppr.create_program_from_spirv(q, il, "")
-    assert pr.has_sycl_kernel("double_it")
+    kb = dppr.create_kernel_bundle_from_spirv(q, il, "")
+    assert kb.has_sycl_kernel("double_it")
 
 
 def test_kernel_submit_through_extension():
@@ -57,8 +57,8 @@ def test_kernel_submit_through_extension():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Could not create default queue")
-    pr = dppr.create_program_from_spirv(q, il, "")
-    krn = pr.get_sycl_kernel("double_it")
+    kb = dppr.create_kernel_bundle_from_spirv(q, il, "")
+    krn = kb.get_sycl_kernel("double_it")
     assert krn.num_args == 2
 
     x = np.arange(0, stop=13, step=1, dtype="i4")

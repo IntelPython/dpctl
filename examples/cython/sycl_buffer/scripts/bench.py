@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2023 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ print("NumPy result: ", X.sum(axis=0))
 for ss in ["opencl:cpu", "opencl:gpu", "level_zero:gpu"]:
     print(f"Result for '{ss}': {run_offload(ss, X)}")
 
-print("=" * 10 + " Running bechmarks " + "=" * 10)
+print("=" * 10 + " Running benchmarks " + "=" * 10)
 
 for ss in ["opencl:cpu", "opencl:gpu", "level_zero:gpu"]:
     print(f"Timing offload to '{ss}': {bench_offload(ss, X)}")

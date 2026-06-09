@@ -10,13 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 
 ### Fixed
+
+## [0.22.1] - Apr. 24, 2026
+
+This is a bug-fix release which fixes a memory leak in `dpctl.RawKernelArg`.
+
+### Fixed
+* Fixed a memory leak in `dpctl.RawKernelArg` [gh-2294](https://github.com/IntelPython/dpctl/pull/2294)
 
 ## [0.22.0] - Apr. 14, 2026
 
 The highlight of this release is the full migration of `dpctl.tensor` submodule to sister project [`dpnp`](https://github.com/IntelPython/dpnp), shrinking the size of the package tremendously, by between 93% and 96%. The `__sycl_usm_array_interface__` is still supported, with `dpctl` serving as curator of the protocol.
-
 
 Additionally, `dpctl` build scripts were updated, removing use of `python setup.py develop` and `python setup.py install`, and `dpctl` [documentation page](https://intelpython.github.io/dpctl/latest/index.html) now supports a version dropdown.
 
@@ -152,7 +159,7 @@ The `dpctl` namespace has also received a number of new features, including new 
 
 ### Changed
 
-* Updated Level Zero loader detection to no longer rely on reading `libur_adapter_level_zero.so` for the loader filename [gh-2025](https://github.com/IntelPython/dpctl/pull/2025)
+* Updated Level Zero loader detection to no longer rely on reading `libur_adapter_level_zero.so` for the loader filename [gh](https://github.com/IntelPython/dpctl/pull/2025)
 * Updated integer array indexing to align with the 2024.12 array API specification [gh-2032](https://github.com/IntelPython/dpctl/pull/2032)
 * Support for Boolean data-type is added to `dpctl.tensor.ceil`, `dpctl.tensor.floor`, and `dpctl.tensor.trunc` [gh-2033](https://github.com/IntelPython/dpctl/pull/2033)
 * Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [gh-2042](https://github.com/IntelPython/dpctl/pull/2042)

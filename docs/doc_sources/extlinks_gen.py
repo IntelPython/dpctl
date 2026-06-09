@@ -1,6 +1,6 @@
 #                       Data Parallel Control (dpctl)
 #
-#  Copyright 2020-2025 Intel Corporation
+#  Copyright 2024 Intel Corporation
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import json
 
 def create_extlinks():
     """Reads a JSON file to create a dictionary of urls in the format supported
-    by the sphinx.ect.extlinks extension.
+    by the sphinx.ext.extlinks extension.
 
     Returns:
         dict: A dictionary that is understood by the extlinks Sphinx extension.

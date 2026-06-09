@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1691,7 +1691,7 @@ cdef class SyclDevice(_SyclDevice):
         return _get_devices(DVRef)
 
     def create_sub_devices(self, **kwargs):
-        """create_sub_devices(partition=parition_spec)
+        """create_sub_devices(partition=partition_spec)
         Creates a list of sub-devices by partitioning a root device based on the
         provided partition specifier.
 
@@ -1755,12 +1755,12 @@ cdef class SyclDevice(_SyclDevice):
         """
         if "partition" not in kwargs:
             raise TypeError(
-                "create_sub_devices(partition=parition_spec) is expected."
+                "create_sub_devices(partition=partition_spec) is expected."
             )
         partition = kwargs.pop("partition")
         if kwargs:
             raise TypeError(
-                "create_sub_devices(partition=parition_spec) is expected."
+                "create_sub_devices(partition=partition_spec) is expected."
             )
         if isinstance(partition, int) and partition >= 0:
             return self.create_sub_devices_equally(partition)

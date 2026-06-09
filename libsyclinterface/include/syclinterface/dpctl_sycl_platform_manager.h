@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @{
  */
 
-// Declares a set of types abd functions to deal with vectors of
+// Declares a set of types and functions to deal with vectors of
 // DPCTLSyclPlatformRef. Refer dpctl_vector_macros.h
 DPCTL_DECLARE_VECTOR(Platform)
 

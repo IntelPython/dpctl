@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 ///
 /// \file
 /// A functor to use for passing an error handler callback function to sycl
-/// context and queue contructors.
+/// context and queue constructors.
 //===----------------------------------------------------------------------===//
 
 #include "dpctl_error_handlers.h"
