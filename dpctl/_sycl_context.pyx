@@ -392,8 +392,8 @@ cdef class SyclContext(_SyclContext):
         :class:`dpctl.SyclContext` instance.
 
         Returns:
-            tuple:
-                A :obj:`tuple` of :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of :class:`dpctl.SyclDevice` objects
                 that belong to this context.
 
         Raises:

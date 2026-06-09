@@ -169,7 +169,7 @@ cpdef tuple get_devices(
             "gpu", "cpu", "accelerator", or "all".
             Default: ``dpctl.device_type.all``.
     Returns:
-        tuple:
+        Tuple[:class:`dpctl.SyclDevice`]:
             A tuple of available :class:`dpctl.SyclDevice` instances that
             satisfy the provided :class:`dpctl.backend_type` and
             :class:`dpctl.device_type` values.
@@ -221,7 +221,7 @@ cpdef tuple get_composite_devices():
     https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_composite_device.asciidoc
 
     Returns:
-        tuple:
+        Tuple[:class:`dpctl.SyclDevice`]:
             A tuple of available composite :class:`dpctl.SyclDevice` instances.
     """
     cdef DPCTLDeviceVectorRef DVRef = NULL

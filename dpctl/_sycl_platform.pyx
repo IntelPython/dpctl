@@ -391,8 +391,8 @@ cdef class SyclPlatform(_SyclPlatform):
                 Default: ``dpctl.device_type.all``.
 
         Returns:
-            tuple:
-                A :obj:`tuple` of :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of :class:`dpctl.SyclDevice` objects
                 that belong to this platform.
 
         Raises:
@@ -463,8 +463,8 @@ cdef class SyclPlatform(_SyclPlatform):
         associated with :class:`dpctl.SyclPlatform` instance.
 
         Returns:
-            tuple:
-                A :obj:`tuple` of composite :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of composite :class:`dpctl.SyclDevice` objects
                 that belong to this platform.
 
         Raises:
