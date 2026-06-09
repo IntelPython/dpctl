@@ -1,6 +1,0 @@
-dpctl.SyclTimer.dt
-==================
-
-.. currentmodule:: dpctl
-
-.. autoproperty:: SyclTimer.dt
