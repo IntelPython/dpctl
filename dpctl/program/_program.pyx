@@ -37,7 +37,7 @@ from cpython.buffer cimport (
 from cpython.bytes cimport PyBytes_FromStringAndSize
 from libc.stdint cimport uint32_t
 from libc.stdlib cimport free, malloc
-from libc.string cimport memcmp
+from libc.string cimport memcmp, memcpy
 
 import warnings
 
@@ -298,12 +298,10 @@ cdef class SpecializationConstant:
       integers, the first argument is interpreted as the number of bytes and
       the second argument is interpreted as a pointer to the data.
 
-    Note that when constructing from a buffer, the
-    :class:`.SpecializationConstant`, shares memory with the original object.
-    Modifications to the original object's data after construction will be
-    reflected when the :class:`.SpecializationConstant` is used to create a
-    :class:`.SyclKernelBundle`. This is not the case when constructing from a
-    raw pointer, as the data is copied.
+    Note that construction of the :class:`.SpecializationConstant` copies the
+    input, so modifications made after construction of the
+    :class:`.SpecializationConstant` will not be reflected in the
+    :class:`.SyclKernelBundle`.
 
     Args:
         spec_id (int):
@@ -319,11 +317,12 @@ cdef class SpecializationConstant:
     """
 
     cdef _spec_const _spec_const
-    cdef Py_buffer _buffer
 
     def __cinit__(self, spec_id, *args):
         cdef int ret_code = 0
         cdef object target_obj = None
+        cdef Py_buffer _local_buffer
+        cdef void *copied_data
 
         if not isinstance(spec_id, numbers.Integral):
             raise TypeError(
@@ -348,16 +347,16 @@ cdef class SpecializationConstant:
                 )
             elif isinstance(args[0], str):
                 target_obj = np.ascontiguousarray(args[1], dtype=args[0])
+            else:
+                raise TypeError(
+                    "Invalid arguments."
+                )
 
         elif len(args) == 1:
             target_obj = args[0]
             if not PyObject_CheckBuffer(target_obj):
                 # attempt to coerce to a numpy array
                 target_obj = np.ascontiguousarray(target_obj)
-        else:
-            raise TypeError(
-                "Invalid arguments."
-            )
 
         if isinstance(target_obj, np.ndarray):
             if target_obj.dtype.kind not in ("b", "i", "u", "f", "c"):
@@ -372,17 +371,30 @@ cdef class SpecializationConstant:
                 )
 
         ret_code = PyObject_GetBuffer(
-            target_obj, &(self._buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS
+            target_obj, &(_local_buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS
         )
         if ret_code != 0:
             raise ValueError(
                 "Failed to get buffer view for the provided object."
             )
-        self._spec_const.value = <void*>self._buffer.buf
-        self._spec_const.size = <size_t>self._buffer.len
+
+        self._spec_const.size = <size_t>_local_buffer.len
+        copied_data = malloc(self._spec_const.size)
+
+        if copied_data == NULL:
+            PyBuffer_Release(&(_local_buffer))
+            raise MemoryError(
+                "Failed to allocate memory for specialization constant data."
+            )
+
+        memcpy(copied_data, _local_buffer.buf, self._spec_const.size)
+        self._spec_const.value = copied_data
+
+        PyBuffer_Release(&(_local_buffer))
 
     def __dealloc__(self):
-        PyBuffer_Release(&(self._buffer))
+        if self._spec_const.value != NULL:
+            free(<void*>self._spec_const.value)
 
     def __repr__(self):
         return f"SpecializationConstant({self._spec_const.id})"

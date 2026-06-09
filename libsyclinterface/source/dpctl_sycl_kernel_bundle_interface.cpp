@@ -503,7 +503,6 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
     backend_traits<ze_be>::return_type<device> ZeDevice;
     ZeDevice = get_native<ze_be>(SyclDev);
 
-    // Specialization constants are not supported by DPCTL at the moment
     std::vector<std::uint32_t> spec_ids;
     std::vector<const void *> spec_values;
 
