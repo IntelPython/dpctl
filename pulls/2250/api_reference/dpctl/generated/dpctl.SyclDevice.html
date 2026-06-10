@@ -684,10 +684,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device (<code class="docutils literal notranslate"><span class="pre">self</span></code>) can enable peer access to USM device memory on <code class="docutils literal notranslate"><span class="pre">peer</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.component_devices.html#dpctl.SyclDevice.component_devices" title="dpctl.SyclDevice.component_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">component_devices</span></code></a>()</p></td>
-<td><p>Returns a list of component devices contained in this SYCL device.</p></td>
+<td><p>Returns a tuple of component devices contained in this SYCL device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.create_sub_devices.html#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a>([partition])</p></td>
-<td><p>Creates a list of sub-devices by partitioning a root device based on the provided partition specifier.</p></td>
+<td><p>Creates a tuple of sub-devices by partitioning a root device based on the provided partition specifier.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.disable_peer_access.html#dpctl.SyclDevice.disable_peer_access" title="dpctl.SyclDevice.disable_peer_access"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_peer_access</span></code></a>(peer)</p></td>
 <td><p>Disables peer access to <code class="docutils literal notranslate"><span class="pre">peer</span></code> from this device (<code class="docutils literal notranslate"><span class="pre">self</span></code>).</p></td>
@@ -928,7 +928,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports independent forward progress of sub-groups with respect to other sub-groups in the same work-group.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.sub_group_sizes.html#dpctl.SyclDevice.sub_group_sizes" title="dpctl.SyclDevice.sub_group_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sub_group_sizes</span></code></a></p></td>
-<td><p>Returns list of supported sub-group sizes for this device.</p></td>
+<td><p>Returns tuple of supported sub-group sizes for this device.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.sycl_platform.html#dpctl.SyclDevice.sycl_platform" title="dpctl.SyclDevice.sycl_platform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sycl_platform</span></code></a></p></td>
 <td><p>Returns the platform associated with this device.</p></td>
@@ -972,7 +972,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2020-2025, Intel Corp.
+                Copyright &#169; 2024, Intel Corp.
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
