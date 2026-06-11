@@ -541,6 +541,8 @@ cdef DPCTLSyclEventRef _copy_memcpy_impl(
         c_dst_ptr = dst_buf_view.buf
         dst_is_buf = True
     else:
+        if src_is_buf:
+            PyBuffer_Release(&src_buf_view)
         raise TypeError(
              "Parameter `dst` should have either type `dpctl.memory._Memory` "
              "or a type that supports Python buffer protocol"
