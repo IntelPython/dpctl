@@ -31,6 +31,7 @@ cdef extern from "syclinterface/dpctl_error_handler_type.h":
 cdef extern from "syclinterface/dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)
     cdef void DPCTLSize_t_Array_Delete(size_t *arr)
+    cdef void DPCTLInt_Array_Delete(int *arr)
 
 
 cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
@@ -127,6 +128,41 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _MEM_CACHE_TYPE_NONE             "DPCTL_MEM_CACHE_TYPE_NONE"
         _MEM_CACHE_TYPE_READ_ONLY        "DPCTL_MEM_CACHE_TYPE_READ_ONLY"
         _MEM_CACHE_TYPE_READ_WRITE       "DPCTL_MEM_CACHE_TYPE_READ_WRITE"
+
+    ctypedef enum _local_mem_type "DPCTLLocalMemType":
+        _LOCAL_MEM_TYPE_NONE             "DPCTL_LOCAL_MEM_TYPE_NONE"
+        _LOCAL_MEM_TYPE_LOCAL            "DPCTL_LOCAL_MEM_TYPE_LOCAL"
+        _LOCAL_MEM_TYPE_GLOBAL           "DPCTL_LOCAL_MEM_TYPE_GLOBAL"
+
+    ctypedef enum _partition_property_type "DPCTLPartitionPropertyType":
+        _PARTITION_NO_PARTITION          "DPCTL_PARTITION_NO_PARTITION"
+        _PARTITION_EQUALLY               "DPCTL_PARTITION_EQUALLY"
+        _PARTITION_BY_COUNTS             "DPCTL_PARTITION_BY_COUNTS"
+        _PARTITION_BY_AFFINITY_DOMAIN    "DPCTL_PARTITION_BY_AFFINITY_DOMAIN"
+
+    ctypedef enum _fp_config_type "DPCTLFPConfigType":
+        _FP_DENORM                     "DPCTL_FP_DENORM"
+        _FP_INF_NAN                    "DPCTL_FP_INF_NAN"
+        _FP_ROUND_TO_NEAREST           "DPCTL_FP_ROUND_TO_NEAREST"
+        _FP_ROUND_TO_ZERO              "DPCTL_FP_ROUND_TO_ZERO"
+        _FP_ROUND_TO_INF               "DPCTL_FP_ROUND_TO_INF"
+        _FP_FMA                        "DPCTL_FP_FMA"
+        _FP_CORRECT_ROUND_DIV_SQRT     "DPCTL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT"
+        _FP_SOFT_FLOAT                 "DPCTL_FP_SOFT_FLOAT"
+
+    ctypedef enum _memory_order_type "DPCTLMemoryOrderType":
+        _MEMORY_ORDER_RELAXED            "DPCTL_MEMORY_ORDER_RELAXED"
+        _MEMORY_ORDER_ACQUIRE            "DPCTL_MEMORY_ORDER_ACQUIRE"
+        _MEMORY_ORDER_RELEASE            "DPCTL_MEMORY_ORDER_RELEASE"
+        _MEMORY_ORDER_ACQ_REL            "DPCTL_MEMORY_ORDER_ACQ_REL"
+        _MEMORY_ORDER_SEQ_CST            "DPCTL_MEMORY_ORDER_SEQ_CST"
+
+    ctypedef enum _memory_scope_type "DPCTLMemoryScopeType":
+        _MEMORY_SCOPE_WORK_ITEM          "DPCTL_MEMORY_SCOPE_WORK_ITEM"
+        _MEMORY_SCOPE_SUB_GROUP          "DPCTL_MEMORY_SCOPE_SUB_GROUP"
+        _MEMORY_SCOPE_WORK_GROUP         "DPCTL_MEMORY_SCOPE_WORK_GROUP"
+        _MEMORY_SCOPE_DEVICE             "DPCTL_MEMORY_SCOPE_DEVICE"
+        _MEMORY_SCOPE_SYSTEM             "DPCTL_MEMORY_SCOPE_SYSTEM"
 
 
 cdef extern from "syclinterface/dpctl_sycl_types.h":
@@ -290,6 +326,46 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
 
     cdef void DPCTLDevice_DisablePeerAccess(const DPCTLSyclDeviceRef DRef,
                                             const DPCTLSyclDeviceRef PDRef)
+    cdef uint32_t DPCTLDevice_GetVendorId(const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetAddressBits(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetImageMaxBufferSize(
+        const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMaxSamplers(const DPCTLSyclDeviceRef DRef)
+    cdef size_t DPCTLDevice_GetMaxParameterSize(
+        const DPCTLSyclDeviceRef DRef)
+    cdef uint32_t DPCTLDevice_GetMemBaseAddrAlign(
+        const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_GetErrorCorrectionSupport(
+        const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_IsAvailable(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetVersion(const DPCTLSyclDeviceRef DRef)
+    cdef const char *DPCTLDevice_GetBackendVersion(
+        const DPCTLSyclDeviceRef DRef)
+    cdef _local_mem_type DPCTLDevice_GetLocalMemType(
+        const DPCTLSyclDeviceRef DRef)
+    cdef _partition_property_type DPCTLDevice_GetPartitionTypeProperty(
+        const DPCTLSyclDeviceRef DRef)
+    cdef _partition_affinity_domain_type \
+        DPCTLDevice_GetPartitionTypeAffinityDomain(
+            const DPCTLSyclDeviceRef DRef)
+    cdef int *DPCTLDevice_GetHalfFPConfig(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetSingleFPConfig(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetDoubleFPConfig(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetPartitionProperties(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef int *DPCTLDevice_GetPartitionAffinityDomains(
+        const DPCTLSyclDeviceRef DRef, size_t *res_len)
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(

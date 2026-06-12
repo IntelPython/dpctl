@@ -29,3 +29,5 @@
 void DPCTLCString_Delete(__dpctl_take const char *str) { delete[] str; }
 
 void DPCTLSize_t_Array_Delete(__dpctl_take size_t *arr) { delete[] arr; }
+
+void DPCTLInt_Array_Delete(__dpctl_take int *arr) { delete[] arr; }
