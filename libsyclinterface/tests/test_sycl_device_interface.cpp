@@ -551,6 +551,136 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetCompositeDevice)
     }
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetVendorId)
+{
+    uint32_t vid = 0;
+    EXPECT_NO_FATAL_FAILURE(vid = DPCTLDevice_GetVendorId(DRef));
+    EXPECT_TRUE(vid > 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAddressBits)
+{
+    uint32_t ab = 0;
+    EXPECT_NO_FATAL_FAILURE(ab = DPCTLDevice_GetAddressBits(DRef));
+    EXPECT_TRUE(ab == 32 || ab == 64);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxSamplers)
+{
+    uint32_t ms = 0;
+    EXPECT_NO_FATAL_FAILURE(ms = DPCTLDevice_GetMaxSamplers(DRef));
+    EXPECT_TRUE(ms >= 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxParameterSize)
+{
+    size_t mps = 0;
+    EXPECT_NO_FATAL_FAILURE(mps = DPCTLDevice_GetMaxParameterSize(DRef));
+    EXPECT_TRUE(mps > 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMemBaseAddrAlign)
+{
+    uint32_t align = 0;
+    EXPECT_NO_FATAL_FAILURE(align = DPCTLDevice_GetMemBaseAddrAlign(DRef));
+    EXPECT_TRUE(align > 0);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetErrorCorrectionSupport)
+{
+    bool ecs = false;
+    EXPECT_NO_FATAL_FAILURE(ecs = DPCTLDevice_GetErrorCorrectionSupport(DRef));
+    (void)ecs;
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkIsAvailable)
+{
+    bool avail = false;
+    EXPECT_NO_FATAL_FAILURE(avail = DPCTLDevice_IsAvailable(DRef));
+    EXPECT_TRUE(avail);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetVersion)
+{
+    const char *ver = nullptr;
+    EXPECT_NO_FATAL_FAILURE(ver = DPCTLDevice_GetVersion(DRef));
+    EXPECT_TRUE(ver != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(ver));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetBackendVersion)
+{
+    const char *ver = nullptr;
+    EXPECT_NO_FATAL_FAILURE(ver = DPCTLDevice_GetBackendVersion(DRef));
+    EXPECT_TRUE(ver != nullptr);
+    EXPECT_NO_FATAL_FAILURE(DPCTLCString_Delete(ver));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetLocalMemType)
+{
+    DPCTLLocalMemType lmt;
+    EXPECT_NO_FATAL_FAILURE(lmt = DPCTLDevice_GetLocalMemType(DRef));
+    EXPECT_TRUE(lmt == DPCTL_LOCAL_MEM_TYPE_NONE ||
+                lmt == DPCTL_LOCAL_MEM_TYPE_LOCAL ||
+                lmt == DPCTL_LOCAL_MEM_TYPE_GLOBAL);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeProperty)
+{
+    DPCTLPartitionPropertyType ptp;
+    EXPECT_NO_FATAL_FAILURE(ptp = DPCTLDevice_GetPartitionTypeProperty(DRef));
+    EXPECT_TRUE(ptp == DPCTL_PARTITION_NO_PARTITION ||
+                ptp == DPCTL_PARTITION_EQUALLY ||
+                ptp == DPCTL_PARTITION_BY_COUNTS ||
+                ptp == DPCTL_PARTITION_BY_AFFINITY_DOMAIN);
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSingleFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetSingleFPConfig(DRef, &len));
+    EXPECT_TRUE(len > 0);
+    EXPECT_TRUE(arr != nullptr);
+    if (arr)
+        delete[] arr;
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(DRef, &len));
+    EXPECT_TRUE(len > 0);
+    EXPECT_TRUE(arr != nullptr);
+    if (arr)
+        delete[] arr;
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(DRef, &len));
+    EXPECT_TRUE(len > 0);
+    EXPECT_TRUE(arr != nullptr);
+    if (arr)
+        delete[] arr;
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionProperties)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(arr =
+                                DPCTLDevice_GetPartitionProperties(DRef, &len));
+    // may be empty if device doesn't support partitioning
+    if (arr)
+        delete[] arr;
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
                          TestDPCTLSyclDeviceInterface,
                          ::testing::Values("opencl",

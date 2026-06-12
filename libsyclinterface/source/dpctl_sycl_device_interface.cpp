@@ -982,3 +982,417 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     }
     return;
 }
+
+uint32_t DPCTLDevice_GetVendorId(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t vendorId = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            vendorId = D->get_info<info::device::vendor_id>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return vendorId;
+}
+
+uint32_t DPCTLDevice_GetAddressBits(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t addressBits = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            addressBits = D->get_info<info::device::address_bits>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return addressBits;
+}
+
+size_t
+DPCTLDevice_GetImageMaxBufferSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t result = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::image_max_buffer_size>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+uint32_t DPCTLDevice_GetMaxSamplers(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t result = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::max_samplers>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+size_t
+DPCTLDevice_GetMaxParameterSize(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    size_t result = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::max_parameter_size>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+uint32_t
+DPCTLDevice_GetMemBaseAddrAlign(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    uint32_t result = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::mem_base_addr_align>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+bool DPCTLDevice_GetErrorCorrectionSupport(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool result = false;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::error_correction_support>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+bool DPCTLDevice_IsAvailable(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool result = false;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            result = D->get_info<info::device::is_available>();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return result;
+}
+
+__dpctl_give const char *
+DPCTLDevice_GetVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    const char *cstr_version = nullptr;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            auto version = D->get_info<info::device::version>();
+            cstr_version = dpctl::helper::cstring_from_string(version);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return cstr_version;
+}
+
+__dpctl_give const char *
+DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    const char *cstr_version = nullptr;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            auto version = D->get_info<info::device::backend_version>();
+            cstr_version = dpctl::helper::cstring_from_string(version);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return cstr_version;
+}
+
+DPCTLLocalMemType
+DPCTLDevice_GetLocalMemType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        try {
+            auto mem_type = D->get_info<info::device::local_mem_type>();
+            switch (mem_type) {
+            case info::local_mem_type::none:
+                return DPCTL_LOCAL_MEM_TYPE_NONE;
+            case info::local_mem_type::local:
+                return DPCTL_LOCAL_MEM_TYPE_LOCAL;
+            case info::local_mem_type::global:
+                return DPCTL_LOCAL_MEM_TYPE_GLOBAL;
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return DPCTL_LOCAL_MEM_TYPE_NONE;
+}
+
+DPCTLPartitionPropertyType
+DPCTLDevice_GetPartitionTypeProperty(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        try {
+            auto pp = D->get_info<info::device::partition_type_property>();
+            switch (pp) {
+            case info::partition_property::no_partition:
+                return DPCTL_PARTITION_NO_PARTITION;
+            case info::partition_property::partition_equally:
+                return DPCTL_PARTITION_EQUALLY;
+            case info::partition_property::partition_by_counts:
+                return DPCTL_PARTITION_BY_COUNTS;
+            case info::partition_property::partition_by_affinity_domain:
+                return DPCTL_PARTITION_BY_AFFINITY_DOMAIN;
+            default:
+                // TODO: investigate ext_intel_partition_by_cslice extension
+                break;
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return DPCTL_PARTITION_NO_PARTITION;
+}
+
+DPCTLPartitionAffinityDomainType DPCTLDevice_GetPartitionTypeAffinityDomain(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    if (DRef) {
+        auto D = unwrap<device>(DRef);
+        try {
+            auto domain =
+                D->get_info<info::device::partition_type_affinity_domain>();
+            return DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return DPCTLPartitionAffinityDomainType::not_applicable;
+}
+
+namespace
+{
+
+int dpctl_fp_config_to_int(info::fp_config fc)
+{
+    switch (fc) {
+    case info::fp_config::denorm:
+        return DPCTL_FP_DENORM;
+    case info::fp_config::inf_nan:
+        return DPCTL_FP_INF_NAN;
+    case info::fp_config::round_to_nearest:
+        return DPCTL_FP_ROUND_TO_NEAREST;
+    case info::fp_config::round_to_zero:
+        return DPCTL_FP_ROUND_TO_ZERO;
+    case info::fp_config::round_to_inf:
+        return DPCTL_FP_ROUND_TO_INF;
+    case info::fp_config::fma:
+        return DPCTL_FP_FMA;
+    case info::fp_config::correctly_rounded_divide_sqrt:
+        return DPCTL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
+    case info::fp_config::soft_float:
+        return DPCTL_FP_SOFT_FLOAT;
+    }
+    return -1;
+}
+
+int dpctl_memory_order_to_int(sycl::memory_order mo)
+{
+    switch (mo) {
+    case sycl::memory_order::relaxed:
+        return DPCTL_MEMORY_ORDER_RELAXED;
+    case sycl::memory_order::acquire:
+        return DPCTL_MEMORY_ORDER_ACQUIRE;
+    case sycl::memory_order::release:
+        return DPCTL_MEMORY_ORDER_RELEASE;
+    case sycl::memory_order::acq_rel:
+        return DPCTL_MEMORY_ORDER_ACQ_REL;
+    case sycl::memory_order::seq_cst:
+        return DPCTL_MEMORY_ORDER_SEQ_CST;
+    default:
+        return -1;
+    }
+}
+
+int dpctl_memory_scope_to_int(sycl::memory_scope ms)
+{
+    switch (ms) {
+    case sycl::memory_scope::work_item:
+        return DPCTL_MEMORY_SCOPE_WORK_ITEM;
+    case sycl::memory_scope::sub_group:
+        return DPCTL_MEMORY_SCOPE_SUB_GROUP;
+    case sycl::memory_scope::work_group:
+        return DPCTL_MEMORY_SCOPE_WORK_GROUP;
+    case sycl::memory_scope::device:
+        return DPCTL_MEMORY_SCOPE_DEVICE;
+    case sycl::memory_scope::system:
+        return DPCTL_MEMORY_SCOPE_SYSTEM;
+    }
+    return -1;
+}
+
+int dpctl_partition_property_to_int(info::partition_property pp)
+{
+    switch (pp) {
+    case info::partition_property::no_partition:
+        return DPCTL_PARTITION_NO_PARTITION;
+    case info::partition_property::partition_equally:
+        return DPCTL_PARTITION_EQUALLY;
+    case info::partition_property::partition_by_counts:
+        return DPCTL_PARTITION_BY_COUNTS;
+    case info::partition_property::partition_by_affinity_domain:
+        return DPCTL_PARTITION_BY_AFFINITY_DOMAIN;
+    default:
+        // TODO: investigate ext_intel_partition_by_cslice extension
+        return -1;
+    }
+}
+
+int dpctl_partition_affinity_domain_to_int(info::partition_affinity_domain pad)
+{
+    switch (pad) {
+    case info::partition_affinity_domain::not_applicable:
+        return DPCTLPartitionAffinityDomainType::not_applicable;
+    case info::partition_affinity_domain::numa:
+        return DPCTLPartitionAffinityDomainType::numa;
+    case info::partition_affinity_domain::L4_cache:
+        return DPCTLPartitionAffinityDomainType::L4_cache;
+    case info::partition_affinity_domain::L3_cache:
+        return DPCTLPartitionAffinityDomainType::L3_cache;
+    case info::partition_affinity_domain::L2_cache:
+        return DPCTLPartitionAffinityDomainType::L2_cache;
+    case info::partition_affinity_domain::L1_cache:
+        return DPCTLPartitionAffinityDomainType::L1_cache;
+    case info::partition_affinity_domain::next_partitionable:
+        return DPCTLPartitionAffinityDomainType::next_partitionable;
+    }
+    return DPCTLPartitionAffinityDomainType::not_applicable;
+}
+
+template <typename InfoDescT, typename ConvertFn>
+int *get_info_enum_array(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                         size_t *res_len,
+                         ConvertFn convert)
+{
+    int *arr = nullptr;
+    *res_len = 0;
+    auto D = unwrap<device>(DRef);
+    if (D) {
+        try {
+            auto values = D->get_info<InfoDescT>();
+            *res_len = values.size();
+            if (*res_len > 0) {
+                arr = new int[*res_len];
+                for (size_t i = 0; i < *res_len; ++i) {
+                    arr[i] = convert(values[i]);
+                }
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            delete[] arr;
+            arr = nullptr;
+            *res_len = 0;
+        }
+    }
+    return arr;
+}
+
+} // end of anonymous namespace
+
+__dpctl_keep int *
+DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                            size_t *res_len)
+{
+    return get_info_enum_array<info::device::half_fp_config>(
+        DRef, res_len, dpctl_fp_config_to_int);
+}
+
+__dpctl_keep int *
+DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                              size_t *res_len)
+{
+    return get_info_enum_array<info::device::single_fp_config>(
+        DRef, res_len, dpctl_fp_config_to_int);
+}
+
+__dpctl_keep int *
+DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                              size_t *res_len)
+{
+    return get_info_enum_array<info::device::double_fp_config>(
+        DRef, res_len, dpctl_fp_config_to_int);
+}
+
+__dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len)
+{
+    return get_info_enum_array<info::device::atomic_memory_order_capabilities>(
+        DRef, res_len, dpctl_memory_order_to_int);
+}
+
+__dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len)
+{
+    return get_info_enum_array<info::device::atomic_fence_order_capabilities>(
+        DRef, res_len, dpctl_memory_order_to_int);
+}
+
+__dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len)
+{
+    return get_info_enum_array<info::device::atomic_memory_scope_capabilities>(
+        DRef, res_len, dpctl_memory_scope_to_int);
+}
+
+__dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len)
+{
+    return get_info_enum_array<info::device::atomic_fence_scope_capabilities>(
+        DRef, res_len, dpctl_memory_scope_to_int);
+}
+
+__dpctl_keep int *
+DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                   size_t *res_len)
+{
+    return get_info_enum_array<info::device::partition_properties>(
+        DRef, res_len, dpctl_partition_property_to_int);
+}
+
+__dpctl_keep int *DPCTLDevice_GetPartitionAffinityDomains(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len)
+{
+    return get_info_enum_array<info::device::partition_affinity_domains>(
+        DRef, res_len, dpctl_partition_affinity_domain_to_int);
+}

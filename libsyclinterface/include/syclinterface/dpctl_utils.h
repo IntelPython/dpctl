@@ -47,4 +47,12 @@ void DPCTLCString_Delete(__dpctl_take const char *str);
 DPCTL_API
 void DPCTLSize_t_Array_Delete(__dpctl_take size_t *arr);
 
+/*!
+ * @brief Deletes an array of int elements.
+ *
+ * @param    arr            Array to be deleted.
+ */
+DPCTL_API
+void DPCTLInt_Array_Delete(__dpctl_take int *arr);
+
 DPCTL_C_EXTERN_C_END
