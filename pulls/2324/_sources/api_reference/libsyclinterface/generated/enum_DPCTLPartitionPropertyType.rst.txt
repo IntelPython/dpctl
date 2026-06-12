@@ -1,0 +1,21 @@
+.. index:: pair: enum; DPCTLPartitionPropertyType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3:
+
+enum DPCTLPartitionPropertyType
+===============================
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLPartitionPropertyType
+	{
+	    :target:`DPCTL_PARTITION_NO_PARTITION<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a4520cdbba0b38f9fe87c78792d42df73>`,
+	    :target:`DPCTL_PARTITION_EQUALLY<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a1d087562b58c7bcaa1aecde8febe24b6>`,
+	    :target:`DPCTL_PARTITION_BY_COUNTS<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a647c41b95e14591819932502535e3e1d>`,
+	    :target:`DPCTL_PARTITION_BY_AFFINITY_DOMAIN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3af84cde8ea26687ce73ceb9f9200bfc69>`,
+	};
+

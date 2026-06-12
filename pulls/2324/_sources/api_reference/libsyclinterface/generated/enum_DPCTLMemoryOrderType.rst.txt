@@ -1,0 +1,22 @@
+.. index:: pair: enum; DPCTLMemoryOrderType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672:
+
+enum DPCTLMemoryOrderType
+=========================
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLMemoryOrderType
+	{
+	    :target:`DPCTL_MEMORY_ORDER_RELAXED<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672a8fcc7228a14eaafa7946369e008b5bd9>`,
+	    :target:`DPCTL_MEMORY_ORDER_ACQUIRE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672a9d681b8f90efbbe91869fb0ed7a65ebf>`,
+	    :target:`DPCTL_MEMORY_ORDER_RELEASE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672a5fc1432045cf7437a19f8d8f27eace52>`,
+	    :target:`DPCTL_MEMORY_ORDER_ACQ_REL<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672a6b1ba1e10b7e85d55316640ab5fb2e32>`,
+	    :target:`DPCTL_MEMORY_ORDER_SEQ_CST<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672a0009df9cbfcb1c8305b890ac63a1fb82>`,
+	};
+

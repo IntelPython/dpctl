@@ -1,0 +1,22 @@
+.. index:: pair: enum; DPCTLMemoryScopeType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231:
+
+enum DPCTLMemoryScopeType
+=========================
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLMemoryScopeType
+	{
+	    :target:`DPCTL_MEMORY_SCOPE_WORK_ITEM<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231a6a7e41c94dca3e6312882f80bdfff206>`,
+	    :target:`DPCTL_MEMORY_SCOPE_SUB_GROUP<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231a108f570bbc8fca3c3207e170d4a29295>`,
+	    :target:`DPCTL_MEMORY_SCOPE_WORK_GROUP<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231ae40706c65d6b213d8f770c81ec245a4b>`,
+	    :target:`DPCTL_MEMORY_SCOPE_DEVICE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231a0548e147220ac9590843284559c9a183>`,
+	    :target:`DPCTL_MEMORY_SCOPE_SYSTEM<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231a86165ab802dab962d6e3bf828db8a679>`,
+	};
+

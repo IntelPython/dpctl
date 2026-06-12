@@ -1,0 +1,6 @@
+dpctl.SyclDevice.is\_available
+==============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.is_available

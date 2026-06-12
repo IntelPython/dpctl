@@ -1,0 +1,25 @@
+.. index:: pair: enum; DPCTLFPConfigType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11:
+
+enum DPCTLFPConfigType
+======================
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLFPConfigType
+	{
+	    :target:`DPCTL_FP_DENORM<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a08c32c0915201b4c808d1d376c8a455f>`,
+	    :target:`DPCTL_FP_INF_NAN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a20315614f427612dd7066c4c4bf0e48b>`,
+	    :target:`DPCTL_FP_ROUND_TO_NEAREST<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a05c36e3fac71c660c87d3d46fba0fe54>`,
+	    :target:`DPCTL_FP_ROUND_TO_ZERO<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11ad593765f472895ac483e0024d77866ca>`,
+	    :target:`DPCTL_FP_ROUND_TO_INF<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11aee3078d6cd6af82ba1b46f889295fca3>`,
+	    :target:`DPCTL_FP_FMA<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11aa314b62665d64a344265b439eb66524c>`,
+	    :target:`DPCTL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a3e8a02fa5e07d13b43ab55737edac11b>`,
+	    :target:`DPCTL_FP_SOFT_FLOAT<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a3aabbadc07262908048d1cc66c278bfd>`,
+	};
+

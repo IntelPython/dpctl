@@ -1,0 +1,20 @@
+.. index:: pair: enum; DPCTLLocalMemType
+.. _doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149ae:
+
+enum DPCTLLocalMemType
+======================
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_enum_types.h>
+
+	enum DPCTLLocalMemType
+	{
+	    :target:`DPCTL_LOCAL_MEM_TYPE_NONE<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149aea4f89ea5567a7881551b8c252390e9cf2>`,
+	    :target:`DPCTL_LOCAL_MEM_TYPE_LOCAL<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149aea9f928e18a6cf01395a0bb22448f228cb>`,
+	    :target:`DPCTL_LOCAL_MEM_TYPE_GLOBAL<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149aeac7d8fd379ec1f4f21943f3ad7060430c>`,
+	};
+
