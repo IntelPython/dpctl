@@ -371,6 +371,13 @@ TEST(TestDPCTLSyclQueueInterface, CheckMemOpsZeroQRef)
         ERef = DPCTLQueue_MemcpyWithEvents(QRef, p1, p2, n_bytes, NULL, 0));
     ASSERT_FALSE(bool(ERef));
 
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_CopyData(QRef, p1, p2, n_bytes));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_CopyDataWithEvents(QRef, p1, p2, n_bytes, NULL, 0));
+    ASSERT_FALSE(bool(ERef));
+
     ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Prefetch(QRef, p1, n_bytes));
     ASSERT_FALSE(bool(ERef));
 
@@ -427,6 +434,13 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemOpsNullPtr)
 
     ASSERT_NO_FATAL_FAILURE(
         ERef = DPCTLQueue_MemcpyWithEvents(QRef, p1, p2, n_bytes, NULL, 0));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_CopyData(QRef, p1, p2, n_bytes));
+    ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_CopyDataWithEvents(QRef, p1, p2, n_bytes, NULL, 0));
     ASSERT_FALSE(bool(ERef));
 
     ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Prefetch(QRef, p1, n_bytes));
