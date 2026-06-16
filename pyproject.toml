@@ -61,9 +61,9 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-coverage = ["Cython", "pytest", "coverage", "tomli"]
+coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli"]
 docs = [
-  "Cython",
+  "Cython>=3.1.0",
   "graphviz",
   "pydot",
   "furo",
@@ -126,7 +126,7 @@ multi_line_output = 3
 skip = ["dpctl/_version.py"]
 use_parentheses = true
 
-[tool.pytest.ini.options]
+[tool.pytest.ini_options]
 addopts = [
   "--junitxml=junit.xml",
   "--ignore setup.py",
