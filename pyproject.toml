@@ -129,12 +129,13 @@ use_parentheses = true
 [tool.pytest.ini_options]
 addopts = [
   "--junitxml=junit.xml",
-  "--ignore setup.py",
-  "--ignore run_test.py",
-  "--tb native",
+  "--ignore=setup.py",
+  "--ignore=run_test.py",
+  "--tb=native",
   "--strict",
   "--durations=20",
-  "-q -ra"
+  "-q",
+  "-ra"
 ]
 markers = [
   "broken_complex: mark a test that is skipped due to complex implementation issues in DPC++ compiler"
