@@ -1,3 +1,4 @@
+import sys
 import threading
 import weakref
 from collections import defaultdict
@@ -17,6 +18,8 @@ class _SequentialOrderManager:
         self._state = _OrderManager(16)
 
     def __del__(self):
+        if sys.is_finalizing():
+            return
         _local = self._state
         SyclEvent.wait_for(_local.get_submitted_events())
         SyclEvent.wait_for(_local.get_host_task_events())
