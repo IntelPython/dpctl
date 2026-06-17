@@ -154,6 +154,8 @@ public:
             // acquire gil to safely call into Python C API
             py::gil_scoped_acquire acquire;
 
+            // initialize C-API singleton
+            // not freed, as it's kept until process termination
             capi_ptr = new dpctl_capi();
 
             global_capi.store(capi_ptr, std::memory_order_release);
