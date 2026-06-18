@@ -17,6 +17,7 @@ env:
   VER_SCRIPT3: "print(' '.join(map(lambda s: chr(34) + s + chr(34), [comp for comp in d['depends'] if 'dpcpp' in comp][1:])))"
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
   CONDA_BUILD_VERSION: 26.3.0
+  CONDA_INDEX_VERSION: 0.11.0
 
 jobs:
   build_linux:
@@ -204,7 +205,7 @@ jobs:
           conda update -n base --all
       - name: Install conda-index
         run: |
-          conda install -n base conda-index"<0.12.0" -c conda-forge --override-channels
+          conda install -n base conda-index=${{ env.CONDA_INDEX_VERSION }} -c conda-forge --override-channels
       - name: Show Conda info
         run: |
           conda info --all
@@ -597,7 +598,7 @@ jobs:
         # Needed to be able to run conda index
         run: |
           conda update -n base --all
-          conda install conda-index"<0.12.0" -c conda-forge --override-channels
+          conda install conda-index=${{ env.CONDA_INDEX_VERSION }} -c conda-forge --override-channels
       - name: Checkout dpctl repo
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
