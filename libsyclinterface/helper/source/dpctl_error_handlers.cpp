@@ -26,6 +26,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_service.h"
 #include <cstring>
+#include <iostream>
 #include <sstream>
 #ifdef _WIN32
 #include <cstdlib>

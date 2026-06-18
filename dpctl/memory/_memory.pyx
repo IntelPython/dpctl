@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 """This file implements Python buffer protocol using Sycl USM shared and host
 allocators. The USM device allocator is also exposed through this module for

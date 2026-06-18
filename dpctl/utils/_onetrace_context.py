@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import threading
 from contextlib import contextmanager
 from os import environ, getenv
 from platform import system as sys_platform
@@ -25,6 +26,7 @@ __doc__ = (
 
 _UNCHECKED = sys_platform() == "Linux"
 del sys_platform
+_unchecked_lock = threading.Lock()
 
 
 @contextmanager
@@ -62,21 +64,25 @@ def onetrace_enabled():
     """
     global _UNCHECKED
 
-    if _UNCHECKED:
-        _UNCHECKED = False
-        if not (
-            getenv("PTI_ENABLE", None) == "1"
-            and "onetrace_tool" in getenv("LD_PRELOAD", "")
-        ):
-            import warnings
-
-            warnings.warn(
-                "It looks like Python interpreter was not started using "
-                "`onetrace` utility. Using `onetrace_enabled` may have "
-                "no effect. See `onetrace_enabled.__doc__` for usage.",
-                RuntimeWarning,
-                stacklevel=2,
+    with _unchecked_lock:
+        if _UNCHECKED:
+            _UNCHECKED = False
+            needs_warning = not (
+                getenv("PTI_ENABLE", None) == "1"
+                and "onetrace_tool" in getenv("LD_PRELOAD", "")
             )
+        else:
+            needs_warning = False
+    if needs_warning:
+        import warnings
+
+        warnings.warn(
+            "It looks like Python interpreter was not started using "
+            "`onetrace` utility. Using `onetrace_enabled` may have "
+            "no effect. See `onetrace_enabled.__doc__` for usage.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
 
     _env_var_name = "PTI_ENABLE_COLLECTION"
     saved = getenv(_env_var_name, None)

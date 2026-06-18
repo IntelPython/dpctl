@@ -63,25 +63,35 @@ static PyMethodDef SyclLSMethods[] = {
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
+static int syclls_module_exec(PyObject *m)
+{
+    (void)(m);
+    import_dpctl();
+    if (PyErr_Occurred()) {
+        return -1;
+    }
+    return 0;
+}
+
+static PyModuleDef_Slot syclls_module_slots[] = {
+    {Py_mod_exec, syclls_module_exec},
+#if PY_VERSION_HEX >= 0x030D0000
+    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+#endif
+    {0, NULL}};
+
 static struct PyModuleDef syclls_module = {
     PyModuleDef_HEAD_INIT,
     "_py_sycl_ls", /* name of module */
     "",            /* module documentation, may be NULL */
-    -1,            /* size of per-interpreter state of the module,
-                      or -1 if the module keeps state in global variables. */
+    0,             /* size of per-interpreter state of the module */
     SyclLSMethods,
-    NULL,
+    syclls_module_slots,
     NULL,
     NULL,
     NULL};
 
 PyMODINIT_FUNC PyInit__py_sycl_ls(void)
 {
-    PyObject *m;
-
-    import_dpctl();
-
-    m = PyModule_Create(&syclls_module);
-
-    return m;
+    return PyModuleDef_Init(&syclls_module);
 }

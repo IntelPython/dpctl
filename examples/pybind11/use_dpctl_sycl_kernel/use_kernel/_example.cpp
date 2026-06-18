@@ -75,7 +75,7 @@ void submit_custom_kernel(sycl::queue &q,
     return;
 }
 
-PYBIND11_MODULE(_use_kernel, m)
+PYBIND11_MODULE(_use_kernel, m, py::mod_gil_not_used())
 {
     m.def("submit_custom_kernel", &submit_custom_kernel,
           "Submit given kernel with arguments (int *, int *) to queue",

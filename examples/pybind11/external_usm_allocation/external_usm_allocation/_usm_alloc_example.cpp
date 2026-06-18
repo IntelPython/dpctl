@@ -141,7 +141,7 @@ dpctl::memory::usm_memory make_zeroed_device_memory(size_t nbytes,
     return dpctl::memory::usm_memory(data, nbytes, q, shptr);
 }
 
-PYBIND11_MODULE(_external_usm_alloc, m)
+PYBIND11_MODULE(_external_usm_alloc, m, py::mod_gil_not_used())
 {
     py::class_<DMatrix> dm(m, "DMatrix");
     dm.def(py::init(&create_matrix),
