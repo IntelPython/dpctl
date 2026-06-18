@@ -204,7 +204,7 @@ jobs:
           conda update -n base --all
       - name: Install conda-index
         run: |
-          conda install -n base conda-index -c conda-forge --override-channels
+          conda install -n base conda-index"<0.12.0" -c conda-forge --override-channels
       - name: Show Conda info
         run: |
           conda info --all
@@ -597,7 +597,7 @@ jobs:
         # Needed to be able to run conda index
         run: |
           conda update -n base --all
-          conda install conda-index -c conda-forge --override-channels
+          conda install conda-index"<0.12.0" -c conda-forge --override-channels
       - name: Checkout dpctl repo
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
