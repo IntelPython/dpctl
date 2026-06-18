@@ -30,7 +30,7 @@ requirements:
         - python
         - pip >=24.0
         - level-zero-devel >=1.16
-        - pybind11 >=2.12
+        - pybind11 >=2.13
         - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
         # Ensure we are using latest version of setuptools, since we don't need

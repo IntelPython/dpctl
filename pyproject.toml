@@ -132,7 +132,7 @@ addopts = [
   "--ignore=setup.py",
   "--ignore=run_test.py",
   "--tb=native",
-  "--strict",
+  "--strict-markers",
   "--durations=20",
   "-q",
   "-ra"
