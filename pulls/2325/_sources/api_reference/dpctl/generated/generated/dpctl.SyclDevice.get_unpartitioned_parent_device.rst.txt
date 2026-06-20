@@ -1,0 +1,6 @@
+dpctl.SyclDevice.get\_unpartitioned\_parent\_device
+===================================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.get_unpartitioned_parent_device
