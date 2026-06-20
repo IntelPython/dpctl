@@ -635,7 +635,7 @@
     <span class="k">return</span> <span class="n">dev</span><span class="p">.</span><span class="n">get_info</span><span class="o">&lt;</span><span class="n">sycl</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">device</span><span class="o">::</span><span class="n">name</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="p">}</span>
 
-<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">py</span><span class="o">::</span><span class="n">mod_gil_not_used</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_device_name&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
