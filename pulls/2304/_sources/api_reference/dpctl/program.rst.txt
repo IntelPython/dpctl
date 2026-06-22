@@ -31,6 +31,7 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
 
     SyclKernelBundle
     SyclKernel
+    SpecializationConstant
 
 .. autosummary::
     :toctree: generated
