@@ -344,6 +344,19 @@ def test_create_kernel_bundle_with_composite_spec_const():
     assert np.all(y == 12.5)
 
 
+def test_specialization_constant_addressof_ref():
+    sp = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    ref = sp.addressof_ref()
+    assert type(ref) is int
+    assert ref != 0
+
+    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 3.14)
+    ref2 = sp2.addressof_ref()
+    assert type(ref2) is int
+    assert ref2 != 0
+    assert ref != ref2
+
+
 def test_spirv_specializations_parser():
     spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
     with open(spirv_file, "rb") as spv:
