@@ -333,7 +333,8 @@ cdef class SpecializationConstant:
 
         if len(args) == 0 or len(args) > 2:
             raise TypeError(
-                f"Constructor takes 2 or 3 arguments, got {len(args)}."
+                "Constructor takes 2 or 3 arguments, got "
+                f"{len(args) + 1}."
             )
 
         self._spec_const.id = <uint32_t>spec_id
