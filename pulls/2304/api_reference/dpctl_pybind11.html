@@ -375,6 +375,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/generated/dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
@@ -636,7 +638,7 @@
     <span class="k">return</span> <span class="n">dev</span><span class="p">.</span><span class="n">get_info</span><span class="o">&lt;</span><span class="n">sycl</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">device</span><span class="o">::</span><span class="n">name</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="p">}</span>
 
-<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
+<span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">py</span><span class="o">::</span><span class="n">mod_gil_not_used</span><span class="p">())</span> <span class="p">{</span>
     <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_device_name&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
@@ -690,7 +692,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2020-2025, Intel Corp.
+                Copyright &#169; 2024, Intel Corp.
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

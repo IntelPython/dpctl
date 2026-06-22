@@ -375,6 +375,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
@@ -691,7 +693,7 @@ multiple sub-devices.</p></li>
 <span class="n">sub_devices</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># Create a context common to all the sub-devices.</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclContext</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">)</span>
-<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">))</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">get_devices</span><span class="p">())</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_devices</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd>
@@ -729,7 +731,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
 <td><p>Returns the address of the <code class="docutils literal notranslate"><span class="pre">DPCTLSyclContextRef</span></code> pointer as a <code class="docutils literal notranslate"><span class="pre">size_t</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclContext.get_devices.html#dpctl.SyclContext.get_devices" title="dpctl.SyclContext.get_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_devices</span></code></a>()</p></td>
-<td><p>Returns the list of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p></td>
+<td><p>Returns a tuple of <a class="reference internal" href="dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> objects associated with <a class="reference internal" href="#dpctl.SyclContext" title="dpctl.SyclContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclContext</span></code></a> instance.</p></td>
 </tr>
 </tbody>
 </table>
@@ -777,7 +779,7 @@ named <code class="docutils literal notranslate"><span class="pre">PyCapsule</sp
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2020-2025, Intel Corp.
+                Copyright &#169; 2024, Intel Corp.
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

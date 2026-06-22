@@ -375,6 +375,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="generated/dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
@@ -694,7 +696,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.get_devices.html#dpctl.get_devices" title="dpctl.get_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_devices</span></code></a></p></td>
-<td><p>Returns a list of <a class="reference internal" href="generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on the given <a class="reference internal" href="constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p></td>
+<td><p>Returns a tuple of <a class="reference internal" href="generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances selected based on the given <a class="reference internal" href="constants.html#dpctl.device_type" title="dpctl.device_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.device_type</span></code></a> and <a class="reference internal" href="constants.html#dpctl.backend_type" title="dpctl.backend_type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.backend_type</span></code></a> values.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.lsplatform.html#dpctl.lsplatform" title="dpctl.lsplatform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lsplatform</span></code></a></p></td>
 <td><p>Prints out the list of available SYCL platforms, and optionally extra metadata about each platform.</p></td>
@@ -712,7 +714,7 @@
 <td><p>A helper function to check if there are any SYCL Accelerator devices available.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.get_composite_devices.html#dpctl.get_composite_devices" title="dpctl.get_composite_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_composite_devices</span></code></a></p></td>
-<td><p>Returns a list of the available composite <a class="reference internal" href="generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances.</p></td>
+<td><p>Returns a tuple of the available composite <a class="reference internal" href="generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> instances.</p></td>
 </tr>
 </tbody>
 </table>
@@ -802,7 +804,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2020-2025, Intel Corp.
+                Copyright &#169; 2024, Intel Corp.
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
