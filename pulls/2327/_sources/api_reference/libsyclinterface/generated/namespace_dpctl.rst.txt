@@ -1,0 +1,25 @@
+.. index:: pair: namespace; dpctl
+.. _doxid-d2/df1/namespacedpctl:
+
+namespace dpctl
+===============
+
+.. toctree::
+	:hidden:
+
+	namespace_dpctl_syclinterface.rst
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	namespace dpctl {
+
+	// namespaces
+
+	namespace :ref:`dpctl::syclinterface<doxid-d1/d06/namespacedpctl_1_1syclinterface>`;
+
+	} // namespace dpctl
