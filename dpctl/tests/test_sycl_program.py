@@ -401,3 +401,14 @@ def test_spirv_specializations_parser_invalid_spirv():
     invalid_spv = b"\x00\x01\x02\x03\x04\x05"
     with pytest.raises(ValueError):
         parse_spirv_specializations(invalid_spv)
+
+
+def test_spec_const_equality():
+    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    sp2 = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    sp3 = dpctl_prog.SpecializationConstant(1, "i4", 42)
+    sp4 = dpctl_prog.SpecializationConstant(0, "f4", 42.0)
+
+    assert sp1 == sp2
+    assert sp1 != sp3
+    assert sp1 != sp4
