@@ -288,11 +288,11 @@ cdef class SpecializationConstant:
       data in the buffer
 
     - ``SpecializationConstant(spec_id, dtype, obj)``
-    If the constructor is invoked with two variadic arguments, and the first
-    argument is a string, it is interpreted as a NumPy ``dtype`` string and the
-    second argument will be coerced to a NumPy array with that data type.
-    The data type specified by the first argument must be a supported data
-    type (bool, integral, or floating point).
+      If the constructor is invoked with two variadic arguments, and the first
+      argument is a string, it is interpreted as a NumPy ``dtype`` string and
+      the second argument will be coerced to a NumPy array with that data type.
+      The data type specified by the first argument must be a supported data
+      type (bool, integral, or floating point).
 
     - ``SpecializationConstant(spec_id, nbytes, raw_ptr)``
       If the constructor is invoked with two variadic arguments where both are
@@ -406,10 +406,11 @@ cdef class SpecializationConstant:
         cdef SpecializationConstant _other = <SpecializationConstant>other
         if (
             self._spec_const.id != _other._spec_const.id or
-            self._spec_const.size != _other._spec_const.size or
-            self._spec_const.value != _other._spec_const.value
+            self._spec_const.size != _other._spec_const.size
         ):
             return False
+        if self._spec_const.value == _other._spec_const.value:
+            return True
         return memcmp(
             self._spec_const.value,
             _other._spec_const.value,
