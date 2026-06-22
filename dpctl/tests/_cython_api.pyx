@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 # cython: language=c++
 # cython: language_level=3
+# cython: freethreading_compatible = True
 
 cimport dpctl as c_dpctl
 

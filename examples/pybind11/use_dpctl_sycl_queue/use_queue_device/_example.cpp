@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ std::uint32_t get_partition_max_sub_devices(const sycl::device &d)
     return d.get_info<sycl::info::device::partition_max_sub_devices>();
 }
 
-PYBIND11_MODULE(_use_queue_device, m)
+PYBIND11_MODULE(_use_queue_device, m, py::mod_gil_not_used())
 {
     m.def(
         "get_max_compute_units",

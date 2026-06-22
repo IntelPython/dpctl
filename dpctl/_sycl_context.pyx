@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 """ Implements SyclContext Cython extension type.
 """
@@ -153,7 +154,7 @@ cdef class SyclContext(_SyclContext):
             sub_devices = cpu_d.create_sub_devices(partition=2)
             # Create a context common to all the sub-devices.
             ctx = dpctl.SyclContext(sub_devices)
-            assert(len(ctx.get_devices) == len(sub_devices))
+            assert(len(ctx.get_devices()) == len(sub_devices))
 
     - Invoking the constructor with a named ``PyCapsule`` with name
       **"SyclContextRef"** that carries a pointer to a ``sycl::context``
@@ -388,12 +389,12 @@ cdef class SyclContext(_SyclContext):
 
     def get_devices(self):
         """
-        Returns the list of :class:`dpctl.SyclDevice` objects associated with
+        Returns a tuple of :class:`dpctl.SyclDevice` objects associated with
         :class:`dpctl.SyclContext` instance.
 
         Returns:
-            list:
-                A :obj:`list` of :class:`dpctl.SyclDevice` objects
+            Tuple[:class:`dpctl.SyclDevice`]:
+                A tuple of :class:`dpctl.SyclDevice` objects
                 that belong to this context.
 
         Raises:
@@ -415,7 +416,7 @@ cdef class SyclContext(_SyclContext):
             DRef = DPCTLDeviceVector_GetAt(DVRef, i)
             devices.append(SyclDevice._create(DRef))
         DPCTLDeviceVector_Delete(DVRef)
-        return devices
+        return tuple(devices)
 
     @property
     def device_count(self):

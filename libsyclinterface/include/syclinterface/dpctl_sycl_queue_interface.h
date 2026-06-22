@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2020 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -326,6 +326,47 @@ DPCTLQueue_MemcpyWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
                             size_t Count,
                             __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                             size_t DepEventsCount);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::copy``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    Dest           A destination pointer.
+ * @param    Src            A source pointer.
+ * @param    Count          A number of bytes to copy.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::copy`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_CopyData(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                    void *Dest,
+                    const void *Src,
+                    size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::copy``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    Dest           A destination pointer.
+ * @param    Src            A source pointer.
+ * @param    Count          A number of bytes to copy.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::copy`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_CopyDataWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                              void *Dest,
+                              const void *Src,
+                              size_t Count,
+                              __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                              size_t DepEventsCount);
 
 /*!
  * @brief C-API wrapper for ``sycl::queue::prefetch``.

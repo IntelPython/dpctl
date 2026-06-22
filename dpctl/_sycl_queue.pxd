@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -103,6 +103,10 @@ cdef public api class SyclQueue (_SyclQueue) [
     cdef DPCTLSyclQueueRef get_queue_ref(self)
     cpdef memcpy(self, dest, src, size_t count)
     cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=*)
+    cpdef copy(self, dest, src, size_t count, str dtype=*)
+    cpdef SyclEvent copy_async(
+        self, dest, src, size_t count, list dEvents=*, str dtype=*
+    )
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)

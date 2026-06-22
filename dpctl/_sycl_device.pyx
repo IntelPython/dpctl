@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 # distutils: language = c++
 # cython: language_level=3
 # cython: linetrace=True
+# cython: freethreading_compatible = True
 
 """ Implements SyclDevice Cython extension type.
 """
@@ -157,7 +158,7 @@ cdef class _SyclDevice:
         DPCTLSize_t_Array_Delete(self._max_work_item_sizes)
 
 
-cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
+cdef tuple _get_devices(DPCTLDeviceVectorRef DVRef):
     """
     Deletes DVRef. Pass a copy in case an original reference is needed.
     """
@@ -171,7 +172,7 @@ cdef list _get_devices(DPCTLDeviceVectorRef DVRef):
             devices.append(D)
         DPCTLDeviceVector_Delete(DVRef)
 
-    return devices
+    return tuple(devices)
 
 
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
@@ -1188,7 +1189,7 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def sub_group_sizes(self):
-        """ Returns list of supported sub-group sizes for this device.
+        """ Returns tuple of supported sub-group sizes for this device.
 
         :Example:
 
@@ -1197,11 +1198,11 @@ cdef class SyclDevice(_SyclDevice):
                 >>> import dpctl
                 >>> dev = dpctl.select_cpu_device()
                 >>> dev.sub_group_sizes
-                [4, 8, 16, 32, 64]
+                (4, 8, 16, 32, 64)
 
         Returns:
-            List[int]:
-                List of supported sub-group sizes.
+            Tuple[int]:
+                Tuple of supported sub-group sizes.
         """
         cdef size_t *sg_sizes = NULL
         cdef size_t sg_sizes_len = 0
@@ -1214,9 +1215,9 @@ cdef class SyclDevice(_SyclDevice):
             for i in range(sg_sizes_len):
                 res.append(sg_sizes[i])
             DPCTLSize_t_Array_Delete(sg_sizes)
-            return res
+            return tuple(res)
         else:
-            return []
+            return ()
 
     @property
     def sycl_platform(self):
@@ -1590,11 +1591,11 @@ cdef class SyclDevice(_SyclDevice):
         """
         return DPCTLDevice_Hash(self._device_ref)
 
-    cdef list create_sub_devices_equally(self, size_t count):
-        """ Returns a list of sub-devices partitioned from this SYCL device
+    cdef tuple create_sub_devices_equally(self, size_t count):
+        """ Returns a tuple of sub-devices partitioned from this SYCL device
         based on the ``count`` parameter.
 
-        The returned list contains as many sub-devices as can be created
+        The returned tuple contains as many sub-devices as can be created
         such that each sub-device contains count compute units. If the
         device’s total number of compute units is not evenly divided by
         count, then the remaining compute units are not included in any of
@@ -1605,7 +1606,7 @@ cdef class SyclDevice(_SyclDevice):
                 Number of sub-devices to partition into.
 
         Returns:
-            List[:class:`dpctl.SyclDevice`]:
+            Tuple[:class:`dpctl.SyclDevice`]:
                 Created sub-devices.
 
         Raises:
@@ -1623,15 +1624,15 @@ cdef class SyclDevice(_SyclDevice):
             )
         return _get_devices(DVRef)
 
-    cdef list create_sub_devices_by_counts(self, object counts):
-        """ Returns a list of sub-devices partitioned from this SYCL device
+    cdef tuple create_sub_devices_by_counts(self, object counts):
+        """ Returns a tuple of sub-devices partitioned from this SYCL device
         based on the ``counts`` parameter.
 
         For each non-zero value ``M`` in the counts vector, a sub-device
         with ``M`` compute units is created.
 
         Returns:
-            List[:class:`dpctl.SyclDevice`]:
+            Tuple[:class:`dpctl.SyclDevice`]:
                 Created sub-devices.
 
         Raises:
@@ -1670,14 +1671,14 @@ cdef class SyclDevice(_SyclDevice):
             )
         return _get_devices(DVRef)
 
-    cdef list create_sub_devices_by_affinity(
+    cdef tuple create_sub_devices_by_affinity(
         self, _partition_affinity_domain_type domain
     ):
-        """ Returns a list of sub-devices partitioned from this SYCL device by
+        """ Returns a tuple of sub-devices partitioned from this SYCL device by
         affinity domain based on the ``domain`` parameter.
 
         Returns:
-            List[:class:`dpctl.SyclDevice`]:
+            Tuple[:class:`dpctl.SyclDevice`]:
                 Created sub-devices.
 
         Raises:
@@ -1692,8 +1693,8 @@ cdef class SyclDevice(_SyclDevice):
 
     def create_sub_devices(self, **kwargs):
         """create_sub_devices(partition=partition_spec)
-        Creates a list of sub-devices by partitioning a root device based on the
-        provided partition specifier.
+        Creates a tuple of sub-devices by partitioning a root device based on
+        the provided partition specifier.
 
         A partition specifier must be provided using a ``partition``
         keyword argument. Possible values for the specifier are: an integer, a
@@ -1725,7 +1726,7 @@ cdef class SyclDevice(_SyclDevice):
                 Specification to partition the device as follows:
 
                 - Specifying an int (``count``)
-                    The returned list contains as
+                    The returned tuple contains as
                     many sub-devices as can be created such that each
                     sub-device contains ``count`` compute units. If the
                     device’s total number of compute units is not evenly
@@ -1742,7 +1743,7 @@ cdef class SyclDevice(_SyclDevice):
                     sub-device with ``M`` compute units is created.
 
         Returns:
-            List[:class:`dpctl.SyclDevice`]:
+            Tuple[:class:`dpctl.SyclDevice`]:
                 Created sub-devices.
 
         Raises:
@@ -1831,14 +1832,14 @@ cdef class SyclDevice(_SyclDevice):
         return SyclDevice._create(CDRef)
 
     def component_devices(self):
-        """ Returns a list of component devices contained in this SYCL device.
+        """ Returns a tuple of component devices contained in this SYCL device.
 
-        The returned list will be empty if this SYCL device is not a composite
+        The returned tuple will be empty if this SYCL device is not a composite
         device, i.e., if `is_composite` is ``False``.
 
         Returns:
-            List[:class:`dpctl.SyclDevice`]:
-                List of component devices.
+            Tuple[:class:`dpctl.SyclDevice`]:
+                Tuple of component devices.
 
         Raises:
             ValueError:

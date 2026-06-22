@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import inspect
 
 def has_nondefault_params(sgn):
     for v in sgn.parameters.values():
-        if v.default is inspect._empty:
+        if v.default is inspect.Parameter.empty:
             return True
     return False
 

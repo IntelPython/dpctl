@@ -2,7 +2,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_service.h"
 #include <cstring>
+#include <iostream>
 #include <sstream>
 #ifdef _WIN32
 #include <cstdlib>

@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,12 @@
 #pragma once
 
 #include "dpctl_capi.h"
+
+#include <atomic>
 #include <complex>
 #include <cstddef> // for std::size_t for C++ linkage
 #include <memory>
+#include <mutex>
 #include <pybind11/pybind11.h>
 #include <stddef.h> // for size_t for C linkage
 #include <stdexcept>
@@ -128,8 +131,37 @@ public:
 
     static auto &get()
     {
-        static dpctl_capi api{};
-        return api;
+        static std::atomic<dpctl_capi *> global_capi{nullptr};
+        dpctl_capi *capi_ptr = global_capi.load(std::memory_order_acquire);
+
+        // fast path
+        if (capi_ptr) {
+            return *capi_ptr;
+        }
+
+        static std::mutex init_mtx;
+
+        // initialization requires calls into Python C-API, so initializing
+        // thread must hold the GIL, while other threads must not block on the
+        // mutex while holding the GIL, as this creates a deadlock
+        py::gil_scoped_release release;
+        std::lock_guard<std::mutex> lock(init_mtx);
+
+        // double check after acquiring lock
+        capi_ptr = global_capi.load(std::memory_order_relaxed);
+
+        if (!capi_ptr) {
+            // acquire gil to safely call into Python C API
+            py::gil_scoped_acquire acquire;
+
+            // initialize C-API singleton
+            // not freed, as it's kept until process termination
+            capi_ptr = new dpctl_capi();
+
+            global_capi.store(capi_ptr, std::memory_order_release);
+        }
+
+        return *capi_ptr;
     }
 
     py::object default_sycl_queue_pyobj() { return *default_sycl_queue_; }

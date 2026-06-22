@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dev] - XXX. XX, XXXX
 
 ### Added
+* `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 
-### Change
+### Changed
+* Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 
 ### Fixed
 
@@ -157,7 +160,7 @@ The `dpctl` namespace has also received a number of new features, including new 
 
 ### Changed
 
-* Updated Level Zero loader detection to no longer rely on reading `libur_adapter_level_zero.so` for the loader filename [gh-2025](https://github.com/IntelPython/dpctl/pull/2025)
+* Updated Level Zero loader detection to no longer rely on reading `libur_adapter_level_zero.so` for the loader filename [gh](https://github.com/IntelPython/dpctl/pull/2025)
 * Updated integer array indexing to align with the 2024.12 array API specification [gh-2032](https://github.com/IntelPython/dpctl/pull/2032)
 * Support for Boolean data-type is added to `dpctl.tensor.ceil`, `dpctl.tensor.floor`, and `dpctl.tensor.trunc` [gh-2033](https://github.com/IntelPython/dpctl/pull/2033)
 * Changed implementation of `DPCTLPlatform_GetDefaultContext` from using deprecated `ext_oneapi_get_default_context` to `khr_get_default_context` [gh-2042](https://github.com/IntelPython/dpctl/pull/2042)

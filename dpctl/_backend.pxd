@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -511,6 +511,18 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         const void *Src,
         size_t Count)
     cdef DPCTLSyclEventRef DPCTLQueue_MemcpyWithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        const void *Src,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
+    cdef DPCTLSyclEventRef DPCTLQueue_CopyData(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        const void *Src,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_CopyDataWithEvents(
         const DPCTLSyclQueueRef Q,
         void *Dest,
         const void *Src,

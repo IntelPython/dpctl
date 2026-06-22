@@ -4,7 +4,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2021 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -141,7 +141,7 @@ dpctl::memory::usm_memory make_zeroed_device_memory(size_t nbytes,
     return dpctl::memory::usm_memory(data, nbytes, q, shptr);
 }
 
-PYBIND11_MODULE(_external_usm_alloc, m)
+PYBIND11_MODULE(_external_usm_alloc, m, py::mod_gil_not_used())
 {
     py::class_<DMatrix> dm(m, "DMatrix");
     dm.def(py::init(&create_matrix),

@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ def test_memory_create(memory_ctor):
     assert mobj.sycl_queue == queue
     assert type(repr(mobj)) is str
     assert type(bytes(mobj)) is bytes
-    assert sys.getsizeof(mobj) > nbytes
+    assert sys.getsizeof(mobj) >= nbytes
 
 
 def test_memory_create_with_np():

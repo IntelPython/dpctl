@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2021 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,4 +45,4 @@ cdef class SyclPlatform(_SyclPlatform):
     cdef bool equals(self, SyclPlatform)
 
 
-cpdef list get_platforms()
+cpdef tuple get_platforms()

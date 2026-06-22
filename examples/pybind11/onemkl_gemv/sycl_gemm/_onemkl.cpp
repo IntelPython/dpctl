@@ -3,7 +3,7 @@
 //
 //                      Data Parallel Control (dpctl)
 //
-// Copyright 2020-2025 Intel Corporation
+// Copyright 2022 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -521,7 +521,7 @@ int py_cg_solve(sycl::queue exec_q,
     }
 }
 
-PYBIND11_MODULE(_onemkl, m)
+PYBIND11_MODULE(_onemkl, m, py::mod_gil_not_used())
 {
     m.def("gemv", &py_gemv, "Uses oneMKL to compute dot(matrix, vector)",
           py::arg("exec_queue"), py::arg("Amatrix"), py::arg("xvec"),

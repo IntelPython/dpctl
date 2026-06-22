@@ -8,8 +8,8 @@ requires = [
   "scikit-build>=0.17.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   "cmake>=3.29.0",
-  "cython>=3.0.10",
-  "numpy >=1.23",
+  "cython>=3.1.0",
+  "numpy >=1.26.0",
   # WARNING: check with doc how to upgrade
   "versioneer[toml]==0.29"
 ]
@@ -29,6 +29,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Free Threading :: 2 - Beta",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
   "Operating System :: Microsoft :: Windows",
@@ -44,7 +45,7 @@ dependencies = [
   # TODO: do we have to set sycl runtime dependencies here
   # "dpcpp-cpp-rt>=0.59.0",
   # "intel-cmplr-lib-rt>=0.59.0"
-  "numpy>=1.23.0"
+  "numpy>=2.0.0"
 ]
 description = "A lightweight Python wrapper for a subset of SYCL."
 dynamic = ["version"]
@@ -60,9 +61,9 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
-coverage = ["Cython", "pytest", "pytest-cov", "coverage", "tomli"]
+coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli"]
 docs = [
-  "Cython",
+  "Cython>=3.1.0",
   "graphviz",
   "pydot",
   "furo",
@@ -125,16 +126,16 @@ multi_line_output = 3
 skip = ["dpctl/_version.py"]
 use_parentheses = true
 
-[tool.pytest.ini.options]
+[tool.pytest.ini_options]
 addopts = [
   "--junitxml=junit.xml",
-  "--ignore setup.py",
-  "--ignore run_test.py",
-  "--cov-report term-missing",
-  "--tb native",
-  "--strict",
+  "--ignore=setup.py",
+  "--ignore=run_test.py",
+  "--tb=native",
+  "--strict-markers",
   "--durations=20",
-  "-q -ra"
+  "-q",
+  "-ra"
 ]
 markers = [
   "broken_complex: mark a test that is skipped due to complex implementation issues in DPC++ compiler"

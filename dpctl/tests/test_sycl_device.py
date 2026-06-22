@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2020-2025 Intel Corporation
+# Copyright 2020 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -307,7 +307,7 @@ def test_get_unpartitioned_parent_device_from_sub_device():
             sdevs = dev.create_sub_devices(partition=[1, 1])
     except dpctl.SyclSubDeviceCreationError:
         pytest.skip("Default device can not be partitioned")
-    assert isinstance(sdevs, list) and len(sdevs) > 0
+    assert isinstance(sdevs, tuple) and len(sdevs) > 0
     assert dev == sdevs[0].get_unpartitioned_parent_device()
 
 
