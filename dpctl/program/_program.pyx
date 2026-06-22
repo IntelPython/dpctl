@@ -435,6 +435,17 @@ cdef class SpecializationConstant:
         """
         return <size_t>&(self._spec_const)
 
+    def addressof_ref(self):
+        """Returns the address of the ``_spec_const`` struct for this
+        :class:`.SpecializationConstant` cast to ``size_t``.
+
+        Returns:
+            The address of the internal ``_spec_const`` struct used by
+            this :class:`.SpecializationConstant` object cast to a
+            ``size_t``.
+        """
+        return self.addressof()
+
 
 cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
     """
