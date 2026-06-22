@@ -297,8 +297,25 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
         auto clSetProgramSpecConstF = get_clSetProgramSpecializationConstant();
         if (clSetProgramSpecConstF) {
             for (size_t i = 0; i < NumSpecConsts; ++i) {
-                clSetProgramSpecConstF(clProgram, SpecConsts[i].id,
-                                       SpecConsts[i].size, SpecConsts[i].value);
+                cl_int spec_err = clSetProgramSpecConstF(
+                    clProgram, SpecConsts[i].id, SpecConsts[i].size,
+                    SpecConsts[i].value);
+                if (spec_err != CL_SUCCESS) {
+                    error_handler(
+                        "clSetProgramSpecializationConstant failed for "
+                        "spec constant id " +
+                            std::to_string(SpecConsts[i].id) +
+                            ". OpenCL Error " +
+                            _GetErrorCode_ocl_impl(spec_err),
+                        __FILE__, __func__, __LINE__);
+
+                    auto clReleaseProgramF = get_clReleaseProgram();
+                    if (clReleaseProgramF) {
+                        clReleaseProgramF(clProgram);
+                    }
+
+                    return nullptr;
+                }
             }
         }
         else {
