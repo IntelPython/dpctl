@@ -84,7 +84,7 @@ repos:
     -   id: pretty-format-toml
         args: [--autofix]
 - repo: https://github.com/MarcoGorelli/cython-lint
-  rev: v0.20.0
+  rev: v0.21.0
   hooks:
   - id: cython-lint
   - id: double-quote-cython-strings
