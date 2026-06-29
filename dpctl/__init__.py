@@ -65,7 +65,12 @@ from .enum_types import (
     backend_type,
     device_type,
     event_status_type,
+    fp_config,
     global_mem_cache_type,
+    local_mem_type,
+    memory_order,
+    memory_scope,
+    partition_property,
 )
 
 __all__ = [
@@ -118,6 +123,11 @@ __all__ += [
     "backend_type",
     "event_status_type",
     "global_mem_cache_type",
+    "local_mem_type",
+    "partition_property",
+    "fp_config",
+    "memory_order",
+    "memory_scope",
 ]
 __all__ += [
     "get_include",
