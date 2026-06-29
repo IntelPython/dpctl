@@ -31,6 +31,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h> /* OpenCL headers     */
+#include <cstdint>
 #include <sstream>
 #include <stddef.h>
 #include <sycl/backend/opencl.hpp>
@@ -136,7 +137,7 @@ typedef cl_int (*clBuildProgramFT)(cl_program,
                                    void (*)(cl_program, void *),
                                    void *);
 const char *clBuildProgram_Name = "clBuildProgram";
-clBuildProgramFT get_clBuldProgram()
+clBuildProgramFT get_clBuildProgram()
 {
     static auto st_clBuildProgramF =
         cl_loader::get().getSymbol<clBuildProgramFT>(clBuildProgram_Name);
@@ -170,6 +171,31 @@ std::string _GetErrorCode_ocl_impl(cl_int code)
     }
 }
 
+typedef cl_int (*clSetProgramSpecializationConstantFT)(cl_program,
+                                                       cl_uint,
+                                                       size_t,
+                                                       const void *);
+const char *clSetProgramSpecializationConstant_Name =
+    "clSetProgramSpecializationConstant";
+clSetProgramSpecializationConstantFT get_clSetProgramSpecializationConstant()
+{
+    static auto st_clSetProgramSpecializationConstantF =
+        cl_loader::get().getSymbol<clSetProgramSpecializationConstantFT>(
+            clSetProgramSpecializationConstant_Name);
+
+    return st_clSetProgramSpecializationConstantF;
+}
+
+typedef cl_int (*clReleaseProgramFT)(cl_program);
+const char *clReleaseProgram_Name = "clReleaseProgram";
+clReleaseProgramFT get_clReleaseProgram()
+{
+    static auto st_clReleaseProgramF =
+        cl_loader::get().getSymbol<clReleaseProgramFT>(clReleaseProgram_Name);
+
+    return st_clReleaseProgramF;
+}
+
 DPCTLSyclKernelBundleRef
 _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
                                     const context &ctx,
@@ -181,8 +207,12 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
 
     // Last two pointers are notification function pointer and user-data pointer
     // that can be passed to the notification function.
-    auto clBuildProgramF = get_clBuldProgram();
+    auto clBuildProgramF = get_clBuildProgram();
     if (clBuildProgramF == nullptr) {
+        auto clReleaseProgramF = get_clReleaseProgram();
+        if (clReleaseProgramF) {
+            clReleaseProgramF(clProgram);
+        }
         return nullptr;
     }
     cl_int build_status =
@@ -192,6 +222,10 @@ _CreateKernelBundle_common_ocl_impl(cl_program clProgram,
         error_handler("clBuildProgram failed: " +
                           _GetErrorCode_ocl_impl(build_status),
                       __FILE__, __func__, __LINE__);
+        auto clReleaseProgramF = get_clReleaseProgram();
+        if (clReleaseProgramF) {
+            clReleaseProgramF(clProgram);
+        }
         return nullptr;
     }
 
@@ -235,7 +269,9 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
                                    const device &dev,
                                    const void *IL,
                                    size_t il_length,
-                                   const char *CompileOpts)
+                                   const char *CompileOpts,
+                                   size_t NumSpecConsts,
+                                   const DPCTLSpecConst *SpecConsts)
 {
     auto clCreateProgramWithILF = get_clCreateProgramWithIL();
     if (clCreateProgramWithILF == nullptr) {
@@ -255,6 +291,45 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
                           _GetErrorCode_ocl_impl(create_err_code),
                       __FILE__, __func__, __LINE__);
         return nullptr;
+    }
+
+    if (SpecConsts != nullptr && NumSpecConsts > 0) {
+        auto clSetProgramSpecConstF = get_clSetProgramSpecializationConstant();
+        if (clSetProgramSpecConstF) {
+            for (size_t i = 0; i < NumSpecConsts; ++i) {
+                cl_int spec_err = clSetProgramSpecConstF(
+                    clProgram, SpecConsts[i].id, SpecConsts[i].size,
+                    SpecConsts[i].value);
+                if (spec_err != CL_SUCCESS) {
+                    error_handler(
+                        "clSetProgramSpecializationConstant failed for "
+                        "spec constant id " +
+                            std::to_string(SpecConsts[i].id) +
+                            ". OpenCL Error " +
+                            _GetErrorCode_ocl_impl(spec_err),
+                        __FILE__, __func__, __LINE__);
+
+                    auto clReleaseProgramF = get_clReleaseProgram();
+                    if (clReleaseProgramF) {
+                        clReleaseProgramF(clProgram);
+                    }
+
+                    return nullptr;
+                }
+            }
+        }
+        else {
+            error_handler("clSetProgramSpecializationConstant is not available "
+                          "in the OpenCL implementation.",
+                          __FILE__, __func__, __LINE__);
+
+            auto clReleaseProgramF = get_clReleaseProgram();
+            if (clReleaseProgramF) {
+                clReleaseProgramF(clProgram);
+            }
+
+            return nullptr;
+        }
     }
 
     return _CreateKernelBundle_common_ocl_impl(clProgram, ctx, dev,
@@ -428,7 +503,9 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
                                   const device &SyclDev,
                                   const void *IL,
                                   size_t il_length,
-                                  const char *CompileOpts)
+                                  const char *CompileOpts,
+                                  size_t NumSpecConsts,
+                                  const DPCTLSpecConst *SpecConsts)
 {
     auto zeModuleCreateFn = get_zeModuleCreate();
     if (zeModuleCreateFn == nullptr) {
@@ -443,9 +520,22 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
     backend_traits<ze_be>::return_type<device> ZeDevice;
     ZeDevice = get_native<ze_be>(SyclDev);
 
-    // Specialization constants are not supported by DPCTL at the moment
+    std::vector<std::uint32_t> spec_ids;
+    std::vector<const void *> spec_values;
+
+    if (SpecConsts != nullptr && NumSpecConsts > 0) {
+        spec_ids.reserve(NumSpecConsts);
+        spec_values.reserve(NumSpecConsts);
+        for (size_t i = 0; i < NumSpecConsts; ++i) {
+            spec_ids.push_back(SpecConsts[i].id);
+            spec_values.push_back(SpecConsts[i].value);
+        }
+    }
     ze_module_constants_t ZeSpecConstants = {};
-    ZeSpecConstants.numConstants = 0;
+    ZeSpecConstants.numConstants = static_cast<std::uint32_t>(NumSpecConsts);
+    ZeSpecConstants.pConstantIds = spec_ids.empty() ? nullptr : spec_ids.data();
+    ZeSpecConstants.pConstantValues =
+        spec_values.empty() ? nullptr : spec_values.data();
 
     // Populate the Level Zero module descriptions
     ze_module_desc_t ZeModuleDesc = {};
@@ -583,7 +673,9 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                                   __dpctl_keep const DPCTLSyclDeviceRef DevRef,
                                   __dpctl_keep const void *IL,
                                   size_t length,
-                                  const char *CompileOpts)
+                                  const char *CompileOpts,
+                                  size_t NumSpecConsts,
+                                  const DPCTLSpecConst *SpecConsts)
 {
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     if (!CtxRef) {
@@ -611,12 +703,14 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     switch (BE) {
     case backend::opencl:
         KBRef = _CreateKernelBundleWithIL_ocl_impl(*SyclCtx, *SyclDev, IL,
-                                                   length, CompileOpts);
+                                                   length, CompileOpts,
+                                                   NumSpecConsts, SpecConsts);
         break;
     case backend::ext_oneapi_level_zero:
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
         KBRef = _CreateKernelBundleWithIL_ze_impl(*SyclCtx, *SyclDev, IL,
-                                                  length, CompileOpts);
+                                                  length, CompileOpts,
+                                                  NumSpecConsts, SpecConsts);
         break;
 #endif
     default:

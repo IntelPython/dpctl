@@ -22,6 +22,7 @@ file.
 """
 
 from ._program import (
+    SpecializationConstant,
     SyclKernel,
     SyclKernelBundle,
     SyclKernelBundleCompilationError,
@@ -41,6 +42,12 @@ __all__ = [
     "SyclKernelBundleCompilationError",
     "SyclProgram",
     "SyclProgramCompilationError",
+    "SpecializationConstant",
+]
+
+# add submodules
+__all__ += [
+    "utils",
 ]
 
 

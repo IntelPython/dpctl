@@ -35,6 +35,13 @@
 
 DPCTL_C_EXTERN_C_BEGIN
 
+typedef struct DPCTLSpecConstTy
+{
+    uint32_t id;
+    size_t size;
+    const void *value;
+} DPCTLSpecConst;
+
 /**
  * @defgroup KernelBundleInterface Kernel_bundle class C wrapper
  */
@@ -51,6 +58,8 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    Length         The size of the IL binary in bytes.
  * @param    CompileOpts    Optional compiler flags used when compiling the
  *                          SPIR-V binary.
+ * @param    NumSpecConsts  The number of specialization constants.
+ * @param    SpecConsts     An array of specialization constants.
  * @return   A new SyclKernelBundleRef pointer if the kernel_bundle creation
  * succeeded, else returns NULL.
  * @ingroup KernelBundleInterface
@@ -61,7 +70,9 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
                                   __dpctl_keep const DPCTLSyclDeviceRef Dev,
                                   __dpctl_keep const void *IL,
                                   size_t Length,
-                                  const char *CompileOpts);
+                                  const char *CompileOpts,
+                                  size_t NumSpecConsts,
+                                  const DPCTLSpecConst *SpecConsts);
 
 /*!
  * @brief Create a Sycl kernel bundle from an OpenCL kernel source string.
