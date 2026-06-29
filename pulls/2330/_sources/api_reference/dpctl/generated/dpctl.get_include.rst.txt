@@ -1,6 +1,0 @@
-﻿dpctl.get\_include
-==================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: get_include
