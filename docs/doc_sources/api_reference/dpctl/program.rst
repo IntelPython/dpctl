@@ -22,6 +22,7 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
 
     create_kernel_bundle_from_source
     create_kernel_bundle_from_spirv
+    create_kernel_bundle_from_sycl_source
     create_program_from_source
     create_program_from_spirv
 
