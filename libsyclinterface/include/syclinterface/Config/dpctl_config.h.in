@@ -35,3 +35,5 @@
 
 #define DPCTL_LIBZE_LOADER_FILENAME "@LIBZE_LOADER_FILENAME@"
 #define DPCTL_LIBCL_LOADER_FILENAME "@LIBCL_LOADER_FILENAME@"
+/* Defined when the SYCL runtime supports IPC memory (ipc::memory API). */
+#cmakedefine DPCTL_HAS_IPC_MEMORY 1

@@ -28,6 +28,7 @@ skbuild.setup(
         "dpctl.memory",
         "dpctl.program",
         "dpctl.utils",
+        "dpctl.ipc",
     ],
     package_data={
         "dpctl": [
@@ -47,6 +48,7 @@ skbuild.setup(
             "*.pxd",
             "memory/*.pxd",
             "program/*.pxd",
+            "ipc/*.pxd",
         ]
     },
     include_package_data=False,

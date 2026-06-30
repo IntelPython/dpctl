@@ -606,3 +606,19 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
         DPCTLSyclRawKernelArgRef Ref)
 
     cdef bint DPCTLRawKernelArg_Available()
+
+cdef extern from "syclinterface/dpctl_sycl_ipc_memory_interface.h":
+    cdef int DPCTLIPCMem_GetHandle(
+        DPCTLSyclUSMRef Ptr,
+        DPCTLSyclContextRef CRef,
+        char **DataOut,
+        size_t *SizeOut)
+    cdef DPCTLSyclUSMRef DPCTLIPCMem_OpenHandle(
+        const char *HandleData,
+        size_t HandleDataSize,
+        DPCTLSyclContextRef CRef,
+        DPCTLSyclDeviceRef DRef)
+    cdef void DPCTLIPCMem_CloseHandle(
+        DPCTLSyclUSMRef MappedPtr,
+        DPCTLSyclContextRef CRef)
+    cdef void DPCTLIPCMem_FreeHandleData(char *Data)
