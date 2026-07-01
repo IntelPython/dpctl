@@ -111,6 +111,35 @@ endif()
 message(STATUS "LIB_ZE: ${LIBZE_LOADER_FILENAME}")
 message(STATUS "LIB_CL: ${LIBCL_LOADER_FILENAME}")
 
+
+# --- IPC Memory support detection ---
+option(DPCTL_ENABLE_IPC_MEMORY
+    "Enable IPC memory support (requires SYCL IPC runtime)"
+    ON
+)
+if(DPCTL_ENABLE_IPC_MEMORY)
+    include(CheckCXXSourceCompiles)
+    set(CMAKE_REQUIRED_FLAGS "${SYCL_FLAGS}")
+    set(CMAKE_REQUIRED_INCLUDES "${SYCL_INCLUDE_DIR}")
+    check_cxx_source_compiles("
+        #include <sycl/ext/oneapi/experimental/ipc_memory.hpp>
+        int main() { return 0; }
+    " DPCTL_IPC_MEMORY_HEADER_FOUND)
+    if(DPCTL_IPC_MEMORY_HEADER_FOUND)
+        # Check if libsycl.so has the openIPCMemHandle symbol
+        set(DPCTL_HAS_IPC_MEMORY 1)
+        set(DPCTL_HAS_IPC_MEMORY 1 PARENT_SCOPE)
+        message(STATUS "SYCL IPC memory support: ENABLED (ipc_memory.hpp found)")
+    else()
+        message(STATUS "SYCL IPC memory support: DISABLED (ipc_memory.hpp not found)")
+    endif()
+    unset(CMAKE_REQUIRED_FLAGS)
+    unset(CMAKE_REQUIRED_INCLUDES)
+    unset(CMAKE_REQUIRED_LIBRARIES)
+else()
+    message(STATUS "SYCL IPC memory support: DISABLED (DPCTL_ENABLE_IPC_MEMORY=OFF)")
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config/dpctl_config.h.in
     ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config/dpctl_config.h
@@ -222,7 +251,16 @@ file(GLOB_RECURSE sources
 list(REMOVE_ITEM
     sources
     "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_vector_templ.cpp"
+
 )
+
+# Conditionally exclude IPC memory source if not supported
+if(NOT DPCTL_HAS_IPC_MEMORY)
+    list(REMOVE_ITEM sources
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_sycl_ipc_memory_interface.cpp"
+    )
+    message(STATUS "Excluding dpctl_sycl_ipc_memory_interface.cpp from build")
+endif()
 
 file(GLOB_RECURSE helper_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/source/*.cpp

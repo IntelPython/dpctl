@@ -133,7 +133,8 @@ typedef enum
     host_debuggable,
     emulated,
     is_component,
-    is_composite
+    is_composite,
+    ext_oneapi_ipc_memory
 } DPCTLSyclAspectType;
 
 /*!

@@ -101,6 +101,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _emulated                           "emulated",
         _is_component                       "is_component",
         _is_composite                       "is_composite",
+        _ext_oneapi_ipc_memory              "ext_oneapi_ipc_memory",
 
     ctypedef enum _partition_affinity_domain_type \
             "DPCTLPartitionAffinityDomainType":
@@ -606,3 +607,19 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
         DPCTLSyclRawKernelArgRef Ref)
 
     cdef bint DPCTLRawKernelArg_Available()
+
+cdef extern from "syclinterface/dpctl_sycl_ipc_memory_interface.h":
+    cdef int DPCTLIPCMem_GetHandle(
+        DPCTLSyclUSMRef Ptr,
+        DPCTLSyclContextRef CRef,
+        char **DataOut,
+        size_t *SizeOut)
+    cdef DPCTLSyclUSMRef DPCTLIPCMem_OpenHandle(
+        const char *HandleData,
+        size_t HandleDataSize,
+        DPCTLSyclContextRef CRef,
+        DPCTLSyclDeviceRef DRef)
+    cdef void DPCTLIPCMem_CloseHandle(
+        DPCTLSyclUSMRef MappedPtr,
+        DPCTLSyclContextRef CRef)
+    cdef void DPCTLIPCMem_FreeHandleData(char *Data)
