@@ -105,6 +105,12 @@ cdef class IPCMemoryHandle:
             raise ValueError("USM memory object has a null pointer")
 
         cdef SyclQueue q = usm_memory.queue
+        cdef SyclDevice dev = q.sycl_device
+        if not dev.has_aspect_ext_oneapi_ipc_memory:
+            raise RuntimeError(
+                "Device does not support aspect::ext_oneapi_ipc_memory"
+            )
+
         if context is None:
             context = q.sycl_context
 
@@ -174,6 +180,11 @@ cdef class IPCMemoryHandle:
         """
         cdef const char *raw = PyBytes_AS_STRING(handle_bytes)
         cdef size_t raw_size = <size_t>len(handle_bytes)
+
+        if not device.has_aspect_ext_oneapi_ipc_memory:
+            raise RuntimeError(
+                "Device does not support aspect::ext_oneapi_ipc_memory"
+            )
 
         if context is None:
             context = device.sycl_platform.default_context

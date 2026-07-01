@@ -101,6 +101,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _emulated                           "emulated",
         _is_component                       "is_component",
         _is_composite                       "is_composite",
+        _ext_oneapi_ipc_memory              "ext_oneapi_ipc_memory",
 
     ctypedef enum _partition_affinity_domain_type \
             "DPCTLPartitionAffinityDomainType":
