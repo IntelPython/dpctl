@@ -224,9 +224,11 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::ext_oneapi_is_composite:
         ss << "is_composite";
         break;
+#ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case aspect::ext_oneapi_ipc_memory:
         ss << "ext_oneapi_ipc_memory";
         break;
+#endif
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -302,9 +304,11 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     else if (aspectTyStr == "is_composite") {
         aspectTy = aspect::ext_oneapi_is_composite;
     }
+#ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     else if (aspectTyStr == "ext_oneapi_ipc_memory") {
         aspectTy = aspect::ext_oneapi_ipc_memory;
     }
+#endif
     else {
         // \todo handle the error
         throw std::runtime_error("Unsupported aspect type");
@@ -357,8 +361,10 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::ext_oneapi_is_component;
     case DPCTLSyclAspectType::is_composite:
         return aspect::ext_oneapi_is_composite;
+#ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case DPCTLSyclAspectType::ext_oneapi_ipc_memory:
         return aspect::ext_oneapi_ipc_memory;
+#endif
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -409,8 +415,10 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::is_composite;
     case aspect::ext_oneapi_is_component:
         return DPCTLSyclAspectType::is_component;
+#ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case aspect::ext_oneapi_ipc_memory:
         return DPCTLSyclAspectType::ext_oneapi_ipc_memory;
+#endif
     default:
         throw std::runtime_error("Unsupported aspect type");
     }

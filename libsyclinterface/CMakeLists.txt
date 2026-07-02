@@ -126,7 +126,7 @@ if(DPCTL_ENABLE_IPC_MEMORY)
         int main() { return 0; }
     " DPCTL_IPC_MEMORY_HEADER_FOUND)
     if(DPCTL_IPC_MEMORY_HEADER_FOUND)
-        # Check if libsycl.so has the openIPCMemHandle symbol
+        # Header found; enable IPC memory support
         set(DPCTL_HAS_IPC_MEMORY 1)
         set(DPCTL_HAS_IPC_MEMORY 1 PARENT_SCOPE)
         message(STATUS "SYCL IPC memory support: ENABLED (ipc_memory.hpp found)")
@@ -251,15 +251,20 @@ file(GLOB_RECURSE sources
 list(REMOVE_ITEM
     sources
     "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_vector_templ.cpp"
-
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_sycl_ipc_memory_interface.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_sycl_ipc_memory_stubs.cpp"
 )
 
-# Conditionally exclude IPC memory source if not supported
-if(NOT DPCTL_HAS_IPC_MEMORY)
-    list(REMOVE_ITEM sources
+# IPC memory: use real implementation or stubs depending on header availability.
+if(DPCTL_HAS_IPC_MEMORY)
+    list(APPEND sources
         "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_sycl_ipc_memory_interface.cpp"
     )
-    message(STATUS "Excluding dpctl_sycl_ipc_memory_interface.cpp from build")
+else()
+    list(APPEND sources
+        "${CMAKE_CURRENT_SOURCE_DIR}/source/dpctl_sycl_ipc_memory_stubs.cpp"
+    )
+    message(STATUS "Using IPC memory stubs (header not found)")
 endif()
 
 file(GLOB_RECURSE helper_sources

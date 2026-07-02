@@ -31,8 +31,8 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <sycl/sycl.hpp>
 #include <sycl/ext/oneapi/experimental/ipc_memory.hpp>
+#include <sycl/sycl.hpp>
 
 using namespace sycl;
 
@@ -84,10 +84,6 @@ int DPCTLIPCMem_GetHandle(__dpctl_keep DPCTLSyclUSMRef Ptr,
 
         // Copy handle data into a malloc'd buffer for the caller.
         auto HandleData = Handle.data(); // std::vector<std::byte>
-
-        // Release driver-side resources immediately; the bytes are sufficient
-        // for the receiver to call open().
-        ipc::put(Handle, *Ctx);
 
         size_t Size = HandleData.size();
         char *Buf = static_cast<char *>(std::malloc(Size));
@@ -166,7 +162,4 @@ void DPCTLIPCMem_CloseHandle(__dpctl_keep DPCTLSyclUSMRef MappedPtr,
     }
 }
 
-void DPCTLIPCMem_FreeHandleData(char *Data)
-{
-    std::free(Data);
-}
+void DPCTLIPCMem_FreeHandleData(char *Data) { std::free(Data); }

@@ -596,6 +596,7 @@ cdef extern from "syclinterface/dpctl_sycl_extension_interface.h":
         DPCTLSyclWorkGroupMemoryRef Ref)
 
     cdef bint DPCTLWorkGroupMemory_Available()
+    cdef bint DPCTLIPCMem_Available()
 
     cdef struct DPCTLOpaqueRawKernelArg
     ctypedef DPCTLOpaqueRawKernelArg *DPCTLSyclRawKernelArgRef

@@ -35,6 +35,9 @@ from ._memory import (
     MemoryUSMShared,
     USMAllocationError,
     as_usm_memory,
+    SyclIpcGetMemHandle,
+    SyclIpcOpenMemHandle,
+    SyclIpcCloseMemHandle,
 )
 
 __all__ = [
@@ -43,4 +46,7 @@ __all__ = [
     "MemoryUSMShared",
     "USMAllocationError",
     "as_usm_memory",
+    "SyclIpcGetMemHandle",
+    "SyclIpcOpenMemHandle",
+    "SyclIpcCloseMemHandle",
 ]

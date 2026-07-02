@@ -63,6 +63,16 @@ bool DPCTLWorkGroupMemory_Available()
 #endif
 }
 
+DPCTL_API
+bool DPCTLIPCMem_Available()
+{
+#ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
+    return true;
+#else
+    return false;
+#endif
+}
+
 using raw_kernel_arg_t = std::vector<unsigned char>;
 
 DPCTL_API
