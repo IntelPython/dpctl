@@ -1037,7 +1037,7 @@ cdef class IPCMemoryHandle:
     transport (e.g. via pickle, ZMQ, shared-memory).
 
     On the receiving side, call :meth:`IPCMemoryHandle.open` with the
-    payload and a target device to obtain a :class:`MemoryUSMDevice`
+    payload and a target device to obtain a :class:`MemoryIPCDevice`
     backed by the IPC-mapped memory.
 
     Parameters
@@ -1167,7 +1167,7 @@ cdef class IPCMemoryHandle:
 
         Returns
         -------
-        MemoryUSMDevice
+        MemoryIPCDevice
             A USM device memory object backed by the IPC-mapped pointer.
             Call :meth:`close_mapping` when done.
 
@@ -1295,7 +1295,7 @@ def SyclIPCOpenMemHandle(bytes handle_bytes not None,
                          SyclDevice device not None,
                          Py_ssize_t nbytes,
                          SyclContext context=None):
-    """Open an IPC handle and return a mapped MemoryUSMDevice.
+    """Open an IPC handle and return a mapped MemoryIPCDevice.
 
     Parameters
     ----------
@@ -1310,7 +1310,7 @@ def SyclIPCOpenMemHandle(bytes handle_bytes not None,
 
     Returns
     -------
-    MemoryUSMDevice
+    MemoryIPCDevice
         Mapped IPC memory. Must be closed with :func:`SyclIPCCloseMemHandle`.
     """
     return IPCMemoryHandle.open(handle_bytes, device, nbytes, context)
