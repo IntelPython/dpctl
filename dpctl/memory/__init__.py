@@ -30,23 +30,25 @@ objects to maniputalate USM memory using NumPy or `bytearray`,
 """
 
 from ._memory import (
+    MemoryIPCDevice,
     MemoryUSMDevice,
     MemoryUSMHost,
     MemoryUSMShared,
+    SyclIPCCloseMemHandle,
+    SyclIPCGetMemHandle,
+    SyclIPCOpenMemHandle,
     USMAllocationError,
     as_usm_memory,
-    SyclIpcGetMemHandle,
-    SyclIpcOpenMemHandle,
-    SyclIpcCloseMemHandle,
 )
 
 __all__ = [
+    "MemoryIPCDevice",
     "MemoryUSMDevice",
     "MemoryUSMHost",
     "MemoryUSMShared",
     "USMAllocationError",
     "as_usm_memory",
-    "SyclIpcGetMemHandle",
-    "SyclIpcOpenMemHandle",
-    "SyclIpcCloseMemHandle",
+    "SyclIPCGetMemHandle",
+    "SyclIPCOpenMemHandle",
+    "SyclIPCCloseMemHandle",
 ]

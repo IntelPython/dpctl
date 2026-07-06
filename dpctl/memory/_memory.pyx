@@ -78,10 +78,11 @@ __all__ = [
     "MemoryUSMShared",
     "MemoryUSMHost",
     "MemoryUSMDevice",
+    "MemoryIPCDevice",
     "USMAllocationError",
-    "SyclIpcGetMemHandle",
-    "SyclIpcOpenMemHandle",
-    "SyclIpcCloseMemHandle",
+    "SyclIPCGetMemHandle",
+    "SyclIPCOpenMemHandle",
+    "SyclIPCCloseMemHandle",
 ]
 
 include "_sycl_usm_array_interface_utils.pxi"
@@ -753,7 +754,6 @@ cdef class _Memory:
         return _out
 
 
-
 cdef class MemoryUSMShared(_Memory):
     """
     MemoryUSMShared(nbytes, alignment=0, queue=None)
@@ -901,6 +901,60 @@ cdef class MemoryUSMDevice(_Memory):
                     )
 
 
+cdef class MemoryIPCDevice(MemoryUSMDevice):
+    """
+    Class representing emory object backed by an IPC-mapped USM device pointer.
+
+    This class is not intended to be instantiated directly.
+    """
+
+    @property
+    def is_closed(self):
+        """Whether the IPC mapping has been closed."""
+        return self._memory_ptr is NULL
+
+    def __dealloc__(self):
+        cdef DPCTLSyclContextRef ctx_ref
+        if self._memory_ptr is not NULL:
+            ctx_ref = DPCTLQueue_GetContext(self.queue.get_queue_ref())
+            DPCTLIPCMem_CloseHandle(self._memory_ptr, ctx_ref)
+            DPCTLContext_Delete(ctx_ref)
+            self._memory_ptr = NULL
+
+    @staticmethod
+    cdef object create_ipc_from_usm_pointer_size_qref(
+        DPCTLSyclUSMRef USMRef,
+        Py_ssize_t nbytes,
+        DPCTLSyclQueueRef QRef,
+    ):
+        """Create a MemoryIPCDevice wrapping an IPC-mapped pointer."""
+        cdef DPCTLSyclQueueRef QRef_copy = NULL
+        cdef _Memory base
+
+        if nbytes <= 0:
+            raise ValueError("Number of bytes must be positive")
+        if QRef is NULL:
+            raise TypeError("Argument DPCTLSyclQueueRef is NULL")
+
+        base = _Memory.__new__(_Memory)
+        base._cinit_empty()
+        base._memory_ptr = USMRef
+        base.nbytes = nbytes
+
+        QRef_copy = DPCTLQueue_Copy(QRef)
+        if QRef_copy is NULL:
+            raise ValueError("Referenced queue could not be copied.")
+        try:
+            base.queue = SyclQueue._create(QRef_copy)
+        except dpctl.SyclQueueCreationError as sqce:
+            raise ValueError(
+                "SyclQueue object could not be created from "
+                "copy of referenced queue"
+            ) from sqce
+
+        return MemoryIPCDevice(<object>base)
+
+
 def as_usm_memory(obj):
     """
     as_usm_memory(obj)
@@ -972,7 +1026,6 @@ cdef api object Memory_Make(
     )
 
 
-
 # ─── IPC Memory Handle ────────────────────────────────────────────────
 
 cdef class IPCMemoryHandle:
@@ -1021,11 +1074,13 @@ cdef class IPCMemoryHandle:
 
     cdef bytes _handle_bytes
     cdef SyclContext _ctx
+    cdef void *_opaque_ptr
     cdef bint _closed
 
     def __cinit__(self):
         self._handle_bytes = None
         self._ctx = None
+        self._opaque_ptr = NULL
         self._closed = False
 
     def __init__(self, _Memory usm_memory not None, SyclContext context=None):
@@ -1041,6 +1096,12 @@ cdef class IPCMemoryHandle:
         cdef DPCTLSyclUSMRef ptr = usm_memory._memory_ptr
         if ptr is NULL:
             raise ValueError("USM memory object has a null pointer")
+
+        cdef void *src_opaque = usm_memory._opaque_ptr
+        if src_opaque is NULL:
+            raise ValueError(
+                "USM memory object does not own its allocation"
+            )
 
         cdef SyclDevice dev = usm_memory.sycl_device
         if not dev.has_aspect_ext_oneapi_ipc_memory:
@@ -1069,6 +1130,7 @@ cdef class IPCMemoryHandle:
         finally:
             DPCTLIPCMem_FreeHandleData(data_out)
 
+        self._opaque_ptr = OpaqueSmartPtr_Copy(src_opaque)
         self._ctx = context
         self._closed = False
 
@@ -1143,60 +1205,50 @@ cdef class IPCMemoryHandle:
         if mapped_ptr is NULL:
             raise RuntimeError("DPCTLIPCMem_OpenHandle failed")
 
-        # Build a SyclQueue for the device+context, then wrap the
-        # mapped pointer.  If anything fails, close the mapping.
         cdef SyclQueue q
         try:
             q = dpctl.SyclQueue(context, device)
-            # Wrap as MemoryUSMDevice, memory_owner=True skips the
-            # OpaqueSmartPtr so __dealloc__ won't call sycl::free.
-            mem = _Memory.create_from_usm_pointer_size_qref(
-                mapped_ptr, nbytes, q.get_queue_ref(), memory_owner=True)
+            mem = MemoryIPCDevice.create_ipc_from_usm_pointer_size_qref(
+                mapped_ptr, nbytes, q.get_queue_ref())
         except Exception:
             DPCTLIPCMem_CloseHandle(mapped_ptr, ctx_ref)
             raise
+
         return mem
 
     @staticmethod
-    def close_mapping(_Memory usm_memory not None,
-                      SyclContext context=None):
+    def close_mapping(_Memory usm_memory not None):
         """Explicitly close an IPC mapping.
 
         After calling this, *usm_memory* is invalidated and must not be
-        used again. Its destructor will not attempt to free the pointer.
+        used again.
 
         Parameters
         ----------
         usm_memory : _Memory
             The memory object returned by :meth:`open`.
-        context : dpctl.SyclContext, optional
-            Context used when opening. Defaults to the memory's queue
-            context.
         """
+        cdef DPCTLSyclUSMRef ptr
+        cdef DPCTLSyclContextRef ctx_ref
+
         if not DPCTLIPCMem_Available():
             raise RuntimeError("IPC memory not supported in this build")
 
-        cdef DPCTLSyclUSMRef ptr = usm_memory._memory_ptr
-        if ptr is NULL:
-            return
-
-        # Only IPC-mapped objects (no owning smart pointer) can be closed.
-        if usm_memory._opaque_ptr is not NULL:
+        if not isinstance(usm_memory, MemoryIPCDevice):
             raise RuntimeError(
-                "close_mapping called on an owning USM allocation; "
+                "close_mapping called on a non-IPC memory object; "
                 "this method is only valid for IPC-mapped memory"
             )
 
-        if context is None:
-            context = usm_memory.queue.sycl_context
+        ptr = usm_memory._memory_ptr
+        if ptr is NULL:
+            return
 
-        cdef DPCTLSyclContextRef ctx_ref = context.get_context_ref()
+        ctx_ref = DPCTLQueue_GetContext(usm_memory.queue.get_queue_ref())
         DPCTLIPCMem_CloseHandle(ptr, ctx_ref)
+        DPCTLContext_Delete(ctx_ref)
 
-        # Fully invalidate so subsequent use is inert and __dealloc__
-        # won't call sycl::free.
         usm_memory._memory_ptr = NULL
-        usm_memory._opaque_ptr = NULL
         usm_memory.nbytes = 0
 
     def close(self):
@@ -1204,6 +1256,9 @@ cdef class IPCMemoryHandle:
         self._closed = True
 
     def __dealloc__(self):
+        if self._opaque_ptr is not NULL:
+            OpaqueSmartPtr_Delete(self._opaque_ptr)
+            self._opaque_ptr = NULL
         self._closed = True
 
     def __repr__(self):
@@ -1215,10 +1270,9 @@ cdef class IPCMemoryHandle:
         )
 
 
-
 # ─── SYCL IPC free functions ──────────────────────────────────────────
 
-def SyclIpcGetMemHandle(_Memory usm_memory not None, SyclContext context=None):
+def SyclIPCGetMemHandle(_Memory usm_memory not None, SyclContext context=None):
     """Export a USM device allocation as IPC handle bytes.
 
     Parameters
@@ -1237,7 +1291,7 @@ def SyclIpcGetMemHandle(_Memory usm_memory not None, SyclContext context=None):
     return h.to_bytes()
 
 
-def SyclIpcOpenMemHandle(bytes handle_bytes not None,
+def SyclIPCOpenMemHandle(bytes handle_bytes not None,
                          SyclDevice device not None,
                          Py_ssize_t nbytes,
                          SyclContext context=None):
@@ -1246,7 +1300,7 @@ def SyclIpcOpenMemHandle(bytes handle_bytes not None,
     Parameters
     ----------
     handle_bytes : bytes
-        Opaque payload from :func:`SyclIpcGetMemHandle`.
+        Opaque payload from :func:`SyclIPCGetMemHandle`.
     device : dpctl.SyclDevice
         Device to map the memory on.
     nbytes : int
@@ -1257,13 +1311,12 @@ def SyclIpcOpenMemHandle(bytes handle_bytes not None,
     Returns
     -------
     MemoryUSMDevice
-        Mapped IPC memory. Must be closed with :func:`SyclIpcCloseMemHandle`.
+        Mapped IPC memory. Must be closed with :func:`SyclIPCCloseMemHandle`.
     """
     return IPCMemoryHandle.open(handle_bytes, device, nbytes, context)
 
 
-def SyclIpcCloseMemHandle(_Memory usm_memory not None,
-                          SyclContext context=None):
+def SyclIPCCloseMemHandle(_Memory usm_memory not None):
     """Close an IPC memory mapping.
 
     After this call, *usm_memory* is invalidated.
@@ -1271,8 +1324,6 @@ def SyclIpcCloseMemHandle(_Memory usm_memory not None,
     Parameters
     ----------
     usm_memory : _Memory
-        The memory object returned by :func:`SyclIpcOpenMemHandle`.
-    context : dpctl.SyclContext, optional
-        Context used when opening.
+        The memory object returned by :func:`SyclIPCOpenMemHandle`.
     """
-    IPCMemoryHandle.close_mapping(usm_memory, context)
+    IPCMemoryHandle.close_mapping(usm_memory)
