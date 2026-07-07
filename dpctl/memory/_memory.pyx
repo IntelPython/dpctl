@@ -1054,9 +1054,6 @@ cdef class IPCMemoryHandle:
     ----------
     usm_memory : MemoryUSMDevice
         USM device memory object whose pointer to export.
-    context : dpctl.SyclContext, optional
-        SYCL context to use. Defaults to the context of *usm_memory*'s
-        queue.
 
     Raises
     ------
@@ -1093,7 +1090,7 @@ cdef class IPCMemoryHandle:
         self._opaque_ptr = NULL
         self._closed = False
 
-    def __init__(self, _Memory usm_memory not None, SyclContext context=None):
+    def __init__(self, _Memory usm_memory not None):
         if not DPCTLIPCMem_Available():
             raise RuntimeError("IPC memory not supported in this build")
 
@@ -1121,8 +1118,7 @@ cdef class IPCMemoryHandle:
             )
 
         cdef SyclQueue q = usm_memory.queue
-        if context is None:
-            context = q.sycl_context
+        cdef SyclContext context = q.sycl_context
 
         cdef DPCTLSyclContextRef ctx_ref = context.get_context_ref()
         cdef char *data_out = NULL
@@ -1158,8 +1154,7 @@ cdef class IPCMemoryHandle:
     @staticmethod
     def open(bytes handle_bytes not None,
              SyclDevice device not None,
-             Py_ssize_t nbytes,
-             SyclContext context=None):
+             Py_ssize_t nbytes):
         """Open an IPC handle in this process.
 
         Parameters
@@ -1171,9 +1166,6 @@ cdef class IPCMemoryHandle:
             Device to map the memory on.
         nbytes : int
             Byte size of the original allocation. Must be > 0.
-        context : dpctl.SyclContext, optional
-            SYCL context to use. Defaults to the default context for
-            *device*'s platform.
 
         Returns
         -------
@@ -1204,8 +1196,7 @@ cdef class IPCMemoryHandle:
         cdef const char *raw = PyBytes_AS_STRING(handle_bytes)
         cdef size_t raw_size = <size_t>len(handle_bytes)
 
-        if context is None:
-            context = device.sycl_platform.default_context
+        cdef SyclContext context = device.sycl_platform.default_context
 
         cdef DPCTLSyclContextRef ctx_ref = context.get_context_ref()
         cdef DPCTLSyclDeviceRef dev_ref = device.get_device_ref()
@@ -1294,29 +1285,26 @@ cdef class IPCMemoryHandle:
 
 # ─── SYCL IPC free functions ──────────────────────────────────────────
 
-def SyclIPCGetMemHandle(_Memory usm_memory not None, SyclContext context=None):
+def SyclIPCGetMemHandle(_Memory usm_memory not None):
     """Export a USM device allocation as IPC handle bytes.
 
     Parameters
     ----------
     usm_memory : MemoryUSMDevice
         USM device memory to export.
-    context : dpctl.SyclContext, optional
-        SYCL context. Defaults to the memory's queue context.
 
     Returns
     -------
     bytes
         Opaque IPC handle data for cross-process transport.
     """
-    cdef IPCMemoryHandle h = IPCMemoryHandle(usm_memory, context)
+    cdef IPCMemoryHandle h = IPCMemoryHandle(usm_memory)
     return h.to_bytes()
 
 
 def SyclIPCOpenMemHandle(bytes handle_bytes not None,
                          SyclDevice device not None,
-                         Py_ssize_t nbytes,
-                         SyclContext context=None):
+                         Py_ssize_t nbytes):
     """Open an IPC handle and return a mapped MemoryIPCDevice.
 
     Parameters
@@ -1327,15 +1315,13 @@ def SyclIPCOpenMemHandle(bytes handle_bytes not None,
         Device to map the memory on.
     nbytes : int
         Byte size of the original allocation.
-    context : dpctl.SyclContext, optional
-        SYCL context. Defaults to the platform default context.
 
     Returns
     -------
     MemoryIPCDevice
         Mapped IPC memory. Must be closed with :func:`SyclIPCCloseMemHandle`.
     """
-    return IPCMemoryHandle.open(handle_bytes, device, nbytes, context)
+    return IPCMemoryHandle.open(handle_bytes, device, nbytes)
 
 
 def SyclIPCCloseMemHandle(_Memory usm_memory not None):
