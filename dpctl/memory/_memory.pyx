@@ -903,7 +903,7 @@ cdef class MemoryUSMDevice(_Memory):
 
 cdef class MemoryIPCDevice(MemoryUSMDevice):
     """
-    Class representing emory object backed by an IPC-mapped USM device pointer.
+    Class representing memory object backed by an IPC-mapped USM device pointer.
 
     This class is not intended to be instantiated directly.
     """
@@ -947,12 +947,22 @@ cdef class MemoryIPCDevice(MemoryUSMDevice):
         try:
             base.queue = SyclQueue._create(QRef_copy)
         except dpctl.SyclQueueCreationError as sqce:
+            base._memory_ptr = NULL  # caller retains ownership of USMRef
             raise ValueError(
                 "SyclQueue object could not be created from "
                 "copy of referenced queue"
             ) from sqce
 
-        return MemoryIPCDevice(<object>base)
+        try:
+            result = MemoryIPCDevice(<object>base)
+        except Exception:
+            # If MemoryIPCDevice.__cinit__ failed after _cinit_other copied
+            # _memory_ptr, the partial object's __dealloc__ already closed
+            # the IPC handle.  Null base to prevent any further action.
+            base._memory_ptr = NULL
+            raise
+        base._memory_ptr = NULL  # ownership fully transferred to result
+        return result
 
 
 def as_usm_memory(obj):
@@ -1208,10 +1218,22 @@ cdef class IPCMemoryHandle:
         cdef SyclQueue q
         try:
             q = dpctl.SyclQueue(context, device)
-            mem = MemoryIPCDevice.create_ipc_from_usm_pointer_size_qref(
-                mapped_ptr, nbytes, q.get_queue_ref())
         except Exception:
             DPCTLIPCMem_CloseHandle(mapped_ptr, ctx_ref)
+            raise
+
+        try:
+            mem = MemoryIPCDevice.create_ipc_from_usm_pointer_size_qref(
+                mapped_ptr, nbytes, q.get_queue_ref())
+        except ValueError:
+            # Failed before MemoryIPCDevice construction (queue copy, etc).
+            # Handle was NOT closed — we still own it.
+            DPCTLIPCMem_CloseHandle(mapped_ptr, ctx_ref)
+            raise
+        except Exception:
+            # Failed during MemoryIPCDevice construction.
+            # MemoryIPCDevice.__dealloc__ already closed the IPC handle.
+            # Do NOT close again to avoid double-close (undefined behavior).
             raise
 
         return mem

@@ -42,8 +42,7 @@ DPCTL_C_EXTERN_C_BEGIN
  * @brief Get an IPC memory handle for a USM device pointer.
  *
  * Wraps ``sycl::ext::oneapi::experimental::ipc::memory::get()``.
- * The returned handle bytes are copied out and the driver-side handle
- * resource is released (via ``put``) before returning.
+ * The returned handle bytes are copied out.
  *
  * @param    Ptr         USM device pointer to export.
  * @param    CRef        Sycl context associated with the pointer.
