@@ -568,7 +568,7 @@ cpdef create_kernel_bundle_from_spirv(
     cdef _spec_const *spconsts
     cdef SpecializationConstant spconst
 
-    if specializations is not None:
+    if specializations is not None and len(specializations) > 0:
         num_spconsts = len(specializations)
         spconsts = <_spec_const *>(
             malloc(num_spconsts * sizeof(_spec_const))

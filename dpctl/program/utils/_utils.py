@@ -142,7 +142,7 @@ def parse_spirv_specializations(
                 "itemsize": width // 8,
             }
         elif opcode == SpirvOpCode.OpSpecConstant:
-            if word_count < 3:
+            if word_count < 4:
                 raise ValueError(f"Truncated OpSpecConstant at word index {i}")
             type_id = int(words[i + 1])
             result_id = int(words[i + 2])

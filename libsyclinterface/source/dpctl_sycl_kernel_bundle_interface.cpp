@@ -281,6 +281,12 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
     backend_traits<cl_be>::return_type<context> clContext;
     clContext = get_native<cl_be>(ctx);
 
+    if (NumSpecConsts > 0 && SpecConsts == nullptr) {
+        error_handler("NumSpecConsts > 0 but SpecConsts is NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+
     cl_int create_err_code = CL_SUCCESS;
     cl_program clProgram =
         clCreateProgramWithILF(clContext, IL, il_length, &create_err_code);
@@ -290,12 +296,6 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
                       "binary. OpenCL Error " +
                           _GetErrorCode_ocl_impl(create_err_code),
                       __FILE__, __func__, __LINE__);
-        return nullptr;
-    }
-
-    if (NumSpecConsts > 0 && SpecConsts == nullptr) {
-        error_handler("NumSpecConsts > 0 but SpecConsts is NULL.", __FILE__,
-                      __func__, __LINE__);
         return nullptr;
     }
 
