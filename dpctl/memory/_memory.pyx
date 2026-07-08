@@ -79,6 +79,7 @@ __all__ = [
     "MemoryUSMHost",
     "MemoryUSMDevice",
     "MemoryIPCDevice",
+    "IPCMemoryHandle",
     "USMAllocationError",
     "SyclIPCGetMemHandle",
     "SyclIPCOpenMemHandle",

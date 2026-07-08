@@ -30,6 +30,7 @@ objects to maniputalate USM memory using NumPy or `bytearray`,
 """
 
 from ._memory import (
+    IPCMemoryHandle,
     MemoryIPCDevice,
     MemoryUSMDevice,
     MemoryUSMHost,
@@ -42,6 +43,7 @@ from ._memory import (
 )
 
 __all__ = [
+    "IPCMemoryHandle",
     "MemoryIPCDevice",
     "MemoryUSMDevice",
     "MemoryUSMHost",
