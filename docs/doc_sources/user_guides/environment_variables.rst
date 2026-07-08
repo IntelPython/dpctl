@@ -42,7 +42,7 @@ The value of the variable is a bit-mask, with the following supported values:
 .. _env_var_ze_flat_device_hierarchy:
 
 Variable ``ZE_FLAT_DEVICE_HIERARCHY``
---------------------------
+-------------------------------------
 Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
 Keep in mind :py:mod:`dpctl.get_composite_devices` will only work while this is set to ``COMBINED``.
 
@@ -79,7 +79,7 @@ Therefore, we could use the second tile in each of four dual-tile GPUs with ``ZE
 Additional examples to illustrate this are in the detailed documentation for ``ZE_AFFINITY_MASK``, read more about it in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
 
 Variable ``ZE_ENABLE_PCI_ID_DEVICE_ORDER``
--------------------------------
+------------------------------------------
 Forces driver to report devices from lowest to highest PCI bus ID.
 
 .. list-table::
@@ -93,7 +93,7 @@ Forces driver to report devices from lowest to highest PCI bus ID.
       - Enabled.
 
 Variable ``ZE_SHARED_FORCE_DEVICE_ALLOC``
--------------------------------
+-----------------------------------------
 Forces all shared allocations into device memory
 
 .. list-table::
