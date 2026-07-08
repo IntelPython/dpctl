@@ -509,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
@@ -557,10 +558,13 @@
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="struct_DPCTLSpecConstTy.html">struct DPCTLSpecConstTy</a><input aria-label="Toggle navigation of struct DPCTLSpecConstTy" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -575,7 +579,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html">Building from the Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
@@ -636,6 +640,7 @@
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclRawKernelArg</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a72d61960f9c803f28ada3994d6b50f76"><span></span><span class="n">DPCTLSyclRawKernelArgRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclWorkGroupMemory</span><span class="o">*</span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ab3a8275f34098811f89278732d5dc8a7"><span></span><span class="n">DPCTLSyclWorkGroupMemoryRef</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <a class="reference internal" href="#doxid-d7-d31-extern-c-8h-1ad85f54ad0bab1d5206255e5920261be3"><span class="std std-ref">DPCTL_C_EXTERN_C_BEGIN</span></a><span></span> <span class="k">struct</span> <a class="reference internal" href="struct_RawWorkGroupMemoryTy.html#doxid-db-d1d-struct-raw-work-group-memory-ty"><span class="std std-ref">RawWorkGroupMemoryTy</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ace3e58dbaa53288d9b7272fe9a6d03b3"><span></span><span class="n">RawWorkGroupMemory</span></span><span></span><span class="p">;</span>
+<span class="k">typedef</span> <a class="reference internal" href="#doxid-d7-d31-extern-c-8h-1ad85f54ad0bab1d5206255e5920261be3"><span class="std std-ref">DPCTL_C_EXTERN_C_BEGIN</span></a><span></span> <span class="k">struct</span> <a class="reference internal" href="struct_DPCTLSpecConstTy.html#doxid-dd-dc9-struct-d-p-c-t-l-spec-const-ty"><span class="std std-ref">DPCTLSpecConstTy</span></a><span></span> <span class="doxyrest-code-target target" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1a1286c730db79d69a9ce8a88d4c356290"><span></span><span class="n">DPCTLSpecConst</span></span><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span> <a class="reference internal" href="#doxid-da-db8-dpctl-sycl-queue-interface-8h-1a7779ae83e3fd4db1174768e1ba62f30b"><span class="std std-ref">MDLocalAccessor</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span>  <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclContext</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1accf78808322af80b73da617cb2f15f08"><span class="std std-ref">DPCTLSyclContextRef</span></a><span></span><span class="p">;</span>
 <span class="k">typedef</span> <span class="k">struct</span> <span class="n">DPCTLOpaqueSyclDevice</span><span class="o">*</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span><span class="p">;</span>
@@ -662,6 +667,7 @@
 
 <span class="c1">// structs</span>
 
+<span class="k">struct</span> <a class="reference internal" href="struct_DPCTLSpecConstTy.html#doxid-dd-dc9-struct-d-p-c-t-l-spec-const-ty"><span class="std std-ref">DPCTLSpecConstTy</span></a><span></span><span class="p">;</span>
 <span class="k">struct</span> <a class="reference internal" href="struct_MDLocalAccessorTy.html#doxid-db-dfd-struct-m-d-local-accessor-ty"><span class="std std-ref">MDLocalAccessorTy</span></a><span></span><span class="p">;</span>
 <span class="k">struct</span> <a class="reference internal" href="struct_RawWorkGroupMemoryTy.html#doxid-db-d1d-struct-raw-work-group-memory-ty"><span class="std std-ref">RawWorkGroupMemoryTy</span></a><span></span><span class="p">;</span>
 

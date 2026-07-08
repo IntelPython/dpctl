@@ -18,6 +18,7 @@ Global Namespace
 	enum_DPCTLSyclDeviceType.rst
 	enum_DPCTLSyclEventStatusType.rst
 	enum_DPCTLSyclUSMType.rst
+	struct_DPCTLSpecConstTy.rst
 	struct_MDLocalAccessorTy.rst
 	struct_RawWorkGroupMemoryTy.rst
 
@@ -42,6 +43,7 @@ Overview
 	typedef struct DPCTLOpaqueSyclRawKernelArg* :target:`DPCTLSyclRawKernelArgRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a72d61960f9c803f28ada3994d6b50f76>`;
 	typedef struct DPCTLOpaqueSyclWorkGroupMemory* :target:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>`;
 	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>` :target:`RawWorkGroupMemory<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ace3e58dbaa53288d9b7272fe9a6d03b3>`;
+	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`DPCTLSpecConstTy<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty>` :target:`DPCTLSpecConst<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a1286c730db79d69a9ce8a88d4c356290>`;
 	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` :ref:`MDLocalAccessor<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
@@ -68,6 +70,7 @@ Overview
 
 	// structs
 
+	struct :ref:`DPCTLSpecConstTy<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty>`;
 	struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>`;
 	struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>`;
 

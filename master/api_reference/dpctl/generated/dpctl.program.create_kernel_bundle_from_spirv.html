@@ -509,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
 </ul>
 </li>
@@ -557,10 +558,13 @@
 <li class="toctree-l5"><a class="reference internal" href="../../libsyclinterface/generated/enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../libsyclinterface/generated/enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../libsyclinterface/generated/enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_DPCTLSpecConstTy.html">struct DPCTLSpecConstTy</a><input aria-label="Toggle navigation of struct DPCTLSpecConstTy" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -575,7 +579,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html">Building from the Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
@@ -623,7 +627,7 @@
 <h1>dpctl.program.create_kernel_bundle_from_spirv<a class="headerlink" href="#dpctl-program-create-kernel-bundle-from-spirv" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.program.create_kernel_bundle_from_spirv">
-<span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_kernel_bundle_from_spirv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_kernel_bundle_from_spirv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.program.</span></span><span class="sig-name descname"><span class="pre">create_kernel_bundle_from_spirv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specializations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.program.create_kernel_bundle_from_spirv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Sycl interoperability kernel bundle from an SPIR-V binary.</p>
 <p>We use the <code class="xref c c-func docutils literal notranslate"><span class="pre">DPCTLKernelBundle_CreateFromOCLSpirv()</span></code> C API function
 to create a <code class="docutils literal notranslate"><span class="pre">sycl::kernel_bundle&lt;sycl::bundle_state::executable&gt;</span></code>
@@ -636,6 +640,8 @@ object from an compiled SPIR-V binary file.</p>
 <li><p><strong>IL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><em>bytes</em></a>) – SPIR-V binary IL file for an OpenCL program.</p></li>
 <li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Optional compilation flags that will be used
 when compiling the kernel bundle. Default: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p></li>
+<li><p><strong>specializations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – A list of <a class="reference internal" href="dpctl.program.SpecializationConstant.html#dpctl.program.SpecializationConstant" title="dpctl.program.SpecializationConstant"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpecializationConstant</span></code></a> objects to be used
+when creating the kernel bundle. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
