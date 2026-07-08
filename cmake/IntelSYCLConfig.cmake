@@ -304,7 +304,9 @@ set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
 set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
   INTERFACE_LINK_OPTIONS ${SYCL_LINK_FLAGS})
 set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${SYCL_INCLUDE_DIR})
+  INTERFACE_INCLUDE_DIRECTORIES $<BUILD_INTERFACE:${SYCL_INCLUDE_DIR}>)
+set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
+  INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${SYCL_INCLUDE_DIR})
 set_property(TARGET IntelSYCL::SYCL_CXX PROPERTY
   INTERFACE_LINK_DIRECTORIES ${SYCL_LIBRARY_DIR})
 
@@ -343,12 +345,13 @@ Adding sycl to all sources but that may effect compilation times")
     if(NOT SYCL_SOURCES)
       message(WARNING "add_sycl_to_target() does not have sources specified.. Adding sycl to all sources but that may effect compilation times")
       target_compile_options(${SYCL_TARGET} PUBLIC ${__sycl_cxx_options})
-      target_include_directories(${SYCL_TARGET} PUBLIC ${__sycl_cxx_include_directories})
+      target_include_directories(${SYCL_TARGET} SYSTEM PUBLIC ${__sycl_cxx_include_directories})
+    else()
+      target_include_directories(${SYCL_TARGET} SYSTEM PRIVATE ${__sycl_cxx_include_directories})
     endif()
 
     foreach(source ${SYCL_SOURCES})
       set_source_files_properties(${source} PROPERTIES COMPILE_OPTIONS "${__sycl_cxx_options}")
-      set_source_files_properties(${source} PROPERTIES INCLUDE_DIRECTORIES "${__sycl_cxx_include_directories}")
     endforeach()
 
     get_target_property(__sycl_link_options

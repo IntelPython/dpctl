@@ -87,6 +87,9 @@ target_include_directories(dpctl_c_api_tests
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/../include/syclinterface"
+)
+target_include_directories(dpctl_c_api_tests
+    SYSTEM PRIVATE
     ${LEVEL_ZERO_INCLUDE_DIR}
 )
 
