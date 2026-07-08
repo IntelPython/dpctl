@@ -1231,7 +1231,7 @@ cdef class IPCMemoryHandle:
         return mem
 
     @staticmethod
-    def close_mapping(_Memory usm_memory not None):
+    def close_mapping(MemoryUSMDevice usm_memory not None):
         """Explicitly close an IPC mapping.
 
         After calling this, *usm_memory* is invalidated and must not be
@@ -1239,7 +1239,7 @@ cdef class IPCMemoryHandle:
 
         Parameters
         ----------
-        usm_memory : _Memory
+        usm_memory : MemoryIPCDevice
             The memory object returned by :meth:`open`.
         """
         cdef DPCTLSyclUSMRef ptr
@@ -1286,7 +1286,7 @@ cdef class IPCMemoryHandle:
 
 # ─── SYCL IPC free functions ──────────────────────────────────────────
 
-def SyclIPCGetMemHandle(_Memory usm_memory not None):
+def SyclIPCGetMemHandle(MemoryUSMDevice usm_memory not None):
     """Export a USM device allocation as IPC handle bytes.
 
     Parameters
@@ -1325,14 +1325,14 @@ def SyclIPCOpenMemHandle(bytes handle_bytes not None,
     return IPCMemoryHandle.open(handle_bytes, device, nbytes)
 
 
-def SyclIPCCloseMemHandle(_Memory usm_memory not None):
+def SyclIPCCloseMemHandle(MemoryUSMDevice usm_memory not None):
     """Close an IPC memory mapping.
 
     After this call, *usm_memory* is invalidated.
 
     Parameters
     ----------
-    usm_memory : _Memory
+    usm_memory : MemoryIPCDevice
         The memory object returned by :func:`SyclIPCOpenMemHandle`.
     """
     IPCMemoryHandle.close_mapping(usm_memory)
