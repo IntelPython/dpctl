@@ -902,6 +902,16 @@ cdef class MemoryUSMDevice(_Memory):
                     )
 
 
+cdef void _close_ipc_ptr(DPCTLSyclUSMRef ptr, DPCTLSyclQueueRef qref) noexcept:
+    """Close an IPC-mapped pointer using the context derived from *qref*."""
+    cdef DPCTLSyclContextRef ctx_ref
+    if ptr is NULL:
+        return
+    ctx_ref = DPCTLQueue_GetContext(qref)
+    DPCTLIPCMem_CloseHandle(ptr, ctx_ref)
+    DPCTLContext_Delete(ctx_ref)
+
+
 cdef class MemoryIPCDevice(MemoryUSMDevice):
     """
     Class representing memory object backed by an IPC-mapped USM device pointer.
@@ -915,11 +925,8 @@ cdef class MemoryIPCDevice(MemoryUSMDevice):
         return self._memory_ptr is NULL
 
     def __dealloc__(self):
-        cdef DPCTLSyclContextRef ctx_ref
         if self._memory_ptr is not NULL:
-            ctx_ref = DPCTLQueue_GetContext(self.queue.get_queue_ref())
-            DPCTLIPCMem_CloseHandle(self._memory_ptr, ctx_ref)
-            DPCTLContext_Delete(ctx_ref)
+            _close_ipc_ptr(self._memory_ptr, self.queue.get_queue_ref())
             self._memory_ptr = NULL
 
     @staticmethod
@@ -928,14 +935,19 @@ cdef class MemoryIPCDevice(MemoryUSMDevice):
         Py_ssize_t nbytes,
         DPCTLSyclQueueRef QRef,
     ):
-        """Create a MemoryIPCDevice wrapping an IPC-mapped pointer."""
+        """Create a MemoryIPCDevice wrapping an IPC-mapped pointer.
+
+        Takes **sole ownership** of *USMRef*.  On any failure the mapping
+        is closed exactly once before the exception propagates.
+        """
         cdef DPCTLSyclQueueRef QRef_copy = NULL
         cdef _Memory base
 
-        if nbytes <= 0:
-            raise ValueError("Number of bytes must be positive")
         if QRef is NULL:
             raise TypeError("Argument DPCTLSyclQueueRef is NULL")
+        if nbytes <= 0:
+            _close_ipc_ptr(USMRef, QRef)
+            raise ValueError("Number of bytes must be positive")
 
         base = _Memory.__new__(_Memory)
         base._cinit_empty()
@@ -944,11 +956,14 @@ cdef class MemoryIPCDevice(MemoryUSMDevice):
 
         QRef_copy = DPCTLQueue_Copy(QRef)
         if QRef_copy is NULL:
+            _close_ipc_ptr(USMRef, QRef)
+            base._memory_ptr = NULL
             raise ValueError("Referenced queue could not be copied.")
         try:
             base.queue = SyclQueue._create(QRef_copy)
         except dpctl.SyclQueueCreationError as sqce:
-            base._memory_ptr = NULL  # caller retains ownership of USMRef
+            _close_ipc_ptr(USMRef, QRef)
+            base._memory_ptr = NULL
             raise ValueError(
                 "SyclQueue object could not be created from "
                 "copy of referenced queue"
@@ -957,9 +972,8 @@ cdef class MemoryIPCDevice(MemoryUSMDevice):
         try:
             result = MemoryIPCDevice(<object>base)
         except Exception:
-            # If MemoryIPCDevice.__cinit__ failed after _cinit_other copied
-            # _memory_ptr, the partial object's __dealloc__ already closed
-            # the IPC handle.  Null base to prevent any further action.
+            # MemoryIPCDevice.__dealloc__ already closed the IPC handle.
+            # Null base to prevent base's dealloc from acting on it.
             base._memory_ptr = NULL
             raise
         base._memory_ptr = NULL  # ownership fully transferred to result
@@ -1226,21 +1240,11 @@ cdef class IPCMemoryHandle:
             DPCTLIPCMem_CloseHandle(mapped_ptr, ctx_ref)
             raise
 
-        try:
-            mem = MemoryIPCDevice.create_ipc_from_usm_pointer_size_qref(
-                mapped_ptr, nbytes, q.get_queue_ref())
-        except ValueError:
-            # Failed before MemoryIPCDevice construction (queue copy, etc).
-            # Handle was NOT closed — we still own it.
-            DPCTLIPCMem_CloseHandle(mapped_ptr, ctx_ref)
-            raise
-        except Exception:
-            # Failed during MemoryIPCDevice construction.
-            # MemoryIPCDevice.__dealloc__ already closed the IPC handle.
-            # Do NOT close again to avoid double-close (undefined behavior).
-            raise
-
-        return mem
+        # Ownership of mapped_ptr transfers unconditionally to the helper.
+        # It will close the mapping on any failure; on success the returned
+        # MemoryIPCDevice owns it.
+        return MemoryIPCDevice.create_ipc_from_usm_pointer_size_qref(
+            mapped_ptr, nbytes, q.get_queue_ref())
 
     @staticmethod
     def close_mapping(MemoryUSMDevice usm_memory not None):
