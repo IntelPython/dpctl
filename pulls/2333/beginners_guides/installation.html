@@ -443,6 +443,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_include.html">dpctl.get_include</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
@@ -828,9 +829,15 @@ Compute Capabilities can be found in the official
 <p>Note that the oneAPI for AMD GPUs plugin requires the architecture be specified and only
 one architecture can be specified at a time.</p>
 <p>To determine the architecture code (<code class="docutils literal notranslate"><span class="pre">&lt;arch&gt;</span></code>) for your AMD GPU, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rocminfo<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;Name: *gfx.*&#39;</span>
+</pre></div>
+</div>
 <p>This will print names like <code class="docutils literal notranslate"><span class="pre">gfx90a</span></code>, <code class="docutils literal notranslate"><span class="pre">gfx1030</span></code>, etc.
 You can then use one of them as the argument to <code class="docutils literal notranslate"><span class="pre">--target-hip</span></code>.</p>
 <p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--target-hip<span class="o">=</span>gfx1030
+</pre></div>
+</div>
 <p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">DPCTL_TARGET_HIP</span></code> CMake option:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">&quot;-DDPCTL_TARGET_HIP=gfx1030&quot;</span>
 </pre></div>

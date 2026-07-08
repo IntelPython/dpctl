@@ -217,6 +217,7 @@ one architecture can be specified at a time.
 To determine the architecture code (``<arch>``) for your AMD GPU, run:
 
 .. code-block:: bash
+
     rocminfo | grep 'Name: *gfx.*'
 
 This will print names like ``gfx90a``, ``gfx1030``, etc.
@@ -225,6 +226,7 @@ You can then use one of them as the argument to ``--target-hip``.
 For example:
 
 .. code-block:: bash
+
     python scripts/build_locally.py --verbose --target-hip=gfx1030
 
 Alternatively, you can use the ``DPCTL_TARGET_HIP`` CMake option:

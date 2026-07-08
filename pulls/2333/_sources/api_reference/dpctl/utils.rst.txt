@@ -13,9 +13,5 @@
 
 .. data:: SequentialOrderManager
 
-    Thread-local instance of
-    :class:`~dpctl.utils._order_manager.SyclQueueToOrderManagerMap` used to
-    ensure sequential ordering of tasks offloaded to a :class:`dpctl.SyclQueue`.
-
-.. autoclass:: dpctl.utils._order_manager.SyclQueueToOrderManagerMap
-    :members:
+    Thread-local object mapping each :class:`dpctl.SyclQueue` to an order
+    manager, used to ensure sequential ordering of offloaded tasks.

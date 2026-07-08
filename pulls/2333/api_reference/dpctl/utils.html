@@ -443,6 +443,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.get_include.html">dpctl.get_include</a></li>
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
@@ -730,24 +731,8 @@ to <code class="docutils literal notranslate"><span class="pre">1</span></code> 
 <dl class="py data">
 <dt class="sig sig-object py" id="dpctl.utils.SequentialOrderManager">
 <span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">SequentialOrderManager</span></span><a class="headerlink" href="#dpctl.utils.SequentialOrderManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Thread-local instance of
-<a class="reference internal" href="#dpctl.utils._order_manager.SyclQueueToOrderManagerMap" title="dpctl.utils._order_manager.SyclQueueToOrderManagerMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclQueueToOrderManagerMap</span></code></a> used to
-ensure sequential ordering of tasks offloaded to a <a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="dpctl.utils._order_manager.SyclQueueToOrderManagerMap">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpctl.utils._order_manager.</span></span><span class="sig-name descname"><span class="pre">SyclQueueToOrderManagerMap</span></span><a class="reference internal" href="../../_modules/dpctl/utils/_order_manager.html#SyclQueueToOrderManagerMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils._order_manager.SyclQueueToOrderManagerMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Utility class used to ensure sequential ordering of offloaded tasks
-when passed to order manager.</p>
-<p>Maintains a thread-local dictionary mapping SyclQueue instances to
-_SequentialOrderManager instances.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="dpctl.utils._order_manager.SyclQueueToOrderManagerMap.clear">
-<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_order_manager.html#SyclQueueToOrderManagerMap.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils._order_manager.SyclQueueToOrderManagerMap.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clear content of internal dictionary</p>
-</dd></dl>
-
+<dd><p>Thread-local object mapping each <a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> to an order
+manager, used to ensure sequential ordering of offloaded tasks.</p>
 </dd></dl>
 
 </section>
@@ -811,10 +796,6 @@ _SequentialOrderManager instances.</p>
 <li><a class="reference internal" href="#dpctl.utils.onetrace_enabled"><code class="docutils literal notranslate"><span class="pre">onetrace_enabled()</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.utils.intel_device_info"><code class="docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.utils.SequentialOrderManager"><code class="docutils literal notranslate"><span class="pre">SequentialOrderManager</span></code></a></li>
-<li><a class="reference internal" href="#dpctl.utils._order_manager.SyclQueueToOrderManagerMap"><code class="docutils literal notranslate"><span class="pre">SyclQueueToOrderManagerMap</span></code></a><ul>
-<li><a class="reference internal" href="#dpctl.utils._order_manager.SyclQueueToOrderManagerMap.clear"><code class="docutils literal notranslate"><span class="pre">SyclQueueToOrderManagerMap.clear()</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
