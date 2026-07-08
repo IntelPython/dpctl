@@ -36,7 +36,7 @@ from cpython.buffer cimport (
     PyObject_GetBuffer,
 )
 from cpython.bytes cimport PyBytes_FromStringAndSize
-from libc.stdint cimport uint32_t
+from libc.stdint cimport UINT32_MAX, uint32_t
 from libc.stdlib cimport free, malloc
 from libc.string cimport memcmp, memcpy
 
@@ -337,6 +337,11 @@ cdef class SpecializationConstant:
                 f"{len(args) + 1}."
             )
 
+        if spec_id < 0 or spec_id > UINT32_MAX:
+            raise ValueError(
+                "Specialization constant ID must fit in a 32-bit unsigned "
+                f"integer (0 <= id <= {UINT32_MAX}), got {spec_id}"
+            )
         self._spec_const.id = <uint32_t>spec_id
 
         if len(args) == 2:
@@ -344,6 +349,11 @@ cdef class SpecializationConstant:
                 isinstance(args[0], numbers.Integral) and
                 isinstance(args[1], numbers.Integral)
             ):
+                if args[0] <= 0:
+                    raise ValueError(
+                        "Size must be a positive integer when constructing "
+                        f"from a pointer and size, got {args[0]}"
+                    )
                 target_obj = PyBytes_FromStringAndSize(
                     <const char *><size_t>args[1], <Py_ssize_t>args[0]
                 )
@@ -380,6 +390,12 @@ cdef class SpecializationConstant:
                 "Failed to get buffer view for the provided object."
             )
 
+        if _local_buffer.len <= 0:
+            PyBuffer_Release(&(_local_buffer))
+            raise ValueError(
+                "Specialization constant value must not be zero-sized."
+            )
+
         self._spec_const.size = <size_t>_local_buffer.len
         copied_data = malloc(self._spec_const.size)
 
@@ -403,7 +419,7 @@ cdef class SpecializationConstant:
 
     def __eq__(self, other):
         if not isinstance(other, SpecializationConstant):
-            return False
+            return NotImplemented
         cdef SpecializationConstant _other = <SpecializationConstant>other
         if (
             self._spec_const.id != _other._spec_const.id or
@@ -417,6 +433,16 @@ cdef class SpecializationConstant:
             _other._spec_const.value,
             self._spec_const.size
         ) == 0
+
+    def __hash__(self):
+        cdef bytes value_bytes
+        if self._spec_const.value != NULL:
+            value_bytes = (<char *>self._spec_const.value)[
+                :self._spec_const.size
+            ]
+        else:
+            value_bytes = b""
+        return hash((self._spec_const.id, value_bytes))
 
     @property
     def id(self):
@@ -551,13 +577,14 @@ cpdef create_kernel_bundle_from_spirv(
             raise MemoryError(
                 "Failed to allocate memory for specialization constants."
             )
-        for i, spconst in enumerate(specializations):
-            if not isinstance(spconst, SpecializationConstant):
+        for i, _spconst in enumerate(specializations):
+            if not isinstance(_spconst, SpecializationConstant):
                 free(spconsts)
                 raise TypeError(
                     "All items in specializations must be of type "
-                    f"`SpecializationConstant`, got {type(spconst)}"
+                    f"`SpecializationConstant`, got {type(_spconst)}"
                 )
+            spconst = <SpecializationConstant>_spconst
             spconsts[i] = spconst._spec_const
     else:
         num_spconsts = 0

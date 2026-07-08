@@ -117,9 +117,13 @@ def parse_spirv_specializations(
             # parsing, so we can stop parsing at this point
             break
         elif opcode == SpirvOpCode.OpTypeBool:
+            if word_count < 2:
+                raise ValueError(f"Truncated OpTypeBool at word index {i}")
             result_id = int(words[i + 1])
             types[result_id] = {"dtype": "?", "itemsize": 1}
         elif opcode == SpirvOpCode.OpTypeInt:
+            if word_count < 4:
+                raise ValueError(f"Truncated OpTypeInt at word index {i}")
             result_id = int(words[i + 1])
             width = int(words[i + 2])
             signed = int(words[i + 3])
@@ -129,6 +133,8 @@ def parse_spirv_specializations(
                 "itemsize": width // 8,
             }
         elif opcode == SpirvOpCode.OpTypeFloat:
+            if word_count < 3:
+                raise ValueError(f"Truncated OpTypeFloat at word index {i}")
             result_id = int(words[i + 1])
             width = int(words[i + 2])
             types[result_id] = {
@@ -136,30 +142,53 @@ def parse_spirv_specializations(
                 "itemsize": width // 8,
             }
         elif opcode == SpirvOpCode.OpSpecConstant:
+            if word_count < 3:
+                raise ValueError(f"Truncated OpSpecConstant at word index {i}")
             type_id = int(words[i + 1])
             result_id = int(words[i + 2])
             constants[result_id] = type_id
             literal_words = words[i + 3 : i + word_count]
             defaults[result_id] = literal_words.tobytes()
         elif opcode == SpirvOpCode.OpSpecConstantTrue:
+            if word_count < 3:
+                raise ValueError(
+                    f"Truncated OpSpecConstantTrue at word index {i}"
+                )
             type_id = int(words[i + 1])
             result_id = int(words[i + 2])
             constants[result_id] = type_id
             defaults[result_id] = True
         elif opcode == SpirvOpCode.OpSpecConstantFalse:
+            if word_count < 3:
+                raise ValueError(
+                    f"Truncated OpSpecConstantFalse at word index {i}"
+                )
             type_id = int(words[i + 1])
             result_id = int(words[i + 2])
             constants[result_id] = type_id
             defaults[result_id] = False
         elif opcode == SpirvOpCode.OpDecorate:
+            if word_count < 3:
+                raise ValueError(f"Truncated OpDecorate at word index {i}")
             target_id = int(words[i + 1])
             decoration = int(words[i + 2])
             if decoration == SpirvDecoration.SpecId:
+                if word_count < 4:
+                    raise ValueError(
+                        f"Truncated OpDecorate SpecId at word index {i}"
+                    )
                 ids[target_id] = int(words[i + 3])
         elif opcode == SpirvOpCode.OpName:
+            if word_count < 2:
+                raise ValueError(f"Truncated OpName at word index {i}")
             target_id = int(words[i + 1])
             name_bytes = words[i + 2 : i + word_count].tobytes()
-            names[target_id] = name_bytes.split(b"\x00", 1)[0].decode("utf-8")
+            try:
+                names[target_id] = name_bytes.split(b"\x00", 1)[0].decode(
+                    "utf-8"
+                )
+            except UnicodeDecodeError:
+                raise ValueError(f"Invalid UTF-8 in OpName at word index {i}")
 
         i += word_count
 

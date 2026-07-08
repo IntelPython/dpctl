@@ -293,6 +293,12 @@ _CreateKernelBundleWithIL_ocl_impl(const context &ctx,
         return nullptr;
     }
 
+    if (NumSpecConsts > 0 && SpecConsts == nullptr) {
+        error_handler("NumSpecConsts > 0 but SpecConsts is NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+
     if (SpecConsts != nullptr && NumSpecConsts > 0) {
         auto clSetProgramSpecConstF = get_clSetProgramSpecializationConstant();
         if (clSetProgramSpecConstF) {
@@ -520,6 +526,12 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
     backend_traits<ze_be>::return_type<device> ZeDevice;
     ZeDevice = get_native<ze_be>(SyclDev);
 
+    if (NumSpecConsts > 0 && SpecConsts == nullptr) {
+        error_handler("NumSpecConsts > 0 but SpecConsts is NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+
     std::vector<std::uint32_t> spec_ids;
     std::vector<const void *> spec_values;
 
@@ -532,7 +544,7 @@ _CreateKernelBundleWithIL_ze_impl(const context &SyclCtx,
         }
     }
     ze_module_constants_t ZeSpecConstants = {};
-    ZeSpecConstants.numConstants = static_cast<std::uint32_t>(NumSpecConsts);
+    ZeSpecConstants.numConstants = static_cast<std::uint32_t>(spec_ids.size());
     ZeSpecConstants.pConstantIds = spec_ids.empty() ? nullptr : spec_ids.data();
     ZeSpecConstants.pConstantValues =
         spec_values.empty() ? nullptr : spec_values.data();
@@ -699,25 +711,30 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
     context *SyclCtx = unwrap<context>(CtxRef);
     device *SyclDev = unwrap<device>(DevRef);
     // get the backend type
-    auto BE = SyclCtx->get_platform().get_backend();
-    switch (BE) {
-    case backend::opencl:
-        KBRef = _CreateKernelBundleWithIL_ocl_impl(*SyclCtx, *SyclDev, IL,
-                                                   length, CompileOpts,
-                                                   NumSpecConsts, SpecConsts);
-        break;
-    case backend::ext_oneapi_level_zero:
+    try {
+        auto BE = SyclCtx->get_platform().get_backend();
+        switch (BE) {
+        case backend::opencl:
+            KBRef = _CreateKernelBundleWithIL_ocl_impl(
+                *SyclCtx, *SyclDev, IL, length, CompileOpts, NumSpecConsts,
+                SpecConsts);
+            break;
+        case backend::ext_oneapi_level_zero:
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
-        KBRef = _CreateKernelBundleWithIL_ze_impl(*SyclCtx, *SyclDev, IL,
-                                                  length, CompileOpts,
-                                                  NumSpecConsts, SpecConsts);
-        break;
+            KBRef = _CreateKernelBundleWithIL_ze_impl(
+                *SyclCtx, *SyclDev, IL, length, CompileOpts, NumSpecConsts,
+                SpecConsts);
+            break;
 #endif
-    default:
-        std::ostringstream os;
-        os << "Backend " << BE << " is not supported";
-        error_handler(os.str(), __FILE__, __func__, __LINE__);
-        break;
+        default:
+            std::ostringstream os;
+            os << "Backend " << BE << " is not supported";
+            error_handler(os.str(), __FILE__, __func__, __LINE__);
+            break;
+        }
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
     }
     return KBRef;
 }

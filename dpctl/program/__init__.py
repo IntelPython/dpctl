@@ -21,6 +21,7 @@ file.
 
 """
 
+from . import utils
 from ._program import (
     SpecializationConstant,
     SyclKernel,

@@ -65,14 +65,14 @@ typedef struct DPCTLSpecConstTy
  * @ingroup KernelBundleInterface
  */
 DPCTL_API
-__dpctl_give DPCTLSyclKernelBundleRef
-DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef Ctx,
-                                  __dpctl_keep const DPCTLSyclDeviceRef Dev,
-                                  __dpctl_keep const void *IL,
-                                  size_t Length,
-                                  const char *CompileOpts,
-                                  size_t NumSpecConsts,
-                                  const DPCTLSpecConst *SpecConsts);
+__dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSpirv(
+    __dpctl_keep const DPCTLSyclContextRef Ctx,
+    __dpctl_keep const DPCTLSyclDeviceRef Dev,
+    __dpctl_keep const void *IL,
+    size_t Length,
+    const char *CompileOpts,
+    size_t NumSpecConsts,
+    __dpctl_keep const DPCTLSpecConst *SpecConsts);
 
 /*!
  * @brief Create a Sycl kernel bundle from an OpenCL kernel source string.
