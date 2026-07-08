@@ -886,6 +886,18 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
+    def has_aspect_ext_oneapi_ipc_memory(self):
+        """ Returns ``True`` if this device supports inter-process
+        communication (IPC) memory handles, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if device supports IPC memory.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_ipc_memory
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
     def image_2d_max_width(self):
         """ Returns the maximum width of a 2D image or 1D image in pixels.
             The minimum value is 8192 if the SYCL device has

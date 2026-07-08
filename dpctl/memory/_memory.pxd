@@ -90,3 +90,12 @@ cdef public api class MemoryUSMDevice(_Memory) [
     object PyMemoryUSMDeviceObject, type PyMemoryUSMDeviceType
 ]:
     pass
+
+
+cdef class MemoryIPCDevice(MemoryUSMDevice):
+    @staticmethod
+    cdef object create_ipc_from_usm_pointer_size_qref(
+        DPCTLSyclUSMRef USMRef,
+        Py_ssize_t nbytes,
+        DPCTLSyclQueueRef QRef,
+    )
