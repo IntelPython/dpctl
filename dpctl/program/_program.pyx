@@ -27,7 +27,18 @@ an OpenCL source string or a SPIR-V binary file.
 
 """
 
-from libc.stdint cimport uint32_t
+from cpython.buffer cimport (
+    Py_buffer,
+    PyBUF_ANY_CONTIGUOUS,
+    PyBUF_SIMPLE,
+    PyBuffer_Release,
+    PyObject_CheckBuffer,
+    PyObject_GetBuffer,
+)
+from cpython.bytes cimport PyBytes_FromStringAndSize
+from libc.stdint cimport UINT32_MAX, uint32_t
+from libc.stdlib cimport free, malloc
+from libc.string cimport memcmp, memcpy
 
 import warnings
 
@@ -52,7 +63,12 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLSyclDeviceRef,
     DPCTLSyclKernelBundleRef,
     DPCTLSyclKernelRef,
+    _spec_const,
 )
+
+import numbers
+
+import numpy as np
 
 __all__ = [
     "create_kernel_bundle_from_source",
@@ -60,6 +76,7 @@ __all__ = [
     "SyclKernel",
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
+    "SpecializationConstant",
 ]
 
 cdef class SyclKernelBundleCompilationError(Exception):
@@ -253,6 +270,211 @@ cdef api SyclKernelBundle SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef):
     return SyclKernelBundle._create(copied_KBRef)
 
 
+cdef class SpecializationConstant:
+    """
+    SpecializationConstant(spec_id, *args)
+
+    Python class representing SYCL specialization constants that can be used
+    when creating a :class:`dpctl.program.SyclKernelBundle` from SPIR-V.
+
+    There are multiple ways to create a :class:`.SpecializationConstant`:
+
+    - ``SpecializationConstant(spec_id, obj)``
+      If the constructor is invoked with a single variadic argument, the
+      argument is expected to either expose the Python buffer protocol or be
+      coercible to a NumPy array. If the argument is coercible to a NumPy array
+      or is one, it must have a supported data type (bool, integral, or
+      floating point). The specialization constant will be constructed from the
+      data in the buffer
+
+    - ``SpecializationConstant(spec_id, dtype, obj)``
+      If the constructor is invoked with two variadic arguments, and the first
+      argument is a string, it is interpreted as a NumPy ``dtype`` string and
+      the second argument will be coerced to a NumPy array with that data type.
+      The data type specified by the first argument must be a supported data
+      type (bool, integral, or floating point).
+
+    - ``SpecializationConstant(spec_id, nbytes, raw_ptr)``
+      If the constructor is invoked with two variadic arguments where both are
+      integers, the first argument is interpreted as the number of bytes and
+      the second argument is interpreted as a pointer to the data.
+
+    Note that construction of the :class:`.SpecializationConstant` copies the
+    input, so modifications made after construction of the
+    :class:`.SpecializationConstant` will not be reflected in the
+    :class:`.SyclKernelBundle`.
+
+    Args:
+        spec_id (int):
+            The SPIR-V specialization ID.
+        args:
+            Variadic argument, see class documentation.
+
+    Raises:
+        TypeError: In case of incorrect arguments given to constructor,
+                   failure to coerce to a buffer, or unsupported data type when
+                   coercing to a buffer.
+        ValueError: If the provided object fails to construct a buffer.
+    """
+
+    cdef _spec_const _spec_const
+
+    def __cinit__(self, spec_id, *args):
+        cdef int ret_code = 0
+        cdef object target_obj = None
+        cdef Py_buffer _local_buffer
+        cdef void *copied_data
+
+        if not isinstance(spec_id, numbers.Integral):
+            raise TypeError(
+                "Specialization constant ID must be of type `int`, got "
+                f"{type(spec_id)}"
+            )
+
+        if len(args) == 0 or len(args) > 2:
+            raise TypeError(
+                "Constructor takes 2 or 3 arguments, got "
+                f"{len(args) + 1}."
+            )
+
+        if spec_id < 0 or spec_id > UINT32_MAX:
+            raise ValueError(
+                "Specialization constant ID must fit in a 32-bit unsigned "
+                f"integer (0 <= id <= {UINT32_MAX}), got {spec_id}"
+            )
+        self._spec_const.id = <uint32_t>spec_id
+
+        if len(args) == 2:
+            if (
+                isinstance(args[0], numbers.Integral) and
+                isinstance(args[1], numbers.Integral)
+            ):
+                if args[0] <= 0:
+                    raise ValueError(
+                        "Size must be a positive integer when constructing "
+                        f"from a pointer and size, got {args[0]}"
+                    )
+                target_obj = PyBytes_FromStringAndSize(
+                    <const char *><size_t>args[1], <Py_ssize_t>args[0]
+                )
+            elif isinstance(args[0], str):
+                target_obj = np.ascontiguousarray(args[1], dtype=args[0])
+            else:
+                raise TypeError(
+                    "Invalid arguments."
+                )
+
+        elif len(args) == 1:
+            target_obj = args[0]
+            if not PyObject_CheckBuffer(target_obj):
+                # attempt to coerce to a numpy array
+                target_obj = np.ascontiguousarray(target_obj)
+
+        if isinstance(target_obj, np.ndarray):
+            if target_obj.dtype.kind not in ("b", "i", "u", "f", "c"):
+                raise TypeError(
+                    "Coercion of input to buffer resulted in an unsupported "
+                    f"data type '{target_obj.dtype}'. When coercing objects, "
+                    "`SpecializationConstant` expects the data to coerce to a "
+                    "supported type: bool, integral, or real or complex "
+                    "floating point. To pass arbitrary data, use a "
+                    "`memoryview` or `bytes` object, or pass the pointer and "
+                    "size directly."
+                )
+
+        ret_code = PyObject_GetBuffer(
+            target_obj, &(_local_buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS
+        )
+        if ret_code != 0:
+            raise ValueError(
+                "Failed to get buffer view for the provided object."
+            )
+
+        if _local_buffer.len <= 0:
+            PyBuffer_Release(&(_local_buffer))
+            raise ValueError(
+                "Specialization constant value must not be zero-sized."
+            )
+
+        self._spec_const.size = <size_t>_local_buffer.len
+        copied_data = malloc(self._spec_const.size)
+
+        if copied_data == NULL:
+            PyBuffer_Release(&(_local_buffer))
+            raise MemoryError(
+                "Failed to allocate memory for specialization constant data."
+            )
+
+        memcpy(copied_data, _local_buffer.buf, self._spec_const.size)
+        self._spec_const.value = copied_data
+
+        PyBuffer_Release(&(_local_buffer))
+
+    def __dealloc__(self):
+        if self._spec_const.value != NULL:
+            free(<void*>self._spec_const.value)
+
+    def __repr__(self):
+        return f"SpecializationConstant({self._spec_const.id})"
+
+    def __eq__(self, other):
+        if not isinstance(other, SpecializationConstant):
+            return NotImplemented
+        cdef SpecializationConstant _other = <SpecializationConstant>other
+        if (
+            self._spec_const.id != _other._spec_const.id or
+            self._spec_const.size != _other._spec_const.size
+        ):
+            return False
+        if self._spec_const.value == _other._spec_const.value:
+            return True
+        return memcmp(
+            self._spec_const.value,
+            _other._spec_const.value,
+            self._spec_const.size
+        ) == 0
+
+    def __hash__(self):
+        cdef bytes value_bytes
+        if self._spec_const.value != NULL:
+            value_bytes = (<char *>self._spec_const.value)[
+                :self._spec_const.size
+            ]
+        else:
+            value_bytes = b""
+        return hash((self._spec_const.id, value_bytes))
+
+    @property
+    def id(self):
+        """Returns the specialization ID for this specialization constant."""
+        return self._spec_const.id
+
+    @property
+    def size(self):
+        """
+        Returns the size in bytes of the data for this specialization constant.
+        """
+        return self._spec_const.size
+
+    cdef size_t addressof(self):
+        """
+        Returns the address of the _spec_const for this
+        :class:`.SpecializationConstant` cast to ``size_t``.
+        """
+        return <size_t>&(self._spec_const)
+
+    def addressof_ref(self):
+        """Returns the address of the ``_spec_const`` struct for this
+        :class:`.SpecializationConstant` cast to ``size_t``.
+
+        Returns:
+            The address of the internal ``_spec_const`` struct used by
+            this :class:`.SpecializationConstant` object cast to a
+            ``size_t``.
+        """
+        return self.addressof()
+
+
 cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
     """
         Creates a Sycl interoperability kernel bundle from an OpenCL source
@@ -300,7 +522,10 @@ cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
 
 
 cpdef create_kernel_bundle_from_spirv(
-    SyclQueue q, const unsigned char[:] IL, str copts=""
+    SyclQueue q,
+    const unsigned char[:] IL,
+    str copts="",
+    list specializations=None,
 ):
     """
         Creates a Sycl interoperability kernel bundle from an SPIR-V binary.
@@ -318,7 +543,9 @@ cpdef create_kernel_bundle_from_spirv(
             copts (str, optional)
                 Optional compilation flags that will be used
                 when compiling the kernel bundle. Default: ``""``.
-
+            specializations (list, optional)
+                A list of :class:`.SpecializationConstant` objects to be used
+                when creating the kernel bundle. Default: ``None``.
         Returns:
             kernel_bundle (:class:`.SyclKernelBundle`)
                 A :class:`.SyclKernelBundle` object wrapping the
@@ -337,11 +564,45 @@ cpdef create_kernel_bundle_from_spirv(
     cdef size_t length = IL.shape[0]
     cdef bytes bCOpts = copts.encode("utf8")
     cdef const char *COpts = <const char*>bCOpts
-    KBref = DPCTLKernelBundle_CreateFromSpirv(
-        CRef, DRef, <const void*>dIL, length, COpts
-    )
-    if KBref is NULL:
-        raise SyclKernelBundleCompilationError()
+    cdef size_t num_spconsts
+    cdef _spec_const *spconsts
+    cdef SpecializationConstant spconst
+
+    if specializations is not None and len(specializations) > 0:
+        num_spconsts = len(specializations)
+        spconsts = <_spec_const *>(
+            malloc(num_spconsts * sizeof(_spec_const))
+        )
+        if spconsts == NULL:
+            raise MemoryError(
+                "Failed to allocate memory for specialization constants."
+            )
+        for i, _spconst in enumerate(specializations):
+            if not isinstance(_spconst, SpecializationConstant):
+                free(spconsts)
+                raise TypeError(
+                    "All items in specializations must be of type "
+                    f"`SpecializationConstant`, got {type(_spconst)}"
+                )
+            spconst = <SpecializationConstant>_spconst
+            spconsts[i] = spconst._spec_const
+    else:
+        num_spconsts = 0
+        spconsts = NULL
+    try:
+        KBref = DPCTLKernelBundle_CreateFromSpirv(
+            CRef,
+            DRef,
+            <const void*>dIL,
+            length, COpts,
+            num_spconsts,
+            spconsts,
+        )
+        if KBref is NULL:
+            raise SyclKernelBundleCompilationError()
+    finally:
+        if spconsts != NULL:
+            free(spconsts)
 
     return SyclKernelBundle._create(KBref)
 

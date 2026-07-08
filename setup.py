@@ -27,6 +27,7 @@ skbuild.setup(
         "dpctl",
         "dpctl.memory",
         "dpctl.program",
+        "dpctl.program.utils",
         "dpctl.utils",
     ],
     package_data={

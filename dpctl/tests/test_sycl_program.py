@@ -18,10 +18,12 @@
 
 import os
 
+import numpy as np
 import pytest
 
 import dpctl
 import dpctl.program as dpctl_prog
+from dpctl.program.utils import parse_spirv_specializations
 
 
 def get_spirv_abspath(fn):
@@ -262,3 +264,151 @@ def test_create_kernel_bundle_from_invalid_src_ocl():
     }"
     with pytest.raises(dpctl_prog.SyclKernelBundleCompilationError):
         dpctl_prog.create_kernel_bundle_from_source(q, invalid_oclSrc)
+
+
+def test_create_kernel_bundle_with_spec_const():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+
+    spec_id = 0
+    sp = dpctl_prog.SpecializationConstant(spec_id, "i4", 42)
+
+    spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
+    with open(spirv_file, "br") as spv:
+        spv_bytes = spv.read()
+
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(
+        q, spv_bytes, specializations=[sp]
+    )
+    kernel = kb.get_sycl_kernel("_ZTS20BasicSpecConstKernel")
+
+    n = 128
+    x = np.ones(n, dtype="i4")
+    y = np.zeros_like(x)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    e1 = q.memcpy_async(x_usm, x, x.nbytes)
+    e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
+    e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
+
+    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+
+    e3.wait()
+    ht_e.wait()
+
+    assert np.all(y == 43)
+
+
+def test_create_kernel_bundle_with_composite_spec_const():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+
+    # composite specialization constants are separated into individual
+    # specialization constants with unique spec_ids
+    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 10)
+    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 2.5)
+    sp3 = dpctl_prog.SpecializationConstant(2, "?", 1)
+
+    spirv_file = get_spirv_abspath("specialization_constant_composite.spv")
+    with open(spirv_file, "br") as spv:
+        spv_bytes = spv.read()
+
+    kb = dpctl_prog.create_kernel_bundle_from_spirv(
+        q, spv_bytes, specializations=[sp1, sp2, sp3]
+    )
+    kernel = kb.get_sycl_kernel("_ZTS21StructSpecConstKernel")
+
+    n = 128
+    x = np.ones(n, dtype="f4")
+    y = np.zeros_like(x)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    e1 = q.memcpy_async(x_usm, x, x.nbytes)
+    e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
+    e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
+
+    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+
+    e3.wait()
+    ht_e.wait()
+
+    # 1.0 * 10 + 2.5 = 12.5
+    assert np.all(y == 12.5)
+
+
+def test_specialization_constant_addressof_ref():
+    sp = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    ref = sp.addressof_ref()
+    assert type(ref) is int
+    assert ref != 0
+
+    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 3.14)
+    ref2 = sp2.addressof_ref()
+    assert type(ref2) is int
+    assert ref2 != 0
+    assert ref != ref2
+
+
+def test_spirv_specializations_parser():
+    spirv_file = get_spirv_abspath("specialization_constant_kernel.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert len(spec_consts) == 1
+    assert spec_consts[0].dtype == "u4"
+
+    spirv_file = get_spirv_abspath("specialization_constant_composite.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert len(spec_consts) == 3
+    spec_const0, spec_const1, spec_const2 = spec_consts
+    assert spec_const0.dtype == "u4"
+    assert spec_const0.itemsize == 4
+    assert spec_const0.name == "unnamed_spec_const_0"
+    assert spec_const0.default_value == 1
+
+    assert spec_const1.dtype == "f4"
+    assert spec_const1.itemsize == 4
+    assert spec_const1.name == "unnamed_spec_const_1"
+    assert spec_const1.default_value == 0
+
+    # compiler translates bool to char
+    assert spec_const2.dtype == "u1"
+    assert spec_const2.itemsize == 1
+    assert spec_const2.name == "unnamed_spec_const_2"
+    assert spec_const2.default_value == 0
+
+
+def test_spirv_specializations_parser_no_spec_consts():
+    spirv_file = get_spirv_abspath("multi_kernel.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert not spec_consts
+
+
+def test_spirv_specializations_parser_invalid_spirv():
+    invalid_spv = b"\x00\x01\x02\x03\x04\x05"
+    with pytest.raises(ValueError):
+        parse_spirv_specializations(invalid_spv)
+
+
+def test_spec_const_equality():
+    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    sp2 = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    sp3 = dpctl_prog.SpecializationConstant(1, "i4", 42)
+    sp4 = dpctl_prog.SpecializationConstant(0, "f4", 42.0)
+
+    assert sp1 == sp2
+    assert sp1 != sp3
+    assert sp1 != sp4
