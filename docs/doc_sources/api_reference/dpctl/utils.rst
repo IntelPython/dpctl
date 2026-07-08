@@ -7,14 +7,15 @@
 
 .. currentmodule:: dpctl.utils
 
-.. autofunction:: get_execution_queue
-
-.. autofunction:: get_coerced_usm_type
-
-.. autofunction:: validate_usm_type
-
 .. autofunction:: onetrace_enabled
 
 .. autofunction:: intel_device_info
 
-.. autoexception:: ExecutionPlacementError
+.. data:: SequentialOrderManager
+
+    Thread-local instance of
+    :class:`~dpctl.utils._order_manager.SyclQueueToOrderManagerMap` used to
+    ensure sequential ordering of tasks offloaded to a :class:`dpctl.SyclQueue`.
+
+.. autoclass:: dpctl.utils._order_manager.SyclQueueToOrderManagerMap
+    :members:
