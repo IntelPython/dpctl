@@ -22,6 +22,7 @@ import pytest
 
 import dpctl
 from dpctl.memory import (
+    IPCMemoryHandle,
     MemoryIPCDevice,
     MemoryUSMDevice,
     MemoryUSMHost,
@@ -29,6 +30,11 @@ from dpctl.memory import (
     SyclIPCCloseMemHandle,
     SyclIPCGetMemHandle,
     SyclIPCOpenMemHandle,
+)
+
+pytestmark = pytest.mark.skipif(
+    not IPCMemoryHandle.is_available(),
+    reason="IPC memory not supported in this build",
 )
 
 

@@ -1091,6 +1091,18 @@ cdef class IPCMemoryHandle:
         self._opaque_ptr = NULL
         self._closed = False
 
+    @staticmethod
+    def is_available():
+        """Return whether IPC memory support is available in this build.
+
+        Returns
+        -------
+        bool
+            ``True`` if IPC memory functions are available, ``False``
+            otherwise (stub build without oneAPI IPC support).
+        """
+        return bool(DPCTLIPCMem_Available())
+
     def __init__(self, _Memory usm_memory not None):
         if not DPCTLIPCMem_Available():
             raise RuntimeError("IPC memory not supported in this build")
