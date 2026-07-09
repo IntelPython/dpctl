@@ -29,6 +29,24 @@ import os.path
 
 from . import _init_helper
 from ._device_selection import select_device_with_aspects
+from ._dtypes import (
+    DpctlScalar,
+    bool,
+    complex64,
+    complex128,
+    dtype,
+    float16,
+    float32,
+    float64,
+    int8,
+    int16,
+    int32,
+    int64,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
 from ._sycl_context import SyclContext, SyclContextCreationError
 from ._sycl_device import (
     SyclDevice,
@@ -121,6 +139,24 @@ __all__ += [
 ]
 __all__ += [
     "get_include",
+]
+__all__ += [
+    "dtype",
+    "DpctlScalar",
+    "bool",
+    "int8",
+    "uint8",
+    "int16",
+    "uint16",
+    "int32",
+    "uint32",
+    "int64",
+    "uint64",
+    "float16",
+    "float32",
+    "float64",
+    "complex64",
+    "complex128",
 ]
 # add submodules
 __all__ += [

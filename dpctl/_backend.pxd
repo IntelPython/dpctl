@@ -72,6 +72,9 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _LOCAL_ACCESSOR     "DPCTL_LOCAL_ACCESSOR",
         _WORK_GROUP_MEMORY  "DPCTL_WORK_GROUP_MEMORY"
         _RAW_KERNEL_ARG     "DPCTL_RAW_KERNEL_ARG"
+        _FLOAT16            "DPCTL_FLOAT16_T"
+        _COMPLEX64          "DPCTL_COMPLEX64_T"
+        _COMPLEX128         "DPCTL_COMPLEX128_T"
 
     ctypedef enum _queue_property_type "DPCTLQueuePropertyType":
         _DEFAULT_PROPERTY   "DPCTL_DEFAULT_PROPERTY"

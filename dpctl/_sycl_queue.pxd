@@ -63,7 +63,8 @@ cdef public api class SyclQueue (_SyclQueue) [
         self,
         list args,
         void **kargs,
-        _arg_data_type *kargty
+        _arg_data_type *kargty,
+        list _converted
     )
     cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
 
