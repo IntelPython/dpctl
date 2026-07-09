@@ -314,13 +314,14 @@ if(DPCTL_GENERATE_COVERAGE)
 endif()
 
 target_include_directories(DPCTLSyclInterface
-    # PUBLIC
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface
     ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Support
     ${CMAKE_CURRENT_SOURCE_DIR}/include/syclinterface/Config
-    # PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/include/
+)
+target_include_directories(DPCTLSyclInterface
+    SYSTEM PRIVATE
     ${SYCL_INCLUDE_DIR}
 )
 
@@ -354,7 +355,7 @@ endif()
 
 if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     target_include_directories(DPCTLSyclInterface
-        PRIVATE
+        SYSTEM PRIVATE
         ${LEVEL_ZERO_INCLUDE_DIR}
     )
 endif()
