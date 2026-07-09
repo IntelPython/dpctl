@@ -443,6 +443,7 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.get_include.html">dpctl.get_include</a></li>
+<li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
@@ -727,6 +728,13 @@ to <code class="docutils literal notranslate"><span class="pre">1</span></code> 
 </div>
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="dpctl.utils.SequentialOrderManager">
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">SequentialOrderManager</span></span><a class="headerlink" href="#dpctl.utils.SequentialOrderManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Thread-local object mapping each <a class="reference internal" href="generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> to an order
+manager, used to ensure sequential ordering of offloaded tasks.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -787,6 +795,7 @@ to <code class="docutils literal notranslate"><span class="pre">1</span></code> 
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a><ul>
 <li><a class="reference internal" href="#dpctl.utils.onetrace_enabled"><code class="docutils literal notranslate"><span class="pre">onetrace_enabled()</span></code></a></li>
 <li><a class="reference internal" href="#dpctl.utils.intel_device_info"><code class="docutils literal notranslate"><span class="pre">intel_device_info()</span></code></a></li>
+<li><a class="reference internal" href="#dpctl.utils.SequentialOrderManager"><code class="docutils literal notranslate"><span class="pre">SequentialOrderManager</span></code></a></li>
 </ul>
 </li>
 </ul>
