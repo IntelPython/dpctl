@@ -828,4 +828,271 @@ DPCTL_API
 void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    __dpctl_keep const DPCTLSyclDeviceRef PDRef);
 
+/*!
+ * @brief Wrapper over device.get_info<info::device::vendor_id>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the vendor id of the device.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetVendorId(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::address_bits>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the address space size (32 or 64 bits).
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetAddressBits(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::image_max_buffer_size>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the max number of pixels for a 1D image from buffer.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetImageMaxBufferSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::max_samplers>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the maximum number of samplers that can be used in a
+ * kernel.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t DPCTLDevice_GetMaxSamplers(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::max_parameter_size>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the max size in bytes of all arguments passed to a kernel.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+size_t
+DPCTLDevice_GetMaxParameterSize(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::mem_base_addr_align>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the minimum alignment in bits for memory allocations.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+uint32_t
+DPCTLDevice_GetMemBaseAddrAlign(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::error_correction_support>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns true if the device supports ECC memory.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_GetErrorCorrectionSupport(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::is_available>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns true if the device is available.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_IsAvailable(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::version>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns a C string with the device version.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_give const char *
+DPCTLDevice_GetVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::backend_version>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns a C string with the backend version.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_give const char *
+DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::local_mem_type>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the type of local memory supported.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+DPCTLLocalMemType
+DPCTLDevice_GetLocalMemType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::partition_type_property>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the partition property used to create this device.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+DPCTLPartitionPropertyType DPCTLDevice_GetPartitionTypeProperty(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::partition_type_affinity_domain>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @return   Returns the affinity domain used to partition the parent device.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+DPCTLPartitionAffinityDomainType DPCTLDevice_GetPartitionTypeAffinityDomain(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::half_fp_config>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLFPConfigType values. Caller must free
+ * with DPCTLSize_t_Array_Delete.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *
+DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                            size_t *res_len);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::single_fp_config>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLFPConfigType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *
+DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                              size_t *res_len);
+
+/*!
+ * @brief Wrapper over device.get_info<info::device::double_fp_config>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLFPConfigType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *
+DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                              size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::atomic_memory_order_capabilities>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLMemoryOrderType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::atomic_fence_order_capabilities>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLMemoryOrderType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::atomic_memory_scope_capabilities>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLMemoryScopeType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::atomic_fence_scope_capabilities>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLMemoryScopeType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::partition_properties>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLPartitionPropertyType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *
+DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
+                                   size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * device.get_info<info::device::partition_affinity_domains>().
+ *
+ * @param    DRef           Opaque pointer to a ``sycl::device``
+ * @param    res_len        Populated with size of the returned array
+ * @return   Returns an array of DPCTLPartitionAffinityDomainType values.
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+__dpctl_keep int *DPCTLDevice_GetPartitionAffinityDomains(
+    __dpctl_keep const DPCTLSyclDeviceRef DRef,
+    size_t *res_len);
+
 DPCTL_C_EXTERN_C_END

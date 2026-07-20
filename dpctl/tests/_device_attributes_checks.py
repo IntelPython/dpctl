@@ -659,6 +659,146 @@ def check_global_mem_cache_line_size(device):
     assert gmc_sz
 
 
+def check_vendor_id(device):
+    vid = device.vendor_id
+    assert isinstance(vid, int)
+    assert vid > 0
+
+
+def check_address_bits(device):
+    ab = device.address_bits
+    assert isinstance(ab, int)
+    assert ab in (32, 64)
+
+
+def check_image_max_buffer_size(device):
+    sz = device.image_max_buffer_size
+    assert isinstance(sz, int)
+    assert sz >= 0
+
+
+def check_max_samplers(device):
+    ms = device.max_samplers
+    assert isinstance(ms, int)
+    assert ms >= 0
+
+
+def check_max_parameter_size(device):
+    mps = device.max_parameter_size
+    assert isinstance(mps, int)
+    assert mps > 0
+
+
+def check_mem_base_addr_align(device):
+    align = device.mem_base_addr_align
+    assert isinstance(align, int)
+    assert align > 0
+
+
+def check_error_correction_support(device):
+    ecs = device.error_correction_support
+    assert isinstance(ecs, bool)
+
+
+def check_is_available(device):
+    avail = device.is_available
+    assert isinstance(avail, bool)
+    assert avail
+
+
+def check_version(device):
+    ver = device.version
+    assert isinstance(ver, str)
+    assert len(ver) > 0
+
+
+def check_backend_version(device):
+    ver = device.backend_version
+    assert isinstance(ver, str)
+
+
+def check_local_mem_type(device):
+    lmt = device.local_mem_type
+    assert type(lmt) is dpctl.local_mem_type
+
+
+def check_partition_type_property(device):
+    ptp = device.partition_type_property
+    assert type(ptp) is dpctl.partition_property
+
+
+def check_partition_type_affinity_domain(device):
+    ptad = device.partition_type_affinity_domain
+    assert isinstance(ptad, str)
+
+
+def check_half_fp_config(device):
+    cfg = device.half_fp_config
+    assert isinstance(cfg, tuple)
+    for v in cfg:
+        assert type(v) is dpctl.fp_config
+
+
+def check_single_fp_config(device):
+    cfg = device.single_fp_config
+    assert isinstance(cfg, tuple)
+    for v in cfg:
+        assert type(v) is dpctl.fp_config
+
+
+def check_double_fp_config(device):
+    cfg = device.double_fp_config
+    assert isinstance(cfg, tuple)
+    for v in cfg:
+        assert type(v) is dpctl.fp_config
+
+
+def check_atomic_memory_order_capabilities(device):
+    caps = device.atomic_memory_order_capabilities
+    assert isinstance(caps, tuple)
+    assert len(caps) > 0
+    for v in caps:
+        assert type(v) is dpctl.memory_order
+
+
+def check_atomic_fence_order_capabilities(device):
+    caps = device.atomic_fence_order_capabilities
+    assert isinstance(caps, tuple)
+    assert len(caps) > 0
+    for v in caps:
+        assert type(v) is dpctl.memory_order
+
+
+def check_atomic_memory_scope_capabilities(device):
+    caps = device.atomic_memory_scope_capabilities
+    assert isinstance(caps, tuple)
+    assert len(caps) > 0
+    for v in caps:
+        assert type(v) is dpctl.memory_scope
+
+
+def check_atomic_fence_scope_capabilities(device):
+    caps = device.atomic_fence_scope_capabilities
+    assert isinstance(caps, tuple)
+    assert len(caps) > 0
+    for v in caps:
+        assert type(v) is dpctl.memory_scope
+
+
+def check_partition_properties(device):
+    props = device.partition_properties
+    assert isinstance(props, tuple)
+    for v in props:
+        assert type(v) is dpctl.partition_property
+
+
+def check_partition_affinity_domains(device):
+    domains = device.partition_affinity_domains
+    assert isinstance(domains, tuple)
+    for v in domains:
+        assert isinstance(v, str)
+
+
 list_of_checks = [
     check_max_compute_units,
     check_max_work_item_dims,
@@ -742,6 +882,28 @@ list_of_checks = [
     check_global_mem_cache_line_size,
     check_max_clock_frequency,
     check_max_mem_alloc_size,
+    check_vendor_id,
+    check_address_bits,
+    check_image_max_buffer_size,
+    check_max_samplers,
+    check_max_parameter_size,
+    check_mem_base_addr_align,
+    check_error_correction_support,
+    check_is_available,
+    check_version,
+    check_backend_version,
+    check_local_mem_type,
+    check_partition_type_property,
+    check_partition_type_affinity_domain,
+    check_half_fp_config,
+    check_single_fp_config,
+    check_double_fp_config,
+    check_atomic_memory_order_capabilities,
+    check_atomic_fence_order_capabilities,
+    check_atomic_memory_scope_capabilities,
+    check_atomic_fence_scope_capabilities,
+    check_partition_properties,
+    check_partition_affinity_domains,
 ]
 
 

@@ -35,32 +35,46 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_Delete,
     DPCTLDevice_DisablePeerAccess,
     DPCTLDevice_EnablePeerAccess,
+    DPCTLDevice_GetAddressBits,
+    DPCTLDevice_GetAtomicFenceOrderCapabilities,
+    DPCTLDevice_GetAtomicFenceScopeCapabilities,
+    DPCTLDevice_GetAtomicMemoryOrderCapabilities,
+    DPCTLDevice_GetAtomicMemoryScopeCapabilities,
     DPCTLDevice_GetBackend,
+    DPCTLDevice_GetBackendVersion,
     DPCTLDevice_GetComponentDevices,
     DPCTLDevice_GetCompositeDevice,
     DPCTLDevice_GetDeviceType,
+    DPCTLDevice_GetDoubleFPConfig,
     DPCTLDevice_GetDriverVersion,
+    DPCTLDevice_GetErrorCorrectionSupport,
     DPCTLDevice_GetGlobalMemCacheLineSize,
     DPCTLDevice_GetGlobalMemCacheSize,
     DPCTLDevice_GetGlobalMemCacheType,
     DPCTLDevice_GetGlobalMemSize,
+    DPCTLDevice_GetHalfFPConfig,
     DPCTLDevice_GetImage2dMaxHeight,
     DPCTLDevice_GetImage2dMaxWidth,
     DPCTLDevice_GetImage3dMaxDepth,
     DPCTLDevice_GetImage3dMaxHeight,
     DPCTLDevice_GetImage3dMaxWidth,
+    DPCTLDevice_GetImageMaxBufferSize,
     DPCTLDevice_GetLocalMemSize,
+    DPCTLDevice_GetLocalMemType,
     DPCTLDevice_GetMaxClockFrequency,
     DPCTLDevice_GetMaxComputeUnits,
     DPCTLDevice_GetMaxMemAllocSize,
     DPCTLDevice_GetMaxNumSubGroups,
+    DPCTLDevice_GetMaxParameterSize,
     DPCTLDevice_GetMaxReadImageArgs,
+    DPCTLDevice_GetMaxSamplers,
     DPCTLDevice_GetMaxWorkGroupSize,
     DPCTLDevice_GetMaxWorkItemDims,
     DPCTLDevice_GetMaxWorkItemSizes1d,
     DPCTLDevice_GetMaxWorkItemSizes2d,
     DPCTLDevice_GetMaxWorkItemSizes3d,
     DPCTLDevice_GetMaxWriteImageArgs,
+    DPCTLDevice_GetMemBaseAddrAlign,
     DPCTLDevice_GetName,
     DPCTLDevice_GetNativeVectorWidthChar,
     DPCTLDevice_GetNativeVectorWidthDouble,
@@ -70,7 +84,11 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetNativeVectorWidthLong,
     DPCTLDevice_GetNativeVectorWidthShort,
     DPCTLDevice_GetParentDevice,
+    DPCTLDevice_GetPartitionAffinityDomains,
     DPCTLDevice_GetPartitionMaxSubDevices,
+    DPCTLDevice_GetPartitionProperties,
+    DPCTLDevice_GetPartitionTypeAffinityDomain,
+    DPCTLDevice_GetPartitionTypeProperty,
     DPCTLDevice_GetPlatform,
     DPCTLDevice_GetPreferredVectorWidthChar,
     DPCTLDevice_GetPreferredVectorWidthDouble,
@@ -80,12 +98,16 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetPreferredVectorWidthLong,
     DPCTLDevice_GetPreferredVectorWidthShort,
     DPCTLDevice_GetProfilingTimerResolution,
+    DPCTLDevice_GetSingleFPConfig,
     DPCTLDevice_GetSubGroupIndependentForwardProgress,
     DPCTLDevice_GetSubGroupSizes,
     DPCTLDevice_GetVendor,
+    DPCTLDevice_GetVendorId,
+    DPCTLDevice_GetVersion,
     DPCTLDevice_HasAspect,
     DPCTLDevice_Hash,
     DPCTLDevice_IsAccelerator,
+    DPCTLDevice_IsAvailable,
     DPCTLDevice_IsCPU,
     DPCTLDevice_IsGPU,
     DPCTLDeviceMgr_GetDeviceInfoStr,
@@ -98,6 +120,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLDeviceVector_Size,
     DPCTLDeviceVectorRef,
     DPCTLFilterSelector_Create,
+    DPCTLInt_Array_Delete,
     DPCTLSize_t_Array_Delete,
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
@@ -106,11 +129,22 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
     _device_type,
     _global_mem_cache_type,
+    _local_mem_type,
     _partition_affinity_domain_type,
+    _partition_property_type,
     _peer_access,
 )
 
-from .enum_types import backend_type, device_type, global_mem_cache_type
+from .enum_types import (
+    backend_type,
+    device_type,
+    fp_config,
+    global_mem_cache_type,
+    local_mem_type,
+    memory_order,
+    memory_scope,
+    partition_property,
+)
 
 from libc.stdint cimport int64_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
@@ -2122,6 +2156,446 @@ cdef class SyclDevice(_SyclDevice):
             self._device_ref
         )
         return max_part
+
+    @property
+    def vendor_id(self):
+        """ Returns the vendor identifier of the device.
+
+        Returns:
+            int:
+                The vendor ID as an unsigned 32-bit integer.
+        """
+        return DPCTLDevice_GetVendorId(self._device_ref)
+
+    @property
+    def address_bits(self):
+        """ Returns the address space size of the device.
+
+        Returns:
+            int:
+                The default compute device address space size specified as
+                an unsigned integer value in bits.
+                The result should always be 32 or 64.
+        """
+        return DPCTLDevice_GetAddressBits(self._device_ref)
+
+    @property
+    def image_max_buffer_size(self):
+        """ Returns the max number of pixels for a 1D image created from a
+        buffer.
+
+        Returns:
+            int:
+                The maximum number of pixels in a 1D image from buffer.
+        """
+        return DPCTLDevice_GetImageMaxBufferSize(self._device_ref)
+
+    @property
+    def max_samplers(self):
+        """ Returns the maximum number of samplers that can be used in a
+        kernel.
+
+        Returns:
+            int:
+                Maximum number of samplers.
+        """
+        return DPCTLDevice_GetMaxSamplers(self._device_ref)
+
+    @property
+    def max_parameter_size(self):
+        """ Returns the maximum size in bytes of all arguments that can be
+        passed to a kernel.
+
+        Returns:
+            int:
+                Maximum kernel parameter size in bytes.
+        """
+        return DPCTLDevice_GetMaxParameterSize(self._device_ref)
+
+    @property
+    def mem_base_addr_align(self):
+        """ Returns the minimum value to which memory allocations on this
+        device are aligned in bits.
+
+        Returns:
+            int:
+                Minimum alignment in bits for memory allocations.
+        """
+        return DPCTLDevice_GetMemBaseAddrAlign(self._device_ref)
+
+    @property
+    def error_correction_support(self):
+        """ Returns ``True`` if the device implements error correction for
+        all accesses to compute device memories (global, local, etc.).
+
+        Returns:
+            bool:
+                Whether ECC memory is supported.
+        """
+        return DPCTLDevice_GetErrorCorrectionSupport(self._device_ref)
+
+    @property
+    def is_available(self):
+        """ Returns ``True`` if the device is available.
+
+        Returns:
+            bool:
+                Whether the device is currently available.
+        """
+        return DPCTLDevice_IsAvailable(self._device_ref)
+
+    @property
+    def version(self):
+        """ Returns a backend-defined device version string.
+
+        Returns:
+            str:
+                The device version string.
+        """
+        cdef const char *ver = DPCTLDevice_GetVersion(self._device_ref)
+        if ver is NULL:
+            raise RuntimeError("Descriptor 'version' not available")
+        cdef str ver_str = ver.decode()
+        DPCTLCString_Delete(ver)
+        return ver_str
+
+    @property
+    def backend_version(self):
+        """ Returns a backend-defined driver version string.
+
+        Returns:
+            str:
+                The backend version string.
+        """
+        cdef const char *ver = DPCTLDevice_GetBackendVersion(self._device_ref)
+        if ver is NULL:
+            raise RuntimeError("Descriptor 'backend_version' not available")
+        cdef str ver_str = ver.decode()
+        DPCTLCString_Delete(ver)
+        return ver_str
+
+    @property
+    def local_mem_type(self):
+        """ Returns the type of local memory supported by the device.
+
+        Returns:
+            :class:`dpctl.local_mem_type`:
+                The type of local memory (none, local, or global).
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory type is reported by runtime.
+        """
+        cdef _local_mem_type lmTy = (
+            DPCTLDevice_GetLocalMemType(self._device_ref)
+        )
+        if lmTy == _local_mem_type._LOCAL_MEM_TYPE_LOCAL:
+            return local_mem_type.local
+        elif lmTy == _local_mem_type._LOCAL_MEM_TYPE_GLOBAL:
+            return local_mem_type.global_mem
+        elif lmTy == _local_mem_type._LOCAL_MEM_TYPE_NONE:
+            return local_mem_type.none
+        raise RuntimeError("Unrecognized local memory type reported")
+
+    @property
+    def partition_type_property(self):
+        """ Returns the partition property of this device if it is a
+        sub-device, or ``partition_property.no_partition`` if it is not a
+        sub-device.
+
+        Returns:
+            :class:`dpctl.partition_property`:
+                The partition property that was used to create this device.
+        """
+        cdef _partition_property_type ppTy = (
+            DPCTLDevice_GetPartitionTypeProperty(self._device_ref)
+        )
+        if ppTy == _partition_property_type._PARTITION_NO_PARTITION:
+            return partition_property.no_partition
+        elif ppTy == _partition_property_type._PARTITION_EQUALLY:
+            return partition_property.partition_equally
+        elif ppTy == _partition_property_type._PARTITION_BY_COUNTS:
+            return partition_property.partition_by_counts
+        elif ppTy == _partition_property_type._PARTITION_BY_AFFINITY_DOMAIN:
+            return partition_property.partition_by_affinity_domain
+        return partition_property.no_partition
+
+    @property
+    def partition_type_affinity_domain(self):
+        """ Returns the partition affinity domain used to partition the parent
+        device if this is a sub-device partitioned by affinity domain, or
+        ``"not_applicable"`` otherwise.
+
+        Returns:
+            str:
+                The affinity domain string.
+        """
+        cdef _partition_affinity_domain_type padTy = (
+            DPCTLDevice_GetPartitionTypeAffinityDomain(self._device_ref)
+        )
+        if padTy == _partition_affinity_domain_type._not_applicable:
+            return "not_applicable"
+        elif padTy == _partition_affinity_domain_type._numa:
+            return "numa"
+        elif padTy == _partition_affinity_domain_type._L4_cache:
+            return "L4_cache"
+        elif padTy == _partition_affinity_domain_type._L3_cache:
+            return "L3_cache"
+        elif padTy == _partition_affinity_domain_type._L2_cache:
+            return "L2_cache"
+        elif padTy == _partition_affinity_domain_type._L1_cache:
+            return "L1_cache"
+        elif padTy == _partition_affinity_domain_type._next_partitionable:
+            return "next_partitionable"
+        return "not_applicable"
+
+    @property
+    def half_fp_config(self):
+        """ Returns a tuple of :class:`dpctl.fp_config` enum members
+        describing half-precision floating-point capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.fp_config`]:
+                Tuple of floating-point configuration flags.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetHalfFPConfig(self._device_ref, &arr_len)
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(fp_config(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def single_fp_config(self):
+        """ Returns a tuple of :class:`dpctl.fp_config` enum members
+        describing single-precision floating-point capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.fp_config`]:
+                Tuple of floating-point configuration flags.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetSingleFPConfig(self._device_ref, &arr_len)
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(fp_config(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def double_fp_config(self):
+        """ Returns a tuple of :class:`dpctl.fp_config` enum members
+        describing double-precision floating-point capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.fp_config`]:
+                Tuple of floating-point configuration flags.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetDoubleFPConfig(self._device_ref, &arr_len)
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(fp_config(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def atomic_memory_order_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_order` enum members
+        describing atomic memory order capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_order`]:
+                Tuple of supported memory orders.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(memory_order(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def atomic_fence_order_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_order` enum members
+        describing atomic fence order capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_order`]:
+                Tuple of supported fence orders.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetAtomicFenceOrderCapabilities(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(memory_order(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def atomic_memory_scope_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_scope` enum members
+        describing atomic memory scope capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_scope`]:
+                Tuple of supported memory scopes.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(memory_scope(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def atomic_fence_scope_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_scope` enum members
+        describing atomic fence scope capabilities of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_scope`]:
+                Tuple of supported fence scopes.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetAtomicFenceScopeCapabilities(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(memory_scope(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def partition_properties(self):
+        """ Returns a tuple of :class:`dpctl.partition_property` enum members
+        describing supported partition properties of the device.
+
+        Returns:
+            Tuple[:class:`dpctl.partition_property`]:
+                Tuple of supported partition properties.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+
+        arr = DPCTLDevice_GetPartitionProperties(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(partition_property(arr[i] + 1))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
+
+    @property
+    def partition_affinity_domains(self):
+        """ Returns a tuple of strings describing supported partition
+        affinity domains of the device.
+
+        Returns:
+            Tuple[str]:
+                Tuple of supported affinity domain names.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+        cdef size_t i
+        cdef list res
+        cdef dict _pad_map = {
+            <int>_partition_affinity_domain_type._not_applicable:
+                "not_applicable",
+            <int>_partition_affinity_domain_type._numa: "numa",
+            <int>_partition_affinity_domain_type._L4_cache: "L4_cache",
+            <int>_partition_affinity_domain_type._L3_cache: "L3_cache",
+            <int>_partition_affinity_domain_type._L2_cache: "L2_cache",
+            <int>_partition_affinity_domain_type._L1_cache: "L1_cache",
+            <int>_partition_affinity_domain_type._next_partitionable:
+                "next_partitionable",
+        }
+
+        arr = DPCTLDevice_GetPartitionAffinityDomains(
+            self._device_ref, &arr_len
+        )
+        if arr is not NULL and arr_len > 0:
+            res = []
+            for i in range(arr_len):
+                res.append(_pad_map.get(arr[i], "not_applicable"))
+            DPCTLInt_Array_Delete(arr)
+            return tuple(res)
+        if arr is not NULL:
+            DPCTLInt_Array_Delete(arr)
+        return ()
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the
