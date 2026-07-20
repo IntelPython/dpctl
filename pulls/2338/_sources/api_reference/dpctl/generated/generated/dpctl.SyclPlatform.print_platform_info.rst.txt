@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.print\_platform\_info
-========================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclPlatform.print_platform_info

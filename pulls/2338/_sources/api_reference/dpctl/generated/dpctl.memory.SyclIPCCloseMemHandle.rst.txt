@@ -1,6 +1,0 @@
-﻿dpctl.memory.SyclIPCCloseMemHandle
-==================================
-
-.. currentmodule:: dpctl.memory
-
-.. autofunction:: SyclIPCCloseMemHandle
