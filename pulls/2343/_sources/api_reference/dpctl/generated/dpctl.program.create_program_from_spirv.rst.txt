@@ -1,0 +1,6 @@
+﻿dpctl.program.create\_program\_from\_spirv
+==========================================
+
+.. currentmodule:: dpctl.program
+
+.. autofunction:: create_program_from_spirv
