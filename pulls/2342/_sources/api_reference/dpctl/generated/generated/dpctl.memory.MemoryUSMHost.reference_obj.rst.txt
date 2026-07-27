@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.reference\_obj
+=========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMHost.reference_obj
