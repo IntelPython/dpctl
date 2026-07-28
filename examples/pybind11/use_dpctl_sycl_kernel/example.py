@@ -16,6 +16,8 @@
 
 # coding: utf-8
 
+import os
+
 import numpy as np
 import use_kernel as eg
 
@@ -27,7 +29,8 @@ import dpctl.program as dppr
 q = dpctl.SyclQueue()
 
 # read SPIR-V: a program in Khronos standardized intermediate form
-with open("resource/double_it.spv", "br") as fh:
+eg_dir = os.path.dirname(os.path.abspath(eg.__file__))
+with open(os.path.join(eg_dir, "resource", "double_it.spv"), "br") as fh:
     il = fh.read()
 
 # Build the program for the selected device

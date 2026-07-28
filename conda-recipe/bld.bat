@@ -2,8 +2,6 @@ REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
 set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
-"%PYTHON%" setup.py clean --all
-
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
 if DEFINED OVERRIDE_INTEL_IPO (
   set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
@@ -22,6 +20,8 @@ set "CXX=icx"
 set "CMAKE_GENERATOR=Ninja"
 :: Make CMake verbose
 set "VERBOSE=1"
+
+set "SETUPTOOLS_SCM_PRETEND_VERSION=%PKG_VERSION%"
 
 set "CMAKE_ARGS=%CMAKE_ARGS% -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=%PREFIX:\=/%/Library/include/level_zero"
 

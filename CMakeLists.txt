@@ -110,7 +110,7 @@ target_link_libraries(DpctlCAPI INTERFACE DPCTLSyclInterfaceHeaders)
 
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
+    DESTINATION dpctl/include
     FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 
