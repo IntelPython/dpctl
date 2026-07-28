@@ -31,7 +31,7 @@ jobs:
         python_spec: ['']
         include:
           - python: '3.14'
-            python_spec: '3.14.* *_cp314'
+            python_spec: '3.14.* *_cp314t'
         experimental: [false]
         runner: [ubuntu-22.04, ubuntu-24.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -90,7 +90,7 @@ jobs:
         python_spec: ['']
         include:
           - python: '3.14'
-            python_spec: '3.14.* *_cp314'
+            python_spec: '3.14.* *_cp314t'
         experimental: [false]
         runner: [windows-latest]
 
