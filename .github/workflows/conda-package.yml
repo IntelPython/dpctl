@@ -26,9 +26,11 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
     steps:
@@ -101,9 +103,11 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
     steps:
@@ -176,9 +180,13 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: ubuntu-22.04
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
             experimental: false
@@ -291,9 +299,13 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: windows-latest
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
             experimental: false
@@ -480,9 +492,11 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
     steps:
@@ -527,9 +541,11 @@ jobs:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python: ['3.10', '3.11', '3.12', '3.13']
         python_spec: ['']
         include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
     steps:
@@ -573,7 +589,7 @@ jobs:
     strategy:
       matrix:
         python: ['3.14']
-        python_spec: ['']
+        python_spec: ['3.14.* *_cp314']
         experimental: [false]
         runner: [ubuntu-latest]
         include:
