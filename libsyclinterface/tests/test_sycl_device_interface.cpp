@@ -642,8 +642,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSingleFPConfig)
     EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetSingleFPConfig(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
-    if (arr)
-        delete[] arr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryOrderCapabilities)
@@ -654,8 +653,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryOrderCapabilities)
         arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
-    if (arr)
-        delete[] arr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryScopeCapabilities)
@@ -666,8 +664,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryScopeCapabilities)
         arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
-    if (arr)
-        delete[] arr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionProperties)
@@ -677,8 +674,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionProperties)
     EXPECT_NO_FATAL_FAILURE(arr =
                                 DPCTLDevice_GetPartitionProperties(DRef, &len));
     // may be empty if device doesn't support partitioning
-    if (arr)
-        delete[] arr;
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
