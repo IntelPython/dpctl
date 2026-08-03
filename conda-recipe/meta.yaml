@@ -49,6 +49,7 @@ requirements:
         {% endfor %}
         # versioneer dependency
         - tomli # [py<311]
+        - opencl-headers >=2025.06.13 # [win]
     run:
         - python
         - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
