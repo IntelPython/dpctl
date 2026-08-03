@@ -976,8 +976,7 @@ DPCTLPartitionAffinityDomainType DPCTLDevice_GetPartitionTypeAffinityDomain(
  *
  * @param    DRef           Opaque pointer to a ``sycl::device``
  * @param    res_len        Populated with size of the returned array
- * @return   Returns an array of DPCTLFPConfigType values. Caller must free
- * with DPCTLSize_t_Array_Delete.
+ * @return   Returns an array of DPCTLFPConfigType values.
  * @ingroup DeviceInterface
  */
 DPCTL_API
