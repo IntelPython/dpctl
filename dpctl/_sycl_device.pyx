@@ -209,6 +209,28 @@ cdef tuple _get_devices(DPCTLDeviceVectorRef DVRef):
     return tuple(devices)
 
 
+cdef tuple _to_enum_tuple(
+    int *arr, size_t arr_len, object enum_type, str descr
+):
+    """
+    Converts an array of DPCTL enum values into a tuple of ``enum_type``s
+    """
+    cdef list res = []
+    cdef size_t i
+
+    if arr is NULL:
+        return ()
+    try:
+        for i in range(arr_len):
+            if arr[i] < 0:
+                raise RuntimeError(f"Unrecognized {descr} reported")
+            res.append(enum_type(arr[i] + 1))
+    finally:
+        DPCTLInt_Array_Delete(arr)
+
+    return tuple(res)
+
+
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     if BTy == _backend_type._CUDA:
         return "cuda"
@@ -2357,22 +2379,19 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.fp_config`]:
                 Tuple of floating-point configuration flags.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized floating-point configuration flag is
+                reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetHalfFPConfig(self._device_ref, &arr_len)
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(fp_config(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(
+            arr, arr_len, fp_config, "floating-point configuration flag"
+        )
 
     @property
     def single_fp_config(self):
@@ -2382,22 +2401,19 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.fp_config`]:
                 Tuple of floating-point configuration flags.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized floating-point configuration flag is
+                reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetSingleFPConfig(self._device_ref, &arr_len)
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(fp_config(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(
+            arr, arr_len, fp_config, "floating-point configuration flag"
+        )
 
     @property
     def double_fp_config(self):
@@ -2407,22 +2423,19 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.fp_config`]:
                 Tuple of floating-point configuration flags.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized floating-point configuration flag is
+                reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetDoubleFPConfig(self._device_ref, &arr_len)
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(fp_config(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(
+            arr, arr_len, fp_config, "floating-point configuration flag"
+        )
 
     @property
     def atomic_memory_order_capabilities(self):
@@ -2432,24 +2445,18 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.memory_order`]:
                 Tuple of supported memory orders.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory order is reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(memory_order(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(arr, arr_len, memory_order, "memory order")
 
     @property
     def atomic_fence_order_capabilities(self):
@@ -2459,24 +2466,18 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.memory_order`]:
                 Tuple of supported fence orders.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory order is reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetAtomicFenceOrderCapabilities(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(memory_order(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(arr, arr_len, memory_order, "memory order")
 
     @property
     def atomic_memory_scope_capabilities(self):
@@ -2486,24 +2487,18 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.memory_scope`]:
                 Tuple of supported memory scopes.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory scope is reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(memory_scope(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(arr, arr_len, memory_scope, "memory scope")
 
     @property
     def atomic_fence_scope_capabilities(self):
@@ -2513,24 +2508,18 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.memory_scope`]:
                 Tuple of supported fence scopes.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory scope is reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetAtomicFenceScopeCapabilities(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(memory_scope(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(arr, arr_len, memory_scope, "memory scope")
 
     @property
     def partition_properties(self):
@@ -2540,24 +2529,20 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[:class:`dpctl.partition_property`]:
                 Tuple of supported partition properties.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized partition property is reported by runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
-        cdef size_t i
-        cdef list res
 
         arr = DPCTLDevice_GetPartitionProperties(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
-            res = []
-            for i in range(arr_len):
-                res.append(partition_property(arr[i] + 1))
-            DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+        return _to_enum_tuple(
+            arr, arr_len, partition_property, "partition property"
+        )
 
     @property
     def partition_affinity_domains(self):
