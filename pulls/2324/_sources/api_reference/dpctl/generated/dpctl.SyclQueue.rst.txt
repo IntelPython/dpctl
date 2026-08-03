@@ -13,6 +13,8 @@
       :toctree: generated
    
       ~SyclQueue.addressof_ref
+      ~SyclQueue.copy
+      ~SyclQueue.copy_async
       ~SyclQueue.get_sycl_context
       ~SyclQueue.get_sycl_device
       ~SyclQueue.mem_advise

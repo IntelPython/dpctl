@@ -42,7 +42,7 @@ The value of the variable is a bit-mask, with the following supported values:
 .. _env_var_ze_flat_device_hierarchy:
 
 Variable ``ZE_FLAT_DEVICE_HIERARCHY``
---------------------------
+-------------------------------------
 Allows users to define the device hierarchy model exposed by Level Zero driver implementation.
 Keep in mind :py:mod:`dpctl.get_composite_devices` will only work while this is set to ``COMBINED``.
 
@@ -58,7 +58,7 @@ Keep in mind :py:mod:`dpctl.get_composite_devices` will only work while this is 
     * - ``FLAT``
       - Level Zero devices with multiple tiles will be exposed as a set of root devices, each corresponding to an individual tile. Enabled by default.
 
-Read more about device hierarchy in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy>`_ and `Intel GPU article <https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html>`_.
+Read more about device hierarchy in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#device-hierarchy>`__ and `Intel GPU article <https://www.intel.com/content/www/us/en/developer/articles/technical/flattening-gpu-tile-hierarchy.html>`__.
 
 Variable ``ZE_AFFINITY_MASK``
 -------------------------------
@@ -76,10 +76,10 @@ Therefore, we could use the second tile in each of four dual-tile GPUs with ``ZE
 | **If the exposed tiles belong to different physical devices:**
 | - A composite device is available for each physical device, and the tiles are accessible as component devices of their respective composite device.
 
-Additional examples to illustrate this are in the detailed documentation for ``ZE_AFFINITY_MASK``, read more about it in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`_.
+Additional examples to illustrate this are in the detailed documentation for ``ZE_AFFINITY_MASK``, read more about it in `Level Zero Specification <https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/PROG.html#affinity-mask>`__.
 
 Variable ``ZE_ENABLE_PCI_ID_DEVICE_ORDER``
--------------------------------
+------------------------------------------
 Forces driver to report devices from lowest to highest PCI bus ID.
 
 .. list-table::
@@ -93,7 +93,7 @@ Forces driver to report devices from lowest to highest PCI bus ID.
       - Enabled.
 
 Variable ``ZE_SHARED_FORCE_DEVICE_ALLOC``
--------------------------------
+-----------------------------------------
 Forces all shared allocations into device memory
 
 .. list-table::

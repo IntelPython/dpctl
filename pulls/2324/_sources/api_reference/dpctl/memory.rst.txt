@@ -66,6 +66,27 @@ Should the USM allocation fail, the following Python exception will be raised:
 
     USMAllocationError
 
+.. rubric:: IPC (Inter-Process Communication) Memory
+
+Classes and functions for sharing USM device allocations across processes
+using IPC memory handles.
+
+.. autosummary::
+    :toctree: generated
+    :template: autosummary/usmmemory.rst
+    :nosignatures:
+
+    IPCMemoryHandle
+    MemoryIPCDevice
+
+.. autosummary::
+    :toctree: generated
+    :nosignatures:
+
+    SyclIPCGetMemHandle
+    SyclIPCOpenMemHandle
+    SyclIPCCloseMemHandle
+
 .. toctree::
     :hidden:
 

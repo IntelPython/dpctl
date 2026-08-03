@@ -96,4 +96,5 @@
 .. toctree::
     :hidden:
 
+    constants
     filter_selector_string
