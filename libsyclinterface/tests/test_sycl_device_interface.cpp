@@ -472,6 +472,16 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImage3dMaxDepth)
         EXPECT_TRUE(image_3d_max_depth >= min_val);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetImageMaxBufferSize)
+{
+    size_t image_max_buffer_size = 0;
+    EXPECT_NO_FATAL_FAILURE(image_max_buffer_size =
+                                DPCTLDevice_GetImageMaxBufferSize(DRef));
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("image"))))
+        EXPECT_TRUE(image_max_buffer_size > 0);
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetParentDevice)
 {
     DPCTLSyclDeviceRef pDRef = nullptr;
@@ -635,6 +645,24 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeProperty)
                 ptp == DPCTL_PARTITION_BY_AFFINITY_DOMAIN);
 }
 
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetHalfFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetHalfFPConfig(DRef, &len));
+    // half_fp_config is empty for devices without aspect::fp16
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("fp16"))))
+    {
+        EXPECT_TRUE(len > 0);
+        EXPECT_TRUE(arr != nullptr);
+    }
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_FP_DENORM && arr[i] <= DPCTL_FP_SOFT_FLOAT);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSingleFPConfig)
 {
     int *arr = nullptr;
@@ -642,6 +670,27 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSingleFPConfig)
     EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetSingleFPConfig(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_FP_DENORM && arr[i] <= DPCTL_FP_SOFT_FLOAT);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetDoubleFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetDoubleFPConfig(DRef, &len));
+    // double_fp_config is empty for devices without aspect::fp64
+    if (DPCTLDevice_HasAspect(DRef, DPCTL_SyclAspectToDPCTLAspectType(
+                                        DPCTL_StrToAspectType("fp64"))))
+    {
+        EXPECT_TRUE(len > 0);
+        EXPECT_TRUE(arr != nullptr);
+    }
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_FP_DENORM && arr[i] <= DPCTL_FP_SOFT_FLOAT);
+    }
     EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
@@ -653,6 +702,25 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryOrderCapabilities)
         arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
+                    arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicFenceOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicFenceOrderCapabilities(DRef, &len));
+    EXPECT_TRUE(len > 0);
+    EXPECT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
+                    arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
+    }
     EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
@@ -664,6 +732,25 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicMemoryScopeCapabilities)
         arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(DRef, &len));
     EXPECT_TRUE(len > 0);
     EXPECT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
+                    arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAtomicFenceScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicFenceScopeCapabilities(DRef, &len));
+    EXPECT_TRUE(len > 0);
+    EXPECT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
+                    arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
+    }
     EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
 
@@ -674,7 +761,40 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionProperties)
     EXPECT_NO_FATAL_FAILURE(arr =
                                 DPCTLDevice_GetPartitionProperties(DRef, &len));
     // may be empty if device doesn't support partitioning
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_PARTITION_NO_PARTITION &&
+                    arr[i] <= DPCTL_PARTITION_BY_AFFINITY_DOMAIN);
+    }
     EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionAffinityDomains)
+{
+    int *arr = nullptr;
+    size_t len = 0;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetPartitionAffinityDomains(DRef, &len));
+    // may be empty if device doesn't support partitioning by affinity
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(
+            arr[i] >= DPCTLPartitionAffinityDomainType::not_applicable &&
+            arr[i] <= DPCTLPartitionAffinityDomainType::next_partitionable);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+}
+
+TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeAffinityDomain)
+{
+    DPCTLPartitionAffinityDomainType ptad;
+    EXPECT_NO_FATAL_FAILURE(
+        ptad = DPCTLDevice_GetPartitionTypeAffinityDomain(DRef));
+    EXPECT_TRUE(ptad == DPCTLPartitionAffinityDomainType::not_applicable ||
+                ptad == DPCTLPartitionAffinityDomainType::numa ||
+                ptad == DPCTLPartitionAffinityDomainType::L4_cache ||
+                ptad == DPCTLPartitionAffinityDomainType::L3_cache ||
+                ptad == DPCTLPartitionAffinityDomainType::L2_cache ||
+                ptad == DPCTLPartitionAffinityDomainType::L1_cache ||
+                ptad == DPCTLPartitionAffinityDomainType::next_partitionable);
 }
 
 INSTANTIATE_TEST_SUITE_P(DPCTLDeviceFns,
@@ -1050,4 +1170,188 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetCompositeDevice)
     DPCTLSyclDeviceRef CDRef = nullptr;
     EXPECT_NO_FATAL_FAILURE(CDRef = DPCTLDevice_GetCompositeDevice(Null_DRef));
     EXPECT_TRUE(CDRef == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetImageMaxBufferSize)
+{
+    size_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImageMaxBufferSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetHalfFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(arr = DPCTLDevice_GetHalfFPConfig(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetDoubleFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(arr =
+                                DPCTLDevice_GetDoubleFPConfig(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetAtomicFenceOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicFenceOrderCapabilities(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetAtomicFenceScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicFenceScopeCapabilities(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionAffinityDomains)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetPartitionAffinityDomains(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionTypeAffinityDomain)
+{
+    DPCTLPartitionAffinityDomainType res =
+        DPCTLPartitionAffinityDomainType::numa;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetPartitionTypeAffinityDomain(Null_DRef));
+    ASSERT_TRUE(res == DPCTLPartitionAffinityDomainType::not_applicable);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetVendorId)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetVendorId(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetAddressBits)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetAddressBits(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxSamplers)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxSamplers(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxParameterSize)
+{
+    size_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxParameterSize(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMemBaseAddrAlign)
+{
+    uint32_t res = 1;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMemBaseAddrAlign(Null_DRef));
+    ASSERT_TRUE(res == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetErrorCorrectionSupport)
+{
+    bool res = true;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetErrorCorrectionSupport(Null_DRef));
+    ASSERT_FALSE(res);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkIsAvailable)
+{
+    bool res = true;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_IsAvailable(Null_DRef));
+    ASSERT_FALSE(res);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetVersion)
+{
+    const char *version = nullptr;
+    EXPECT_NO_FATAL_FAILURE(version = DPCTLDevice_GetVersion(Null_DRef));
+    ASSERT_TRUE(version == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetBackendVersion)
+{
+    const char *version = nullptr;
+    EXPECT_NO_FATAL_FAILURE(version = DPCTLDevice_GetBackendVersion(Null_DRef));
+    ASSERT_TRUE(version == nullptr);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetLocalMemType)
+{
+    DPCTLLocalMemType res = DPCTL_LOCAL_MEM_TYPE_LOCAL;
+    EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetLocalMemType(Null_DRef));
+    ASSERT_TRUE(res == DPCTL_LOCAL_MEM_TYPE_NONE);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionTypeProperty)
+{
+    DPCTLPartitionPropertyType res = DPCTL_PARTITION_EQUALLY;
+    EXPECT_NO_FATAL_FAILURE(
+        res = DPCTLDevice_GetPartitionTypeProperty(Null_DRef));
+    ASSERT_TRUE(res == DPCTL_PARTITION_NO_PARTITION);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSingleFPConfig)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(arr =
+                                DPCTLDevice_GetSingleFPConfig(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetAtomicMemoryOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicMemoryOrderCapabilities(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetAtomicMemoryScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetAtomicMemoryScopeCapabilities(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
+}
+
+TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionProperties)
+{
+    int *arr = nullptr;
+    size_t len = 1;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLDevice_GetPartitionProperties(Null_DRef, &len));
+    ASSERT_TRUE(arr == nullptr);
+    ASSERT_TRUE(len == 0);
 }
