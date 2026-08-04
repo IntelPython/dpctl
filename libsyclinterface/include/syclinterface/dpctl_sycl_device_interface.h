@@ -980,7 +980,7 @@ DPCTLPartitionAffinityDomainType DPCTLDevice_GetPartitionTypeAffinityDomain(
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                             size_t *res_len);
 
@@ -993,7 +993,7 @@ DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                               size_t *res_len);
 
@@ -1006,7 +1006,7 @@ DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                               size_t *res_len);
 
@@ -1020,7 +1020,7 @@ DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 
@@ -1034,7 +1034,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 
@@ -1048,7 +1048,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 
@@ -1062,7 +1062,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 
@@ -1076,7 +1076,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    size_t *res_len);
 
@@ -1090,7 +1090,7 @@ DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep int *DPCTLDevice_GetPartitionAffinityDomains(
+__dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 

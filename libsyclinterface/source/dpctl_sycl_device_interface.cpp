@@ -1325,7 +1325,7 @@ int *get_info_enum_array(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 
 } // end of anonymous namespace
 
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                             size_t *res_len)
 {
@@ -1333,7 +1333,7 @@ DPCTLDevice_GetHalfFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         DRef, res_len, dpctl_fp_config_to_int);
 }
 
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                               size_t *res_len)
 {
@@ -1341,7 +1341,7 @@ DPCTLDevice_GetSingleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         DRef, res_len, dpctl_fp_config_to_int);
 }
 
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                               size_t *res_len)
 {
@@ -1349,7 +1349,7 @@ DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         DRef, res_len, dpctl_fp_config_to_int);
 }
 
-__dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
 {
@@ -1357,7 +1357,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
         DRef, res_len, dpctl_memory_order_to_int);
 }
 
-__dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
 {
@@ -1365,7 +1365,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
         DRef, res_len, dpctl_memory_order_to_int);
 }
 
-__dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
 {
@@ -1373,7 +1373,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
         DRef, res_len, dpctl_memory_scope_to_int);
 }
 
-__dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+__dpctl_give int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
 {
@@ -1381,7 +1381,7 @@ __dpctl_keep int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
         DRef, res_len, dpctl_memory_scope_to_int);
 }
 
-__dpctl_keep int *
+__dpctl_give int *
 DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    size_t *res_len)
 {
@@ -1389,7 +1389,7 @@ DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         DRef, res_len, dpctl_partition_property_to_int);
 }
 
-__dpctl_keep int *DPCTLDevice_GetPartitionAffinityDomains(
+__dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
 {
