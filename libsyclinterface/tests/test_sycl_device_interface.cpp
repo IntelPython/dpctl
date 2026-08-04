@@ -577,9 +577,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetAddressBits)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxSamplers)
 {
-    uint32_t ms = 0;
-    EXPECT_NO_FATAL_FAILURE(ms = DPCTLDevice_GetMaxSamplers(DRef));
-    EXPECT_TRUE(ms >= 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_GetMaxSamplers(DRef));
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxParameterSize)
