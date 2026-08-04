@@ -34,8 +34,7 @@ jobs:
 
       - name: Install latest Intel OneAPI
         run: |
-          # TODO: drop 2025.3 requirement when coverage build segfault is resolved
-          sudo apt install intel-oneapi-compiler-dpcpp-cpp-2025.3
+          sudo apt install intel-oneapi-compiler-dpcpp-cpp
           sudo apt install intel-oneapi-tbb
           sudo apt install intel-oneapi-umf
           sudo apt install hwloc
