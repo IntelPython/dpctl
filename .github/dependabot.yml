@@ -4,3 +4,18 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "saturday"
+    labels: ["autoupdate"]
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    labels: ["autoupdate"]
+    groups:
+      pre-commit:
+        patterns: ["*"]
