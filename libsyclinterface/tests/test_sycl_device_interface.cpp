@@ -181,9 +181,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxWorkGroupSize)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxWorkGroupSize(DRef));
-    if (DPCTLDevice_IsAccelerator(DRef))
-        EXPECT_TRUE(n >= 0);
-    else
+    // accelerators may report 0, all other devices must report a positive value
+    if (!DPCTLDevice_IsAccelerator(DRef))
         EXPECT_TRUE(n > 0);
 }
 
@@ -191,9 +190,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetMaxNumSubGroups)
 {
     size_t n = 0;
     EXPECT_NO_FATAL_FAILURE(n = DPCTLDevice_GetMaxNumSubGroups(DRef));
-    if (DPCTLDevice_IsAccelerator(DRef))
-        EXPECT_TRUE(n >= 0);
-    else
+    // accelerators may report 0, all other devices must report a positive value
+    if (!DPCTLDevice_IsAccelerator(DRef))
         EXPECT_TRUE(n > 0);
 }
 
@@ -203,9 +201,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupSizes)
     size_t *sg_sizes = nullptr;
     EXPECT_NO_FATAL_FAILURE(
         sg_sizes = DPCTLDevice_GetSubGroupSizes(DRef, &sg_sizes_len));
-    if (DPCTLDevice_IsAccelerator(DRef))
-        EXPECT_TRUE(sg_sizes_len >= 0);
-    else
+    // accelerators may report 0, all other devices must report a positive value
+    if (!DPCTLDevice_IsAccelerator(DRef))
         EXPECT_TRUE(sg_sizes_len > 0);
     for (size_t i = 0; i < sg_sizes_len; ++i) {
         EXPECT_TRUE(sg_sizes[i] > 0);
@@ -495,7 +492,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionMaxSubDevices)
     size_t max_cu = 0;
     EXPECT_NO_FATAL_FAILURE(max_part =
                                 DPCTLDevice_GetPartitionMaxSubDevices(DRef));
-    EXPECT_TRUE(max_part >= 0);
     EXPECT_NO_FATAL_FAILURE(max_cu = DPCTLDevice_GetMaxComputeUnits(DRef));
     EXPECT_TRUE(max_part <= max_cu);
 }
@@ -533,10 +529,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGetMaxClockFrequency)
 {
     uint32_t res = 0;
     EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetMaxClockFrequency(DRef));
-    // FIXME: uncomment once coverage build transitions away
-    // FIXME: from using DPC++ 2023.2
     EXPECT_TRUE(res >= 0);
-    // EXPECT_TRUE(res != 0);
+    // FIXME: DPC++ may return 0 for some CPUs
+    // unknown whether bug or expected behavior
+    // EXPECT_TRUE(res > 0);
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetGlobalMemCacheType)
