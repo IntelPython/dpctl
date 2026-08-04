@@ -801,24 +801,24 @@ DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     if (DRef) {
         auto D = unwrap<device>(DRef);
-        auto mem_type = D->get_info<info::device::global_mem_cache_type>();
-        switch (mem_type) {
-        case info::global_mem_cache_type::none:
-            return DPCTL_MEM_CACHE_TYPE_NONE;
-        case info::global_mem_cache_type::read_only:
-            return DPCTL_MEM_CACHE_TYPE_READ_ONLY;
-        case info::global_mem_cache_type::read_write:
-            return DPCTL_MEM_CACHE_TYPE_READ_WRITE;
+        try {
+            auto mem_type = D->get_info<info::device::global_mem_cache_type>();
+            switch (mem_type) {
+            case info::global_mem_cache_type::none:
+                return DPCTL_MEM_CACHE_TYPE_NONE;
+            case info::global_mem_cache_type::read_only:
+                return DPCTL_MEM_CACHE_TYPE_READ_ONLY;
+            case info::global_mem_cache_type::read_write:
+                return DPCTL_MEM_CACHE_TYPE_READ_WRITE;
+            }
+            // If execution reaches here unrecognized mem_type was returned.
+            // Check values in the enumeration `info::global_mem_cache_type` in
+            // SYCL specs
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
         }
-        // If execution reaches here unrecognized mem_type was returned. Check
-        // values in the enumeration `info::global_mem_cache_type` in SYCL specs
-        assert(false);
-        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
     }
-    else {
-        error_handler("Argument DRef is null", __FILE__, __func__, __LINE__);
-        return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
-    }
+    return DPCTL_MEM_CACHE_TYPE_INDETERMINATE;
 }
 
 __dpctl_give size_t *
