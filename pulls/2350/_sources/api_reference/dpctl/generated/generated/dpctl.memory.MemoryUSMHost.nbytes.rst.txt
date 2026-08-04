@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.nbytes
+=================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMHost.nbytes

@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.copy\_from\_host
+=============================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMDevice.copy_from_host
