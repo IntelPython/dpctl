@@ -2273,6 +2273,10 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             str:
                 The device version string.
+
+        Raises:
+            RuntimeError:
+                If the ``version`` descriptor is not available.
         """
         cdef const char *ver = DPCTLDevice_GetVersion(self._device_ref)
         if ver is NULL:
@@ -2283,11 +2287,15 @@ cdef class SyclDevice(_SyclDevice):
 
     @property
     def backend_version(self):
-        """ Returns a backend-defined driver version string.
+        """ Returns a backend version string.
 
         Returns:
             str:
                 The backend version string.
+
+        Raises:
+            RuntimeError:
+                If the ``backend_version`` descriptor is not available.
         """
         cdef const char *ver = DPCTLDevice_GetBackendVersion(self._device_ref)
         if ver is NULL:
