@@ -55,7 +55,7 @@ device *new_device_from_selector(const dpctl_device_selector *sel)
 }
 
 template <int dim>
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     size_t *sizes = nullptr;
@@ -248,19 +248,19 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     return maxWorkItemDims;
 }
 
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     return DPCTLDevice__GetMaxWorkItemSizes<1>(DRef);
 }
 
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     return DPCTLDevice__GetMaxWorkItemSizes<2>(DRef);
 }
 
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     return DPCTLDevice__GetMaxWorkItemSizes<3>(DRef);
@@ -821,7 +821,7 @@ DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
 }
 
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                              size_t *res_len)
 {

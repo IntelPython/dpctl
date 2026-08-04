@@ -208,7 +208,7 @@ DPCTLDevice_GetMaxWorkItemDims(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
@@ -219,7 +219,7 @@ DPCTLDevice_GetMaxWorkItemSizes1d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
@@ -230,7 +230,7 @@ DPCTLDevice_GetMaxWorkItemSizes2d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetMaxWorkItemSizes3d(__dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
@@ -762,7 +762,7 @@ DPCTLDevice_GetGlobalMemCacheType(__dpctl_keep const DPCTLSyclDeviceRef DRef);
  * @ingroup DeviceInterface
  */
 DPCTL_API
-__dpctl_keep size_t *
+__dpctl_give size_t *
 DPCTLDevice_GetSubGroupSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                              size_t *res_len);
 
