@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.nbytes
-===================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryIPCDevice.nbytes
