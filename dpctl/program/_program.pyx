@@ -698,12 +698,17 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
                 If a SYCL kernel bundle could not be created. The exception
                 message contains the build log for more details.
     """
-    cdef DPCTLSyclKernelBundleRef KBref
+    cdef DPCTLSyclKernelBundleRef KBref = NULL
     cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
     cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
     cdef bytes bSrc = source.encode("utf8")
     cdef const char *Src = <const char*>bSrc
-    cdef DPCTLBuildOptionListRef BuildOpts = DPCTLBuildOptionList_Create()
+    # initialized to NULL so that the `finally` clause below can release
+    # whichever of these were created before an exception was raised
+    cdef DPCTLBuildOptionListRef BuildOpts = NULL
+    cdef DPCTLKernelNameListRef KernelNames = NULL
+    cdef DPCTLVirtualHeaderListRef VirtualHeaders = NULL
+    cdef DPCTLKernelBuildLogRef BuildLog = NULL
     cdef bytes bOpt
     cdef const char* sOpt
     cdef bytes bName
@@ -719,59 +724,67 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
     if copts is None:
         copts = []
 
-    for opt in copts:
-        if not isinstance(opt, unicode):
-            DPCTLBuildOptionList_Delete(BuildOpts)
-            raise SyclKernelBundleCompilationError()
-        bOpt = opt.encode("utf8")
-        sOpt = <const char*>bOpt
-        DPCTLBuildOptionList_Append(BuildOpts, sOpt)
+    try:
+        BuildOpts = DPCTLBuildOptionList_Create()
+        KernelNames = DPCTLKernelNameList_Create()
+        VirtualHeaders = DPCTLVirtualHeaderList_Create()
+        BuildLog = DPCTLKernelBuildLog_Create()
 
-    cdef DPCTLKernelNameListRef KernelNames = DPCTLKernelNameList_Create()
-    for name in registered_names:
-        if not isinstance(name, unicode):
-            DPCTLBuildOptionList_Delete(BuildOpts)
-            DPCTLKernelNameList_Delete(KernelNames)
-            raise SyclKernelBundleCompilationError()
-        bName = name.encode("utf8")
-        sName = <const char*>bName
-        DPCTLKernelNameList_Append(KernelNames, sName)
+        for opt in copts:
+            if not isinstance(opt, unicode):
+                raise TypeError(
+                    "Every element of `copts` must be a string, got "
+                    f"{type(opt)}"
+                )
+            bOpt = opt.encode("utf8")
+            sOpt = <const char*>bOpt
+            DPCTLBuildOptionList_Append(BuildOpts, sOpt)
 
-    cdef DPCTLVirtualHeaderListRef VirtualHeaders
-    VirtualHeaders = DPCTLVirtualHeaderList_Create()
+        for name in registered_names:
+            if not isinstance(name, unicode):
+                raise TypeError(
+                    "Every element of `registered_names` must be a string, "
+                    f"got {type(name)}"
+                )
+            bName = name.encode("utf8")
+            sName = <const char*>bName
+            DPCTLKernelNameList_Append(KernelNames, sName)
 
-    for name, content in headers:
-        if not isinstance(name, unicode) or not isinstance(content, unicode):
-            DPCTLBuildOptionList_Delete(BuildOpts)
-            DPCTLKernelNameList_Delete(KernelNames)
-            DPCTLVirtualHeaderList_Delete(VirtualHeaders)
-            raise SyclKernelBundleCompilationError()
-        bName = name.encode("utf8")
-        sName = <const char*>bName
-        bContent = content.encode("utf8")
-        sContent = <const char*>bContent
-        DPCTLVirtualHeaderList_Append(VirtualHeaders, sName, sContent)
+        for header in headers:
+            if not isinstance(header, tuple) or len(header) != 2:
+                raise TypeError(
+                    "Every element of `headers` must be a 2-tuple of header "
+                    "name and header content"
+                )
+            name, content = header
+            if (
+                not isinstance(name, unicode)
+                or not isinstance(content, unicode)
+            ):
+                raise TypeError(
+                    "Header names and header content must be strings, got "
+                    f"({type(name)}, {type(content)})"
+                )
+            bName = name.encode("utf8")
+            sName = <const char*>bName
+            bContent = content.encode("utf8")
+            sContent = <const char*>bContent
+            DPCTLVirtualHeaderList_Append(VirtualHeaders, sName, sContent)
 
-    cdef DPCTLKernelBuildLogRef BuildLog
-    BuildLog = DPCTLKernelBuildLog_Create()
+        KBref = DPCTLKernelBundle_CreateFromSYCLSource(
+            CRef, DRef, Src, VirtualHeaders, KernelNames, BuildOpts, BuildLog
+        )
 
-    KBref = DPCTLKernelBundle_CreateFromSYCLSource(CRef, DRef, Src,
-                                                   VirtualHeaders, KernelNames,
-                                                   BuildOpts, BuildLog)
-
-    if KBref is NULL:
-        buildLogContent = DPCTLKernelBuildLog_Get(BuildLog)
-        buildLogStr = str(buildLogContent, "utf-8")
+        if KBref is NULL:
+            buildLogContent = DPCTLKernelBuildLog_Get(BuildLog)
+            raise SyclKernelBundleCompilationError(
+                str(buildLogContent, "utf-8")
+            )
+    finally:
         DPCTLBuildOptionList_Delete(BuildOpts)
         DPCTLKernelNameList_Delete(KernelNames)
         DPCTLVirtualHeaderList_Delete(VirtualHeaders)
         DPCTLKernelBuildLog_Delete(BuildLog)
-        raise SyclKernelBundleCompilationError(buildLogStr)
-
-    DPCTLBuildOptionList_Delete(BuildOpts)
-    DPCTLKernelNameList_Delete(KernelNames)
-    DPCTLVirtualHeaderList_Delete(VirtualHeaders)
-    DPCTLKernelBuildLog_Delete(BuildLog)
 
     return SyclKernelBundle._create(KBref, True)
 

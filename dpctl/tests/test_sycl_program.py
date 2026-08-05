@@ -599,6 +599,47 @@ def test_create_kernel_bundle_from_sycl_source_defaults(queue_selector):
 
 
 @pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"copts": [1]},
+        {"copts": ["-fno-fast-math", None]},
+        {"registered_names": [1]},
+        {"registered_names": ["vector_add", None]},
+        {"headers": [1]},
+        {"headers": [("math_ops.hpp",)]},
+        {"headers": [("math_ops.hpp", "int f(){return 0;}", "extra")]},
+        {"headers": [(1, "int f(){return 0;}")]},
+        {"headers": [("math_ops.hpp", 1)]},
+    ],
+)
+def test_create_kernel_bundle_from_sycl_source_bad_args(kwargs):
+    q = _get_opencl_queue_or_skip()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = in1[globalID] + in2[globalID];
+    }
+    """
+
+    # Malformed arguments must raise rather than crash, and the C API handles
+    # allocated for the argument lists must be released on the way out.
+    with pytest.raises(TypeError):
+        dpctl.program.create_kernel_bundle_from_sycl_source(
+            q, sycl_source, **kwargs
+        )
+
+
+@pytest.mark.parametrize(
     "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
 )
 def test_sycl_source_vector_add_correctness(queue_selector):
