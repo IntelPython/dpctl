@@ -671,20 +671,21 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
                 :class:`.SyclKernelBundle` is going to be built.
             source (unicode)
                 SYCL source code string.
-            headers (list)
+            headers (list, optional)
                 Optional list of virtual headers, where each entry in the list
                 needs to be a tuple of header name and header content. See the
                 documentation of the ``include_files`` property in the DPC++
                 ``kernel_compiler`` extension for more information.
-                Default: []
+                Default: ``None``
             registered_names (list, optional)
                 Optional list of kernel names to register. See the
                 documentation of the ``registered_names`` property in the DPC++
                 ``kernel_compiler`` extension for more information.
-                Default: []
-            copts (list)
+                Default: ``None``
+            copts (list, optional)
                 Optional list of compilation flags that will be used
-                when compiling the program. Default: ``""``.
+                when compiling the program.
+                Default: ``None``
 
         Returns:
             kernel_bundle (:class:`.SyclKernelBundle`)
@@ -710,6 +711,14 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
     cdef bytes bContent
     cdef const char* sContent
     cdef const char* buildLogContent
+
+    if headers is None:
+        headers = []
+    if registered_names is None:
+        registered_names = []
+    if copts is None:
+        copts = []
+
     for opt in copts:
         if not isinstance(opt, unicode):
             DPCTLBuildOptionList_Delete(BuildOpts)

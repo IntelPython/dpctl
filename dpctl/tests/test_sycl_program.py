@@ -573,6 +573,34 @@ def test_sycl_source_compilation_is_available_returns_bool():
 @pytest.mark.parametrize(
     "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
 )
+def test_create_kernel_bundle_from_sycl_source_defaults(queue_selector):
+    q = queue_selector()
+    _skip_if_no_sycl_source_compilation(q)
+
+    sycl_source = """
+    #include <sycl/sycl.hpp>
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL
+    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item =
+                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = in1[globalID] + in2[globalID];
+    }
+    """
+
+    prog = dpctl.program.create_kernel_bundle_from_sycl_source(q, sycl_source)
+
+    assert type(prog) is dpctl_prog.SyclKernelBundle
+    assert prog.has_sycl_kernel("vector_add")
+
+
+@pytest.mark.parametrize(
+    "queue_selector", [_get_opencl_queue_or_skip, _get_level_zero_queue_or_skip]
+)
 def test_sycl_source_vector_add_correctness(queue_selector):
     q = queue_selector()
     _skip_if_no_sycl_source_compilation(q)
