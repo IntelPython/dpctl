@@ -106,6 +106,8 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
 
     ctypedef enum _partition_affinity_domain_type \
             "DPCTLPartitionAffinityDomainType":
+        _PARTITION_AFFINITY_DOMAIN_UNKNOWN  \
+            "DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN",
         _not_applicable                     "not_applicable",
         _numa                               "numa",
         _L4_cache                           "L4_cache",
@@ -131,17 +133,20 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _MEM_CACHE_TYPE_READ_WRITE       "DPCTL_MEM_CACHE_TYPE_READ_WRITE"
 
     ctypedef enum _local_mem_type "DPCTLLocalMemType":
+        _LOCAL_MEM_TYPE_UNKNOWN          "DPCTL_LOCAL_MEM_TYPE_UNKNOWN"
         _LOCAL_MEM_TYPE_NONE             "DPCTL_LOCAL_MEM_TYPE_NONE"
         _LOCAL_MEM_TYPE_LOCAL            "DPCTL_LOCAL_MEM_TYPE_LOCAL"
         _LOCAL_MEM_TYPE_GLOBAL           "DPCTL_LOCAL_MEM_TYPE_GLOBAL"
 
     ctypedef enum _partition_property_type "DPCTLPartitionPropertyType":
+        _PARTITION_UNKNOWN               "DPCTL_PARTITION_UNKNOWN"
         _PARTITION_NO_PARTITION          "DPCTL_PARTITION_NO_PARTITION"
         _PARTITION_EQUALLY               "DPCTL_PARTITION_EQUALLY"
         _PARTITION_BY_COUNTS             "DPCTL_PARTITION_BY_COUNTS"
         _PARTITION_BY_AFFINITY_DOMAIN    "DPCTL_PARTITION_BY_AFFINITY_DOMAIN"
 
     ctypedef enum _fp_config_type "DPCTLFPConfigType":
+        _FP_UNKNOWN                    "DPCTL_FP_UNKNOWN"
         _FP_DENORM                     "DPCTL_FP_DENORM"
         _FP_INF_NAN                    "DPCTL_FP_INF_NAN"
         _FP_ROUND_TO_NEAREST           "DPCTL_FP_ROUND_TO_NEAREST"
@@ -152,6 +157,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _FP_SOFT_FLOAT                 "DPCTL_FP_SOFT_FLOAT"
 
     ctypedef enum _memory_order_type "DPCTLMemoryOrderType":
+        _MEMORY_ORDER_UNKNOWN            "DPCTL_MEMORY_ORDER_UNKNOWN"
         _MEMORY_ORDER_RELAXED            "DPCTL_MEMORY_ORDER_RELAXED"
         _MEMORY_ORDER_ACQUIRE            "DPCTL_MEMORY_ORDER_ACQUIRE"
         _MEMORY_ORDER_RELEASE            "DPCTL_MEMORY_ORDER_RELEASE"
@@ -159,6 +165,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _MEMORY_ORDER_SEQ_CST            "DPCTL_MEMORY_ORDER_SEQ_CST"
 
     ctypedef enum _memory_scope_type "DPCTLMemoryScopeType":
+        _MEMORY_SCOPE_UNKNOWN            "DPCTL_MEMORY_SCOPE_UNKNOWN"
         _MEMORY_SCOPE_WORK_ITEM          "DPCTL_MEMORY_SCOPE_WORK_ITEM"
         _MEMORY_SCOPE_SUB_GROUP          "DPCTL_MEMORY_SCOPE_SUB_GROUP"
         _MEMORY_SCOPE_WORK_GROUP         "DPCTL_MEMORY_SCOPE_WORK_GROUP"

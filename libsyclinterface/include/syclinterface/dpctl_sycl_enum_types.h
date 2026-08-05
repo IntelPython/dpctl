@@ -143,6 +143,7 @@ typedef enum
  */
 typedef enum
 {
+    DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN = 0,
     not_applicable,
     numa,
     L4_cache,
@@ -194,6 +195,7 @@ typedef enum
 
 typedef enum
 {
+    DPCTL_LOCAL_MEM_TYPE_UNKNOWN = 0,
     DPCTL_LOCAL_MEM_TYPE_NONE,
     DPCTL_LOCAL_MEM_TYPE_LOCAL,
     DPCTL_LOCAL_MEM_TYPE_GLOBAL
@@ -201,6 +203,7 @@ typedef enum
 
 typedef enum
 {
+    DPCTL_PARTITION_UNKNOWN = 0,
     DPCTL_PARTITION_NO_PARTITION,
     DPCTL_PARTITION_EQUALLY,
     DPCTL_PARTITION_BY_COUNTS,
@@ -209,6 +212,7 @@ typedef enum
 
 typedef enum
 {
+    DPCTL_FP_UNKNOWN = 0,
     DPCTL_FP_DENORM,
     DPCTL_FP_INF_NAN,
     DPCTL_FP_ROUND_TO_NEAREST,
@@ -221,6 +225,7 @@ typedef enum
 
 typedef enum
 {
+    DPCTL_MEMORY_ORDER_UNKNOWN = 0,
     DPCTL_MEMORY_ORDER_RELAXED,
     DPCTL_MEMORY_ORDER_ACQUIRE,
     DPCTL_MEMORY_ORDER_RELEASE,
@@ -230,6 +235,7 @@ typedef enum
 
 typedef enum
 {
+    DPCTL_MEMORY_SCOPE_UNKNOWN = 0,
     DPCTL_MEMORY_SCOPE_WORK_ITEM,
     DPCTL_MEMORY_SCOPE_SUB_GROUP,
     DPCTL_MEMORY_SCOPE_WORK_GROUP,

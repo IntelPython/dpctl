@@ -214,6 +214,10 @@ cdef tuple _to_enum_tuple(
 ):
     """
     Converts an array of DPCTL enum values into a tuple of ``enum_type``s
+
+    The DPCTL enums reserve value 0 for an unrecognized value, so a DPCTL
+    value of ``n`` corresponds to the ``n``-th member of ``enum_type``, whose
+    members are numbered from 1 by ``enum.auto()``.
     """
     cdef list res = []
     cdef size_t i
@@ -222,9 +226,10 @@ cdef tuple _to_enum_tuple(
         return ()
     try:
         for i in range(arr_len):
-            if arr[i] < 0:
+            try:
+                res.append(enum_type(arr[i]))
+            except ValueError:
                 raise RuntimeError(f"Unrecognized {descr} reported")
-            res.append(enum_type(arr[i] + 1))
     finally:
         DPCTLInt_Array_Delete(arr)
 
@@ -2336,6 +2341,10 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             :class:`dpctl.partition_property`:
                 The partition property that was used to create this device.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized partition property is reported by runtime.
         """
         cdef _partition_property_type ppTy = (
             DPCTLDevice_GetPartitionTypeProperty(self._device_ref)
@@ -2348,7 +2357,7 @@ cdef class SyclDevice(_SyclDevice):
             return partition_property.partition_by_counts
         elif ppTy == _partition_property_type._PARTITION_BY_AFFINITY_DOMAIN:
             return partition_property.partition_by_affinity_domain
-        return partition_property.no_partition
+        raise RuntimeError("Unrecognized partition property reported")
 
     @property
     def partition_type_affinity_domain(self):
@@ -2359,6 +2368,11 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             str:
                 The affinity domain string.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized partition affinity domain is reported by
+                runtime.
         """
         cdef _partition_affinity_domain_type padTy = (
             DPCTLDevice_GetPartitionTypeAffinityDomain(self._device_ref)
@@ -2377,7 +2391,9 @@ cdef class SyclDevice(_SyclDevice):
             return "L1_cache"
         elif padTy == _partition_affinity_domain_type._next_partitionable:
             return "next_partitionable"
-        return "not_applicable"
+        raise RuntimeError(
+            "Unrecognized partition affinity domain reported"
+        )
 
     @property
     def half_fp_config(self):
@@ -2560,6 +2576,11 @@ cdef class SyclDevice(_SyclDevice):
         Returns:
             Tuple[str]:
                 Tuple of supported affinity domain names.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized partition affinity domain is reported by
+                runtime.
         """
         cdef int *arr = NULL
         cdef size_t arr_len = 0
@@ -2580,15 +2601,20 @@ cdef class SyclDevice(_SyclDevice):
         arr = DPCTLDevice_GetPartitionAffinityDomains(
             self._device_ref, &arr_len
         )
-        if arr is not NULL and arr_len > 0:
+        if arr is NULL:
+            return ()
+        try:
             res = []
             for i in range(arr_len):
-                res.append(_pad_map.get(arr[i], "not_applicable"))
+                if arr[i] not in _pad_map:
+                    raise RuntimeError(
+                        "Unrecognized partition affinity domain reported"
+                    )
+                res.append(_pad_map[arr[i]])
+        finally:
             DPCTLInt_Array_Delete(arr)
-            return tuple(res)
-        if arr is not NULL:
-            DPCTLInt_Array_Delete(arr)
-        return ()
+
+        return tuple(res)
 
     cdef cpp_bool equals(self, SyclDevice other):
         """ Returns ``True`` if the :class:`dpctl.SyclDevice` argument has the

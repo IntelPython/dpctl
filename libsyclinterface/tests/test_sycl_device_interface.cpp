@@ -633,10 +633,10 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeProperty)
 {
     DPCTLPartitionPropertyType ptp;
     EXPECT_NO_FATAL_FAILURE(ptp = DPCTLDevice_GetPartitionTypeProperty(DRef));
-    EXPECT_TRUE(ptp == DPCTL_PARTITION_NO_PARTITION ||
-                ptp == DPCTL_PARTITION_EQUALLY ||
-                ptp == DPCTL_PARTITION_BY_COUNTS ||
-                ptp == DPCTL_PARTITION_BY_AFFINITY_DOMAIN);
+    EXPECT_TRUE(
+        ptp == DPCTL_PARTITION_UNKNOWN || ptp == DPCTL_PARTITION_NO_PARTITION ||
+        ptp == DPCTL_PARTITION_EQUALLY || ptp == DPCTL_PARTITION_BY_COUNTS ||
+        ptp == DPCTL_PARTITION_BY_AFFINITY_DOMAIN);
 }
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetHalfFPConfig)
@@ -772,7 +772,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionAffinityDomains)
     for (size_t i = 0; i < len; ++i) {
         EXPECT_TRUE(
             arr[i] >= DPCTLPartitionAffinityDomainType::not_applicable &&
-            arr[i] <= DPCTLPartitionAffinityDomainType::next_partitionable);
+            arr[i] <= DPCTLPartitionAffinityDomainType::next_partitionable)
+            << "Unrecognized partition affinity domain reported";
     }
     EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
 }
@@ -1228,7 +1229,8 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionTypeAffinityDomain)
         DPCTLPartitionAffinityDomainType::numa;
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTLDevice_GetPartitionTypeAffinityDomain(Null_DRef));
-    ASSERT_TRUE(res == DPCTLPartitionAffinityDomainType::not_applicable);
+    ASSERT_TRUE(res == DPCTLPartitionAffinityDomainType::
+                           DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetVendorId)
@@ -1299,7 +1301,7 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetLocalMemType)
 {
     DPCTLLocalMemType res = DPCTL_LOCAL_MEM_TYPE_LOCAL;
     EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetLocalMemType(Null_DRef));
-    ASSERT_TRUE(res == DPCTL_LOCAL_MEM_TYPE_NONE);
+    ASSERT_TRUE(res == DPCTL_LOCAL_MEM_TYPE_UNKNOWN);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionTypeProperty)
@@ -1307,7 +1309,7 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPartitionTypeProperty)
     DPCTLPartitionPropertyType res = DPCTL_PARTITION_EQUALLY;
     EXPECT_NO_FATAL_FAILURE(
         res = DPCTLDevice_GetPartitionTypeProperty(Null_DRef));
-    ASSERT_TRUE(res == DPCTL_PARTITION_NO_PARTITION);
+    ASSERT_TRUE(res == DPCTL_PARTITION_UNKNOWN);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSingleFPConfig)
