@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 * `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
+* Added `create_kernel_bundle_from_sycl_source` for creating `dpctl.SyclKernelBundle` from SYCL source strings via DPC++ extension, as well as corresponding C-API functions to support it [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
