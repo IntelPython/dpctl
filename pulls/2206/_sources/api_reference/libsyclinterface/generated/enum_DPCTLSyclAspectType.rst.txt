@@ -35,5 +35,6 @@ DPCTL device has an associated set of aspects which identify characteristics of 
 	    :target:`emulated<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389ab27bbc08528fa6686e454b22b5d7c18e>`,
 	    :target:`is_component<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389aac76b3ba16e6c05ac7becc31c4c7aea2>`,
 	    :target:`is_composite<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a2e9595f3eff4b403dc0936971c46ac1e>`,
+	    :target:`ext_oneapi_ipc_memory<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389a63fa2c65970ac51f662c707f07c7a121>`,
 	};
 
