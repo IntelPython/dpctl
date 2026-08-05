@@ -1025,14 +1025,48 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     __dpctl_keep DPCTLKernelBuildLogRef BuildLog)
 {
 #if (SUPPORTS_SYCL_COMPILATION > 0)
+    // optional arguments and BuildLog may be NULL, which is equivalent to
+    // passing an empty list or discarding the log
+    // Writing to the log is routed through a helper
+    auto *RawBuildLog = reinterpret_cast<kernel_build_log_t *>(BuildLog);
+    auto set_build_log = [RawBuildLog](const std::string &Msg) {
+        if (RawBuildLog)
+            *RawBuildLog = Msg;
+    };
+    auto fail = [&set_build_log](const char *Msg, int Line) {
+        set_build_log(Msg);
+        error_handler(Msg, __FILE__, "DPCTLKernelBundle_CreateFromSYCLSource",
+                      Line);
+        return nullptr;
+    };
+
+    if (!Ctx)
+        return fail("Input Ctx is nullptr.", __LINE__);
+    if (!Dev)
+        return fail("Input Dev is nullptr.", __LINE__);
+    if (!Source)
+        return fail("Input Source is nullptr.", __LINE__);
+
+    static const virtual_header_list_t EmptyHeaders{};
+    static const kernel_name_list_t EmptyNames{};
+    static const build_option_list_t EmptyOptions{};
+
+    const auto &IncludeFiles =
+        Headers ? *reinterpret_cast<virtual_header_list_t *>(Headers)
+                : EmptyHeaders;
+    const auto &KernelNames =
+        Names ? *reinterpret_cast<kernel_name_list_t *>(Names) : EmptyNames;
+    const auto &Options =
+        BuildOptions ? *reinterpret_cast<build_option_list_t *>(BuildOptions)
+                     : EmptyOptions;
+
     context *SyclCtx = unwrap<context>(Ctx);
     device *SyclDev = unwrap<device>(Dev);
     if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
+        set_build_log("Device does not support compilation of SYCL source.");
         return nullptr;
     }
     try {
-        auto *IncludeFileList =
-            reinterpret_cast<virtual_header_list_t *>(Headers);
         std::unique_ptr<kernel_bundle<bundle_state::ext_oneapi_source>>
             SrcBundle;
         std::string Src(Source);
@@ -1041,20 +1075,21 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         // `include_files` property, but does not implement it. Therefore, the
         // only way to create `include_files` is with the name and content of
         // the first virtual header, if any.
-        if (!IncludeFileList->empty()) {
-            auto IncludeFileIt = IncludeFileList->begin();
-            syclex::include_files IncludeFiles{IncludeFileIt->first,
-                                               IncludeFileIt->second};
+        if (!IncludeFiles.empty()) {
+            auto IncludeFileIt = IncludeFiles.begin();
+            syclex::include_files IncludeFilesProp{IncludeFileIt->first,
+                                                   IncludeFileIt->second};
             for (std::advance(IncludeFileIt, 1);
-                 IncludeFileIt != IncludeFileList->end(); ++IncludeFileIt)
+                 IncludeFileIt != IncludeFiles.end(); ++IncludeFileIt)
             {
-                IncludeFiles.add(IncludeFileIt->first, IncludeFileIt->second);
+                IncludeFilesProp.add(IncludeFileIt->first,
+                                     IncludeFileIt->second);
             }
             SrcBundle = std::make_unique<
                 kernel_bundle<bundle_state::ext_oneapi_source>>(
                 syclex::create_kernel_bundle_from_source(
                     *SyclCtx, syclex::source_language::sycl, Src,
-                    syclex::properties{IncludeFiles}));
+                    syclex::properties{IncludeFilesProp}));
         }
         else {
             SrcBundle = std::make_unique<
@@ -1064,14 +1099,11 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         }
 
         registered_names_property_t RegisteredNames;
-        for (const std::string &Name :
-             *reinterpret_cast<kernel_name_list_t *>(Names))
-        {
+        for (const std::string &Name : KernelNames) {
             RegisteredNames.add(Name);
         }
 
-        syclex::build_options Opts{
-            *reinterpret_cast<build_option_list_t *>(BuildOptions)};
+        syclex::build_options Opts{Options};
 
         std::vector<sycl::device> Devices({*SyclDev});
 
@@ -1083,8 +1115,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         return wrap<kernel_bundle<bundle_state::executable>>(
             ResultBundle.release());
     } catch (const std::exception &e) {
-        auto *RawBuildLog = reinterpret_cast<kernel_build_log_t *>(BuildLog);
-        *RawBuildLog = e.what();
+        set_build_log(e.what());
         return nullptr;
     }
 #else
@@ -1097,6 +1128,15 @@ DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                                 __dpctl_keep const char *KernelName)
 {
 #if (SUPPORTS_SYCL_COMPILATION > 0)
+    if (!KBRef) {
+        error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+    if (!KernelName) {
+        error_handler("Input KernelName is nullptr", __FILE__, __func__,
+                      __LINE__);
+        return nullptr;
+    }
     try {
         auto KernelBundle =
             unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);
@@ -1116,6 +1156,15 @@ bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
                                      __dpctl_keep const char *KernelName)
 {
 #if (SUPPORTS_SYCL_COMPILATION > 0)
+    if (!KBRef) {
+        error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
+        return false;
+    }
+    if (!KernelName) {
+        error_handler("Input KernelName is nullptr", __FILE__, __func__,
+                      __LINE__);
+        return false;
+    }
     try {
         auto KernelBundle =
             unwrap<sycl::kernel_bundle<bundle_state::executable>>(KBRef);

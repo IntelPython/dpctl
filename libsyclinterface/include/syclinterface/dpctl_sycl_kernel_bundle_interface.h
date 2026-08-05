@@ -57,11 +57,13 @@ typedef struct DPCTLSpecConstTy
  * @param    IL             SPIR-V binary
  * @param    Length         The size of the IL binary in bytes.
  * @param    CompileOpts    Optional compiler flags used when compiling the
- *                          SPIR-V binary.
+ *                          SPIR-V binary, or NULL for none.
  * @param    NumSpecConsts  The number of specialization constants.
- * @param    SpecConsts     An array of specialization constants.
+ * @param    SpecConsts     An array of specialization constants, or NULL if
+ *                          NumSpecConsts is 0.
  * @return   A new SyclKernelBundleRef pointer if the kernel_bundle creation
  * succeeded, else returns NULL.
+ *
  * @ingroup KernelBundleInterface
  */
 DPCTL_API
@@ -80,9 +82,11 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSpirv(
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    Dev            An opaque pointer to a sycl::device
  * @param    Source         OpenCL source string
- * @param    CompileOpts    Extra compiler flags (refer Sycl spec.)
+ * @param    CompileOpts    Extra compiler flags (refer Sycl spec.), or NULL
+ *                          for none
  * @return   A new SyclKernelBundleRef pointer if the kernel bundle creation
  * succeeded, else returns NULL.
+ *
  * @ingroup KernelBundleInterface
  */
 DPCTL_API
@@ -273,11 +277,15 @@ bool DPCTLKernelBundle_CreateFromSYCLSource_Available();
  * @param    Ctx            An opaque pointer to a sycl::context
  * @param    Dev            An opaque pointer to a sycl::device
  * @param    Source         SYCL source string
- * @param    Headers        List of virtual headers
- * @param    Names          List of kernel names to register
- * @param    CompileOpts    List of extra compiler flags (refer Sycl spec.)
+ * @param    Headers        List of virtual headers, or NULL for none
+ * @param    Names          List of kernel names to register, or NULL for none
+ * @param    BuildOptions   List of extra compiler flags (refer Sycl spec.),
+ *                          or NULL for none
+ * @param    BuildLog       Build log to write diagnostics to, or NULL to
+ *                          discard the log
  * @return   A new SyclKernelBundleRef pointer if the program creation
  * succeeded, else returns NULL.
+ *
  * @ingroup KernelBundleInterface
  */
 DPCTL_API
