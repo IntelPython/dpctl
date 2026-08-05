@@ -13,6 +13,7 @@ enum DPCTLPartitionPropertyType
 
 	enum DPCTLPartitionPropertyType
 	{
+	    :target:`DPCTL_PARTITION_UNKNOWN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a3b6bcf9e122190cf148b3d56440a8444>`            = 0,
 	    :target:`DPCTL_PARTITION_NO_PARTITION<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a4520cdbba0b38f9fe87c78792d42df73>`,
 	    :target:`DPCTL_PARTITION_EQUALLY<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a1d087562b58c7bcaa1aecde8febe24b6>`,
 	    :target:`DPCTL_PARTITION_BY_COUNTS<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3a647c41b95e14591819932502535e3e1d>`,

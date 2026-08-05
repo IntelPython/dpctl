@@ -13,6 +13,7 @@ enum DPCTLFPConfigType
 
 	enum DPCTLFPConfigType
 	{
+	    :target:`DPCTL_FP_UNKNOWN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11aa935874d6f2ce81f2ba8b267353cc42e>`                       = 0,
 	    :target:`DPCTL_FP_DENORM<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a08c32c0915201b4c808d1d376c8a455f>`,
 	    :target:`DPCTL_FP_INF_NAN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a20315614f427612dd7066c4c4bf0e48b>`,
 	    :target:`DPCTL_FP_ROUND_TO_NEAREST<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11a05c36e3fac71c660c87d3d46fba0fe54>`,
