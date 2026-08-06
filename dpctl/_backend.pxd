@@ -512,6 +512,20 @@ cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
     cdef size_t DPCTLContext_Hash(const DPCTLSyclContextRef CRef)
     cdef _backend_type DPCTLContext_GetBackend(const DPCTLSyclContextRef)
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
+    cdef DPCTLSyclPlatformRef DPCTLContext_GetPlatform(
+        const DPCTLSyclContextRef CRef)
+    cdef int *DPCTLContext_GetAtomicMemoryOrderCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicFenceOrderCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicMemoryScopeCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicFenceScopeCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
 
 
 cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":

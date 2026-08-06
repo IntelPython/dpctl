@@ -161,4 +161,73 @@ void DPCTLContext_Delete(__dpctl_take DPCTLSyclContextRef CtxRef);
 DPCTL_API
 size_t DPCTLContext_Hash(__dpctl_keep DPCTLSyclContextRef CtxRef);
 
+/*!
+ * @brief Wrapper over
+ * context.get_info<info::context::platform>().
+ *
+ * @param    CtxRef         Opaque pointer to a ``sycl::context``.
+ * @return   Returns an opaque pointer to the ``sycl::platform`` associated with
+ * the context.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLContext_GetPlatform(__dpctl_keep const DPCTLSyclContextRef CtxRef);
+
+/*!
+ * @brief Wrapper over
+ * context.get_info<info::context::atomic_memory_order_capabilities>().
+ *
+ * @param    CtxRef         Opaque pointer to a ``sycl::context``.
+ * @param    res_len        Populated with size of the returned array.
+ * @return   Returns an array of DPCTLMemoryOrderType values.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+__dpctl_give int *DPCTLContext_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * context.get_info<info::context::atomic_fence_order_capabilities>().
+ *
+ * @param    CtxRef         Opaque pointer to a ``sycl::context``.
+ * @param    res_len        Populated with size of the returned array.
+ * @return   Returns an array of DPCTLMemoryOrderType values.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+__dpctl_give int *DPCTLContext_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * context.get_info<info::context::atomic_memory_scope_capabilities>().
+ *
+ * @param    CtxRef         Opaque pointer to a ``sycl::context``.
+ * @param    res_len        Populated with size of the returned array.
+ * @return   Returns an array of DPCTLMemoryScopeType values.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+__dpctl_give int *DPCTLContext_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len);
+
+/*!
+ * @brief Wrapper over
+ * context.get_info<info::context::atomic_fence_scope_capabilities>().
+ *
+ * @param    CtxRef         Opaque pointer to a ``sycl::context``.
+ * @param    res_len        Populated with size of the returned array.
+ * @return   Returns an array of DPCTLMemoryScopeType values.
+ * @ingroup ContextInterface
+ */
+DPCTL_API
+__dpctl_give int *DPCTLContext_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len);
+
 DPCTL_C_EXTERN_C_END
