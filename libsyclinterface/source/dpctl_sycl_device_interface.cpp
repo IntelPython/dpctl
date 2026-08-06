@@ -1285,24 +1285,48 @@ __dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
 
 bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
+    bool canCompile = false;
     auto Dev = unwrap<device>(DRef);
-    auto Backend = Dev->get_platform().get_backend();
-    return Backend == backend::opencl ||
-           Backend == backend::ext_oneapi_level_zero;
+    if (Dev) {
+        try {
+            auto Backend = Dev->get_platform().get_backend();
+            canCompile = Backend == backend::opencl ||
+                         Backend == backend::ext_oneapi_level_zero;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
 }
 
 bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
+    bool canCompile = false;
     auto Dev = unwrap<device>(DRef);
-    return Dev->get_platform().get_backend() == backend::opencl;
+    if (Dev) {
+        try {
+            canCompile = Dev->get_platform().get_backend() == backend::opencl;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
 }
 
 bool DPCTLDevice_CanCompileSYCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
 #ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    bool canCompile = false;
     auto Dev = unwrap<device>(DRef);
-    return Dev->ext_oneapi_can_compile(
-        ext::oneapi::experimental::source_language::sycl);
+    if (Dev) {
+        try {
+            canCompile = Dev->ext_oneapi_can_compile(
+                ext::oneapi::experimental::source_language::sycl);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
 #else
     return false;
 #endif
