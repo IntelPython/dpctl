@@ -23,7 +23,17 @@ backend and device_type enumerations.
 
 from enum import Enum, auto
 
-__all__ = ["device_type", "backend_type", "event_status_type"]
+__all__ = [
+    "device_type",
+    "backend_type",
+    "event_status_type",
+    "global_mem_cache_type",
+    "local_mem_type",
+    "partition_property",
+    "fp_config",
+    "memory_order",
+    "memory_scope",
+]
 
 
 class device_type(Enum):
@@ -134,3 +144,145 @@ class global_mem_cache_type(Enum):
     none = auto()
     read_only = auto()
     read_write = auto()
+
+
+class local_mem_type(Enum):
+    """
+    An :class:`enum.Enum` of local memory types for a device.
+
+        |  ``none``
+        |  ``local``
+        |  ``global_mem``
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            dev.local_mem_type
+            # Possible output: <local_mem_type.local: 2>
+    """
+
+    none = auto()
+    local = auto()
+    global_mem = auto()
+
+
+class partition_property(Enum):
+    """
+    An :class:`enum.Enum` of partition property types.
+
+        |  ``no_partition``
+        |  ``partition_equally``
+        |  ``partition_by_counts``
+        |  ``partition_by_affinity_domain``
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            dev.partition_type_property
+            # Possible output: <partition_property.no_partition: 1>
+    """
+
+    no_partition = auto()
+    partition_equally = auto()
+    partition_by_counts = auto()
+    partition_by_affinity_domain = auto()
+
+
+class fp_config(Enum):
+    """
+    An :class:`enum.Enum` of floating-point capability flags.
+
+        |  ``denorm``
+        |  ``inf_nan``
+        |  ``round_to_nearest``
+        |  ``round_to_zero``
+        |  ``round_to_inf``
+        |  ``fma``
+        |  ``correctly_rounded_divide_sqrt``
+        |  ``soft_float``
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            dev.single_fp_config
+            # Possible output: (
+            #     <fp_config.denorm: 1>,
+            #     <fp_config.inf_nan: 2>,
+            #     ...
+            # )
+    """
+
+    denorm = auto()
+    inf_nan = auto()
+    round_to_nearest = auto()
+    round_to_zero = auto()
+    round_to_inf = auto()
+    fma = auto()
+    correctly_rounded_divide_sqrt = auto()
+    soft_float = auto()
+
+
+class memory_order(Enum):
+    """
+    An :class:`enum.Enum` of memory ordering capabilities.
+
+        |  ``relaxed``
+        |  ``acquire``
+        |  ``release``
+        |  ``acq_rel``
+        |  ``seq_cst``
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            dev.atomic_memory_order_capabilities
+            # Possible output: (
+            #     <memory_order.relaxed: 1>,
+            #     <memory_order.acquire: 2>,
+            #     ...
+            # )
+    """
+
+    relaxed = auto()
+    acquire = auto()
+    release = auto()
+    acq_rel = auto()
+    seq_cst = auto()
+
+
+class memory_scope(Enum):
+    """
+    An :class:`enum.Enum` of memory scope capabilities.
+
+        |  ``work_item``
+        |  ``sub_group``
+        |  ``work_group``
+        |  ``device``
+        |  ``system``
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+            dev = dpctl.SyclDevice()
+            dev.atomic_memory_scope_capabilities
+            # Possible output: (
+            #     <memory_scope.work_item: 1>,
+            #     <memory_scope.sub_group: 2>,
+            #     ...
+            # )
+    """
+
+    work_item = auto()
+    sub_group = auto()
+    work_group = auto()
+    device = auto()
+    system = auto()

@@ -26,6 +26,7 @@
 #include "dpctl_utils_helper.h"
 #include "Config/dpctl_config.h"
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 using namespace sycl;
@@ -466,7 +467,101 @@ DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     case info::partition_affinity_domain::next_partitionable:
         return DPCTLPartitionAffinityDomainType::next_partitionable;
     default:
-        throw std::runtime_error("Unsupported partition_affinity_domain type");
+        return DPCTLPartitionAffinityDomainType::
+            DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN;
+    }
+}
+
+DPCTLFPConfigType DPCTL_SyclFPConfigToDPCTLType(info::fp_config FPConfig)
+{
+    switch (FPConfig) {
+    case info::fp_config::denorm:
+        return DPCTLFPConfigType::DPCTL_FP_DENORM;
+    case info::fp_config::inf_nan:
+        return DPCTLFPConfigType::DPCTL_FP_INF_NAN;
+    case info::fp_config::round_to_nearest:
+        return DPCTLFPConfigType::DPCTL_FP_ROUND_TO_NEAREST;
+    case info::fp_config::round_to_zero:
+        return DPCTLFPConfigType::DPCTL_FP_ROUND_TO_ZERO;
+    case info::fp_config::round_to_inf:
+        return DPCTLFPConfigType::DPCTL_FP_ROUND_TO_INF;
+    case info::fp_config::fma:
+        return DPCTLFPConfigType::DPCTL_FP_FMA;
+    case info::fp_config::correctly_rounded_divide_sqrt:
+        return DPCTLFPConfigType::DPCTL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT;
+    case info::fp_config::soft_float:
+        return DPCTLFPConfigType::DPCTL_FP_SOFT_FLOAT;
+    default:
+        return DPCTLFPConfigType::DPCTL_FP_UNKNOWN;
+    }
+}
+
+DPCTLLocalMemType
+DPCTL_SyclLocalMemTypeToDPCTLType(info::local_mem_type LocalMemType)
+{
+    switch (LocalMemType) {
+    case info::local_mem_type::none:
+        return DPCTLLocalMemType::DPCTL_LOCAL_MEM_TYPE_NONE;
+    case info::local_mem_type::local:
+        return DPCTLLocalMemType::DPCTL_LOCAL_MEM_TYPE_LOCAL;
+    case info::local_mem_type::global:
+        return DPCTLLocalMemType::DPCTL_LOCAL_MEM_TYPE_GLOBAL;
+    default:
+        return DPCTLLocalMemType::DPCTL_LOCAL_MEM_TYPE_UNKNOWN;
+    }
+}
+
+DPCTLMemoryOrderType DPCTL_SyclMemoryOrderToDPCTLType(memory_order MemoryOrder)
+{
+    switch (MemoryOrder) {
+    case memory_order::relaxed:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_RELAXED;
+    case memory_order::acquire:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_ACQUIRE;
+    case memory_order::release:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_RELEASE;
+    case memory_order::acq_rel:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_ACQ_REL;
+    case memory_order::seq_cst:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_SEQ_CST;
+    default:
+        return DPCTLMemoryOrderType::DPCTL_MEMORY_ORDER_UNKNOWN;
+    }
+}
+
+DPCTLMemoryScopeType DPCTL_SyclMemoryScopeToDPCTLType(memory_scope MemoryScope)
+{
+    switch (MemoryScope) {
+    case memory_scope::work_item:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_WORK_ITEM;
+    case memory_scope::sub_group:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_SUB_GROUP;
+    case memory_scope::work_group:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_WORK_GROUP;
+    case memory_scope::device:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_DEVICE;
+    case memory_scope::system:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_SYSTEM;
+    default:
+        return DPCTLMemoryScopeType::DPCTL_MEMORY_SCOPE_UNKNOWN;
+    }
+}
+
+DPCTLPartitionPropertyType DPCTL_SyclPartitionPropertyToDPCTLType(
+    info::partition_property PartitionProperty)
+{
+    switch (PartitionProperty) {
+    case info::partition_property::no_partition:
+        return DPCTLPartitionPropertyType::DPCTL_PARTITION_NO_PARTITION;
+    case info::partition_property::partition_equally:
+        return DPCTLPartitionPropertyType::DPCTL_PARTITION_EQUALLY;
+    case info::partition_property::partition_by_counts:
+        return DPCTLPartitionPropertyType::DPCTL_PARTITION_BY_COUNTS;
+    case info::partition_property::partition_by_affinity_domain:
+        return DPCTLPartitionPropertyType::DPCTL_PARTITION_BY_AFFINITY_DOMAIN;
+    default:
+        // TODO: investigate ext_intel_partition_by_cslice extension
+        return DPCTLPartitionPropertyType::DPCTL_PARTITION_UNKNOWN;
     }
 }
 
