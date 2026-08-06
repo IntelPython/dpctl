@@ -1,0 +1,6 @@
+﻿dpctl.select\_cpu\_device
+=========================
+
+.. currentmodule:: dpctl
+
+.. autofunction:: select_cpu_device
