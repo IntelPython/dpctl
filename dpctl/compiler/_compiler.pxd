@@ -18,7 +18,7 @@
 # cython: language_level=3
 
 
-"""The Cython declarations for the functions defined in _program.pyx.
+"""The Cython declarations for the functions defined in _compiler.pyx.
 """
 
 
