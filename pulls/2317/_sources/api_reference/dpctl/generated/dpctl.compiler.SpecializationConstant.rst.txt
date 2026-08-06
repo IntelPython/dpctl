@@ -15,6 +15,7 @@
    .. autosummary::
    
       ~SpecializationConstant.__init__
+      ~SpecializationConstant.addressof_ref
    
    
 
