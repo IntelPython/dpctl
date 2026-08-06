@@ -209,4 +209,18 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef
 DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef);
 
+/*!
+ * @brief Checks if all devices associated with the platform have the given
+ * aspect.
+ *
+ * @param    PRef           Opaque pointer to a ``sycl::platform``
+ * @param    AT             DPCTLSyclAspectType of ``device::aspect``.
+ * @return   True if all ``sycl::device`` objects associated with the
+ * ``sycl::platform`` have the given ``device::aspect``, else false.
+ * @ingroup PlatformInterface
+ */
+DPCTL_API
+bool DPCTLPlatform_HasAspect(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                             DPCTLSyclAspectType AT);
+
 DPCTL_C_EXTERN_C_END
