@@ -408,22 +408,6 @@ declmethod(GetImage3dMaxHeight, image3d_max_height, size_t);
 declmethod(GetImage3dMaxDepth, image3d_max_depth, size_t);
 #undef declmethod
 
-bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool SubGroupProgress = false;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            SubGroupProgress = D->get_info<
-                info::device::sub_group_independent_forward_progress>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return SubGroupProgress;
-}
-
 namespace
 {
 
