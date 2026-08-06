@@ -491,6 +491,8 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
         const DPCTLSyclPlatformRef PRef, _device_type DTy)
     cdef DPCTLDeviceVectorRef DPCTLPlatform_GetCompositeDevices(
         const DPCTLSyclPlatformRef PRef)
+    cdef bool DPCTLPlatform_HasAspect(
+        const DPCTLSyclPlatformRef, _aspect_type)
 
 
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":

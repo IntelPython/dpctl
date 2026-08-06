@@ -45,6 +45,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLPlatform_GetPlatforms,
     DPCTLPlatform_GetVendor,
     DPCTLPlatform_GetVersion,
+    DPCTLPlatform_HasAspect,
     DPCTLPlatform_Hash,
     DPCTLPlatformMgr_GetInfo,
     DPCTLPlatformMgr_PrintInfo,
@@ -56,6 +57,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclDeviceRef,
     DPCTLSyclDeviceSelectorRef,
     DPCTLSyclPlatformRef,
+    _aspect_type,
     _backend_type,
     _device_type,
 )
@@ -314,6 +316,323 @@ cdef class SyclPlatform(_SyclPlatform):
             raise ValueError("Unknown backend type.")
 
     @property
+    def has_aspect_cpu(self):
+        """ Returns ``True`` if all devices of this platform are CPU devices,
+        ``False`` otherwise.
+
+        :Example:
+
+            .. code-block:: python
+
+                >>> import dpctl
+                >>> pl = dpctl.SyclPlatform("opencl:cpu")
+                >>> pl.has_aspect_cpu
+                True
+
+        Returns:
+            bool:
+                Indicates whether all devices of the platform are cpus.
+        """
+        cdef _aspect_type AT = _aspect_type._cpu
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_gpu(self):
+        """ Returns ``True`` if all devices of this platform are GPU devices,
+        ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates whether all devices of the platform are gpus.
+        """
+        cdef _aspect_type AT = _aspect_type._gpu
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_accelerator(self):
+        """ Returns ``True`` if all devices of this platform are accelerator
+        devices, ``False`` otherwise.
+
+        SYCL considers an accelerator to be a device that usually uses a
+        peripheral interconnect for communication.
+
+        Returns:
+            bool:
+                Indicates whether all devices of the platform are
+                accelerators.
+        """
+        cdef _aspect_type AT = _aspect_type._accelerator
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_custom(self):
+        """ Returns ``True`` if all devices of this platform are custom
+        devices, ``False`` otherwise.
+
+        A custom device can be a dedicated accelerator that can use the
+        SYCL API, but programmable kernels cannot be dispatched to the device,
+        only fixed functionality is available. Refer SYCL spec for more details.
+
+        Returns:
+            bool:
+                Indicates whether all devices of the platform are custom SYCL
+                devices.
+        """
+        cdef _aspect_type AT = _aspect_type._custom
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_fp16(self):
+        """ Returns ``True`` if all devices of this platform support
+        half-precision floating point operations, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support half
+                precision floating point operations.
+        """
+        cdef _aspect_type AT = _aspect_type._fp16
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_fp64(self):
+        """ Returns ``True`` if all devices of this platform support 64-bit
+        precision floating point operations, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support 64-bit
+                precision floating point operations.
+        """
+        cdef _aspect_type AT = _aspect_type._fp64
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_atomic64(self):
+        """ Returns ``True`` if all devices of this platform support a basic
+        set of atomic operations, ``False`` otherwise.
+
+        Indicates that the devices support the following atomic operations on
+        64-bit values:
+
+            - ``sycl::atomic_ref::load``
+            - ``sycl::atomic_ref::store``
+            - ``sycl::atomic_ref::fetch_add``
+            - ``sycl::atomic_ref::fetch_sub``
+            - ``sycl::atomic_ref::exchange``
+            - ``sycl::atomic_ref::compare_exchange_strong``
+            - ``sycl::atomic_ref::compare_exchange_weak``
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support a basic set
+                of atomic operations on 64-bit values.
+        """
+        cdef _aspect_type AT = _aspect_type._atomic64
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_image(self):
+        """ Returns ``True`` if all devices of this platform support images,
+        ``False`` otherwise (refer Sec 4.15.3 of SYCL 2020 spec).
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support images.
+        """
+        cdef _aspect_type AT = _aspect_type._image
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_online_compiler(self):
+        """ Returns ``True`` if all devices of this platform support online
+        compilation of device code, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support online
+                compilation of device code.
+        """
+        cdef _aspect_type AT = _aspect_type._online_compiler
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_online_linker(self):
+        """ Returns ``True`` if all devices of this platform support online
+        linking of device code, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support online
+                linking of device code.
+        """
+        cdef _aspect_type AT = _aspect_type._online_linker
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_queue_profiling(self):
+        """ Returns ``True`` if all devices of this platform support queue
+        profiling, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support queue
+                profiling.
+        """
+        cdef _aspect_type AT = _aspect_type._queue_profiling
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_device_allocations(self):
+        """ Returns ``True`` if all devices of this platform support explicit
+        USM allocations, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support explicit USM
+                allocations.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_device_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_host_allocations(self):
+        """ Returns ``True`` if all devices of this platform can access USM
+        memory allocated via ``sycl::malloc_host``, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform can access USM
+                memory allocated via ``sycl::malloc_host``.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_host_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_shared_allocations(self):
+        """ Returns ``True`` if all devices of this platform support USM
+        memory allocated via ``sycl::malloc_shared``, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support USM memory
+                allocated via ``sycl::malloc_shared``.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_shared_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_system_allocations(self):
+        """ Returns ``True`` if the system allocator may be used instead of
+        SYCL USM allocation mechanisms for ``shared`` allocations on all
+        devices of this platform, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that the system allocator may be used instead of
+                SYCL USM allocation mechanisms for ``shared`` allocations.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_system_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_atomic_host_allocations(self):
+        """ Returns ``True`` if all devices of this platform support USM
+        memory allocated via ``sycl::malloc_host`` and can be accessed
+        atomically, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support USM memory
+                allocated via ``sycl::malloc_host`` and can be accessed
+                atomically.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_atomic_host_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_usm_atomic_shared_allocations(self):
+        """ Returns ``True`` if all devices of this platform support USM
+        memory allocated via ``sycl::malloc_shared`` and can be accessed
+        atomically, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform support USM memory
+                allocated via ``sycl::malloc_shared`` and can be accessed
+                atomically.
+        """
+        cdef _aspect_type AT = _aspect_type._usm_atomic_shared_allocations
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_host_debuggable(self):
+        """ Returns ``True`` if kernels running on all devices of this
+        platform can be debugged using standard debuggers that are normally
+        available on the host system, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates that kernels running on all devices of the platform
+                can be debugged using standard debuggers that are normally
+                available on the host system.
+        """
+        cdef _aspect_type AT = _aspect_type._host_debuggable
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_emulated(self):
+        """ Returns ``True`` if all devices of this platform are somehow
+        emulated, ``False`` otherwise. A device with this aspect is not
+        intended for performance, and instead will generally have another
+        non-emulated platform as a better representation for performance.
+
+        Returns:
+            bool:
+                Indicates that all devices of the platform are emulated.
+        """
+        cdef _aspect_type AT = _aspect_type._emulated
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_is_component(self):
+        """ Returns ``True`` if all devices of this platform are component
+        devices, ``False`` otherwise. A device with this aspect will have a
+        composite device from which it is descended.
+
+        Returns:
+            bool:
+                Indicates if all devices of the platform are component devices.
+        """
+        cdef _aspect_type AT = _aspect_type._is_component
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_is_composite(self):
+        """ Returns ``True`` if all devices of this platform are composite
+        devices, ``False`` otherwise. A device with this aspect contains
+        component devices.
+
+        Returns:
+            bool:
+                Indicates if all devices of the platform are composite devices.
+        """
+        cdef _aspect_type AT = _aspect_type._is_composite
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_ipc_memory(self):
+        """ Returns ``True`` if all devices of this platform support
+        inter-process communication (IPC) memory handles, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if all devices of the platform support IPC memory.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_ipc_memory
+        return DPCTLPlatform_HasAspect(self._platform_ref, AT)
+
+    @property
     def default_context(self):
         """Returns the default platform context for this platform
 
@@ -521,39 +840,36 @@ def lsplatform(verbosity=0):
         .. code-block:: text
             :caption: Sample output of lsplatform(verbosity=2)
 
-            Platform 0::
+            Platform  0 ::
                 Name        Intel(R) OpenCL
                 Version     OpenCL 2.1 LINUX
                 Vendor      Intel(R) Corporation
-                Profile     FULL_PROFILE
                 Backend     opencl
-                Devices     1
-                    Device 0::
-                    Name            Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
-                    Driver version  2020.11.11.0.13_160000
-                    Device type     cpu
-            Platform 1::
+                Num Devices 1
+                  # 0
+                    Name                Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
+                    Version             2020.11.11.0.13_160000
+                    Filter string       opencl:cpu:0
+            Platform  1 ::
                 Name        Intel(R) OpenCL HD Graphics
                 Version     OpenCL 3.0
                 Vendor      Intel(R) Corporation
-                Profile     FULL_PROFILE
                 Backend     opencl
-                Devices     1
-                    Device 0::
-                    Name            Intel(R) Graphics Gen9 [0x3e98]
-                    Driver version  20.47.18513
-                    Device type     gpu
-            Platform 2::
+                Num Devices 1
+                  # 0
+                    Name                Intel(R) Graphics Gen9 [0x3e98]
+                    Version             20.47.18513
+                    Filter string       opencl:gpu:0
+            Platform  2 ::
                 Name        Intel(R) Level-Zero
                 Version     1.0
                 Vendor      Intel(R) Corporation
-                Profile     FULL_PROFILE
                 Backend     level_zero
-                Devices     1
-                    Device 0::
-                    Name            Intel(R) Graphics Gen9 [0x3e98]
-                    Driver version  1.0.18513
-                    Device type     gpu
+                Num Devices 1
+                  # 0
+                    Name                Intel(R) Graphics Gen9 [0x3e98]
+                    Version             1.0.18513
+                    Filter string       level_zero:gpu:0
 
     Args:
         verbosity (Literal[0,1,2], optional):
