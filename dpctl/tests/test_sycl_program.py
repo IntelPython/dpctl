@@ -351,12 +351,12 @@ def test_create_kernel_bundle_with_composite_spec_const():
 
 
 def test_specialization_constant_addressof_ref():
-    sp = dpctl_prog.SpecializationConstant(0, "i4", 42)
+    sp = dpc.SpecializationConstant(0, "i4", 42)
     ref = sp.addressof_ref()
     assert type(ref) is int
     assert ref != 0
 
-    sp2 = dpctl_prog.SpecializationConstant(1, "f4", 3.14)
+    sp2 = dpc.SpecializationConstant(1, "f4", 3.14)
     ref2 = sp2.addressof_ref()
     assert type(ref2) is int
     assert ref2 != 0
@@ -410,10 +410,10 @@ def test_spirv_specializations_parser_invalid_spirv():
 
 
 def test_spec_const_equality():
-    sp1 = dpctl_prog.SpecializationConstant(0, "i4", 42)
-    sp2 = dpctl_prog.SpecializationConstant(0, "i4", 42)
-    sp3 = dpctl_prog.SpecializationConstant(1, "i4", 42)
-    sp4 = dpctl_prog.SpecializationConstant(0, "f4", 42.0)
+    sp1 = dpc.SpecializationConstant(0, "i4", 42)
+    sp2 = dpc.SpecializationConstant(0, "i4", 42)
+    sp3 = dpc.SpecializationConstant(1, "i4", 42)
+    sp4 = dpc.SpecializationConstant(0, "f4", 42.0)
 
     assert sp1 == sp2
     assert sp1 != sp3
