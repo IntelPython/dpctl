@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 
+### Removed
+* Removed Cython API for `dpctl.program` submodule, as the submodule is now deprecated, with functionality migrated to `dpctl.compiler` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 
 ### Fixed
+
+### Deprecated
+* Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
 ## [0.22.1] - Apr. 24, 2026
 
