@@ -8,9 +8,14 @@ Global Namespace
 	:hidden:
 
 	namespace_dpctl.rst
+	enum_DPCTLFPConfigType.rst
 	enum_DPCTLGlobalMemCacheType.rst
 	enum_DPCTLKernelArgType.rst
+	enum_DPCTLLocalMemType.rst
+	enum_DPCTLMemoryOrderType.rst
+	enum_DPCTLMemoryScopeType.rst
 	enum_DPCTLPartitionAffinityDomainType.rst
+	enum_DPCTLPartitionPropertyType.rst
 	enum_DPCTLPeerAccessType.rst
 	enum_DPCTLQueuePropertyType.rst
 	enum_DPCTLSyclAspectType.rst
@@ -57,9 +62,14 @@ Overview
 
 	// enums
 
+	enum :ref:`DPCTLFPConfigType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11>`;
 	enum :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`;
 	enum :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`;
+	enum :ref:`DPCTLLocalMemType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149ae>`;
+	enum :ref:`DPCTLMemoryOrderType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672>`;
+	enum :ref:`DPCTLMemoryScopeType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231>`;
 	enum :ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>`;
+	enum :ref:`DPCTLPartitionPropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3>`;
 	enum :ref:`DPCTLPeerAccessType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2abd5871b3207b5249bab61f0731e878>`;
 	enum :ref:`DPCTLQueuePropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4f>`;
 	enum :ref:`DPCTLSyclAspectType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389>`;
@@ -163,6 +173,9 @@ Overview
 
 	:ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` :ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLCString_Delete<doxid-da/d48/dpctl__utils_8h_1a33267597953b5a15fc3a052e0d09ef06>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` const char* str);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLInt_Array_Delete<doxid-da/d48/dpctl__utils_8h_1ab52ed226b4ed6e0c83337a0aecaf6d4e>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` int* arr);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLSize_t_Array_Delete<doxid-da/d48/dpctl__utils_8h_1a8666dbbe5583326eb3b57293be168ffc>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` size_t* arr);
@@ -907,6 +920,29 @@ Deletes the C String argument.
 		- str
 
 		- C string to be deleted
+
+.. index:: pair: function; DPCTLInt_Array_Delete
+.. _doxid-da/d48/dpctl__utils_8h_1ab52ed226b4ed6e0c83337a0aecaf6d4e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLInt_Array_Delete(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` int* arr)
+
+Deletes an array of int elements.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- arr
+
+		- Array to be deleted.
 
 .. index:: pair: function; DPCTLSize_t_Array_Delete
 .. _doxid-da/d48/dpctl__utils_8h_1a8666dbbe5583326eb3b57293be168ffc:

@@ -32,16 +32,25 @@
    .. autosummary::
       :toctree: generated
    
+      ~SyclDevice.address_bits
+      ~SyclDevice.atomic_fence_order_capabilities
+      ~SyclDevice.atomic_fence_scope_capabilities
+      ~SyclDevice.atomic_memory_order_capabilities
+      ~SyclDevice.atomic_memory_scope_capabilities
       ~SyclDevice.backend
+      ~SyclDevice.backend_version
       ~SyclDevice.composite_device
       ~SyclDevice.default_selector_score
       ~SyclDevice.device_type
+      ~SyclDevice.double_fp_config
       ~SyclDevice.driver_version
+      ~SyclDevice.error_correction_support
       ~SyclDevice.filter_string
       ~SyclDevice.global_mem_cache_line_size
       ~SyclDevice.global_mem_cache_size
       ~SyclDevice.global_mem_cache_type
       ~SyclDevice.global_mem_size
+      ~SyclDevice.half_fp_config
       ~SyclDevice.has_aspect_accelerator
       ~SyclDevice.has_aspect_atomic64
       ~SyclDevice.has_aspect_cpu
@@ -69,15 +78,20 @@
       ~SyclDevice.image_3d_max_depth
       ~SyclDevice.image_3d_max_height
       ~SyclDevice.image_3d_max_width
+      ~SyclDevice.image_max_buffer_size
       ~SyclDevice.is_accelerator
+      ~SyclDevice.is_available
       ~SyclDevice.is_cpu
       ~SyclDevice.is_gpu
       ~SyclDevice.local_mem_size
+      ~SyclDevice.local_mem_type
       ~SyclDevice.max_clock_frequency
       ~SyclDevice.max_compute_units
       ~SyclDevice.max_mem_alloc_size
       ~SyclDevice.max_num_sub_groups
+      ~SyclDevice.max_parameter_size
       ~SyclDevice.max_read_image_args
+      ~SyclDevice.max_samplers
       ~SyclDevice.max_work_group_size
       ~SyclDevice.max_work_item_dims
       ~SyclDevice.max_work_item_sizes
@@ -85,6 +99,7 @@
       ~SyclDevice.max_work_item_sizes2d
       ~SyclDevice.max_work_item_sizes3d
       ~SyclDevice.max_write_image_args
+      ~SyclDevice.mem_base_addr_align
       ~SyclDevice.name
       ~SyclDevice.native_vector_width_char
       ~SyclDevice.native_vector_width_double
@@ -94,7 +109,11 @@
       ~SyclDevice.native_vector_width_long
       ~SyclDevice.native_vector_width_short
       ~SyclDevice.parent_device
+      ~SyclDevice.partition_affinity_domains
       ~SyclDevice.partition_max_sub_devices
+      ~SyclDevice.partition_properties
+      ~SyclDevice.partition_type_affinity_domain
+      ~SyclDevice.partition_type_property
       ~SyclDevice.preferred_vector_width_char
       ~SyclDevice.preferred_vector_width_double
       ~SyclDevice.preferred_vector_width_float
@@ -103,9 +122,12 @@
       ~SyclDevice.preferred_vector_width_long
       ~SyclDevice.preferred_vector_width_short
       ~SyclDevice.profiling_timer_resolution
+      ~SyclDevice.single_fp_config
       ~SyclDevice.sub_group_independent_forward_progress
       ~SyclDevice.sub_group_sizes
       ~SyclDevice.sycl_platform
       ~SyclDevice.vendor
+      ~SyclDevice.vendor_id
+      ~SyclDevice.version
    
    
