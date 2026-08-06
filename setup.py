@@ -49,7 +49,6 @@ skbuild.setup(
             "*.pxd",
             "compiler/*.pxd",
             "memory/*.pxd",
-            "program/*.pxd",
         ]
     },
     include_package_data=False,
