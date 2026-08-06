@@ -12,12 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `sycl::info::context` queries `sycl_platform`, `atomic_memory_order_capabilities`, `atomic_fence_order_capabilities`, `atomic_memory_scope_capabilities`, and `atomic_fence_scope_capabilities` to `dpctl.SyclContext` [gh-2354](https://github.com/IntelPython/dpctl/pull/2354)
 * Added `create_kernel_bundle_from_sycl_source`, `is_sycl_source_compilation_available`, and `dpctl.SyclDevice.can_compile` for supporting the creation of `dpctl.SyclKernelBundle`s from SYCL source strings via DPC++ extension, as well as corresponding C-API functions to support it [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
 
+### Removed
+* Removed Cython API for `dpctl.program` submodule, as the submodule is now deprecated, with functionality migrated to `dpctl.compiler` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 
 ### Fixed
+
+### Deprecated
+* Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
 ### Maintenance
 * Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
