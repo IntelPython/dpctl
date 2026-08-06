@@ -172,12 +172,81 @@ DPCTL_DPCTLPartitionAffinityDomainTypeToSycl(
  * @param    PartitionAffinityDomain sycl::info::partition_affinity_domain to be
  * converted to DPCTLPartitionAffinityDomainType enum.
  * @return   A DPCTLPartitionAffinityDomainType enum value for the input
- * sycl::info::partition_affinity_domain enum value.
- * @throws runtime_error
+ * sycl::info::partition_affinity_domain enum value, or
+ * DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN if the value is not recognized.
  */
 DPCTL_API
 DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     sycl::info::partition_affinity_domain PartitionAffinityDomain);
+
+/*!
+ * @brief Converts a sycl::info::fp_config enum value to corresponding
+ * DPCTLFPConfigType enum value.
+ *
+ * @param    FPConfig sycl::info::fp_config to be converted to
+ * DPCTLFPConfigType enum.
+ * @return   A DPCTLFPConfigType enum value for the input
+ * sycl::info::fp_config enum value, or DPCTL_FP_UNKNOWN if the value is
+ * not recognized.
+ */
+DPCTL_API
+DPCTLFPConfigType DPCTL_SyclFPConfigToDPCTLType(sycl::info::fp_config FPConfig);
+
+/*!
+ * @brief Converts a sycl::info::local_mem_type enum value to corresponding
+ * DPCTLLocalMemType enum value.
+ *
+ * @param    LocalMemType sycl::info::local_mem_type to be converted to
+ * DPCTLLocalMemType enum.
+ * @return   A DPCTLLocalMemType enum value for the input
+ * sycl::info::local_mem_type enum value, or DPCTL_LOCAL_MEM_TYPE_UNKNOWN if
+ * the value is not recognized.
+ */
+DPCTL_API
+DPCTLLocalMemType
+DPCTL_SyclLocalMemTypeToDPCTLType(sycl::info::local_mem_type LocalMemType);
+
+/*!
+ * @brief Converts a sycl::memory_order enum value to corresponding
+ * DPCTLMemoryOrderType enum value.
+ *
+ * @param    MemoryOrder sycl::memory_order to be converted to
+ * DPCTLMemoryOrderType enum.
+ * @return   A DPCTLMemoryOrderType enum value for the input
+ * sycl::memory_order enum value, or DPCTL_MEMORY_ORDER_UNKNOWN if the value
+ * is not recognized.
+ */
+DPCTL_API
+DPCTLMemoryOrderType
+DPCTL_SyclMemoryOrderToDPCTLType(sycl::memory_order MemoryOrder);
+
+/*!
+ * @brief Converts a sycl::memory_scope enum value to corresponding
+ * DPCTLMemoryScopeType enum value.
+ *
+ * @param    MemoryScope sycl::memory_scope to be converted to
+ * DPCTLMemoryScopeType enum.
+ * @return   A DPCTLMemoryScopeType enum value for the input
+ * sycl::memory_scope enum value, or DPCTL_MEMORY_SCOPE_UNKNOWN if the value
+ * is not recognized.
+ */
+DPCTL_API
+DPCTLMemoryScopeType
+DPCTL_SyclMemoryScopeToDPCTLType(sycl::memory_scope MemoryScope);
+
+/*!
+ * @brief Converts a sycl::info::partition_property enum value to corresponding
+ * DPCTLPartitionPropertyType enum value.
+ *
+ * @param    PartitionProperty sycl::info::partition_property to be converted
+ * to DPCTLPartitionPropertyType enum.
+ * @return   A DPCTLPartitionPropertyType enum value for the input
+ * sycl::info::partition_property enum value, or DPCTL_PARTITION_UNKNOWN if
+ * the value is not recognized.
+ */
+DPCTL_API
+DPCTLPartitionPropertyType DPCTL_SyclPartitionPropertyToDPCTLType(
+    sycl::info::partition_property PartitionProperty);
 
 /*!
  * @brief Converts a DPCTLPeerAccessType enum value to its corresponding

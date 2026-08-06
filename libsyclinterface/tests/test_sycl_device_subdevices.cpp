@@ -41,7 +41,16 @@ using namespace sycl;
 using namespace dpctl::syclinterface;
 
 const DPCTLPartitionAffinityDomainType a_dpctl_domain =
-    DPCTLPartitionAffinityDomainType::not_applicable;
+    DPCTLPartitionAffinityDomainType::DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN;
+
+/*! Tells whether a domain was recognized by
+ *  DPCTL_SyclPartitionAffinityDomainToDPCTLType.
+ */
+inline bool is_known(DPCTLPartitionAffinityDomainType domain)
+{
+    return domain != DPCTLPartitionAffinityDomainType::
+                         DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN;
+}
 
 struct TestDPCTLSyclDeviceInterface
     : public ::testing::TestWithParam<const char *>
@@ -133,7 +142,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNotApplicable)
     DPCTLPartitionAffinityDomainType dpctl_domain =
         DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain);
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -162,7 +171,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityNuma)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -193,7 +202,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL4Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -224,7 +233,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL3Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -255,7 +264,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL2Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -286,7 +295,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkCreateSubDevicesByAffinityL1Cache)
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
@@ -318,7 +327,7 @@ TEST_P(TestDPCTLSyclDeviceInterface,
     EXPECT_NO_FATAL_FAILURE(
         dpctl_domain = DPCTL_SyclPartitionAffinityDomainToDPCTLType(domain));
 
-    if (dpctl_domain) {
+    if (is_known(dpctl_domain)) {
         EXPECT_NO_FATAL_FAILURE(
             DVRef = DPCTLDevice_CreateSubDevicesByAffinity(DRef, dpctl_domain));
 
