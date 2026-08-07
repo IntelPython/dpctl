@@ -48,6 +48,10 @@ set(LIBZE_SET_LOADER_FILENAME "" CACHE STRING "User-provided Level Zero Loader f
 
 set(LIBZE_DEFAULT_LOADER_FILENAME "libze_loader.so.1" CACHE STRING "Default Level Zero Loader filename")
 
+set(LIBCL_SET_LOADER_FILENAME "" CACHE STRING "User-provided OpenCL ICD Loader filename")
+
+set(LIBCL_DEFAULT_LOADER_FILENAME "libOpenCL.so.1" CACHE STRING "Default OpenCL ICD Loader filename")
+
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
     find_package(IntelSyclCompiler 2021.3.0 REQUIRED)
@@ -65,21 +69,24 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
     endif()
     if (UNIX)
         if ("x${LIBZE_SET_LOADER_FILENAME}" STREQUAL "x")
-            find_library(PI_LEVEL_ZERO_LIB
-                NAMES pi_level_zero ur_adapter_level_zero
+            find_library(LEVEL_ZERO_LIB
+                NAMES ur_adapter_level_zero
                 HINTS ${IntelSyclCompiler_LIBRARY_DIR}
             )
-            find_program(READELF_PROG readelf)
-            find_program(GREP_PROG grep)
-            execute_process(
-                COMMAND ${READELF_PROG} -d ${PI_LEVEL_ZERO_LIB}
-                COMMAND ${GREP_PROG} libze_loader
-                COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
-                OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-                ERROR_STRIP_TRAILING_WHITESPACE
-            )
-            # if libze_loader is statically linked, LIBZE_LOADER_FILENAME will be an empty string
+            if (LEVEL_ZERO_LIB)
+                find_program(READELF_PROG readelf)
+                find_program(GREP_PROG grep)
+                execute_process(
+                    COMMAND ${READELF_PROG} -d ${LEVEL_ZERO_LIB}
+                    COMMAND ${GREP_PROG} libze_loader
+                    COMMAND ${GREP_PROG} -Po "libze_loader[^\]]*"
+                    OUTPUT_VARIABLE LIBZE_LOADER_FILENAME
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_STRIP_TRAILING_WHITESPACE
+                )
+            endif()
+            # empty if the adapter was not found or if it links the Level Zero
+            # loader statically
             if ("x${LIBZE_LOADER_FILENAME}" STREQUAL "x")
                 set(LIBZE_LOADER_FILENAME ${LIBZE_DEFAULT_LOADER_FILENAME})
             endif()
@@ -91,20 +98,31 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
 endif()
 
 if (UNIX)
-  find_library(OPENCL_LIB
-      NAMES ur_adapter_opencl OpenCL
-      HINTS ${IntelSyclCompiler_LIBRARY_DIR}
-  )
-  find_program(READELF_PROG readelf)
-  find_program(GREP_PROG grep)
-  execute_process(
-    COMMAND ${READELF_PROG} -d ${OPENCL_LIB}
-    COMMAND ${GREP_PROG} OpenCL
-    COMMAND ${GREP_PROG} -Po "libOpenCL[^\]]*"
-    OUTPUT_VARIABLE LIBCL_LOADER_FILENAME
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_STRIP_TRAILING_WHITESPACE
-  )
+  if ("x${LIBCL_SET_LOADER_FILENAME}" STREQUAL "x")
+    find_library(OPENCL_LIB
+        NAMES ur_adapter_opencl OpenCL
+        HINTS ${IntelSyclCompiler_LIBRARY_DIR}
+    )
+    if (OPENCL_LIB)
+      find_program(READELF_PROG readelf)
+      find_program(GREP_PROG grep)
+      execute_process(
+        COMMAND ${READELF_PROG} -d ${OPENCL_LIB}
+        COMMAND ${GREP_PROG} OpenCL
+        COMMAND ${GREP_PROG} -Po "libOpenCL[^\]]*"
+        OUTPUT_VARIABLE LIBCL_LOADER_FILENAME
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+      )
+    endif()
+    # Empty if the adapter was not found or if it links the ICD loader
+    # statically
+    if ("x${LIBCL_LOADER_FILENAME}" STREQUAL "x")
+      set(LIBCL_LOADER_FILENAME ${LIBCL_DEFAULT_LOADER_FILENAME})
+    endif()
+  else ()
+    set(LIBCL_LOADER_FILENAME ${LIBCL_SET_LOADER_FILENAME})
+  endif()
   set(LIBCL_LOADER_FILENAME ${LIBCL_LOADER_FILENAME} PARENT_SCOPE)
 endif()
 
