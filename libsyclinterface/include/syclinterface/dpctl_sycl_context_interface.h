@@ -48,7 +48,8 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    DRef           Opaque pointer to a SYCL device.
  * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during context creation. Can be
- *                          NULL if no async_handler is needed.
+ *                          NULL, in which case asynchronous errors are only
+ *                          reported to the dpctl error log.
  * @param    properties     An optional combination of bit flags to define
  *                          context properties. Currently, dpctl does not use
  *                          this argument.
@@ -69,7 +70,8 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  *                          DPCTLSyclDeviceRef opaque pointers.
  * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during context creation. Can be
- *                          NULL if no async_handler is needed.
+ *                          NULL, in which case asynchronous errors are only
+ *                          reported to the dpctl error log.
  * @param    properties     An optional combination of bit flags to define
  *                          context properties. Currently, dpctl does not use
  *                          this argument.

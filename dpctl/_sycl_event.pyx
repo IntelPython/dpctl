@@ -22,8 +22,6 @@
 """ Implements SyclEvent Cython extension type.
 """
 
-import logging
-
 from cpython cimport pycapsule
 from libc.stdint cimport uint64_t
 import collections.abc
@@ -53,8 +51,6 @@ from .enum_types import backend_type, event_status_type
 __all__ = [
     "SyclEvent",
 ]
-
-_logger = logging.getLogger(__name__)
 
 
 cdef api DPCTLSyclEventRef SyclEvent_GetEventRef(SyclEvent ev):

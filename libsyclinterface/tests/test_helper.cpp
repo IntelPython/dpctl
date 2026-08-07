@@ -25,14 +25,51 @@
 //===----------------------------------------------------------------------===//
 
 #include "Config/dpctl_config.h"
+#include "dpctl_error_handlers.h"
 #include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
+#include <memory>
 #include <string>
 #include <sycl/sycl.hpp>
 
 struct TestHelperFns : public ::testing::Test
 {
 };
+
+namespace
+{
+
+void noop_error_handler_fn(int /*err_code*/, const char * /*err_msg*/) {}
+
+} // namespace
+
+// Note: DPCTL_AsyncErrorHandler::operator() cannot be unit tested directly,
+// because sycl::exception_list has no public constructor -- only the SYCL
+// scheduler can populate one. These tests cover installing the functor on a
+// queue, which is the path that would previously dereference a NULL callback.
+
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerWithCallbackIsInstallable)
+{
+    std::unique_ptr<sycl::queue> Q;
+    EXPECT_NO_FATAL_FAILURE(
+        Q = std::make_unique<sycl::queue>(
+            sycl::default_selector_v,
+            DPCTL_AsyncErrorHandler(&noop_error_handler_fn)));
+    ASSERT_TRUE(Q != nullptr);
+    EXPECT_NO_FATAL_FAILURE(Q->wait());
+}
+
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerToleratesNullCallback)
+{
+    // A NULL callback is documented as valid and must not be dereferenced
+    // when the handler runs.
+    std::unique_ptr<sycl::queue> Q;
+    EXPECT_NO_FATAL_FAILURE(
+        Q = std::make_unique<sycl::queue>(sycl::default_selector_v,
+                                          DPCTL_AsyncErrorHandler(nullptr)));
+    ASSERT_TRUE(Q != nullptr);
+    EXPECT_NO_FATAL_FAILURE(Q->wait());
+}
 
 TEST_F(TestHelperFns, ChkDeviceTypeToStr)
 {

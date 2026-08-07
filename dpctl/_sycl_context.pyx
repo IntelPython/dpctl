@@ -22,11 +22,10 @@
 """ Implements SyclContext Cython extension type.
 """
 
-import logging
-
 from cpython cimport pycapsule
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
+from ._async_error_handler cimport get_async_error_handler
 from ._backend cimport (  # noqa: E211
     DPCTLContext_AreEq,
     DPCTLContext_Copy,
@@ -54,6 +53,7 @@ from ._backend cimport (  # noqa: E211
     error_handler_callback,
 )
 from ._sycl_device cimport SyclDevice
+
 from ._sycl_device import SyclDeviceCreationError
 from ._sycl_platform cimport SyclPlatform
 
@@ -63,8 +63,6 @@ __all__ = [
     "SyclContext",
     "SyclContextCreationError",
 ]
-
-_logger = logging.getLogger(__name__)
 
 
 cdef class SyclContextCreationError(Exception):
@@ -238,7 +236,7 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_context_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
         cdef DPCTLSyclContextRef CRef = NULL
-        cdef error_handler_callback * eh_callback = NULL
+        cdef error_handler_callback * eh_callback = get_async_error_handler()
         # look up cached contexts for root devices first
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
@@ -254,7 +252,7 @@ cdef class SyclContext(_SyclContext):
         cdef int i = 0
         cdef size_t num_bytes
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        cdef error_handler_callback * eh_callback = NULL
+        cdef error_handler_callback * eh_callback = get_async_error_handler()
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclDeviceRef *elems
 

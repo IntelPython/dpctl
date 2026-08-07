@@ -336,22 +336,15 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     }
     auto propList = create_property_list(properties);
 
-    if (handler) {
-        try {
-            auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler),
-                                   *propList);
-            q = wrap<queue>(Queue);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    else {
-        try {
-            auto Queue = new queue(*ctx, *dev, *propList);
-            q = wrap<queue>(Queue);
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
+    // The async handler is installed unconditionally so that asynchronous
+    // errors are always reported through error_handler. A NULL `handler` simply
+    // means no additional callback is invoked.
+    try {
+        auto Queue =
+            new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler), *propList);
+        q = wrap<queue>(Queue);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
     }
 
     return q;
@@ -380,7 +373,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     if (!CRef) {
         context *ContextPtr = nullptr;
         try {
-            ContextPtr = new context(*Device);
+            ContextPtr = new context(*Device, DPCTL_AsyncErrorHandler(handler));
             CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
@@ -644,12 +637,16 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
 {
-    // \todo what happens if the QRef is null or a pointer to a valid sycl
-    // queue
     if (QRef) {
         auto SyclQueue = unwrap<queue>(QRef);
-        if (SyclQueue)
-            SyclQueue->wait();
+        try {
+            if (SyclQueue)
+                SyclQueue->wait();
+        } catch (std::exception const &e) {
+            // wait() invokes the async handler, which may rethrow. Report the
+            // error rather than let a C++ exception escape the C API.
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
     }
     else {
         error_handler("Argument QRef is NULL.", __FILE__, __func__, __LINE__);

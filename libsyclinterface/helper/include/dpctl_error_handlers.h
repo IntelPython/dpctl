@@ -31,6 +31,10 @@
 
 /*!
  * @brief Functor class used by DPCTL to handle SYCL asynchronous errors.
+ *
+ * Every asynchronous error is always reported through ``error_handler``. When
+ * a non-NULL callback was supplied at construction, it is additionally invoked
+ * with the error code and message of each asynchronous error.
  */
 class DPCTL_API DPCTL_AsyncErrorHandler
 {

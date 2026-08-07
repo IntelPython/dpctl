@@ -19,7 +19,6 @@
 # cython: linetrace=True
 # cython: freethreading_compatible = True
 
-import logging
 import threading
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
@@ -28,8 +27,6 @@ __all__ = [
     "_global_device_queue_cache",
     "get_device_cached_queue",
 ]
-
-_logger = logging.getLogger(__name__)
 
 
 cdef class _DeviceDefaultQueueCache:

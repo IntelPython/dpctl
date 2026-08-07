@@ -26,7 +26,7 @@ from libcpp cimport bool
 
 
 cdef extern from "syclinterface/dpctl_error_handler_type.h":
-    ctypedef void error_handler_callback(int err_code)
+    ctypedef void error_handler_callback(int err_code, const char *err_msg)
 
 cdef extern from "syclinterface/dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)

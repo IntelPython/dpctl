@@ -22,6 +22,7 @@
 """ Implements SyclQueue Cython extension type.
 """
 
+from ._async_error_handler cimport get_async_error_handler
 from ._backend cimport (  # noqa: E211
     DPCTLContext_Create,
     DPCTLContext_Delete,
@@ -79,6 +80,7 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
     _md_local_accessor,
     _queue_property_type,
+    error_handler_callback,
 )
 from .memory._memory cimport _Memory
 
@@ -103,7 +105,6 @@ from libc.stdlib cimport free, malloc
 
 import atexit
 import collections.abc
-import logging
 import os
 import struct
 import sys
@@ -135,9 +136,6 @@ __all__ = [
     "SyclKernelSubmitError",
     "SyclQueueCreationError",
 ]
-
-
-_logger = logging.getLogger(__name__)
 
 
 cdef class kernel_arg_type_attribute:
@@ -1008,19 +1006,20 @@ cdef class SyclQueue(_SyclQueue):
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclQueueRef QRef
+        cdef error_handler_callback * eh_callback = get_async_error_handler()
 
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
             # look-up failed (was not a root device?)
             # create a new context
-            CRef = DPCTLContext_Create(DRef, NULL, 0)
+            CRef = DPCTLContext_Create(DRef, eh_callback, 0)
             if (CRef is NULL):
                 DPCTLDevice_Delete(DRef)
                 return -3
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
-            NULL,
+            eh_callback,
             props
         )
         if QRef is NULL:
@@ -1097,7 +1096,7 @@ cdef class SyclQueue(_SyclQueue):
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
-            NULL,
+            get_async_error_handler(),
             props
         )
         if (QRef is NULL):
@@ -1182,7 +1181,7 @@ cdef class SyclQueue(_SyclQueue):
         qref = DPCTLQueue_Create(
             cref,
             dref,
-            NULL,
+            get_async_error_handler(),
             props
         )
         if qref is NULL:

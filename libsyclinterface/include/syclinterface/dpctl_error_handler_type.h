@@ -31,5 +31,8 @@
  *
  * @param    err_code       Error code extracted from an SYCL asynchronous
  * error.
+ * @param    err_msg        Explanatory message of the SYCL asynchronous error,
+ * as reported by ``std::exception::what()``. The pointer is only valid for the
+ * duration of the call, and must not be retained by the callback. Never NULL.
  */
-typedef void error_handler_callback(int err_code);
+typedef void error_handler_callback(int err_code, const char *err_msg);

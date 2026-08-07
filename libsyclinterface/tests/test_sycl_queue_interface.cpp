@@ -45,7 +45,7 @@ using namespace dpctl::syclinterface;
 namespace
 {
 
-void error_handler_fn(int /*err*/) { return; }
+void error_handler_fn(int /*err*/, const char * /*err_msg*/) { return; }
 
 struct TestDPCTLQueueMemberFunctions
     : public ::testing::TestWithParam<

@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* `dpctl.SyclQueue` and `dpctl.SyclContext` now install an asynchronous error handler which reports SYCL asynchronous errors through the `dpctl._async_error_handler` logger, instead of passing a NULL handler
+* **Breaking change to `libsyclinterface`**: `error_handler_callback` gained a second parameter carrying the error message, changing from `void(int)` to `void(int, const char *)`
+* `DPCTLQueue_Create` now always installs the `DPCTL_AsyncErrorHandler` functor, so that asynchronous errors are reported to the dpctl error log even when the `handler` argument is NULL
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
@@ -27,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 * A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Fixed a null pointer dereference in `DPCTL_AsyncErrorHandler` when a `sycl::context` created with a NULL `handler` argument reported an asynchronous error
+* `DPCTLQueue_CreateForDevice` now installs the caller-supplied async error handler on the fallback `sycl::context` it creates for non-root devices
+* `DPCTLQueue_Wait` no longer lets a C++ exception raised by the asynchronous error handler escape through the C API
 
 ### Maintenance
 * Removed the `-fno-sycl-id-queries-fit-in-int` compile option, which none of the `dpctl` extensions need since `dpctl.tensor` moved to `dpnp` [gh-2413](https://github.com/IntelPython/dpctl/pull/2413)

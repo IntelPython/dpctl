@@ -47,7 +47,8 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    DRef           An opaque pointer to a sycl::device
  * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
- *                          NULL if no async_handler is needed.
+ *                          NULL, in which case asynchronous errors are only
+ *                          reported to the dpctl error log.
  * @param    properties     A combination of bit flags using the values defined
  *                          in the DPCTLQueuePropertyType enum. The bit flags
  *                          are used to create a sycl::property_list that is
@@ -86,7 +87,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  * @param    DRef           An opaque pointer to a ``sycl::device``.
  * @param    handler        A callback function that will be invoked by the
  *                          async_handler used during queue creation. Can be
- *                          NULL if no async_handler is needed.
+ *                          NULL, in which case asynchronous errors are only
+ *                          reported to the dpctl error log.
  * @param    properties     A combination of bit flags using the values defined
  *                          in the DPCTLQueuePropertyType enum. The bit flags
  *                          are used to create a ``sycl::property_list`` that is
