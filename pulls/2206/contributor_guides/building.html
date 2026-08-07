@@ -836,6 +836,26 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
 </div>
 <p>You can retrieve available options and their descriptions using the option
 <code class="code docutils literal notranslate"><span class="pre">--help</span></code>.</p>
+<section id="runtime-loaders-when-using-a-nightly-dpc-build">
+<h3>Runtime loaders when using a nightly DPC++ build<a class="headerlink" href="#runtime-loaders-when-using-a-nightly-dpc-build" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> creates kernel bundles from OpenCL* source and from SPIR-V by
+calling into the OpenCL ICD loader and the Level Zero loader directly.</p>
+<p>The oneAPI DPC++ Compiler installation and the conda packages provide these
+loaders as dependencies. Nightly builds of the open source DPC++ toolchain,
+however, bundle neither, so they must be installed separately:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">libOpenCL.so.1</span></code>, from the OpenCL ICD loader (for example, <code class="docutils literal notranslate"><span class="pre">ocl-icd</span></code>
+conda package or <code class="docutils literal notranslate"><span class="pre">ocl-icd-libopencl1</span></code> system package)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">libze_loader.so.1</span></code>, from the Level Zero loader (for example, the
+<code class="docutils literal notranslate"><span class="pre">level-zero</span></code> conda package or the <code class="docutils literal notranslate"><span class="pre">libze1</span></code> system package)</p></li>
+</ul>
+<p>Both can be installed from the toolchain’s own dependencies. The DPC++ toolchain
+pins them in <a class="reference external" href="https://github.com/intel/llvm/blob/sycl/devops/dependencies.json">devops/dependencies.json</a>,
+as the <code class="docutils literal notranslate"><span class="pre">level_zero</span></code> and <code class="docutils literal notranslate"><span class="pre">oclcpu</span></code> entries.</p>
+<p>Should a loader be installed under a different file name, override the name that
+<a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> uses with the <code class="docutils literal notranslate"><span class="pre">LIBCL_SET_LOADER_FILENAME</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LIBZE_SET_LOADER_FILENAME</span></code> CMake variables.</p>
+</section>
 </section>
 </section>
 <section id="building-the-libsyclinterface-library">
@@ -949,7 +969,10 @@ make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><sp
 <li><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#building-using-custom-dpc">Building Using Custom DPC++</a></li>
+<li><a class="reference internal" href="#building-using-custom-dpc">Building Using Custom DPC++</a><ul>
+<li><a class="reference internal" href="#runtime-loaders-when-using-a-nightly-dpc-build">Runtime loaders when using a nightly DPC++ build</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
