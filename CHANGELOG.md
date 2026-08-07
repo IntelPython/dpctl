@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Maintenance
+* Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
+
 ## [0.22.1] - Apr. 24, 2026
 
 This is a bug-fix release which fixes a memory leak in `dpctl.RawKernelArg`.
