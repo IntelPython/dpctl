@@ -91,14 +91,14 @@ if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
 endif()
 
 if (UNIX)
-  find_library(PI_OPENCL_LIB
-      NAMES pi_opencl ur_adapter_opencl
+  find_library(OPENCL_LIB
+      NAMES ur_adapter_opencl OpenCL
       HINTS ${IntelSyclCompiler_LIBRARY_DIR}
   )
   find_program(READELF_PROG readelf)
   find_program(GREP_PROG grep)
   execute_process(
-    COMMAND ${READELF_PROG} -d ${PI_OPENCL_LIB}
+    COMMAND ${READELF_PROG} -d ${OPENCL_LIB}
     COMMAND ${GREP_PROG} OpenCL
     COMMAND ${GREP_PROG} -Po "libOpenCL[^\]]*"
     OUTPUT_VARIABLE LIBCL_LOADER_FILENAME
