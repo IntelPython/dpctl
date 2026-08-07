@@ -1,6 +1,6 @@
 #                      Data Parallel Control (dpctl)
 #
-# Copyright 2026 Intel Corporation
+# Copyright 2020-2025 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
 # limitations under the License.
 
 """
-A collection of utility functions for dpctl.program module.
+A collection of utility functions for dpctl.compiler module.
 """
 
-from ._utils import SpecializationConstantInfo, parse_spirv_specializations
+from dpctl.compiler.utils._utils import parse_spirv_specializations
 
 __all__ = [
     "parse_spirv_specializations",
-    "SpecializationConstantInfo",
 ]

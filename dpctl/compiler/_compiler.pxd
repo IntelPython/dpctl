@@ -18,7 +18,7 @@
 # cython: language_level=3
 
 
-"""The Cython declarations for the functions defined in _program.pyx.
+"""The Cython declarations for the functions defined in _compiler.pyx.
 """
 
 
@@ -67,8 +67,4 @@ cpdef create_kernel_bundle_from_spirv (
     const unsigned char[:] IL,
     unicode copts=*,
     list specializations=*,
-)
-cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
-cpdef create_program_from_spirv (
-    SyclQueue q, const unsigned char[:] IL, unicode copts=*
 )

@@ -9,7 +9,8 @@ The package ``dpctl`` provides
 * Python language bindings for the DPC++ runtime
    - :ref:`API objects <dpctl_pyapi>` in :py:mod:`dpctl` namespace
    - :ref:`API objects <dpctl_memory_pyapi>` in :py:mod:`dpctl.memory` namespace
-   - :ref:`API objects <dpctl_program_pyapi>` in :py:mod:`dpctl.program` namespace
+   - :ref:`API objects <dpctl_compiler_pyapi>` in :py:mod:`dpctl.compiler` namespace
+   - :ref:`API objects <dpctl_program_pyapi>` in :py:mod:`dpctl.program` namespace (deprecated, use :py:mod:`dpctl.compiler`)
    - :ref:`API objects <dpctl_utils_pyapi>` in :py:mod:`dpctl.utils` namespace
 * Python C API
    - :ref:`C API <dpctl_capi>` for working with Python classes defined in :mod:`dpctl`
@@ -31,6 +32,7 @@ The package ``dpctl`` provides
 
    dpctl/index
    dpctl/memory
+   dpctl/compiler
    dpctl/program
    dpctl/utils
    libsyclinterface/index
