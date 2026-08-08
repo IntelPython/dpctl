@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import platform
+import sys
+
 import pytest
 
 import dpctl
@@ -49,3 +52,12 @@ def get_queue_or_skip(args=()):
     except dpctl.SyclQueueCreationError:
         pytest.skip(f"Queue could not be created from {args}")
     return q
+
+
+def is_wsl_or_windows():
+    """
+    Skip test on WSL or Windows.
+    Useful with AdaptiveCpp, which crashes more catastrophically for
+    unsupported CUDA features.
+    """
+    return sys.platform == "win32" or "microsoft" in platform.release().lower()
