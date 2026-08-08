@@ -61,3 +61,4 @@ cdef public api class SyclDevice(_SyclDevice) [
     cdef int get_overall_ordinal(self)
     cdef int get_backend_ordinal(self)
     cdef int get_backend_and_device_type_ordinal(self)
+    cpdef bint can_compile(self, str language)
