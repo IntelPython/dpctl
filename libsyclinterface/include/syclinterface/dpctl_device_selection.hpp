@@ -1,7 +1,6 @@
 //===-- dpctl_device_selection.h -
 //                              Device selector class declaration --*-C++-*- =//
 //
-//
 //                      Data Parallel Control (dpctl)
 //
 // Copyright 2022 Intel Corporation
@@ -28,6 +27,7 @@
 #pragma once
 
 #include "Support/DllExport.h"
+#include <string>
 #include <sycl/sycl.hpp>
 
 namespace dpctl
@@ -78,7 +78,11 @@ public:
     int operator()(const sycl::device &d) const override;
 
 private:
+#ifndef __ADAPTIVECPP__
     sycl::ext::oneapi::filter_selector _impl;
+#else
+    std::string _impl; // Standard string fallback for AdaptiveCpp
+#endif
 };
 
 } // namespace syclinterface

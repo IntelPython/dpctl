@@ -11,8 +11,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 
 find_package(Git REQUIRED)
 
-if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
-   find_package(IntelSYCL REQUIRED)
+if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+    if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
+       find_package(IntelSYCL REQUIRED)
+    endif()
+elseif(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+    if(NOT DEFINED AdaptiveCpp_FOUND OR NOT AdaptiveCpp_FOUND)
+       find_package(AdaptiveCpp CONFIG REQUIRED)
+    endif()
 endif()
 
 # Option to turn on support for creating Level Zero interoperability kernel
@@ -66,11 +72,14 @@ set(LIBCL_SET_LOADER_FILENAME "" CACHE STRING "User-provided OpenCL ICD Loader f
 
 set(LIBCL_DEFAULT_LOADER_FILENAME "libOpenCL.so.1" CACHE STRING "Default OpenCL ICD Loader filename")
 
-# Minimum version requirement only when oneAPI dpcpp is used.
-if(DPCTL_DPCPP_FROM_ONEAPI)
-    find_package(IntelSyclCompiler 2026.0.0 REQUIRED)
-else()
-    find_package(IntelSyclCompiler REQUIRED)
+# SYCL RT driver discovery
+if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+    # Minimum version requirement only when oneAPI dpcpp is used.
+    if(DPCTL_DPCPP_FROM_ONEAPI)
+        find_package(IntelSyclCompiler 2026.0.0 REQUIRED)
+    else()
+        find_package(IntelSyclCompiler REQUIRED)
+    endif()
 endif()
 
 if(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION)

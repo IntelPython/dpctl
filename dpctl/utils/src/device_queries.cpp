@@ -13,9 +13,11 @@ std::uint32_t py_intel_device_id(const sycl::device &d)
 {
     static constexpr std::uint32_t device_id_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_device_id)) {
         return d.get_info<sycl::ext::intel::info::device::device_id>();
     }
+#endif
 
     return device_id_unavailable;
 }
@@ -24,9 +26,11 @@ std::uint32_t py_intel_gpu_eu_count(const sycl::device &d)
 {
     static constexpr std::uint32_t eu_count_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_eu_count)) {
         return d.get_info<sycl::ext::intel::info::device::gpu_eu_count>();
     }
+#endif
 
     return eu_count_unavailable;
 }
@@ -35,10 +39,12 @@ std::uint32_t py_intel_gpu_hw_threads_per_eu(const sycl::device &d)
 {
     static constexpr std::uint32_t thread_count_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_hw_threads_per_eu)) {
         return d
             .get_info<sycl::ext::intel::info::device::gpu_hw_threads_per_eu>();
     }
+#endif
 
     return thread_count_unavailable;
 }
@@ -47,9 +53,11 @@ std::uint32_t py_intel_gpu_eu_simd_width(const sycl::device &d)
 {
     static constexpr std::uint32_t width_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_eu_simd_width)) {
         return d.get_info<sycl::ext::intel::info::device::gpu_eu_simd_width>();
     }
+#endif
 
     return width_unavailable;
 }
@@ -58,9 +66,11 @@ std::uint32_t py_intel_gpu_slices(const sycl::device &d)
 {
     static constexpr std::uint32_t count_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_slices)) {
         return d.get_info<sycl::ext::intel::info::device::gpu_slices>();
     }
+#endif
 
     return count_unavailable;
 }
@@ -69,10 +79,12 @@ std::uint32_t py_intel_gpu_subslices_per_slice(const sycl::device &d)
 {
     static constexpr std::uint32_t count_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_subslices_per_slice)) {
         return d.get_info<
             sycl::ext::intel::info::device::gpu_subslices_per_slice>();
     }
+#endif
 
     return count_unavailable;
 }
@@ -81,10 +93,12 @@ std::uint32_t py_intel_gpu_eu_count_per_subslice(const sycl::device &d)
 {
     static constexpr std::uint32_t count_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_gpu_eu_count_per_subslice)) {
         return d.get_info<
             sycl::ext::intel::info::device::gpu_eu_count_per_subslice>();
     }
+#endif
 
     return count_unavailable;
 }
@@ -93,9 +107,11 @@ std::uint64_t py_intel_max_mem_bandwidth(const sycl::device &d)
 {
     static constexpr std::uint64_t bandwidth_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_max_mem_bandwidth)) {
         return d.get_info<sycl::ext::intel::info::device::max_mem_bandwidth>();
     }
+#endif
 
     return bandwidth_unavailable;
 }
@@ -104,9 +120,11 @@ std::uint64_t py_intel_free_memory(const sycl::device &d)
 {
     static constexpr std::uint64_t free_memory_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_free_memory)) {
         return d.get_info<sycl::ext::intel::info::device::free_memory>();
     }
+#endif
     return free_memory_unavailable;
 }
 
@@ -114,9 +132,11 @@ std::uint32_t py_intel_memory_clock_rate(const sycl::device &d)
 {
     static constexpr std::uint32_t rate_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_memory_clock_rate)) {
         return d.get_info<sycl::ext::intel::info::device::memory_clock_rate>();
     }
+#endif
     return rate_unavailable;
 }
 
@@ -124,9 +144,11 @@ std::uint32_t py_intel_memory_bus_width(const sycl::device &d)
 {
     static constexpr std::uint32_t width_unavailable = 0;
 
+#ifndef __ADAPTIVECPP__
     if (d.has(sycl::aspect::ext_intel_memory_bus_width)) {
         return d.get_info<sycl::ext::intel::info::device::memory_bus_width>();
     }
+#endif
     return width_unavailable;
 }
 

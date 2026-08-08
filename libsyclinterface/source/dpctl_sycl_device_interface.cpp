@@ -42,9 +42,10 @@ using namespace sycl;
 
 namespace
 {
-
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 
@@ -62,11 +63,12 @@ DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD
+#if defined(__ADAPTIVECPP__) ||                                                \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD)
             auto id_sizes =
                 D->get_info<info::device::max_work_item_sizes<dim>>();
 #else
-            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+            auto id_sizes = D->get_info<info::device::max_work_item_sizes<3>>();
 #endif
             sizes = new size_t[dim];
             for (auto i = 0ul; i < dim; ++i) {
@@ -838,6 +840,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     using vecTy = std::vector<DPCTLSyclDeviceRef>;
     vecTy *ComponentDevicesVectorPtr = nullptr;
     if (DRef) {
+#ifndef __ADAPTIVECPP__
         auto D = unwrap<device>(DRef);
         try {
             auto componentDevices =
@@ -854,6 +857,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
+#endif
     }
     return wrap<vecTy>(ComponentDevicesVectorPtr);
 }
@@ -861,6 +865,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     if (D) {
         bool is_component = false;
@@ -884,7 +889,12 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
     else
         return nullptr;
+#else
+    return nullptr;
+#endif
 }
+
+#ifndef __ADAPTIVECPP__
 
 static inline bool _CallPeerAccess(device dev, device peer)
 {
@@ -905,11 +915,14 @@ static inline bool _CallPeerAccess(device dev, device peer)
     return false;
 }
 
+#endif /* #ifndef __ADAPTIVECPP__ */
+
 bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                __dpctl_keep const DPCTLSyclDeviceRef PDRef,
                                DPCTLPeerAccessType PT)
 {
     bool canAccess = false;
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -922,12 +935,14 @@ bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             }
         }
     }
+#endif
     return canAccess;
 }
 
 void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -943,12 +958,14 @@ void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                           __func__, __LINE__);
         }
     }
+#endif
     return;
 }
 
 void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    __dpctl_keep const DPCTLSyclDeviceRef PDRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -964,6 +981,7 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                           __func__, __LINE__);
         }
     }
+#endif
     return;
 }
 
@@ -1103,6 +1121,7 @@ __dpctl_give const char *
 DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     const char *cstr_version = nullptr;
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
@@ -1112,6 +1131,10 @@ DPCTLDevice_GetBackendVersion(__dpctl_keep const DPCTLSyclDeviceRef DRef)
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
+#else
+    error_handler("Backend version of a device is not queryable in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+#endif
     return cstr_version;
 }
 
@@ -1219,6 +1242,8 @@ DPCTLDevice_GetDoubleFPConfig(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         DRef, res_len, DPCTL_SyclFPConfigToDPCTLType);
 }
 
+#ifndef __ADAPTIVECPP__
+
 __dpctl_give int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len)
@@ -1251,6 +1276,52 @@ __dpctl_give int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
         DRef, res_len, DPCTL_SyclMemoryScopeToDPCTLType);
 }
 
+#else
+
+namespace
+{
+
+int *unsupported_device_capabilities(size_t *res_len)
+{
+    error_handler("Atomic capabilities of a device are not queryable in "
+                  "AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    *res_len = 0;
+    return nullptr;
+}
+
+} // end of anonymous namespace
+
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef,
+    size_t *res_len)
+{
+    return unsupported_device_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLDevice_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef,
+    size_t *res_len)
+{
+    return unsupported_device_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLDevice_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef,
+    size_t *res_len)
+{
+    return unsupported_device_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLDevice_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclDeviceRef,
+    size_t *res_len)
+{
+    return unsupported_device_capabilities(res_len);
+}
+
+#endif /* #ifndef __ADAPTIVECPP__ */
+
 __dpctl_give int *
 DPCTLDevice_GetPartitionProperties(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    size_t *res_len)
@@ -1274,8 +1345,12 @@ bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     if (Dev) {
         try {
             auto Backend = Dev->get_platform().get_backend();
+#ifndef __ADAPTIVECPP__
             canCompile = Backend == backend::opencl ||
                          Backend == backend::ext_oneapi_level_zero;
+#else
+            canCompile = Backend == backend::ocl;
+#endif
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
@@ -1289,7 +1364,11 @@ bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto Dev = unwrap<device>(DRef);
     if (Dev) {
         try {
+#ifndef __ADAPTIVECPP__
             canCompile = Dev->get_platform().get_backend() == backend::opencl;
+#else
+            canCompile = Dev->get_platform().get_backend() == backend::ocl;
+#endif
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
