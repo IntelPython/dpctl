@@ -39,6 +39,10 @@
 #include "syclinterface/dpctl_data_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 
+#ifdef __ADAPTIVECPP__
+#include "apis/include/dpctl_acpp_host_task.hpp"
+#endif
+
 DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
                                 PyObject **obj_array,
                                 size_t obj_array_size,
@@ -49,12 +53,14 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
     using dpctl::syclinterface::unwrap;
     using dpctl::syclinterface::wrap;
 
-    sycl::queue *q = unwrap<sycl::queue>(QRef);
+    [[maybe_unused]] sycl::queue *q = unwrap<sycl::queue>(QRef);
 
     std::vector<PyObject *> obj_vec(obj_array, obj_array + obj_array_size);
 
     try {
-        sycl::event ht_ev = q->submit([&](sycl::handler &cgh) {
+        sycl::event ht_ev;
+#ifndef __ADAPTIVECPP__
+        ht_ev = q->submit([&](sycl::handler &cgh) {
             for (size_t ev_id = 0; ev_id < nDepERefs; ++ev_id) {
                 cgh.depends_on(*(unwrap<sycl::event>(depERefs[ev_id])));
             }
@@ -76,6 +82,35 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
                 }
             });
         });
+#else
+        // Submit a dummy kernel to track dependencies
+        ht_ev = q->submit([&](sycl::handler &cgh) {
+            for (size_t ev_id = 0; ev_id < nDepERefs; ++ev_id) {
+                cgh.depends_on(*(unwrap<sycl::event>(depERefs[ev_id])));
+            }
+            class dpctl_async_decref_dummy;
+            cgh.single_task<dpctl_async_decref_dummy>([=]() {});
+        });
+
+        // Delegate to our custom thread pool
+        dpctl::detail::AcppHostTaskPool::get().submit(
+            ht_ev, [obj_array_size, obj_vec = std::move(obj_vec)]() {
+                const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+                const bool finalizing = _Py_IsFinalizing();
+#else
+            const bool finalizing = Py_IsFinalizing();
+#endif
+                if (initialized && !finalizing) {
+                    PyGILState_STATE gstate;
+                    gstate = PyGILState_Ensure();
+                    for (size_t i = 0; i < obj_array_size; ++i) {
+                        Py_DECREF(obj_vec[i]);
+                    }
+                    PyGILState_Release(gstate);
+                }
+            });
+#endif
 
         static constexpr int result_ok = 0;
 

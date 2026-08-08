@@ -42,9 +42,10 @@ using namespace sycl;
 
 namespace
 {
-
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 
@@ -62,11 +63,12 @@ DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD
+#if defined(__ADAPTIVECPP__) ||                                                \
+    (__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD)
             auto id_sizes =
                 D->get_info<info::device::max_work_item_sizes<dim>>();
 #else
-            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
+            auto id_sizes = D->get_info<info::device::max_work_item_sizes<3>>();
 #endif
             sizes = new size_t[dim];
             for (auto i = 0ul; i < dim; ++i) {
@@ -854,6 +856,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     using vecTy = std::vector<DPCTLSyclDeviceRef>;
     vecTy *ComponentDevicesVectorPtr = nullptr;
     if (DRef) {
+#ifndef __ADAPTIVECPP__
         auto D = unwrap<device>(DRef);
         try {
             auto componentDevices =
@@ -870,6 +873,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
+#endif
     }
     return wrap<vecTy>(ComponentDevicesVectorPtr);
 }
@@ -877,6 +881,7 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 __dpctl_give DPCTLSyclDeviceRef
 DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     if (D) {
         bool is_component = false;
@@ -900,7 +905,12 @@ DPCTLDevice_GetCompositeDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     }
     else
         return nullptr;
+#else
+    return nullptr;
+#endif
 }
+
+#ifndef __ADAPTIVECPP__
 
 static inline bool _CallPeerAccess(device dev, device peer)
 {
@@ -921,11 +931,14 @@ static inline bool _CallPeerAccess(device dev, device peer)
     return false;
 }
 
+#endif /* #ifndef __ADAPTIVECPP__ */
+
 bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                __dpctl_keep const DPCTLSyclDeviceRef PDRef,
                                DPCTLPeerAccessType PT)
 {
     bool canAccess = false;
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -938,12 +951,14 @@ bool DPCTLDevice_CanAccessPeer(__dpctl_keep const DPCTLSyclDeviceRef DRef,
             }
         }
     }
+#endif
     return canAccess;
 }
 
 void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                   __dpctl_keep const DPCTLSyclDeviceRef PDRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -959,12 +974,14 @@ void DPCTLDevice_EnablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                           __func__, __LINE__);
         }
     }
+#endif
     return;
 }
 
 void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                                    __dpctl_keep const DPCTLSyclDeviceRef PDRef)
 {
+#ifndef __ADAPTIVECPP__
     auto D = unwrap<device>(DRef);
     auto PD = unwrap<device>(PDRef);
     if (D && PD) {
@@ -980,6 +997,7 @@ void DPCTLDevice_DisablePeerAccess(__dpctl_keep const DPCTLSyclDeviceRef DRef,
                           __func__, __LINE__);
         }
     }
+#endif
     return;
 }
 

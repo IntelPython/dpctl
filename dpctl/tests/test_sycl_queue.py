@@ -23,7 +23,7 @@ import pytest
 
 import dpctl
 
-from .helper import create_invalid_capsule
+from .helper import create_invalid_capsule, is_wsl_or_windows
 
 
 def test_standard_selectors(device_selector, check):
@@ -337,19 +337,22 @@ def test_queue_memops():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Failed to create device with supported filter")
-    from dpctl.memory import MemoryUSMDevice
+    from dpctl.memory import MemoryUSMShared
 
-    m1 = MemoryUSMDevice(512, queue=q)
-    m2 = MemoryUSMDevice(512, queue=q)
+    m1 = MemoryUSMShared(512, queue=q)
+    m2 = MemoryUSMShared(512, queue=q)
     q.memcpy(m1, m2, 512)
-    q.prefetch(m1, 512)
-    q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
         q.memcpy(m1, [], 512)
     with pytest.raises(TypeError):
         q.memcpy([], m2, 512)
-    with pytest.raises(TypeError):
-        q.prefetch([], 512)
+
+    if not is_wsl_or_windows():
+        q.prefetch(m1, 512)
+        with pytest.raises(TypeError):
+            q.prefetch([], 512)
+
+    q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
         q.mem_advise([], 512, 0)
 

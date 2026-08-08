@@ -39,6 +39,10 @@
 #include <utility>
 #include <vector>
 
+#ifdef __ADAPTIVECPP__
+#include "dpctl_acpp_host_task.hpp"
+#endif
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -517,6 +521,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.program.SyclKernel"));
 };
 
+#ifndef __ADAPTIVECPP__
 /* This type caster associates
  * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
  * :class:`dpctl.program.SyclKernelBundle` for the purposes of generation of
@@ -560,6 +565,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
                       _("dpctl.program.SyclKernelBundle"));
 };
+#endif
 
 /* This type caster associates
  * ``sycl::half`` C++ class with Python :class:`float` for the purposes
@@ -643,7 +649,7 @@ public:
     }
 
     /*! @brief Create usm_memory object from shared pointer that manages
-     *  lifetime of the USM allocation.
+     * lifetime of the USM allocation.
      */
     usm_memory(void *usm_ptr,
                std::size_t nbytes,
@@ -827,6 +833,7 @@ sycl::event keep_args_alive(sycl::queue &q,
     sycl::event host_task_ev;
 
     if (n_usm_owners_held > 0) {
+#ifndef __ADAPTIVECPP__
         host_task_ev = q.submit([&](sycl::handler &cgh) {
             if (use_depends) {
                 cgh.depends_on(depends);
@@ -841,9 +848,28 @@ sycl::event keep_args_alive(sycl::queue &q,
                 // kept alive
             });
         });
+#else
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
+            }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            class dpctl_keep_alive_dummy_usm;
+            cgh.single_task<dpctl_keep_alive_dummy_usm>([=]() {});
+        });
+
+        dpctl::detail::AcppHostTaskPool::get().submit(
+            host_task_ev, [shp_usm = std::move(shp_usm)]() {
+                // shp_usm destructs naturally here
+            });
+#endif
     }
 
     if (n_objects_held > 0) {
+#ifndef __ADAPTIVECPP__
         host_task_ev = q.submit([&](sycl::handler &cgh) {
             if (use_depends) {
                 cgh.depends_on(depends);
@@ -860,6 +886,27 @@ sycl::event keep_args_alive(sycl::queue &q,
                 }
             });
         });
+#else
+        host_task_ev = q.submit([&](sycl::handler &cgh) {
+            if (use_depends) {
+                cgh.depends_on(depends);
+                use_depends = false;
+            }
+            else {
+                cgh.depends_on(host_task_ev);
+            }
+            class dpctl_keep_alive_dummy_arr;
+            cgh.single_task<dpctl_keep_alive_dummy_arr>([=]() {});
+        });
+
+        dpctl::detail::AcppHostTaskPool::get().submit(
+            host_task_ev, [n_objects_held, shp_arr = std::move(shp_arr)]() {
+                py::gil_scoped_acquire acquire;
+                for (std::size_t i = 0; i < n_objects_held; ++i) {
+                    shp_arr[i]->dec_ref();
+                }
+            });
+#endif
     }
 
     return host_task_ev;

@@ -37,8 +37,10 @@ using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
@@ -186,6 +188,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 
     auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
+#ifndef __ADAPTIVECPP__
     switch (BE) {
     case backend::opencl:
         return DPCTL_OPENCL;
@@ -198,6 +201,16 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
     default:
         return DPCTL_UNKNOWN_BACKEND;
     }
+#else
+    switch (BE) {
+    case backend::cuda:
+        return DPCTL_CUDA;
+    case backend::hip:
+        return DPCTL_HIP;
+    default:
+        return DPCTL_UNKNOWN_BACKEND;
+    }
+#endif
 }
 
 size_t DPCTLContext_Hash(__dpctl_keep const DPCTLSyclContextRef CtxRef)

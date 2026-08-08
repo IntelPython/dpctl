@@ -342,12 +342,14 @@ DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef)
     }
 
     try {
+#ifndef __ADAPTIVECPP__
         auto composite_devices = P->ext_oneapi_get_composite_devices();
         DevicesVectorPtr->reserve(composite_devices.size());
         for (const auto &Dev : composite_devices) {
             DevicesVectorPtr->emplace_back(
                 wrap<device>(new device(std::move(Dev))));
         }
+#endif
         return wrap<vecTy>(DevicesVectorPtr);
     } catch (std::exception const &e) {
         delete DevicesVectorPtr;

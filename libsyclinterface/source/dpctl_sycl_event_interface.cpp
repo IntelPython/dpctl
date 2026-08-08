@@ -126,7 +126,12 @@ DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto E = unwrap<event>(ERef);
     if (E) {
+#ifndef __ADAPTIVECPP__
         BTy = DPCTL_SyclBackendToDPCTLBackendType(E->get_backend());
+#else
+        // AdaptiveCpp does not natively expose get_backend() on sycl::event
+        BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+#endif
     }
     else {
         error_handler("Backend cannot be looked up for a NULL event.", __FILE__,

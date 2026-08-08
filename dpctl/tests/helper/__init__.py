@@ -22,6 +22,7 @@ from ._helper import (
     has_cpu,
     has_gpu,
     has_sycl_platforms,
+    is_wsl_or_windows,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "has_gpu",
     "has_sycl_platforms",
     "get_queue_or_skip",
+    "is_wsl_or_windows",
 ]

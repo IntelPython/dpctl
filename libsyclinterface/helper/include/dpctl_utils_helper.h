@@ -179,6 +179,7 @@ DPCTL_API
 DPCTLPartitionAffinityDomainType DPCTL_SyclPartitionAffinityDomainToDPCTLType(
     sycl::info::partition_affinity_domain PartitionAffinityDomain);
 
+#ifndef __ADAPTIVECPP__
 /*!
  * @brief Converts a sycl::info::fp_config enum value to corresponding
  * DPCTLFPConfigType enum value.
@@ -274,6 +275,7 @@ DPCTL_DPCTLPeerAccessTypeToSycl(DPCTLPeerAccessType PeerAccessTy);
 DPCTL_API
 DPCTLPeerAccessType
 DPCTL_SyclPeerAccessToDPCTLType(sycl::ext::oneapi::peer_access PeerAccess);
+#endif
 
 /*!
  * @brief Gives the index of the given device with respective to all the other

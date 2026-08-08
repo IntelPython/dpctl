@@ -89,7 +89,11 @@ size_t DPCTLKernel_GetWorkGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -110,7 +114,11 @@ size_t DPCTLKernel_GetPreferredWorkGroupSizeMultiple(
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -131,7 +139,11 @@ size_t DPCTLKernel_GetPrivateMemSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -153,7 +165,11 @@ DPCTLKernel_GetMaxNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -175,7 +191,11 @@ DPCTLKernel_GetMaxSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -197,7 +217,11 @@ DPCTLKernel_GetCompileNumSubGroups(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);
@@ -220,7 +244,11 @@ DPCTLKernel_GetCompileSubGroupSize(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kern = unwrap<kernel>(KRef);
+#ifndef __ADAPTIVECPP__
     auto devs = sycl_kern->get_kernel_bundle().get_devices();
+#else
+    auto devs = sycl_kern->get_context().get_devices();
+#endif
     if (devs.empty()) {
         error_handler("Input DPCTKSyclKernelRef has no associated device.",
                       __FILE__, __func__, __LINE__);

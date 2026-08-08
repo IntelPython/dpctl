@@ -376,12 +376,14 @@ __dpctl_give DPCTLDeviceVectorRef DPCTLDeviceMgr_GetCompositeDevices()
     }
 
     try {
+#ifndef __ADAPTIVECPP__
         auto composite_devices =
             ext::oneapi::experimental::get_composite_devices();
         Devices->reserve(composite_devices.size());
         for (const auto &CDev : composite_devices) {
             Devices->emplace_back(wrap<device>(new device(std::move(CDev))));
         }
+#endif
         return wrap<vecTy>(Devices);
     } catch (std::exception const &e) {
         delete Devices;

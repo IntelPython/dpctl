@@ -74,7 +74,20 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
            << p.get_info<info::platform::version>() << _endl << std::setw(4)
            << " " << std::left << std::setw(12) << "Vendor" << vendor << _endl
            << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
+
+#ifndef __ADAPTIVECPP__
         ss << p.get_backend();
+#else
+        auto be = p.get_backend();
+        if (be == sycl::backend::cuda)
+            ss << "cuda";
+        else if (be == sycl::backend::hip)
+            ss << "hip";
+        else if (be == sycl::backend::ocl)
+            ss << "opencl";
+        else
+            ss << static_cast<int>(be);
+#endif
         ss << _endl;
 
         // Get number of devices on the platform

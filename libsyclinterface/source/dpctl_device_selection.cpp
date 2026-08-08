@@ -31,9 +31,11 @@
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
-}
+#endif
+} // namespace
 
 namespace dpctl
 {
@@ -68,7 +70,13 @@ int dpctl_cpu_selector::operator()(const sycl::device &d) const
 
 int dpctl_filter_selector::operator()(const sycl::device &d) const
 {
+#ifndef __ADAPTIVECPP__
     return _impl(d);
+#else
+    // AdaptiveCpp does not natively support ext::oneapi::filter_selector
+    // Fall back to default behavior
+    return sycl::default_selector_v(d);
+#endif
 }
 
 } // namespace syclinterface

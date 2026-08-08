@@ -25,26 +25,32 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_kernel_bundle_interface.h"
+#ifndef __ADAPTIVECPP__
+#include <CL/cl.h> /* OpenCL headers     */
+#include <sycl/backend/opencl.hpp>
+#endif
+
 #include "Config/dpctl_config.h"
 #include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h> /* OpenCL headers     */
 #include <cstdint>
 #include <sstream>
 #include <stddef.h>
-#include <sycl/backend/opencl.hpp>
 #include <sycl/sycl.hpp> /* Sycl headers       */
 #include <utility>
 
 #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifndef __ADAPTIVECPP__
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 // clang-format off
 #include "ze_api.h" /* Level Zero headers */
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 // clang-format on
+#endif
 #endif
 
 using namespace sycl;
@@ -55,6 +61,8 @@ static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
 
 using namespace dpctl::syclinterface;
+
+#ifndef __ADAPTIVECPP__
 
 #ifdef __linux__
 static const char *clLoaderName = DPCTL_LIBCL_LOADER_FILENAME;
@@ -678,6 +686,8 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
 
 #endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION */
 
+#endif /* #ifndef __ADAPTIVECPP__ */
+
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclKernelBundleRef
@@ -689,6 +699,7 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                                   size_t NumSpecConsts,
                                   const DPCTLSpecConst *SpecConsts)
 {
+#ifndef __ADAPTIVECPP__
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     if (!CtxRef) {
         error_handler("Cannot create program from SPIR-V as the supplied SYCL "
@@ -737,6 +748,12 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
         return nullptr;
     }
     return KBRef;
+#else
+    error_handler(
+        "Dynamic kernel bundle creation is not supported in AdaptiveCpp",
+        __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
@@ -745,6 +762,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
     __dpctl_keep const char *Source,
     __dpctl_keep const char *CompileOpts)
 {
+#ifndef __ADAPTIVECPP__
     context *SyclCtx = nullptr;
     device *SyclDev = nullptr;
 
@@ -786,12 +804,19 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler(
+        "Dynamic kernel bundle creation is not supported in AdaptiveCpp",
+        __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelRef
 DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                             __dpctl_keep const char *KernelName)
 {
+#ifndef __ADAPTIVECPP__
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return nullptr;
@@ -816,11 +841,17 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         error_handler(os.str(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler("Dynamic kernel querying is not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                                  __dpctl_keep const char *KernelName)
 {
+#ifndef __ADAPTIVECPP__
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
@@ -846,16 +877,24 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         error_handler(os.str(), __FILE__, __func__, __LINE__);
         return false;
     }
+#else
+    error_handler("Dynamic kernel querying is not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return false;
+#endif
 }
 
 void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef)
 {
+#ifndef __ADAPTIVECPP__
     delete unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelBundleRef
 DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
 {
+#ifndef __ADAPTIVECPP__
     auto Bundle = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
     if (!Bundle) {
         error_handler(
@@ -871,4 +910,9 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler("Kernel bundle copies are not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
