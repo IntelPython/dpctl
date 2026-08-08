@@ -538,6 +538,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.compiler.SyclKernel"));
 };
 
+#ifndef __ADAPTIVECPP__
 /* This type caster associates
  * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
  * :class:`dpctl.compiler.SyclKernelBundle` for the purposes of generation of
@@ -581,6 +582,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
                       _("dpctl.compiler.SyclKernelBundle"));
 };
+#endif
 
 /* This type caster associates
  * ``sycl::half`` C++ class with Python :class:`float` for the purposes

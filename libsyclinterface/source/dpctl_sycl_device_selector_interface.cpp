@@ -34,8 +34,10 @@ using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace

@@ -247,6 +247,8 @@ cdef str _backend_type_to_filter_string_part(_backend_type BTy):
         return "level_zero"
     elif BTy == _backend_type._OPENCL:
         return "opencl"
+    elif BTy == _backend_type._OPENMP:
+        return "openmp"
     else:
         return "unknown"
 
@@ -560,6 +562,8 @@ cdef class SyclDevice(_SyclDevice):
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:
             return backend_type.opencl
+        elif BTy == _backend_type._OPENMP:
+            return backend_type.openmp
         else:
             raise ValueError("Unknown backend type.")
 

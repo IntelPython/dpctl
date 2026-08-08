@@ -336,6 +336,8 @@ cdef class SyclEvent(_SyclEvent):
             return backend_type.cuda
         elif BE == _backend_type._HIP:
             return backend_type.hip
+        elif BE == _backend_type._OPENMP:
+            return backend_type.openmp
         else:
             raise ValueError("Unknown backend type.")
 

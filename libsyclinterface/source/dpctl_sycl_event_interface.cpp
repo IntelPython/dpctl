@@ -36,8 +36,10 @@ using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
@@ -126,7 +128,12 @@ DPCTLSyclBackendType DPCTLEvent_GetBackend(__dpctl_keep DPCTLSyclEventRef ERef)
     DPCTLSyclBackendType BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     auto E = unwrap<event>(ERef);
     if (E) {
+#ifndef __ADAPTIVECPP__
         BTy = DPCTL_SyclBackendToDPCTLBackendType(E->get_backend());
+#else
+        // AdaptiveCpp does not natively expose get_backend() on sycl::event
+        BTy = DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
+#endif
     }
     else {
         error_handler("Backend cannot be looked up for a NULL event.", __FILE__,
