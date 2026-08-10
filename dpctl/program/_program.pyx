@@ -246,7 +246,15 @@ cdef class SyclKernelBundle:
 
     SyclKernelBundle exposes the C API from
     ``dpctl_sycl_kernel_bundle_interface.h``. A SyclKernelBundle can be
-    created from either a source string or a SPIR-V binary file.
+    created from an OpenCL C source string
+    (:func:`.create_kernel_bundle_from_source`), a SPIR-V binary file
+    (:func:`.create_kernel_bundle_from_spirv`), or a SYCL source string
+    (:func:`.create_kernel_bundle_from_sycl_source`).
+
+    Creation from SYCL source uses the DPC++ ``kernel_compiler`` extension,
+    which requires both a compiler and a device that support it. Use
+    :func:`.is_sycl_source_compilation_available` to check for compiler
+    support.
     """
 
     @staticmethod

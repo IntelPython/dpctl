@@ -2879,9 +2879,9 @@ cdef class SyclDevice(_SyclDevice):
 
         Parameters:
             language
-                Input language. Possible values are "spirv" for SPIR-V binary
-                files, "opencl" for OpenCL C device code and "sycl" for SYCL
-                device code.
+                Input language. Possible values are "spirv" or "spv" for
+                SPIR-V binary files, "opencl" or "ocl" for OpenCL C device code
+                and "sycl" for SYCL device code.
 
         Returns:
             bool:

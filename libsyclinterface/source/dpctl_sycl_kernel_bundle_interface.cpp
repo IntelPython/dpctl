@@ -1062,11 +1062,13 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
 
     context *SyclCtx = unwrap<context>(Ctx);
     device *SyclDev = unwrap<device>(Dev);
-    if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
-        set_build_log("Device does not support compilation of SYCL source.");
-        return nullptr;
-    }
     try {
+        if (!SyclDev->ext_oneapi_can_compile(syclex::source_language::sycl)) {
+            set_build_log(
+                "Device does not support compilation of SYCL source.");
+            return nullptr;
+        }
+
         std::unique_ptr<kernel_bundle<bundle_state::ext_oneapi_source>>
             SrcBundle;
         std::string Src(Source);

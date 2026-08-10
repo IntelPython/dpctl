@@ -55,9 +55,9 @@ cdef api class SyclKernelBundle [
     cdef bint _is_sycl_source
 
     @staticmethod
-    cdef  SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref,
-                                    bint _is_sycl_source)
-    cdef  DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
+    cdef SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref,
+                                   bint _is_sycl_source)
+    cdef DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 

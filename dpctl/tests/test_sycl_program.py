@@ -551,18 +551,17 @@ def test_create_kernel_bundle_from_invalid_src_sycl(queue_selector):
         out[globalID] = in1[globalID] + in2[globalID];
     }
     """
-    try:
-        _ = dpctl.program.create_kernel_bundle_from_sycl_source(
+    with pytest.raises(
+        dpctl_prog.SyclKernelBundleCompilationError,
+        match="error: expected ';' at end of declaration",
+    ):
+        dpctl.program.create_kernel_bundle_from_sycl_source(
             q,
             sycl_source,
             headers=[],
             registered_names=[],
             copts=[],
         )
-        assert False
-    except dpctl_prog.SyclKernelBundleCompilationError as prog_error:
-        print(str(prog_error))
-        assert "error: expected ';' at end of declaration" in str(prog_error)
 
 
 def test_sycl_source_compilation_is_available_returns_bool():
