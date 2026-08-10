@@ -73,6 +73,9 @@ from .memory._memory cimport _Memory
 import ctypes
 import numbers
 
+import numpy as np
+
+from ._dtypes import DpctlScalar
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
@@ -108,6 +111,25 @@ __all__ = [
 
 
 _logger = logging.getLogger(__name__)
+
+_numpy_dtype_num_to_arg_type = {
+    np.dtype(np.bool_).num: _arg_data_type._INT8_T,
+    np.dtype(np.int8).num: _arg_data_type._INT8_T,
+    np.dtype(np.uint8).num: _arg_data_type._UINT8_T,
+    np.dtype(np.int16).num: _arg_data_type._INT16_T,
+    np.dtype(np.uint16).num: _arg_data_type._UINT16_T,
+    np.dtype(np.int32).num: _arg_data_type._INT32_T,
+    np.dtype(np.uint32).num: _arg_data_type._UINT32_T,
+    np.dtype(np.int64).num: _arg_data_type._INT64_T,
+    np.dtype(np.uint64).num: _arg_data_type._UINT64_T,
+    np.dtype(np.longlong).num: _arg_data_type._INT64_T,
+    np.dtype(np.ulonglong).num: _arg_data_type._UINT64_T,
+    np.dtype(np.float16).num: _arg_data_type._FLOAT16,
+    np.dtype(np.float32).num: _arg_data_type._FLOAT,
+    np.dtype(np.float64).num: _arg_data_type._DOUBLE,
+    np.dtype(np.complex64).num: _arg_data_type._COMPLEX64,
+    np.dtype(np.complex128).num: _arg_data_type._COMPLEX128,
+}
 
 
 cdef class kernel_arg_type_attribute:
@@ -152,9 +174,11 @@ cdef class LocalAccessor:
                 `'u1'`, `'u2'`, `'u4'`, `'u8'`
                     unsigned integral types uint8_t, uint16_t, uint32_t,
                     uint64_t
-                `'f4'`, `'f8'`,
-                    single- and double-precision floating-point types float and
-                    double
+                `'f2'`, `'f4'`, `'f8'`:
+                    half-, single-, and double-precision floating-point types
+                    sycl::half, float, and double
+                `'c8'`, `'c16'`:
+                    complex types with float or double components
         shape (tuple, list):
             Size of LocalAccessor dimensions. Dimension of the LocalAccessor is
             determined by the length of the tuple. Must be of length 1, 2, or 3,
@@ -215,10 +239,16 @@ cdef class LocalAccessor:
             self.lacc.dpctl_type_id = _arg_data_type._INT64_T
         elif dtype == "u8":
             self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
+        elif dtype == "f2":
+            self.lacc.dpctl_type_id = _arg_data_type._FLOAT16
         elif dtype == "f4":
             self.lacc.dpctl_type_id = _arg_data_type._FLOAT
         elif dtype == "f8":
             self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
+        elif dtype == "c8":
+            self.lacc.dpctl_type_id = _arg_data_type._COMPLEX64
+        elif dtype == "c16":
+            self.lacc.dpctl_type_id = _arg_data_type._COMPLEX128
         else:
             raise ValueError(f"Unrecognized type value: '{dtype}'")
 
@@ -379,6 +409,33 @@ cdef class _kernel_arg_type:
             _arg_data_type._RAW_KERNEL_ARG
         )
 
+    @property
+    def dpctl_float16(self):
+        cdef str p_name = "dpctl_float16"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._FLOAT16
+        )
+
+    @property
+    def dpctl_complex64(self):
+        cdef str p_name = "dpctl_complex64"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._COMPLEX64
+        )
+
+    @property
+    def dpctl_complex128(self):
+        cdef str p_name = "dpctl_complex128"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._COMPLEX128
+        )
+
 
 kernel_arg_type = _kernel_arg_type()
 
@@ -476,20 +533,23 @@ ctypedef DPCTLSyclEventRef (*queue_copy_with_events_fn)(
 cdef size_t _get_dtype_size(str dtype) except *:
     """
     Parse numpy-style dtype string and return element size in bytes.
-    Supports: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8
+    Supports: i1, u1, i2, u2, i4, u4, i8, u8, f2, f4, f8, c8, c16
     """
     if dtype == "i1" or dtype == "u1":
         return 1
-    elif dtype == "i2" or dtype == "u2":
+    elif dtype == "i2" or dtype == "u2" or dtype == "f2":
         return 2
     elif dtype == "i4" or dtype == "u4" or dtype == "f4":
         return 4
-    elif dtype == "i8" or dtype == "u8" or dtype == "f8":
+    elif dtype == "i8" or dtype == "u8" or dtype == "f8" or dtype == "c8":
         return 8
+    elif dtype == "c16":
+        return 16
     else:
         raise ValueError(
             f"Unrecognized dtype '{dtype}'. "
-            "Expected one of: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8"
+            "Expected one of: i1, u1, i2, u2, i4, u4, i8, u8, "
+            "f2, f4, f8, c8, c16"
         )
 
 
@@ -1008,11 +1068,72 @@ cdef class SyclQueue(_SyclQueue):
         self,
         list args,
         void **kargs,
-        _arg_data_type *kargty
+        _arg_data_type *kargty,
+        list _converted
     ):
         cdef int ret = 0
+        cdef Py_buffer _buf
+        cdef object np_scalar
+        cdef int dtype_num
         for idx, arg in enumerate(args):
-            if isinstance(arg, ctypes.c_char):
+            if isinstance(arg, DpctlScalar):
+                np_scalar = arg._value
+                if PyObject_GetBuffer(np_scalar, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = <_arg_data_type>arg._arg_type_id
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, np.generic):
+                dtype_num = arg.dtype.num
+                if dtype_num not in _numpy_dtype_num_to_arg_type:
+                    ret = -1
+                    break
+                if PyObject_GetBuffer(arg, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = <_arg_data_type>(
+                    _numpy_dtype_num_to_arg_type[dtype_num]
+                )
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, bool):
+                np_scalar = np.int8(arg)
+                _converted.append(np_scalar)
+                if PyObject_GetBuffer(np_scalar, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = _arg_data_type._INT8_T
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, int):
+                np_scalar = np.int64(arg)
+                _converted.append(np_scalar)
+                if PyObject_GetBuffer(np_scalar, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = _arg_data_type._INT64_T
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, float):
+                np_scalar = np.float64(arg)
+                _converted.append(np_scalar)
+                if PyObject_GetBuffer(np_scalar, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = _arg_data_type._DOUBLE
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, complex):
+                np_scalar = np.complex128(arg)
+                _converted.append(np_scalar)
+                if PyObject_GetBuffer(np_scalar, &_buf, PyBUF_SIMPLE) != 0:
+                    ret = -1
+                    break
+                kargs[idx] = _buf.buf
+                kargty[idx] = _arg_data_type._COMPLEX128
+                PyBuffer_Release(&_buf)
+            elif isinstance(arg, ctypes.c_char):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._INT8_T
             elif isinstance(arg, ctypes.c_uint8):
@@ -1043,7 +1164,7 @@ cdef class SyclQueue(_SyclQueue):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
             elif isinstance(arg, _Memory):
-                kargs[idx]= <void*>(<size_t>arg._pointer)
+                kargs[idx] = <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             elif isinstance(arg, WorkGroupMemory):
                 kargs[idx] = <void*>(<size_t>arg._ref)
@@ -1290,6 +1411,7 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
+        cdef list _converted = []
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1323,7 +1445,7 @@ cdef class SyclQueue(_SyclQueue):
                         )
 
         # populate the args and argstype arrays
-        ret = self._populate_args(args, kargs, kargty)
+        ret = self._populate_args(args, kargs, kargty, _converted)
         if ret == -1:
             free(kargs)
             free(kargty)
@@ -1900,7 +2022,7 @@ cdef class WorkGroupMemory:
                 )
             dtype = <str>(args[0])
             count = <size_t>(args[1])
-            if not dtype[0] in ["i", "u", "f"]:
+            if not dtype[0] in ["i", "u", "f", "c"]:
                 raise TypeError(f"Unrecognized type value: '{dtype}'")
             try:
                 bit_width = int(dtype[1:])
