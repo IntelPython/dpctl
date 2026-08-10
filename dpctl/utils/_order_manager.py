@@ -1,5 +1,6 @@
 import sys
 import threading
+import warnings
 import weakref
 from collections import defaultdict
 
@@ -25,6 +26,14 @@ class _SequentialOrderManager:
         SyclEvent.wait_for(_local.get_host_task_events())
 
     def add_event_pair(self, host_task_ev, comp_ev):
+        warnings.warn(
+            "add_event_pair is deprecated and will be removed in a future "
+            "release. dpctl no longer submits host tasks, so there is no "
+            "separate host task event to track. Use add_event(comp_ev) "
+            "instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _local = self._state
         if isinstance(host_task_ev, SyclEvent) and isinstance(
             comp_ev, SyclEvent
@@ -37,8 +46,24 @@ class _SequentialOrderManager:
                 comp_ev = (comp_ev,)
             _local.add_vector_to_both_events(host_task_ev, comp_ev)
 
+    def add_event(self, comp_ev):
+        _local = self._state
+        if isinstance(comp_ev, SyclEvent):
+            _local.add_to_submitted_events(comp_ev)
+        else:
+            if not isinstance(comp_ev, (list, tuple)):
+                comp_ev = (comp_ev,)
+            for ev in comp_ev:
+                _local.add_to_submitted_events(ev)
+
     @property
     def num_host_task_events(self):
+        warnings.warn(
+            "num_host_task_events is deprecated and will be removed in a "
+            "future release. dpctl no longer submits host tasks.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _local = self._state
         return _local.get_num_host_task_events()
 
@@ -49,6 +74,12 @@ class _SequentialOrderManager:
 
     @property
     def host_task_events(self):
+        warnings.warn(
+            "host_task_events is deprecated and will be removed in a future "
+            "release. dpctl no longer submits host tasks.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _local = self._state
         return _local.get_host_task_events()
 

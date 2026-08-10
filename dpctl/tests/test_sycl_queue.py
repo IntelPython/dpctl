@@ -22,6 +22,7 @@ import sys
 import pytest
 
 import dpctl
+import dpctl.memory
 
 from .helper import create_invalid_capsule
 
@@ -402,3 +403,26 @@ def test_cython_api(dpctl_cython_extension):
     except dpctl.SyclDeviceCreationError:
         pytest.skip("Default-construction of SyclDevice failed")
     assert q.sycl_device == d
+
+
+def test_keep_args_alive_validates_events():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+
+    usm = dpctl.memory.MemoryUSMDevice(4096, queue=q)
+    with pytest.raises(TypeError):
+        dpctl.keep_args_alive((usm,), [None])
+
+
+def test_submit_keep_args_alive_deprecated():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+
+    usm = dpctl.memory.MemoryUSMDevice(4096, queue=q)
+    with pytest.warns(DeprecationWarning):
+        ht_ev = q._submit_keep_args_alive((usm,), [])
+    ht_ev.wait()

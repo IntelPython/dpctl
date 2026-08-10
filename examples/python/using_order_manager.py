@@ -30,7 +30,7 @@ def _memset_async(q, usm_buf, fill_byte, om):
     """
     Fill ``usm_buf`` with ``fill_byte`` asynchronously and track in ``om``.
 
-    ``_submit_keep_args_alive`` prevents the buffer and the target from being
+    ``dpctl.keep_args_alive`` prevents the buffer and the target from being
     garbage-collected while the device is still reading/writing.
     """
     n = usm_buf.nbytes
@@ -38,8 +38,8 @@ def _memset_async(q, usm_buf, fill_byte, om):
 
     comp_ev = q.memcpy_async(usm_buf, data, n, dEvents=om.submitted_events)
     # keep Python objects alive until the copy finishes
-    ht_ev = q._submit_keep_args_alive((usm_buf, data), [comp_ev])
-    om.add_event_pair(ht_ev, comp_ev)
+    dpctl.keep_args_alive((usm_buf, data), [comp_ev])
+    om.add_event(comp_ev)
     return comp_ev
 
 
@@ -101,8 +101,8 @@ def fork_join():
             chunk,
             dEvents=child_om.submitted_events,
         )
-        ht_ev = q._submit_keep_args_alive((usm_chunk, usm_data), [comp_ev])
-        child_om.add_event_pair(ht_ev, comp_ev)
+        dpctl.keep_args_alive((usm_chunk, usm_data), [comp_ev])
+        child_om.add_event(comp_ev)
 
         child_om.wait()
         return usm_chunk
@@ -120,8 +120,8 @@ def fork_join():
         comp_ev = q.memcpy_async(
             part, child_buf, chunk, dEvents=main_om.submitted_events
         )
-        ht_ev = q._submit_keep_args_alive((part, child_buf), [comp_ev])
-        main_om.add_event_pair(ht_ev, comp_ev)
+        dpctl.keep_args_alive((part, child_buf), [comp_ev])
+        main_om.add_event(comp_ev)
         result_parts.append(part)
     main_om.wait()
 
@@ -154,7 +154,7 @@ def explicit_event_passing():
 
         _memset_async(q, buf, fill_val, child_om)
 
-        return buf, child_om.host_task_events, child_om.submitted_events
+        return buf, child_om.submitted_events
 
     with concurrent.futures.ThreadPoolExecutor(
         max_workers=n_threads
@@ -162,15 +162,13 @@ def explicit_event_passing():
         futures_results = list(executor.map(child_prepare, range(n_threads)))
 
     child_buffers = []
-    collected_ht_events = []
     collected_comp_events = []
-    for buf, ht_events, comp_events in futures_results:
+    for buf, comp_events in futures_results:
         child_buffers.append(buf)
-        collected_ht_events.extend(ht_events)
         collected_comp_events.extend(comp_events)
 
     main_om = SequentialOrderManager[q]
-    main_om.add_event_pair(collected_ht_events, collected_comp_events)
+    main_om.add_event(collected_comp_events)
 
     results = []
     for buf in child_buffers:
@@ -178,8 +176,8 @@ def explicit_event_passing():
         comp_ev = q.memcpy_async(
             out, buf, nbytes, dEvents=main_om.submitted_events
         )
-        ht_ev = q._submit_keep_args_alive((out, buf), [comp_ev])
-        main_om.add_event_pair(ht_ev, comp_ev)
+        dpctl.keep_args_alive((out, buf), [comp_ev])
+        main_om.add_event(comp_ev)
         results.append(out)
 
     main_om.wait()

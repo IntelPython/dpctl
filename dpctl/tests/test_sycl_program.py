@@ -295,10 +295,9 @@ def test_create_kernel_bundle_with_spec_const():
     e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
     e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
 
-    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+    dpctl.keep_args_alive([x_usm], [e3])
 
     e3.wait()
-    ht_e.wait()
 
     assert np.all(y == 43)
 
@@ -335,10 +334,9 @@ def test_create_kernel_bundle_with_composite_spec_const():
     e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
     e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
 
-    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+    dpctl.keep_args_alive([x_usm], [e3])
 
     e3.wait()
-    ht_e.wait()
 
     # 1.0 * 10 + 2.5 = 12.5
     assert np.all(y == 12.5)

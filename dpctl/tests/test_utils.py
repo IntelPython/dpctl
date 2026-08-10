@@ -73,13 +73,10 @@ def test_order_manager():
         pytest.skip("Queue could not be created for default-selected device")
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
-    assert isinstance(_mngr.num_host_task_events, int)
     assert isinstance(_mngr.num_submitted_events, int)
     assert isinstance(_mngr.submitted_events, list)
-    assert isinstance(_mngr.host_task_events, list)
-    _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
-    _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
-    _mngr.add_event_pair(dpctl.SyclEvent(), [dpctl.SyclEvent()])
+    _mngr.add_event(dpctl.SyclEvent())
+    _mngr.add_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
     _mngr.wait()
     cpy = _mngr.__copy__()
     _som.clear()
@@ -92,3 +89,25 @@ def test_order_manager():
         _passed = True
     finally:
         assert _passed
+
+
+def test_order_manager_deprecated_host_task_api():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+
+    with pytest.warns(DeprecationWarning):
+        assert isinstance(_mngr.num_host_task_events, int)
+    with pytest.warns(DeprecationWarning):
+        assert isinstance(_mngr.host_task_events, list)
+    with pytest.warns(DeprecationWarning):
+        _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+    with pytest.warns(DeprecationWarning):
+        _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+    with pytest.warns(DeprecationWarning):
+        _mngr.add_event_pair(dpctl.SyclEvent(), [dpctl.SyclEvent()])
+    _mngr.wait()
+    _som.clear()

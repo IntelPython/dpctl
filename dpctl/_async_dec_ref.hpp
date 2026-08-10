@@ -42,18 +42,18 @@
 #include "syclinterface/dpctl_data_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 
-DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
-                                PyObject **obj_array,
-                                size_t obj_array_size,
-                                DPCTLSyclEventRef *depERefs,
-                                size_t nDepERefs,
-                                int *status)
+/*!
+ * @brief Schedule DECREFs of `obj_array` for once `depERefs` have completed.
+ *
+ * Sets `*status` to 0 on success and 1 if scheduling threw.
+ */
+void async_dec_ref(PyObject **obj_array,
+                   size_t obj_array_size,
+                   DPCTLSyclEventRef *depERefs,
+                   size_t nDepERefs,
+                   int *status)
 {
     using dpctl::syclinterface::unwrap;
-    using dpctl::syclinterface::wrap;
-
-    // `QRef` is kept in the signature for API compatibility
-    (void)QRef;
 
     std::vector<PyObject *> obj_vec(obj_array, obj_array + obj_array_size);
 
@@ -85,20 +85,36 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
             });
 
         static constexpr int result_ok = 0;
-
         *status = result_ok;
-        // return a dummy event for API compatibility
-        auto e_ptr = new sycl::event();
-        return wrap<sycl::event>(e_ptr);
     } catch (const std::exception &e) {
         static constexpr int result_std_exception = 1;
-
         *status = result_std_exception;
+    }
+}
+
+/*!
+ * @brief Event-returning form of `async_dec_ref`.
+ *
+ * Returns a default-constructed event.
+ * Returns nullptr on failure, with `*status` set.
+ */
+DPCTLSyclEventRef async_dec_ref_event(DPCTLSyclQueueRef QRef,
+                                      PyObject **obj_array,
+                                      size_t obj_array_size,
+                                      DPCTLSyclEventRef *depERefs,
+                                      size_t nDepERefs,
+                                      int *status)
+{
+    using dpctl::syclinterface::wrap;
+
+    (void)QRef;
+
+    async_dec_ref(obj_array, obj_array_size, depERefs, nDepERefs, status);
+
+    if (*status != 0) {
         return nullptr;
     }
 
-    static constexpr int result_other_abnormal = 2;
-
-    *status = result_other_abnormal;
-    return nullptr;
+    auto e_ptr = new sycl::event();
+    return wrap<sycl::event>(e_ptr);
 }

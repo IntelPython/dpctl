@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 * Added a number of `sycl::device` info queries to `dpctl.SyclDevice` [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
+* Added `dpctl.keep_args_alive` free function, and `add_event` method to the order manager
+
+### Deprecated
+* Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.keep_args_alive` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Deprecated the order manager's `add_event_pair`, `host_task_events` and `num_host_task_events`, as `host_task` is no longer used for managing object lifetimes [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Implemented a thread pool to manage object lifetime during offload rather than use `host_task` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 
