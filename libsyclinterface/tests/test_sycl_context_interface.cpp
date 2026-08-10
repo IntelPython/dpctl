@@ -208,8 +208,8 @@ TEST_P(TestDPCTLContextInterface, ChkGetAtomicMemoryOrderCapabilities)
     ASSERT_TRUE(CRef);
     EXPECT_NO_FATAL_FAILURE(
         arr = DPCTLContext_GetAtomicMemoryOrderCapabilities(CRef, &len));
-    EXPECT_TRUE(len > 0);
-    EXPECT_TRUE(arr != nullptr);
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
     for (size_t i = 0; i < len; ++i) {
         EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
                     arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
@@ -228,8 +228,8 @@ TEST_P(TestDPCTLContextInterface, ChkGetAtomicFenceOrderCapabilities)
     ASSERT_TRUE(CRef);
     EXPECT_NO_FATAL_FAILURE(
         arr = DPCTLContext_GetAtomicFenceOrderCapabilities(CRef, &len));
-    EXPECT_TRUE(len > 0);
-    EXPECT_TRUE(arr != nullptr);
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
     for (size_t i = 0; i < len; ++i) {
         EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
                     arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
@@ -248,8 +248,8 @@ TEST_P(TestDPCTLContextInterface, ChkGetAtomicMemoryScopeCapabilities)
     ASSERT_TRUE(CRef);
     EXPECT_NO_FATAL_FAILURE(
         arr = DPCTLContext_GetAtomicMemoryScopeCapabilities(CRef, &len));
-    EXPECT_TRUE(len > 0);
-    EXPECT_TRUE(arr != nullptr);
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
     for (size_t i = 0; i < len; ++i) {
         EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
                     arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
@@ -268,8 +268,8 @@ TEST_P(TestDPCTLContextInterface, ChkGetAtomicFenceScopeCapabilities)
     ASSERT_TRUE(CRef);
     EXPECT_NO_FATAL_FAILURE(
         arr = DPCTLContext_GetAtomicFenceScopeCapabilities(CRef, &len));
-    EXPECT_TRUE(len > 0);
-    EXPECT_TRUE(arr != nullptr);
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
     for (size_t i = 0; i < len; ++i) {
         EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
                     arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
