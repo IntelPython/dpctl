@@ -1,6 +1,0 @@
-dpctl.SyclDevice.native\_vector\_width\_short
-=============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.native_vector_width_short

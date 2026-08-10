@@ -1,6 +1,0 @@
-dpctl.SyclDevice.sycl\_platform
-===============================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.sycl_platform
