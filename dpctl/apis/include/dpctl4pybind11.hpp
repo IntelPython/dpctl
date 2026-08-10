@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "detail/keep_alive_pool.hpp"
 #include "dpctl_capi.h"
 
 #include <atomic>
@@ -823,46 +824,26 @@ sycl::event keep_args_alive(sycl::queue &q,
         }
     }
 
-    bool use_depends = true;
-    sycl::event host_task_ev;
+    if (n_usm_owners_held > 0 || n_objects_held > 0) {
+        dpctl::detail::KeepAlivePool::get().submit(
+            depends, [n_usm_owners_held, shp_usm = std::move(shp_usm),
+                      n_objects_held, shp_arr = std::move(shp_arr)]() mutable {
+                for (std::size_t i = 0; i < n_usm_owners_held; ++i) {
+                    shp_usm[i].reset();
+                }
 
-    if (n_usm_owners_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
-            }
-            else {
-                cgh.depends_on(host_task_ev);
-            }
-            cgh.host_task([shp_usm = std::move(shp_usm)]() {
-                // no body, but shared pointers are captured in
-                // the lambda, ensuring that USM allocation is
-                // kept alive
-            });
-        });
-    }
+                if (n_objects_held > 0) {
+                    py::gil_scoped_acquire acquire;
 
-    if (n_objects_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
-            }
-            else {
-                cgh.depends_on(host_task_ev);
-            }
-            cgh.host_task([n_objects_held, shp_arr = std::move(shp_arr)]() {
-                py::gil_scoped_acquire acquire;
-
-                for (std::size_t i = 0; i < n_objects_held; ++i) {
-                    shp_arr[i]->dec_ref();
+                    for (std::size_t i = 0; i < n_objects_held; ++i) {
+                        shp_arr[i]->dec_ref();
+                    }
                 }
             });
-        });
     }
 
-    return host_task_ev;
+    // return dummy event for API compatibility
+    return sycl::event{};
 }
 
 /*! @brief Check if all allocation queues are the same as the

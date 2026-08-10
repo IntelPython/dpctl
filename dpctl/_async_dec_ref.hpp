@@ -1,4 +1,4 @@
-//===--- _host_tasl_util.hpp - Implements async DECREF =//
+//===--- _async_dec_ref.hpp - Implements async DECREF ---------------------===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -19,11 +19,11 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file implements a utility function to schedule host task to a sycl
-/// queue depending on given array of sycl events to decrement reference counts
-/// for the given array of Python objects.
+/// This file implements a utility function to decrement reference counts for a
+/// given array of Python objects once a given array of sycl events has
+/// completed.
 ///
-/// N.B.: The host task attempts to acquire GIL, so queue wait, event wait and
+/// N.B.: The deferred work acquires the GIL, so queue wait, event wait and
 /// other synchronization mechanisms should be called after releasing the GIL to
 /// avoid deadlocks.
 ///
@@ -33,9 +33,12 @@
 #include <exception>
 #include <stddef.h>
 #include <sycl/sycl.hpp>
+#include <utility>
+#include <vector>
 
 #include "Python.h"
 
+#include "detail/keep_alive_pool.hpp"
 #include "syclinterface/dpctl_data_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 
@@ -49,16 +52,21 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
     using dpctl::syclinterface::unwrap;
     using dpctl::syclinterface::wrap;
 
-    sycl::queue *q = unwrap<sycl::queue>(QRef);
+    // `QRef` is kept in the signature for API compatibility
+    (void)QRef;
 
     std::vector<PyObject *> obj_vec(obj_array, obj_array + obj_array_size);
 
     try {
-        sycl::event ht_ev = q->submit([&](sycl::handler &cgh) {
-            for (size_t ev_id = 0; ev_id < nDepERefs; ++ev_id) {
-                cgh.depends_on(*(unwrap<sycl::event>(depERefs[ev_id])));
-            }
-            cgh.host_task([obj_array_size, obj_vec]() {
+        std::vector<sycl::event> depends;
+        depends.reserve(nDepERefs);
+        for (size_t ev_id = 0; ev_id < nDepERefs; ++ev_id) {
+            depends.push_back(*(unwrap<sycl::event>(depERefs[ev_id])));
+        }
+
+        dpctl::detail::KeepAlivePool::get().submit(
+            std::move(depends),
+            [obj_array_size, obj_vec = std::move(obj_vec)]() {
                 const bool initialized = Py_IsInitialized();
 #if PY_VERSION_HEX < 0x30d0000
                 const bool finalizing = _Py_IsFinalizing();
@@ -75,12 +83,12 @@ DPCTLSyclEventRef async_dec_ref(DPCTLSyclQueueRef QRef,
                     PyGILState_Release(gstate);
                 }
             });
-        });
 
         static constexpr int result_ok = 0;
 
         *status = result_ok;
-        auto e_ptr = new sycl::event(ht_ev);
+        // return a dummy event for API compatibility
+        auto e_ptr = new sycl::event();
         return wrap<sycl::event>(e_ptr);
     } catch (const std::exception &e) {
         static constexpr int result_std_exception = 1;

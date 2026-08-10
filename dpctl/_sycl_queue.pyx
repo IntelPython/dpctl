@@ -92,7 +92,7 @@ import collections.abc
 import logging
 
 
-cdef extern from "_host_task_util.hpp":
+cdef extern from "_async_dec_ref.hpp":
     DPCTLSyclEventRef async_dec_ref(
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
@@ -1184,16 +1184,18 @@ cdef class SyclQueue(_SyclQueue):
                 working on Python objects collected in ``args``.
         Returns:
             dpctl.SyclEvent
-               The event associated with the submission of host task.
+               An already-complete event. No task is submitted to the queue,
+               so there is nothing to wait for here; ``events`` are what say
+               when the work reading ``args`` is done.
 
-        Increments reference count of ``args`` and schedules asynchronous
-        ``host_task`` to decrement the count once dependent events are
+        Increments reference count of ``args`` and schedules the matching
+        decrement to run on a background thread once dependent events are
         complete.
 
         .. note::
-            The ``host_task`` attempts to acquire Python GIL, and it is
-            known to be unsafe during interpreter shutdown sequence. It is
-            thus strongly advised to ensure that all submitted ``host_task``
+            The deferred decrement attempts to acquire Python GIL, which is
+            known to be unsafe during the interpreter shutdown sequence. It
+            is thus strongly advised to ensure that all dependent events
             complete before the end of the Python script.
         """
         cdef size_t nDE = len(dEvents)
@@ -1236,7 +1238,7 @@ cdef class SyclQueue(_SyclQueue):
             with nogil:
                 DPCTLEvent_Wait(htERef)
             DPCTLEvent_Delete(htERef)
-            raise RuntimeError("Could not submit keep_args_alive host_task")
+            raise RuntimeError("Could not schedule keep_args_alive cleanup")
 
         return SyclEvent._create(htERef)
 
