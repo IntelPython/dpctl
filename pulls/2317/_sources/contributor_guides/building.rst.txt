@@ -186,6 +186,30 @@ You can retrieve available options and their descriptions using the option
 :code:`--help`.
 
 
+Runtime loaders when using a nightly DPC++ build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:py:mod:`dpctl` creates kernel bundles from OpenCL* source and from SPIR-V by
+calling into the OpenCL ICD loader and the Level Zero loader directly.
+
+The oneAPI DPC++ Compiler installation and the conda packages provide these
+loaders as dependencies. Nightly builds of the open source DPC++ toolchain,
+however, bundle neither, so they must be installed separately:
+
+- ``libOpenCL.so.1``, from the OpenCL ICD loader (for example, ``ocl-icd``
+  conda package or ``ocl-icd-libopencl1`` system package)
+- ``libze_loader.so.1``, from the Level Zero loader (for example, the
+  ``level-zero`` conda package or the ``libze1`` system package)
+
+Both can be installed from the toolchain's own dependencies. The DPC++ toolchain
+pins them in `devops/dependencies.json <https://github.com/intel/llvm/blob/sycl/devops/dependencies.json>`_,
+as the ``level_zero`` and ``oclcpu`` entries.
+
+Should a loader be installed under a different file name, override the name that
+:py:mod:`dpctl` uses with the ``LIBCL_SET_LOADER_FILENAME`` and
+``LIBZE_SET_LOADER_FILENAME`` CMake variables.
+
+
 Building the libsyclinterface Library
 =======================================
 
@@ -226,7 +250,7 @@ library.
         -DCMAKE_CXX_COMPILER=icpx                               \
         -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}                \
         -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}                   \
-        -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON                   \
+        -DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION=ON             \
         -DDPCTL_BUILD_CAPI_TESTS=ON                             \
         -DDPCTL_GENERATE_COVERAGE=ON                            \
         ..
