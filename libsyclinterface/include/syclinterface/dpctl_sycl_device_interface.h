@@ -458,18 +458,6 @@ DPCTL_API
 __dpctl_give DPCTLDeviceVectorRef DPCTLDevice_CreateSubDevicesByAffinity(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     DPCTLPartitionAffinityDomainType PartAffDomTy);
-/*!
- * @brief Wrapper over
- * device.get_info<info::device::sub_group_independent_forward_progress>.
- *
- * @param    DRef           Opaque pointer to a ``sycl::device``
- * @return   Returns true if the device supports independent forward progress of
- * sub-groups with respect to other sub-groups in the same work-group.
- * @ingroup DeviceInterface
- */
-DPCTL_API
-bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef);
 
 /*!
  * @brief Wrapper over

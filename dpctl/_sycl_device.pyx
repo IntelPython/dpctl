@@ -99,7 +99,6 @@ from ._backend cimport (  # noqa: E211
     DPCTLDevice_GetPreferredVectorWidthShort,
     DPCTLDevice_GetProfilingTimerResolution,
     DPCTLDevice_GetSingleFPConfig,
-    DPCTLDevice_GetSubGroupIndependentForwardProgress,
     DPCTLDevice_GetSubGroupSizes,
     DPCTLDevice_GetVendor,
     DPCTLDevice_GetVendorId,
@@ -1245,20 +1244,6 @@ cdef class SyclDevice(_SyclDevice):
             DPCTLDevice_GetMaxNumSubGroups(self._device_ref)
         )
         return max_num_sub_groups
-
-    @property
-    def sub_group_independent_forward_progress(self):
-        """ Returns ``True`` if the device supports independent forward progress
-        of sub-groups with respect to other sub-groups in the same work-group.
-
-        Returns:
-            bool:
-                Indicates if the device supports independent forward progress
-                of sub-groups.
-        """
-        return DPCTLDevice_GetSubGroupIndependentForwardProgress(
-            self._device_ref
-        )
 
     @property
     def sub_group_sizes(self):
