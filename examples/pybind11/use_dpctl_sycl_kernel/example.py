@@ -30,12 +30,12 @@ q = dpctl.SyclQueue()
 with open("resource/double_it.spv", "br") as fh:
     il = fh.read()
 
-# Build the program for the selected device
-pr = dpc.create_kernel_bundle_from_spirv(q, il, "")
-assert pr.has_sycl_kernel("double_it")
+# Build the kernel bundle for the selected device
+kb = dpc.create_kernel_bundle_from_spirv(q, il, "")
+assert kb.has_sycl_kernel("double_it")
 
-# Retrieve the kernel from the problem
-krn = pr.get_sycl_kernel("double_it")
+# Retrieve the kernel from the kernel bundle
+krn = kb.get_sycl_kernel("double_it")
 assert krn.num_args == 2
 
 # Construct the argument, and allocate memory for the result

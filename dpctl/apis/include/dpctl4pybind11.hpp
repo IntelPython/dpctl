@@ -88,7 +88,7 @@ public:
                               DPCTLSyclQueueRef,
                               PyObject *);
 
-    // program
+    // compiler
     DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
     PySyclKernelObject *(*SyclKernel_Make_)(DPCTLSyclKernelRef, const char *);
 

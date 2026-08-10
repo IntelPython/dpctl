@@ -54,14 +54,14 @@ def get_spirv_abspath(fn):
     return spirv_file
 
 
-def _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(sycl_prog):
+def _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(kb):
     """Checks Cython-generated C-API function
-    `SyclKernelBundle_GetKernelBundleRef` defined in _program.pyx"""
+    `SyclKernelBundle_GetKernelBundleRef` defined in _compiler.pyx"""
     import ctypes
     import sys
 
-    assert type(sycl_prog) is dpc.SyclKernelBundle
-    mod = sys.modules[sycl_prog.__class__.__module__]
+    assert type(kb) is dpc.SyclKernelBundle
+    mod = sys.modules[kb.__class__.__module__]
     # get capsule storing SyclKernelBundle_GetKernelBundleRef function ptr
     kb_ref_fn_cap = mod.__pyx_capi__["SyclKernelBundle_GetKernelBundleRef"]
     # construct Python callable to invoke "SyclKernelBundle_GetKernelBundleRef"
@@ -76,40 +76,41 @@ def _check_cpython_api_SyclKernelBundle_GetKernelBundleRef(sycl_prog):
     callable_maker = ctypes.PYFUNCTYPE(ctypes.c_void_p, ctypes.py_object)
     get_kernel_bundle_ref_fn = callable_maker(kb_ref_fn_ptr)
 
-    r2 = sycl_prog.addressof_ref()
-    r1 = get_kernel_bundle_ref_fn(sycl_prog)
+    r2 = kb.addressof_ref()
+    r1 = get_kernel_bundle_ref_fn(kb)
     assert r1 == r2
 
 
-def _check_cpython_api_SyclKernelBundle_Make(sycl_prog):
+def _check_cpython_api_SyclKernelBundle_Make(kb):
     """Checks Cython-generated C-API function
-    `SyclKernelBundle_Make` defined in _program.pyx"""
+    `SyclKernelBundle_Make` defined in _compiler.pyx"""
     import ctypes
     import sys
 
-    assert type(sycl_prog) is dpc.SyclKernelBundle
-    mod = sys.modules[sycl_prog.__class__.__module__]
+    assert type(kb) is dpc.SyclKernelBundle
+    mod = sys.modules[kb.__class__.__module__]
     # get capsule storing SyclKernelBundle_Make function ptr
-    make_prog_fn_cap = mod.__pyx_capi__["SyclKernelBundle_Make"]
+    make_kb_fn_cap = mod.__pyx_capi__["SyclKernelBundle_Make"]
     # construct Python callable to invoke "SyclKernelBundle_Make"
     cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
     cap_ptr_fn.restype = ctypes.c_void_p
     cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
-    make_prog_fn_ptr = cap_ptr_fn(
-        make_prog_fn_cap,
+    make_kb_fn_ptr = cap_ptr_fn(
+        make_kb_fn_cap,
         b"struct PySyclKernelBundleObject *(DPCTLSyclKernelBundleRef)",
     )
     # PYFUNCTYPE(result_type, *arg_types)
     callable_maker = ctypes.PYFUNCTYPE(ctypes.py_object, ctypes.c_void_p)
-    make_prog_fn = callable_maker(make_prog_fn_ptr)
+    make_kb_fn = callable_maker(make_kb_fn_ptr)
 
-    p2 = make_prog_fn(sycl_prog.addressof_ref())
-    return p2
+    kb2 = make_kb_fn(kb.addressof_ref())
+    assert kb2.has_sycl_kernel("add")
+    assert kb2.has_sycl_kernel("axpy")
 
 
 def _check_cpython_api_SyclKernel_GetKernelRef(krn):
     """Checks Cython-generated C-API function
-    `SyclKernel_GetKernelRef` defined in _program.pyx"""
+    `SyclKernel_GetKernelRef` defined in _compiler.pyx"""
     import ctypes
     import sys
 
@@ -135,7 +136,7 @@ def _check_cpython_api_SyclKernel_GetKernelRef(krn):
 
 def _check_cpython_api_SyclKernel_Make(krn):
     """Checks Cython-generated C-API function
-    `SyclKernel_Make` defined in _program.pyx"""
+    `SyclKernel_Make` defined in _compiler.pyx"""
     import ctypes
     import sys
 
@@ -170,7 +171,7 @@ def _check_cpython_api_SyclKernel_Make(krn):
     assert krn.work_group_size == k3.work_group_size
 
 
-def _check_multi_kernel_program(kb):
+def _check_multi_kernel_bundle(kb):
     assert type(kb) is dpc.SyclKernelBundle
 
     assert type(kb.addressof_ref()) is int
@@ -226,7 +227,7 @@ def test_create_kernel_bundle_from_source_ocl():
     }"
     q = _get_opencl_queue_or_skip()
     kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
-    _check_multi_kernel_program(kb)
+    _check_multi_kernel_bundle(kb)
 
 
 def test_create_kernel_bundle_from_spirv_ocl():
@@ -235,7 +236,7 @@ def test_create_kernel_bundle_from_spirv_ocl():
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
     kb = dpc.create_kernel_bundle_from_spirv(q, spirv)
-    _check_multi_kernel_program(kb)
+    _check_multi_kernel_bundle(kb)
 
 
 def test_create_kernel_bundle_from_spirv_l0():
@@ -244,7 +245,7 @@ def test_create_kernel_bundle_from_spirv_l0():
     with open(spirv_file, "rb") as fin:
         spirv = fin.read()
     kb = dpc.create_kernel_bundle_from_spirv(q, spirv)
-    _check_multi_kernel_program(kb)
+    _check_multi_kernel_bundle(kb)
 
 
 @pytest.mark.xfail(
@@ -262,7 +263,7 @@ def test_create_kernel_bundle_from_source_l0():
         c[index] = a[index] + d*b[index];                                  \
     }"
     kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
-    _check_multi_kernel_program(kb)
+    _check_multi_kernel_bundle(kb)
 
 
 def test_create_kernel_bundle_from_invalid_src_ocl():

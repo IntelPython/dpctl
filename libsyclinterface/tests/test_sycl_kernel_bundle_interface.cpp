@@ -526,7 +526,7 @@ INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSpirv,
                                            "opencl:gpu",
                                            "opencl:cpu",
                                            "opencl:gpu:0",
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
                                            "level_zero",
                                            "level_zero:gpu",
 #endif
