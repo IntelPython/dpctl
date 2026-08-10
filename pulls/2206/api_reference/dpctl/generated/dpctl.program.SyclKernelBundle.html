@@ -383,7 +383,6 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.preferred_vector_width_short.html">dpctl.SyclDevice.preferred_vector_width_short</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.profiling_timer_resolution.html">dpctl.SyclDevice.profiling_timer_resolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.single_fp_config.html">dpctl.SyclDevice.single_fp_config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.sub_group_independent_forward_progress.html">dpctl.SyclDevice.sub_group_independent_forward_progress</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.sub_group_sizes.html">dpctl.SyclDevice.sub_group_sizes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.sycl_platform.html">dpctl.SyclDevice.sycl_platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.vendor.html">dpctl.SyclDevice.vendor</a></li>
@@ -694,7 +693,14 @@ created using SYCL interoperability layer with underlying backends. Only the
 OpenCL and Level-Zero backends are currently supported.</p>
 <p>SyclKernelBundle exposes the C API from
 <code class="docutils literal notranslate"><span class="pre">dpctl_sycl_kernel_bundle_interface.h</span></code>. A SyclKernelBundle can be
-created from either a source string or a SPIR-V binary file.</p>
+created from an OpenCL C source string
+(<a class="reference internal" href="dpctl.program.create_kernel_bundle_from_source.html#dpctl.program.create_kernel_bundle_from_source" title="dpctl.program.create_kernel_bundle_from_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_kernel_bundle_from_source()</span></code></a>), a SPIR-V binary file
+(<a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv" title="dpctl.program.create_kernel_bundle_from_spirv"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_kernel_bundle_from_spirv()</span></code></a>), or a SYCL source string
+(<a class="reference internal" href="dpctl.program.create_kernel_bundle_from_sycl_source.html#dpctl.program.create_kernel_bundle_from_sycl_source" title="dpctl.program.create_kernel_bundle_from_sycl_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_kernel_bundle_from_sycl_source()</span></code></a>).</p>
+<p>Creation from SYCL source uses the DPC++ <code class="docutils literal notranslate"><span class="pre">kernel_compiler</span></code> extension,
+which requires both a compiler and a device that support it. Use
+<a class="reference internal" href="dpctl.program.is_sycl_source_compilation_available.html#dpctl.program.is_sycl_source_compilation_available" title="dpctl.program.is_sycl_source_compilation_available"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_sycl_source_compilation_available()</span></code></a> to check for compiler
+support.</p>
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">

@@ -383,7 +383,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.preferred_vector_width_short.html">dpctl.SyclDevice.preferred_vector_width_short</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.profiling_timer_resolution.html">dpctl.SyclDevice.profiling_timer_resolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.single_fp_config.html">dpctl.SyclDevice.single_fp_config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sub_group_independent_forward_progress.html">dpctl.SyclDevice.sub_group_independent_forward_progress</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sub_group_sizes.html">dpctl.SyclDevice.sub_group_sizes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sycl_platform.html">dpctl.SyclDevice.sycl_platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.vendor.html">dpctl.SyclDevice.vendor</a></li>
@@ -693,9 +692,9 @@
 for this device from the given source language.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>language</strong> – Input language. Possible values are “spirv” for SPIR-V binary
-files, “opencl” for OpenCL C device code and “sycl” for SYCL
-device code.</p>
+<dd class="field-odd"><p><strong>language</strong> – Input language. Possible values are “spirv” or “spv” for
+SPIR-V binary files, “opencl” or “ocl” for OpenCL C device code
+and “sycl” for SYCL device code.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if compilation is supported, False otherwise.</p>
