@@ -1,0 +1,6 @@
+dpctl.SyclDevice.partition\_properties
+======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.partition_properties

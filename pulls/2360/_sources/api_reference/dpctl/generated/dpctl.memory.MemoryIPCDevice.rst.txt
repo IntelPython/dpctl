@@ -1,0 +1,44 @@
+﻿dpctl.memory.MemoryIPCDevice
+============================
+
+.. currentmodule:: dpctl.memory
+
+
+
+.. autoclass:: MemoryIPCDevice
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~MemoryIPCDevice.copy_from_device
+      ~MemoryIPCDevice.copy_from_host
+      ~MemoryIPCDevice.copy_to_host
+      ~MemoryIPCDevice.get_usm_type
+      ~MemoryIPCDevice.get_usm_type_enum
+      ~MemoryIPCDevice.memset
+      ~MemoryIPCDevice.tobytes
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~MemoryIPCDevice.is_closed
+      ~MemoryIPCDevice.nbytes
+      ~MemoryIPCDevice.reference_obj
+      ~MemoryIPCDevice.size
+      ~MemoryIPCDevice.sycl_context
+      ~MemoryIPCDevice.sycl_device
+      ~MemoryIPCDevice.sycl_queue
+      ~MemoryIPCDevice.__sycl_usm_array_interface__
+   
+   
