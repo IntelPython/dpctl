@@ -4,8 +4,8 @@
 =======================
 
 :py:mod:`dpctl.program` provides a way to create a SYCL kernel
-from either an OpenCL* program source code represented as a string
-or a SPIR-V binary file.
+from an OpenCL* program source code represented as a string, SYCL
+source code represented as a string, or a SPIR-V binary file.
 
 It implements creation of interoperability
 ``sycl::kernel_bundle<sycl::bundle_state_executable>`` (a collection of kernels),
@@ -22,8 +22,10 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
 
     create_kernel_bundle_from_source
     create_kernel_bundle_from_spirv
+    create_kernel_bundle_from_sycl_source
     create_program_from_source
     create_program_from_spirv
+    is_sycl_source_compilation_available
 
 .. autosummary::
     :toctree: generated

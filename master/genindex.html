@@ -281,6 +281,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -560,8 +561,10 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="api_reference/dpctl/program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_sycl_source.html">dpctl.program.create_kernel_bundle_from_sycl_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.is_sycl_source_compilation_available.html">dpctl.program.is_sycl_source_compilation_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api_reference/dpctl/generated/dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
@@ -780,6 +783,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html#dpctl.SyclDevice.can_access_peer">can_access_peer() (dpctl.SyclDevice method)</a>
 </li>
+        <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_compile.html#dpctl.SyclDevice.can_compile">can_compile() (dpctl.SyclDevice method)</a>
+</li>
         <li>
     class
 
@@ -845,6 +850,8 @@
 </li>
         <li><a href="api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_spirv.html#dpctl.program.create_kernel_bundle_from_spirv">create_kernel_bundle_from_spirv() (in module dpctl.program)</a>
 </li>
+        <li><a href="api_reference/dpctl/generated/dpctl.program.create_kernel_bundle_from_sycl_source.html#dpctl.program.create_kernel_bundle_from_sycl_source">create_kernel_bundle_from_sycl_source() (in module dpctl.program)</a>
+</li>
         <li><a href="api_reference/dpctl/generated/dpctl.program.create_program_from_source.html#dpctl.program.create_program_from_source">create_program_from_source() (in module dpctl.program)</a>
 </li>
         <li><a href="api_reference/dpctl/generated/dpctl.program.create_program_from_spirv.html#dpctl.program.create_program_from_spirv">create_program_from_spirv() (in module dpctl.program)</a>
@@ -867,15 +874,15 @@
     define
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-34">DPCTL_DECLARE_VECTOR_TYPE</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-37">DPCTL_DECLARE_VECTOR_TYPE</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-35">HUGE_VALF</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-38">HUGE_VALF</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-36">INT64_MAX</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-39">INT64_MAX</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-37">INT64_MIN</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-40">INT64_MIN</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-38">UINT64_MAX</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-41">UINT64_MAX</a>
 </li>
         </ul></li>
         <li>
@@ -987,14 +994,21 @@
     DPCTL_DECLARE_VECTOR_TYPE
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-34">define</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-37">define</a>
+</li>
+        </ul></li>
+        <li>
+    DPCTLBuildOptionList_Append
+
+        <ul>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-29">function</a>
 </li>
         </ul></li>
         <li>
     DPCTLCString_Delete
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-31">function</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-34">function</a>
 </li>
         </ul></li>
         <li>
@@ -1136,7 +1150,7 @@
     DPCTLInt_Array_Delete
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-32">function</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-35">function</a>
 </li>
         </ul></li>
         <li>
@@ -1144,6 +1158,13 @@
 
         <ul>
           <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLKernelArgType.html#index-0">enum</a>
+</li>
+        </ul></li>
+        <li>
+    DPCTLKernelNameList_Append
+
+        <ul>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-30">function</a>
 </li>
         </ul></li>
         <li>
@@ -1192,14 +1213,14 @@
     DPCTLQueue_SubmitBarrier
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-29">function</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-32">function</a>
 </li>
         </ul></li>
         <li>
     DPCTLQueue_SubmitBarrierForEvents
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-30">function</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-33">function</a>
 </li>
         </ul></li>
         <li>
@@ -1213,7 +1234,7 @@
     DPCTLSize_t_Array_Delete
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-33">function</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-36">function</a>
 </li>
         </ul></li>
         <li>
@@ -1321,6 +1342,13 @@
           <li><a href="api_reference/libsyclinterface/generated/enum_DPCTLSyclUSMType.html#index-0">enum</a>
 </li>
         </ul></li>
+        <li>
+    DPCTLVirtualHeaderList_Append
+
+        <ul>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-31">function</a>
+</li>
+        </ul></li>
         <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.driver_version.html#dpctl.SyclDevice.driver_version">driver_version (dpctl.SyclDevice attribute)</a>
 
         <ul>
@@ -1405,7 +1433,9 @@
     function
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-31">DPCTLCString_Delete</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-29">DPCTLBuildOptionList_Append</a>
+</li>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-34">DPCTLCString_Delete</a>
 </li>
           <li><a href="api_reference/libsyclinterface/generated/global.html#index-12">DPCTLDevice_GetCompositeDevice</a>
 </li>
@@ -1441,13 +1471,17 @@
 </li>
           <li><a href="api_reference/libsyclinterface/generated/global.html#index-28">DPCTLDevice_Hash</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-32">DPCTLInt_Array_Delete</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-35">DPCTLInt_Array_Delete</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-29">DPCTLQueue_SubmitBarrier</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-30">DPCTLKernelNameList_Append</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-30">DPCTLQueue_SubmitBarrierForEvents</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-32">DPCTLQueue_SubmitBarrier</a>
 </li>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-33">DPCTLSize_t_Array_Delete</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-33">DPCTLQueue_SubmitBarrierForEvents</a>
+</li>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-36">DPCTLSize_t_Array_Delete</a>
+</li>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-31">DPCTLVirtualHeaderList_Append</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1606,7 +1640,7 @@
     HUGE_VALF
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-35">define</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-38">define</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1633,14 +1667,14 @@
     INT64_MAX
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-36">define</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-39">define</a>
 </li>
         </ul></li>
         <li>
     INT64_MIN
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-37">define</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-40">define</a>
 </li>
         </ul></li>
     </ul></td>
@@ -1662,6 +1696,8 @@
         <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_gpu.html#dpctl.SyclDevice.is_gpu">is_gpu (dpctl.SyclDevice attribute)</a>
 </li>
         <li><a href="api_reference/dpctl/generated/generated/dpctl.SyclQueue.is_in_order.html#dpctl.SyclQueue.is_in_order">is_in_order (dpctl.SyclQueue attribute)</a>
+</li>
+        <li><a href="api_reference/dpctl/generated/dpctl.program.is_sycl_source_compilation_available.html#dpctl.program.is_sycl_source_compilation_available">is_sycl_source_compilation_available() (in module dpctl.program)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2203,7 +2239,7 @@
     UINT64_MAX
 
         <ul>
-          <li><a href="api_reference/libsyclinterface/generated/global.html#index-38">define</a>
+          <li><a href="api_reference/libsyclinterface/generated/global.html#index-41">define</a>
 </li>
         </ul></li>
     </ul></td>

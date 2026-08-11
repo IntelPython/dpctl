@@ -283,6 +283,7 @@
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -562,8 +563,10 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_kernel_bundle_from_sycl_source.html">dpctl.program.create_kernel_bundle_from_sycl_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl.program.is_sycl_source_compilation_available.html">dpctl.program.is_sycl_source_compilation_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
@@ -751,28 +754,31 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.can_access_peer.html#dpctl.SyclDevice.can_access_peer" title="dpctl.SyclDevice.can_access_peer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_access_peer</span></code></a>(peer[, value])</p></td>
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this device (<code class="docutils literal notranslate"><span class="pre">self</span></code>) can enable peer access to USM device memory on <code class="docutils literal notranslate"><span class="pre">peer</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.component_devices.html#dpctl.SyclDevice.component_devices" title="dpctl.SyclDevice.component_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">component_devices</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.can_compile.html#dpctl.SyclDevice.can_compile" title="dpctl.SyclDevice.can_compile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_compile</span></code></a>(language)</p></td>
+<td><p>Check whether it is possible to create an executable kernel_bundle for this device from the given source language.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.component_devices.html#dpctl.SyclDevice.component_devices" title="dpctl.SyclDevice.component_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">component_devices</span></code></a>()</p></td>
 <td><p>Returns a tuple of component devices contained in this SYCL device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.create_sub_devices.html#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a>([partition])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.create_sub_devices.html#dpctl.SyclDevice.create_sub_devices" title="dpctl.SyclDevice.create_sub_devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sub_devices</span></code></a>([partition])</p></td>
 <td><p>Creates a tuple of sub-devices by partitioning a root device based on the provided partition specifier.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.disable_peer_access.html#dpctl.SyclDevice.disable_peer_access" title="dpctl.SyclDevice.disable_peer_access"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_peer_access</span></code></a>(peer)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.disable_peer_access.html#dpctl.SyclDevice.disable_peer_access" title="dpctl.SyclDevice.disable_peer_access"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_peer_access</span></code></a>(peer)</p></td>
 <td><p>Disables peer access to <code class="docutils literal notranslate"><span class="pre">peer</span></code> from this device (<code class="docutils literal notranslate"><span class="pre">self</span></code>).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.enable_peer_access.html#dpctl.SyclDevice.enable_peer_access" title="dpctl.SyclDevice.enable_peer_access"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_peer_access</span></code></a>(peer)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.enable_peer_access.html#dpctl.SyclDevice.enable_peer_access" title="dpctl.SyclDevice.enable_peer_access"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_peer_access</span></code></a>(peer)</p></td>
 <td><p>Enables this device (<code class="docutils literal notranslate"><span class="pre">self</span></code>) to access USM device allocations located on <code class="docutils literal notranslate"><span class="pre">peer</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_device_id.html#dpctl.SyclDevice.get_device_id" title="dpctl.SyclDevice.get_device_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_device_id</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_device_id.html#dpctl.SyclDevice.get_device_id" title="dpctl.SyclDevice.get_device_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_device_id</span></code></a>()</p></td>
 <td><p>For an unpartitioned device, returns the canonical index of this device in the list of devices visible to dpctl.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_filter_string.html#dpctl.SyclDevice.get_filter_string" title="dpctl.SyclDevice.get_filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></a>([include_backend, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_filter_string.html#dpctl.SyclDevice.get_filter_string" title="dpctl.SyclDevice.get_filter_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_filter_string</span></code></a>([include_backend, ...])</p></td>
 <td><p>For a parent device, returns a filter selector string that includes backend or device type based on the value of the given keyword arguments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_unpartitioned_parent_device.html#dpctl.SyclDevice.get_unpartitioned_parent_device" title="dpctl.SyclDevice.get_unpartitioned_parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_unpartitioned_parent_device</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.get_unpartitioned_parent_device.html#dpctl.SyclDevice.get_unpartitioned_parent_device" title="dpctl.SyclDevice.get_unpartitioned_parent_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_unpartitioned_parent_device</span></code></a>()</p></td>
 <td><p>Returns the unpartitioned parent device of this device.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.print_device_info.html#dpctl.SyclDevice.print_device_info" title="dpctl.SyclDevice.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclDevice.print_device_info.html#dpctl.SyclDevice.print_device_info" title="dpctl.SyclDevice.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
 <td><p>Print information about the SYCL device.</p></td>
 </tr>
 </tbody>

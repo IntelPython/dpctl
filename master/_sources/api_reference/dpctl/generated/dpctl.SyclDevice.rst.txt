@@ -14,6 +14,7 @@
    
       ~SyclDevice.addressof_ref
       ~SyclDevice.can_access_peer
+      ~SyclDevice.can_compile
       ~SyclDevice.component_devices
       ~SyclDevice.create_sub_devices
       ~SyclDevice.disable_peer_access
