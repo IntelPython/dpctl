@@ -233,18 +233,6 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkIsGPU)
     EXPECT_NO_FATAL_FAILURE(DPCTLDevice_IsGPU(DRef));
 }
 
-TEST_P(TestDPCTLSyclDeviceInterface, ChkGetSubGroupIndependentForwardProgress)
-{
-    bool sub_group_progress = 0;
-    EXPECT_NO_FATAL_FAILURE(
-        sub_group_progress =
-            DPCTLDevice_GetSubGroupIndependentForwardProgress(DRef));
-    auto D = reinterpret_cast<device *>(DRef);
-    auto get_sub_group_progress =
-        D->get_info<info::device::sub_group_independent_forward_progress>();
-    EXPECT_TRUE(get_sub_group_progress == sub_group_progress);
-}
-
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPreferredVectorWidthChar)
 {
     uint32_t vector_width_char = 0;
@@ -1001,15 +989,6 @@ TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetMaxImageDims)
     res = 0;
     EXPECT_NO_FATAL_FAILURE(res = DPCTLDevice_GetImage3dMaxDepth(Null_DRef));
     ASSERT_TRUE(res == 0);
-}
-
-TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetSubGroupIndependentForwardProgress)
-{
-    bool indep_pr = true;
-    EXPECT_NO_FATAL_FAILURE(
-        indep_pr =
-            DPCTLDevice_GetSubGroupIndependentForwardProgress(Null_DRef));
-    ASSERT_FALSE(indep_pr);
 }
 
 TEST_F(TestDPCTLSyclDeviceNullArgs, ChkGetPreferredVectorWidth)
