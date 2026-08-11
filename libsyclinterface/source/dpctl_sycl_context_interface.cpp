@@ -195,6 +195,8 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         return DPCTL_CUDA;
     case backend::ext_oneapi_hip:
         return DPCTL_HIP;
+    case backend::ext_oneapi_native_cpu:
+        return DPCTL_NATIVE_CPU;
     default:
         return DPCTL_UNKNOWN_BACKEND;
     }
