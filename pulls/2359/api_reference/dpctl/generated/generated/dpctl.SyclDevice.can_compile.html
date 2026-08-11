@@ -12,11 +12,11 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclDevice.sub_group_sizes" href="dpctl.SyclDevice.sub_group_sizes.html"><link rel="prev" title="dpctl.SyclDevice.single_fp_config" href="dpctl.SyclDevice.single_fp_config.html">
+    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclDevice.component_devices" href="dpctl.SyclDevice.component_devices.html"><link rel="prev" title="dpctl.SyclDevice.can_access_peer" href="dpctl.SyclDevice.can_access_peer.html">
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
-        <title>dpctl.SyclDevice.sub_group_independent_forward_progress - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
+        <title>dpctl.SyclDevice.can_compile - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -283,6 +283,7 @@
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -382,7 +383,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.preferred_vector_width_short.html">dpctl.SyclDevice.preferred_vector_width_short</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.profiling_timer_resolution.html">dpctl.SyclDevice.profiling_timer_resolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.single_fp_config.html">dpctl.SyclDevice.single_fp_config</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.sub_group_independent_forward_progress</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sub_group_sizes.html">dpctl.SyclDevice.sub_group_sizes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sycl_platform.html">dpctl.SyclDevice.sycl_platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.vendor.html">dpctl.SyclDevice.vendor</a></li>
@@ -393,7 +393,12 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclContext.html">dpctl.SyclContext</a><input aria-label="Toggle navigation of dpctl.SyclContext" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.addressof_ref.html">dpctl.SyclContext.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.get_devices.html">dpctl.SyclContext.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_fence_order_capabilities.html">dpctl.SyclContext.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_fence_scope_capabilities.html">dpctl.SyclContext.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_memory_order_capabilities.html">dpctl.SyclContext.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_memory_scope_capabilities.html">dpctl.SyclContext.atomic_memory_scope_capabilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.device_count.html">dpctl.SyclContext.device_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -559,8 +564,10 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_kernel_bundle_from_sycl_source.html">dpctl.program.create_kernel_bundle_from_sycl_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.is_sycl_source_compilation_available.html">dpctl.program.is_sycl_source_compilation_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
@@ -664,7 +671,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.sub_group_independent_forward_progress.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_compile.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -682,20 +689,27 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-sycldevice-sub-group-independent-forward-progress">
-<h1>dpctl.SyclDevice.sub_group_independent_forward_progress<a class="headerlink" href="#dpctl-sycldevice-sub-group-independent-forward-progress" title="Permalink to this heading">¶</a></h1>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_independent_forward_progress">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports independent forward progress
-of sub-groups with respect to other sub-groups in the same work-group.</p>
+          <section id="dpctl-sycldevice-can-compile">
+<h1>dpctl.SyclDevice.can_compile<a class="headerlink" href="#dpctl-sycldevice-can-compile" title="Permalink to this heading">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpctl.SyclDevice.can_compile">
+<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">can_compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclDevice.can_compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether it is possible to create an executable kernel_bundle
+for this device from the given source language.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indicates if the device supports independent forward progress
-of sub-groups.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language</strong> – Input language. Possible values are “spirv” or “spv” for
+SPIR-V binary files, “opencl” or “ocl” for OpenCL C device code
+and “sycl” for SYCL device code.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if compilation is supported, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If an unknown source language is used.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -707,23 +721,23 @@ of sub-groups.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclDevice.sub_group_sizes.html">
+          <a class="next-page" href="dpctl.SyclDevice.component_devices.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclDevice.sub_group_sizes</div>
+                <div class="title">dpctl.SyclDevice.component_devices</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.SyclDevice.single_fp_config.html">
+          <a class="prev-page" href="dpctl.SyclDevice.can_access_peer.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.SyclDevice.single_fp_config</div>
+                <div class="title">dpctl.SyclDevice.can_access_peer</div>
                 
               </div>
             </a>
@@ -757,8 +771,8 @@ of sub-groups.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.SyclDevice.sub_group_independent_forward_progress</a><ul>
-<li><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="docutils literal notranslate"><span class="pre">SyclDevice.sub_group_independent_forward_progress</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.SyclDevice.can_compile</a><ul>
+<li><a class="reference internal" href="#dpctl.SyclDevice.can_compile"><code class="docutils literal notranslate"><span class="pre">SyclDevice.can_compile()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -14,6 +14,7 @@
    
       ~SyclDevice.addressof_ref
       ~SyclDevice.can_access_peer
+      ~SyclDevice.can_compile
       ~SyclDevice.component_devices
       ~SyclDevice.create_sub_devices
       ~SyclDevice.disable_peer_access
@@ -123,7 +124,6 @@
       ~SyclDevice.preferred_vector_width_short
       ~SyclDevice.profiling_timer_resolution
       ~SyclDevice.single_fp_config
-      ~SyclDevice.sub_group_independent_forward_progress
       ~SyclDevice.sub_group_sizes
       ~SyclDevice.sycl_platform
       ~SyclDevice.vendor
