@@ -1,6 +1,0 @@
-dpctl.SyclDevice.preferred\_vector\_width\_int
-==============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.preferred_vector_width_int
