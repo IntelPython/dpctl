@@ -94,6 +94,8 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
         return backend::all;
     case DPCTLSyclBackendType::DPCTL_HIP:
         return backend::ext_oneapi_hip;
+    case DPCTLSyclBackendType::DPCTL_NATIVE_CPU:
+        return backend::ext_oneapi_native_cpu;
     default:
         throw std::runtime_error("Unsupported backend type");
     }
@@ -110,6 +112,8 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
         return DPCTLSyclBackendType::DPCTL_OPENCL;
     case backend::ext_oneapi_hip:
         return DPCTLSyclBackendType::DPCTL_HIP;
+    case backend::ext_oneapi_native_cpu:
+        return DPCTLSyclBackendType::DPCTL_NATIVE_CPU;
     default:
         return DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     }

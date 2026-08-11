@@ -56,6 +56,7 @@ typedef enum
     DPCTL_UNKNOWN_BACKEND = 0,
     DPCTL_ALL_BACKENDS    = ((1<<5)-1) << 16,
     DPCTL_HIP             = 1 << 19,
+    DPCTL_NATIVE_CPU      = 1 << 20,
     // clang-format on
 } DPCTLSyclBackendType;
 

@@ -95,6 +95,7 @@ class backend_type(Enum):
     cuda = auto()
     hip = auto()
     level_zero = auto()
+    native_cpu = auto()
     opencl = auto()
 
 
