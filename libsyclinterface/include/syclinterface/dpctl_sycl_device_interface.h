@@ -1082,4 +1082,40 @@ __dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
     __dpctl_keep const DPCTLSyclDeviceRef DRef,
     size_t *res_len);
 
+/*!
+ * @brief Checks whether it is possible to create executables kernel bundles
+ * from SPIR-V binaries on this device.
+ *
+ * @param DRef  Opaque pointer to a ``sycl::device``.
+ * @return True if creation is supported.
+ * #DPCTLSyclDeviceRef objects
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Checks whether it is possible to create executables kernel bundles
+ * from OpenCL source code on this device.
+ *
+ * @param DRef  Opaque pointer to a ``sycl::device``.
+ * @return True if creation is supported.
+ * #DPCTLSyclDeviceRef objects
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
+/*!
+ * @brief Checks whether it is possible to create executables kernel bundles
+ * from SYCL source code on this device.
+ *
+ * @param DRef  Opaque pointer to a ``sycl::device``.
+ * @return True if creation is supported.
+ * #DPCTLSyclDeviceRef objects
+ * @ingroup DeviceInterface
+ */
+DPCTL_API
+bool DPCTLDevice_CanCompileSYCL(__dpctl_keep const DPCTLSyclDeviceRef DRef);
+
 DPCTL_C_EXTERN_C_END

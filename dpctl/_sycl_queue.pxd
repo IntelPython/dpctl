@@ -68,16 +68,16 @@ cdef public api class SyclQueue (_SyclQueue) [
     cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
 
     @staticmethod
-    cdef  SyclQueue _create(DPCTLSyclQueueRef qref)
+    cdef SyclQueue _create(DPCTLSyclQueueRef qref)
 
     @staticmethod
-    cdef  SyclQueue _create_from_context_and_device(
+    cdef SyclQueue _create_from_context_and_device(
         SyclContext ctx, SyclDevice dev, int props=*
     )
     cdef cpp_bool equals(self, SyclQueue q)
     cpdef SyclContext get_sycl_context(self)
     cpdef SyclDevice get_sycl_device(self)
-    cdef  DPCTLSyclQueueRef get_queue_ref(self)
+    cdef DPCTLSyclQueueRef get_queue_ref(self)
     cpdef SyclEvent _submit_keep_args_alive(
         self,
         object args,

@@ -52,10 +52,12 @@ cdef api class SyclKernelBundle [
     binary file.
     """
     cdef DPCTLSyclKernelBundleRef _kernel_bundle_ref
+    cdef bint _is_sycl_source
 
     @staticmethod
-    cdef  SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref)
-    cdef  DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
+    cdef SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref,
+                                   bint _is_sycl_source)
+    cdef DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 
 
@@ -72,3 +74,7 @@ cpdef create_program_from_source (SyclQueue q, unicode source, unicode copts=*)
 cpdef create_program_from_spirv (
     SyclQueue q, const unsigned char[:] IL, unicode copts=*
 )
+cpdef create_kernel_bundle_from_sycl_source(SyclQueue q, unicode source,
+                                            list headers=*,
+                                            list registered_names=*,
+                                            list copts=*)

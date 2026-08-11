@@ -43,6 +43,10 @@ from libc.string cimport memcmp, memcpy
 import warnings
 
 from dpctl._backend cimport (  # noqa: E211, E402;
+    DPCTLBuildOptionList_Append,
+    DPCTLBuildOptionList_Create,
+    DPCTLBuildOptionList_Delete,
+    DPCTLBuildOptionListRef,
     DPCTLKernel_Copy,
     DPCTLKernel_Delete,
     DPCTLKernel_GetCompileNumSubGroups,
@@ -53,16 +57,32 @@ from dpctl._backend cimport (  # noqa: E211, E402;
     DPCTLKernel_GetPreferredWorkGroupSizeMultiple,
     DPCTLKernel_GetPrivateMemSize,
     DPCTLKernel_GetWorkGroupSize,
+    DPCTLKernelBuildLog_Create,
+    DPCTLKernelBuildLog_Delete,
+    DPCTLKernelBuildLog_Get,
+    DPCTLKernelBuildLogRef,
     DPCTLKernelBundle_Copy,
     DPCTLKernelBundle_CreateFromOCLSource,
     DPCTLKernelBundle_CreateFromSpirv,
+    DPCTLKernelBundle_CreateFromSYCLSource,
+    DPCTLKernelBundle_CreateFromSYCLSource_Available,
     DPCTLKernelBundle_Delete,
     DPCTLKernelBundle_GetKernel,
+    DPCTLKernelBundle_GetSyclKernel,
     DPCTLKernelBundle_HasKernel,
+    DPCTLKernelBundle_HasSyclKernel,
+    DPCTLKernelNameList_Append,
+    DPCTLKernelNameList_Create,
+    DPCTLKernelNameList_Delete,
+    DPCTLKernelNameListRef,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
     DPCTLSyclKernelBundleRef,
     DPCTLSyclKernelRef,
+    DPCTLVirtualHeaderList_Append,
+    DPCTLVirtualHeaderList_Create,
+    DPCTLVirtualHeaderList_Delete,
+    DPCTLVirtualHeaderListRef,
     _spec_const,
 )
 
@@ -73,6 +93,8 @@ import numpy as np
 __all__ = [
     "create_kernel_bundle_from_source",
     "create_kernel_bundle_from_spirv",
+    "create_kernel_bundle_from_sycl_source",
+    "is_sycl_source_compilation_available",
     "SyclKernel",
     "SyclKernelBundle",
     "SyclKernelBundleCompilationError",
@@ -84,6 +106,17 @@ cdef class SyclKernelBundleCompilationError(Exception):
        built from either a SPIR-V binary file or a string source.
     """
     pass
+
+
+cpdef bint is_sycl_source_compilation_available():
+    """Returns True if dpctl was built with compiler that supports the DPC++
+       `kernel_compiler` extension API used by
+       :func:`create_kernel_bundle_from_sycl_source`.
+
+       Device support is separate; callers should also check
+       ``q.sycl_device.can_compile('sycl')`` (or similar) for specific devices.
+    """
+    return DPCTLKernelBundle_CreateFromSYCLSource_Available()
 
 
 cdef class SyclKernel:
@@ -213,13 +246,23 @@ cdef class SyclKernelBundle:
 
     SyclKernelBundle exposes the C API from
     ``dpctl_sycl_kernel_bundle_interface.h``. A SyclKernelBundle can be
-    created from either a source string or a SPIR-V binary file.
+    created from an OpenCL C source string
+    (:func:`.create_kernel_bundle_from_source`), a SPIR-V binary file
+    (:func:`.create_kernel_bundle_from_spirv`), or a SYCL source string
+    (:func:`.create_kernel_bundle_from_sycl_source`).
+
+    Creation from SYCL source uses the DPC++ ``kernel_compiler`` extension,
+    which requires both a compiler and a device that support it. Use
+    :func:`.is_sycl_source_compilation_available` to check for compiler
+    support.
     """
 
     @staticmethod
-    cdef SyclKernelBundle _create(DPCTLSyclKernelBundleRef KBRef):
+    cdef SyclKernelBundle _create(DPCTLSyclKernelBundleRef KBRef,
+                                  bint is_sycl_source):
         cdef SyclKernelBundle ret = SyclKernelBundle.__new__(SyclKernelBundle)
         ret._kernel_bundle_ref = KBRef
+        ret._is_sycl_source = is_sycl_source
         return ret
 
     def __dealloc__(self):
@@ -230,6 +273,13 @@ cdef class SyclKernelBundle:
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
+        if self._is_sycl_source:
+            return SyclKernel._create(
+                    DPCTLKernelBundle_GetSyclKernel(
+                        self._kernel_bundle_ref, name
+                    ),
+                    kernel_name
+                )
         return SyclKernel._create(
             DPCTLKernelBundle_GetKernel(self._kernel_bundle_ref, name),
             kernel_name
@@ -237,6 +287,10 @@ cdef class SyclKernelBundle:
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
+        if self._is_sycl_source:
+            return DPCTLKernelBundle_HasSyclKernel(
+                self._kernel_bundle_ref, name
+            )
         return DPCTLKernelBundle_HasKernel(self._kernel_bundle_ref, name)
 
     def addressof_ref(self):
@@ -267,7 +321,7 @@ cdef api SyclKernelBundle SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef):
     reference.
     """
     cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
-    return SyclKernelBundle._create(copied_KBRef)
+    return SyclKernelBundle._create(copied_KBRef, False)
 
 
 cdef class SpecializationConstant:
@@ -518,7 +572,7 @@ cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
     if KBref is NULL:
         raise SyclKernelBundleCompilationError()
 
-    return SyclKernelBundle._create(KBref)
+    return SyclKernelBundle._create(KBref, False)
 
 
 cpdef create_kernel_bundle_from_spirv(
@@ -604,7 +658,143 @@ cpdef create_kernel_bundle_from_spirv(
         if spconsts != NULL:
             free(spconsts)
 
-    return SyclKernelBundle._create(KBref)
+    return SyclKernelBundle._create(KBref, False)
+
+
+cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
+                                            unicode source,
+                                            list headers=None,
+                                            list registered_names=None,
+                                            list copts=None):
+    """
+        Creates an executable SYCL kernel_bundle from SYCL source code.
+
+        This uses the DPC++ ``kernel_compiler`` extension to create a
+        ``sycl::kernel_bundle<sycl::bundle_state::executable>`` object from
+        SYCL source code.
+
+        Parameters:
+            q (:class:`dpctl.SyclQueue`)
+                The :class:`dpctl.SyclQueue` for which the
+                :class:`.SyclKernelBundle` is going to be built.
+            source (unicode)
+                SYCL source code string.
+            headers (list, optional)
+                Optional list of virtual headers, where each entry in the list
+                needs to be a tuple of header name and header content. See the
+                documentation of the ``include_files`` property in the DPC++
+                ``kernel_compiler`` extension for more information.
+                Default: ``None``
+            registered_names (list, optional)
+                Optional list of kernel names to register. See the
+                documentation of the ``registered_names`` property in the DPC++
+                ``kernel_compiler`` extension for more information.
+                Default: ``None``
+            copts (list, optional)
+                Optional list of compilation flags that will be used
+                when compiling the program.
+                Default: ``None``
+
+        Returns:
+            kernel_bundle (:class:`.SyclKernelBundle`)
+                A :class:`.SyclKernelBundle` object wrapping the
+                ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+                returned by the C API.
+
+        Raises:
+            SyclKernelBundleCompilationError
+                If a SYCL kernel bundle could not be created. The exception
+                message contains the build log for more details.
+    """
+    cdef DPCTLSyclKernelBundleRef KBref = NULL
+    cdef DPCTLSyclContextRef CRef = q.get_sycl_context().get_context_ref()
+    cdef DPCTLSyclDeviceRef DRef = q.get_sycl_device().get_device_ref()
+    cdef bytes bSrc = source.encode("utf8")
+    cdef const char *Src = <const char*>bSrc
+    # initialized to NULL so that the `finally` clause below can release
+    # whichever of these were created before an exception was raised
+    cdef DPCTLBuildOptionListRef BuildOpts = NULL
+    cdef DPCTLKernelNameListRef KernelNames = NULL
+    cdef DPCTLVirtualHeaderListRef VirtualHeaders = NULL
+    cdef DPCTLKernelBuildLogRef BuildLog = NULL
+    cdef bytes bOpt
+    cdef const char* sOpt
+    cdef bytes bName
+    cdef const char* sName
+    cdef bytes bContent
+    cdef const char* sContent
+    cdef const char* buildLogContent
+
+    if headers is None:
+        headers = []
+    if registered_names is None:
+        registered_names = []
+    if copts is None:
+        copts = []
+
+    try:
+        BuildOpts = DPCTLBuildOptionList_Create()
+        KernelNames = DPCTLKernelNameList_Create()
+        VirtualHeaders = DPCTLVirtualHeaderList_Create()
+        BuildLog = DPCTLKernelBuildLog_Create()
+
+        for opt in copts:
+            if not isinstance(opt, unicode):
+                raise TypeError(
+                    "Every element of `copts` must be a string, got "
+                    f"{type(opt)}"
+                )
+            bOpt = opt.encode("utf8")
+            sOpt = <const char*>bOpt
+            DPCTLBuildOptionList_Append(BuildOpts, sOpt)
+
+        for name in registered_names:
+            if not isinstance(name, unicode):
+                raise TypeError(
+                    "Every element of `registered_names` must be a string, "
+                    f"got {type(name)}"
+                )
+            bName = name.encode("utf8")
+            sName = <const char*>bName
+            DPCTLKernelNameList_Append(KernelNames, sName)
+
+        for header in headers:
+            if not isinstance(header, tuple) or len(header) != 2:
+                raise TypeError(
+                    "Every element of `headers` must be a 2-tuple of header "
+                    "name and header content"
+                )
+            name, content = header
+            if (
+                not isinstance(name, unicode)
+                or not isinstance(content, unicode)
+            ):
+                raise TypeError(
+                    "Header names and header content must be strings, got "
+                    f"({type(name)}, {type(content)})"
+                )
+            bName = name.encode("utf8")
+            sName = <const char*>bName
+            bContent = content.encode("utf8")
+            sContent = <const char*>bContent
+            DPCTLVirtualHeaderList_Append(VirtualHeaders, sName, sContent)
+
+        KBref = DPCTLKernelBundle_CreateFromSYCLSource(
+            CRef, DRef, Src, VirtualHeaders, KernelNames, BuildOpts, BuildLog
+        )
+
+        if KBref is NULL:
+            buildLogContent = DPCTLKernelBuildLog_Get(BuildLog)
+            raise SyclKernelBundleCompilationError(
+                str(buildLogContent, "utf-8")
+            )
+    finally:
+        DPCTLBuildOptionList_Delete(BuildOpts)
+        DPCTLKernelNameList_Delete(KernelNames)
+        DPCTLVirtualHeaderList_Delete(VirtualHeaders)
+        DPCTLKernelBuildLog_Delete(BuildLog)
+
+    return SyclKernelBundle._create(KBref, True)
 
 
 cpdef create_program_from_source(SyclQueue q, str src, str copts=""):
