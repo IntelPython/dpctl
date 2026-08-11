@@ -151,6 +151,36 @@ TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNull)
     ASSERT_TRUE(KBRef == nullptr);
 }
 
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvNullCompileOpts)
+{
+    // CompileOpts is optional and NULL means "no build options". It is
+    // forwarded to clBuildProgram (whose `options` argument is nullable) for
+    // the OpenCL backend, and to ze_module_desc_t::pBuildFlags (documented
+    // as [in][optional]) for the Level Zero backend.
+    DPCTLSyclKernelBundleRef KB = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(KB = DPCTLKernelBundle_CreateFromSpirv(
+                                CRef, DRef, spirvBuffer.data(), spirvFileSize,
+                                nullptr, 0, nullptr));
+    ASSERT_TRUE(KB != nullptr);
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "add"));
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "axpy"));
+    DPCTLKernelBundle_Delete(KB);
+}
+
+TEST_P(TestDPCTLSyclKernelBundleInterface, ChkCreateFromSpirvWithCompileOpts)
+{
+    DPCTLSyclKernelBundleRef KB = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(KB = DPCTLKernelBundle_CreateFromSpirv(
+                                CRef, DRef, spirvBuffer.data(), spirvFileSize,
+                                "-cl-fast-relaxed-math", 0, nullptr));
+    ASSERT_TRUE(KB != nullptr);
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "add"));
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "axpy"));
+    DPCTLKernelBundle_Delete(KB);
+}
+
 TEST_P(TestDPCTLSyclKernelBundleInterface, ChkHasKernelNullKernelBundle)
 {
 
@@ -267,6 +297,19 @@ TEST_P(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNull)
     ASSERT_TRUE(KBRef == nullptr);
 }
 
+TEST_P(TestOCLKernelBundleFromSource, CheckCreateFromOCLSourceNullCompileOpts)
+{
+    // CompileOpts is optional: it is forwarded to clBuildProgram, whose
+    // `options` argument accepts NULL to mean "no build options".
+    DPCTLSyclKernelBundleRef KB = nullptr;
+    EXPECT_NO_FATAL_FAILURE(KB = DPCTLKernelBundle_CreateFromOCLSource(
+                                CRef, DRef, CLProgramStr, nullptr));
+    ASSERT_TRUE(KB != nullptr);
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "add"));
+    EXPECT_TRUE(DPCTLKernelBundle_HasKernel(KB, "axpy"));
+    DPCTLKernelBundle_Delete(KB);
+}
+
 TEST_P(TestOCLKernelBundleFromSource, CheckGetKernelOCLSource)
 {
     auto AddKernel = DPCTLKernelBundle_GetKernel(KBRef, "add");
@@ -275,6 +318,206 @@ TEST_P(TestOCLKernelBundleFromSource, CheckGetKernelOCLSource)
     ASSERT_TRUE(AxpyKernel != nullptr);
     DPCTLKernel_Delete(AddKernel);
     DPCTLKernel_Delete(AxpyKernel);
+}
+
+struct TestSYCLKernelBundleFromSource
+    : public ::testing::TestWithParam<const char *>
+{
+    const char *sycl_source = R"===(
+    #include <sycl/sycl.hpp>
+    #include "math_ops.hpp"
+    #include "math_template_ops.hpp"
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item = sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op(in1[globalID],in2[globalID]);
+    }
+
+    template<typename T>
+    SYCL_EXTERNAL SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add_template(T* in1, T* in2, T* out){
+        sycl::nd_item<1> item = sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = math_op_template(in1[globalID], in2[globalID]);
+    }
+    )===";
+
+    // A source string that needs no virtual headers, so that it can be built
+    // while passing NULL for the optional arguments.
+    const char *standalone_sycl_source = R"===(
+    #include <sycl/sycl.hpp>
+
+    namespace syclext = sycl::ext::oneapi::experimental;
+
+    extern "C" SYCL_EXTERNAL SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
+    void vector_add(int* in1, int* in2, int* out){
+        sycl::nd_item<1> item = sycl::ext::oneapi::this_work_item::get_nd_item<1>();
+        size_t globalID = item.get_global_linear_id();
+        out[globalID] = in1[globalID] + in2[globalID];
+    }
+    )===";
+
+    const char *header1_content = R"===(
+    int math_op(int a, int b){
+        return a + b;
+    }
+    )===";
+
+    const char *header2_content = R"===(
+    template<typename T>
+    T math_op_template(T a, T b){
+        return a + b;
+    }
+    )===";
+
+    const char *CompileOpt = "-fno-fast-math";
+    const char *KernelName = "vector_add_template<int>";
+    const char *Header1Name = "math_ops.hpp";
+    const char *Header2Name = "math_template_ops.hpp";
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLSyclKernelBundleRef KBRef = nullptr;
+
+    TestSYCLKernelBundleFromSource()
+    {
+        auto DS = DPCTLFilterSelector_Create(GetParam());
+        DRef = DPCTLDevice_CreateFromSelector(DS);
+        DPCTLDeviceSelector_Delete(DS);
+        CRef = DPCTLDeviceMgr_GetCachedContext(DRef);
+
+        if (DRef) {
+            DPCTLBuildOptionListRef BORef = DPCTLBuildOptionList_Create();
+            DPCTLBuildOptionList_Append(BORef, CompileOpt);
+            DPCTLKernelNameListRef KNRef = DPCTLKernelNameList_Create();
+            DPCTLKernelNameList_Append(KNRef, KernelName);
+            DPCTLVirtualHeaderListRef VHRef = DPCTLVirtualHeaderList_Create();
+            DPCTLVirtualHeaderList_Append(VHRef, Header1Name, header1_content);
+            DPCTLVirtualHeaderList_Append(VHRef, Header2Name, header2_content);
+            DPCTLKernelBuildLogRef KBLRef = DPCTLKernelBuildLog_Create();
+            KBRef = DPCTLKernelBundle_CreateFromSYCLSource(
+                CRef, DRef, sycl_source, VHRef, KNRef, BORef, KBLRef);
+            DPCTLVirtualHeaderList_Delete(VHRef);
+            DPCTLKernelNameList_Delete(KNRef);
+            DPCTLBuildOptionList_Delete(BORef);
+            DPCTLKernelBuildLog_Delete(KBLRef);
+        }
+    }
+
+    void SetUp()
+    {
+        if (!DRef) {
+            auto message = "Skipping as no device of type " +
+                           std::string(GetParam()) + ".";
+            GTEST_SKIP_(message.c_str());
+        }
+        if (!DPCTLDevice_CanCompileSYCL(DRef)) {
+            const char *message = "Skipping as SYCL compilation not supported";
+            GTEST_SKIP_(message);
+        }
+    }
+
+    ~TestSYCLKernelBundleFromSource()
+    {
+        if (DRef)
+            DPCTLDevice_Delete(DRef);
+        if (CRef)
+            DPCTLContext_Delete(CRef);
+        if (KBRef)
+            DPCTLKernelBundle_Delete(KBRef);
+    }
+};
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckCreateFromSYCLSource)
+{
+    ASSERT_TRUE(KBRef != nullptr);
+    ASSERT_TRUE(DPCTLKernelBundle_HasSyclKernel(KBRef, "vector_add"));
+    // DPC++ version 2025.1 supports compilation of SYCL template kernels,
+    // but does not yet support referencing them with the unmangled name.
+    ASSERT_TRUE(
+        DPCTLKernelBundle_HasSyclKernel(KBRef, "vector_add_template<int>") ||
+        DPCTLKernelBundle_HasSyclKernel(
+            KBRef, "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_"));
+}
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckGetKernelSYCLSource)
+{
+    auto AddKernel = DPCTLKernelBundle_GetSyclKernel(KBRef, "vector_add");
+    auto AxpyKernel =
+        DPCTLKernelBundle_GetSyclKernel(KBRef, "vector_add_template<int>");
+    if (AxpyKernel == nullptr) {
+        // DPC++ version 2025.1 supports compilation of SYCL template kernels,
+        // but does not yet support referencing them with the unmangled name.
+        AxpyKernel = DPCTLKernelBundle_GetSyclKernel(
+            KBRef, "_Z33__sycl_kernel_vector_add_templateIiEvPT_S1_S1_");
+    }
+
+    ASSERT_TRUE(AddKernel != nullptr);
+    ASSERT_TRUE(AxpyKernel != nullptr);
+    DPCTLKernel_Delete(AddKernel);
+    DPCTLKernel_Delete(AxpyKernel);
+}
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckCreateFromSYCLSourceNullArgs)
+{
+    DPCTLBuildOptionListRef BORef = DPCTLBuildOptionList_Create();
+    DPCTLKernelNameListRef KNRef = DPCTLKernelNameList_Create();
+    DPCTLVirtualHeaderListRef VHRef = DPCTLVirtualHeaderList_Create();
+    DPCTLKernelBuildLogRef KBLRef = DPCTLKernelBuildLog_Create();
+
+    // Ctx, Dev and Source are required; passing NULL must return NULL rather
+    // than dereference it.
+    auto create = [&](DPCTLSyclContextRef C, DPCTLSyclDeviceRef D,
+                      const char *S, DPCTLVirtualHeaderListRef H,
+                      DPCTLKernelNameListRef N, DPCTLBuildOptionListRef B,
+                      DPCTLKernelBuildLogRef L) {
+        return DPCTLKernelBundle_CreateFromSYCLSource(C, D, S, H, N, B, L);
+    };
+
+    EXPECT_EQ(create(nullptr, DRef, sycl_source, VHRef, KNRef, BORef, KBLRef),
+              nullptr);
+    EXPECT_EQ(create(CRef, nullptr, sycl_source, VHRef, KNRef, BORef, KBLRef),
+              nullptr);
+    EXPECT_EQ(create(CRef, DRef, nullptr, VHRef, KNRef, BORef, KBLRef),
+              nullptr);
+
+    DPCTLVirtualHeaderList_Delete(VHRef);
+    DPCTLKernelNameList_Delete(KNRef);
+    DPCTLBuildOptionList_Delete(BORef);
+    DPCTLKernelBuildLog_Delete(KBLRef);
+}
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckCreateFromSYCLSourceNullOptionals)
+{
+    // Headers, Names, BuildOptions and BuildLog are optional: passing NULL is
+    // equivalent to passing an empty list / discarding the log.
+    DPCTLSyclKernelBundleRef KB = DPCTLKernelBundle_CreateFromSYCLSource(
+        CRef, DRef, standalone_sycl_source, nullptr, nullptr, nullptr, nullptr);
+
+    ASSERT_TRUE(KB != nullptr);
+    EXPECT_TRUE(DPCTLKernelBundle_HasSyclKernel(KB, "vector_add"));
+    DPCTLKernelBundle_Delete(KB);
+}
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckNullBuildLogOnFailure)
+{
+    // A compilation failure with a NULL BuildLog must return NULL rather than
+    // write the diagnostics through a null pointer.
+    const char *bad_source = "this is not valid SYCL";
+    EXPECT_EQ(DPCTLKernelBundle_CreateFromSYCLSource(
+                  CRef, DRef, bad_source, nullptr, nullptr, nullptr, nullptr),
+              nullptr);
+}
+
+TEST_P(TestSYCLKernelBundleFromSource, CheckSyclKernelQueriesNullArgs)
+{
+    EXPECT_EQ(DPCTLKernelBundle_GetSyclKernel(nullptr, "vector_add"), nullptr);
+    EXPECT_EQ(DPCTLKernelBundle_GetSyclKernel(KBRef, nullptr), nullptr);
+    EXPECT_FALSE(DPCTLKernelBundle_HasSyclKernel(nullptr, "vector_add"));
+    EXPECT_FALSE(DPCTLKernelBundle_HasSyclKernel(KBRef, nullptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSpirv,
@@ -292,6 +535,12 @@ INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSpirv,
 INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSource,
                          TestOCLKernelBundleFromSource,
                          ::testing::Values("opencl:gpu", "opencl:cpu"));
+
+INSTANTIATE_TEST_SUITE_P(KernelBundleCreationFromSYCL,
+                         TestSYCLKernelBundleFromSource,
+                         ::testing::Values("opencl:gpu",
+                                           "opencl:cpu",
+                                           "level_zero:gpu"));
 
 struct TestKernelBundleUnsupportedBackend : public ::testing::Test
 {

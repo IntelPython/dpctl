@@ -28,7 +28,10 @@
 #include "dpctl_sycl_context_interface.h"
 #include "dpctl_sycl_device_interface.h"
 #include "dpctl_sycl_device_selector_interface.h"
+#include "dpctl_sycl_enum_types.h"
+#include "dpctl_sycl_platform_interface.h"
 #include "dpctl_sycl_types.h"
+#include "dpctl_utils.h"
 
 #include <stddef.h>
 
@@ -181,6 +184,100 @@ TEST_P(TestDPCTLContextInterface, ChkGetBackend)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
+TEST_P(TestDPCTLContextInterface, ChkGetPlatform)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    DPCTLSyclPlatformRef PRef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLContext_GetPlatform(CRef));
+    ASSERT_TRUE(PRef);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLPlatform_Delete(PRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_P(TestDPCTLContextInterface, ChkGetAtomicMemoryOrderCapabilities)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    int *arr = nullptr;
+    size_t len = 0;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicMemoryOrderCapabilities(CRef, &len));
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
+                    arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_P(TestDPCTLContextInterface, ChkGetAtomicFenceOrderCapabilities)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    int *arr = nullptr;
+    size_t len = 0;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicFenceOrderCapabilities(CRef, &len));
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_ORDER_RELAXED &&
+                    arr[i] <= DPCTL_MEMORY_ORDER_SEQ_CST);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_P(TestDPCTLContextInterface, ChkGetAtomicMemoryScopeCapabilities)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    int *arr = nullptr;
+    size_t len = 0;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicMemoryScopeCapabilities(CRef, &len));
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
+                    arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
+TEST_P(TestDPCTLContextInterface, ChkGetAtomicFenceScopeCapabilities)
+{
+    DPCTLSyclContextRef CRef = nullptr;
+    int *arr = nullptr;
+    size_t len = 0;
+
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, nullptr, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicFenceScopeCapabilities(CRef, &len));
+    ASSERT_TRUE(len > 0);
+    ASSERT_TRUE(arr != nullptr);
+    for (size_t i = 0; i < len; ++i) {
+        EXPECT_TRUE(arr[i] >= DPCTL_MEMORY_SCOPE_WORK_ITEM &&
+                    arr[i] <= DPCTL_MEMORY_SCOPE_SYSTEM);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLInt_Array_Delete(arr));
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+}
+
 INSTANTIATE_TEST_SUITE_P(DPCTLContextTests,
                          TestDPCTLContextInterface,
                          ::testing::Values("opencl",
@@ -267,4 +364,51 @@ TEST_F(TestDPCTLContextNullArgs, ChkGetBackend)
 TEST_F(TestDPCTLContextNullArgs, ChkDelete)
 {
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(Null_CRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetPlatform)
+{
+    DPCTLSyclPlatformRef PRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(PRef = DPCTLContext_GetPlatform(Null_CRef));
+    ASSERT_FALSE(bool(PRef));
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetAtomicMemoryOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 42;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicMemoryOrderCapabilities(Null_CRef, &len));
+    ASSERT_FALSE(bool(arr));
+    ASSERT_EQ(len, 0ul);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetAtomicFenceOrderCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 42;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicFenceOrderCapabilities(Null_CRef, &len));
+    ASSERT_FALSE(bool(arr));
+    ASSERT_EQ(len, 0ul);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetAtomicMemoryScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 42;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicMemoryScopeCapabilities(Null_CRef, &len));
+    ASSERT_FALSE(bool(arr));
+    ASSERT_EQ(len, 0ul);
+}
+
+TEST_F(TestDPCTLContextNullArgs, ChkGetAtomicFenceScopeCapabilities)
+{
+    int *arr = nullptr;
+    size_t len = 42;
+    EXPECT_NO_FATAL_FAILURE(
+        arr = DPCTLContext_GetAtomicFenceScopeCapabilities(Null_CRef, &len));
+    ASSERT_FALSE(bool(arr));
+    ASSERT_EQ(len, 0ul);
 }

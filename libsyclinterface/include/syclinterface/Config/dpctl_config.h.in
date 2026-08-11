@@ -28,7 +28,7 @@
 /* Defined when dpctl was built with level zero program creation enabled. */
 #cmakedefine DPCTL_ENABLE_L0_PROGRAM_CREATION 1
 
-#define __SYCL_COMPILER_VERSION_REQUIRED 20221201L
+#define __SYCL_COMPILER_VERSION_REQUIRED 20260331
 
 /* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@IntelSyclCompiler_VERSION@"

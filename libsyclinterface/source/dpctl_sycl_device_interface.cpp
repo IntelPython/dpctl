@@ -408,22 +408,6 @@ declmethod(GetImage3dMaxHeight, image3d_max_height, size_t);
 declmethod(GetImage3dMaxDepth, image3d_max_depth, size_t);
 #undef declmethod
 
-bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
-    __dpctl_keep const DPCTLSyclDeviceRef DRef)
-{
-    bool SubGroupProgress = false;
-    auto D = unwrap<device>(DRef);
-    if (D) {
-        try {
-            SubGroupProgress = D->get_info<
-                info::device::sub_group_independent_forward_progress>();
-        } catch (std::exception const &e) {
-            error_handler(e, __FILE__, __func__, __LINE__);
-        }
-    }
-    return SubGroupProgress;
-}
-
 namespace
 {
 
@@ -1281,4 +1265,53 @@ __dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
 {
     return get_info_enum_array<info::device::partition_affinity_domains>(
         DRef, res_len, DPCTL_SyclPartitionAffinityDomainToDPCTLType);
+}
+
+bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool canCompile = false;
+    auto Dev = unwrap<device>(DRef);
+    if (Dev) {
+        try {
+            auto Backend = Dev->get_platform().get_backend();
+            canCompile = Backend == backend::opencl ||
+                         Backend == backend::ext_oneapi_level_zero;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
+}
+
+bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+    bool canCompile = false;
+    auto Dev = unwrap<device>(DRef);
+    if (Dev) {
+        try {
+            canCompile = Dev->get_platform().get_backend() == backend::opencl;
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
+}
+
+bool DPCTLDevice_CanCompileSYCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
+{
+#ifdef SYCL_EXT_ONEAPI_KERNEL_COMPILER
+    bool canCompile = false;
+    auto Dev = unwrap<device>(DRef);
+    if (Dev) {
+        try {
+            canCompile = Dev->ext_oneapi_can_compile(
+                ext::oneapi::experimental::source_language::sycl);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return canCompile;
+#else
+    return false;
+#endif
 }

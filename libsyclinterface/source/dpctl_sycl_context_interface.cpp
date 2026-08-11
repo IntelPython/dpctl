@@ -28,6 +28,7 @@
 #include "Config/dpctl_config.h"
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_type_casters.hpp"
+#include "dpctl_utils_helper.h"
 #include <stddef.h>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -211,4 +212,89 @@ size_t DPCTLContext_Hash(__dpctl_keep const DPCTLSyclContextRef CtxRef)
         error_handler("Argument CtxRef is null.", __FILE__, __func__, __LINE__);
         return 0;
     }
+}
+
+__dpctl_give DPCTLSyclPlatformRef
+DPCTLContext_GetPlatform(__dpctl_keep const DPCTLSyclContextRef CtxRef)
+{
+    DPCTLSyclPlatformRef PRef = nullptr;
+    auto C = unwrap<context>(CtxRef);
+    if (C) {
+        try {
+            PRef = wrap<platform>(
+                new platform(C->get_info<info::context::platform>()));
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    return PRef;
+}
+
+namespace
+{
+
+template <typename InfoDescT, typename ConvertFn>
+int *get_context_info_enum_array(__dpctl_keep const DPCTLSyclContextRef CtxRef,
+                                 size_t *res_len,
+                                 ConvertFn convert)
+{
+    int *arr = nullptr;
+    *res_len = 0;
+    auto C = unwrap<context>(CtxRef);
+    if (C) {
+        try {
+            auto values = C->get_info<InfoDescT>();
+            *res_len = values.size();
+            if (*res_len > 0) {
+                arr = new int[*res_len];
+                for (size_t i = 0; i < *res_len; ++i) {
+                    arr[i] = convert(values[i]);
+                }
+            }
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            delete[] arr;
+            arr = nullptr;
+            *res_len = 0;
+        }
+    }
+    return arr;
+}
+
+} // end of anonymous namespace
+
+__dpctl_give int *DPCTLContext_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len)
+{
+    return get_context_info_enum_array<
+        info::context::atomic_memory_order_capabilities>(
+        CtxRef, res_len, DPCTL_SyclMemoryOrderToDPCTLType);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len)
+{
+    return get_context_info_enum_array<
+        info::context::atomic_fence_order_capabilities>(
+        CtxRef, res_len, DPCTL_SyclMemoryOrderToDPCTLType);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len)
+{
+    return get_context_info_enum_array<
+        info::context::atomic_memory_scope_capabilities>(
+        CtxRef, res_len, DPCTL_SyclMemoryScopeToDPCTLType);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef CtxRef,
+    size_t *res_len)
+{
+    return get_context_info_enum_array<
+        info::context::atomic_fence_scope_capabilities>(
+        CtxRef, res_len, DPCTL_SyclMemoryScopeToDPCTLType);
 }

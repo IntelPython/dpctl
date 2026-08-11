@@ -273,3 +273,71 @@ def test_multi_device_different_platforms():
             dpctl.SyclContext(devs)
     else:
         pytest.skip("Insufficient amount of available devices for this test")
+
+
+def test_context_sycl_platform(valid_filter):
+    """
+    Test that :attr:`dpctl.SyclContext.sycl_platform` returns the
+    platform shared by the context's devices.
+    """
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
+    plat = ctx.sycl_platform
+    assert isinstance(plat, dpctl.SyclPlatform)
+    for d in ctx.get_devices():
+        assert d.sycl_platform == plat
+
+
+def test_context_atomic_memory_order_capabilities(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
+    caps = ctx.atomic_memory_order_capabilities
+    assert isinstance(caps, tuple)
+    assert all(isinstance(m, dpctl.memory_order) for m in caps)
+    # SYCL 2020 requires at least these capabilities
+    assert dpctl.memory_order.relaxed in caps
+    # capabilities of the context must be a subset of every device
+    for d in ctx.get_devices():
+        assert set(caps).issubset(set(d.atomic_memory_order_capabilities))
+
+
+def test_context_atomic_fence_order_capabilities(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
+    caps = ctx.atomic_fence_order_capabilities
+    assert isinstance(caps, tuple)
+    assert all(isinstance(m, dpctl.memory_order) for m in caps)
+    for d in ctx.get_devices():
+        assert set(caps).issubset(set(d.atomic_fence_order_capabilities))
+
+
+def test_context_atomic_memory_scope_capabilities(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
+    caps = ctx.atomic_memory_scope_capabilities
+    assert isinstance(caps, tuple)
+    assert all(isinstance(m, dpctl.memory_scope) for m in caps)
+    # SYCL 2020 requires at least these capabilities
+    assert dpctl.memory_scope.work_group in caps
+    for d in ctx.get_devices():
+        assert set(caps).issubset(set(d.atomic_memory_scope_capabilities))
+
+
+def test_context_atomic_fence_scope_capabilities(valid_filter):
+    try:
+        ctx = dpctl.SyclContext(valid_filter)
+    except dpctl.SyclContextCreationError:
+        pytest.skip()
+    caps = ctx.atomic_fence_scope_capabilities
+    assert isinstance(caps, tuple)
+    assert all(isinstance(m, dpctl.memory_scope) for m in caps)
+    for d in ctx.get_devices():
+        assert set(caps).issubset(set(d.atomic_fence_scope_capabilities))

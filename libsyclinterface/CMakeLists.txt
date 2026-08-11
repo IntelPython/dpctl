@@ -54,7 +54,7 @@ set(LIBCL_DEFAULT_LOADER_FILENAME "libOpenCL.so.1" CACHE STRING "Default OpenCL 
 
 # Minimum version requirement only when oneAPI dpcpp is used.
 if(DPCTL_DPCPP_FROM_ONEAPI)
-    find_package(IntelSyclCompiler 2021.3.0 REQUIRED)
+    find_package(IntelSyclCompiler 2026.0.0 REQUIRED)
 else()
     find_package(IntelSyclCompiler REQUIRED)
 endif()

@@ -234,9 +234,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
     cdef bool DPCTLDevice_IsAccelerator(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsCPU(const DPCTLSyclDeviceRef DRef)
     cdef bool DPCTLDevice_IsGPU(const DPCTLSyclDeviceRef DRef)
-    cdef bool DPCTLDevice_GetSubGroupIndependentForwardProgress(
-        const DPCTLSyclDeviceRef DRef
-    )
     cdef uint32_t DPCTLDevice_GetPreferredVectorWidthChar(
         const DPCTLSyclDeviceRef DRef
     )
@@ -331,7 +328,6 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
                                         _peer_access PT)
     cdef void DPCTLDevice_EnablePeerAccess(const DPCTLSyclDeviceRef DRef,
                                            const DPCTLSyclDeviceRef PDRef)
-
     cdef void DPCTLDevice_DisablePeerAccess(const DPCTLSyclDeviceRef DRef,
                                             const DPCTLSyclDeviceRef PDRef)
     cdef uint32_t DPCTLDevice_GetVendorId(const DPCTLSyclDeviceRef DRef)
@@ -374,6 +370,10 @@ cdef extern from "syclinterface/dpctl_sycl_device_interface.h":
         const DPCTLSyclDeviceRef DRef, size_t *res_len)
     cdef int *DPCTLDevice_GetPartitionAffinityDomains(
         const DPCTLSyclDeviceRef DRef, size_t *res_len)
+    cdef bool DPCTLDevice_CanCompileSPIRV(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_CanCompileOpenCL(const DPCTLSyclDeviceRef DRef)
+    cdef bool DPCTLDevice_CanCompileSYCL(const DPCTLSyclDeviceRef DRef)
+
 
 cdef extern from "syclinterface/dpctl_sycl_device_manager.h":
     cdef DPCTLDeviceVectorRef DPCTLDeviceVector_CreateFromArray(
@@ -512,6 +512,20 @@ cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
     cdef size_t DPCTLContext_Hash(const DPCTLSyclContextRef CRef)
     cdef _backend_type DPCTLContext_GetBackend(const DPCTLSyclContextRef)
     cdef void DPCTLContext_Delete(DPCTLSyclContextRef CtxRef)
+    cdef DPCTLSyclPlatformRef DPCTLContext_GetPlatform(
+        const DPCTLSyclContextRef CRef)
+    cdef int *DPCTLContext_GetAtomicMemoryOrderCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicFenceOrderCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicMemoryScopeCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
+    cdef int *DPCTLContext_GetAtomicFenceScopeCapabilities(
+        const DPCTLSyclContextRef CRef,
+        size_t *res_len)
 
 
 cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
@@ -541,6 +555,53 @@ cdef extern from "syclinterface/dpctl_sycl_kernel_bundle_interface.h":
     cdef void DPCTLKernelBundle_Delete(DPCTLSyclKernelBundleRef KBRef)
     cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_Copy(
         const DPCTLSyclKernelBundleRef KBRef)
+
+    cdef struct DPCTLBuildOptionList
+    cdef struct DPCTLKernelNameList
+    cdef struct DPCTLVirtualHeaderList
+    cdef struct DPCTLKernelBuildLog
+    ctypedef DPCTLBuildOptionList* DPCTLBuildOptionListRef
+    ctypedef DPCTLKernelNameList* DPCTLKernelNameListRef
+    ctypedef DPCTLVirtualHeaderList* DPCTLVirtualHeaderListRef
+    ctypedef DPCTLKernelBuildLog* DPCTLKernelBuildLogRef
+
+    cdef DPCTLBuildOptionListRef DPCTLBuildOptionList_Create()
+    cdef void DPCTLBuildOptionList_Delete(DPCTLBuildOptionListRef Ref)
+    cdef void DPCTLBuildOptionList_Append(DPCTLBuildOptionListRef Ref,
+                                          const char *Option)
+
+    cdef DPCTLKernelNameListRef DPCTLKernelNameList_Create()
+    cdef void DPCTLKernelNameList_Delete(DPCTLKernelNameListRef Ref)
+    cdef void DPCTLKernelNameList_Append(DPCTLKernelNameListRef Ref,
+                                         const char *Option)
+
+    cdef DPCTLVirtualHeaderListRef DPCTLVirtualHeaderList_Create()
+    cdef void DPCTLVirtualHeaderList_Delete(DPCTLVirtualHeaderListRef Ref)
+    cdef void DPCTLVirtualHeaderList_Append(DPCTLVirtualHeaderListRef Ref,
+                                            const char *Name,
+                                            const char *Content)
+
+    cdef DPCTLKernelBuildLogRef DPCTLKernelBuildLog_Create()
+    cdef void DPCTLKernelBuildLog_Delete(DPCTLKernelBuildLogRef Ref)
+    cdef const char *DPCTLKernelBuildLog_Get(DPCTLKernelBuildLogRef)
+
+    cdef bool DPCTLKernelBundle_CreateFromSYCLSource_Available()
+
+    cdef DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
+        const DPCTLSyclContextRef Ctx,
+        const DPCTLSyclDeviceRef Dev,
+        const char *Source,
+        DPCTLVirtualHeaderListRef Headers,
+        DPCTLKernelNameListRef Names,
+        DPCTLBuildOptionListRef BuildOptions,
+        DPCTLKernelBuildLogRef BuildLog)
+
+    cdef DPCTLSyclKernelRef DPCTLKernelBundle_GetSyclKernel(
+                                                DPCTLSyclKernelBundleRef KBRef,
+                                                const char *KernelName)
+
+    cdef bool DPCTLKernelBundle_HasSyclKernel(DPCTLSyclKernelBundleRef KBRef,
+                                              const char *KernelName)
 
 
 cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":

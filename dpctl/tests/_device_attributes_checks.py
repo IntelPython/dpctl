@@ -322,13 +322,6 @@ def check_image_3d_max_depth(device):
         pytest.fail("image_3d_max_depth call failed")
 
 
-def check_sub_group_independent_forward_progress(device):
-    try:
-        device.sub_group_independent_forward_progress
-    except Exception:
-        pytest.fail("sub_group_independent_forward_progress call failed")
-
-
 def check_preferred_vector_width_char(device):
     try:
         device.preferred_vector_width_char
@@ -812,7 +805,6 @@ list_of_checks = [
     check_is_accelerator,
     check_is_cpu,
     check_is_gpu,
-    check_sub_group_independent_forward_progress,
     check_preferred_vector_width_char,
     check_preferred_vector_width_short,
     check_preferred_vector_width_int,
