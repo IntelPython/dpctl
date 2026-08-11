@@ -34,7 +34,12 @@ from ._backend cimport (  # noqa: E211
     DPCTLContext_CreateFromDevices,
     DPCTLContext_Delete,
     DPCTLContext_DeviceCount,
+    DPCTLContext_GetAtomicFenceOrderCapabilities,
+    DPCTLContext_GetAtomicFenceScopeCapabilities,
+    DPCTLContext_GetAtomicMemoryOrderCapabilities,
+    DPCTLContext_GetAtomicMemoryScopeCapabilities,
     DPCTLContext_GetDevices,
+    DPCTLContext_GetPlatform,
     DPCTLContext_Hash,
     DPCTLDeviceMgr_GetCachedContext,
     DPCTLDeviceVector_CreateFromArray,
@@ -42,12 +47,17 @@ from ._backend cimport (  # noqa: E211
     DPCTLDeviceVector_GetAt,
     DPCTLDeviceVector_Size,
     DPCTLDeviceVectorRef,
+    DPCTLInt_Array_Delete,
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
+    DPCTLSyclPlatformRef,
     error_handler_callback,
 )
 from ._sycl_device cimport SyclDevice
 from ._sycl_device import SyclDeviceCreationError
+from ._sycl_platform cimport SyclPlatform
+
+from .enum_types import memory_order, memory_scope
 
 __all__ = [
     "SyclContext",
@@ -82,6 +92,33 @@ cdef void _context_capsule_deleter(object o) noexcept:
 cdef void _init_helper(_SyclContext context, DPCTLSyclContextRef CRef):
     "Populate context attributes from opaque reference CRef"
     context._ctxt_ref = CRef
+
+
+cdef tuple _to_enum_tuple(
+    int *arr, size_t arr_len, object enum_type, str descr
+):
+    """
+    Converts an array of DPCTL enum values into a tuple of ``enum_type``s
+
+    The DPCTL enums reserve value 0 for an unrecognized value, so a DPCTL
+    value of ``n`` corresponds to the ``n``-th member of ``enum_type``, whose
+    members are numbered from 1 by ``enum.auto()``.
+    """
+    cdef list res = []
+    cdef size_t i
+
+    if arr is NULL:
+        return ()
+    try:
+        for i in range(arr_len):
+            try:
+                res.append(enum_type(arr[i]))
+            except ValueError:
+                raise RuntimeError(f"Unrecognized {descr} reported")
+    finally:
+        DPCTLInt_Array_Delete(arr)
+
+    return tuple(res)
 
 
 cdef class _SyclContext:
@@ -441,6 +478,110 @@ cdef class SyclContext(_SyclContext):
                 "An error was encountered querying the number of devices "
                 "associated with this context"
             )
+
+    @property
+    def sycl_platform(self):
+        """ Returns the platform associated with this context.
+
+        Returns:
+            :class:`dpctl.SyclPlatform`:
+                The platform associated with this context.
+
+        Raises:
+            RuntimeError:
+                If ``DPCTLContext_GetPlatform`` fails to return a platform.
+        """
+        cdef DPCTLSyclPlatformRef PRef = (
+            DPCTLContext_GetPlatform(self.get_context_ref())
+        )
+        if (PRef == NULL):
+            raise RuntimeError("Could not get platform for context.")
+        else:
+            return SyclPlatform._create(PRef)
+
+    @property
+    def atomic_memory_order_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_order` describing atomic
+        memory order capabilities of the context.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_order`]:
+                Tuple of supported memory orders.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory order is given by runtime.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+
+        arr = DPCTLContext_GetAtomicMemoryOrderCapabilities(
+            self.get_context_ref(), &arr_len
+        )
+        return _to_enum_tuple(arr, arr_len, memory_order, "memory order")
+
+    @property
+    def atomic_fence_order_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_order` describing atomic
+        fence order capabilities of the context.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_order`]:
+                Tuple of supported fence orders.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory order is given by runtime.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+
+        arr = DPCTLContext_GetAtomicFenceOrderCapabilities(
+            self.get_context_ref(), &arr_len
+        )
+        return _to_enum_tuple(arr, arr_len, memory_order, "memory order")
+
+    @property
+    def atomic_memory_scope_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_scope` describing atomic
+        memory scope capabilities of the context.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_scope`]:
+                Tuple of supported memory scopes.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory scope is given by runtime.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+
+        arr = DPCTLContext_GetAtomicMemoryScopeCapabilities(
+            self.get_context_ref(), &arr_len
+        )
+        return _to_enum_tuple(arr, arr_len, memory_scope, "memory scope")
+
+    @property
+    def atomic_fence_scope_capabilities(self):
+        """ Returns a tuple of :class:`dpctl.memory_scope` describing atomic
+        fence scope capabilities of the context.
+
+        Returns:
+            Tuple[:class:`dpctl.memory_scope`]:
+                Tuple of supported fence scopes.
+
+        Raises:
+            RuntimeError:
+                If an unrecognized memory scope is given by runtime.
+        """
+        cdef int *arr = NULL
+        cdef size_t arr_len = 0
+
+        arr = DPCTLContext_GetAtomicFenceScopeCapabilities(
+            self.get_context_ref(), &arr_len
+        )
+        return _to_enum_tuple(arr, arr_len, memory_scope, "memory scope")
 
     @property
     def __name__(self):

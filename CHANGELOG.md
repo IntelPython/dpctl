@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 * Added a number of `sycl::device` info queries to `dpctl.SyclDevice` [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
+* Added `sycl::info::context` queries `sycl_platform`, `atomic_memory_order_capabilities`, `atomic_fence_order_capabilities`, `atomic_memory_scope_capabilities`, and `atomic_fence_scope_capabilities` to `dpctl.SyclContext` [gh-2354](https://github.com/IntelPython/dpctl/pull/2354)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
