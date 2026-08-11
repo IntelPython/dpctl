@@ -235,7 +235,7 @@ library.
     INSTALL_PREFIX=$(pwd)/../install
     rm -rf "${INSTALL_PREFIX}"
     export ONEAPI_ROOT=/opt/intel/oneapi
-    # Values are set as appropriate for oneAPI DPC++ 2024.0
+    # Values are set as appropriate for oneAPI DPC++ 2026.0
     # or later.
     DPCPP_ROOT=${ONEAPI_ROOT}/compiler/latest/
 
