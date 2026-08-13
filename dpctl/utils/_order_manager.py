@@ -23,6 +23,7 @@ class _SequentialOrderManager:
             return
         _local = self._state
         SyclEvent.wait_for(_local.get_submitted_events())
+        # TODO: remove once deprecated add_event_pair is removed
         SyclEvent.wait_for(_local.get_host_task_events())
 
     def add_event_pair(self, host_task_ev, comp_ev):

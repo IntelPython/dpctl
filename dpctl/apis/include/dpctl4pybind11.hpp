@@ -803,6 +803,9 @@ sycl::event keep_args_alive(sycl::queue &q,
                             const py::object (&py_objs)[num],
                             const std::vector<sycl::event> &depends = {})
 {
+    // q is only retained for API compatibility
+    (void)q;
+
     std::size_t n_objects_held = 0;
     std::array<std::shared_ptr<py::handle>, num> shp_arr{};
 

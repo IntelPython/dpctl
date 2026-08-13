@@ -1180,8 +1180,9 @@ cdef class SyclQueue(_SyclQueue):
         Keeps objects in ``args`` alive until tasks associated with events
         complete.
 
-        Deprecated since dpctl 0.23.0. Use :func:`dpctl.keep_args_alive`
-        instead, which is not bound to a queue and returns nothing.
+        Deprecated. Use :func:`dpctl.keep_args_alive` instead, which is not
+        bound to a queue and returns nothing. The event returned by this
+        function is already complete.
 
         Args:
             args(object):
@@ -2064,12 +2065,7 @@ def keep_args_alive(args, depends):
 
     Increments the reference count of ``args`` and schedules the matching
     decrement to run on a background thread once every event in ``depends``
-    is complete. The reference is guaranteed to be held for the whole span
-    in between, so the objects cannot be collected while offloaded tasks are
-    still reading them.
-
-    This function is not bound to a queue: the gating events fully determine
-    when the objects may be released.
+    is complete.
 
     :Example:
         .. code-block:: python
