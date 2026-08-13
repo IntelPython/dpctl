@@ -32,8 +32,20 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: ubuntu-22.04
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
+            experimental: false
+            runner: ubuntu-22.04
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: ubuntu-24.04
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+            experimental: false
+            runner: ubuntu-24.04
         experimental: [false]
         runner: [ubuntu-22.04, ubuntu-24.04]
     continue-on-error: ${{ matrix.experimental }}
@@ -81,6 +93,9 @@ jobs:
 
 
   test_windows:
+    # disable scheduled workflow to be run in forks
+    if: github.event.repository.fork == false
+
     runs-on:  ${{ matrix.runner }}
     timeout-minutes: 60
     defaults:
@@ -93,8 +108,12 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
+            experimental: false
+            runner: windows-latest
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
+            experimental: false
+            runner: windows-latest
         experimental: [false]
         runner: [windows-latest]
 
