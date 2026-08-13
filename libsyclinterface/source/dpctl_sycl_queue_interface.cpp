@@ -906,6 +906,42 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
 };
 
 __dpctl_give DPCTLSyclEventRef
+DPCTLQueue_MemsetWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint8_t Value,
+                            size_t Count,
+                            const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount)
+{
+    event ev;
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        try {
+            ev = Q->submit([&](handler &cgh) {
+                if (DepEvents)
+                    for (size_t i = 0; i < DepEventsCount; ++i) {
+                        event *ei = unwrap<event>(DepEvents[i]);
+                        if (ei)
+                            cgh.depends_on(*ei);
+                    }
+
+                cgh.memset(USMRef, static_cast<int>(Value), Count);
+            });
+        } catch (const std::exception &ex) {
+            error_handler(ex, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+    }
+    else {
+        error_handler("QRef or USMRef passed to memset were NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+
+    return wrap<event>(new event(ev));
+};
+
+__dpctl_give DPCTLSyclEventRef
 DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
                  void *USMRef,
                  uint8_t Value,
