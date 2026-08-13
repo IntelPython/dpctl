@@ -69,7 +69,8 @@ jobs:
           if [ -z "${PYTHON_SPEC}" ]; then
             PYTHON_SPEC="${{ matrix.python }}"
           fi
-          conda create -n "${{ env.TEST_ENV_NAME }}" -c dppy/label/dev "${{ env.CHANNELS }}" dpctl pytest cython setuptools c-compiler cxx-compiler python="${PYTHON_SPEC}"
+          # shellcheck disable=SC2086
+          conda create -n "${{ env.TEST_ENV_NAME }}" -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="${PYTHON_SPEC}"
 
       - name: Smoke test
         run: |
