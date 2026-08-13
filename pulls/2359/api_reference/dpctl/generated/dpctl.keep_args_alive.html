@@ -711,11 +711,7 @@ event in <code class="docutils literal notranslate"><span class="pre">depends</s
 </dl>
 <p>Increments the reference count of <code class="docutils literal notranslate"><span class="pre">args</span></code> and schedules the matching
 decrement to run on a background thread once every event in <code class="docutils literal notranslate"><span class="pre">depends</span></code>
-is complete. The reference is guaranteed to be held for the whole span
-in between, so the objects cannot be collected while offloaded tasks are
-still reading them.</p>
-<p>This function is not bound to a queue: the gating events fully determine
-when the objects may be released.</p>
+is complete.</p>
 <dl class="field-list">
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
