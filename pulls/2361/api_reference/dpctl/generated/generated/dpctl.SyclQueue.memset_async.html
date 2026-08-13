@@ -12,11 +12,11 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.memory.MemoryIPCDevice.is_closed" href="dpctl.memory.MemoryIPCDevice.is_closed.html"><link rel="prev" title="dpctl.memory.MemoryIPCDevice.memset" href="dpctl.memory.MemoryIPCDevice.memset.html">
+    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclQueue.prefetch" href="dpctl.SyclQueue.prefetch.html"><link rel="prev" title="dpctl.SyclQueue.memset" href="dpctl.SyclQueue.memset.html">
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
-        <title>dpctl.memory.MemoryIPCDevice.tobytes - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
+        <title>dpctl.SyclQueue.memset_async - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -279,7 +279,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of dpctl" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of dpctl" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
@@ -401,7 +401,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
@@ -411,7 +411,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memset.html">dpctl.SyclQueue.memset</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memset_async.html">dpctl.SyclQueue.memset_async</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclQueue.memset_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.prefetch.html">dpctl.SyclQueue.prefetch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.print_device_info.html">dpctl.SyclQueue.print_device_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.submit.html">dpctl.SyclQueue.submit</a></li>
@@ -476,7 +476,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../filter_selector_string.html">Filter Selector String</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../../memory.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a><input aria-label="Toggle navigation of dpctl.memory" checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../memory.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a><input aria-label="Toggle navigation of dpctl.memory" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.memory.MemoryUSMDevice.html">dpctl.memory.MemoryUSMDevice</a><input aria-label="Toggle navigation of dpctl.memory.MemoryUSMDevice" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryUSMDevice.copy_from_device.html">dpctl.memory.MemoryUSMDevice.copy_from_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryUSMDevice.copy_from_host.html">dpctl.memory.MemoryUSMDevice.copy_from_host</a></li>
@@ -538,14 +538,14 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.IPCMemoryHandle.to_bytes.html">dpctl.memory.IPCMemoryHandle.to_bytes</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.memory.MemoryIPCDevice.html">dpctl.memory.MemoryIPCDevice</a><input aria-label="Toggle navigation of dpctl.memory.MemoryIPCDevice" checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.memory.MemoryIPCDevice.html">dpctl.memory.MemoryIPCDevice</a><input aria-label="Toggle navigation of dpctl.memory.MemoryIPCDevice" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.copy_from_device.html">dpctl.memory.MemoryIPCDevice.copy_from_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.copy_from_host.html">dpctl.memory.MemoryIPCDevice.copy_from_host</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.copy_to_host.html">dpctl.memory.MemoryIPCDevice.copy_to_host</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.get_usm_type.html">dpctl.memory.MemoryIPCDevice.get_usm_type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.get_usm_type_enum.html">dpctl.memory.MemoryIPCDevice.get_usm_type_enum</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.memset.html">dpctl.memory.MemoryIPCDevice.memset</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.memory.MemoryIPCDevice.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.tobytes.html">dpctl.memory.MemoryIPCDevice.tobytes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.is_closed.html">dpctl.memory.MemoryIPCDevice.is_closed</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.nbytes.html">dpctl.memory.MemoryIPCDevice.nbytes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.memory.MemoryIPCDevice.reference_obj.html">dpctl.memory.MemoryIPCDevice.reference_obj</a></li>
@@ -672,7 +672,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.tobytes.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclQueue.memset_async.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -690,12 +690,39 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-memory-memoryipcdevice-tobytes">
-<h1>dpctl.memory.MemoryIPCDevice.tobytes<a class="headerlink" href="#dpctl-memory-memoryipcdevice-tobytes" title="Permalink to this heading">¶</a></h1>
+          <section id="dpctl-syclqueue-memset-async">
+<h1>dpctl.SyclQueue.memset_async<a class="headerlink" href="#dpctl-syclqueue-memset-async" title="Permalink to this heading">¶</a></h1>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpctl.memory.MemoryIPCDevice.tobytes">
-<span class="sig-prename descclassname"><span class="pre">MemoryIPCDevice.</span></span><span class="sig-name descname"><span class="pre">tobytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.memory.MemoryIPCDevice.tobytes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs bytes object populated with copy of USM memory.</p>
+<dt class="sig sig-object py" id="dpctl.SyclQueue.memset_async">
+<span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">memset_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dEvents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.memset_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill USM allocation <code class="docutils literal notranslate"><span class="pre">mem</span></code> with the byte value <code class="docutils literal notranslate"><span class="pre">val</span></code>
+asynchronously.</p>
+<p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>. The operation is
+byte-wise: <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes are set, each to the same value <code class="docutils literal notranslate"><span class="pre">val</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mem</strong> – Destination USM allocation, an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>.</p></li>
+<li><p><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Value to fill <code class="docutils literal notranslate"><span class="pre">mem</span></code> with. Following <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>,
+it is interpreted as an <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code>, i.e. only the least
+significant byte is used.</p></li>
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bytes to fill. If <code class="docutils literal notranslate"><span class="pre">0</span></code> or greater than the size of
+<code class="docutils literal notranslate"><span class="pre">mem</span></code>, the whole allocation is filled. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – Events that this operation depends on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Event associated with the memset operation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent">dpctl.SyclEvent</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">mem</span></code> is not an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>,
+    or <code class="docutils literal notranslate"><span class="pre">dEvents</span></code> is not a sequence of <a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -705,23 +732,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.memory.MemoryIPCDevice.is_closed.html">
+          <a class="next-page" href="dpctl.SyclQueue.prefetch.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.memory.MemoryIPCDevice.is_closed</div>
+                <div class="title">dpctl.SyclQueue.prefetch</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.memory.MemoryIPCDevice.memset.html">
+          <a class="prev-page" href="dpctl.SyclQueue.memset.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.memory.MemoryIPCDevice.memset</div>
+                <div class="title">dpctl.SyclQueue.memset</div>
                 
               </div>
             </a>
@@ -755,8 +782,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.memory.MemoryIPCDevice.tobytes</a><ul>
-<li><a class="reference internal" href="#dpctl.memory.MemoryIPCDevice.tobytes"><code class="docutils literal notranslate"><span class="pre">MemoryIPCDevice.tobytes()</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.SyclQueue.memset_async</a><ul>
+<li><a class="reference internal" href="#dpctl.SyclQueue.memset_async"><code class="docutils literal notranslate"><span class="pre">SyclQueue.memset_async()</span></code></a></li>
 </ul>
 </li>
 </ul>

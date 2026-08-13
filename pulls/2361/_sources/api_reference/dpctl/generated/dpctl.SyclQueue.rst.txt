@@ -21,6 +21,7 @@
       ~SyclQueue.memcpy
       ~SyclQueue.memcpy_async
       ~SyclQueue.memset
+      ~SyclQueue.memset_async
       ~SyclQueue.prefetch
       ~SyclQueue.print_device_info
       ~SyclQueue.submit

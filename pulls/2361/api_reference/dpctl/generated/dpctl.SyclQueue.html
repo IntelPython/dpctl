@@ -411,6 +411,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.memset.html">dpctl.SyclQueue.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.memset_async.html">dpctl.SyclQueue.memset_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.prefetch.html">dpctl.SyclQueue.prefetch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.print_device_info.html">dpctl.SyclQueue.print_device_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.submit.html">dpctl.SyclQueue.submit</a></li>
@@ -834,22 +835,25 @@ The argument can be either “default”, “in_order”,
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.memset.html#dpctl.SyclQueue.memset" title="dpctl.SyclQueue.memset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset</span></code></a>(mem, val[, count])</p></td>
 <td><p>Fill USM allocation <code class="docutils literal notranslate"><span class="pre">mem</span></code> with the byte value <code class="docutils literal notranslate"><span class="pre">val</span></code> and wait.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.prefetch.html#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.memset_async.html#dpctl.SyclQueue.memset_async" title="dpctl.SyclQueue.memset_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">memset_async</span></code></a>(mem, val[, count, dEvents])</p></td>
+<td><p>Fill USM allocation <code class="docutils literal notranslate"><span class="pre">mem</span></code> with the byte value <code class="docutils literal notranslate"><span class="pre">val</span></code> asynchronously.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.prefetch.html#dpctl.SyclQueue.prefetch" title="dpctl.SyclQueue.prefetch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefetch</span></code></a>(mem[, count])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.print_device_info.html#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.print_device_info.html#dpctl.SyclQueue.print_device_info" title="dpctl.SyclQueue.print_device_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_device_info</span></code></a>()</p></td>
 <td><p>Print information about the SYCL device associated with this queue.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit.html#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit.html#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
 <td><p>Submit <a class="reference internal" href="dpctl.program.SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit_async.html#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_async</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit_async.html#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_async</span></code></a>(kernel, args, gS[, lS, dEvents])</p></td>
 <td><p>Asynchronously submit <a class="reference internal" href="dpctl.program.SyclKernel.html#dpctl.program.SyclKernel" title="dpctl.program.SyclKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SyclKernel</span></code></a> for execution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit_barrier.html#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a>([dependent_events])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.submit_barrier.html#dpctl.SyclQueue.submit_barrier" title="dpctl.SyclQueue.submit_barrier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">submit_barrier</span></code></a>([dependent_events])</p></td>
 <td><p>Submits a barrier to this queue.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.wait.html#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.wait.html#dpctl.SyclQueue.wait" title="dpctl.SyclQueue.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
