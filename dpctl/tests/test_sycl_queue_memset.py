@@ -104,3 +104,63 @@ def test_memset_type_error():
     with pytest.raises(TypeError) as cm:
         q.memset(None, 1)
     assert "_Memory" in str(cm.value)
+
+
+def test_memset_async():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    nbytes = 64
+    mobj = _create_memory(q, nbytes)
+
+    e = q.memset_async(mobj, 0xAB)
+    assert isinstance(e, dpctl.SyclEvent)
+    e.wait()
+
+    assert bytes(memoryview(mobj)) == b"\xab" * nbytes
+
+
+def test_memset_async_with_dependent_events():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    nbytes = 64
+    mobj = _create_memory(q, nbytes)
+
+    e1 = q.memset_async(mobj, 0x01)
+    e2 = q.memset_async(mobj, 0x02, nbytes, [e1])
+    e2.wait()
+
+    assert bytes(memoryview(mobj)) == b"\x02" * nbytes
+
+
+def test_memset_async_partial_count():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    nbytes = 16
+    mobj = _create_memory(q, nbytes)
+
+    q.memset(mobj, 0x00)
+    e = q.memset_async(mobj, 0x7F, 4)
+    e.wait()
+
+    assert bytes(memoryview(mobj)) == b"\x7f" * 4 + b"\x00" * (nbytes - 4)
+
+
+def test_memset_async_type_error():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    mobj = _create_memory(q)
+
+    with pytest.raises(TypeError) as cm:
+        q.memset_async(None, 1)
+    assert "_Memory" in str(cm.value)
+
+    with pytest.raises(TypeError):
+        q.memset_async(mobj, 1, 0, [None])
