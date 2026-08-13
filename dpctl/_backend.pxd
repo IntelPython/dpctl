@@ -679,6 +679,13 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         void *Dest,
         int Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_MemsetWithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        int Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Prefetch(
         const DPCTLSyclQueueRef Q,
         const void *Src,
