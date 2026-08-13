@@ -899,7 +899,7 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
+        error_handler("QRef or USMRef passed to memset were NULL.", __FILE__,
                       __func__, __LINE__);
         return nullptr;
     }
