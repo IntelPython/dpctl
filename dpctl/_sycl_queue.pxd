@@ -107,6 +107,7 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef SyclEvent copy_async(
         self, dest, src, size_t count, list dEvents=*, str dtype=*
     )
+    cpdef memset(self, mem, int val, size_t count=*)
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)

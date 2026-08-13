@@ -49,6 +49,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
     DPCTLQueue_MemcpyWithEvents,
+    DPCTLQueue_Memset,
     DPCTLQueue_Prefetch,
     DPCTLQueue_SubmitBarrierForEvents,
     DPCTLQueue_SubmitNDRange,
@@ -1593,6 +1594,48 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         return SyclEvent._create(ERef)
+
+    cpdef memset(self, mem, int val, size_t count=0):
+        """Fill USM allocation ``mem`` with the byte value ``val`` and wait.
+
+        Internally, this dispatches ``sycl::queue::memset``. The operation is
+        byte-wise: ``count`` bytes are set, each to the same value ``val``.
+
+        Args:
+            mem:
+                Destination USM allocation, an instance of
+                :class:`dpctl.memory._Memory`.
+            val (int):
+                Value to fill ``mem`` with. Following ``sycl::queue::memset``,
+                it is interpreted as an ``unsigned char``, i.e. only the least
+                significant byte is used.
+            count (int, optional):
+                Number of bytes to fill. If ``0`` or greater than the size of
+                ``mem``, the whole allocation is filled. Default: ``0``.
+
+        Raises:
+            TypeError:
+                If ``mem`` is not an instance of :class:`dpctl.memory._Memory`.
+        """
+        cdef void *ptr
+        cdef DPCTLSyclEventRef ERef = NULL
+
+        if isinstance(mem, _Memory):
+            ptr = <void*>(<_Memory>mem).get_data_ptr()
+        else:
+            raise TypeError("Parameter `mem` should have type _Memory")
+
+        if (count <= 0 or count > mem.nbytes):
+            count = mem.nbytes
+
+        ERef = DPCTLQueue_Memset(self._queue_ref, ptr, val, count)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memset operation encountered an error"
+            )
+        with nogil:
+            DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
 
     cpdef prefetch(self, mem, size_t count=0):
         cdef void *ptr
