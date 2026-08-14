@@ -12,7 +12,6 @@ on:
 permissions: read-all
 
 env:
-  PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
   TEST_ENV_NAME: test_dpctl
   INTEL_CHANNEL: "https://software.repos.intel.com/python/conda/"
@@ -22,42 +21,23 @@ jobs:
     # disable scheduled workflow to be run in forks
     if: github.event.repository.fork == false
 
-    runs-on:  ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 45
 
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
-        python_spec: ['']
-        include:
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314'
-            experimental: false
-            runner: ubuntu-22.04
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314t'
-            experimental: false
-            runner: ubuntu-22.04
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314'
-            experimental: false
-            runner: ubuntu-24.04
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314t'
-            experimental: false
-            runner: ubuntu-24.04
-        experimental: [false]
+        dependencies: [conda-forge, intel]
+        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t']
         runner: [ubuntu-22.04, ubuntu-24.04]
-    continue-on-error: ${{ matrix.experimental }}
 
     steps:
       - name: Construct channels line
         run: |
-          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> "$GITHUB_ENV"
-
-      - name: Display channels line
-        run: |
-          echo "${{ env.CHANNELS }}"
+          if [ "${{ matrix.dependencies }}" = "intel" ]; then
+            echo "CHANNELS=-c dppy/label/dev -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> "$GITHUB_ENV"
+          else
+            echo "CHANNELS=-c dppy/label/dev -c conda-forge --override-channels" >> "$GITHUB_ENV"
+          fi
 
       - name: Set pkgs_dirs
         run: |
@@ -65,12 +45,12 @@ jobs:
 
       - name: Install dpctl
         run: |
-          PYTHON_SPEC="${{ matrix.python_spec }}"
-          if [ -z "${PYTHON_SPEC}" ]; then
-            PYTHON_SPEC="${{ matrix.python }}"
-          fi
           # shellcheck disable=SC2086
-          conda create -n "${{ env.TEST_ENV_NAME }}" -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="${PYTHON_SPEC}"
+          conda create -n "${{ env.TEST_ENV_NAME }}" ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="${{ matrix.python_spec }}"
+
+      - name: Report content of test environment
+        run: |
+          conda list -n "${{ env.TEST_ENV_NAME }}"
 
       - name: Smoke test
         run: |
@@ -97,28 +77,17 @@ jobs:
     # disable scheduled workflow to be run in forks
     if: github.event.repository.fork == false
 
-    runs-on:  ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     defaults:
       run:
         shell: cmd /C CALL {0}
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
-        python_spec: ['']
-        include:
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314'
-            experimental: false
-            runner: windows-latest
-          - python: '3.14'
-            python_spec: '3.14.* *_cp314t'
-            experimental: false
-            runner: windows-latest
-        experimental: [false]
+        # see the comment on the dependencies of test_linux
+        dependencies: [conda-forge, intel]
+        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t']
         runner: [windows-latest]
-
-    continue-on-error: ${{ matrix.experimental }}
     env:
       workdir: '${{ github.workspace }}'
 
@@ -126,11 +95,11 @@ jobs:
       - name: Construct channels line
         shell: pwsh
         run: |
-          echo "CHANNELS=-c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
-
-      - name: Display channels line
-        run: |
-          echo "${{ env.CHANNELS }}"
+          if ("${{ matrix.dependencies }}" -eq "intel") {
+            echo "CHANNELS=-c dppy/label/dev -c ${{ env.INTEL_CHANNEL }} -c conda-forge --override-channels" >> $env:GITHUB_ENV
+          } else {
+            echo "CHANNELS=-c dppy/label/dev -c conda-forge --override-channels" >> $env:GITHUB_ENV
+          }
 
       - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
@@ -138,48 +107,46 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: true
           activate-environment: ${{ env.TEST_ENV_NAME }}
-          python-version: ${{ matrix.python }}
 
       - name: Install dpctl
         run: |
-          SET "PYTHON_SPEC=${{ matrix.python_spec }}"
-          IF "%PYTHON_SPEC%"=="" SET "PYTHON_SPEC=${{ matrix.python }}"
-          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="%PYTHON_SPEC%"
+          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.CHANNELS }} dpctl pytest cython setuptools c-compiler cxx-compiler python="${{ matrix.python_spec }}"
 
-      # intel-opencl-rt is not being installed when running conda install dpctl, so do it manually
-      - name: Install intel-opencl-rt
+      - name: Report content of test environment
         run: |
-          conda install -n ${{ env.TEST_ENV_NAME }} -c dppy/label/dev ${{ env.CHANNELS }} intel-opencl-rt
+          conda list -n ${{ env.TEST_ENV_NAME }}
 
-      - name: Configure Intel OpenCL CPU RT
+      - name: Register the OpenCL CPU driver with the ICD loader
         shell: pwsh
         run: |
-          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
-          if (Test-Path $script_path) {
-            &$script_path
+          $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
+          $script = "$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          if (Test-Path $script) {
+            & $script
           } else {
-            Write-Warning "File $script_path was NOT found!"
+            $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
+            if ($drivers.Count -eq 0) { throw "intel-opencl-rt installed no OpenCL CPU driver under $env:CONDA_PREFIX" }
+            if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
+            foreach ($driver in $drivers) {
+              New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
+            }
           }
-          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
-          $cl_cfg="$env:CONDA_PREFIX\Library\bin\cl.cfg"
-          Get-Content -Tail 5 -Path $cl_cfg
+          Get-ItemProperty -Path $vendors
 
       - name: Smoke test
         shell: cmd /C CALL {0}
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
 
-      - name: Create empty temporary directory to run tests from
-        shell: cmd /C CALL {0}
+      - name: Create test temp dir
         # create temporary empty folder to runs tests from
         # https://github.com/pytest-dev/pytest/issues/11904
-        run: >-
-          mkdir "${{ env.workdir }}\test_tmp"
+        run: mkdir "${{ github.workspace }}\test_tmp"
 
       - name: Run tests
         shell: cmd /C CALL {0}
         env:
           SYCL_CACHE_PERSISTENT: 1
-        working-directory: ${{ env.workdir }}\test_tmp
-        run: >-
+        working-directory: ${{ github.workspace }}\test_tmp
+        run: |
           conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
