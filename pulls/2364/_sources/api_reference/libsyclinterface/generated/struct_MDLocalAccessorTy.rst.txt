@@ -1,0 +1,27 @@
+.. index:: pair: struct; MDLocalAccessorTy
+.. _doxid-db/dfd/struct_m_d_local_accessor_ty:
+
+struct MDLocalAccessorTy
+========================
+
+.. toctree::
+	:hidden:
+
+Structure to be used to specify dimensionality and type of local_accessor kernel type argument.
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_queue_interface.h>
+	
+	struct MDLocalAccessorTy
+	{
+		// fields
+	
+		size_t :target:`dim0<doxid-db/dfd/struct_m_d_local_accessor_ty_1a2f38fe6c63084fd947ec322c8609f79a>`;
+		size_t :target:`dim1<doxid-db/dfd/struct_m_d_local_accessor_ty_1a198638e249a88789bbfa13ef50a9a675>`;
+		size_t :target:`dim2<doxid-db/dfd/struct_m_d_local_accessor_ty_1af0876c6b8135d36550f0cdc5047907d0>`;
+		:ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>` :target:`dpctl_type_id<doxid-db/dfd/struct_m_d_local_accessor_ty_1a2e17804f58ddf62527c0fe8d292084e2>`;
+		size_t :target:`ndim<doxid-db/dfd/struct_m_d_local_accessor_ty_1a5737884a1cd8859b0ee4e4bb7bcaa648>`;
+	};
