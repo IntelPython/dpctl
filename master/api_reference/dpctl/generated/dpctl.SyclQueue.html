@@ -719,7 +719,7 @@ creates a queue for the device corresponding to the filter string.</p></li>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># Create in-order SyclQueue for either gpu, or cpu device</span>
-<span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;gpu,cpu&quot;</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">&quot;in_order&quot;</span><span class="p">)</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">"gpu,cpu"</span><span class="p">,</span> <span class="nb">property</span><span class="o">=</span><span class="s2">"in_order"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">([</span><span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">is_gpu</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span><span class="o">.</span><span class="n">is_cpu</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -734,7 +734,7 @@ a <a class="reference internal" href="dpctl.SyclContext.html#dpctl.SyclContext" 
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
-<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="n">q</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">sycl_context</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">sycl_device</span> <span class="o">==</span> <span class="n">d</span><span class="p">)</span>
@@ -753,7 +753,7 @@ device.</p></li>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># Create a CPU device using the opencl driver</span>
-<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;opencl:cpu&quot;</span><span class="p">)</span>
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"opencl:cpu"</span><span class="p">)</span>
 <span class="c1"># Partition the CPU device into sub-devices with two cores each.</span>
 <span class="n">sub_devices</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="c1"># Create a context common to all the sub-devices.</span>

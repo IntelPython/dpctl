@@ -730,7 +730,7 @@ to remove it.</p>
 </pre></div>
 </div>
 <p>On Windows OS</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">call</span> <span class="s2">&quot;</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\setvars.bat&quot;</span>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">call</span> <span class="s2">"</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\setvars.bat"</span>
 </pre></div>
 </div>
 </section>
@@ -745,8 +745,8 @@ conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span clas
 </div>
 <p>On Windows OS to cope with <a class="reference external" href="https://github.com/IntelPython/dpctl/issues/15">long file names</a>,
 use <code class="docutils literal notranslate"><span class="pre">croot</span></code> with a short folder path:</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="s2">&quot;ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\&quot;</span>
-conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\conda_channel&quot;</span>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="s2">"ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"</span>
+conda build --croot=C:/tmp conda-recipe -c <span class="s2">"</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\conda_channel"</span>
 </pre></div>
 </div>
 <p>After building the Conda package, install it by executing:</p>
@@ -881,7 +881,7 @@ mkdir<span class="w"> </span>build
 <span class="nb">pushd</span><span class="w"> </span>build<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 
 <span class="nv">INSTALL_PREFIX</span><span class="o">=</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/../install
-rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="s2">&quot;</span>
+rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">"</span><span class="si">${</span><span class="nv">INSTALL_PREFIX</span><span class="si">}</span><span class="s2">"</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">ONEAPI_ROOT</span><span class="o">=</span>/opt/intel/oneapi
 <span class="c1"># Values are set as appropriate for oneAPI DPC++ 2026.0</span>
 <span class="c1"># or later.</span>

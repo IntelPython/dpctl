@@ -686,14 +686,14 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2024 Intel Corporation</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
@@ -715,7 +715,7 @@
 
 
 <div class="viewcode-block" id="intel_device_info"><a class="viewcode-back" href="../../../api_reference/dpctl/utils.html#dpctl.utils.intel_device_info">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">intel_device_info</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;intel_device_info(sycl_device)</span>
+<span class="w">    </span><span class="sd">"""intel_device_info(sycl_device)</span>
 
 <span class="sd">    For Intel(R) GPU devices returns a dictionary</span>
 <span class="sd">    with device architectural details, and an empty</span>
@@ -748,52 +748,52 @@
 
 <span class="sd">    .. note::</span>
 <span class="sd">        Environment variable ``ZES_ENABLE_SYSMAN`` may need to be set</span>
-<span class="sd">        to ``1`` for the ``&quot;free_memory&quot;`` key to be reported.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        to ``1`` for the ``"free_memory"`` key to be reported.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">SyclDevice</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected dpctl.SyclDevice, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Expected dpctl.SyclDevice, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">dev_id</span> <span class="o">=</span> <span class="n">intel_device_info_device_id</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dev_id</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;device_id&quot;</span><span class="p">:</span> <span class="n">dev_id</span><span class="p">,</span>
+            <span class="s2">"device_id"</span><span class="p">:</span> <span class="n">dev_id</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">dev</span><span class="o">.</span><span class="n">has_aspect_gpu</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">eu_count</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_count</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">eu_count</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eu_count</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_eu_count"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eu_count</span>
             <span class="n">hw_threads</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_hw_threads_per_eu</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">hw_threads</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_hw_threads_per_eu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw_threads</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_hw_threads_per_eu"</span><span class="p">]</span> <span class="o">=</span> <span class="n">hw_threads</span>
             <span class="n">simd_w</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_simd_width</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">simd_w</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_simd_width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">simd_w</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_eu_simd_width"</span><span class="p">]</span> <span class="o">=</span> <span class="n">simd_w</span>
             <span class="n">n_slices</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_slices</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_slices</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_slices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_slices</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_slices"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_slices</span>
             <span class="n">n_subslices</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_subslices_per_slice</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_subslices</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_subslices_per_slice&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_subslices</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_subslices_per_slice"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_subslices</span>
             <span class="n">n_eu_per_subslice</span> <span class="o">=</span> <span class="n">intel_device_info_gpu_eu_count_per_subslice</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_eu_per_subslice</span><span class="p">:</span>
-                <span class="n">res</span><span class="p">[</span><span class="s2">&quot;gpu_eu_count_per_subslice&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_eu_per_subslice</span>
+                <span class="n">res</span><span class="p">[</span><span class="s2">"gpu_eu_count_per_subslice"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_eu_per_subslice</span>
         <span class="n">bw</span> <span class="o">=</span> <span class="n">intel_device_info_max_mem_bandwidth</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bw</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;max_mem_bandwidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bw</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">"max_mem_bandwidth"</span><span class="p">]</span> <span class="o">=</span> <span class="n">bw</span>
         <span class="n">fm</span> <span class="o">=</span> <span class="n">intel_device_info_free_memory</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fm</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;free_memory&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fm</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">"free_memory"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fm</span>
         <span class="n">mcr</span> <span class="o">=</span> <span class="n">intel_device_info_memory_clock_rate</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mcr</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;memory_clock_rate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mcr</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">"memory_clock_rate"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mcr</span>
         <span class="n">mbw</span> <span class="o">=</span> <span class="n">intel_device_info_memory_bus_width</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mbw</span><span class="p">:</span>
-            <span class="n">res</span><span class="p">[</span><span class="s2">&quot;memory_bus_width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mbw</span>
+            <span class="n">res</span><span class="p">[</span><span class="s2">"memory_bus_width"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mbw</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">return</span> <span class="p">{}</span></div>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;intel_device_info&quot;</span><span class="p">,</span>
+    <span class="s2">"intel_device_info"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
         </article>
