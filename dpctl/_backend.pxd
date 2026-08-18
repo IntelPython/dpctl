@@ -684,26 +684,61 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         void *Dest,
         uint8_t Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill8WithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint8_t Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Fill16(
         const DPCTLSyclQueueRef Q,
         void *Dest,
         uint16_t Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill16WithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint16_t Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Fill32(
         const DPCTLSyclQueueRef Q,
         void *Dest,
         uint32_t Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill32WithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint32_t Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Fill64(
         const DPCTLSyclQueueRef Q,
         void *Dest,
         uint64_t Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill64WithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint64_t Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Fill128(
         const DPCTLSyclQueueRef Q,
         void *Dest,
         uint64_t *Val,
         size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill128WithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint64_t *Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
     cdef DPCTLSyclEventRef DPCTLQueue_Prefetch(
         const DPCTLSyclQueueRef Q,
         const void *Src,
