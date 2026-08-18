@@ -21,7 +21,7 @@
 types defined by dpctl's C API.
 """
 
-from libc.stdint cimport int64_t, uint32_t, uint64_t
+from libc.stdint cimport int64_t, uint8_t, uint16_t, uint32_t, uint64_t
 from libcpp cimport bool
 
 
@@ -678,6 +678,31 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         const DPCTLSyclQueueRef Q,
         void *Dest,
         int Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill8(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint8_t Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill16(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint16_t Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill32(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint32_t Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill64(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint64_t Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_Fill128(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint64_t *Val,
         size_t Count)
     cdef DPCTLSyclEventRef DPCTLQueue_Prefetch(
         const DPCTLSyclQueueRef Q,
