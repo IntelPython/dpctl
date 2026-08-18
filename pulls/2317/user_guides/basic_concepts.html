@@ -283,6 +283,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -392,7 +393,12 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContext.html">dpctl.SyclContext</a><input aria-label="Toggle navigation of dpctl.SyclContext" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.addressof_ref.html">dpctl.SyclContext.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.get_devices.html">dpctl.SyclContext.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_fence_order_capabilities.html">dpctl.SyclContext.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_fence_scope_capabilities.html">dpctl.SyclContext.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_memory_order_capabilities.html">dpctl.SyclContext.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_memory_scope_capabilities.html">dpctl.SyclContext.atomic_memory_scope_capabilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.device_count.html">dpctl.SyclContext.device_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -557,6 +563,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api_reference/dpctl/compiler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.compiler</span></code></a><input aria-label="Toggle navigation of dpctl.compiler" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_source.html">dpctl.compiler.create_kernel_bundle_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_spirv.html">dpctl.compiler.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_sycl_source.html">dpctl.compiler.create_kernel_bundle_from_sycl_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.is_sycl_source_compilation_available.html">dpctl.compiler.is_sycl_source_compilation_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.SyclKernelBundle.html">dpctl.compiler.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.SyclKernel.html">dpctl.compiler.SyclKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.compiler.SpecializationConstant.html">dpctl.compiler.SpecializationConstant</a></li>
@@ -848,9 +856,9 @@ use the default platform context associated with the platform given device is a 
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Queues constructed from device instance or filter string that selects it have the same context</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span><span class="o">.</span><span class="n">sycl_context</span> <span class="o">==</span> <span class="n">q2</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">q1</span><span class="o">.</span><span class="n">sycl_device</span> <span class="o">==</span> <span class="n">q2</span><span class="o">.</span><span class="n">sycl_device</span>
 <span class="go">(True, True)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">==</span> <span class="n">q2</span>
@@ -888,17 +896,17 @@ expose Python buffer interface.</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># allocate USM-shared memory for 6 32-bit integers</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="sa">b</span><span class="s2">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMShared</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;-&quot;&quot;))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">"-""))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">copy_from_device</span><span class="p">(</span><span class="n">mem_d</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># since USM-shared is host-accessible,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># it implements Python buffer protocol that allows</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># for Python objects to read this USM allocation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span><span class="p">(</span><span class="n">mem_s</span><span class="p">)</span>
-<span class="go">b&#39;abcdefghijklmnopqrstuvwxyz--&#39;</span>
+<span class="go">b'abcdefghijklmnopqrstuvwxyz--'</span>
 </pre></div>
 </div>
 </section>

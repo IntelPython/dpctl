@@ -48,7 +48,11 @@ Overview
 	typedef struct DPCTLOpaqueSyclRawKernelArg* :target:`DPCTLSyclRawKernelArgRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a72d61960f9c803f28ada3994d6b50f76>`;
 	typedef struct DPCTLOpaqueSyclWorkGroupMemory* :target:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>`;
 	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>` :target:`RawWorkGroupMemory<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ace3e58dbaa53288d9b7272fe9a6d03b3>`;
+	typedef struct DPCTLBuildOptionList* :target:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>`;
+	typedef struct DPCTLKernelBuildLog* :target:`DPCTLKernelBuildLogRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a04b2b63e0b03dd61914248868778fdde>`;
+	typedef struct DPCTLKernelNameList* :target:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>`;
 	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`DPCTLSpecConstTy<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty>` :target:`DPCTLSpecConst<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a1286c730db79d69a9ce8a88d4c356290>`;
+	typedef struct DPCTLVirtualHeaderList* :target:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>`;
 	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` :ref:`MDLocalAccessor<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
@@ -160,6 +164,25 @@ Overview
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:target:`DPCTLWorkGroupMemory_Delete<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a7a9cad89e434a7becb710176e7be9117>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` :ref:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>` Ref);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLBuildOptionList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af383b94be34e6790bdbefdfa85e32036>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLKernelNameList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af9ad93ab19fd359b70e5603afe368109>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLVirtualHeaderList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a2c23ffa355e4ac5596ed682eab2c4817>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Name,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Content
+		);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_SubmitBarrier<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a2453786e50a7d7e51a0d240b2ce52f53>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
@@ -825,6 +848,105 @@ Wrapper over std::hash<sycl::device>'s operator()
 .. rubric:: Returns:
 
 Returns hash value.
+
+.. index:: pair: function; DPCTLBuildOptionList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af383b94be34e6790bdbefdfa85e32036:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLBuildOptionList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		)
+
+Append a build option to the list of build options.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of build options
+
+	*
+		- Option
+
+		- Option to append
+
+.. index:: pair: function; DPCTLKernelNameList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af9ad93ab19fd359b70e5603afe368109:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLKernelNameList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		)
+
+Append a kernel name to register to the list of build options.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of kernel names
+
+	*
+		- Option
+
+		- Kernel name to append
+
+.. index:: pair: function; DPCTLVirtualHeaderList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a2c23ffa355e4ac5596ed682eab2c4817:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLVirtualHeaderList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Name,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Content
+		)
+
+Append a kernel name to register to the list of virtual header files.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of header files
+
+	*
+		- Name
+
+		- Name of the virtual header file
+
+	*
+		- Content
+
+		- Content of the virtual header
 
 .. index:: pair: function; DPCTLQueue_SubmitBarrier
 .. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a2453786e50a7d7e51a0d240b2ce52f53:

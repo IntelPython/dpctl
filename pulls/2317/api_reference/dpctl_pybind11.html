@@ -283,6 +283,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -392,7 +393,12 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/generated/dpctl.SyclContext.html">dpctl.SyclContext</a><input aria-label="Toggle navigation of dpctl.SyclContext" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.addressof_ref.html">dpctl.SyclContext.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.get_devices.html">dpctl.SyclContext.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.atomic_fence_order_capabilities.html">dpctl.SyclContext.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.atomic_fence_scope_capabilities.html">dpctl.SyclContext.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.atomic_memory_order_capabilities.html">dpctl.SyclContext.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.atomic_memory_scope_capabilities.html">dpctl.SyclContext.atomic_memory_scope_capabilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.device_count.html">dpctl.SyclContext.device_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dpctl/generated/dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -557,6 +563,8 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="dpctl/compiler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.compiler</span></code></a><input aria-label="Toggle navigation of dpctl.compiler" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.create_kernel_bundle_from_source.html">dpctl.compiler.create_kernel_bundle_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.create_kernel_bundle_from_spirv.html">dpctl.compiler.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.create_kernel_bundle_from_sycl_source.html">dpctl.compiler.create_kernel_bundle_from_sycl_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.is_sycl_source_compilation_available.html">dpctl.compiler.is_sycl_source_compilation_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.SyclKernelBundle.html">dpctl.compiler.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.SyclKernel.html">dpctl.compiler.SyclKernel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.compiler.SpecializationConstant.html">dpctl.compiler.SpecializationConstant</a></li>
@@ -696,14 +704,14 @@
 <span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span> <span class="cpf">&lt;pybind11/pybind11.h&gt;</span>
 <span class="cp">#include</span> <span class="cpf">&lt;pybind11/stl.h&gt;</span>
-<span class="cp">#include</span> <span class="cpf">&quot;dpctl4pybind11.hpp&quot;</span>
+<span class="cp">#include</span> <span class="cpf">"dpctl4pybind11.hpp"</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">get_device_name</span><span class="p">(</span><span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">dev</span><span class="p">.</span><span class="n">get_info</span><span class="o">&lt;</span><span class="n">sycl</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">device</span><span class="o">::</span><span class="n">name</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">py</span><span class="o">::</span><span class="n">mod_gil_not_used</span><span class="p">())</span> <span class="p">{</span>
-    <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_device_name&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">"get_device_name"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>
