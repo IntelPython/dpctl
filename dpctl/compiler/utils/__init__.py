@@ -22,4 +22,5 @@ from dpctl.compiler.utils._utils import parse_spirv_specializations
 
 __all__ = [
     "parse_spirv_specializations",
+    "SpecializationConstantInfo",
 ]
