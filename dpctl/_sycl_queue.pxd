@@ -108,6 +108,9 @@ cdef public api class SyclQueue (_SyclQueue) [
         self, dest, src, size_t count, list dEvents=*, str dtype=*
     )
     cpdef fill(self, dest, value, size_t count, str dtype=*)
+    cpdef SyclEvent fill_async(
+        self, dest, value, size_t count, list dEvents=*, str dtype=*
+    )
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)
