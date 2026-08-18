@@ -22,8 +22,8 @@ import numpy as np
 import pytest
 
 import dpctl
-import dpctl.memory as dpm
 import dpctl.compiler as dpc
+import dpctl.memory as dpm
 from dpctl.compiler.utils import parse_spirv_specializations
 
 
@@ -42,7 +42,7 @@ def _get_level_zero_queue_or_skip():
 
 
 def _skip_if_no_sycl_source_compilation(q):
-    if not dpctl.program.is_sycl_source_compilation_available():
+    if not dpc.is_sycl_source_compilation_available():
         pytest.skip("SYCL source compilation extension not available")
     if not q.get_sycl_device().can_compile("sycl"):
         pytest.skip("SYCL source compilation not supported")
@@ -468,7 +468,7 @@ def test_create_kernel_bundle_from_sycl_source(queue_selector):
     }
     """
 
-    prog = dpctl.program.create_kernel_bundle_from_sycl_source(
+    prog = dpc.create_kernel_bundle_from_sycl_source(
         q,
         sycl_source,
         headers=[
@@ -479,7 +479,7 @@ def test_create_kernel_bundle_from_sycl_source(queue_selector):
         copts=["-fno-fast-math"],
     )
 
-    assert type(prog) is dpctl_prog.SyclKernelBundle
+    assert type(prog) is dpc.SyclKernelBundle
 
     assert type(prog.addressof_ref()) is int
     assert prog.has_sycl_kernel("vector_add")
@@ -551,10 +551,10 @@ def test_create_kernel_bundle_from_invalid_src_sycl(queue_selector):
     }
     """
     with pytest.raises(
-        dpctl_prog.SyclKernelBundleCompilationError,
+        dpc.SyclKernelBundleCompilationError,
         match="error: expected ';' at end of declaration",
     ):
-        dpctl.program.create_kernel_bundle_from_sycl_source(
+        dpc.create_kernel_bundle_from_sycl_source(
             q,
             sycl_source,
             headers=[],
@@ -564,7 +564,7 @@ def test_create_kernel_bundle_from_invalid_src_sycl(queue_selector):
 
 
 def test_sycl_source_compilation_is_available_returns_bool():
-    v = dpctl.program.is_sycl_source_compilation_available()
+    v = dpc.is_sycl_source_compilation_available()
     assert type(v) is bool
 
 
@@ -590,9 +590,9 @@ def test_create_kernel_bundle_from_sycl_source_defaults(queue_selector):
     }
     """
 
-    prog = dpctl.program.create_kernel_bundle_from_sycl_source(q, sycl_source)
+    prog = dpc.create_kernel_bundle_from_sycl_source(q, sycl_source)
 
-    assert type(prog) is dpctl_prog.SyclKernelBundle
+    assert type(prog) is dpc.SyclKernelBundle
     assert prog.has_sycl_kernel("vector_add")
 
 
@@ -632,9 +632,7 @@ def test_create_kernel_bundle_from_sycl_source_bad_args(kwargs):
     # Malformed arguments must raise rather than crash, and the C API handles
     # allocated for the argument lists must be released on the way out.
     with pytest.raises(TypeError):
-        dpctl.program.create_kernel_bundle_from_sycl_source(
-            q, sycl_source, **kwargs
-        )
+        dpc.create_kernel_bundle_from_sycl_source(q, sycl_source, **kwargs)
 
 
 @pytest.mark.parametrize(
@@ -666,7 +664,7 @@ def test_sycl_source_vector_add_correctness(queue_selector):
     }
     """
 
-    prog = dpctl.program.create_kernel_bundle_from_sycl_source(
+    prog = dpc.create_kernel_bundle_from_sycl_source(
         q,
         sycl_source,
         headers=[("math_ops.hpp", header_content)],
