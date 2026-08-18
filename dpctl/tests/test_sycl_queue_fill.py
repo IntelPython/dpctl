@@ -123,6 +123,70 @@ def test_fill_signed_negative_value():
     assert memoryview(mem).tobytes() == b"\xff" * num_elements
 
 
+def test_fill_async():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    num_elements = 32
+    mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
+
+    e = q.fill_async(mem, 0xAB, num_elements)
+    assert isinstance(e, dpctl.SyclEvent)
+    e.wait()
+
+    assert memoryview(mem).tobytes() == b"\xab" * num_elements
+
+
+def test_fill_async_with_dtype():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    value = 1.5
+    num_elements = 10
+    nbytes = num_elements * 8
+
+    mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
+    e = q.fill_async(mem, value, num_elements, dtype="f8")
+    e.wait()
+
+    expected = np.full(num_elements, value, dtype=np.float64).tobytes()
+    assert memoryview(mem)[:nbytes].tobytes() == expected
+
+
+def test_fill_async_with_dep_events():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    num_elements = 64
+    mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
+
+    # The second fill depends on the first, so its value wins deterministically
+    # even on an out-of-order queue.
+    e1 = q.fill_async(mem, 0x11, num_elements)
+    e2 = q.fill_async(mem, 0x22, num_elements, dEvents=[e1])
+    e2.wait()
+
+    assert memoryview(mem).tobytes() == b"\x22" * num_elements
+
+
+def test_fill_async_bad_dep_events():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    mem = dpctl.memory.MemoryUSMShared(16, queue=q)
+
+    with pytest.raises(TypeError):
+        q.fill_async(mem, 0, 16, dEvents=[None])
+
+
 @pytest.mark.parametrize("dtype", ["c8", "c16"])
 def test_fill_complex_from_real_scalar(dtype):
     try:
