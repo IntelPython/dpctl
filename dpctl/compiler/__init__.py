@@ -26,11 +26,13 @@ from dpctl.compiler._compiler import (
     SyclKernel,
     SyclKernelBundle,
     SyclKernelBundleCompilationError,
-    create_kernel_bundle_from_sycl_source,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
+    create_kernel_bundle_from_sycl_source,
     is_sycl_source_compilation_available,
 )
+
+from . import utils
 
 __all__ = [
     "create_kernel_bundle_from_source",
