@@ -186,11 +186,11 @@ jobs:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
             experimental: false
-            runner: ubuntu-22.04
+            runner: ubuntu-latest
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
             experimental: false
-            runner: ubuntu-22.04
+            runner: ubuntu-latest
         experimental: [false]
         runner: [ubuntu-latest]
     continue-on-error: ${{ matrix.experimental }}

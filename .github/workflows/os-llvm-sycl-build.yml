@@ -9,7 +9,7 @@ permissions: read-all
 jobs:
   install-compiler:
     name: Build with nightly build of DPC++ toolchain
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
 
     env:
