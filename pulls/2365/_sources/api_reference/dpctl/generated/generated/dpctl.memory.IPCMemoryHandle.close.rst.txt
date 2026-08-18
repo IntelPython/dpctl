@@ -1,0 +1,6 @@
+dpctl.memory.IPCMemoryHandle.close
+==================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: IPCMemoryHandle.close

@@ -1,0 +1,6 @@
+dpctl.SyclDevice.can\_compile
+=============================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.can_compile

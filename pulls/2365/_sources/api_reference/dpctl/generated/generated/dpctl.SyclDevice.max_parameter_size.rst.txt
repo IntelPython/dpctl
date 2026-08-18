@@ -1,0 +1,6 @@
+dpctl.SyclDevice.max\_parameter\_size
+=====================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.max_parameter_size
