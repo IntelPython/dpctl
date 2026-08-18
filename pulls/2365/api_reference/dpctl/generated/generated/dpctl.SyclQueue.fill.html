@@ -12,7 +12,7 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclQueue.get_sycl_context" href="dpctl.SyclQueue.get_sycl_context.html"><link rel="prev" title="dpctl.SyclQueue.copy_async" href="dpctl.SyclQueue.copy_async.html">
+    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclQueue.fill_async" href="dpctl.SyclQueue.fill_async.html"><link rel="prev" title="dpctl.SyclQueue.copy_async" href="dpctl.SyclQueue.copy_async.html">
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
@@ -406,6 +406,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclQueue.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
@@ -700,6 +701,8 @@ the <code class="docutils literal notranslate"><span class="pre">count</span></c
 written is <code class="docutils literal notranslate"><span class="pre">count</span></code> multiplied by the size of <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. The default
 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (a single byte) makes the default a byte-wise
 fill, analogous to <code class="docutils literal notranslate"><span class="pre">memset</span></code>.</p>
+<p>This is a synchronizing variant corresponding to
+<a class="reference internal" href="dpctl.SyclQueue.fill_async.html#dpctl.SyclQueue.fill_async" title="dpctl.SyclQueue.fill_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.fill_async()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -733,12 +736,12 @@ c16.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclQueue.get_sycl_context.html">
+          <a class="next-page" href="dpctl.SyclQueue.fill_async.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclQueue.get_sycl_context</div>
+                <div class="title">dpctl.SyclQueue.fill_async</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
