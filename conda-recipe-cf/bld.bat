@@ -42,5 +42,5 @@ for /f %%f in ('dir /b /S .\dist') do (
       --no-index ^
       --prefix %PREFIX% ^
       -vv
-    if %ERRORLEVEL% neq 0 exit 1
+    if errorlevel 1 exit 1
 )
