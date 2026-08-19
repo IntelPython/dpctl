@@ -699,6 +699,12 @@
 asynchronously.</p>
 <p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>. The operation is
 byte-wise: <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes are set, each to the same value <code class="docutils literal notranslate"><span class="pre">val</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned event does not keep <code class="docutils literal notranslate"><span class="pre">mem</span></code> alive. Keep <code class="docutils literal notranslate"><span class="pre">mem</span></code>
+alive until the event completes, otherwise its USM allocation
+may be freed mid-operation, causing a use-after-free.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
