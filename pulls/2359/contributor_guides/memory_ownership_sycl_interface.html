@@ -709,9 +709,9 @@ such as <code class="xref c c-func docutils literal notranslate"><span class="pr
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Example: Example of use of DPCTLSyclInterface functions</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">// filename: example_syclinterface.c</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdint.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;stdio.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;dpctl_sycl_interface.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"stdint.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"stdio.h"</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">"dpctl_sycl_interface.h"</span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// we own memory allocation associated DRef object</span>
@@ -724,7 +724,7 @@ such as <code class="xref c c-func docutils literal notranslate"><span class="pr
 <span class="w">    </span><span class="c1">// Free allocations associated with DRef</span>
 <span class="w">    </span><span class="n">DPCTLDevice_Delete</span><span class="p">(</span><span class="n">DRef</span><span class="p">);</span>
 
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Device %s has %d compute units</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">cu</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">"Device %s has %d compute units</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">cu</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// Free memory allocate for device name</span>
 <span class="w">    </span><span class="n">DPCTLCString_Delete</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>

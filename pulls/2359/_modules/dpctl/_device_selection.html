@@ -687,14 +687,14 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2021 Intel Corporation</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
@@ -707,7 +707,7 @@
 
 
 <div class="viewcode-block" id="select_device_with_aspects"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.select_device_with_aspects.html#dpctl.select_device_with_aspects">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">select_device_with_aspects</span><span class="p">(</span><span class="n">required_aspects</span><span class="p">,</span> <span class="n">excluded_aspects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Selects the root :class:`dpctl.SyclDevice` that has the highest</span>
+<span class="w">    </span><span class="sd">"""Selects the root :class:`dpctl.SyclDevice` that has the highest</span>
 <span class="sd">    default selector score among devices that have all aspects in the</span>
 <span class="sd">    `required_aspects` list, and do not have any aspects in `excluded_aspects`</span>
 <span class="sd">    list.</span>
@@ -721,11 +721,11 @@
 
 <span class="sd">                import dpctl</span>
 <span class="sd">                # select a GPU that supports double precision</span>
-<span class="sd">                dpctl.select_device_with_aspects([&#39;fp64&#39;, &#39;gpu&#39;])</span>
+<span class="sd">                dpctl.select_device_with_aspects(['fp64', 'gpu'])</span>
 <span class="sd">                # select non-custom device with USM shared allocations</span>
 <span class="sd">                dpctl.select_device_with_aspects(</span>
-<span class="sd">                    [&#39;usm_shared_allocations&#39;], excluded_aspects=[&#39;custom&#39;])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">                    ['usm_shared_allocations'], excluded_aspects=['custom'])</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">excluded_aspects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">excluded_aspects</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">required_aspects</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -742,14 +742,14 @@
     <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">input_types_ok</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Aspects are expected to be Python sequences, &quot;</span>
-            <span class="s2">&quot;e.g. lists, of strings&quot;</span>
+            <span class="s2">"Aspects are expected to be Python sequences, "</span>
+            <span class="s2">"e.g. lists, of strings"</span>
         <span class="p">)</span>
     <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="n">required_aspects</span><span class="p">,</span> <span class="n">excluded_aspects</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">asp</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The list objects must be of a string type&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">SyclDevice</span><span class="p">,</span> <span class="s2">&quot;has_aspect_&quot;</span> <span class="o">+</span> <span class="n">asp</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="n">asp</span><span class="si">}</span><span class="s2"> aspect is not supported in dpctl&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"The list objects must be of a string type"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">SyclDevice</span><span class="p">,</span> <span class="s2">"has_aspect_"</span> <span class="o">+</span> <span class="n">asp</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The </span><span class="si">{</span><span class="n">asp</span><span class="si">}</span><span class="s2"> aspect is not supported in dpctl"</span><span class="p">)</span>
     <span class="n">devs</span> <span class="o">=</span> <span class="n">get_devices</span><span class="p">()</span>
     <span class="n">max_score</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">selected_dev</span> <span class="o">=</span> <span class="kc">None</span>
@@ -757,14 +757,14 @@
     <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">devs</span><span class="p">:</span>
         <span class="n">aspect_status</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s2">&quot;has_aspect_&quot;</span> <span class="o">+</span> <span class="n">asp</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s2">"has_aspect_"</span> <span class="o">+</span> <span class="n">asp</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
                 <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="n">required_aspects</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">aspect_status</span> <span class="o">=</span> <span class="n">aspect_status</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="nb">any</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="nb">getattr</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s2">&quot;has_aspect_&quot;</span> <span class="o">+</span> <span class="n">asp</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="s2">"has_aspect_"</span> <span class="o">+</span> <span class="n">asp</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">True</span>
                     <span class="k">for</span> <span class="n">asp</span> <span class="ow">in</span> <span class="n">excluded_aspects</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -775,9 +775,9 @@
 
     <span class="k">if</span> <span class="n">selected_dev</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SyclDeviceCreationError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Requested device is unavailable: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;required_aspects=</span><span class="si">{</span><span class="n">required_aspects</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;excluded_aspects=</span><span class="si">{</span><span class="n">excluded_aspects</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Requested device is unavailable: "</span>
+            <span class="sa">f</span><span class="s2">"required_aspects=</span><span class="si">{</span><span class="n">required_aspects</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"excluded_aspects=</span><span class="si">{</span><span class="n">excluded_aspects</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">selected_dev</span></div>

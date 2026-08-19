@@ -717,7 +717,7 @@ data collection and its output for every offloaded kernel:</p>
 <span class="n">x_dev</span> <span class="o">=</span> <span class="n">dpmem</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
 <span class="c1"># onetrace output reporting on execution of the kernel</span>
-<span class="c1"># should be seen, starting with &quot;Device Timeline&quot;</span>
+<span class="c1"># should be seen, starting with "Device Timeline"</span>
 <span class="k">with</span> <span class="n">onetrace_enabled</span><span class="p">():</span>
     <span class="n">eg</span><span class="o">.</span><span class="n">run_kernel</span><span class="p">(</span><span class="n">x_dev</span><span class="p">)</span>
 </pre></div>
@@ -773,7 +773,7 @@ as the dependency list of subsequent submissions. To keep Python objects
 referenced by a task alive until it completes, use
 <a class="reference internal" href="generated/dpctl.keep_args_alive.html#dpctl.keep_args_alive" title="dpctl.keep_args_alive"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.keep_args_alive()</span></code></a>.</p>
 <div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version ``add_event_pair``,: </span><code class="docutils literal notranslate"><span class="pre">host_task_events</span></code> and <code class="docutils literal notranslate"><span class="pre">num_host_task_events</span></code>
+<p><span class="versionmodified deprecated">Deprecated since version 0.23.0: </span><code class="docutils literal notranslate"><span class="pre">add_event_pair</span></code>, <code class="docutils literal notranslate"><span class="pre">host_task_events</span></code> and <code class="docutils literal notranslate"><span class="pre">num_host_task_events</span></code>
 are deprecated. Tasks are no longer paired with a host task event,
 so <code class="docutils literal notranslate"><span class="pre">add_event</span></code> takes the computational event alone.</p>
 </div>

@@ -722,8 +722,8 @@ in the filter string. Default: <code class="docutils literal notranslate"><span 
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># Create a GPU SyclDevice</span>
-<span class="n">gpu_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu:0&quot;</span><span class="p">)</span>
-<span class="c1"># filter string should be &quot;gpu:0&quot;</span>
+<span class="n">gpu_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu:0"</span><span class="p">)</span>
+<span class="c1"># filter string should be "gpu:0"</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="n">gpu_dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">(</span><span class="n">use_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">gpu</span> <span class="n">_dev</span> <span class="o">==</span> <span class="n">dev</span>
