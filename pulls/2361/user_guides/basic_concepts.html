@@ -852,9 +852,9 @@ use the default platform context associated with the platform given device is a 
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Queues constructed from device instance or filter string that selects it have the same context</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span><span class="o">.</span><span class="n">sycl_context</span> <span class="o">==</span> <span class="n">q2</span><span class="o">.</span><span class="n">sycl_context</span><span class="p">,</span> <span class="n">q1</span><span class="o">.</span><span class="n">sycl_device</span> <span class="o">==</span> <span class="n">q2</span><span class="o">.</span><span class="n">sycl_device</span>
 <span class="go">(True, True)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q1</span> <span class="o">==</span> <span class="n">q2</span>
@@ -892,17 +892,17 @@ expose Python buffer interface.</p>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># allocate USM-shared memory for 6 32-bit integers</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;abcdefghijklmnopqrstuvwxyz&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="sa">b</span><span class="s2">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMShared</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;-&quot;&quot;))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">"-""))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">copy_from_device</span><span class="p">(</span><span class="n">mem_d</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># since USM-shared is host-accessible,</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># it implements Python buffer protocol that allows</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># for Python objects to read this USM allocation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span><span class="p">(</span><span class="n">mem_s</span><span class="p">)</span>
-<span class="go">b&#39;abcdefghijklmnopqrstuvwxyz--&#39;</span>
+<span class="go">b'abcdefghijklmnopqrstuvwxyz--'</span>
 </pre></div>
 </div>
 </section>

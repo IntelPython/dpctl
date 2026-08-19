@@ -698,6 +698,8 @@
 <dd><p>Fill USM allocation <code class="docutils literal notranslate"><span class="pre">mem</span></code> with the byte value <code class="docutils literal notranslate"><span class="pre">val</span></code> and wait.</p>
 <p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>. The operation is
 byte-wise: <code class="docutils literal notranslate"><span class="pre">count</span></code> bytes are set, each to the same value <code class="docutils literal notranslate"><span class="pre">val</span></code>.</p>
+<p>This is a synchronizing variant corresponding to
+<a class="reference internal" href="dpctl.SyclQueue.memset_async.html#dpctl.SyclQueue.memset_async" title="dpctl.SyclQueue.memset_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.memset_async()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -711,7 +713,10 @@ significant byte is used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">mem</span></code> is not an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">mem</span></code> is not an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the memset operation encountered an error.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

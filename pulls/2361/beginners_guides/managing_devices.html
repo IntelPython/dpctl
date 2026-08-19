@@ -879,12 +879,12 @@ Amongst these are a default selector, CPU selector, GPU selector, as well as fil
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># select a device that support float64 data type</span>
-<span class="n">dev1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_device_with_aspects</span><span class="p">(</span><span class="s2">&quot;fp64&quot;</span><span class="p">)</span>
+<span class="n">dev1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_device_with_aspects</span><span class="p">(</span><span class="s2">"fp64"</span><span class="p">)</span>
 
 <span class="c1"># select a device that supports atomic operations on 64-bit types</span>
 <span class="c1"># in USM-shared allocations</span>
 <span class="n">dev2</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_device_with_aspects</span><span class="p">(</span>
-    <span class="p">[</span><span class="s2">&quot;atomic64&quot;</span><span class="p">,</span> <span class="s2">&quot;usm_atomic_shared_allocations&quot;</span><span class="p">]</span>
+    <span class="p">[</span><span class="s2">"atomic64"</span><span class="p">,</span> <span class="s2">"usm_atomic_shared_allocations"</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -900,14 +900,14 @@ as argument to the class constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># create any GPU device</span>
-<span class="n">dev_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu&quot;</span><span class="p">)</span>
+<span class="n">dev_gpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
 
 <span class="c1"># take second device GPU device in the list of GPU devices</span>
 <span class="c1"># 0-based number is used</span>
-<span class="n">dev_gpu1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu:1&quot;</span><span class="p">)</span>
+<span class="n">dev_gpu1</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu:1"</span><span class="p">)</span>
 
 <span class="c1"># create GPU device, or CPU if GPU is not available</span>
-<span class="n">dev_gpu_or_cpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu,cpu&quot;</span><span class="p">)</span>
+<span class="n">dev_gpu_or_cpu</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu,cpu"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -926,8 +926,8 @@ For example:</p>
 
 <span class="n">NBYTES</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">6</span> <span class="o">*</span> <span class="mi">4</span>
 
-<span class="n">x</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="n">NBYTES</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Allocated </span><span class="si">{</span><span class="n">NBYTES</span><span class="si">}</span><span class="s2"> bytes of USM on </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="n">NBYTES</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Allocated </span><span class="si">{</span><span class="n">NBYTES</span><span class="si">}</span><span class="s2"> bytes of USM on </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">"</span> <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -981,13 +981,13 @@ Other descriptions are exposed as properties of the instance.</p>
 <span class="c1"># (corresponding decimal value: 39497)</span>
 <span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">intel_device_info</span><span class="p">(</span><span class="n">d_gpu</span><span class="p">)</span>
 <span class="n">Out</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
-<span class="p">{</span><span class="s1">&#39;device_id&#39;</span><span class="p">:</span> <span class="mi">39497</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count&#39;</span><span class="p">:</span> <span class="mi">96</span><span class="p">,</span>
-<span class="s1">&#39;gpu_hw_threads_per_eu&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_simd_width&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-<span class="s1">&#39;gpu_slices&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<span class="s1">&#39;gpu_subslices_per_slice&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-<span class="s1">&#39;gpu_eu_count_per_subslice&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">'device_id'</span><span class="p">:</span> <span class="mi">39497</span><span class="p">,</span>
+<span class="s1">'gpu_eu_count'</span><span class="p">:</span> <span class="mi">96</span><span class="p">,</span>
+<span class="s1">'gpu_hw_threads_per_eu'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+<span class="s1">'gpu_eu_simd_width'</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+<span class="s1">'gpu_slices'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+<span class="s1">'gpu_subslices_per_slice'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+<span class="s1">'gpu_eu_count_per_subslice'</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>

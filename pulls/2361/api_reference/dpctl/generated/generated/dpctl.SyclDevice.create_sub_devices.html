@@ -704,7 +704,7 @@ string specifying the affinity domain, or a collection of integers.</p>
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
-<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">cpu_count</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">max_compute_units</span>
 <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="n">cpu_count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">:</span>
@@ -712,13 +712,13 @@ string specifying the affinity domain, or a collection of integers.</p>
 
 <span class="c1"># Create sub-devices partitioning by affinity.</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">sd</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="s2">&quot;numa&quot;</span><span class="p">)</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="s2">"numa"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span><span class="si">}</span><span class="s2"> sub-devices were created with respective &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;#EUs being </span><span class="si">{</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">sd</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span><span class="si">}</span><span class="s2"> sub-devices were created with respective "</span>
+        <span class="sa">f</span><span class="s2">"#EUs being </span><span class="si">{</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">sd</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
     <span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device partitioning by affinity was not successful.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Device partitioning by affinity was not successful."</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>

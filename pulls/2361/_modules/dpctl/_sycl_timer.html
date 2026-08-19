@@ -688,14 +688,14 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2021 Intel Corporation</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
@@ -704,7 +704,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclQueue</span>
 
-<span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;This module implements :class:`dpctl.SyclTimer`.&quot;</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">"This module implements :class:`dpctl.SyclTimer`."</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">HostDeviceDuration</span><span class="p">:</span>
@@ -713,10 +713,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span> <span class="o">=</span> <span class="n">device_dt</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(host_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_dt</span><span class="si">}</span><span class="s2">, device_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"(host_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_dt</span><span class="si">}</span><span class="s2">, device_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;(host_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_dt</span><span class="si">}</span><span class="s2">, device_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"(host_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_dt</span><span class="si">}</span><span class="s2">, device_dt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span><span class="si">}</span><span class="s2">)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">yield from</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_host_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_dt</span><span class="p">]</span>
@@ -731,11 +731,11 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseDeviceTimer</span><span class="p">:</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;queue&quot;</span><span class="p">]</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"queue"</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">SyclQueue</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected type SyclQueue, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Expected type SyclQueue, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">sycl_queue</span>
 
 
@@ -750,7 +750,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">OrderManagerDeviceTimer</span><span class="p">(</span><span class="n">BaseDeviceTimer</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_order_manager&quot;</span><span class="p">,</span> <span class="s2">&quot;_submit_empty_task_fn&quot;</span><span class="p">]</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"_order_manager"</span><span class="p">,</span> <span class="s2">"_submit_empty_task_fn"</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="p">):</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils._seq_order_keeper</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">s_ok</span>
@@ -769,7 +769,7 @@
 
 
 <div class="viewcode-block" id="SyclTimer"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.SyclTimer.html#dpctl.SyclTimer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SyclTimer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Context to time execution of tasks submitted to :class:`dpctl.SyclQueue`.</span>
 
 <span class="sd">    :Example:</span>
@@ -778,7 +778,7 @@
 <span class="sd">            import dpctl</span>
 
 <span class="sd">            # Create a default SyclQueue</span>
-<span class="sd">            q = dpctl.SyclQueue(property=&quot;enable_profiling&quot;)</span>
+<span class="sd">            q = dpctl.SyclQueue(property="enable_profiling")</span>
 
 <span class="sd">            # create the timer</span>
 <span class="sd">            milliseconds_sc = 1e3</span>
@@ -804,7 +804,7 @@
 <span class="sd">        The timer submits tasks to the queue at the entrance and the</span>
 <span class="sd">        exit of the context and uses profiling information from events</span>
 <span class="sd">        associated with these submissions to perform the timing. Thus</span>
-<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with ``&quot;enable_profiling&quot;``</span>
+<span class="sd">        :class:`dpctl.SyclTimer` requires the queue with ``"enable_profiling"``</span>
 <span class="sd">        property. In order to be able to collect the profiling information,</span>
 <span class="sd">        the ``dt`` property ensures that both tasks submitted by the timer</span>
 <span class="sd">        complete their execution and thus effectively synchronizes the queue.</span>
@@ -818,15 +818,15 @@
 <span class="sd">        ``[tasks_of_untimed_block3]``.</span>
 
 <span class="sd">        ``device_timer`` keyword argument controls the type of tasks submitted.</span>
-<span class="sd">        With ``&quot;queue_barrier&quot;`` value, queue barrier tasks are used. With</span>
-<span class="sd">        ``&quot;order_manager&quot;`` value, a single empty body task is inserted</span>
+<span class="sd">        With ``"queue_barrier"`` value, queue barrier tasks are used. With</span>
+<span class="sd">        ``"order_manager"`` value, a single empty body task is inserted</span>
 <span class="sd">        and order manager is used to order these tasks so that they fence</span>
-<span class="sd">        operations performed within the timer&#39;s context. This requires that</span>
+<span class="sd">        operations performed within the timer's context. This requires that</span>
 <span class="sd">        the order manager is used to order all tasks submitted to the queue</span>
-<span class="sd">        within the timer&#39;s context.</span>
+<span class="sd">        within the timer's context.</span>
 
 <span class="sd">        Timing offloading operations that do not use the order manager with</span>
-<span class="sd">        the timer that uses ``&quot;order_manager&quot;`` as ``device_timer`` value</span>
+<span class="sd">        the timer that uses ``"order_manager"`` as ``device_timer`` value</span>
 <span class="sd">        will be misleading becaused the tasks submitted by the timer will not</span>
 <span class="sd">        be ordered with respect to tasks we intend to time.</span>
 
@@ -847,17 +847,17 @@
 <span class="sd">            A callable such that host_timer() returns current</span>
 <span class="sd">            host time in seconds.</span>
 <span class="sd">            Default: :py:func:`timeit.default_timer`.</span>
-<span class="sd">        device_timer (Literal[&quot;queue_barrier&quot;, &quot;order_manager&quot;], optional):</span>
-<span class="sd">            Device timing method. Default: &quot;queue_barrier&quot;.</span>
+<span class="sd">        device_timer (Literal["queue_barrier", "order_manager"], optional):</span>
+<span class="sd">            Device timing method. Default: "queue_barrier".</span>
 <span class="sd">        time_scale (Union[int, float], optional):</span>
 <span class="sd">            Ratio of one second and the unit of time-scale of interest.</span>
 <span class="sd">            Default: ``1``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="SyclTimer.__init__"><a class="viewcode-back" href="../../api_reference/dpctl/generated/generated/dpctl.SyclTimer.__init__.html#dpctl.SyclTimer.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">host_timer</span><span class="o">=</span><span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">,</span> <span class="n">device_timer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_scale</span><span class="o">=</span><span class="mi">1</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create new instance of :class:`.SyclTimer`.</span>
 
 <span class="sd">        Args:</span>
@@ -865,12 +865,12 @@
 <span class="sd">                A function that takes no arguments and returns a value</span>
 <span class="sd">                measuring time.</span>
 <span class="sd">                Default: :meth:`timeit.default_timer`.</span>
-<span class="sd">            device_timer (Literal[&quot;queue_barrier&quot;, &quot;order_manager&quot;], optional):</span>
-<span class="sd">                Device timing method. Default: &quot;queue_barrier&quot;</span>
+<span class="sd">            device_timer (Literal["queue_barrier", "order_manager"], optional):</span>
+<span class="sd">                Device timing method. Default: "queue_barrier"</span>
 <span class="sd">            time_scale (Union[int, float], optional):</span>
 <span class="sd">                Scaling factor applied to durations measured by</span>
 <span class="sd">                the host_timer. Default: ``1``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">host_timer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="kc">None</span>
@@ -878,16 +878,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bracketing_events</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_context_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">device_timer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">device_timer</span> <span class="o">=</span> <span class="s2">&quot;queue_barrier&quot;</span>
-        <span class="k">if</span> <span class="n">device_timer</span> <span class="o">==</span> <span class="s2">&quot;queue_barrier&quot;</span><span class="p">:</span>
+            <span class="n">device_timer</span> <span class="o">=</span> <span class="s2">"queue_barrier"</span>
+        <span class="k">if</span> <span class="n">device_timer</span> <span class="o">==</span> <span class="s2">"queue_barrier"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_timer_class</span> <span class="o">=</span> <span class="n">QueueBarrierDeviceTimer</span>
-        <span class="k">elif</span> <span class="n">device_timer</span> <span class="o">==</span> <span class="s2">&quot;order_manager&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">device_timer</span> <span class="o">==</span> <span class="s2">"order_manager"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_device_timer_class</span> <span class="o">=</span> <span class="n">OrderManagerDeviceTimer</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Supported values for device_timer keyword are &quot;</span>
-                <span class="s2">&quot;&#39;queue_barrier&#39;, &#39;order_manager&#39;, got &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">device_timer</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="s2">"Supported values for device_timer keyword are "</span>
+                <span class="s2">"'queue_barrier', 'order_manager', got "</span>
+                <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">device_timer</span><span class="si">}</span><span class="s2">'"</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device_timer</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -898,13 +898,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_device_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_device_timer_class</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;The given queue was not created with the &quot;</span>
-                    <span class="s2">&quot;enable_profiling property&quot;</span>
+                    <span class="s2">"The given queue was not created with the "</span>
+                    <span class="s2">"enable_profiling property"</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;The passed queue must have type dpctl.SyclQueue, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">"The passed queue must have type dpctl.SyclQueue, "</span>
+                <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -923,7 +923,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a pair of elapsed times ``host_dt`` and</span>
+<span class="w">        </span><span class="sd">"""Returns a pair of elapsed times ``host_dt`` and</span>
 <span class="sd">        ``device_dt``.</span>
 
 <span class="sd">        The ``host_dt`` is the duration as measured by the host</span>
@@ -941,10 +941,10 @@
 
 <span class="sd">                import dpctl</span>
 
-<span class="sd">                q = dpctl.SyclQueue(property=&quot;enable_profiling&quot;)</span>
+<span class="sd">                q = dpctl.SyclQueue(property="enable_profiling")</span>
 
 <span class="sd">                timer = dpctl.SyclTimer()</span>
-<span class="sd">                x = np.linspace(-4, 4, num=10**6, dtype=&quot;float32&quot;)</span>
+<span class="sd">                x = np.linspace(-4, 4, num=10**6, dtype="float32")</span>
 
 <span class="sd">                with timer(q):</span>
 <span class="sd">                    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)</span>
@@ -960,7 +960,7 @@
 <span class="sd">            Use tracing tools like ``onetrace``, or ``unitrace`` from</span>
 <span class="sd">            `intel/pti-gpu &lt;https://github.com/intel/pti-gpu&gt;`_ repository</span>
 <span class="sd">            for more accurate measurements.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">es</span><span class="p">,</span> <span class="n">ef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bracketing_events</span><span class="p">:</span>
             <span class="n">es</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="n">ef</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
