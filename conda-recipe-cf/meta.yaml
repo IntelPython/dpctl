@@ -10,8 +10,6 @@ build:
   number: {{ GIT_DESCRIBE_NUMBER }}
   # let the public CI build without IPO, which needs more resources than the
   # GitHub Actions runners provide
-  script_env:
-    - OVERRIDE_INTEL_IPO  # [win]
   ignore_run_exports:
     - level-zero
   missing_dso_whitelist:
