@@ -16,6 +16,7 @@
 
 """Defines unit test cases for the SyclQueue.memset."""
 
+import numpy as np
 import pytest
 
 import dpctl
@@ -205,3 +206,18 @@ def test_memset_value_truncated_to_byte(val, expected):
     q.memset(mobj, val)
 
     assert bytes(memoryview(mobj)) == bytes([expected]) * nbytes
+
+
+def test_memset_fills_bytewise():
+    # memset fills byte-by-byte, so 0xAB reads back as 0xABABABAB per uint32
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    nelems = 16
+    mobj = _create_memory(q, nelems * 4)
+
+    q.memset(mobj, 0xAB)
+
+    view = np.frombuffer(memoryview(mobj), dtype=np.uint32)
+    assert np.all(view == 0xABABABAB)
