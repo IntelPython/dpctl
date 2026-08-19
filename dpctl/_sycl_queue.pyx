@@ -102,6 +102,7 @@ cdef extern from "_async_dec_ref.hpp":
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
     ) nogil
+    void *keep_alive_pool_ptr() nogil
 
 
 __all__ = [
@@ -1850,6 +1851,10 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
+
+
+cdef api void *KeepAlivePool_Get() noexcept nogil:
+    return keep_alive_pool_ptr()
 
 cdef class _WorkGroupMemory:
     def __dealloc__(self):

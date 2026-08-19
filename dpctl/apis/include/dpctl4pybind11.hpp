@@ -47,6 +47,21 @@ namespace dpctl
 namespace detail
 {
 
+/*!
+ * @brief Whether the interpreter can still be called into.
+ *
+ * Acquiring the GIL once finalization has begun does not return, so work
+ * deferred to a thread must check this before touching Python.
+ */
+inline bool interpreter_is_live()
+{
+#if PY_VERSION_HEX < 0x30d0000
+    return !_Py_IsFinalizing();
+#else
+    return !Py_IsFinalizing();
+#endif
+}
+
 class dpctl_capi
 {
 public:
@@ -174,15 +189,7 @@ private:
     {
         void operator()(py::object *p) const
         {
-            const bool initialized = Py_IsInitialized();
-#if PY_VERSION_HEX < 0x30d0000
-            const bool finalizing = _Py_IsFinalizing();
-#else
-            const bool finalizing = Py_IsFinalizing();
-#endif
-            const bool guard = initialized && !finalizing;
-
-            if (guard) {
+            if (interpreter_is_live()) {
                 delete p;
             }
         }
@@ -295,6 +302,25 @@ private:
     dpctl_capi &operator=(dpctl_capi &&) = default;
 
 }; // struct dpctl_capi
+
+/*!
+ * @brief The `KeepAlivePool` singleton, owned by `dpctl._sycl_queue`.
+ */
+inline KeepAlivePool &get_keep_alive_pool()
+{
+    static KeepAlivePool *pool = []() -> KeepAlivePool * {
+        // get dpctl_capi to prevent nullptr return
+        static_cast<void>(dpctl_capi::get());
+
+        return static_cast<KeepAlivePool *>(KeepAlivePool_Get());
+    }();
+
+    if (!pool) {
+        throw std::runtime_error("Could not create dpctl's keep-alive pool");
+    }
+    return *pool;
+}
+
 } // namespace detail
 } // namespace dpctl
 
@@ -828,14 +854,16 @@ sycl::event keep_args_alive(sycl::queue &q,
     }
 
     if (n_usm_owners_held > 0 || n_objects_held > 0) {
-        dpctl::detail::KeepAlivePool::get().submit(
+        dpctl::detail::get_keep_alive_pool().submit(
             depends, [n_usm_owners_held, shp_usm = std::move(shp_usm),
                       n_objects_held, shp_arr = std::move(shp_arr)]() mutable {
                 for (std::size_t i = 0; i < n_usm_owners_held; ++i) {
                     shp_usm[i].reset();
                 }
 
-                if (n_objects_held > 0) {
+                // if the main thread has not finalized the interpreter yet
+                if (n_objects_held > 0 &&
+                    dpctl::detail::interpreter_is_live()) {
                     py::gil_scoped_acquire acquire;
 
                     for (std::size_t i = 0; i < n_objects_held; ++i) {

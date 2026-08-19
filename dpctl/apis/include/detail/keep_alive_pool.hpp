@@ -38,6 +38,10 @@
 
 #include <sycl/sycl.hpp>
 
+#ifndef DPCTL_KEEP_ALIVE_POOL_SIZE
+#define DPCTL_KEEP_ALIVE_POOL_SIZE 4
+#endif
+
 namespace dpctl
 {
 namespace detail
@@ -49,9 +53,15 @@ public:
     /*!
      * @brief Number of waiter threads.
      */
-    static constexpr std::size_t num_threads = 4;
+    static constexpr std::size_t num_threads = DPCTL_KEEP_ALIVE_POOL_SIZE;
 
-    static KeepAlivePool &get()
+    static_assert(num_threads > 0,
+                  "DPCTL_KEEP_ALIVE_POOL_SIZE must be greater than zero");
+
+    /*!
+     * @brief The instance belonging to this shared object.
+     */
+    static KeepAlivePool &local_instance()
     {
         // deliberately leaked: workers are detached and hold a bare `this`, so
         // the pool must outlive them

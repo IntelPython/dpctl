@@ -98,6 +98,13 @@ def parse_args():
     )
 
     p.add_argument(
+        "--keep-alive-pool-size",
+        type=int,
+        default=None,
+        help="Number of threads used to keep objects alive during offload.",
+    )
+
+    p.add_argument(
         "--cmake-opts",
         type=str,
         default="",
@@ -149,6 +156,11 @@ def main():
     # Level Zero state (on unless explicitly disabled)
     level_zero_enabled = False if args.no_level_zero else True
 
+    if args.keep_alive_pool_size is not None and args.keep_alive_pool_size < 1:
+        err(
+            "--keep-alive-pool-size must be a positive integer", "build_locally"
+        )
+
     cmake_args = make_cmake_args(
         c_compiler=c_compiler,
         cxx_compiler=cxx_compiler,
@@ -156,6 +168,7 @@ def main():
         glog=args.glog,
         verbose=args.verbose,
         other_opts=args.cmake_opts,
+        keep_alive_pool_size=args.keep_alive_pool_size,
     )
 
     # handle architecture conflicts

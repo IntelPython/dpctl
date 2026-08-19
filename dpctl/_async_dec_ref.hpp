@@ -43,6 +43,21 @@
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 
 /*!
+ * @brief Address of the `KeepAlivePool`.
+ *
+ * Returns nullptr if the pool could not be created.
+ */
+void *keep_alive_pool_ptr()
+{
+    try {
+        return static_cast<void *>(
+            &dpctl::detail::KeepAlivePool::local_instance());
+    } catch (const std::exception &e) {
+        return nullptr;
+    }
+}
+
+/*!
  * @brief Schedule DECREFs of `obj_array` for once `depERefs` have completed.
  *
  * Sets `*status` to 0 on success and 1 if scheduling threw.
@@ -64,17 +79,16 @@ void async_dec_ref(PyObject **obj_array,
             depends.push_back(*(unwrap<sycl::event>(depERefs[ev_id])));
         }
 
-        dpctl::detail::KeepAlivePool::get().submit(
+        dpctl::detail::KeepAlivePool::local_instance().submit(
             std::move(depends),
             [obj_array_size, obj_vec = std::move(obj_vec)]() {
-                const bool initialized = Py_IsInitialized();
 #if PY_VERSION_HEX < 0x30d0000
                 const bool finalizing = _Py_IsFinalizing();
 #else
                 const bool finalizing = Py_IsFinalizing();
 #endif
                 // if the main thread has not finalized the interpreter yet
-                if (initialized && !finalizing) {
+                if (!finalizing) {
                     PyGILState_STATE gstate;
                     gstate = PyGILState_Ensure();
                     for (size_t i = 0; i < obj_array_size; ++i) {

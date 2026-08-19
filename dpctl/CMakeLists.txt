@@ -205,6 +205,10 @@ target_include_directories(${_trgt} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/apis/include
 )
+# _sycl_queue owns the pool, so only it needs to know the pool size
+target_compile_definitions(${_trgt} PRIVATE
+    DPCTL_KEEP_ALIVE_POOL_SIZE=${DPCTL_KEEP_ALIVE_POOL_SIZE}
+)
 target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
 add_subdirectory(program)

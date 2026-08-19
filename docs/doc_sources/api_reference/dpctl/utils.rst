@@ -21,7 +21,7 @@
     referenced by a task alive until it completes, use
     :func:`dpctl.keep_args_alive`.
 
-    .. deprecated::
+    .. deprecated:: 0.23.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``
         are deprecated. Tasks are no longer paired with a host task event,
         so ``add_event`` takes the computational event alone.
