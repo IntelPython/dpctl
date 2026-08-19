@@ -26,17 +26,32 @@ def _create_memory(q, nbytes=1024):
     return dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
 
-def test_memset_fills_whole_allocation():
+_MEMORY_CLASSES = [
+    dpctl.memory.MemoryUSMShared,
+    dpctl.memory.MemoryUSMHost,
+    dpctl.memory.MemoryUSMDevice,
+]
+
+
+def _read_back(q, mobj, nbytes):
+    """Copy USM memory to host and return it as bytes (works for device)."""
+    host = bytearray(nbytes)
+    q.memcpy(host, mobj, nbytes)
+    return bytes(host)
+
+
+@pytest.mark.parametrize("mem_cls", _MEMORY_CLASSES)
+def test_memset_fills_whole_allocation(mem_cls):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
     nbytes = 256
-    mobj = _create_memory(q, nbytes)
+    mobj = mem_cls(nbytes, queue=q)
 
     q.memset(mobj, 0xAB)
 
-    assert bytes(memoryview(mobj)) == b"\xab" * nbytes
+    assert _read_back(q, mobj, nbytes) == b"\xab" * nbytes
 
 
 def test_memset_zero_count_fills_whole_allocation():
@@ -106,19 +121,20 @@ def test_memset_type_error():
     assert "_Memory" in str(cm.value)
 
 
-def test_memset_async():
+@pytest.mark.parametrize("mem_cls", _MEMORY_CLASSES)
+def test_memset_async(mem_cls):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
     nbytes = 64
-    mobj = _create_memory(q, nbytes)
+    mobj = mem_cls(nbytes, queue=q)
 
     e = q.memset_async(mobj, 0xAB)
     assert isinstance(e, dpctl.SyclEvent)
     e.wait()
 
-    assert bytes(memoryview(mobj)) == b"\xab" * nbytes
+    assert _read_back(q, mobj, nbytes) == b"\xab" * nbytes
 
 
 def test_memset_async_with_dependent_events():
@@ -164,3 +180,28 @@ def test_memset_async_type_error():
 
     with pytest.raises(TypeError):
         q.memset_async(mobj, 1, 0, [None])
+
+
+@pytest.mark.parametrize(
+    "val, expected",
+    [
+        (0xAB, 0xAB),
+        (0, 0x00),
+        (255, 0xFF),
+        (256, 0x00),
+        (-1, 0xFF),
+        (300, 0x2C),
+    ],
+)
+def test_memset_value_truncated_to_byte(val, expected):
+    # ``val`` is used as a single byte, so values wrap modulo 256
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+    nbytes = 8
+    mobj = _create_memory(q, nbytes)
+
+    q.memset(mobj, val)
+
+    assert bytes(memoryview(mobj)) == bytes([expected]) * nbytes
