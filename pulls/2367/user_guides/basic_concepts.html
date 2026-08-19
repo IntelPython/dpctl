@@ -893,7 +893,7 @@ expose Python buffer interface.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_d</span><span class="o">.</span><span class="n">copy_from_host</span><span class="p">(</span><span class="sa">b</span><span class="s2">"abcdefghijklmnopqrstuvwxyz"</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span> <span class="o">=</span> <span class="n">dpm</span><span class="o">.</span><span class="n">MemoryUSMShared</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">"-""))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">memset</span><span class="p">(</span><span class="n">val</span><span class="o">=</span><span class="nb">ord</span><span class="p">(</span><span class="sa">b</span><span class="s2">"-"</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mem_s</span><span class="o">.</span><span class="n">copy_from_device</span><span class="p">(</span><span class="n">mem_d</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># since USM-shared is host-accessible,</span>
