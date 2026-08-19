@@ -1764,6 +1764,8 @@ cdef class SyclQueue(_SyclQueue):
             ValueError:
                 If ``dtype`` is unrecognized, or ``value`` cannot be
                 represented as ``dtype``.
+            RuntimeError:
+                If the fill operation encountered an error.
         """
         cdef DPCTLSyclEventRef ERef = NULL
 
@@ -1817,6 +1819,8 @@ cdef class SyclQueue(_SyclQueue):
             ValueError:
                 If ``dtype`` is unrecognized, or ``value`` cannot be
                 represented as ``dtype``.
+            RuntimeError:
+                If the fill operation encountered an error.
         """
         cdef DPCTLSyclEventRef ERef = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -1849,7 +1853,7 @@ cdef class SyclQueue(_SyclQueue):
 
         if (ERef is NULL):
             raise RuntimeError(
-                "SyclQueue.fill operation encountered an error"
+                "SyclQueue.fill_async operation encountered an error"
             )
 
         return SyclEvent._create(ERef)
