@@ -13,7 +13,7 @@
 # limitations under the License.
 #
 # The module uses git to clone the Level Zero source repository into the
-# CMAKE_CURRENT_BINARY_DIR. The path to the Level Zero headers is then returned
+# CMAKE_BINARY_DIR. The path to the Level Zero headers is then returned
 # to the caller in the LEVEL_ZERO_INCLUDE_DIR variable.
 #
 # Example usage:
@@ -26,13 +26,13 @@
 
 function(get_level_zero_headers)
 
-    if(EXISTS level-zero)
+    if(EXISTS "${CMAKE_BINARY_DIR}/level-zero/.git")
       # Update the checkout
         execute_process(
             COMMAND ${GIT_EXECUTABLE} fetch
             RESULT_VARIABLE result
             ERROR_VARIABLE error
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/level-zero"
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
         )
@@ -43,11 +43,15 @@ function(get_level_zero_headers)
             )
         endif()
     else()
+        # remove level-zero directory if it exists
+        file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/level-zero")
+
         # Clone the Level Zero git repo
         execute_process(
             COMMAND ${GIT_EXECUTABLE} clone https://github.com/oneapi-src/level-zero.git
             RESULT_VARIABLE result
             ERROR_VARIABLE error
+            WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
         )
@@ -65,7 +69,7 @@ function(get_level_zero_headers)
         RESULT_VARIABLE result
         OUTPUT_VARIABLE latest_tag
         ERROR_VARIABLE error
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/level-zero"
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_STRIP_TRAILING_WHITESPACE
     )
@@ -81,7 +85,7 @@ function(get_level_zero_headers)
         COMMAND ${GIT_EXECUTABLE} checkout ${latest_tag}
         RESULT_VARIABLE result
         ERROR_VARIABLE error
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/level-zero
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/level-zero"
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_STRIP_TRAILING_WHITESPACE
     )
@@ -95,7 +99,7 @@ function(get_level_zero_headers)
     # Populate the path to the headers
     find_path(LEVEL_ZERO_INCLUDE_DIR
         NAMES zet_api.h
-        PATHS ${CMAKE_BINARY_DIR}/level-zero/include
+        PATHS "${CMAKE_BINARY_DIR}/level-zero/include"
         NO_DEFAULT_PATH
         NO_CMAKE_ENVIRONMENT_PATH
         NO_CMAKE_PATH

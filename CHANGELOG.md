@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 
 ### Fixed
+* Fixed incorrect paths in `GetLevelZeroHeaders.cmake` [gh-2366](https://github.com/IntelPython/dpctl/pull/2366)
 
 ### Maintenance
 * Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
