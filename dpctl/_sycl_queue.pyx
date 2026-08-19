@@ -1726,7 +1726,9 @@ cdef class SyclQueue(_SyclQueue):
                         raise TypeError(
                             "A sequence of dpctl.SyclEvent is expected"
                         )
-                ERef = _memset_impl(self, mem, byte_val, count, depEvents, nDE)
+                ERef = _memset_impl(
+                    <SyclQueue>self, mem, byte_val, count, depEvents, nDE
+                )
             finally:
                 free(depEvents)
 
