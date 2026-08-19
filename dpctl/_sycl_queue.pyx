@@ -1631,6 +1631,9 @@ cdef class SyclQueue(_SyclQueue):
         Internally, this dispatches ``sycl::queue::memset``. The operation is
         byte-wise: ``count`` bytes are set, each to the same value ``val``.
 
+        This is a synchronizing variant corresponding to
+        :meth:`dpctl.SyclQueue.memset_async`.
+
         Args:
             mem:
                 Destination USM allocation, an instance of
@@ -1646,6 +1649,8 @@ cdef class SyclQueue(_SyclQueue):
         Raises:
             TypeError:
                 If ``mem`` is not an instance of :class:`dpctl.memory._Memory`.
+            RuntimeError:
+                If the memset operation encountered an error.
         """
         cdef DPCTLSyclEventRef ERef = NULL
 
@@ -1689,6 +1694,8 @@ cdef class SyclQueue(_SyclQueue):
             TypeError:
                 If ``mem`` is not an instance of :class:`dpctl.memory._Memory`,
                 or ``dEvents`` is not a sequence of :class:`dpctl.SyclEvent`.
+            RuntimeError:
+                If the memset operation encountered an error.
         """
         cdef DPCTLSyclEventRef ERef = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
@@ -1717,7 +1724,7 @@ cdef class SyclQueue(_SyclQueue):
 
         if (ERef is NULL):
             raise RuntimeError(
-                "SyclQueue.memset operation encountered an error"
+                "SyclQueue.memset_async operation encountered an error"
             )
 
         return SyclEvent._create(ERef)
