@@ -1,6 +1,0 @@
-dpctl.SyclDevice.profiling\_timer\_resolution
-=============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.profiling_timer_resolution
