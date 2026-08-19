@@ -21,7 +21,7 @@
 types defined by dpctl's C API.
 """
 
-from libc.stdint cimport int64_t, uint32_t, uint64_t
+from libc.stdint cimport int64_t, uint8_t, uint32_t, uint64_t
 from libcpp cimport bool
 
 
@@ -677,12 +677,12 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
     cdef DPCTLSyclEventRef DPCTLQueue_Memset(
         const DPCTLSyclQueueRef Q,
         void *Dest,
-        int Val,
+        uint8_t Val,
         size_t Count)
     cdef DPCTLSyclEventRef DPCTLQueue_MemsetWithEvents(
         const DPCTLSyclQueueRef Q,
         void *Dest,
-        int Val,
+        uint8_t Val,
         size_t Count,
         const DPCTLSyclEventRef *depEvents,
         size_t depEventsCount)

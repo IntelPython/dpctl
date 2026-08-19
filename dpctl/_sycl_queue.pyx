@@ -88,6 +88,7 @@ from cpython.buffer cimport (
     PyObject_GetBuffer,
 )
 from cpython.ref cimport Py_INCREF, PyObject
+from libc.stdint cimport uint8_t
 from libc.stdlib cimport free, malloc
 
 import collections.abc
@@ -607,7 +608,7 @@ cdef DPCTLSyclEventRef _copy_impl(
 cdef DPCTLSyclEventRef _memset_impl(
      SyclQueue q,
      object mem,
-     int val,
+     uint8_t val,
      size_t count,
      DPCTLSyclEventRef *dep_events,
      size_t dep_events_count,
@@ -1653,8 +1654,9 @@ cdef class SyclQueue(_SyclQueue):
                 If the memset operation encountered an error.
         """
         cdef DPCTLSyclEventRef ERef = NULL
+        cdef uint8_t byte_val = <uint8_t>val
 
-        ERef = _memset_impl(<SyclQueue>self, mem, val, count, NULL, 0)
+        ERef = _memset_impl(<SyclQueue>self, mem, byte_val, count, NULL, 0)
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.memset operation encountered an error"
@@ -1700,9 +1702,10 @@ cdef class SyclQueue(_SyclQueue):
         cdef DPCTLSyclEventRef ERef = NULL
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef size_t nDE = 0
+        cdef uint8_t byte_val = <uint8_t>val
 
         if dEvents is None:
-            ERef = _memset_impl(<SyclQueue>self, mem, val, count, NULL, 0)
+            ERef = _memset_impl(<SyclQueue>self, mem, byte_val, count, NULL, 0)
         else:
             nDE = len(dEvents)
             depEvents = (
@@ -1718,7 +1721,7 @@ cdef class SyclQueue(_SyclQueue):
                         raise TypeError(
                             "A sequence of dpctl.SyclEvent is expected"
                         )
-                ERef = _memset_impl(self, mem, val, count, depEvents, nDE)
+                ERef = _memset_impl(self, mem, byte_val, count, depEvents, nDE)
             finally:
                 free(depEvents)
 
