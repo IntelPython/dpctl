@@ -933,8 +933,8 @@ DPCTLQueue_MemsetWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         }
     }
     else {
-        error_handler("QRef or USMRef passed to memset were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to memset_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 
