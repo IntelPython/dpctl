@@ -1674,6 +1674,11 @@ cdef class SyclQueue(_SyclQueue):
         Internally, this dispatches ``sycl::queue::memset``. The operation is
         byte-wise: ``count`` bytes are set, each to the same value ``val``.
 
+        Note:
+            The returned event does not keep ``mem`` alive. Keep ``mem``
+            alive until the event completes, otherwise its USM allocation
+            may be freed mid-operation, causing a use-after-free.
+
         Args:
             mem:
                 Destination USM allocation, an instance of
