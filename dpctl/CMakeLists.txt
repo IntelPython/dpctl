@@ -199,8 +199,16 @@ endforeach()
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 get_filename_component(_trgt ${_cy_file} NAME_WLE)
 build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
-# _sycl_queue include _host_task_util.hpp
-target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# _sycl_queue includes _async_dec_ref.hpp, which includes
+# detail/keep_alive_pool.hpp from the public include directory
+target_include_directories(${_trgt} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/apis/include
+)
+# _sycl_queue owns the pool, so only it needs to know the pool size
+target_compile_definitions(${_trgt} PRIVATE
+    DPCTL_KEEP_ALIVE_POOL_SIZE=${DPCTL_KEEP_ALIVE_POOL_SIZE}
+)
 target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
 add_subdirectory(program)

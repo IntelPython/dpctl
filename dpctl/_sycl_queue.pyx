@@ -85,21 +85,28 @@ from cpython.buffer cimport (
     PyObject_CheckBuffer,
     PyObject_GetBuffer,
 )
-from cpython.ref cimport Py_INCREF, PyObject
+from cpython.ref cimport Py_DECREF, Py_INCREF, PyObject
 from libc.stdlib cimport free, malloc
 
 import collections.abc
 import logging
+import warnings
 
 
-cdef extern from "_host_task_util.hpp":
-    DPCTLSyclEventRef async_dec_ref(
+cdef extern from "_async_dec_ref.hpp":
+    void async_dec_ref(
+        PyObject **, size_t, DPCTLSyclEventRef *, size_t, int *
+    ) nogil
+    # deprecated, retained for the queue-bound _submit_keep_args_alive
+    DPCTLSyclEventRef async_dec_ref_event(
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
     ) nogil
+    void *keep_alive_pool_ptr() nogil
 
 
 __all__ = [
+    "keep_args_alive",
     "SyclQueue",
     "SyclKernelInvalidRangeError",
     "SyclKernelSubmitError",
@@ -1174,6 +1181,10 @@ cdef class SyclQueue(_SyclQueue):
         Keeps objects in ``args`` alive until tasks associated with events
         complete.
 
+        Deprecated. Use :func:`dpctl.keep_args_alive` instead, which is not
+        bound to a queue and returns nothing. The event returned by this
+        function is already complete.
+
         Args:
             args(object):
                 Python object to keep alive.
@@ -1184,18 +1195,28 @@ cdef class SyclQueue(_SyclQueue):
                 working on Python objects collected in ``args``.
         Returns:
             dpctl.SyclEvent
-               The event associated with the submission of host task.
+               An already-complete event. No task is submitted to the queue,
+               so there is nothing to wait for here; ``events`` are what say
+               when the work reading ``args`` is done.
 
-        Increments reference count of ``args`` and schedules asynchronous
-        ``host_task`` to decrement the count once dependent events are
+        Increments reference count of ``args`` and schedules the matching
+        decrement to run on a background thread once dependent events are
         complete.
 
         .. note::
-            The ``host_task`` attempts to acquire Python GIL, and it is
-            known to be unsafe during interpreter shutdown sequence. It is
-            thus strongly advised to ensure that all submitted ``host_task``
+            The deferred decrement attempts to acquire Python GIL, which is
+            known to be unsafe during the interpreter shutdown sequence. It
+            is thus strongly advised to ensure that all dependent events
             complete before the end of the Python script.
         """
+        warnings.warn(
+            "dpctl.SyclQueue._submit_keep_args_alive is deprecated and will "
+            "be removed in a future release. Use dpctl.keep_args_alive "
+            "instead, which is not bound to a queue and returns nothing.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         cdef size_t nDE = len(dEvents)
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef PyObject *args_raw = NULL
@@ -1225,7 +1246,7 @@ cdef class SyclQueue(_SyclQueue):
         # schedule decrement
         args_raw = <PyObject *>args
 
-        htERef = async_dec_ref(
+        htERef = async_dec_ref_event(
             self.get_queue_ref(),
             &args_raw, 1,
             depEvents, nDE, &status
@@ -1236,7 +1257,7 @@ cdef class SyclQueue(_SyclQueue):
             with nogil:
                 DPCTLEvent_Wait(htERef)
             DPCTLEvent_Delete(htERef)
-            raise RuntimeError("Could not submit keep_args_alive host_task")
+            raise RuntimeError("Could not schedule keep_args_alive")
 
         return SyclEvent._create(htERef)
 
@@ -1278,7 +1299,7 @@ cdef class SyclQueue(_SyclQueue):
             as unified address space pointers.
 
             One way of accomplishing this is to use
-            :meth:`dpctl.SyclQueue._submit_keep_args_alive`.
+            :func:`dpctl.keep_args_alive`.
         """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
@@ -1831,6 +1852,10 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
 
+
+cdef api void *KeepAlivePool_Get() noexcept nogil:
+    return keep_alive_pool_ptr()
+
 cdef class _WorkGroupMemory:
     def __dealloc__(self):
         if(self._mem_ref):
@@ -2024,3 +2049,74 @@ cdef class RawKernelArg:
         as a ``size_t``.
         """
         return <size_t>self._arg_ref
+
+
+def keep_args_alive(args, depends):
+    """keep_args_alive(args, depends)
+
+    Keep objects in ``args`` alive until the tasks associated with
+    ``depends`` complete.
+
+    Args:
+        args (object):
+            Python object to keep alive, typically a tuple of the arguments
+            passed to an offloaded task.
+        depends (List[dpctl.SyclEvent]):
+            Gating events. The objects in ``args`` are released once every
+            event in ``depends`` has completed.
+
+    Returns:
+        None
+
+    Increments the reference count of ``args`` and schedules the matching
+    decrement to run on a background thread once every event in ``depends``
+    is complete.
+
+    :Example:
+        .. code-block:: python
+
+            import dpctl
+
+            q = dpctl.SyclQueue()
+            e = q.submit_async(kernel, [x_usm], [n])
+            dpctl.keep_args_alive((x_usm,), [e])
+
+    .. note::
+        The deferred decrement attempts to acquire the Python GIL, which is
+        known to be unsafe during the interpreter shutdown sequence. It is
+        thus strongly advised to ensure that all events in ``depends``
+        complete before the end of the Python script.
+    """
+    cdef size_t nDE = len(depends)
+    cdef DPCTLSyclEventRef *depEvents = NULL
+    cdef PyObject *args_raw = NULL
+    cdef int status = -1
+
+    if nDE > 0:
+        depEvents = (
+            <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+        )
+        if not depEvents:
+            raise MemoryError()
+        for idx, de in enumerate(depends):
+            if isinstance(de, SyclEvent):
+                depEvents[idx] = (<SyclEvent>de).get_event_ref()
+            else:
+                free(depEvents)
+                raise TypeError(
+                    "A sequence of dpctl.SyclEvent is expected"
+                )
+
+    # increment reference counts to list of arguments
+    Py_INCREF(args)
+    args_raw = <PyObject *>args
+
+    # schedule decrement
+    async_dec_ref(&args_raw, 1, depEvents, nDE, &status)
+
+    free(depEvents)
+    if status != 0:
+        # the deferred decrement was never scheduled, so undo the increment
+        # here rather than leak the reference
+        Py_DECREF(args)
+        raise RuntimeError("Could not schedule keep_args_alive")

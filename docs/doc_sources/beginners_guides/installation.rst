@@ -247,6 +247,24 @@ devices at the same time:
 
     python scripts/build_locally.py --verbose --target-cuda --target-hip=gfx1030
 
+Configuring the object management thread pool
+---------------------------------------------
+
+To keep Python objects used by an offloaded task alive until tasks complete,
+:py:mod:`dpctl` maintains a pool of threads that wait on the task's events.
+The pool uses four threads by default. The size is fixed when ``dpctl`` is
+compiled and can be changed with the ``--keep-alive-pool-size`` argument:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --keep-alive-pool-size=8
+
+Alternatively, you use the ``DPCTL_KEEP_ALIVE_POOL_SIZE`` CMake option:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --verbose --cmake-opts="-DDPCTL_KEEP_ALIVE_POOL_SIZE=8"
+
 Running Examples and Tests
 ==========================
 

@@ -93,6 +93,7 @@ def make_cmake_args(
     glog: bool = False,
     verbose: bool = False,
     other_opts: str = None,
+    keep_alive_pool_size: int = None,
 ):
     args = [
         f"-DCMAKE_C_COMPILER:PATH={c_compiler}" if c_compiler else "",
@@ -101,6 +102,10 @@ def make_cmake_args(
         f"-DDPCTL_ENABLE_GLOG:BOOL={'ON' if glog else 'OFF'}",
     ]
 
+    if keep_alive_pool_size is not None:
+        args.append(
+            f"-DDPCTL_KEEP_ALIVE_POOL_SIZE:STRING={keep_alive_pool_size}"
+        )
     if verbose:
         args.append("-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON")
     if other_opts:

@@ -11,9 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added a number of `sycl::device` info queries to `dpctl.SyclDevice` [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 * Added `sycl::info::context` queries `sycl_platform`, `atomic_memory_order_capabilities`, `atomic_fence_order_capabilities`, `atomic_memory_scope_capabilities`, and `atomic_fence_scope_capabilities` to `dpctl.SyclContext` [gh-2354](https://github.com/IntelPython/dpctl/pull/2354)
 * Added `create_kernel_bundle_from_sycl_source`, `is_sycl_source_compilation_available`, and `dpctl.SyclDevice.can_compile` for supporting the creation of `dpctl.SyclKernelBundle`s from SYCL source strings via DPC++ extension, as well as corresponding C-API functions to support it [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
+* Added `dpctl.keep_args_alive` free function, and `add_event` method to the order manager [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Added `DPCTL_KEEP_ALIVE_POOL_SIZE` CMake option for setting the number of threads that keep objects alive during offload [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+
+### Deprecated
+* Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.keep_args_alive` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Deprecated the order manager's `add_event_pair`, `host_task_events` and `num_host_task_events`, as `host_task` is no longer used for managing object lifetimes [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Implemented a thread pool to manage object lifetime during offload rather than use `host_task` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 

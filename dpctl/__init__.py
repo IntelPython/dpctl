@@ -57,6 +57,7 @@ from ._sycl_queue import (
     SyclQueue,
     SyclQueueCreationError,
     WorkGroupMemory,
+    keep_args_alive,
 )
 from ._sycl_queue_manager import get_device_cached_queue
 from ._sycl_timer import SyclTimer
@@ -114,6 +115,7 @@ __all__ += [
     "WorkGroupMemory",
     "LocalAccessor",
     "RawKernelArg",
+    "keep_args_alive",
 ]
 __all__ += [
     "get_device_cached_queue",

@@ -48,6 +48,19 @@ option(
 size of shared object with offloading sections"
      OFF
 )
+set(DPCTL_KEEP_ALIVE_POOL_SIZE
+    "4"
+    CACHE STRING
+    "Number of threads in the pool that keeps Python objects used by \
+offloaded tasks alive until the tasks complete"
+)
+
+if (NOT DPCTL_KEEP_ALIVE_POOL_SIZE MATCHES "^[1-9][0-9]*$")
+    message(FATAL_ERROR
+        "Invalid value for DPCTL_KEEP_ALIVE_POOL_SIZE: \
+\"${DPCTL_KEEP_ALIVE_POOL_SIZE}\". Expected a positive integer."
+    )
+endif()
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
 

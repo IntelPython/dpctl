@@ -86,6 +86,14 @@
     SyclQueueCreationError
     SyclSubDeviceCreationError
 
+.. rubric:: Lifetime management
+
+.. autosummary::
+    :toctree: generated
+    :nosignatures:
+
+    keep_args_alive
+
 .. rubric:: Utilities
 
 .. autosummary::
