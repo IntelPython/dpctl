@@ -1650,6 +1650,9 @@ cdef class SyclQueue(_SyclQueue):
         Raises:
             TypeError:
                 If ``mem`` is not an instance of :class:`dpctl.memory._Memory`.
+            OverflowError:
+                If ``val`` does not fit in a C ``int`` or ``count`` is
+                negative.
             RuntimeError:
                 If the memset operation encountered an error.
         """
@@ -1701,6 +1704,9 @@ cdef class SyclQueue(_SyclQueue):
             TypeError:
                 If ``mem`` is not an instance of :class:`dpctl.memory._Memory`,
                 or ``dEvents`` is not a sequence of :class:`dpctl.SyclEvent`.
+            OverflowError:
+                If ``val`` does not fit in a C ``int`` or ``count`` is
+                negative.
             RuntimeError:
                 If the memset operation encountered an error.
         """

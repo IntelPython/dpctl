@@ -938,7 +938,7 @@ DPCTLQueue_MemsetWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return nullptr;
     }
 
-    return wrap<event>(new event(ev));
+    return wrap<event>(new event(std::move(ev)));
 }
 
 __dpctl_give DPCTLSyclEventRef
