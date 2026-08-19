@@ -903,7 +903,7 @@ DPCTLQueue_Memset(__dpctl_keep const DPCTLSyclQueueRef QRef,
                       __func__, __LINE__);
         return nullptr;
     }
-};
+}
 
 __dpctl_give DPCTLSyclEventRef
 DPCTLQueue_MemsetWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
@@ -939,7 +939,7 @@ DPCTLQueue_MemsetWithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
     }
 
     return wrap<event>(new event(ev));
-};
+}
 
 __dpctl_give DPCTLSyclEventRef
 DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
