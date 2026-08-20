@@ -8,8 +8,6 @@ source:
 
 build:
   number: {{ GIT_DESCRIBE_NUMBER }}
-  # let the public CI build without IPO, which needs more resources than the
-  # GitHub Actions runners provide
   ignore_run_exports:
     - level-zero
   missing_dso_whitelist:
