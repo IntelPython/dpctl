@@ -958,8 +958,8 @@ DPCTLQueue_Fill8WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill8 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to fill8_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1017,8 +1017,8 @@ DPCTLQueue_Fill16WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to fill16_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1076,8 +1076,8 @@ DPCTLQueue_Fill32WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill32 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to fill32_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1135,8 +1135,8 @@ DPCTLQueue_Fill64WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to fill64_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1200,8 +1200,8 @@ DPCTLQueue_Fill128WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef or USMRef passed to fill128_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
