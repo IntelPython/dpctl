@@ -56,6 +56,24 @@ _fill_values = {
 }
 
 
+_MEMORY_CLASSES = [
+    dpctl.memory.MemoryUSMShared,
+    dpctl.memory.MemoryUSMHost,
+    dpctl.memory.MemoryUSMDevice,
+]
+
+
+def _skip_if_usm_unsupported(q, mem_cls):
+    dev = q.sycl_device
+    supported = {
+        dpctl.memory.MemoryUSMShared: dev.has_aspect_usm_shared_allocations,
+        dpctl.memory.MemoryUSMHost: dev.has_aspect_usm_host_allocations,
+        dpctl.memory.MemoryUSMDevice: dev.has_aspect_usm_device_allocations,
+    }
+    if not supported[mem_cls]:
+        pytest.skip(f"{mem_cls.__name__} is not supported on this device")
+
+
 def _read_back(mem, nbytes):
     """Return the first ``nbytes`` bytes of a USM allocation as ``bytes``."""
     if isinstance(mem, dpctl.memory.MemoryUSMDevice):
@@ -67,19 +85,14 @@ def _read_back(mem, nbytes):
 
 @pytest.mark.parametrize("dtype", list(_dtype_to_np))
 @pytest.mark.parametrize(
-    "usm_type",
-    [
-        lambda n, q: dpctl.memory.MemoryUSMShared(n, queue=q),
-        lambda n, q: dpctl.memory.MemoryUSMHost(n, queue=q),
-        lambda n, q: dpctl.memory.MemoryUSMDevice(n, queue=q),
-    ],
-    ids=["shared", "host", "device"],
+    "mem_cls", _MEMORY_CLASSES, ids=["shared", "host", "device"]
 )
-def test_fill_with_dtype_valid(dtype, usm_type):
+def test_fill_with_dtype_valid(dtype, mem_cls):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
+    _skip_if_usm_unsupported(q, mem_cls)
 
     np_dt = _dtype_to_np[dtype]
     value = _fill_values[dtype]
@@ -87,7 +100,7 @@ def test_fill_with_dtype_valid(dtype, usm_type):
     element_size = np.dtype(np_dt).itemsize
     nbytes = num_elements * element_size
 
-    mem = usm_type(nbytes, q)
+    mem = mem_cls(nbytes, queue=q)
     q.fill(mem, value, num_elements, dtype=dtype)
 
     expected = np.full(num_elements, value, dtype=np_dt).tobytes()
@@ -164,15 +177,15 @@ def test_fill_async_with_dep_events():
         pytest.skip("Default constructor for SyclQueue failed")
 
     num_elements = 64
+    half = num_elements // 2
     mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
 
-    # The second fill depends on the first, so its value wins deterministically
-    # even on an out-of-order queue.
     e1 = q.fill_async(mem, 0x11, num_elements)
-    e2 = q.fill_async(mem, 0x22, num_elements, dEvents=[e1])
+    e2 = q.fill_async(mem, 0x22, half, dEvents=[e1])
     e2.wait()
 
-    assert memoryview(mem).tobytes() == b"\x22" * num_elements
+    expected = b"\x22" * half + b"\x11" * (num_elements - half)
+    assert memoryview(mem).tobytes() == expected
 
 
 def test_fill_async_bad_dep_events():
