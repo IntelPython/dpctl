@@ -701,6 +701,12 @@ the <code class="docutils literal notranslate"><span class="pre">count</span></c
 written is <code class="docutils literal notranslate"><span class="pre">count</span></code> multiplied by the size of <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. The default
 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (a single byte) makes the default a byte-wise
 fill, analogous to <code class="docutils literal notranslate"><span class="pre">memset</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned event does not keep <code class="docutils literal notranslate"><span class="pre">dest</span></code> alive. Keep <code class="docutils literal notranslate"><span class="pre">dest</span></code>
+alive until the event completes, otherwise its USM allocation
+may be freed mid-operation, causing a use-after-free.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -730,6 +736,7 @@ c16.</p></li>
     or <code class="docutils literal notranslate"><span class="pre">dEvents</span></code> is not a sequence of <a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a>.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is unrecognized, or <code class="docutils literal notranslate"><span class="pre">value</span></code> cannot be
     represented as <code class="docutils literal notranslate"><span class="pre">dtype</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OverflowError" title="(in Python v3.14)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">count</span></code> is negative.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the fill operation encountered an error.</p></li>
 </ul>
 </dd>

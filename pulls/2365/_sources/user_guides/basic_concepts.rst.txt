@@ -192,7 +192,7 @@ expose Python buffer interface.
    >>> mem_d.copy_from_host(b"abcdefghijklmnopqrstuvwxyz")
 
    >>> mem_s = dpm.MemoryUSMShared(30)
-   >>> mem_s.memset(value=ord(b"-""))
+   >>> mem_s.memset(val=ord(b"-"))
    >>> mem_s.copy_from_device(mem_d)
 
    >>> # since USM-shared is host-accessible,
