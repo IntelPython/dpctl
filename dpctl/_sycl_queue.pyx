@@ -1764,6 +1764,8 @@ cdef class SyclQueue(_SyclQueue):
             ValueError:
                 If ``dtype`` is unrecognized, or ``value`` cannot be
                 represented as ``dtype``.
+            OverflowError:
+                If ``count`` is negative.
             RuntimeError:
                 If the fill operation encountered an error.
         """
@@ -1788,6 +1790,11 @@ cdef class SyclQueue(_SyclQueue):
         written is ``count`` multiplied by the size of ``dtype``. The default
         ``dtype`` of ``"u1"`` (a single byte) makes the default a byte-wise
         fill, analogous to ``memset``.
+
+        Note:
+            The returned event does not keep ``dest`` alive. Keep ``dest``
+            alive until the event completes, otherwise its USM allocation
+            may be freed mid-operation, causing a use-after-free.
 
         Args:
             dest (dpctl.memory._Memory):
@@ -1819,6 +1826,8 @@ cdef class SyclQueue(_SyclQueue):
             ValueError:
                 If ``dtype`` is unrecognized, or ``value`` cannot be
                 represented as ``dtype``.
+            OverflowError:
+                If ``count`` is negative.
             RuntimeError:
                 If the fill operation encountered an error.
         """
