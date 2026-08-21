@@ -467,6 +467,10 @@ TEST(TestDPCTLSyclQueueInterface, CheckMemsetNullQRef)
 
     ASSERT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Memset(QRef, p, val8, 1));
     ASSERT_FALSE(bool(ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_MemsetWithEvents(QRef, p, val8, 1, NULL, 0));
+    ASSERT_FALSE(bool(ERef));
 }
 
 TEST_P(TestDPCTLQueueMemberFunctions, CheckMemset)
@@ -530,6 +534,46 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckMemset2)
 
     for (size_t i = 0; i < nbytes; ++i) {
         ASSERT_TRUE(host_arr[i] == val);
+    }
+    delete[] host_arr;
+}
+
+TEST_P(TestDPCTLQueueMemberFunctions, CheckMemsetWithEvents)
+{
+    DPCTLSyclUSMRef p = nullptr;
+    DPCTLSyclEventRef Memset_ERef = nullptr;
+    DPCTLSyclEventRef MemsetWithEvents_ERef = nullptr;
+    DPCTLSyclEventRef Memcpy_ERef = nullptr;
+    uint8_t val1 = 42;
+    uint8_t val2 = 73;
+    size_t nbytes = 256;
+    uint8_t *host_arr = new uint8_t[nbytes];
+
+    ASSERT_FALSE(host_arr == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(
+        Memset_ERef = DPCTLQueue_Memset(QRef, (void *)p, val1, nbytes));
+
+    ASSERT_NO_FATAL_FAILURE(
+        MemsetWithEvents_ERef = DPCTLQueue_MemsetWithEvents(
+            QRef, (void *)p, val2, nbytes, &Memset_ERef, 1));
+
+    ASSERT_NO_FATAL_FAILURE(
+        Memcpy_ERef = DPCTLQueue_MemcpyWithEvents(QRef, host_arr, p, nbytes,
+                                                  &MemsetWithEvents_ERef, 1));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Wait(Memcpy_ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(Memset_ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(MemsetWithEvents_ERef));
+    ASSERT_NO_FATAL_FAILURE(DPCTLEvent_Delete(Memcpy_ERef));
+
+    ASSERT_NO_FATAL_FAILURE(DPCTLfree_with_queue(p, QRef));
+
+    for (size_t i = 0; i < nbytes; ++i) {
+        ASSERT_TRUE(host_arr[i] == val2);
     }
     delete[] host_arr;
 }

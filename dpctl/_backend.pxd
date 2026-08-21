@@ -674,11 +674,6 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         size_t Count,
         const DPCTLSyclEventRef *depEvents,
         size_t depEventsCount)
-    cdef DPCTLSyclEventRef DPCTLQueue_Memset(
-        const DPCTLSyclQueueRef Q,
-        void *Dest,
-        int Val,
-        size_t Count)
     cdef DPCTLSyclEventRef DPCTLQueue_Fill8(
         const DPCTLSyclQueueRef Q,
         void *Dest,
@@ -736,6 +731,18 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         const DPCTLSyclQueueRef Q,
         void *Dest,
         uint64_t *Val,
+        size_t Count,
+        const DPCTLSyclEventRef *depEvents,
+        size_t depEventsCount)
+    cdef DPCTLSyclEventRef DPCTLQueue_Memset(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint8_t Val,
+        size_t Count)
+    cdef DPCTLSyclEventRef DPCTLQueue_MemsetWithEvents(
+        const DPCTLSyclQueueRef Q,
+        void *Dest,
+        uint8_t Val,
         size_t Count,
         const DPCTLSyclEventRef *depEvents,
         size_t depEventsCount)
