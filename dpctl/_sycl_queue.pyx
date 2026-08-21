@@ -49,6 +49,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_MemAdvise,
     DPCTLQueue_Memcpy,
     DPCTLQueue_MemcpyWithEvents,
+    DPCTLQueue_Memset,
+    DPCTLQueue_MemsetWithEvents,
     DPCTLQueue_Prefetch,
     DPCTLQueue_SubmitBarrierForEvents,
     DPCTLQueue_SubmitNDRange,
@@ -86,6 +88,7 @@ from cpython.buffer cimport (
     PyObject_GetBuffer,
 )
 from cpython.ref cimport Py_INCREF, PyObject
+from libc.stdint cimport uint8_t
 from libc.stdlib cimport free, malloc
 
 import collections.abc
@@ -600,6 +603,35 @@ cdef DPCTLSyclEventRef _copy_impl(
         q, dst, src, byte_count, dep_events, dep_events_count,
         DPCTLQueue_CopyData, DPCTLQueue_CopyDataWithEvents
     )
+
+
+cdef DPCTLSyclEventRef _memset_impl(
+     SyclQueue q,
+     object mem,
+     uint8_t val,
+     size_t count,
+     DPCTLSyclEventRef *dep_events,
+     size_t dep_events_count,
+) except *:
+    cdef void *ptr = NULL
+    cdef DPCTLSyclEventRef ERef = NULL
+
+    if isinstance(mem, _Memory):
+        ptr = <void*>(<_Memory>mem).get_data_ptr()
+    else:
+        raise TypeError("Parameter `mem` should have type _Memory")
+
+    if count <= 0 or count > mem.nbytes:
+        count = mem.nbytes
+
+    if dep_events_count == 0 or dep_events is NULL:
+        ERef = DPCTLQueue_Memset(q._queue_ref, ptr, val, count)
+    else:
+        ERef = DPCTLQueue_MemsetWithEvents(
+            q._queue_ref, ptr, val, count, dep_events, dep_events_count
+        )
+
+    return ERef
 
 
 cdef class _SyclQueue:
@@ -1590,6 +1622,125 @@ cdef class SyclQueue(_SyclQueue):
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.copy operation encountered an error"
+            )
+
+        return SyclEvent._create(ERef)
+
+    cpdef memset(self, mem, int val, size_t count=0):
+        """Fill USM allocation ``mem`` with the byte value ``val`` and wait.
+
+        Internally, this dispatches ``sycl::queue::memset``. The operation is
+        byte-wise: ``count`` bytes are set, each to the same value ``val``.
+
+        This is a synchronizing variant corresponding to
+        :meth:`dpctl.SyclQueue.memset_async`.
+
+        Args:
+            mem:
+                Destination USM allocation, an instance of
+                :class:`dpctl.memory._Memory`.
+            val (int):
+                Value to fill ``mem`` with. Following ``sycl::queue::memset``,
+                it is interpreted as an ``unsigned char``, i.e. only the least
+                significant byte is used.
+            count (int, optional):
+                Number of bytes to fill. If ``0`` or greater than the size of
+                ``mem``, the whole allocation is filled. Default: ``0``.
+
+        Raises:
+            TypeError:
+                If ``mem`` is not an instance of :class:`dpctl.memory._Memory`.
+            OverflowError:
+                If ``val`` does not fit in a C ``int`` or ``count`` is
+                negative.
+            RuntimeError:
+                If the memset operation encountered an error.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef uint8_t byte_val = <uint8_t>val
+
+        ERef = _memset_impl(<SyclQueue>self, mem, byte_val, count, NULL, 0)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memset operation encountered an error"
+            )
+        with nogil:
+            DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
+
+    cpdef SyclEvent memset_async(
+        self, mem, int val, size_t count=0, list dEvents=None
+    ):
+        """Fill USM allocation ``mem`` with the byte value ``val``
+        asynchronously.
+
+        Internally, this dispatches ``sycl::queue::memset``. The operation is
+        byte-wise: ``count`` bytes are set, each to the same value ``val``.
+
+        Note:
+            The returned event does not keep ``mem`` alive. Keep ``mem``
+            alive until the event completes, otherwise its USM allocation
+            may be freed mid-operation, causing a use-after-free.
+
+        Args:
+            mem:
+                Destination USM allocation, an instance of
+                :class:`dpctl.memory._Memory`.
+            val (int):
+                Value to fill ``mem`` with. Following ``sycl::queue::memset``,
+                it is interpreted as an ``unsigned char``, i.e. only the least
+                significant byte is used.
+            count (int, optional):
+                Number of bytes to fill. If ``0`` or greater than the size of
+                ``mem``, the whole allocation is filled. Default: ``0``.
+            dEvents (List[dpctl.SyclEvent], optional):
+                Events that this operation depends on.
+
+        Returns:
+            dpctl.SyclEvent:
+                Event associated with the memset operation.
+
+        Raises:
+            TypeError:
+                If ``mem`` is not an instance of :class:`dpctl.memory._Memory`,
+                or ``dEvents`` is not a sequence of :class:`dpctl.SyclEvent`.
+            OverflowError:
+                If ``val`` does not fit in a C ``int`` or ``count`` is
+                negative.
+            RuntimeError:
+                If the memset operation encountered an error.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef size_t nDE = 0
+        cdef uint8_t byte_val = <uint8_t>val
+
+        if dEvents is None:
+            ERef = _memset_impl(<SyclQueue>self, mem, byte_val, count, NULL, 0)
+        else:
+            nDE = len(dEvents)
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if depEvents is NULL:
+                raise MemoryError()
+            try:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+                ERef = _memset_impl(
+                    <SyclQueue>self, mem, byte_val, count, depEvents, nDE
+                )
+            finally:
+                free(depEvents)
+
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.memset_async operation encountered an error"
             )
 
         return SyclEvent._create(ERef)
