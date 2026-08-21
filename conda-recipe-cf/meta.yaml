@@ -1,0 +1,74 @@
+{% set required_compiler_version = "2026.0.0" %}
+package:
+  name: dpctl
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  path: ..
+
+build:
+  number: {{ GIT_DESCRIBE_NUMBER }}
+  ignore_run_exports:
+    - level-zero
+  missing_dso_whitelist:
+    - $RPATH/DPCTLSyclInterface.dll  # [win]
+  skip: true  # [osx or py<39]
+
+requirements:
+  # TODO: keep in sync with /pyproject.toml
+  build:
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - {{ compiler('dpcpp') }} >={{ required_compiler_version }}
+    - ninja >=1.11.1          # [linux]
+    - cmake >=3.29.0
+  host:
+    - python
+    - pip >=24.0
+    - level-zero-devel >=1.16
+    - pybind11 >=3.0.2
+    - intel-sycl-rt
+    - intel-cmplr-lib-rt
+    # Ensure we are using latest version of setuptools, since we don't need
+    # editable environments for release.
+    - setuptools >=69
+    - wheel >=0.43
+    - python-build >=1.1
+    - scikit-build >=0.17.0
+    - cython >=3.1.0  # [py>=313]
+    - cython >=3.0.10         # [py<313]
+    - numpy
+    # WARNING: check with doc how to upgrade
+    - versioneer ==0.29
+    # versioneer dependency
+    - tomli                   # [py<311]
+  run:
+    - python
+    - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
+    - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
+    - numpy
+
+test:
+  requires:
+    - pip
+    - pytest
+    - cython
+    - setuptools
+  commands:
+    - pip check
+    - python -c "import dpctl; print(dpctl.__version__)"
+    - python -m dpctl -f
+
+about:
+  home: https://github.com/IntelPython/dpctl.git
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: 'A lightweight Python wrapper for a subset of SYCL API.'
+  description: |
+    Data Parallel Control or dpctl is a Python library that allows users to control the execution placement of a compute kernel on an XPU.
+
+extra:
+  recipe-maintainers:
+    - ndgrigorian
+    - antonwolfy
+    - vlad-perevezentsev

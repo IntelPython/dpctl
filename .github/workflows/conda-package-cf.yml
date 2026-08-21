@@ -1,0 +1,372 @@
+name: Conda package (conda-forge)
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions: read-all
+
+env:
+  PACKAGE_NAME: dpctl
+  MODULE_NAME: dpctl
+  TEST_ENV_NAME: test_dpctl
+  RECIPE_DIR: conda-recipe-cf
+  CHANNELS: "-c conda-forge --override-channels"
+  VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); d = j['dpctl'][0];"
+  VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
+  CONDA_BUILD_VERSION: 26.3.0
+  CONDA_INDEX_VERSION: 0.11.0
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          CACHE_NUMBER: 3  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-${{hashFiles('conda-recipe-cf/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-
+      - name: Add conda to system path
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+      - name: Update conda
+        run: |
+          conda update -n base --all
+      - name: Install conda-build
+        run: |
+          conda install -n base conda-build=${{ env.CONDA_BUILD_VERSION }} ${{ env.CHANNELS }}
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
+      - name: Build conda package
+        run: |
+          if [ -n "${{ matrix.python_spec }}" ]; then
+            conda build --no-test --python "${{ matrix.python_spec }}" ${{ env.CHANNELS }} ${{ env.RECIPE_DIR }}
+          else
+            conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} ${{ env.RECIPE_DIR }}
+          fi
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+          path: /usr/share/miniconda/conda-bld/linux-64/${{ env.PACKAGE_NAME }}-*.conda
+
+  build_windows:
+    runs-on: windows-latest
+    timeout-minutes: 150
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
+        with:
+          access_token: ${{ github.token }}
+
+      # the recipe takes the version from git describe
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          activate-environment: build
+          channels: conda-forge
+          conda-remove-defaults: true
+          python-version: ${{ matrix.python }}
+          conda-build-version: ${{ env.CONDA_BUILD_VERSION }}
+      - name: Store conda paths as envs
+        shell: bash -l {0}
+        run: |
+          echo "CONDA_BLD=$CONDA/conda-bld/win-64/" | tr "\\\\" '/' >> "$GITHUB_ENV"
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
+      - name: Build conda package
+        env:
+          OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
+        run: |
+          set "PYTHON_VER=${{ matrix.python_spec }}"
+          if "%PYTHON_VER%" NEQ "" (
+            conda build --no-test --python "%PYTHON_VER%" ${{ env.CHANNELS }} ${{ env.RECIPE_DIR }}
+          ) else (
+            conda build --no-test --python ${{ matrix.python }} ${{ env.CHANNELS }} ${{ env.RECIPE_DIR }}
+          )
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.conda
+
+  test_linux:
+    needs: build_linux
+    runs-on:  ${{ matrix.runner }}
+    timeout-minutes: 30
+
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            runner: ubuntu-22.04
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+            runner: ubuntu-22.04
+        runner: [ubuntu-latest]
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+      - name: Add conda to system path
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+      - name: Update conda
+        run: |
+          conda update -n base --all
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index=${{ env.CONDA_INDEX_VERSION }} ${{ env.CHANNELS }}
+      - name: Show Conda info
+        run: |
+          conda info --all
+      - name: List base environment packages
+        run: |
+          conda list -n base
+      - name: Create conda channel
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          mv "${PACKAGE_NAME}"-*.conda "$GITHUB_WORKSPACE/channel/linux-64" || exit 1
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          # Test channel
+          conda search "$PACKAGE_NAME" -c "$GITHUB_WORKSPACE/channel" --override-channels --info --json > "$GITHUB_WORKSPACE/ver.json"
+          cat ver.json
+      - name: Collect dependencies
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python="${PYTHON_VER}" $CHANNELS --only-deps --dry-run > lockfile
+          cat lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          CACHE_NUMBER: 3  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-
+      - name: Install dpctl
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS
+          # intel-opencl-rt provides the OpenCL CPU device to run the tests on
+          TEST_DEPENDENCIES="pytest cython setuptools intel-opencl-rt"
+          export TEST_DEPENDENCIES
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          export PACKAGE_VERSION
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} $TEST_DEPENDENCIES python="${PYTHON_VER}" $CHANNELS
+          # Test installed packages
+          conda list -n "${{ env.TEST_ENV_NAME }}"
+      - name: Smoke test
+        run: |
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
+          python -c "import dpctl; dpctl.lsplatform(verbosity=2)"
+      - name: Create test temp dir
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: mkdir -p "${GITHUB_WORKSPACE}/test_tmp"
+      - name: Run tests
+        working-directory: ${{ github.workspace }}/test_tmp
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        run: |
+          . "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.TEST_ENV_NAME }}"
+          python -m pytest -v --pyargs "${{ env.MODULE_NAME }}"
+
+  test_windows:
+    needs: build_windows
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+    strategy:
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+        python_spec: ['']
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314'
+            runner: windows-latest
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+            runner: windows-latest
+        runner: [windows-latest]
+    env:
+      workdir: '${{ github.workspace }}'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+          python-version: ${{ matrix.python }}
+
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: Show Conda info
+        run: |
+          conda info --all
+
+      - name: List base environment packages
+        run: |
+          conda list -n base
+
+      - name: Create conda channel with the artifact bit
+        run: |
+          @echo on
+          mkdir ${{ env.workdir }}\channel\win-64
+          move ${{ env.PACKAGE_NAME }}-*.conda ${{ env.workdir }}\channel\win-64
+          dir ${{ env.workdir }}\channel\win-64\
+
+      - name: Index the channel
+        run: |
+          @echo on
+          conda index ${{ env.workdir }}\channel
+
+      - name: Dump dpctl version info from created channel into ver.json
+        run: |
+          @echo on
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
+          dir ${{ env.workdir }}
+
+      - name: Install dpctl
+        run: |
+          @ECHO ON
+          IF NOT EXIST ver.json (
+              copy /Y ${{ env.workdir }}\ver.json .
+          )
+          set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+             SET PACKAGE_VERSION=%%F
+          )
+          SET "PYTHON_VER=${{ matrix.python_spec }}"
+          IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
+          REM intel-opencl-rt provides the OpenCL CPU device to run the tests on
+          SET "TEST_DEPENDENCIES=pytest cython setuptools intel-opencl-rt"
+          conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python="%PYTHON_VER%" -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
+
+      - name: Report content of test environment
+        run: |
+          conda info && conda list -n ${{ env.TEST_ENV_NAME }}
+
+      - name: Register the OpenCL CPU driver with the ICD loader
+        shell: pwsh
+        run: |
+          $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
+          $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
+          if ($drivers.Count -eq 0) { throw "intel-opencl-rt installed no OpenCL CPU driver under $env:CONDA_PREFIX" }
+          if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
+          foreach ($driver in $drivers) {
+            New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
+          }
+          Get-ItemProperty -Path $vendors
+
+      - name: Smoke test
+        run: >-
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m dpctl -f
+
+      - name: Create empty temporary directory to run tests from
+        # create temporary empty folder to runs tests from
+        # https://github.com/pytest-dev/pytest/issues/11904
+        run: >-
+          mkdir "${{ env.workdir }}\test_tmp"
+
+      - name: Run tests
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        working-directory: ${{ env.workdir }}\test_tmp
+        run: >-
+          conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
