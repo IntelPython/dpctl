@@ -20,7 +20,7 @@ cmake                                                       \
     -DCMAKE_CXX_FLAGS=-fsycl                                \
     -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}"              \
     -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}"                 \
-    -DDPCTL_ENABLE_L0_PROGRAM_CREATION=ON                   \
+    -DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION=ON             \
     -DDPCTL_BUILD_CAPI_TESTS=ON                             \
     -DDPCTL_GENERATE_COVERAGE=OFF                           \
     ..

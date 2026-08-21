@@ -97,7 +97,8 @@ def make_cmake_args(
     args = [
         f"-DCMAKE_C_COMPILER:PATH={c_compiler}" if c_compiler else "",
         f"-DCMAKE_CXX_COMPILER:PATH={cxx_compiler}" if cxx_compiler else "",
-        f"-DDPCTL_ENABLE_L0_PROGRAM_CREATION={'ON' if level_zero else 'OFF'}",
+        "-DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION="
+        f"{'ON' if level_zero else 'OFF'}",
         f"-DDPCTL_ENABLE_GLOG:BOOL={'ON' if glog else 'OFF'}",
     ]
 

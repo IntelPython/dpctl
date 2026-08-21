@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 
+### Deprecated
+* Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+
+### Removed
+* Removed Cython API for `dpctl.program` submodule, as the submodule is now deprecated, with functionality migrated to `dpctl.compiler` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+
 ### Fixed
 * Fixed incorrect paths in `GetLevelZeroHeaders.cmake` [gh-2366](https://github.com/IntelPython/dpctl/pull/2366)
 

@@ -15,12 +15,26 @@ if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
    find_package(IntelSYCL REQUIRED)
 endif()
 
-# Option to turn on support for creating Level Zero interoperability programs
-# from a SPIR-V binary file.
-option(DPCTL_ENABLE_L0_PROGRAM_CREATION
-    "Enable Level Zero Program creation from SPIR-V"
+# Option to turn on support for creating Level Zero interoperability kernel
+# bundles from a SPIR-V binary file.
+option(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
+    "Enable Level Zero kernel bundle creation from SPIR-V"
     ON
 )
+if(DEFINED DPCTL_ENABLE_L0_PROGRAM_CREATION)
+    message(DEPRECATION
+        "DPCTL_ENABLE_L0_PROGRAM_CREATION is deprecated and will be removed in "
+        "a future release. Use DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION instead."
+    )
+    set(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
+        ${DPCTL_ENABLE_L0_PROGRAM_CREATION}
+        CACHE BOOL
+        "Enable Level Zero kernel bundle creation from SPIR-V"
+        FORCE
+    )
+    unset(DPCTL_ENABLE_L0_PROGRAM_CREATION)
+    unset(DPCTL_ENABLE_L0_PROGRAM_CREATION CACHE)
+endif()
 # Option to generate code coverage report using llvm-cov and lcov.
 option(DPCTL_GENERATE_COVERAGE
     "Build dpctl C API with coverage instrumentation"
@@ -59,8 +73,8 @@ else()
     find_package(IntelSyclCompiler REQUIRED)
 endif()
 
-if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
-    set(DPCTL_ENABLE_L0_PROGRAM_CREATION 1)
+if(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION)
+    set(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION 1)
     if(DPCTL_LEVEL_ZERO_INCLUDE_DIR)
         set(LEVEL_ZERO_INCLUDE_DIR ${DPCTL_LEVEL_ZERO_INCLUDE_DIR})
     else()
@@ -371,7 +385,7 @@ if (build_so_version)
     )
 endif()
 
-if(DPCTL_ENABLE_L0_PROGRAM_CREATION)
+if(DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION)
     target_include_directories(DPCTLSyclInterface
         SYSTEM PRIVATE
         ${LEVEL_ZERO_INCLUDE_DIR}

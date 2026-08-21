@@ -27,7 +27,7 @@ Example pybind11 extension demonstrating binding of dpctl entities to
 SYCL entities.
 
 dpctl provides type casters that bind ``sycl::kernel`` to
-`dpctl.program.SyclKernel`, ``sycl::device`` to `dpctl.SyclDevice`, etc.
+`dpctl.compiler.SyclKernel`, ``sycl::device`` to `dpctl.SyclDevice`, etc.
 
 Use of these type casters simplifies writing of Python extensions and compile
 then using SYCL C++ compilers, such as Intel(R) oneAPI DPC++ compiler.

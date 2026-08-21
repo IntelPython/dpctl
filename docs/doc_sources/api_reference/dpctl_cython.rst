@@ -6,8 +6,8 @@
 .. role:: python(code)
    :language: python
 
-All Python modules of :py:mod:`dpctl` come with ``__init__.pxd`` alongside ``__init__.py`` files
-permitting doing both :python:`import dpctl` and :code:`cimport dpctl as c_dpctl`.
+Python modules of :py:mod:`dpctl` that expose a Cython API come with ``__init__.pxd`` alongside
+``__init__.py`` files, permitting doing both :python:`import dpctl` and :code:`cimport dpctl as c_dpctl`.
 
 Locations of Cython declaration files in the package installation layout are as follows:
 
@@ -24,11 +24,11 @@ Locations of Cython declaration files in the package installation layout are as 
     _sycl_queue_manager.pxd
     sycl.pxd
 
+    compiler/__init__.pxd
+    compiler/_compiler.pxd
+
     memory/__init__.pxd
     memory/_memory.pxd
-
-    program/__init__.pxd
-    program/_program.pxd
 
 File ``_backend.pxd`` redefines symbols from :ref:`DPCTLSyclInterface library <libsyclinterface>` for Cython.
 

@@ -389,7 +389,7 @@ kernel_arg_type = _kernel_arg_type()
 cdef class SyclKernelSubmitError(Exception):
     """
     A ``SyclKernelSubmitError`` exception is raised when
-    the provided :class:`.program.SyclKernel` could not be
+    the provided :class:`.compiler.SyclKernel` could not be
     submitted to the :class:`.SyclQueue`.
 
     """
@@ -1281,10 +1281,10 @@ cdef class SyclQueue(_SyclQueue):
         list dEvents=None
     ):
         """
-        Asynchronously submit :class:`dpctl.program.SyclKernel` for execution.
+        Asynchronously submit :class:`dpctl.compiler.SyclKernel` for execution.
 
         Args:
-            kernel (dpctl.program.SyclKernel):
+            kernel (dpctl.compiler.SyclKernel):
                 SYCL kernel object
             args (List[object]):
                 List of kernel arguments
@@ -1442,10 +1442,10 @@ cdef class SyclQueue(_SyclQueue):
         list dEvents=None
     ):
         """
-        Submit :class:`dpctl.program.SyclKernel` for execution.
+        Submit :class:`dpctl.compiler.SyclKernel` for execution.
 
         Args:
-            kernel (dpctl.program.SyclKernel):
+            kernel (dpctl.compiler.SyclKernel):
                 SYCL kernel object
             args (List[object]):
                 List of kernel arguments

@@ -25,8 +25,9 @@
 
 #pragma once
 
-/* Defined when dpctl was built with level zero program creation enabled. */
-#cmakedefine DPCTL_ENABLE_L0_PROGRAM_CREATION 1
+/* Defined when dpctl was built with Level Zero kernel bundle creation
+ * enabled. */
+#cmakedefine DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION 1
 
 #define __SYCL_COMPILER_VERSION_REQUIRED 20260331
 
