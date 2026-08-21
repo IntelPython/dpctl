@@ -966,6 +966,41 @@ DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
 }
 
 __dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill8WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                           void *USMRef,
+                           uint8_t Value,
+                           size_t Count,
+                           const DPCTLSyclEventRef *DepEvents,
+                           size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+            ev = Q->fill<uint8_t>(USMRef, Value, Count, dep_events);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill8_async were NULL.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
 DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   void *USMRef,
                   uint16_t Value,
@@ -985,6 +1020,41 @@ DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
     else {
         error_handler("QRef or USMRef passed to fill16 were NULL.", __FILE__,
                       __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill16WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint16_t Value,
+                            size_t Count,
+                            const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+            ev = Q->fill<uint16_t>(USMRef, Value, Count, dep_events);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill16_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1014,6 +1084,41 @@ DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
 }
 
 __dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill32WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint32_t Value,
+                            size_t Count,
+                            const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+            ev = Q->fill<uint32_t>(USMRef, Value, Count, dep_events);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill32_async were NULL.",
+                      __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
 DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   void *USMRef,
                   uint64_t Value,
@@ -1033,6 +1138,41 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
     else {
         error_handler("QRef or USMRef passed to fill64 were NULL.", __FILE__,
                       __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill64WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint64_t Value,
+                            size_t Count,
+                            const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+            ev = Q->fill<uint64_t>(USMRef, Value, Count, dep_events);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill64_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1060,6 +1200,44 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
     else {
         error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
                       __func__, __LINE__);
+        return nullptr;
+    }
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill128WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                             void *USMRef,
+                             uint64_t *Value,
+                             size_t Count,
+                             const DPCTLSyclEventRef *DepEvents,
+                             size_t DepEventsCount)
+{
+    auto Q = unwrap<queue>(QRef);
+    if (Q && USMRef) {
+        sycl::event ev;
+        try {
+            std::vector<event> dep_events;
+            if (DepEvents) {
+                dep_events.reserve(DepEventsCount);
+                for (size_t i = 0; i < DepEventsCount; ++i) {
+                    event *ei = unwrap<event>(DepEvents[i]);
+                    if (ei)
+                        dep_events.push_back(*ei);
+                }
+            }
+            complexNumber Val;
+            Val.real = Value[0];
+            Val.imag = Value[1];
+            ev = Q->fill(USMRef, Val, Count, dep_events);
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(ev)));
+    }
+    else {
+        error_handler("QRef or USMRef passed to fill128_async were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }

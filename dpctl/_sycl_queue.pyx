@@ -40,6 +40,16 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_CopyDataWithEvents,
     DPCTLQueue_Create,
     DPCTLQueue_Delete,
+    DPCTLQueue_Fill8,
+    DPCTLQueue_Fill8WithEvents,
+    DPCTLQueue_Fill16,
+    DPCTLQueue_Fill16WithEvents,
+    DPCTLQueue_Fill32,
+    DPCTLQueue_Fill32WithEvents,
+    DPCTLQueue_Fill64,
+    DPCTLQueue_Fill64WithEvents,
+    DPCTLQueue_Fill128,
+    DPCTLQueue_Fill128WithEvents,
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
@@ -88,11 +98,13 @@ from cpython.buffer cimport (
     PyObject_GetBuffer,
 )
 from cpython.ref cimport Py_INCREF, PyObject
-from libc.stdint cimport uint8_t
+from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
 
 import collections.abc
 import logging
+import struct
+import sys
 
 
 cdef extern from "_host_task_util.hpp":
@@ -568,6 +580,127 @@ cdef DPCTLSyclEventRef _copy_memcpy_impl(
         PyBuffer_Release(&src_buf_view)
     if dst_is_buf:
         PyBuffer_Release(&dst_buf_view)
+
+    return ERef
+
+# struct format per dtype used to pack the fill value into its byte pattern.
+# The pattern's length is the element size.
+# Complex types are packed as (real, imag).
+_fill_dtype_formats = {
+    "i1": "b",
+    "u1": "B",
+    "i2": "h",
+    "u2": "H",
+    "i4": "i",
+    "u4": "I",
+    "f4": "f",
+    "i8": "q",
+    "u8": "Q",
+    "f8": "d",
+    "c8": "ff",
+    "c16": "dd",
+}
+
+
+cdef bytes _pack_fill_pattern(object value, str dtype):
+    """
+    Return the native-byte-order byte pattern of ``value`` interpreted as a
+    single element of ``dtype``. ``sycl::queue::fill`` replicates this pattern
+    across the destination allocation.
+    """
+    cdef str fmt
+    if dtype not in _fill_dtype_formats:
+        raise ValueError(
+            f"Unrecognized dtype '{dtype}'. Expected one of: "
+            "i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8, c16"
+        )
+    fmt = _fill_dtype_formats[dtype]
+    try:
+        if dtype == "c8" or dtype == "c16":
+            # complex: pack real then imag
+            cval = complex(value)
+            return struct.pack("=" + fmt, cval.real, cval.imag)
+        return struct.pack("=" + fmt, value)
+    except (struct.error, TypeError, ValueError) as e:
+        raise ValueError(
+            f"Value {value!r} cannot be represented as dtype '{dtype}': {e}"
+        )
+
+
+cdef DPCTLSyclEventRef _fill_impl(
+     SyclQueue q,
+     object dst,
+     object value,
+     size_t count,
+     str dtype,
+     DPCTLSyclEventRef *dep_events,
+     size_t dep_events_count
+) except *:
+    cdef void *c_dst_ptr = NULL
+    cdef DPCTLSyclEventRef ERef = NULL
+    cdef uint64_t val128[2]
+    cdef bytes pattern = _pack_fill_pattern(value, dtype)
+    cdef size_t element_size = len(pattern)
+    cdef bint with_events = dep_events is not NULL and dep_events_count > 0
+    cdef uint8_t v8
+    cdef uint16_t v16
+    cdef uint32_t v32
+    cdef uint64_t v64
+
+    if isinstance(dst, _Memory):
+        c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
+    else:
+        raise TypeError(
+            "Parameter `dest` should have type `dpctl.memory._Memory`"
+        )
+
+    if element_size == 1:
+        v8 = <uint8_t> int.from_bytes(pattern, sys.byteorder)
+        if with_events:
+            ERef = DPCTLQueue_Fill8WithEvents(
+                q._queue_ref, c_dst_ptr, v8, count,
+                dep_events, dep_events_count
+            )
+        else:
+            ERef = DPCTLQueue_Fill8(q._queue_ref, c_dst_ptr, v8, count)
+    elif element_size == 2:
+        v16 = <uint16_t> int.from_bytes(pattern, sys.byteorder)
+        if with_events:
+            ERef = DPCTLQueue_Fill16WithEvents(
+                q._queue_ref, c_dst_ptr, v16, count,
+                dep_events, dep_events_count
+            )
+        else:
+            ERef = DPCTLQueue_Fill16(q._queue_ref, c_dst_ptr, v16, count)
+    elif element_size == 4:
+        v32 = <uint32_t> int.from_bytes(pattern, sys.byteorder)
+        if with_events:
+            ERef = DPCTLQueue_Fill32WithEvents(
+                q._queue_ref, c_dst_ptr, v32, count,
+                dep_events, dep_events_count
+            )
+        else:
+            ERef = DPCTLQueue_Fill32(q._queue_ref, c_dst_ptr, v32, count)
+    elif element_size == 8:
+        v64 = <uint64_t> int.from_bytes(pattern, sys.byteorder)
+        if with_events:
+            ERef = DPCTLQueue_Fill64WithEvents(
+                q._queue_ref, c_dst_ptr, v64, count,
+                dep_events, dep_events_count
+            )
+        else:
+            ERef = DPCTLQueue_Fill64(q._queue_ref, c_dst_ptr, v64, count)
+    else:
+        # 128-bit pattern is passed as two uint64
+        val128[0] = <uint64_t> int.from_bytes(pattern[:8], sys.byteorder)
+        val128[1] = <uint64_t> int.from_bytes(pattern[8:], sys.byteorder)
+        if with_events:
+            ERef = DPCTLQueue_Fill128WithEvents(
+                q._queue_ref, c_dst_ptr, val128, count,
+                dep_events, dep_events_count
+            )
+        else:
+            ERef = DPCTLQueue_Fill128(q._queue_ref, c_dst_ptr, val128, count)
 
     return ERef
 
@@ -1622,6 +1755,144 @@ cdef class SyclQueue(_SyclQueue):
         if (ERef is NULL):
             raise RuntimeError(
                 "SyclQueue.copy operation encountered an error"
+            )
+
+        return SyclEvent._create(ERef)
+
+    cpdef fill(self, dest, value, size_t count, str dtype="u1"):
+        """Fill ``dest`` with ``count`` copies of ``value`` and wait.
+
+        Internally, this dispatches ``sycl::queue::fill``, which sets each of
+        the ``count`` elements of ``dest`` to ``value``. The number of bytes
+        written is ``count`` multiplied by the size of ``dtype``. The default
+        ``dtype`` of ``"u1"`` (a single byte) makes the default a byte-wise
+        fill, analogous to ``memset``.
+
+        This is a synchronizing variant corresponding to
+        :meth:`dpctl.SyclQueue.fill_async`.
+
+        Args:
+            dest (dpctl.memory._Memory):
+                Destination USM allocation to fill.
+            value (int, float, complex):
+                Value used to fill ``dest``. It is reinterpreted according to
+                ``dtype``: integral ``dtype`` values expect a Python integer,
+                ``"f4"`` and ``"f8"`` expect a Python float, and ``"c8"`` and
+                ``"c16"`` expect a Python complex.
+            count (int):
+                Number of elements to fill.
+            dtype (str, optional):
+                Data type string of the fill elements. Determines the element
+                size and how ``value`` is interpreted.
+                Defaults to ``"u1"`` (one byte per element).
+                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
+                c16.
+
+        Raises:
+            TypeError:
+                If ``dest`` is not a ``dpctl.memory._Memory`` USM allocation.
+            ValueError:
+                If ``dtype`` is unrecognized, or ``value`` cannot be
+                represented as ``dtype``.
+            OverflowError:
+                If ``count`` is negative.
+            RuntimeError:
+                If the fill operation encountered an error.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+
+        ERef = _fill_impl(<SyclQueue>self, dest, value, count, dtype, NULL, 0)
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.fill operation encountered an error"
+            )
+        with nogil:
+            DPCTLEvent_Wait(ERef)
+        DPCTLEvent_Delete(ERef)
+
+    cpdef SyclEvent fill_async(
+        self, dest, value, size_t count, list dEvents=None, str dtype="u1"
+    ):
+        """Fill ``dest`` with ``count`` copies of ``value`` asynchronously.
+
+        Internally, this dispatches ``sycl::queue::fill``, which sets each of
+        the ``count`` elements of ``dest`` to ``value``. The number of bytes
+        written is ``count`` multiplied by the size of ``dtype``. The default
+        ``dtype`` of ``"u1"`` (a single byte) makes the default a byte-wise
+        fill, analogous to ``memset``.
+
+        Note:
+            The returned event does not keep ``dest`` alive. Keep ``dest``
+            alive until the event completes, otherwise its USM allocation
+            may be freed mid-operation, causing a use-after-free.
+
+        Args:
+            dest (dpctl.memory._Memory):
+                Destination USM allocation to fill.
+            value (int, float, complex):
+                Value used to fill ``dest``. It is reinterpreted according to
+                ``dtype``: integral ``dtype`` values expect a Python integer,
+                ``"f4"`` and ``"f8"`` expect a Python float, and ``"c8"`` and
+                ``"c16"`` expect a Python complex.
+            count (int):
+                Number of elements to fill.
+            dEvents (List[dpctl.SyclEvent], optional):
+                Events that this fill depends on.
+            dtype (str, optional):
+                Data type string of the fill elements. Determines the element
+                size and how ``value`` is interpreted.
+                Defaults to ``"u1"`` (one byte per element).
+                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
+                c16.
+
+        Returns:
+            dpctl.SyclEvent:
+                Event associated with the fill operation.
+
+        Raises:
+            TypeError:
+                If ``dest`` is not a ``dpctl.memory._Memory`` USM allocation,
+                or ``dEvents`` is not a sequence of :class:`dpctl.SyclEvent`.
+            ValueError:
+                If ``dtype`` is unrecognized, or ``value`` cannot be
+                represented as ``dtype``.
+            OverflowError:
+                If ``count`` is negative.
+            RuntimeError:
+                If the fill operation encountered an error.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef size_t nDE = 0
+
+        if dEvents is None:
+            ERef = _fill_impl(
+                <SyclQueue>self, dest, value, count, dtype, NULL, 0
+            )
+        else:
+            nDE = len(dEvents)
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if depEvents is NULL:
+                raise MemoryError()
+            try:
+                for idx, de in enumerate(dEvents):
+                    if isinstance(de, SyclEvent):
+                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                    else:
+                        raise TypeError(
+                            "A sequence of dpctl.SyclEvent is expected"
+                        )
+                ERef = _fill_impl(
+                    <SyclQueue>self, dest, value, count, dtype, depEvents, nDE
+                )
+            finally:
+                free(depEvents)
+
+        if (ERef is NULL):
+            raise RuntimeError(
+                "SyclQueue.fill_async operation encountered an error"
             )
 
         return SyclEvent._create(ERef)
