@@ -1,0 +1,6 @@
+﻿dpctl.SyclQueueCreationError
+============================
+
+.. currentmodule:: dpctl
+
+.. autoexception:: SyclQueueCreationError

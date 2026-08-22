@@ -1,0 +1,6 @@
+﻿dpctl.program.is\_sycl\_source\_compilation\_available
+======================================================
+
+.. currentmodule:: dpctl.program
+
+.. autofunction:: is_sycl_source_compilation_available
