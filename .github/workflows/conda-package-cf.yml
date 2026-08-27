@@ -131,8 +131,6 @@ jobs:
         run: |
           conda list -n base
       - name: Build conda package
-        env:
-          OVERRIDE_INTEL_IPO: 1   # IPO requires more resources that GH actions VM provides
         run: |
           set "PYTHON_VER=${{ matrix.python_spec }}"
           if "%PYTHON_VER%" NEQ "" (
