@@ -1,6 +1,0 @@
-dpctl.SyclEvent.wait\_for
-=========================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclEvent.wait_for
