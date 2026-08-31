@@ -310,3 +310,22 @@ def test_fill_type_error():
     with pytest.raises(TypeError) as cm:
         q.fill(bytearray(16), 0, 4)
     assert "_Memory" in str(cm.value)
+
+
+def test_fill_count_out_of_bounds():
+    """fill raises ValueError when count exceeds the destination size."""
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    nbytes = 64
+    mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
+
+    q.fill(mem, 0, nbytes, dtype="u1")
+    with pytest.raises(ValueError):
+        q.fill(mem, 0, nbytes + 1, dtype="u1")
+    with pytest.raises(ValueError):
+        q.fill(mem, 0, 9, dtype="i8")
+    with pytest.raises(ValueError):
+        q.fill_async(mem, 0, nbytes + 1)

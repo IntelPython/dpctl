@@ -638,6 +638,7 @@ cdef DPCTLSyclEventRef _fill_impl(
 ) except *:
     cdef void *c_dst_ptr = NULL
     cdef DPCTLSyclEventRef ERef = NULL
+    cdef _Memory m_dst
     cdef uint64_t val128[2]
     cdef bytes pattern = _pack_fill_pattern(value, dtype)
     cdef size_t element_size = len(pattern)
@@ -647,11 +648,18 @@ cdef DPCTLSyclEventRef _fill_impl(
     cdef uint32_t v32
     cdef uint64_t v64
 
-    if isinstance(dst, _Memory):
-        c_dst_ptr = <void*>(<_Memory>dst).get_data_ptr()
-    else:
+    if not isinstance(dst, _Memory):
         raise TypeError(
             "Parameter `dest` should have type `dpctl.memory._Memory`"
+        )
+    m_dst = <_Memory>dst
+    c_dst_ptr = <void*>m_dst.get_data_ptr()
+
+    # check count fits within the allocation
+    if count > (<size_t>m_dst.nbytes) // element_size:
+        raise ValueError(
+            f"Fill of {count} elements of dtype '{dtype}' is too large "
+            f"to be accommodated in {m_dst.nbytes} bytes allocation"
         )
 
     if element_size == 1:
