@@ -1184,7 +1184,7 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                    size_t Count)
 {
     auto Q = unwrap<queue>(QRef);
-    if (Q && USMRef) {
+    if (Q && USMRef && Value) {
         sycl::event ev;
         try {
             complexNumber Val;
@@ -1198,8 +1198,8 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill128 were NULL.", __FILE__,
-                      __func__, __LINE__);
+        error_handler("QRef, USMRef, or Value passed to fill128 were NULL.",
+                      __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }
@@ -1213,7 +1213,7 @@ DPCTLQueue_Fill128WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
                              size_t DepEventsCount)
 {
     auto Q = unwrap<queue>(QRef);
-    if (Q && USMRef) {
+    if (Q && USMRef && Value) {
         sycl::event ev;
         try {
             std::vector<event> dep_events;
@@ -1236,8 +1236,9 @@ DPCTLQueue_Fill128WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
         return wrap<event>(new event(std::move(ev)));
     }
     else {
-        error_handler("QRef or USMRef passed to fill128_async were NULL.",
-                      __FILE__, __func__, __LINE__);
+        error_handler(
+            "QRef, USMRef, or Value passed to fill128_async were NULL.",
+            __FILE__, __func__, __LINE__);
         return nullptr;
     }
 }

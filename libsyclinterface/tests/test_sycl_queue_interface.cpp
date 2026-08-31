@@ -796,6 +796,10 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckFill128)
     ASSERT_FALSE(p == nullptr);
 
     ASSERT_NO_FATAL_FAILURE(
+        Fill128_ERef = DPCTLQueue_Fill128(QRef, (void *)p, nullptr, nelems));
+    ASSERT_FALSE(bool(Fill128_ERef));
+
+    ASSERT_NO_FATAL_FAILURE(
         Fill128_ERef = DPCTLQueue_Fill128(
             QRef, (void *)p, reinterpret_cast<uint64_t *>(&val), nelems));
 
@@ -992,6 +996,10 @@ TEST_P(TestDPCTLQueueMemberFunctions, CheckFill128WithEvents)
 
     ASSERT_NO_FATAL_FAILURE(p = DPCTLmalloc_device(nbytes, QRef));
     ASSERT_FALSE(p == nullptr);
+
+    ASSERT_NO_FATAL_FAILURE(Fill_ERef = DPCTLQueue_Fill128WithEvents(
+                                QRef, (void *)p, nullptr, nelems, nullptr, 0));
+    ASSERT_FALSE(bool(Fill_ERef));
 
     ASSERT_NO_FATAL_FAILURE(
         FillDep_ERef = DPCTLQueue_Fill128(
