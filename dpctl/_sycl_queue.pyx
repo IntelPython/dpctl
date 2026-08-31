@@ -621,7 +621,7 @@ cdef bytes _pack_fill_pattern(object value, str dtype):
             cval = complex(value)
             return struct.pack("=" + fmt, cval.real, cval.imag)
         return struct.pack("=" + fmt, value)
-    except (struct.error, TypeError, ValueError) as e:
+    except (struct.error, OverflowError, TypeError, ValueError) as e:
         raise ValueError(
             f"Value {value!r} cannot be represented as dtype '{dtype}': {e}"
         )

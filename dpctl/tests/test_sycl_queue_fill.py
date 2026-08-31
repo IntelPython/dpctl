@@ -281,6 +281,7 @@ def test_fill_with_invalid_dtype():
         ("u2", 1 << 16),
         ("i4", 1.5),
         ("u8", 1 << 64),
+        ("f4", 1e40),
     ],
 )
 def test_fill_value_out_of_range(dtype, value):
