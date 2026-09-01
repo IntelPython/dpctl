@@ -527,6 +527,29 @@ DPCTLQueue_Fill8(__dpctl_keep const DPCTLSyclQueueRef QRef,
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A uint8_t value to fill.
+ * @param    Count          A number of uint8_t elements to fill.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill8WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                           void *USMRef,
+                           uint8_t Value,
+                           size_t Count,
+                           __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                           size_t DepEventsCount);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
  * @param    Value          A uint16_t value to fill.
  * @param    Count          A number of uint16_t elements to fill.
  * @return   An opaque pointer to the ``sycl::event`` returned by the
@@ -539,6 +562,29 @@ DPCTLQueue_Fill16(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   void *USMRef,
                   uint16_t Value,
                   size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A uint16_t value to fill.
+ * @param    Count          A number of uint16_t elements to fill.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill16WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint16_t Value,
+                            size_t Count,
+                            __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount);
 
 /*!
  * @brief C-API wrapper for ``sycl::queue::fill``.
@@ -563,6 +609,29 @@ DPCTLQueue_Fill32(__dpctl_keep const DPCTLSyclQueueRef QRef,
  *
  * @param    QRef           An opaque pointer to the ``sycl::queue``.
  * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A uint32_t value to fill.
+ * @param    Count          A number of uint32_t elements to fill.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill32WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint32_t Value,
+                            size_t Count,
+                            __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
  * @param    Value          A uint64_t value to fill.
  * @param    Count          A number of uint64_t elements to fill.
  * @return   An opaque pointer to the ``sycl::event`` returned by the
@@ -575,6 +644,29 @@ DPCTLQueue_Fill64(__dpctl_keep const DPCTLSyclQueueRef QRef,
                   void *USMRef,
                   uint64_t Value,
                   size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A uint64_t value to fill.
+ * @param    Count          A number of uint64_t elements to fill.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill64WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                            void *USMRef,
+                            uint64_t Value,
+                            size_t Count,
+                            __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                            size_t DepEventsCount);
 
 /*!
  * @brief C-API wrapper for ``sycl::queue::fill``.
@@ -594,5 +686,29 @@ DPCTLQueue_Fill128(__dpctl_keep const DPCTLSyclQueueRef QRef,
                    void *USMRef,
                    uint64_t *Value,
                    size_t Count);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::fill``.
+ *
+ * @param    QRef           An opaque pointer to the ``sycl::queue``.
+ * @param    USMRef         An USM pointer to the memory to fill.
+ * @param    Value          A pointer to uint64_t array of 2 elements with value
+ * to fill.
+ * @param    Count          A number of 128-bit elements to fill.
+ * @param    DepEvents      A pointer to array of DPCTLSyclEventRef opaque
+ *                          pointers to dependent events.
+ * @param    DepEventsCount A number of dependent events.
+ * @return   An opaque pointer to the ``sycl::event`` returned by the
+ *           ``sycl::queue::fill`` function.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_Fill128WithEvents(__dpctl_keep const DPCTLSyclQueueRef QRef,
+                             void *USMRef,
+                             uint64_t *Value,
+                             size_t Count,
+                             __dpctl_keep const DPCTLSyclEventRef *DepEvents,
+                             size_t DepEventsCount);
 
 DPCTL_C_EXTERN_C_END
