@@ -405,6 +405,8 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.fill.html">dpctl.SyclQueue.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
@@ -816,6 +818,12 @@ The argument can be either “default”, “in_order”,
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html#dpctl.SyclQueue.copy_async" title="dpctl.SyclQueue.copy_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_async</span></code></a>(dest, src, count[, dEvents, dtype])</p></td>
 <td><p>Copy <code class="docutils literal notranslate"><span class="pre">count</span></code> elements of type <code class="docutils literal notranslate"><span class="pre">dtype</span></code> from <code class="docutils literal notranslate"><span class="pre">src</span></code> to <code class="docutils literal notranslate"><span class="pre">dest</span></code> asynchronously.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.fill.html#dpctl.SyclQueue.fill" title="dpctl.SyclQueue.fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill</span></code></a>(dest, value, count[, dtype])</p></td>
+<td><p>Fill <code class="docutils literal notranslate"><span class="pre">dest</span></code> with <code class="docutils literal notranslate"><span class="pre">count</span></code> copies of <code class="docutils literal notranslate"><span class="pre">value</span></code> and wait.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.fill_async.html#dpctl.SyclQueue.fill_async" title="dpctl.SyclQueue.fill_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_async</span></code></a>(dest, value, count[, dEvents, dtype])</p></td>
+<td><p>Fill <code class="docutils literal notranslate"><span class="pre">dest</span></code> with <code class="docutils literal notranslate"><span class="pre">count</span></code> copies of <code class="docutils literal notranslate"><span class="pre">value</span></code> asynchronously.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
 <td><p></p></td>
