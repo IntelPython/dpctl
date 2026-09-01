@@ -1,6 +1,0 @@
-dpctl.SyclQueue.get\_sycl\_device
-=================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.get_sycl_device
