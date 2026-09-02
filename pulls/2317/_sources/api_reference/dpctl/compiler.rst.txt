@@ -39,12 +39,12 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
 
     SyclKernelBundleCompilationError
 
-:py:mod:`dpctl.program.utils`
+:py:mod:`dpctl.compiler.utils`
 -----------------------------
 
-.. py:module:: dpctl.program.utils
+.. py:module:: dpctl.compiler.utils
 
-.. currentmodule:: dpctl.program.utils
+.. currentmodule:: dpctl.compiler.utils
 
 .. autofunction:: parse_spirv_specializations
 
