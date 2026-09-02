@@ -1,7 +1,7 @@
-﻿dpctl.program.SpecializationConstant
-====================================
+﻿dpctl.compiler.SpecializationConstant
+=====================================
 
-.. currentmodule:: dpctl.program
+.. currentmodule:: dpctl.compiler
 
 
 
