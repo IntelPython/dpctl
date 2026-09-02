@@ -27,4 +27,6 @@ from dpctl.compiler._compiler cimport (
     SyclKernelBundle,
     create_kernel_bundle_from_source,
     create_kernel_bundle_from_spirv,
+    create_kernel_bundle_from_sycl_source,
+    is_sycl_source_compilation_available,
 )
