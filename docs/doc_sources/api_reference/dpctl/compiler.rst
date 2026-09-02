@@ -40,7 +40,7 @@ execution via :py:meth:`dpctl.SyclQueue.submit`.
     SyclKernelBundleCompilationError
 
 :py:mod:`dpctl.compiler.utils`
------------------------------
+------------------------------
 
 .. py:module:: dpctl.compiler.utils
 
