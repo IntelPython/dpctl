@@ -75,3 +75,5 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q, unicode source,
                                             list headers=*,
                                             list registered_names=*,
                                             list copts=*)
+
+cpdef bint is_sycl_source_compilation_available()
