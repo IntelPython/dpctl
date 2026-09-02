@@ -168,22 +168,22 @@ def test_context_multi_device():
     assert type(repr(ctx)) is str
     q1 = dpctl.SyclQueue(ctx, d1)
     q2 = dpctl.SyclQueue(ctx, d2)
-    import dpctl.memory as dpmem
+    import dpctl.memory as dpm
 
-    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
-    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_1 = dpm.MemoryUSMShared(256, queue=q1)
+    shmem_2 = dpm.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
     # create context for single sub-device
     ctx1 = dpctl.SyclContext(d1)
     q1 = dpctl.SyclQueue(ctx1, d1)
-    shmem_1 = dpmem.MemoryUSMShared(256, queue=q1)
+    shmem_1 = dpm.MemoryUSMShared(256, queue=q1)
     cap = ctx1._get_capsule()
     cap2 = ctx1._get_capsule()
     del ctx1
     del cap2  # exercise deleter of non-renamed capsule
     ctx2 = dpctl.SyclContext(cap)
     q2 = dpctl.SyclQueue(ctx2, d1)
-    shmem_2 = dpmem.MemoryUSMDevice(256, queue=q2)
+    shmem_2 = dpm.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
 
 
