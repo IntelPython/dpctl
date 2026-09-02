@@ -1,0 +1,6 @@
+dpctl.SyclDevice.has\_aspect\_image
+===================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.has_aspect_image
