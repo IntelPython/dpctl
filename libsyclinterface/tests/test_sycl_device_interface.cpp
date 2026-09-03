@@ -610,7 +610,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetBackendVersion)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetLocalMemType)
 {
-    DPCTLLocalMemType lmt;
+    DPCTLLocalMemType lmt = DPCTL_LOCAL_MEM_TYPE_UNKNOWN;
     EXPECT_NO_FATAL_FAILURE(lmt = DPCTLDevice_GetLocalMemType(DRef));
     EXPECT_TRUE(lmt == DPCTL_LOCAL_MEM_TYPE_NONE ||
                 lmt == DPCTL_LOCAL_MEM_TYPE_LOCAL ||
@@ -619,7 +619,7 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetLocalMemType)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeProperty)
 {
-    DPCTLPartitionPropertyType ptp;
+    DPCTLPartitionPropertyType ptp = DPCTL_PARTITION_UNKNOWN;
     EXPECT_NO_FATAL_FAILURE(ptp = DPCTLDevice_GetPartitionTypeProperty(DRef));
     EXPECT_TRUE(
         ptp == DPCTL_PARTITION_UNKNOWN || ptp == DPCTL_PARTITION_NO_PARTITION ||
@@ -768,7 +768,8 @@ TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionAffinityDomains)
 
 TEST_P(TestDPCTLSyclDeviceInterface, ChkGetPartitionTypeAffinityDomain)
 {
-    DPCTLPartitionAffinityDomainType ptad;
+    DPCTLPartitionAffinityDomainType ptad =
+        DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN;
     EXPECT_NO_FATAL_FAILURE(
         ptad = DPCTLDevice_GetPartitionTypeAffinityDomain(DRef));
     EXPECT_TRUE(ptad == DPCTLPartitionAffinityDomainType::not_applicable ||
