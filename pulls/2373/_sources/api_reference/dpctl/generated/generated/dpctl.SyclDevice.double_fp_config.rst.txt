@@ -1,6 +1,0 @@
-dpctl.SyclDevice.double\_fp\_config
-===================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.double_fp_config

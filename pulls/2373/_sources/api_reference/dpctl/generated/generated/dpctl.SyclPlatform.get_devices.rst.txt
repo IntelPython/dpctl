@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.get\_devices
-===============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclPlatform.get_devices
