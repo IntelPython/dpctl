@@ -1,6 +1,0 @@
-dpctl.SyclTimer.\_\_init\_\_
-============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclTimer.__init__
