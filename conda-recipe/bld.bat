@@ -1,7 +1,3 @@
-REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
-set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
-set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
-
 "%PYTHON%" setup.py clean --all
 
 REM Overriding IPO is useful for building in resources constrained VMs (public CI)
@@ -9,7 +5,7 @@ if DEFINED OVERRIDE_INTEL_IPO (
   set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 )
 
-FOR %%V IN (17.0.0 17 18.0.0 18 19.0.0 19 20.0.0 20 21.0.0 21) DO @(
+FOR %%V IN (18.0.0 18 19.0.0 19 20.0.0 20 21.0.0 21 22.0.0 22) DO @(
   REM set DIR_HINT if directory exists
   IF EXIST "%BUILD_PREFIX%\Library\lib\clang\%%V\" (
      SET "SYCL_INCLUDE_DIR_HINT=%BUILD_PREFIX%\Library\lib\clang\%%V"
