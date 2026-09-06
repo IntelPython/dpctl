@@ -211,7 +211,7 @@ Overview
 	#define :target:`DPCTL_DECLARE_VECTOR_FN<doxid-d4/d64/dpctl__vector_8h_1acc5c1c7aff23c0d01882e6e82e0eea9d>`(EL)
 	#define :ref:`DPCTL_DECLARE_VECTOR_TYPE<doxid-d4/d64/dpctl__vector_8h_1a83a0669601a2adec6b227cc2276a1538>`(EL)
 	#define :target:`DPCTL_DPCPP_VERSION<doxid-d5/dc8/dpctl__config_8h_1a00ca2e61d36794f041736396d1e20124>`
-	#define :target:`DPCTL_ENABLE_L0_PROGRAM_CREATION<doxid-d5/dc8/dpctl__config_8h_1a182f8dae06ea22e2c65172f1fb1182ea>`
+	#define :target:`DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION<doxid-d5/dc8/dpctl__config_8h_1a609a19e1314f6f36eda7b216f860ef71>`
 	#define :target:`DPCTL_HAS_IPC_MEMORY<doxid-d5/dc8/dpctl__config_8h_1ae2f9c727eb0c7dd3404026fbb9cfc56d>`
 	#define :target:`DPCTL_LIBCL_LOADER_FILENAME<doxid-d5/dc8/dpctl__config_8h_1ac0275ec42e77c34f20506d43687a9748>`
 	#define :target:`DPCTL_LIBZE_LOADER_FILENAME<doxid-d5/dc8/dpctl__config_8h_1a034614d34ebcaa0b5e5dcdee4a0d2a4a>`
