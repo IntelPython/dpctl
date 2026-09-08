@@ -34,6 +34,10 @@ jobs:
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315t'
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -102,6 +106,10 @@ jobs:
             python_spec: '3.14.* *_cp314'
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315'
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315t'
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -160,10 +168,16 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
-            runner: ubuntu-22.04
+            runner: ubuntu-latest
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
-            runner: ubuntu-22.04
+            runner: ubuntu-latest
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315'
+            runner: ubuntu-latest
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315t'
+            runner: ubuntu-latest
         runner: [ubuntu-latest]
 
     steps:
@@ -273,6 +287,12 @@ jobs:
             runner: windows-latest
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
+            runner: windows-latest
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315'
+            runner: windows-latest
+          - python: '3.15'
+            python_spec: '3.15.* *_cp315t'
             runner: windows-latest
         runner: [windows-latest]
     env:
