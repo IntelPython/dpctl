@@ -20,9 +20,15 @@ The kernel is deliberately trivial and the global range is tiny, so what is
 measured is dpctl's submission path and the runtime round trip, not compute.
 """
 
+from asv_runner.benchmarks.mark import SkipNotImplemented
+
 import dpctl
-import dpctl.compiler as dpc
 import dpctl.memory as dpm
+
+try:
+    import dpctl.compiler as dpc
+except ImportError:
+    dpc = None
 
 from ._utils import _SELECTORS, queue_for, spirv_bytes
 
@@ -36,6 +42,8 @@ class Submit:
     param_names = ["selector"]
 
     def setup(self, selector):
+        if dpc is None:
+            raise SkipNotImplemented("dpctl.compiler is not available")
         self.queue = queue_for(selector)
         bundle = dpc.create_kernel_bundle_from_spirv(
             self.queue, spirv_bytes()

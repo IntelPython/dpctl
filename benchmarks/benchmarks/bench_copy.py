@@ -21,6 +21,7 @@ work queued for the next iteration to absorb.
 """
 
 import numpy as np
+from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpctl.memory as dpm
 
@@ -95,16 +96,24 @@ class Fill:
         self.dev.memset()
 
     def time_memset(self, selector, nbytes):
+        if not hasattr(self.queue, "memset"):
+            raise SkipNotImplemented("SyclQueue.memset not available")
         self.queue.memset(self.dev, 0, self.nbytes)
 
     def time_memory_memset(self, selector, nbytes):
         self.dev.memset()
 
     def time_fill_u1(self, selector, nbytes):
+        if not hasattr(self.queue, "fill"):
+            raise SkipNotImplemented("SyclQueue.fill not available")
         self.queue.fill(self.dev, 0, self.nbytes, "u1")
 
     def time_fill_f4(self, selector, nbytes):
+        if not hasattr(self.queue, "fill"):
+            raise SkipNotImplemented("SyclQueue.fill not available")
         self.queue.fill(self.dev, 0.0, self.nbytes // 4, "f4")
 
     def time_memset_async_wait(self, selector, nbytes):
+        if not hasattr(self.queue, "memset_async"):
+            raise SkipNotImplemented("SyclQueue.memset_async not available")
         self.queue.memset_async(self.dev, 0, self.nbytes).wait()

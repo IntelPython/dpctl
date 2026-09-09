@@ -27,10 +27,11 @@ import os
 from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpctl
-import dpctl.compiler as dpc
 
-# Device axis. Filter-selector strings accepted by SyclQueue/SyclDevice.
-_SELECTORS = ["cpu", "gpu"]
+# Device axis. Fully-qualified filter-selector strings, so a node exposing
+# a device through more than one backend still resolves each benchmark to a
+# fixed, unambiguous device.
+_SELECTORS = ["opencl:cpu", "level_zero:gpu"]
 
 # Allocation and transfer size sweep, in bytes: 4 KiB, 1 MiB, 16 MiB, 256 MiB.
 _SIZES = [4 * 1024, 1024**2, 16 * 1024**2, 256 * 1024**2]
@@ -102,6 +103,10 @@ def opencl_queue_or_skip():
 
 def sycl_source_queue_or_skip(selector):
     """Return a queue whose device can compile SYCL source, or skip."""
+    try:
+        import dpctl.compiler as dpc
+    except ImportError:
+        raise SkipNotImplemented("dpctl.compiler is not available")
     q = queue_for(selector)
     if not dpc.is_sycl_source_compilation_available():
         raise SkipNotImplemented("SYCL source compilation extension absent")

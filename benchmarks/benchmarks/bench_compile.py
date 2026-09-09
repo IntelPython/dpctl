@@ -24,7 +24,12 @@ re-submits identical source to measure the cache-hit path instead.
 
 import itertools
 
-import dpctl.compiler as dpc
+from asv_runner.benchmarks.mark import SkipNotImplemented
+
+try:
+    import dpctl.compiler as dpc
+except ImportError:
+    dpc = None
 
 from ._utils import (
     _SELECTORS,
@@ -44,6 +49,8 @@ class BundleFromSPIRV:
     param_names = ["selector"]
 
     def setup(self, selector):
+        if dpc is None:
+            raise SkipNotImplemented("dpctl.compiler is not available")
         self.queue = queue_for(selector)
         self.spirv = spirv_bytes()
         self.bundle = dpc.create_kernel_bundle_from_spirv(
@@ -69,6 +76,8 @@ class BundleFromOpenCLSource:
     warmup_time = 0
 
     def setup(self):
+        if dpc is None:
+            raise SkipNotImplemented("dpctl.compiler is not available")
         self.queue = opencl_queue_or_skip()
         self.counter = itertools.count()
         self.warm_source = ocl_axpy_source()
@@ -98,6 +107,8 @@ class BundleFromSYCLSource:
     warmup_time = 0
 
     def setup(self, selector):
+        if dpc is None:
+            raise SkipNotImplemented("dpctl.compiler is not available")
         self.queue = sycl_source_queue_or_skip(selector)
         self.counter = itertools.count()
         self.warm_source = sycl_axpy_source()
@@ -124,9 +135,10 @@ class SourceCompilationProbe:
 
     def setup(self, selector):
         self.device = queue_for(selector).sycl_device
-        dpc.is_sycl_source_compilation_available()
 
     def time_is_sycl_source_compilation_available(self, selector):
+        if dpc is None:
+            raise SkipNotImplemented("dpctl.compiler is not available")
         dpc.is_sycl_source_compilation_available()
 
     def time_can_compile(self, selector):
