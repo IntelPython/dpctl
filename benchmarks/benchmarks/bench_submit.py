@@ -72,9 +72,6 @@ class Submit:
             ev = q.submit_async(self.kernel, self.args, self.range)
         ev.wait()
 
-    def time_submit_with_local_range(self, selector):
-        self.queue.submit(self.kernel, self.args, [1], [1])
-
 
 class Synchronize:
     """Barrier, queue wait, and event handling costs on an idle queue."""

@@ -136,10 +136,5 @@ class SourceCompilationProbe:
     def setup(self, selector):
         self.device = queue_for(selector).sycl_device
 
-    def time_is_sycl_source_compilation_available(self, selector):
-        if dpc is None:
-            raise SkipNotImplemented("dpctl.compiler is not available")
-        dpc.is_sycl_source_compilation_available()
-
     def time_can_compile(self, selector):
         self.device.can_compile("sycl")

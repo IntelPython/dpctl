@@ -56,13 +56,10 @@ class Construct:
 
 
 class ConstructPlatform:
-    """Construction and enumeration cost of SyclPlatform."""
+    """Construction cost of SyclPlatform."""
 
     def time_sycl_platform_default(self):
         dpctl.SyclPlatform()
-
-    def time_get_platforms(self):
-        dpctl.get_platforms()
 
 
 class DeviceProperties:
@@ -90,9 +87,6 @@ class DeviceProperties:
         d.global_mem_size
         d.has_aspect_fp64
 
-    def time_device_filter_string(self, selector):
-        self.device.filter_string
-
 
 class QueueAccessors:
     """Accessor cost on an existing queue."""
@@ -106,14 +100,5 @@ class QueueAccessors:
     def time_sycl_device_attr(self, selector):
         self.queue.sycl_device
 
-    def time_get_sycl_device(self, selector):
-        self.queue.get_sycl_device()
-
     def time_sycl_context_attr(self, selector):
         self.queue.sycl_context
-
-    def time_queue_hash(self, selector):
-        hash(self.queue)
-
-    def time_queue_eq(self, selector):
-        self.queue == self.queue

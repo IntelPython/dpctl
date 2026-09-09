@@ -86,11 +86,5 @@ class USMQueries:
     def time_get_usm_type(self, selector, usm_type):
         self.mem.get_usm_type()
 
-    def time_get_usm_type_enum(self, selector, usm_type):
-        self.mem.get_usm_type_enum()
-
     def time_sycl_usm_array_interface(self, selector, usm_type):
         self.mem.__sycl_usm_array_interface__
-
-    def time_sycl_queue_attr(self, selector, usm_type):
-        self.mem.sycl_queue
