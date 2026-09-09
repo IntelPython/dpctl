@@ -61,6 +61,7 @@ readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
+benchmark = ["asv>=0.6", "numpy"]
 coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli"]
 docs = [
   "Cython>=3.1.0",
