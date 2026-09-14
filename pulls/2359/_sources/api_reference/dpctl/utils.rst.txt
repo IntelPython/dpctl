@@ -21,7 +21,17 @@
     referenced by a task alive until it completes, use
     :func:`dpctl.keep_args_alive`.
 
+    Record events that gate the release of objects used by a task with
+    ``add_cleanup_event``, and find them in ``cleanup_events``. They are
+    waited on, but never become dependencies of later tasks.
+
+    Waiting with ``wait`` also drops the references that
+    :func:`dpctl.keep_args_alive` took for tasks that have since completed,
+    which is otherwise done the next time ``dpctl`` is called into.
+
     .. deprecated:: 0.23.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``
-        are deprecated. Tasks are no longer paired with a host task event,
-        so ``add_event`` takes the computational event alone.
+        are deprecated. Tasks are no longer paired with a host task event, so
+        ``add_event`` takes the computational event alone, and cleanup is
+        tracked by ``add_cleanup_event``, ``cleanup_events`` and
+        ``num_cleanup_events``.

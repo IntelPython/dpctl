@@ -719,10 +719,10 @@ may be freed mid-operation, causing a use-after-free.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mem</strong> – Destination USM allocation, an instance of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>.</p></li>
-<li><p><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Value to fill <code class="docutils literal notranslate"><span class="pre">mem</span></code> with. Following <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>,
+<li><p><strong>val</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Value to fill <code class="docutils literal notranslate"><span class="pre">mem</span></code> with. Following <code class="docutils literal notranslate"><span class="pre">sycl::queue::memset</span></code>,
 it is interpreted as an <code class="docutils literal notranslate"><span class="pre">unsigned</span> <span class="pre">char</span></code>, i.e. only the least
 significant byte is used.</p></li>
-<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bytes to fill. If <code class="docutils literal notranslate"><span class="pre">0</span></code> or greater than the size of
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bytes to fill. If <code class="docutils literal notranslate"><span class="pre">0</span></code> or greater than the size of
 <code class="docutils literal notranslate"><span class="pre">mem</span></code>, the whole allocation is filled. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – Events that this operation depends on.</p></li>
 </ul>
@@ -735,11 +735,11 @@ significant byte is used.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">mem</span></code> is not an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>,
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">mem</span></code> is not an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code>,
     or <code class="docutils literal notranslate"><span class="pre">dEvents</span></code> is not a sequence of <a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OverflowError" title="(in Python v3.14)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">val</span></code> does not fit in a C <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">count</span></code> is
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#OverflowError" title="(in Python v3.14)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">val</span></code> does not fit in a C <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">count</span></code> is
     negative.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the memset operation encountered an error.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the memset operation encountered an error.</p></li>
 </ul>
 </dd>
 </dl>

@@ -708,10 +708,10 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handle_bytes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.14)"><em>bytes</em></a>) – Opaque payload from <a class="reference internal" href="dpctl.memory.IPCMemoryHandle.to_bytes.html#dpctl.memory.IPCMemoryHandle.to_bytes" title="dpctl.memory.IPCMemoryHandle.to_bytes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_bytes()</span></code></a> (possibly from another
+<li><p><strong>handle_bytes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.14)"><em>bytes</em></a>) – Opaque payload from <a class="reference internal" href="dpctl.memory.IPCMemoryHandle.to_bytes.html#dpctl.memory.IPCMemoryHandle.to_bytes" title="dpctl.memory.IPCMemoryHandle.to_bytes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_bytes()</span></code></a> (possibly from another
 process).</p></li>
 <li><p><strong>device</strong> (<a class="reference internal" href="../dpctl.SyclDevice.html#dpctl.SyclDevice" title="dpctl.SyclDevice"><em>dpctl.SyclDevice</em></a>) – Device to map the memory on.</p></li>
-<li><p><strong>nbytes</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Byte size of the original allocation. Must be &gt; 0.</p></li>
+<li><p><strong>nbytes</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Byte size of the original allocation. Must be &gt; 0.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -723,9 +723,9 @@ Call <a class="reference internal" href="dpctl.memory.IPCMemoryHandle.close_mapp
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the device does not support IPC memory or the handle
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the device does not support IPC memory or the handle
     cannot be opened.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>nbytes</em> &lt;= 0.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>nbytes</em> &lt;= 0.</p></li>
 </ul>
 </dd>
 </dl>

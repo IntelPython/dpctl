@@ -714,16 +714,16 @@ SYCL source code.</p>
 <li><p><strong>q</strong> (<a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>) – The <a class="reference internal" href="dpctl.SyclQueue.html#dpctl.SyclQueue" title="dpctl.SyclQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a> for which the
 <a class="reference internal" href="dpctl.compiler.SyclKernelBundle.html#dpctl.compiler.SyclKernelBundle" title="dpctl.compiler.SyclKernelBundle"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyclKernelBundle</span></code></a> is going to be built.</p></li>
 <li><p><strong>source</strong> (<em>unicode</em>) – SYCL source code string.</p></li>
-<li><p><strong>headers</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of virtual headers, where each entry in the list
+<li><p><strong>headers</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of virtual headers, where each entry in the list
 needs to be a tuple of header name and header content. See the
 documentation of the <code class="docutils literal notranslate"><span class="pre">include_files</span></code> property in the DPC++
 <code class="docutils literal notranslate"><span class="pre">kernel_compiler</span></code> extension for more information.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>registered_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of kernel names to register. See the
+<li><p><strong>registered_names</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of kernel names to register. See the
 documentation of the <code class="docutils literal notranslate"><span class="pre">registered_names</span></code> property in the DPC++
 <code class="docutils literal notranslate"><span class="pre">kernel_compiler</span></code> extension for more information.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of compilation flags that will be used
+<li><p><strong>copts</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>, </em><em>optional</em>) – Optional list of compilation flags that will be used
 when compiling the program.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>

@@ -769,7 +769,7 @@ see <a class="reference internal" href="#building-from-source">Building from sou
 <section id="installation-via-intel-r-distribution-for-python">
 <h2>Installation via Intel(R) Distribution for Python<a class="headerlink" href="#installation-via-intel-r-distribution-for-python" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html">Intel(R) Distribution for Python*</a> is distributed as a conda-based installer
-and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.21.0dev7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
+and includes <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> along with its dependencies and sister projects <a class="reference external" href="https://intelpython.github.io/dpnp/overview.html#module-dpnp" title="(in Data Parallel Extension for NumPy v0.21.0dev8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpnp</span></code></a>
 and <a class="reference external" href="https://intelpython.github.io/numba-dpex/latest/index.html#module-numba_dpex" title="(in numba-dpex)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numba_dpex</span></code></a>.</p>
 <p>Once the installed environment is activated, <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> should be ready to use.</p>
 </section>
@@ -899,20 +899,6 @@ devices at the same time:</p>
 </div>
 </section>
 </section>
-<section id="configuring-the-object-management-thread-pool">
-<h3>Configuring the object management thread pool<a class="headerlink" href="#configuring-the-object-management-thread-pool" title="Permalink to this heading">¶</a></h3>
-<p>To keep Python objects used by an offloaded task alive until tasks complete,
-<a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> maintains a pool of threads that wait on the task’s events.
-The pool uses four threads by default. The size is fixed when <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> is
-compiled and can be changed with the <code class="docutils literal notranslate"><span class="pre">--keep-alive-pool-size</span></code> argument:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--keep-alive-pool-size<span class="o">=</span><span class="m">8</span>
-</pre></div>
-</div>
-<p>Alternatively, you use the <code class="docutils literal notranslate"><span class="pre">DPCTL_KEEP_ALIVE_POOL_SIZE</span></code> CMake option:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--verbose<span class="w"> </span>--cmake-opts<span class="o">=</span><span class="s2">"-DDPCTL_KEEP_ALIVE_POOL_SIZE=8"</span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="running-examples-and-tests">
 <h2>Running Examples and Tests<a class="headerlink" href="#running-examples-and-tests" title="Permalink to this heading">¶</a></h2>
@@ -1011,7 +997,6 @@ each example Python project and how to execute its test suite.</p>
 <li><a class="reference internal" href="#multi-target-build">Multi-target build</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configuring-the-object-management-thread-pool">Configuring the object management thread pool</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#running-examples-and-tests">Running Examples and Tests</a><ul>
