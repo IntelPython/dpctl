@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Maintenance
 * Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
+* Added a weekly `Coverity Scan` workflow that builds `dpctl` with the DPC++ compiler under `cov-build` and submits the results to Coverity Scan
 
 ## [0.22.1] - Apr. 24, 2026
 
