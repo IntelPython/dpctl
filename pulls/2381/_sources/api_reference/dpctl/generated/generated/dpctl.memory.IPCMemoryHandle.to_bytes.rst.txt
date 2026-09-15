@@ -1,0 +1,6 @@
+dpctl.memory.IPCMemoryHandle.to\_bytes
+======================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: IPCMemoryHandle.to_bytes

@@ -1,0 +1,6 @@
+dpctl.SyclDevice.global\_mem\_size
+==================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.global_mem_size
