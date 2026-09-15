@@ -1,0 +1,6 @@
+dpctl.SyclQueue.copy\_async
+===========================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.copy_async
