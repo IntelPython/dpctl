@@ -1,0 +1,10 @@
+﻿dpctl.tensor.atanh
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: atanh
+    :no-value:
+
+

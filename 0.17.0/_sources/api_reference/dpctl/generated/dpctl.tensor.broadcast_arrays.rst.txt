@@ -1,0 +1,6 @@
+﻿dpctl.tensor.broadcast\_arrays
+==============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: broadcast_arrays
