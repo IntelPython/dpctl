@@ -209,8 +209,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" selected>
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -219,6 +227,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -573,32 +613,32 @@
 <span class="c1">#</span>
 <span class="c1"># Copyright 2020-2025 Intel Corporation</span>
 <span class="c1">#</span>
-<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
 <span class="c1"># you may not use this file except in compliance with the License.</span>
 <span class="c1"># You may obtain a copy of the License at</span>
 <span class="c1">#</span>
 <span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
 <span class="c1">#</span>
 <span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
-<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
 <span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
 <span class="c1"># See the License for the specific language governing permissions and</span>
 <span class="c1"># limitations under the License.</span>
 
-<span class="sd">&quot;&quot;&quot;Defines Python enumeration types for SYCL enumerations.</span>
+<span class="sd">"""Defines Python enumeration types for SYCL enumerations.</span>
 
-<span class="sd">This module provides two enumeration types corresponding to SYCL&#39;s</span>
+<span class="sd">This module provides two enumeration types corresponding to SYCL's</span>
 <span class="sd">backend and device_type enumerations.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;device_type&quot;</span><span class="p">,</span> <span class="s2">&quot;backend_type&quot;</span><span class="p">,</span> <span class="s2">&quot;event_status_type&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"device_type"</span><span class="p">,</span> <span class="s2">"backend_type"</span><span class="p">,</span> <span class="s2">"event_status_type"</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="device_type"><a class="viewcode-back" href="../../api_reference/dpctl/constants.html#dpctl.device_type">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">device_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An :class:`enum.Enum` of supported SYCL device types.</span>
 
 <span class="sd">        |  ``all``</span>
@@ -621,7 +661,7 @@
 
 <span class="sd">            # alternatively, get GPU devices directly</span>
 <span class="sd">            gpu_devs2 = dpctl.get_devices(device_type=dpctl.device_type.gpu)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nb">all</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">accelerator</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -632,7 +672,7 @@
 
 
 <div class="viewcode-block" id="backend_type"><a class="viewcode-back" href="../../api_reference/dpctl/constants.html#dpctl.backend_type">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">backend_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An :class:`enum.Enum` of supported SYCL backends.</span>
 
 <span class="sd">        |  ``all``</span>
@@ -647,10 +687,10 @@
 <span class="sd">            import dpctl</span>
 
 <span class="sd">            # create a SYCL device with OpenCL backend using filter selector</span>
-<span class="sd">            d = dpctl.SyclDevice(&quot;opencl&quot;)</span>
+<span class="sd">            d = dpctl.SyclDevice("opencl")</span>
 <span class="sd">            d.backend</span>
 <span class="sd">            # Possible output: &lt;backend_type.opencl: 5&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nb">all</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">cuda</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -660,7 +700,7 @@
 
 
 <div class="viewcode-block" id="event_status_type"><a class="viewcode-back" href="../../api_reference/dpctl/constants.html#dpctl.event_status_type">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">event_status_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An :class:`enum.Enum` of SYCL event states.</span>
 
 <span class="sd">        |  ``unknown_status``</span>
@@ -675,7 +715,7 @@
 <span class="sd">            ev = dpctl.SyclEvent()</span>
 <span class="sd">            ev.execution_status</span>
 <span class="sd">            # Possible output: &lt;event_status_type.complete: 4&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">unknown_status</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">submitted</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -684,7 +724,7 @@
 
 
 <div class="viewcode-block" id="global_mem_cache_type"><a class="viewcode-back" href="../../api_reference/dpctl/constants.html#dpctl.global_mem_cache_type">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">global_mem_cache_type</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An :class:`enum.Enum` of global memory cache types for a device.</span>
 
 <span class="sd">        |  ``indeterminate``</span>
@@ -699,7 +739,7 @@
 <span class="sd">            dev = dpctl.SyclDevice()</span>
 <span class="sd">            dev.global_mem_cache_type</span>
 <span class="sd">            # Possible output: &lt;global_mem_cache_type.read_write: 4&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">indeterminate</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">none</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>

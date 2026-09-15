@@ -210,8 +210,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" selected>
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -220,6 +228,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -579,7 +619,7 @@
 <span id="dpctl-utils"></span><span id="dpctl-utils-pyapi"></span><h1><a class="reference internal" href="#module-dpctl.utils" title="dpctl.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a><a class="headerlink" href="#module-dpctl.utils" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpctl.utils.onetrace_enabled">
-<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpctl.utils.</span></span><span class="sig-name descname"><span class="pre">onetrace_enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpctl/utils/_onetrace_context.html#onetrace_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpctl.utils.onetrace_enabled" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable <code class="docutils literal notranslate"><span class="pre">onetrace</span></code> collection for kernels executed in this context.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -603,7 +643,7 @@ data collection and its output for every offloaded kernel:</p>
 <span class="n">x_dev</span> <span class="o">=</span> <span class="n">dpmem</span><span class="o">.</span><span class="n">MemoryUSMDevice</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
 <span class="c1"># onetrace output reporting on execution of the kernel</span>
-<span class="c1"># should be seen, starting with &quot;Device Timeline&quot;</span>
+<span class="c1"># should be seen, starting with "Device Timeline"</span>
 <span class="k">with</span> <span class="n">onetrace_enabled</span><span class="p">():</span>
     <span class="n">eg</span><span class="o">.</span><span class="n">run_kernel</span><span class="p">(</span><span class="n">x_dev</span><span class="p">)</span>
 </pre></div>

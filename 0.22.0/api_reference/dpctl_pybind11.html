@@ -210,8 +210,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" selected>
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -220,6 +228,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -585,14 +625,14 @@
 <span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span> <span class="cpf">&lt;pybind11/pybind11.h&gt;</span>
 <span class="cp">#include</span> <span class="cpf">&lt;pybind11/stl.h&gt;</span>
-<span class="cp">#include</span> <span class="cpf">&quot;dpctl4pybind11.hpp&quot;</span>
+<span class="cp">#include</span> <span class="cpf">"dpctl4pybind11.hpp"</span>
 
 <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">get_device_name</span><span class="p">(</span><span class="k">const</span> <span class="n">sycl</span><span class="o">::</span><span class="n">device</span> <span class="o">&amp;</span><span class="n">dev</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="n">dev</span><span class="p">.</span><span class="n">get_info</span><span class="o">&lt;</span><span class="n">sycl</span><span class="o">::</span><span class="n">info</span><span class="o">::</span><span class="n">device</span><span class="o">::</span><span class="n">name</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="p">}</span>
 
 <span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">_example</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;get_device_name&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
+    <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">"get_device_name"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">get_device_name</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>

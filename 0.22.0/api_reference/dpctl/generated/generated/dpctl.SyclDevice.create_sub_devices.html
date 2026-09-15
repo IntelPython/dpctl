@@ -210,8 +210,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" selected>
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -220,6 +228,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -589,7 +629,7 @@ string specifying the affinity domain, or a collection of integers.</p>
 <dt class="field-odd">Example<span class="colon">:</span></dt>
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
-<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="n">cpu_d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">)</span>
 <span class="n">cpu_count</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">max_compute_units</span>
 <span class="n">sub_devs</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="n">cpu_count</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sub_devs</span><span class="p">:</span>
@@ -597,20 +637,20 @@ string specifying the affinity domain, or a collection of integers.</p>
 
 <span class="c1"># Create sub-devices partitioning by affinity.</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">sd</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="s2">&quot;numa&quot;</span><span class="p">)</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="n">cpu_d</span><span class="o">.</span><span class="n">create_sub_devices</span><span class="p">(</span><span class="n">partition</span><span class="o">=</span><span class="s2">"numa"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2"> sub-devices were created with respective &quot;</span>
-        <span class="s2">&quot;#EUs being </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s2">"</span><span class="si">{0}</span><span class="s2"> sub-devices were created with respective "</span>
+        <span class="s2">"#EUs being </span><span class="si">{1}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">sd</span><span class="p">),</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">max_compute_units</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">sd</span><span class="p">]</span>
         <span class="p">)</span>
     <span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Device partitioning by affinity was not successful.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Device partitioning by affinity was not successful."</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>partition</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>]</em>) – <p>Specification to partition the device as follows:</p>
+<dd class="field-even"><p><strong>partition</strong> (<em>Union</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>]</em><em>]</em>) – <p>Specification to partition the device as follows:</p>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Specifying an int (<code class="docutils literal notranslate"><span class="pre">count</span></code>)</dt><dd><p>The returned list contains as
@@ -646,7 +686,7 @@ sub-device with <code class="docutils literal notranslate"><span class="pre">M</
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">partition</span></code> keyword argument is not specified or
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">partition</span></code> keyword argument is not specified or
     the affinity domain string is not legal or is not one of the
     three supported options.</p></li>
 <li><p><a class="reference internal" href="../dpctl.SyclSubDeviceCreationError.html#dpctl.SyclSubDeviceCreationError" title="dpctl.SyclSubDeviceCreationError"><strong>dpctl.SyclSubDeviceCreationError</strong></a> – If sub-devices can not be created.</p></li>

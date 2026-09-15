@@ -210,8 +210,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" selected>
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -220,6 +228,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -586,9 +626,9 @@ of the given keyword arguments.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include_backend</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – A flag indicating if the backend should be included in
+<li><p><strong>include_backend</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – A flag indicating if the backend should be included in
 the filter string. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>include_device_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – A flag indicating if the device type should be included
+<li><p><strong>include_device_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>, </em><em>optional</em>) – A flag indicating if the device type should be included
 in the filter string. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
 </dd>
@@ -596,10 +636,10 @@ in the filter string. Default: <code class="docutils literal notranslate"><span 
 <dd class="field-even"><p>A Python string representing a filter selector string.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the device is a sub-device.
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the device is a sub-device.
     
     If no match for the device was found in the vector
     returned by <code class="docutils literal notranslate"><span class="pre">sycl::device::get_devices()</span></code></p>
@@ -608,8 +648,8 @@ in the filter string. Default: <code class="docutils literal notranslate"><span 
 <dd class="field-odd"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 
 <span class="c1"># Create a GPU SyclDevice</span>
-<span class="n">gpu_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">&quot;gpu:0&quot;</span><span class="p">)</span>
-<span class="c1"># filter string should be &quot;gpu:0&quot;</span>
+<span class="n">gpu_dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="s2">"gpu:0"</span><span class="p">)</span>
+<span class="c1"># filter string should be "gpu:0"</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="n">gpu_dev</span><span class="o">.</span><span class="n">get_filter_string</span><span class="p">(</span><span class="n">use_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">dev</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclDevice</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">gpu</span> <span class="n">_dev</span> <span class="o">==</span> <span class="n">dev</span>
