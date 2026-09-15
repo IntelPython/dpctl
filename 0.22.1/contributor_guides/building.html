@@ -210,8 +210,16 @@
   <strong>Docs Version</strong>
   <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
     
-    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" >
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" selected>
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" >
+      0.22.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
@@ -220,6 +228,38 @@
     
     <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
       0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
     </option>
     
   </select>
@@ -617,7 +657,7 @@ to remove it.</p>
 </pre></div>
 </div>
 <p>On Windows OS</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">call</span> <span class="s2">&quot;</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\setvars.bat&quot;</span>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">call</span> <span class="s2">"</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\setvars.bat"</span>
 </pre></div>
 </div>
 </section>
@@ -632,8 +672,8 @@ conda<span class="w"> </span>build<span class="w"> </span>conda-recipe<span clas
 </div>
 <p>On Windows OS to cope with <a class="reference external" href="https://github.com/IntelPython/dpctl/issues/15">long file names</a>,
 use <code class="docutils literal notranslate"><span class="pre">croot</span></code> with a short folder path:</p>
-<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="s2">&quot;ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\&quot;</span>
-conda build --croot=C:/tmp conda-recipe -c <span class="s2">&quot;</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\conda_channel&quot;</span>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span><span class="k">set</span> <span class="s2">"ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"</span>
+conda build --croot=C:/tmp conda-recipe -c <span class="s2">"</span><span class="nv">%ONEAPI_ROOT%</span><span class="s2">\conda_channel"</span>
 </pre></div>
 </div>
 <p>After building the Conda package, install it by executing:</p>
