@@ -75,7 +75,7 @@ jobs:
 
           if [[ "${NEEDS_CONFIG}" == "true" ]]; then
             git fetch origin master
-            git checkout origin/master -- docs/doc_sources/conf.py.in docs/doc_sources/_temples/versions.html docs/doc_versions.txt
+            git checkout origin/master -- docs/doc_sources/conf.py.in docs/doc_sources/_templates/versions.html docs/doc_versions.txt
           else
             echo "Version does not require docs config injection."
           fi
