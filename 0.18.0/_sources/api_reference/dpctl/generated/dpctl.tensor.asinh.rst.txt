@@ -1,0 +1,10 @@
+﻿dpctl.tensor.asinh
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: asinh
+    :no-value:
+
+

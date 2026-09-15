@@ -1,0 +1,6 @@
+﻿dpctl.tensor.concat
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: concat

@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.sycl\_device
+======================================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.sycl_device
