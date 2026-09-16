@@ -1,0 +1,10 @@
+﻿dpctl.tensor.isnan
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: isnan
+    :no-value:
+
+

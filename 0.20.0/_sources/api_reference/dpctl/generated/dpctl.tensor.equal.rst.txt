@@ -1,0 +1,10 @@
+﻿dpctl.tensor.equal
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: equal
+    :no-value:
+
+
