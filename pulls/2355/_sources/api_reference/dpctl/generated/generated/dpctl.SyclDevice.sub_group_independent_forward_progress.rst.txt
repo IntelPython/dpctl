@@ -1,6 +1,0 @@
-dpctl.SyclDevice.sub\_group\_independent\_forward\_progress
-===========================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.sub_group_independent_forward_progress

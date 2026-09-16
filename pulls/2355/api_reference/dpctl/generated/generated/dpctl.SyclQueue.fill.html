@@ -12,11 +12,11 @@
         gtag('js', new Date());
         gtag('config', 'G-7TCKS5BHYE');
     </script>
-    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclDevice.sub_group_sizes" href="dpctl.SyclDevice.sub_group_sizes.html"><link rel="prev" title="dpctl.SyclDevice.single_fp_config" href="dpctl.SyclDevice.single_fp_config.html">
+    <link rel="index" title="Index" href="../../../../genindex.html"><link rel="search" title="Search" href="../../../../search.html"><link rel="next" title="dpctl.SyclQueue.fill_async" href="dpctl.SyclQueue.fill_async.html"><link rel="prev" title="dpctl.SyclQueue.copy_async" href="dpctl.SyclQueue.copy_async.html">
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
-        <title>dpctl.SyclDevice.sub_group_independent_forward_progress - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
+        <title>dpctl.SyclQueue.fill - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -280,9 +280,10 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of dpctl" checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
@@ -382,7 +383,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.preferred_vector_width_short.html">dpctl.SyclDevice.preferred_vector_width_short</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.profiling_timer_resolution.html">dpctl.SyclDevice.profiling_timer_resolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.single_fp_config.html">dpctl.SyclDevice.single_fp_config</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclDevice.sub_group_independent_forward_progress</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sub_group_sizes.html">dpctl.SyclDevice.sub_group_sizes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.sycl_platform.html">dpctl.SyclDevice.sycl_platform</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclDevice.vendor.html">dpctl.SyclDevice.vendor</a></li>
@@ -393,18 +393,27 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclContext.html">dpctl.SyclContext</a><input aria-label="Toggle navigation of dpctl.SyclContext" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.addressof_ref.html">dpctl.SyclContext.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.get_devices.html">dpctl.SyclContext.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_fence_order_capabilities.html">dpctl.SyclContext.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_fence_scope_capabilities.html">dpctl.SyclContext.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_memory_order_capabilities.html">dpctl.SyclContext.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.atomic_memory_scope_capabilities.html">dpctl.SyclContext.atomic_memory_scope_capabilities</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.device_count.html">dpctl.SyclContext.device_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dpctl.SyclQueue.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memset.html">dpctl.SyclQueue.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memset_async.html">dpctl.SyclQueue.memset_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.prefetch.html">dpctl.SyclQueue.prefetch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.print_device_info.html">dpctl.SyclQueue.print_device_info</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.submit.html">dpctl.SyclQueue.submit</a></li>
@@ -555,46 +564,54 @@
 <li class="toctree-l3"><a class="reference internal" href="../../sycl_usm_array_interface.html"><code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> attribute</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code></a><input aria-label="Toggle navigation of dpctl.program" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_kernel_bundle_from_source.html">dpctl.program.create_kernel_bundle_from_source</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_kernel_bundle_from_spirv.html">dpctl.program.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../compiler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.compiler</span></code></a><input aria-label="Toggle navigation of dpctl.compiler" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.create_kernel_bundle_from_source.html">dpctl.compiler.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.create_kernel_bundle_from_spirv.html">dpctl.compiler.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.create_kernel_bundle_from_sycl_source.html">dpctl.compiler.create_kernel_bundle_from_sycl_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.is_sycl_source_compilation_available.html">dpctl.compiler.is_sycl_source_compilation_available</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.SyclKernelBundle.html">dpctl.compiler.SyclKernelBundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.SyclKernel.html">dpctl.compiler.SyclKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.SpecializationConstant.html">dpctl.compiler.SpecializationConstant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.compiler.SyclKernelBundleCompilationError.html">dpctl.compiler.SyclKernelBundleCompilationError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code> (deprecated)</a><input aria-label="Toggle navigation of dpctl.program (deprecated)" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclKernelBundle.html">dpctl.program.SyclKernelBundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SpecializationConstant.html">dpctl.program.SpecializationConstant</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclKernelBundleCompilationError.html">dpctl.program.SyclKernelBundleCompilationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../libsyclinterface/index.html">C Library SyclInterface</a><input aria-label="Toggle navigation of C Library SyclInterface" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/index.html">libsyclinterface</a><input aria-label="Toggle navigation of libsyclinterface" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_DeviceManager.html">Device class helper functions</a><input aria-label="Toggle navigation of Device class helper functions" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../libsyclinterface/index.html">C Library SyclInterface</a><input aria-label="Toggle navigation of C Library SyclInterface" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/index.html">libsyclinterface</a><input aria-label="Toggle navigation of libsyclinterface" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_DeviceManager.html">Device class helper functions</a><input aria-label="Toggle navigation of Device class helper functions" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_PlatformManager.html">Platform class helper functions</a><input aria-label="Toggle navigation of Platform class helper functions" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/group_PlatformManager.html">Platform class helper functions</a><input aria-label="Toggle navigation of Platform class helper functions" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../libsyclinterface/generated/page_todo.html">Todo List</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/global.html">Global Namespace</a><input aria-label="Toggle navigation of Global Namespace" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl.html">namespace dpctl</a><input aria-label="Toggle navigation of namespace dpctl" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a><input aria-label="Toggle navigation of namespace dpctl::syclinterface" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_accelerator_selector.html">class dpctl::syclinterface::dpctl_accelerator_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_accelerator_selector" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/global.html">Global Namespace</a><input aria-label="Toggle navigation of Global Namespace" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl.html">namespace dpctl</a><input aria-label="Toggle navigation of namespace dpctl" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a><input aria-label="Toggle navigation of namespace dpctl::syclinterface" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_accelerator_selector.html">class dpctl::syclinterface::dpctl_accelerator_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_accelerator_selector" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_cpu_selector.html">class dpctl::syclinterface::dpctl_cpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_cpu_selector" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_cpu_selector.html">class dpctl::syclinterface::dpctl_cpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_cpu_selector" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_default_selector.html">class dpctl::syclinterface::dpctl_default_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_default_selector" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_default_selector.html">class dpctl::syclinterface::dpctl_default_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_default_selector" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_device_selector.html">class dpctl::syclinterface::dpctl_device_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_device_selector" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_device_selector.html">class dpctl::syclinterface::dpctl_device_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_device_selector" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_filter_selector.html">class dpctl::syclinterface::dpctl_filter_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_filter_selector" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_filter_selector.html">class dpctl::syclinterface::dpctl_filter_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_filter_selector" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_gpu_selector.html">class dpctl::syclinterface::dpctl_gpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_gpu_selector" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/class_dpctl_syclinterface_dpctl_gpu_selector.html">class dpctl::syclinterface::dpctl_gpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_gpu_selector" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -616,13 +633,13 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../libsyclinterface/generated/enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_DPCTLSpecConstTy.html">struct DPCTLSpecConstTy</a><input aria-label="Toggle navigation of struct DPCTLSpecConstTy" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_DPCTLSpecConstTy.html">struct DPCTLSpecConstTy</a><input aria-label="Toggle navigation of struct DPCTLSpecConstTy" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
 </ul>
 </li>
 </ul>
@@ -637,7 +654,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../dpctl_cmake.html">CMake support</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/building.html">Building from the Source</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
@@ -663,7 +680,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclDevice.sub_group_independent_forward_progress.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../../_sources/api_reference/dpctl/generated/generated/dpctl.SyclQueue.fill.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -681,20 +698,43 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dpctl-sycldevice-sub-group-independent-forward-progress">
-<h1>dpctl.SyclDevice.sub_group_independent_forward_progress<a class="headerlink" href="#dpctl-sycldevice-sub-group-independent-forward-progress" title="Permalink to this heading">¶</a></h1>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dpctl.SyclDevice.sub_group_independent_forward_progress">
-<span class="sig-prename descclassname"><span class="pre">SyclDevice.</span></span><span class="sig-name descname"><span class="pre">sub_group_independent_forward_progress</span></span><a class="headerlink" href="#dpctl.SyclDevice.sub_group_independent_forward_progress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the device supports independent forward progress
-of sub-groups with respect to other sub-groups in the same work-group.</p>
+          <section id="dpctl-syclqueue-fill">
+<h1>dpctl.SyclQueue.fill<a class="headerlink" href="#dpctl-syclqueue-fill" title="Permalink to this heading">¶</a></h1>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpctl.SyclQueue.fill">
+<span class="sig-prename descclassname"><span class="pre">SyclQueue.</span></span><span class="sig-name descname"><span class="pre">fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'u1'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpctl.SyclQueue.fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill <code class="docutils literal notranslate"><span class="pre">dest</span></code> with <code class="docutils literal notranslate"><span class="pre">count</span></code> copies of <code class="docutils literal notranslate"><span class="pre">value</span></code> and wait.</p>
+<p>Internally, this dispatches <code class="docutils literal notranslate"><span class="pre">sycl::queue::fill</span></code>, which sets each of
+the <code class="docutils literal notranslate"><span class="pre">count</span></code> elements of <code class="docutils literal notranslate"><span class="pre">dest</span></code> to <code class="docutils literal notranslate"><span class="pre">value</span></code>. The number of bytes
+written is <code class="docutils literal notranslate"><span class="pre">count</span></code> multiplied by the size of <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. The default
+<code class="docutils literal notranslate"><span class="pre">dtype</span></code> of <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (a single byte) makes the default a byte-wise
+fill, analogous to <code class="docutils literal notranslate"><span class="pre">memset</span></code>.</p>
+<p>This is a synchronizing variant corresponding to
+<a class="reference internal" href="dpctl.SyclQueue.fill_async.html#dpctl.SyclQueue.fill_async" title="dpctl.SyclQueue.fill_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.fill_async()</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Indicates if the device supports independent forward progress
-of sub-groups.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dest</strong> (<em>dpctl.memory._Memory</em>) – Destination USM allocation to fill.</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.14)"><em>complex</em></a>) – Value used to fill <code class="docutils literal notranslate"><span class="pre">dest</span></code>. It is reinterpreted according to
+<code class="docutils literal notranslate"><span class="pre">dtype</span></code>: integral <code class="docutils literal notranslate"><span class="pre">dtype</span></code> values expect a Python integer,
+<code class="docutils literal notranslate"><span class="pre">&quot;f4&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;f8&quot;</span></code> expect a Python float, and <code class="docutils literal notranslate"><span class="pre">&quot;c8&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;c16&quot;</span></code> expect a Python complex.</p></li>
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of elements to fill.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Data type string of the fill elements. Determines the element
+size and how <code class="docutils literal notranslate"><span class="pre">value</span></code> is interpreted.
+Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).
+Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
+c16.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dest</span></code> is not a <code class="docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code> USM allocation.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is unrecognized, or <code class="docutils literal notranslate"><span class="pre">value</span></code> cannot be
+    represented as <code class="docutils literal notranslate"><span class="pre">dtype</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#OverflowError" title="(in Python v3.14)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">count</span></code> is negative.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the fill operation encountered an error.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -706,23 +746,23 @@ of sub-groups.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dpctl.SyclDevice.sub_group_sizes.html">
+          <a class="next-page" href="dpctl.SyclQueue.fill_async.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dpctl.SyclDevice.sub_group_sizes</div>
+                <div class="title">dpctl.SyclQueue.fill_async</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="dpctl.SyclDevice.single_fp_config.html">
+          <a class="prev-page" href="dpctl.SyclQueue.copy_async.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">dpctl.SyclDevice.single_fp_config</div>
+                <div class="title">dpctl.SyclQueue.copy_async</div>
                 
               </div>
             </a>
@@ -756,8 +796,8 @@ of sub-groups.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">dpctl.SyclDevice.sub_group_independent_forward_progress</a><ul>
-<li><a class="reference internal" href="#dpctl.SyclDevice.sub_group_independent_forward_progress"><code class="docutils literal notranslate"><span class="pre">SyclDevice.sub_group_independent_forward_progress</span></code></a></li>
+<li><a class="reference internal" href="#">dpctl.SyclQueue.fill</a><ul>
+<li><a class="reference internal" href="#dpctl.SyclQueue.fill"><code class="docutils literal notranslate"><span class="pre">SyclQueue.fill()</span></code></a></li>
 </ul>
 </li>
 </ul>
