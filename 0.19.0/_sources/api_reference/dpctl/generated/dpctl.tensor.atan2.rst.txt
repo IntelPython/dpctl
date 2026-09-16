@@ -1,0 +1,10 @@
+﻿dpctl.tensor.atan2
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: atan2
+    :no-value:
+
+

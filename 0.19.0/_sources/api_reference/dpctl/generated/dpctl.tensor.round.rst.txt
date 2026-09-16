@@ -1,0 +1,10 @@
+﻿dpctl.tensor.round
+==================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: round
+    :no-value:
+
+
