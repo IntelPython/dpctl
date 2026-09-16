@@ -1,0 +1,6 @@
+﻿dpctl.tensor.arange
+===================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: arange

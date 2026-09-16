@@ -1,0 +1,10 @@
+﻿dpctl.tensor.cosh
+=================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: cosh
+    :no-value:
+
+

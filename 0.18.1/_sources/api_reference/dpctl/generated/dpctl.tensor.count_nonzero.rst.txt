@@ -1,0 +1,6 @@
+﻿dpctl.tensor.count\_nonzero
+===========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: count_nonzero

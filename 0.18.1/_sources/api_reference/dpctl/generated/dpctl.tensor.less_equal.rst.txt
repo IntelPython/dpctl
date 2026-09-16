@@ -1,0 +1,10 @@
+﻿dpctl.tensor.less\_equal
+========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: less_equal
+    :no-value:
+
+

@@ -1,0 +1,10 @@
+﻿dpctl.tensor.positive
+=====================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: positive
+    :no-value:
+
+
