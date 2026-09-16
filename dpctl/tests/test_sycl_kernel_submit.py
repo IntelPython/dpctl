@@ -273,6 +273,391 @@ def test_submit_async():
     assert np.array_equal(x[:, :n], x_ref[:, :n])
 
 
+@pytest.mark.parametrize(
+    "ctype_str,dtype,scalar_ctor",
+    [
+        ("int", np.dtype("i4"), lambda v: np.int32(v)),
+        ("unsigned int", np.dtype("u4"), lambda v: np.uint32(v)),
+        ("long", np.dtype(np.longlong), lambda v: np.longlong(v)),
+        ("float", np.dtype("f4"), lambda v: np.float32(v)),
+        ("double", np.dtype("f8"), lambda v: np.float64(v)),
+    ],
+)
+def test_kernel_submit_numpy_scalar_args(ctype_str, dtype, scalar_ctor):
+    """Test kernel submission with numpy scalars as kernel arguments"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    oclSrc = (
+        "kernel void axpy("
+        "   global " + ctype_str + " *a, global " + ctype_str + " *b,"
+        "   global " + ctype_str + " *c, " + ctype_str + " d) {"
+        "   size_t index = get_global_id(0);"
+        "   c[index] = d * a[index] + b[index];"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    axpyKernel = kb.get_sycl_kernel("axpy")
+
+    n_elems = 1024
+    a = np.arange(n_elems, dtype=dtype)
+    b = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
+    c = np.zeros(n_elems, dtype=dtype)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+    c_usm = dpm.MemoryUSMDevice(c.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+    q.memcpy(dest=b_usm, src=b, count=b.nbytes)
+
+    d = 2
+    args = [a_usm, b_usm, c_usm, scalar_ctor(d)]
+    q.submit(axpyKernel, args, [n_elems]).wait()
+
+    q.memcpy(c, c_usm, c.nbytes)
+    ref_c = a * np.array(d, dtype=dtype) + b
+    assert np.allclose(c, ref_c)
+
+
+@pytest.mark.parametrize(
+    "ctype_str,dtype,dpctl_ctor",
+    [
+        ("int", np.dtype("i4"), dpctl.int32),
+        ("unsigned int", np.dtype("u4"), dpctl.uint32),
+        ("float", np.dtype("f4"), dpctl.float32),
+        ("double", np.dtype("f8"), dpctl.float64),
+    ],
+)
+def test_kernel_submit_dpctl_scalar_args(ctype_str, dtype, dpctl_ctor):
+    """Test kernel submission with dpctl scalar types as kernel arguments"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    oclSrc = (
+        "kernel void axpy("
+        "   global " + ctype_str + " *a, global " + ctype_str + " *b,"
+        "   global " + ctype_str + " *c, " + ctype_str + " d) {"
+        "   size_t index = get_global_id(0);"
+        "   c[index] = d * a[index] + b[index];"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    axpyKernel = kb.get_sycl_kernel("axpy")
+
+    n_elems = 1024
+    a = np.arange(n_elems, dtype=dtype)
+    b = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
+    c = np.zeros(n_elems, dtype=dtype)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+    c_usm = dpm.MemoryUSMDevice(c.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+    q.memcpy(dest=b_usm, src=b, count=b.nbytes)
+
+    d = 2
+    args = [a_usm, b_usm, c_usm, dpctl_ctor(d)]
+    q.submit(axpyKernel, args, [n_elems]).wait()
+
+    q.memcpy(c, c_usm, c.nbytes)
+    ref_c = a * np.array(d, dtype=dtype) + b
+    assert np.allclose(c, ref_c)
+
+
+@pytest.mark.parametrize(
+    "ctype_str,dtype,python_value",
+    [
+        ("long", np.dtype(np.longlong), 2),
+        ("double", np.dtype("f8"), 2.0),
+    ],
+)
+def test_kernel_submit_python_builtin_args(ctype_str, dtype, python_value):
+    """Test kernel submission with Python int/float as kernel arguments"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if dtype == np.dtype("f8") and q.sycl_device.has_aspect_fp64 is False:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+    oclSrc = (
+        "kernel void axpy("
+        "   global " + ctype_str + " *a, global " + ctype_str + " *b,"
+        "   global " + ctype_str + " *c, " + ctype_str + " d) {"
+        "   size_t index = get_global_id(0);"
+        "   c[index] = d * a[index] + b[index];"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    axpyKernel = kb.get_sycl_kernel("axpy")
+
+    n_elems = 1024
+    a = np.arange(n_elems, dtype=dtype)
+    b = np.arange(n_elems, stop=0, step=-1, dtype=dtype)
+    c = np.zeros(n_elems, dtype=dtype)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+    c_usm = dpm.MemoryUSMDevice(c.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+    q.memcpy(dest=b_usm, src=b, count=b.nbytes)
+
+    args = [a_usm, b_usm, c_usm, python_value]
+    q.submit(axpyKernel, args, [n_elems]).wait()
+
+    q.memcpy(c, c_usm, c.nbytes)
+    ref_c = a * np.array(python_value, dtype=dtype) + b
+    assert np.allclose(c, ref_c)
+
+
+def test_kernel_submit_float16_arg():
+    """Test kernel submission with a half-precision scalar argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if not q.sycl_device.has_aspect_fp16:
+        pytest.skip("Device does not support half precision floating point")
+
+    oclSrc = (
+        "#pragma OPENCL EXTENSION cl_khr_fp16 : enable\n"
+        "kernel void scale("
+        "   global half *a, global half *b, half d) {"
+        "   size_t index = get_global_id(0);"
+        "   b[index] = d * a[index];"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    scaleKernel = kb.get_sycl_kernel("scale")
+
+    n_elems = 1024
+    a = np.ones(n_elems, dtype=np.float16) * np.float16(2.0)
+    b = np.zeros(n_elems, dtype=np.float16)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    d = dpctl.float16(3.0)
+    args = [a_usm, b_usm, d]
+    q.submit(scaleKernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.float16(3.0)
+    assert np.allclose(b, expected)
+
+
+def test_kernel_submit_float16_numpy_scalar():
+    """Test kernel submission with a numpy float16 scalar argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if not q.sycl_device.has_aspect_fp16:
+        pytest.skip("Device does not support half precision floating point")
+
+    oclSrc = (
+        "#pragma OPENCL EXTENSION cl_khr_fp16 : enable\n"
+        "kernel void scale("
+        "   global half *a, global half *b, half d) {"
+        "   size_t index = get_global_id(0);"
+        "   b[index] = d * a[index];"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    scaleKernel = kb.get_sycl_kernel("scale")
+
+    n_elems = 1024
+    a = np.ones(n_elems, dtype=np.float16) * np.float16(4.0)
+    b = np.zeros(n_elems, dtype=np.float16)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    args = [a_usm, b_usm, np.float16(2.5)]
+    q.submit(scaleKernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.float16(2.5)
+    assert np.allclose(b, expected)
+
+
+def test_kernel_submit_complex64_arg():
+    """Test kernel submission with a complex64 scalar argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+
+    # OpenCL float2 has the same layout as complex<float>
+    oclSrc = (
+        "kernel void scale_complex("
+        "   global float2 *a, global float2 *b, float2 d) {"
+        "   size_t index = get_global_id(0);"
+        "   float2 ai = a[index];"
+        "   b[index] = (float2)(ai.x * d.x - ai.y * d.y,"
+        "                       ai.x * d.y + ai.y * d.x);"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kernel = kb.get_sycl_kernel("scale_complex")
+
+    n_elems = 512
+    a = np.ones(n_elems, dtype=np.complex64) * np.complex64(1 + 1j)
+    b = np.zeros(n_elems, dtype=np.complex64)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    d = dpctl.complex64(2 + 3j)
+    args = [a_usm, b_usm, d]
+    q.submit(kernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.complex64(2 + 3j)
+    assert np.allclose(b, expected)
+
+
+def test_kernel_submit_complex64_numpy_scalar():
+    """Test kernel submission with a numpy complex64 scalar argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+
+    oclSrc = (
+        "kernel void scale_complex("
+        "   global float2 *a, global float2 *b, float2 d) {"
+        "   size_t index = get_global_id(0);"
+        "   float2 ai = a[index];"
+        "   b[index] = (float2)(ai.x * d.x - ai.y * d.y,"
+        "                       ai.x * d.y + ai.y * d.x);"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kernel = kb.get_sycl_kernel("scale_complex")
+
+    n_elems = 512
+    a = np.ones(n_elems, dtype=np.complex64) * np.complex64(2 + 0j)
+    b = np.zeros(n_elems, dtype=np.complex64)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    args = [a_usm, b_usm, np.complex64(0.5 - 1j)]
+    q.submit(kernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.complex64(0.5 - 1j)
+    assert np.allclose(b, expected)
+
+
+def test_kernel_submit_complex128_arg():
+    """Test kernel submission with a complex128 scalar argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if not q.sycl_device.has_aspect_fp64:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+
+    # OpenCL double2 has the same layout as complex<double>
+    oclSrc = (
+        "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n"
+        "kernel void scale_complex("
+        "   global double2 *a, global double2 *b, double2 d) {"
+        "   size_t index = get_global_id(0);"
+        "   double2 ai = a[index];"
+        "   b[index] = (double2)(ai.x * d.x - ai.y * d.y,"
+        "                        ai.x * d.y + ai.y * d.x);"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kernel = kb.get_sycl_kernel("scale_complex")
+
+    n_elems = 512
+    a = np.ones(n_elems, dtype=np.complex128) * np.complex128(1 + 2j)
+    b = np.zeros(n_elems, dtype=np.complex128)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    d = dpctl.complex128(3 - 1j)
+    args = [a_usm, b_usm, d]
+    q.submit(kernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.complex128(3 - 1j)
+    assert np.allclose(b, expected)
+
+
+def test_kernel_submit_complex128_python_builtin():
+    """Test kernel submission with a Python complex as kernel argument"""
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    if not q.sycl_device.has_aspect_fp64:
+        pytest.skip(
+            "Device does not support double precision floating point type"
+        )
+
+    oclSrc = (
+        "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n"
+        "kernel void scale_complex("
+        "   global double2 *a, global double2 *b, double2 d) {"
+        "   size_t index = get_global_id(0);"
+        "   double2 ai = a[index];"
+        "   b[index] = (double2)(ai.x * d.x - ai.y * d.y,"
+        "                        ai.x * d.y + ai.y * d.x);"
+        "}"
+    )
+    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kernel = kb.get_sycl_kernel("scale_complex")
+
+    n_elems = 512
+    a = np.ones(n_elems, dtype=np.complex128) * np.complex128(2 + 1j)
+    b = np.zeros(n_elems, dtype=np.complex128)
+
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
+    b_usm = dpm.MemoryUSMDevice(b.nbytes, queue=q)
+
+    q.memcpy(dest=a_usm, src=a, count=a.nbytes)
+
+    # Pass a raw Python complex directly
+    args = [a_usm, b_usm, (1 + 1j)]
+    q.submit(kernel, args, [n_elems]).wait()
+
+    q.memcpy(b, b_usm, b.nbytes)
+    expected = a * np.complex128(1 + 1j)
+    assert np.allclose(b, expected)
+
+
 def _check_kernel_arg_type_instance(kati):
     assert isinstance(kati.name, str)
     assert isinstance(kati.value, int)
@@ -303,6 +688,9 @@ def test_kernel_arg_type():
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_local_accessor)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_work_group_memory)
     _check_kernel_arg_type_instance(kernel_arg_type.dpctl_raw_kernel_arg)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_float16)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_complex64)
+    _check_kernel_arg_type_instance(kernel_arg_type.dpctl_complex128)
 
 
 def get_spirv_abspath(fn):
