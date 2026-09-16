@@ -1,0 +1,6 @@
+﻿dpctl.tensor.unique\_all
+========================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: unique_all

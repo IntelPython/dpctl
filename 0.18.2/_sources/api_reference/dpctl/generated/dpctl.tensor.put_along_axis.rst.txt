@@ -1,0 +1,6 @@
+﻿dpctl.tensor.put\_along\_axis
+=============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: put_along_axis

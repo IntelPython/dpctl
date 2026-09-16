@@ -1,0 +1,10 @@
+﻿dpctl.tensor.divide
+===================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: divide
+    :no-value:
+
+

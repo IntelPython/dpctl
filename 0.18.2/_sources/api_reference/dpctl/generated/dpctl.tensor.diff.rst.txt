@@ -1,0 +1,6 @@
+﻿dpctl.tensor.diff
+=================
+
+.. currentmodule:: dpctl.tensor
+
+.. autofunction:: diff
