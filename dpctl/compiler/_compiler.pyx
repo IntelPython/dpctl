@@ -270,18 +270,45 @@ cdef class SyclKernelBundle:
         return self._kernel_bundle_ref
 
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name):
-        name = kernel_name.encode("utf8")
+        """get_sycl_kernel(kernel_name)
+
+        Returns the kernel with the given name defined in this kernel bundle.
+
+        Args:
+            kernel_name (str):
+                Name of the kernel, as it appears in the kernel bundle. For a
+                bundle created from a SPIR-V binary this is the name of the
+                entry point, which for a kernel written in SYCL is the mangled
+                name of its kernel class, e.g.
+                ``'_ZTS20BasicSpecConstKernel'``.
+
+        Returns:
+            dpctl.compiler.SyclKernel:
+                The kernel object.
+
+        Raises:
+            ValueError:
+                If the kernel could not be created for any reason.
+        """
+        cdef bytes name = kernel_name.encode("utf8")
+        cdef DPCTLSyclKernelRef KRef = NULL
+
         if self._is_sycl_source:
-            return SyclKernel._create(
-                    DPCTLKernelBundle_GetSyclKernel(
-                        self._kernel_bundle_ref, name
-                    ),
-                    kernel_name
-                )
-        return SyclKernel._create(
-            DPCTLKernelBundle_GetKernel(self._kernel_bundle_ref, name),
-            kernel_name
-        )
+            KRef = DPCTLKernelBundle_GetSyclKernel(
+                self._kernel_bundle_ref, name
+            )
+        else:
+            KRef = DPCTLKernelBundle_GetKernel(self._kernel_bundle_ref, name)
+        if KRef is NULL:
+            # returning a SyclKernel with a NULL reference would defer the
+            # failure to the submission of the kernel
+            raise ValueError(
+                f"Kernel '{kernel_name}' could not be created from the kernel "
+                "bundle. The kernel bundle may not define a kernel with that "
+                "name, or the module it was built from may require device "
+                "libraries that were not linked into it."
+            )
+        return SyclKernel._create(KRef, kernel_name)
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
