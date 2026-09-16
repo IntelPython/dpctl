@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.sycl\_device
-=======================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMHost.sycl_device

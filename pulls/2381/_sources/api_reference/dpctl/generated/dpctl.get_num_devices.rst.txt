@@ -1,6 +1,0 @@
-﻿dpctl.get\_num\_devices
-=======================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: get_num_devices
