@@ -1,0 +1,10 @@
+﻿dpctl.tensor.bitwise\_and
+=========================
+
+.. currentmodule:: dpctl.tensor
+
+
+.. autodata:: bitwise_and
+    :no-value:
+
+
