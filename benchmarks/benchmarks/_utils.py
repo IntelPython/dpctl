@@ -28,18 +28,16 @@ from asv_runner.benchmarks.mark import SkipNotImplemented
 
 import dpctl
 
-# Device axis. Fully-qualified filter-selector strings, so a node exposing
-# a device through more than one backend still resolves each benchmark to a
-# fixed, unambiguous device.
+# Device selectors
 _SELECTORS = ["opencl:cpu", "level_zero:gpu"]
 
-# Allocation and transfer size sweep, in bytes: 4 KiB, 1 MiB, 16 MiB, 256 MiB.
+# Allocation and transfer sizes, in bytes.
 _SIZES = [4 * 1024, 1024**2, 16 * 1024**2, 256 * 1024**2]
 
-# USM kinds, mapped to their constructors.
+# USM kinds.
 _USM_TYPES = ["device", "host", "shared"]
 
-# Fraction of device global memory a single benchmark allocation may claim.
+# Max fraction of device memory a single allocation may claim.
 _MEM_BUDGET = 0.25
 
 _queues = {}
