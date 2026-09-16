@@ -343,3 +343,28 @@ def test_submit_local_accessor_arg():
     q.memcpy(dest=res, src=x_usm, count=x.nbytes)
     expected = np.arange(1, x.size + 1, dtype=x.dtype) * (2 * lws)
     assert np.all(res == expected)
+
+
+def test_submit_wrong_number_of_args():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    fn = get_spirv_abspath("multi_kernel.spv")
+    with open(fn, "br") as f:
+        spirv_bytes = f.read()
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
+    krn = kb.get_sycl_kernel("axpy")
+    assert krn.num_args == 4
+
+    n = 16
+    x_usm = dpm.MemoryUSMDevice(n * 4, queue=q)
+
+    with pytest.raises(ValueError):
+        q.submit(krn, [x_usm, x_usm, x_usm], [n])
+    with pytest.raises(ValueError):
+        q.submit_async(
+            krn,
+            [x_usm, x_usm, x_usm, ctypes.c_int(2), ctypes.c_int(3)],
+            [n],
+        )
