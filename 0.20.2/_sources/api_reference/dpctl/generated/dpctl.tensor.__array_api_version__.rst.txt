@@ -1,0 +1,14 @@
+﻿dpctl.tensor.\_\_array\_api\_version\_\_
+========================================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoclass:: __array_api_version__
+   
+
+   
+   
+
+   
+   
+   

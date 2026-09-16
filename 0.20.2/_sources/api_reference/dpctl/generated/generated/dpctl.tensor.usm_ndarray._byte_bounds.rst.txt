@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.\_byte\_bounds
+========================================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray._byte_bounds

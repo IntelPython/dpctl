@@ -1,0 +1,6 @@
+dpctl.tensor.usm\_ndarray.flags
+===============================
+
+.. currentmodule:: dpctl.tensor
+
+.. autoattribute:: usm_ndarray.flags
