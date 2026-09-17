@@ -15,10 +15,26 @@
 # limitations under the License.
 
 import os.path
+import sys
 
 from setuptools import Extension, setup
 
 import dpctl
+
+# DPCTLSyclInterface, and on Windows its import library, are installed
+# alongside the dpctl Python modules
+_dpctl_dir = os.path.join(dpctl.get_include(), "..")
+
+if sys.platform == "win32":
+    # py_sycl_ls/__init__.py adds the directory DPCTLSyclInterface.dll to the
+    # DLL search path
+    runtime_library_dirs = []
+    extra_compile_args = ["/W4"]
+    extra_link_args = []
+else:
+    runtime_library_dirs = [_dpctl_dir]
+    extra_compile_args = ["-Wall", "-Wextra"]
+    extra_link_args = ["-fPIC"]
 
 setup(
     name="py_sycl_ls",
@@ -42,17 +58,12 @@ setup(
                 dpctl.get_include(),
             ],
             library_dirs=[
-                os.path.join(dpctl.get_include(), ".."),
+                _dpctl_dir,
             ],
             libraries=["DPCTLSyclInterface"],
-            runtime_library_dirs=[
-                os.path.join(dpctl.get_include(), ".."),
-            ],
-            extra_compile_args=[
-                "-Wall",
-                "-Wextra",
-            ],
-            extra_link_args=["-fPIC"],
+            runtime_library_dirs=runtime_library_dirs,
+            extra_compile_args=extra_compile_args,
+            extra_link_args=extra_link_args,
             language="c",
         )
     ],
