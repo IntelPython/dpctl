@@ -78,6 +78,7 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef SyclContext get_sycl_context(self)
     cpdef SyclDevice get_sycl_device(self)
     cdef DPCTLSyclQueueRef get_queue_ref(self)
+    cpdef SyclEvent keep_args_alive(self, object args, object depends=*)
     cpdef SyclEvent _submit_keep_args_alive(
         self,
         object args,
@@ -138,3 +139,5 @@ cdef public api class RawKernelArg(_RawKernelArg) [
     object PyRawKernelArgObject, type PyRawKernelArgType
 ]:
     pass
+
+cdef bint drain_releases()
