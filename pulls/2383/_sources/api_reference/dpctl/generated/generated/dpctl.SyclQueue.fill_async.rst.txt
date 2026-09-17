@@ -1,0 +1,6 @@
+dpctl.SyclQueue.fill\_async
+===========================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.fill_async

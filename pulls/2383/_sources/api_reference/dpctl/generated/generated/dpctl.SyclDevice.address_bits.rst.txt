@@ -1,0 +1,6 @@
+dpctl.SyclDevice.address\_bits
+==============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.address_bits
