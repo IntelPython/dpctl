@@ -408,6 +408,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
@@ -472,7 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.keep_args_alive.html">dpctl.keep_args_alive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_include.html">dpctl.get_include</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/filter_selector_string.html">Filter Selector String</a></li>
@@ -752,7 +752,6 @@
     <span class="n">SyclQueue</span><span class="p">,</span>
     <span class="n">SyclQueueCreationError</span><span class="p">,</span>
     <span class="n">WorkGroupMemory</span><span class="p">,</span>
-    <span class="n">keep_args_alive</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_queue_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_device_cached_queue</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_timer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclTimer</span>
@@ -810,7 +809,6 @@
     <span class="s2">"WorkGroupMemory"</span><span class="p">,</span>
     <span class="s2">"LocalAccessor"</span><span class="p">,</span>
     <span class="s2">"RawKernelArg"</span><span class="p">,</span>
-    <span class="s2">"keep_args_alive"</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>
     <span class="s2">"get_device_cached_queue"</span><span class="p">,</span>

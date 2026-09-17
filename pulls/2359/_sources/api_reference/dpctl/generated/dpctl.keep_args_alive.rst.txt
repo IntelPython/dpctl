@@ -1,6 +1,0 @@
-﻿dpctl.keep\_args\_alive
-=======================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: keep_args_alive

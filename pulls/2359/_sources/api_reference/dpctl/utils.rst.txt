@@ -19,15 +19,15 @@
     Record submitted tasks with ``add_event`` and use ``submitted_events``
     as the dependency list of subsequent submissions. To keep Python objects
     referenced by a task alive until it completes, use
-    :func:`dpctl.keep_args_alive`.
+    :meth:`dpctl.SyclQueue.keep_args_alive`.
 
     Record events that gate the release of objects used by a task with
     ``add_cleanup_event``, and find them in ``cleanup_events``. They are
     waited on, but never become dependencies of later tasks.
 
     Waiting with ``wait`` also drops the references that
-    :func:`dpctl.keep_args_alive` took for tasks that have since completed,
-    which is otherwise done the next time ``dpctl`` is called into.
+    :meth:`dpctl.SyclQueue.keep_args_alive` took for tasks that have since
+    completed, which ``dpctl`` otherwise does on a thread of its own.
 
     .. deprecated:: 0.23.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``

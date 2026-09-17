@@ -409,6 +409,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
@@ -473,7 +474,6 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.keep_args_alive.html">dpctl.keep_args_alive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.get_include.html">dpctl.get_include</a></li>
 <li class="toctree-l3"><a class="reference internal" href="constants.html">Constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="filter_selector_string.html">Filter Selector String</a></li>
@@ -781,13 +781,13 @@ manager, used to ensure sequential ordering of offloaded tasks.</p>
 <p>Record submitted tasks with <code class="docutils literal notranslate"><span class="pre">add_event</span></code> and use <code class="docutils literal notranslate"><span class="pre">submitted_events</span></code>
 as the dependency list of subsequent submissions. To keep Python objects
 referenced by a task alive until it completes, use
-<a class="reference internal" href="generated/dpctl.keep_args_alive.html#dpctl.keep_args_alive" title="dpctl.keep_args_alive"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.keep_args_alive()</span></code></a>.</p>
+<a class="reference internal" href="generated/generated/dpctl.SyclQueue.keep_args_alive.html#dpctl.SyclQueue.keep_args_alive" title="dpctl.SyclQueue.keep_args_alive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.keep_args_alive()</span></code></a>.</p>
 <p>Record events that gate the release of objects used by a task with
 <code class="docutils literal notranslate"><span class="pre">add_cleanup_event</span></code>, and find them in <code class="docutils literal notranslate"><span class="pre">cleanup_events</span></code>. They are
 waited on, but never become dependencies of later tasks.</p>
 <p>Waiting with <code class="docutils literal notranslate"><span class="pre">wait</span></code> also drops the references that
-<a class="reference internal" href="generated/dpctl.keep_args_alive.html#dpctl.keep_args_alive" title="dpctl.keep_args_alive"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.keep_args_alive()</span></code></a> took for tasks that have since completed,
-which is otherwise done the next time <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> is called into.</p>
+<a class="reference internal" href="generated/generated/dpctl.SyclQueue.keep_args_alive.html#dpctl.SyclQueue.keep_args_alive" title="dpctl.SyclQueue.keep_args_alive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.keep_args_alive()</span></code></a> took for tasks that have since
+completed, which <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> otherwise does on a thread of its own.</p>
 <div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 0.23.0: </span><code class="docutils literal notranslate"><span class="pre">add_event_pair</span></code>, <code class="docutils literal notranslate"><span class="pre">host_task_events</span></code> and <code class="docutils literal notranslate"><span class="pre">num_host_task_events</span></code>
 are deprecated. Tasks are no longer paired with a host task event, so
