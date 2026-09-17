@@ -145,18 +145,12 @@ def ocl_axpy_source(kernel_name="axpy"):
 
 
 def sycl_axpy_source(kernel_name="axpy"):
-    """Return SYCL source for an axpy kernel called *kernel_name*."""
+    """Return SYCL source for an axpy function called *kernel_name*."""
     return f"""
     #include <sycl/sycl.hpp>
 
-    namespace syclext = sycl::ext::oneapi::experimental;
-
     extern "C" SYCL_EXTERNAL
-    SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclext::nd_range_kernel<1>))
-    void {kernel_name}(int* a, int* b, int* c, int d) {{
-        sycl::nd_item<1> item =
-                        sycl::ext::oneapi::this_work_item::get_nd_item<1>();
-        size_t i = item.get_global_linear_id();
+    void {kernel_name}(int* a, int* b, int* c, int d, size_t i) {{
         c[i] = d * a[i] + b[i];
     }}
     """

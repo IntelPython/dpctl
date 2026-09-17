@@ -45,9 +45,7 @@ class Submit:
         if dpc is None:
             raise SkipNotImplemented("dpctl.compiler is not available")
         self.queue = queue_for(selector)
-        bundle = dpc.create_kernel_bundle_from_spirv(
-            self.queue, spirv_bytes()
-        )
+        bundle = dpc.create_kernel_bundle_from_spirv(self.queue, spirv_bytes())
         self.kernel = bundle.get_sycl_kernel("add")
         nbytes = 4 * 1024
         self.args = [
