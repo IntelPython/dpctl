@@ -7,14 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dev] - XXX. XX, XXXX
 
 ### Added
+* Added `dpctl.SyclQueue.keep_args_alive` method, which keeps Python objects alive until the work on that queue using them completes [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Added `add_event` and `add_cleanup_event` methods and `cleanup_events` and `num_cleanup_events` properties to the order manager, for tracking the events that gate the release of objects used by offloaded tasks [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Changed
+* Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+* A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Maintenance
 
@@ -63,6 +68,8 @@ This release extends the SYCL interface exposed by `dpctl` in several directions
 * Deprecated `dpctl.program.create_program_from_source` and `dpctl.program.create_program_from_spirv` in favor of `dpctl.compiler.create_kernel_bundle_from_source` and `dpctl.compiler.create_kernel_bundle_from_spirv`; the old functions are kept as aliases that emit a `DeprecationWarning` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291), [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Deprecated the order manager's `add_event_pair`, `host_task_events` and `num_host_task_events`, as `host_task` is no longer used for managing object lifetimes, in favor of `add_event`, `add_cleanup_event`, `cleanup_events` and `num_cleanup_events` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Removed
 * Removed unused `platform_typeid_lookup` from `dpctl4pybind11.hpp` [gh-2286](https://github.com/IntelPython/dpctl/pull/2286)

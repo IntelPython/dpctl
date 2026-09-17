@@ -66,7 +66,7 @@ from dpctl._backend cimport (  # noqa: E211
 
 from .._sycl_context cimport SyclContext
 from .._sycl_device cimport SyclDevice
-from .._sycl_queue cimport SyclQueue
+from .._sycl_queue cimport SyclQueue, drain_releases
 from .._sycl_queue_manager cimport get_device_cached_queue
 
 import collections
@@ -164,6 +164,45 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
     return res
 
 
+cdef DPCTLSyclUSMRef _usm_alloc(Py_ssize_t alignment, Py_ssize_t nbytes,
+                                bytes ptr_type, DPCTLSyclQueueRef QRef):
+    """
+    Allocates `nbytes` of USM of `ptr_type`, returning NULL if it could not
+    be done. `ptr_type` must be one of b"shared", b"host" or b"device".
+    """
+    cdef DPCTLSyclUSMRef p = NULL
+
+    if (ptr_type == b"shared"):
+        if alignment > 0:
+            with nogil:
+                p = DPCTLaligned_alloc_shared(
+                    alignment, nbytes, QRef
+                )
+        else:
+            with nogil:
+                p = DPCTLmalloc_shared(nbytes, QRef)
+    elif (ptr_type == b"host"):
+        if alignment > 0:
+            with nogil:
+                p = DPCTLaligned_alloc_host(
+                    alignment, nbytes, QRef
+                )
+        else:
+            with nogil:
+                p = DPCTLmalloc_host(nbytes, QRef)
+    else:
+        if (alignment > 0):
+            with nogil:
+                p = DPCTLaligned_alloc_device(
+                    alignment, nbytes, QRef
+                )
+        else:
+            with nogil:
+                p = DPCTLmalloc_device(nbytes, QRef)
+
+    return p
+
+
 cdef class _Memory:
     """ Internal class implementing methods common to
         MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost
@@ -183,42 +222,24 @@ cdef class _Memory:
         self._cinit_empty()
 
         if (nbytes > 0):
-            if queue is None:
-                queue = get_device_cached_queue(dpctl.SyclDevice())
-
-            QRef = queue.get_queue_ref()
-            if (ptr_type == b"shared"):
-                if alignment > 0:
-                    with nogil:
-                        p = DPCTLaligned_alloc_shared(
-                            alignment, nbytes, QRef
-                        )
-                else:
-                    with nogil:
-                        p = DPCTLmalloc_shared(nbytes, QRef)
-            elif (ptr_type == b"host"):
-                if alignment > 0:
-                    with nogil:
-                        p = DPCTLaligned_alloc_host(
-                            alignment, nbytes, QRef
-                        )
-                else:
-                    with nogil:
-                        p = DPCTLmalloc_host(nbytes, QRef)
-            elif (ptr_type == b"device"):
-                if (alignment > 0):
-                    with nogil:
-                        p = DPCTLaligned_alloc_device(
-                            alignment, nbytes, QRef
-                        )
-                else:
-                    with nogil:
-                        p = DPCTLmalloc_device(nbytes, QRef)
-            else:
+            if ptr_type not in (b"shared", b"host", b"device"):
                 raise RuntimeError(
                     f"Pointer type '{ptr_type.decode('UTF-8')}' is not "
                     "recognized"
                 )
+
+            if queue is None:
+                queue = get_device_cached_queue(dpctl.SyclDevice())
+
+            QRef = queue.get_queue_ref()
+            p = _usm_alloc(alignment, nbytes, ptr_type, QRef)
+
+            if not p:
+                # the objects held for tasks that have completed may account
+                # for enough memory for a second attempt to succeed, and
+                # dpctl's thread may not have got to them yet
+                if drain_releases():
+                    p = _usm_alloc(alignment, nbytes, ptr_type, QRef)
 
             if (p):
                 self._memory_ptr = p

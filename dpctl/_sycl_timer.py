@@ -78,7 +78,7 @@ class OrderManagerDeviceTimer(BaseDeviceTimer):
         ev = self._submit_empty_task_fn(
             sycl_queue=self.queue, depends=self._order_manager.submitted_events
         )
-        self._order_manager.add_event_pair(ev, ev)
+        self._order_manager.add_event(ev)
         return ev
 
 
