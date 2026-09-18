@@ -83,6 +83,17 @@ def _create_memory():
     return mobj
 
 
+def _skip_if_usm_types_not_reported(q=None):
+    """Skip the test unless the device reports the type of a USM allocation.
+
+    AdaptiveCpp's OpenMP backend allocates plain host memory, and reports
+    every allocation as USM-host.
+    """
+    m = MemoryUSMDevice(8) if q is None else MemoryUSMDevice(8, queue=q)
+    if m.get_usm_type() != "device":
+        pytest.skip("Device does not report distinct USM allocation types")
+
+
 def _create_host_buf(nbytes):
     ba = bytearray(nbytes)
     for i in range(nbytes):
@@ -91,6 +102,7 @@ def _create_host_buf(nbytes):
 
 
 def test_memory_without_context():
+    _skip_if_usm_types_not_reported()
     mobj = _create_memory()
 
     # Without context
@@ -99,6 +111,7 @@ def test_memory_without_context():
 
 
 def test_memory_cpu_context():
+    _skip_if_usm_types_not_reported()
     mobj = _create_memory()
 
     # USM type respective to the context in which
@@ -110,6 +123,7 @@ def test_memory_cpu_context():
         cpu_queue = dpctl.SyclQueue("cpu")
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue('cpu') failed, skip further testing")
+    _skip_if_usm_types_not_reported(cpu_queue)
     # USM type as view from CPU queue
     usm_type = mobj.get_usm_type(cpu_queue)
     # USM type can be unknown if current queue is
@@ -118,6 +132,7 @@ def test_memory_cpu_context():
 
 
 def test_memory_gpu_context():
+    _skip_if_usm_types_not_reported()
     mobj = _create_memory()
 
     # GPU context
@@ -127,6 +142,7 @@ def test_memory_gpu_context():
         gpu_queue = dpctl.SyclQueue("opencl:gpu")
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue('opencl:gpu') failed, skipping")
+    _skip_if_usm_types_not_reported(gpu_queue)
     usm_type = mobj.get_usm_type(gpu_queue)
     assert usm_type in ["unknown", "shared"]
 
@@ -148,6 +164,7 @@ def test_copy_host_roundtrip():
 
 
 def test_zero_copy():
+    _skip_if_usm_types_not_reported()
     mobj = _create_memory()
     mobj2 = type(mobj)(mobj)
 
@@ -160,6 +177,7 @@ def test_zero_copy():
 def test_pickling(memory_ctor):
     import pickle
 
+    _skip_if_usm_types_not_reported()
     try:
         mobj = memory_ctor(1024, alignment=64)
     except dpctl.SyclDeviceCreationError:
@@ -182,6 +200,7 @@ def test_pickling(memory_ctor):
 def test_pickling_reconstructor_invalid_type(memory_ctor):
     import pickle
 
+    _skip_if_usm_types_not_reported()
     try:
         mobj = memory_ctor(1024, alignment=64)
     except dpctl.SyclDeviceCreationError:
@@ -222,6 +241,7 @@ def test_create_with_size_and_alignment_and_queue(memory_ctor):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing")
+    _skip_if_usm_types_not_reported(q)
     m = memory_ctor(1024, alignment=64, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
@@ -233,6 +253,7 @@ def test_create_with_size_and_queue(memory_ctor):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing")
+    _skip_if_usm_types_not_reported(q)
     m = memory_ctor(1024, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
@@ -240,6 +261,7 @@ def test_create_with_size_and_queue(memory_ctor):
 
 
 def test_create_with_size_and_alignment(memory_ctor):
+    _skip_if_usm_types_not_reported()
     try:
         m = memory_ctor(1024, alignment=64)
     except dpctl.SyclDeviceCreationError:
@@ -250,6 +272,7 @@ def test_create_with_size_and_alignment(memory_ctor):
 
 
 def test_usm_type_exceptions():
+    _skip_if_usm_types_not_reported()
     ctor = MemoryUSMDevice
     try:
         m = ctor(1024)
@@ -310,7 +333,7 @@ def test_suai_non_contig_1D(memory_ctor):
     Test of zero-copy using sycl_usm_array_interface with non-contiguous
     data.
     """
-
+    _skip_if_usm_types_not_reported()
     try:
         buf = memory_ctor(32)
     except Exception:
@@ -341,6 +364,7 @@ def test_suai_non_contig_1D(memory_ctor):
 
 
 def test_suai_non_contig_2D(memory_ctor):
+    _skip_if_usm_types_not_reported()
     try:
         buf = memory_ctor(20)
     except Exception:
@@ -370,6 +394,7 @@ def test_suai_non_contig_2D(memory_ctor):
 
 
 def test_suai_invalid_suai():
+    _skip_if_usm_types_not_reported()
     n_bytes = 2 * 3 * 5 * 128
     try:
         q = dpctl.SyclQueue()
@@ -613,6 +638,7 @@ def test_cpython_api(memory_ctor):
 
 
 def test_memory_construction_from_other_memory_objects():
+    _skip_if_usm_types_not_reported()
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
@@ -641,7 +667,12 @@ def test_memory_copy_between_contexts():
     d = q.sycl_device
     n = d.max_compute_units
     n_half = n // 2
-    d0, d1 = d.create_sub_devices(partition=[n_half, n - n_half])
+    try:
+        d0, d1 = d.create_sub_devices(partition=[n_half, n - n_half])
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     q0 = dpctl.SyclQueue(d0)
     q1 = dpctl.SyclQueue(d1)
     m0 = MemoryUSMDevice(256, queue=q0)

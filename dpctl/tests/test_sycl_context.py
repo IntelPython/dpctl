@@ -162,7 +162,12 @@ def test_context_multi_device():
     n2 = n - n1
     if n1 == 0 or n2 == 0:
         pytest.skip()
-    d1, d2 = d.create_sub_devices(partition=(n1, n2))
+    try:
+        d1, d2 = d.create_sub_devices(partition=(n1, n2))
+    except dpctl.SyclSubDeviceCreationError:
+        pytest.skip(
+            "create_sub_devices can't create sub-devices on this device"
+        )
     ctx = dpctl.SyclContext((d1, d2))
     assert ctx.device_count == 2
     assert type(repr(ctx)) is str
@@ -266,6 +271,8 @@ def test_invalid_capsule():
         dpctl.SyclContext(cap)
 
 
+# AdaptiveCpp contexts span platforms
+@pytest.mark.unsupported_on_acpp
 def test_multi_device_different_platforms():
     devs = dpctl.get_devices()  # all devices
     if len(devs) > 1 and len(set(d.sycl_platform for d in devs)) > 1:
@@ -275,6 +282,8 @@ def test_multi_device_different_platforms():
         pytest.skip("Insufficient amount of available devices for this test")
 
 
+# AdaptiveCpp contexts span platforms
+@pytest.mark.unsupported_on_acpp
 def test_context_sycl_platform(valid_filter):
     """
     Test that :attr:`dpctl.SyclContext.sycl_platform` returns the
@@ -290,6 +299,7 @@ def test_context_sycl_platform(valid_filter):
         assert d.sycl_platform == plat
 
 
+@pytest.mark.unsupported_on_acpp
 def test_context_atomic_memory_order_capabilities(valid_filter):
     try:
         ctx = dpctl.SyclContext(valid_filter)
@@ -317,6 +327,7 @@ def test_context_atomic_fence_order_capabilities(valid_filter):
         assert set(caps).issubset(set(d.atomic_fence_order_capabilities))
 
 
+@pytest.mark.unsupported_on_acpp
 def test_context_atomic_memory_scope_capabilities(valid_filter):
     try:
         ctx = dpctl.SyclContext(valid_filter)
