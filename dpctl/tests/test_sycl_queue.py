@@ -24,7 +24,7 @@ import pytest
 import dpctl
 import dpctl.memory
 
-from .helper import create_invalid_capsule, is_wsl_or_windows
+from .helper import create_invalid_capsule, is_adaptivecpp, is_wsl_or_windows
 
 
 def test_standard_selectors(device_selector, check):
@@ -353,7 +353,9 @@ def test_queue_memops():
         with pytest.raises(TypeError):
             q.prefetch([], 512)
 
-    q.mem_advise(m1, 512, 0)
+    # AdaptiveCpp does not implement mem_advise
+    if not is_adaptivecpp():
+        q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
         q.mem_advise([], 512, 0)
 

@@ -20,6 +20,14 @@ import sys
 import pytest
 
 import dpctl
+from dpctl._diagnostics import sycl_provider
+
+
+def is_adaptivecpp():
+    """
+    Return True if dpctl was built with AdaptiveCpp.
+    """
+    return sycl_provider() == "AdaptiveCpp"
 
 
 def has_gpu(backend="opencl"):

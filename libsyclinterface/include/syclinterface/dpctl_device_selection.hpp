@@ -29,6 +29,7 @@
 #include "Support/DllExport.h"
 #include <string>
 #include <sycl/sycl.hpp>
+#include <vector>
 
 namespace dpctl
 {
@@ -74,14 +75,16 @@ public:
 class DPCTL_API dpctl_filter_selector : public dpctl_device_selector
 {
 public:
-    dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
+    dpctl_filter_selector(const std::string &fs);
     int operator()(const sycl::device &d) const override;
 
 private:
 #ifndef __ADAPTIVECPP__
     sycl::ext::oneapi::filter_selector _impl;
 #else
-    std::string _impl; // Standard string fallback for AdaptiveCpp
+    // AdaptiveCpp has no filter_selector extension, so the filter string is
+    // resolved to devices when the selector is constructed.
+    std::vector<sycl::device> _matches;
 #endif
 };
 
