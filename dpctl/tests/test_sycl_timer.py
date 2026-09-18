@@ -31,6 +31,10 @@ def profiling_queue():
         pytest.skip(
             "Could not created profiling queue " "for default-selected device"
         )
+    ev = q.submit_barrier()
+    ev.wait()
+    if ev.profiling_info_end == 0:
+        pytest.skip("Device does not report profiling timestamps")
     return q
 
 
