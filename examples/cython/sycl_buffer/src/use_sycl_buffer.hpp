@@ -23,7 +23,7 @@
 /// provided as host C-contiguous allocation. SYCL kernels access this memory
 /// using `sycl::buffer`. Two routines are provided. One solves the task by
 /// calling BLAS function GEMV from Intel(R) Math Kernel Library, the other
-/// performs the computation using DPC++ reduction group function and atomics.
+/// performs the computation using a work-group reduction and atomics.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -32,6 +32,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <sycl/sycl.hpp>
+
+#ifdef __ADAPTIVECPP__
+#include "custom_reduce.hpp"
+#endif
 
 using std::size_t;
 
@@ -65,6 +69,9 @@ void columnwise_total(sycl::queue q,
     q.submit([&](sycl::handler &h) {
         sycl::accessor mat_acc{mat_buffer, h, sycl::read_only};
         sycl::accessor ct_acc{ct_buffer, h};
+#ifdef __ADAPTIVECPP__
+        sycl::local_accessor<dataT, 1> local_mem_acc{sycl::range<1>(wg), h};
+#endif
 
         sycl::range<2> global{upper_multiple(n, wg), m};
         sycl::range<2> local{wg, 1};
@@ -72,10 +79,14 @@ void columnwise_total(sycl::queue q,
         h.parallel_for(
             sycl::nd_range<2>(global, local), [=](sycl::nd_item<2> it) {
                 size_t i = it.get_global_id(0);
-                dataT group_sum = sycl::reduce_over_group(
-                    it.get_group(),
-                    (i < n) ? mat_acc[it.get_global_id()] : dataT(0),
-                    std::plus<dataT>());
+                dataT val = (i < n) ? mat_acc[it.get_global_id()] : dataT(0);
+#ifdef __ADAPTIVECPP__
+                dataT group_sum = custom_reduce_over_group(
+                    it.get_group(), local_mem_acc, val, std::plus<dataT>());
+#else
+                dataT group_sum = sycl::reduce_over_group(it.get_group(), val,
+                                                          std::plus<dataT>());
+#endif
                 if (it.get_group().leader()) {
                     size_t j = it.get_global_id(1);
                     sycl::atomic_ref<dataT, sycl::memory_order::relaxed,

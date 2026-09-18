@@ -27,6 +27,9 @@ python setup.py build_ext --inplace -- -G "Ninja" \
      -DTBB_INCLUDE_DIR=${CONDA_PREFIX}/include
 ```
 
+Intel DPC++ is required, as the example links `MKL::MKL_SYCL`, so it cannot be
+called from code compiled with AdaptiveCpp.
+
 ## Running
 
 To run the example, use:
