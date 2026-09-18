@@ -233,6 +233,21 @@ def test_create_kernel_bundle_from_source_ocl():
     _check_multi_kernel_bundle(kb)
 
 
+def test_get_sycl_kernel_undefined_name():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    spirv_file = get_spirv_abspath("multi_kernel.spv")
+    with open(spirv_file, "rb") as fin:
+        spirv = fin.read()
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv)
+
+    assert not kb.has_sycl_kernel("no_such_kernel")
+    with pytest.raises(ValueError):
+        kb.get_sycl_kernel("no_such_kernel")
+
+
 def test_create_kernel_bundle_from_spirv_ocl():
     q = _get_opencl_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")
