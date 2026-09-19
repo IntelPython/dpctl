@@ -74,7 +74,7 @@ jobs:
           conda install -y ${{ env.CHANNELS }} \
               "python=${{ matrix.python_spec }}" \
               "adaptivecpp=*=cpu_llvm19*" "clang=19.*" "clangxx=19.*" \
-              intel-opencl-rt tbb \
+              intel-opencl-rt \
               cmake cython ninja numpy pybind11 pytest scikit-build "setuptools<80" versioneer
 
       - name: Report the environment
