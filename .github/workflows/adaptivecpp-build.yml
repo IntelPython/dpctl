@@ -1,0 +1,178 @@
+name: Build with AdaptiveCpp
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  CHANNELS: "-c conda-forge --override-channels"
+  # examples that AdaptiveCpp can build
+  SYCL_EXAMPLES: "cython/sycl_buffer cython/use_dpctl_sycl pybind11/external_usm_allocation pybind11/use_dpctl_sycl_queue"
+  C_EXAMPLES: "c/py_sycl_ls"
+
+jobs:
+  test_linux:
+    name: Build and test with AdaptiveCpp, Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.14'
+            python_spec: '3.14.*=*_cp314'
+          - python: '3.14t'
+            python_spec: '3.14.*=*_cp314t'
+
+    steps:
+      - name: Checkout dpctl repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # the package version comes from git describe
+          fetch-depth: 0
+
+      - name: Cache conda packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          CACHE_NUMBER: 0  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-acpp-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{ hashFiles('.github/workflows/adaptivecpp-build.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-acpp-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-acpp-${{ env.CACHE_NUMBER }}-
+
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          activate-environment: acpp
+          channels: conda-forge
+          conda-remove-defaults: true
+
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+
+      - name: Install AdaptiveCpp and build dependencies
+        run: |
+          # the Python build string selects the GIL or the free-threaded variant,
+          # clang must come from the LLVM that adaptivecpp was built against, and
+          # intel-opencl-rt provides the OpenCL CPU device to run on
+          conda install -y ${{ env.CHANNELS }} \
+              "python=${{ matrix.python_spec }}" \
+              "adaptivecpp=*=cpu_llvm19*" "clang=19.*" "clangxx=19.*" \
+              intel-opencl-rt tbb \
+              cmake cython ninja numpy pybind11 pytest scikit-build "setuptools<80" versioneer
+
+      - name: Report the environment
+        run: |
+          conda list
+          python -VV
+          acpp-info -l
+
+      - name: Build dpctl
+        run: |
+          # conda-forge builds AdaptiveCpp without the Level Zero backend
+          python scripts/build_locally.py \
+              --c-compiler="${CONDA_PREFIX}/bin/clang" \
+              --cxx-compiler="${CONDA_PREFIX}/bin/acpp" \
+              --no-level-zero \
+              --cmake-opts="-DDPCTL_SYCL_PROVIDER=AdaptiveCpp"
+
+      - name: List platforms
+        run: |
+          python -m dpctl -f
+          python -c "from dpctl._diagnostics import sycl_provider; assert sycl_provider() == 'AdaptiveCpp'"
+
+      - name: Run dpctl/tests on the OpenMP device
+        env:
+          ACPP_VISIBILITY_MASK: omp
+        run: |
+          python -m pytest -q dpctl/tests
+
+      - name: Run dpctl/tests on the OpenCL CPU device
+        env:
+          ACPP_VISIBILITY_MASK: ocl
+        run: |
+          python -m pytest -q dpctl/tests
+
+      - name: Build examples of extensions
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          for d in ${SYCL_EXAMPLES}; do
+            pushd "examples/${d}" > /dev/null
+            CC="${CONDA_PREFIX}/bin/clang" CXX="${CONDA_PREFIX}/bin/acpp" \
+                python setup.py build_ext --inplace -G Ninja -- \
+                    -DDPCTL_SYCL_PROVIDER=AdaptiveCpp \
+                    -DDpctl_DIR="${GITHUB_WORKSPACE}/cmake"
+            popd > /dev/null
+          done
+          for d in ${C_EXAMPLES}; do
+            pushd "examples/${d}" > /dev/null
+            python setup.py build_ext --inplace
+            popd > /dev/null
+          done
+
+      - name: Run examples of extensions on the OpenMP device
+        env:
+          ACPP_VISIBILITY_MASK: omp
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          for d in ${SYCL_EXAMPLES} ${C_EXAMPLES}; do
+            # the OpenMP backend allocates plain host memory, so every USM kind
+            # reports usm_type "host" and this example's checks cannot hold
+            if [ "${d}" = "pybind11/external_usm_allocation" ]; then
+              continue
+            fi
+            pushd "examples/${d}" > /dev/null
+            python -m pytest -q tests
+            popd > /dev/null
+          done
+
+      - name: Run examples of extensions on the OpenCL CPU device
+        env:
+          ACPP_VISIBILITY_MASK: ocl
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          for d in ${SYCL_EXAMPLES} ${C_EXAMPLES}; do
+            pushd "examples/${d}" > /dev/null
+            python -m pytest -q tests
+            popd > /dev/null
+          done
+
+      - name: Run Python examples on the OpenMP device
+        working-directory: examples/python
+        env:
+          ACPP_VISIBILITY_MASK: omp
+        run: |
+          while IFS= read -r script; do
+            echo "Executing ${script}"
+            python "${script}" --run all
+          done < <(find . \( -not -name "_*" -and -name "*.py" \))
+
+      - name: Run Python examples on the OpenCL CPU device
+        working-directory: examples/python
+        env:
+          ACPP_VISIBILITY_MASK: ocl
+        run: |
+          while IFS= read -r script; do
+            echo "Executing ${script}"
+            python "${script}" --run all
+          done < <(find . \( -not -name "_*" -and -name "*.py" \))
