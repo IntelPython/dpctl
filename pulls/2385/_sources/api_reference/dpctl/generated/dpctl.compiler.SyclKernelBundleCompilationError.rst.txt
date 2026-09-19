@@ -1,0 +1,6 @@
+﻿dpctl.compiler.SyclKernelBundleCompilationError
+===============================================
+
+.. currentmodule:: dpctl.compiler
+
+.. autoexception:: SyclKernelBundleCompilationError
