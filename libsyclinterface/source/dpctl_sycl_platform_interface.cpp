@@ -304,6 +304,15 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
         return wrap<vecTy>(DevicesVectorPtr);
     }
 
+    DPCTLSyclBackendType BTy =
+        DPCTL_SyclBackendToDPCTLBackendType(P->get_backend());
+    if (DTy == DPCTLSyclDeviceType::DPCTL_CUSTOM &&
+        BTy == DPCTLSyclBackendType::DPCTL_LEVEL_ZERO)
+    {
+        // avoid ugly warnings from unified runtime
+        return wrap<vecTy>(DevicesVectorPtr);
+    }
+
     try {
         auto SyclDTy = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DTy);
         auto Devices = P->get_devices(SyclDTy);
