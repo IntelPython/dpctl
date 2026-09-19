@@ -348,7 +348,14 @@ def test_queue_memops():
     with pytest.raises(TypeError):
         q.memcpy([], m2, 512)
 
-    if not is_wsl_or_windows():
+    # AdaptiveCpp prefetches by migrating the allocation to the device, which
+    # the OpenCL CPU runtime rejects with CL_INVALID_VALUE
+    acpp_opencl_cpu = (
+        is_adaptivecpp()
+        and q.sycl_device.backend == dpctl.backend_type.opencl
+        and q.sycl_device.has_aspect_cpu
+    )
+    if not is_wsl_or_windows() and not acpp_opencl_cpu:
         q.prefetch(m1, 512)
         with pytest.raises(TypeError):
             q.prefetch([], 512)
