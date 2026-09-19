@@ -244,6 +244,7 @@ def test_create_kernel_bundle_from_spirv_ocl():
     _check_multi_kernel_bundle(kb)
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_from_spirv_l0():
     q = _get_level_zero_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")

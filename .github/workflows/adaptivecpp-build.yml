@@ -50,7 +50,8 @@ jobs:
         env:
           CACHE_NUMBER: 0  # Increase to reset cache
         with:
-          path: ~/.conda/pkgs
+          # the package directory that setup-miniconda configures
+          path: ~/conda_pkgs_dir
           key:
             ${{ runner.os }}-conda-acpp-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{ hashFiles('.github/workflows/adaptivecpp-build.yml') }}
           restore-keys: |
@@ -64,10 +65,6 @@ jobs:
           activate-environment: acpp
           channels: conda-forge
           conda-remove-defaults: true
-
-      - name: Set pkgs_dirs
-        run: |
-          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
 
       - name: Install AdaptiveCpp and build dependencies
         run: |
@@ -88,12 +85,7 @@ jobs:
 
       - name: Build dpctl
         run: |
-          # conda-forge builds AdaptiveCpp without the Level Zero backend
-          python scripts/build_locally.py \
-              --c-compiler="${CONDA_PREFIX}/bin/clang" \
-              --cxx-compiler="${CONDA_PREFIX}/bin/acpp" \
-              --no-level-zero \
-              --cmake-opts="-DDPCTL_SYCL_PROVIDER=AdaptiveCpp"
+          python scripts/build_locally.py --sycl-provider=AdaptiveCpp
 
       - name: List platforms
         run: |
