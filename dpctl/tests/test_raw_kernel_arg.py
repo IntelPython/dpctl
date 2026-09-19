@@ -25,6 +25,11 @@ import pytest
 import dpctl
 import dpctl.memory as dpm
 
+pytestmark = pytest.mark.skipif(
+    not dpctl.RawKernelArg.is_available(),
+    reason="Raw kernel arg extension not supported",
+)
+
 
 def get_spirv_abspath(fn):
     curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,9 +64,6 @@ class Params(ctypes.Structure):
 
 
 def launch_raw_arg_kernel(raw):
-    if not dpctl.RawKernelArg.is_available():
-        pytest.skip("Raw kernel arg extension not supported")
-
     try:
         q = dpctl.SyclQueue("level_zero")
     except dpctl.SyclQueueCreationError:

@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "detail/deferred_releases.hpp"
 #include "dpctl_capi.h"
 
 #include <atomic>
@@ -45,6 +46,24 @@ namespace dpctl
 {
 namespace detail
 {
+
+/*!
+ * @brief Whether the interpreter can still be called into.
+ *
+ * A destructor that may run at shutdown, such as the one releasing
+ * `dpctl_capi`'s objects, must check this before touching Python: asking for
+ * the GIL while finalization runs may not return, and once finalization is over
+ * the call is not safe at all.
+ */
+inline bool interpreter_is_live()
+{
+    const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+    return initialized && !_Py_IsFinalizing();
+#else
+    return initialized && !Py_IsFinalizing();
+#endif
+}
 
 class dpctl_capi
 {
@@ -173,15 +192,7 @@ private:
     {
         void operator()(py::object *p) const
         {
-            const bool initialized = Py_IsInitialized();
-#if PY_VERSION_HEX < 0x30d0000
-            const bool finalizing = _Py_IsFinalizing();
-#else
-            const bool finalizing = Py_IsFinalizing();
-#endif
-            const bool guard = initialized && !finalizing;
-
-            if (guard) {
+            if (interpreter_is_live()) {
                 delete p;
             }
         }
@@ -294,6 +305,33 @@ private:
     dpctl_capi &operator=(dpctl_capi &&) = default;
 
 }; // struct dpctl_capi
+
+/*!
+ * @brief The `DeferredReleases` singleton, owned by `dpctl._sycl_queue`.
+ *
+ * The supported way of reaching the list, so that everything defers to the one
+ * `dpctl`'s thread runs rather than to one of its own that nothing runs. Use it
+ * to release anything that must outlive offloaded work, as
+ * `dpctl::utils::keep_args_alive` does for the objects passed to it.
+ *
+ * Throws `std::runtime_error` if the list could not be obtained.
+ */
+inline DeferredReleases &get_deferred_releases()
+{
+    static DeferredReleases *releases = []() -> DeferredReleases * {
+        // get dpctl_capi to prevent nullptr return
+        static_cast<void>(dpctl_capi::get());
+
+        return static_cast<DeferredReleases *>(DeferredReleases_Get());
+    }();
+
+    if (!releases) {
+        throw std::runtime_error(
+            "Could not create dpctl's deferred release list");
+    }
+    return *releases;
+}
+
 } // namespace detail
 } // namespace dpctl
 
@@ -517,6 +555,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel, _("dpctl.compiler.SyclKernel"));
 };
 
+#ifndef __ADAPTIVECPP__
 /* This type caster associates
  * ``sycl::kernel_bundle<sycl::bundle_state::executable>`` C++ class with
  * :class:`dpctl.compiler.SyclKernelBundle` for the purposes of generation of
@@ -560,6 +599,7 @@ public:
     DPCTL_TYPE_CASTER(sycl::kernel_bundle<sycl::bundle_state::executable>,
                       _("dpctl.compiler.SyclKernelBundle"));
 };
+#endif
 
 /* This type caster associates
  * ``sycl::half`` C++ class with Python :class:`float` for the purposes
@@ -795,8 +835,71 @@ struct ManagedMemory
     }
 };
 
+/*!
+ * @brief Keeps USM owners collected for a release that was never deferred.
+ *
+ * The USM owners collected for a release are given up by that release, so
+ * anything that throws on the way to deferring it must not drop them: the work
+ * that would have gated the release may still be using the allocations. They
+ * are leaked here instead, unless `handed_off` reports that the release took
+ * them over.
+ *
+ * Only the USM owners need this. A reference taken with `inc_ref` is leaked by
+ * the same failure without any help, as destroying a `py::handle` does not drop
+ * one.
+ */
+class held_usm_owners
+{
+public:
+    held_usm_owners(std::shared_ptr<void> *owners, const std::size_t &n_held)
+        : m_owners(owners), m_n_held(n_held)
+    {
+    }
+
+    held_usm_owners(const held_usm_owners &) = delete;
+    held_usm_owners &operator=(const held_usm_owners &) = delete;
+
+    /*!
+     * @brief Report that the deferred release is responsible for the owners.
+     */
+    void handed_off() { m_handed_off = true; }
+
+    ~held_usm_owners()
+    {
+        if (m_handed_off) {
+            return;
+        }
+
+        for (std::size_t i = 0; i < m_n_held; ++i) {
+            try {
+                // deliberately leaked, as described above
+                new std::shared_ptr<void>(std::move(m_owners[i]));
+            } catch (...) {
+                // nothing may be thrown from here, and there is nothing else
+                // left to try: the owner is released as this returns
+            }
+        }
+    }
+
+private:
+    std::shared_ptr<void> *m_owners;
+    const std::size_t &m_n_held;
+    bool m_handed_off = false;
+};
+
 } // end of namespace detail
 
+/*!
+ * @brief Keeps `py_objs` alive until the work covered by `depends` completes.
+ *
+ * Returns an event for an empty kernel submitted to `q` after `depends`, which
+ * is what the release waits for.
+ *
+ * `q` is intended to be the queue running the work that uses `py_objs`.
+ *
+ * Expects the caller to hold the GIL. Throws if the release could not be
+ * scheduled, having released nothing.
+ */
 template <std::size_t num>
 sycl::event keep_args_alive(sycl::queue &q,
                             const py::object (&py_objs)[num],
@@ -807,6 +910,9 @@ sycl::event keep_args_alive(sycl::queue &q,
 
     std::size_t n_usm_owners_held = 0;
     std::array<std::shared_ptr<void>, num> shp_usm{};
+
+    // declared after what it guards, so that it is destroyed first
+    detail::held_usm_owners held(shp_usm.data(), n_usm_owners_held);
 
     for (std::size_t i = 0; i < num; ++i) {
         const auto &py_obj_i = py_objs[i];
@@ -823,46 +929,25 @@ sycl::event keep_args_alive(sycl::queue &q,
         }
     }
 
-    bool use_depends = true;
-    sycl::event host_task_ev;
+    const sycl::event marker =
+        dpctl::detail::submit_keep_alive_marker(q, depends);
 
-    if (n_usm_owners_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
+    // captured by copy rather than moved from, so that the guard can still
+    // find the USM owners should `defer` throw
+    dpctl::detail::get_deferred_releases().defer(
+        {marker},
+        [n_usm_owners_held, shp_usm, n_objects_held, shp_arr]() mutable {
+            for (std::size_t i = 0; i < n_usm_owners_held; ++i) {
+                shp_usm[i].reset();
             }
-            else {
-                cgh.depends_on(host_task_ev);
+
+            for (std::size_t i = 0; i < n_objects_held; ++i) {
+                shp_arr[i]->dec_ref();
             }
-            cgh.host_task([shp_usm = std::move(shp_usm)]() {
-                // no body, but shared pointers are captured in
-                // the lambda, ensuring that USM allocation is
-                // kept alive
-            });
         });
-    }
+    held.handed_off();
 
-    if (n_objects_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
-            }
-            else {
-                cgh.depends_on(host_task_ev);
-            }
-            cgh.host_task([n_objects_held, shp_arr = std::move(shp_arr)]() {
-                py::gil_scoped_acquire acquire;
-
-                for (std::size_t i = 0; i < n_objects_held; ++i) {
-                    shp_arr[i]->dec_ref();
-                }
-            });
-        });
-    }
-
-    return host_task_ev;
+    return marker;
 }
 
 /*! @brief Check if all allocation queues are the same as the

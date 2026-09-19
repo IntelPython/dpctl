@@ -28,6 +28,7 @@ from ._device_attributes_checks import (
     valid_filter,
 )
 from ._numpy_warnings import suppress_invalid_numpy_warnings
+from .helper import is_adaptivecpp
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "helper"))
 
@@ -45,6 +46,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers",
         "broken_complex: Specified again to remove warnings ",
+    )
+    config.addinivalue_line(
+        "markers",
+        "unsupported_on_acpp: Test exercises a feature AdaptiveCpp lacks",
     )
 
 
@@ -64,6 +69,14 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(config, items):
+    if is_adaptivecpp():
+        skip_acpp = pytest.mark.skip(
+            reason="not supported by AdaptiveCpp",
+        )
+        for item in items:
+            if "unsupported_on_acpp" in item.keywords:
+                item.add_marker(skip_acpp)
+
     if config.getoption("--runcomplex"):
         return
     skip_complex = pytest.mark.skip(

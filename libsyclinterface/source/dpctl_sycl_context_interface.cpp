@@ -38,8 +38,10 @@ using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 } // end of anonymous namespace
@@ -187,18 +189,7 @@ DPCTLContext_GetBackend(__dpctl_keep const DPCTLSyclContextRef CtxRef)
 
     auto BE = unwrap<context>(CtxRef)->get_platform().get_backend();
 
-    switch (BE) {
-    case backend::opencl:
-        return DPCTL_OPENCL;
-    case backend::ext_oneapi_level_zero:
-        return DPCTL_LEVEL_ZERO;
-    case backend::ext_oneapi_cuda:
-        return DPCTL_CUDA;
-    case backend::ext_oneapi_hip:
-        return DPCTL_HIP;
-    default:
-        return DPCTL_UNKNOWN_BACKEND;
-    }
+    return DPCTL_SyclBackendToDPCTLBackendType(BE);
 }
 
 size_t DPCTLContext_Hash(__dpctl_keep const DPCTLSyclContextRef CtxRef)
@@ -229,6 +220,8 @@ DPCTLContext_GetPlatform(__dpctl_keep const DPCTLSyclContextRef CtxRef)
     }
     return PRef;
 }
+
+#ifndef __ADAPTIVECPP__
 
 namespace
 {
@@ -298,3 +291,49 @@ __dpctl_give int *DPCTLContext_GetAtomicFenceScopeCapabilities(
         info::context::atomic_fence_scope_capabilities>(
         CtxRef, res_len, DPCTL_SyclMemoryScopeToDPCTLType);
 }
+
+#else
+
+namespace
+{
+
+int *unsupported_context_capabilities(size_t *res_len)
+{
+    error_handler("Atomic capabilities of a context are not queryable in "
+                  "AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    *res_len = 0;
+    return nullptr;
+}
+
+} // end of anonymous namespace
+
+__dpctl_give int *DPCTLContext_GetAtomicMemoryOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef,
+    size_t *res_len)
+{
+    return unsupported_context_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicFenceOrderCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef,
+    size_t *res_len)
+{
+    return unsupported_context_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicMemoryScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef,
+    size_t *res_len)
+{
+    return unsupported_context_capabilities(res_len);
+}
+
+__dpctl_give int *DPCTLContext_GetAtomicFenceScopeCapabilities(
+    __dpctl_keep const DPCTLSyclContextRef,
+    size_t *res_len)
+{
+    return unsupported_context_capabilities(res_len);
+}
+
+#endif /* #ifndef __ADAPTIVECPP__ */

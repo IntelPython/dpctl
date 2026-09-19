@@ -111,11 +111,14 @@ function(build_dpctl_ext _trgt _src _dest)
     Python_add_library(${_trgt} MODULE WITH_SOABI ${_generated_src})
     if (BUILD_DPCTL_EXT_SYCL)
         add_sycl_to_target(TARGET ${_trgt} SOURCES ${_generated_src})
-        target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
-	target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
-	if (DPCTL_OFFLOAD_COMPRESS)
-            target_link_options(${_trgt} PRIVATE --offload-compress)
-	endif()
+        # Only apply DPC++ specific compiler optimizations
+        if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+            target_compile_options(${_trgt} PRIVATE -fno-sycl-id-queries-fit-in-int)
+            target_link_options(${_trgt} PRIVATE -fsycl-device-code-split=per_kernel)
+            if (DPCTL_OFFLOAD_COMPRESS)
+                target_link_options(${_trgt} PRIVATE --offload-compress)
+            endif()
+        endif()
         if(_dpctl_sycl_targets)
             # make fat binary
             target_compile_options(
@@ -134,7 +137,9 @@ function(build_dpctl_ext _trgt _src _dest)
     if (DPCTL_GENERATE_COVERAGE)
         target_compile_definitions(${_trgt} PRIVATE CYTHON_TRACE=1 CYTHON_TRACE_NOGIL=1)
         if (BUILD_DPCTL_EXT_SYCL)
-            target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
+            if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+                target_compile_options(${_trgt} PRIVATE -fno-sycl-use-footer)
+            endif()
         endif()
     endif()
     target_link_libraries(${_trgt} PRIVATE DPCTLSyclInterface)
@@ -199,8 +204,12 @@ endforeach()
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_sycl_queue.pyx)
 get_filename_component(_trgt ${_cy_file} NAME_WLE)
 build_dpctl_ext(${_trgt} ${_cy_file} "dpctl" SYCL)
-# _sycl_queue include _host_task_util.hpp
-target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# _sycl_queue includes _async_dec_ref.hpp, which reaches
+# detail/deferred_releases.hpp in the public include directory
+target_include_directories(${_trgt} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/apis/include
+)
 target_link_libraries(DpctlCAPI INTERFACE ${_trgt}_headers)
 
 add_subdirectory(compiler)

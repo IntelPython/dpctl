@@ -52,6 +52,14 @@ def parse_args():
     )
 
     p.add_argument(
+        "--sycl-provider",
+        type=str,
+        choices=["Intel", "AdaptiveCpp"],
+        default="Intel",
+        help="SYCL implementation to build with (defaults to Intel).",
+    )
+
+    p.add_argument(
         "--oneapi",
         dest="oneapi",
         action="store_true",
@@ -139,15 +147,23 @@ def main():
     setup_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     c_compiler, cxx_compiler = resolve_compilers(
-        args.oneapi, args.c_compiler, args.cxx_compiler, args.compiler_root
+        args.oneapi,
+        args.c_compiler,
+        args.cxx_compiler,
+        args.compiler_root,
+        sycl_provider=args.sycl_provider,
     )
 
     # clean build dir if --clean set
     if args.clean:
         clean_build_dir(setup_dir)
 
-    # Level Zero state (on unless explicitly disabled)
-    level_zero_enabled = False if args.no_level_zero else True
+    # Level Zero state (on unless explicitly disabled), the backend is only
+    # implemented for DPC++
+    if args.sycl_provider == "AdaptiveCpp":
+        level_zero_enabled = False
+    else:
+        level_zero_enabled = False if args.no_level_zero else True
 
     cmake_args = make_cmake_args(
         c_compiler=c_compiler,
@@ -155,6 +171,7 @@ def main():
         level_zero=level_zero_enabled,
         glog=args.glog,
         verbose=args.verbose,
+        sycl_provider=args.sycl_provider,
         other_opts=args.cmake_opts,
     )
 

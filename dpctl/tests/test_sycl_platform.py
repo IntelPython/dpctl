@@ -120,7 +120,9 @@ list_of_checks = [
     check_print_info,
     check_repr,
     check_default_context,
-    check_equal_and_hash,
+    # AdaptiveCpp contexts span platforms, so a context's devices need not
+    # belong to the platform the context was created for
+    pytest.param(check_equal_and_hash, marks=pytest.mark.unsupported_on_acpp),
     check_hash_in_dict,
 ]
 
@@ -214,6 +216,8 @@ def test_get_platforms():
         pytest.fail("Encountered an exception inside get_platforms().")
 
 
+# AdaptiveCpp reports a platform per backend, even those with no device
+@pytest.mark.unsupported_on_acpp
 def test_platform_get_devices():
     platforms = dpctl.get_platforms()
     if platforms:

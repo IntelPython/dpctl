@@ -101,17 +101,26 @@ from cpython.ref cimport Py_INCREF, PyObject
 from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
 
+import atexit
 import collections.abc
 import logging
 import struct
 import sys
+import warnings
 
 
-cdef extern from "_host_task_util.hpp":
+cdef extern from "_async_dec_ref.hpp":
     DPCTLSyclEventRef async_dec_ref(
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
-    ) nogil
+    )
+    void *deferred_releases_ptr() nogil
+    # runs the releases that have come due, and so arbitrary Python code:
+    # requires the GIL
+    bint drain_deferred_releases()
+    void start_deferred_release_watcher() nogil
+    # waits for the thread, which may be waiting for the GIL
+    void stop_deferred_release_watcher() nogil
 
 
 __all__ = [
@@ -1291,6 +1300,8 @@ cdef class SyclQueue(_SyclQueue):
             return backend_type.cuda
         elif BE == _backend_type._HIP:
             return backend_type.hip
+        elif BE == _backend_type._OPENMP:
+            return backend_type.openmp
         else:
             raise ValueError("Unknown backend type.")
 
@@ -1337,6 +1348,105 @@ cdef class SyclQueue(_SyclQueue):
         """
         return <size_t>self._queue_ref
 
+    cpdef SyclEvent keep_args_alive(self, object args, object depends=None):
+        """ SyclQueue.keep_args_alive(args, depends=None)
+
+        Keeps objects in ``args`` alive until the work on this queue that uses
+        them completes.
+
+        Args:
+            args (object):
+                Python object to keep alive, typically a tuple of the arguments
+                passed to an offloaded task.
+            depends (List[dpctl.SyclEvent], optional):
+                Gating events. On an out-of-order queue these decide when the
+                objects stop being used, so every task using them must be
+                covered. Default: ``None``.
+
+        Returns:
+            dpctl.SyclEvent:
+                An event that completes once ``args`` have stopped being used.
+                Its completion does not mean that ``args`` were released, only
+                that releasing them has come due.
+
+        Raises:
+            TypeError:
+                If ``depends`` is not a sequence of :class:`dpctl.SyclEvent`.
+            RuntimeError:
+                If the release could not be scheduled. The reference taken on
+                ``args`` is then leaked deliberately, as the work using them
+                may still be running.
+
+        Increments the reference count of ``args`` and defers the matching
+        decrement until an empty kernel, submitted to this queue after
+        ``depends``, has completed. On an in-order queue it is ordered after
+        everything submitted before it, so ``depends`` may be omitted.
+
+        It is suggested to call this on the queue running the work that uses
+        ``args``: the kernel is ordered only against work submitted to the queue
+        it goes to, so on any other queue ``depends`` alone gates the release.
+
+        :Example:
+            .. code-block:: python
+
+                import dpctl
+
+                q = dpctl.SyclQueue()
+                e = q.submit_async(kernel, [x_usm], [n])
+                q.keep_args_alive((x_usm,), [e])
+
+                # an in-order queue needs no event
+                q_in_order = dpctl.SyclQueue(property="in_order")
+                q_in_order.submit_async(kernel, [y_usm], [n])
+                q_in_order.keep_args_alive((y_usm,))
+
+        .. note::
+            On a free-threaded build, the thread dropping the reference does not
+            own the object, so its ``__del__`` may run later than the decrement.
+        """
+        cdef size_t nDE = 0
+        cdef DPCTLSyclEventRef *depEvents = NULL
+        cdef DPCTLSyclEventRef ERef = NULL
+        cdef PyObject *args_raw = NULL
+        cdef int status = -1
+
+        if depends is None:
+            depends = ()
+        nDE = len(depends)
+
+        if nDE > 0:
+            depEvents = (
+                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
+            )
+            if not depEvents:
+                raise MemoryError()
+            for idx, de in enumerate(depends):
+                if isinstance(de, SyclEvent):
+                    depEvents[idx] = (<SyclEvent>de).get_event_ref()
+                else:
+                    free(depEvents)
+                    raise TypeError(
+                        "A sequence of dpctl.SyclEvent is expected"
+                    )
+
+        # increment reference counts to list of arguments
+        Py_INCREF(args)
+        args_raw = <PyObject *>args
+
+        # schedule decrement
+        ERef = async_dec_ref(
+            self.get_queue_ref(), &args_raw, 1, depEvents, nDE, &status
+        )
+
+        free(depEvents)
+        if status != 0:
+            # nothing will drop the reference taken above, and it is leaked
+            # deliberately: the work in depends, and whatever this queue has
+            # already been given, may still be using args
+            raise RuntimeError("Could not schedule keep_args_alive")
+
+        return SyclEvent._create(ERef)
+
     cpdef SyclEvent _submit_keep_args_alive(
         self,
         object args,
@@ -1357,61 +1467,25 @@ cdef class SyclQueue(_SyclQueue):
                 working on Python objects collected in ``args``.
         Returns:
             dpctl.SyclEvent
-               The event associated with the submission of host task.
+               An event for an empty kernel submitted to this queue after
+               ``events``. It says when ``args`` stop being used, not when they
+               were released: see :meth:`dpctl.SyclQueue.keep_args_alive` for
+               when the reference taken is dropped.
 
-        Increments reference count of ``args`` and schedules asynchronous
-        ``host_task`` to decrement the count once dependent events are
-        complete.
-
-        .. note::
-            The ``host_task`` attempts to acquire Python GIL, and it is
-            known to be unsafe during interpreter shutdown sequence. It is
-            thus strongly advised to ensure that all submitted ``host_task``
-            complete before the end of the Python script.
+        .. deprecated:: 0.23.0
+           The method is deprecated, use
+           :meth:`dpctl.SyclQueue.keep_args_alive` instead, which this now
+           calls and which behaves identically.
         """
-        cdef size_t nDE = len(dEvents)
-        cdef DPCTLSyclEventRef *depEvents = NULL
-        cdef PyObject *args_raw = NULL
-        cdef DPCTLSyclEventRef htERef = NULL
-        cdef int status = -1
-
-        # Create the array of dependent events if any
-        if nDE > 0:
-            depEvents = (
-                <DPCTLSyclEventRef*>malloc(nDE*sizeof(DPCTLSyclEventRef))
-            )
-            if not depEvents:
-                raise MemoryError()
-            else:
-                for idx, de in enumerate(dEvents):
-                    if isinstance(de, SyclEvent):
-                        depEvents[idx] = (<SyclEvent>de).get_event_ref()
-                    else:
-                        free(depEvents)
-                        raise TypeError(
-                            "A sequence of dpctl.SyclEvent is expected"
-                        )
-
-        # increment reference counts to list of arguments
-        Py_INCREF(args)
-
-        # schedule decrement
-        args_raw = <PyObject *>args
-
-        htERef = async_dec_ref(
-            self.get_queue_ref(),
-            &args_raw, 1,
-            depEvents, nDE, &status
+        warnings.warn(
+            "dpctl.SyclQueue._submit_keep_args_alive is deprecated and will "
+            "be removed in a future release. Use "
+            "dpctl.SyclQueue.keep_args_alive instead.",
+            DeprecationWarning,
+            stacklevel=2,
         )
 
-        free(depEvents)
-        if (status != 0):
-            with nogil:
-                DPCTLEvent_Wait(htERef)
-            DPCTLEvent_Delete(htERef)
-            raise RuntimeError("Could not submit keep_args_alive host_task")
-
-        return SyclEvent._create(htERef)
+        return self.keep_args_alive(args, dEvents)
 
     cpdef SyclEvent submit_async(
         self,
@@ -1451,7 +1525,7 @@ cdef class SyclQueue(_SyclQueue):
             as unified address space pointers.
 
             One way of accomplishing this is to use
-            :meth:`dpctl.SyclQueue._submit_keep_args_alive`.
+            :meth:`dpctl.SyclQueue.keep_args_alive`.
         """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
@@ -2260,6 +2334,53 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     """
     cdef DPCTLSyclQueueRef copied_QRef = DPCTLQueue_Copy(QRef)
     return SyclQueue._create(copied_QRef)
+
+
+cdef api void *DeferredReleases_Get() noexcept nogil:
+    return deferred_releases_ptr()
+
+
+cdef bint drain_releases():
+    """Run the releases deferred for offloaded tasks that have completed.
+
+    Returns whether there were any.
+
+    Expects the caller to hold the GIL, as a release runs arbitrary Python code.
+    """
+    return drain_deferred_releases()
+
+
+def _drain_deferred_releases():
+    """_drain_deferred_releases()
+
+    Release the objects held for offloaded tasks that have completed, dropping
+    the references taken for them.
+    """
+    drain_releases()
+
+
+def _start_deferred_release_watcher():
+    """_start_deferred_release_watcher()
+
+    Run deferred releases on dpctl's own thread, starting it if it is stopped.
+    """
+    start_deferred_release_watcher()
+
+
+def _stop_deferred_release_watcher():
+    """_stop_deferred_release_watcher()
+
+    Stop dpctl's thread and wait for it, leaving whatever it still holds held.
+    """
+    with nogil:
+        stop_deferred_release_watcher()
+
+
+start_deferred_release_watcher()
+
+# runs while the interpreter is still up so the thread can be waited for
+atexit.register(_stop_deferred_release_watcher)
+
 
 cdef class _WorkGroupMemory:
     def __dealloc__(self):

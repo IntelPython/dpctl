@@ -1,4 +1,3 @@
-
 set(_cy_file ${CMAKE_CURRENT_SOURCE_DIR}/_memory.pyx)
 get_filename_component(_trgt ${_cy_file} NAME_WLE)
 build_dpctl_ext(${_trgt} ${_cy_file} "dpctl/memory" SYCL RELATIVE_PATH "..")

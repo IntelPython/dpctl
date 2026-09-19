@@ -109,6 +109,7 @@ def test_execution_status():
     assert event_status == esty.complete
 
 
+@pytest.mark.unsupported_on_acpp
 def test_execution_status_nondefault_event():
     try:
         event = produce_event()
@@ -123,6 +124,7 @@ def test_execution_status_nondefault_event():
     assert type(wl) is list
 
 
+@pytest.mark.unsupported_on_acpp
 def test_event_backend():
     if dpctl.get_num_devices() == 0:
         pytest.skip("No backends are available")
@@ -140,6 +142,7 @@ def test_event_backend():
         pytest.fail("Failed to get backend from event")
 
 
+@pytest.mark.unsupported_on_acpp
 def test_get_wait_list():
     try:
         q = dpctl.SyclQueue("opencl:cpu")
@@ -184,6 +187,7 @@ def test_get_wait_list():
     assert len(wait_list) >= 0
 
 
+@pytest.mark.unsupported_on_acpp
 def test_profiling_info():
     try:
         event = produce_event(profiling=True)

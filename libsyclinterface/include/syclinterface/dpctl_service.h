@@ -44,6 +44,15 @@ DPCTL_API
 __dpctl_give const char *DPCTLService_GetDPCPPVersion(void);
 
 /*!
+ * @brief Get the SYCL implementation the library was compiled with.
+ *
+ * @return A C string, either "Intel" or "AdaptiveCpp".
+ * @ingroup Service
+ */
+DPCTL_API
+__dpctl_give const char *DPCTLService_GetSyclProvider(void);
+
+/*!
  * @brief Initialize logger if compiled to use logger, no-op otherwise.
  *
  * @param app_name  C-string for application name reflected in the log.

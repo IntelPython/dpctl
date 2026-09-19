@@ -35,6 +35,21 @@ this functionality.
 
 Examples of Python extensions created using C are located in [c](c) folder.
 
+## Building with AdaptiveCpp
+
+An extension must be built with the same SYCL implementation as the `dpctl` it is
+built against, which `dpctl._diagnostics.sycl_provider()` reports. The `cython`
+and `pybind11` examples accept `-DDPCTL_SYCL_PROVIDER=AdaptiveCpp` to build with
+AdaptiveCpp rather than Intel DPC++:
+
+```bash
+CC=clang CXX=acpp python setup.py build_ext --inplace -G Ninja -- \
+    -DDPCTL_SYCL_PROVIDER=AdaptiveCpp
+```
+
+The `onemkl_gemv` and `use_dpctl_sycl_kernel` examples require Intel DPC++, see
+their READMEs.
+
 
 [platform]: https://intelpython.github.io/dpctl/latest/docfiles/user_guides/manual/dpctl/platforms.html
 [device_selection]: https://intelpython.github.io/dpctl/latest/docfiles/user_guides/manual/dpctl/device_selection.html

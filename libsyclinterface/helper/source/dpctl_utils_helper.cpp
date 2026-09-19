@@ -84,6 +84,7 @@ info::device_type DPCTL_StrToDeviceType(const std::string &devTyStr)
 backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
 {
     switch (BeTy) {
+#ifndef __ADAPTIVECPP__
     case DPCTLSyclBackendType::DPCTL_CUDA:
         return backend::ext_oneapi_cuda;
     case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
@@ -94,6 +95,18 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
         return backend::all;
     case DPCTLSyclBackendType::DPCTL_HIP:
         return backend::ext_oneapi_hip;
+#else
+    case DPCTLSyclBackendType::DPCTL_CUDA:
+        return backend::cuda;
+    case DPCTLSyclBackendType::DPCTL_HIP:
+        return backend::hip;
+    case DPCTLSyclBackendType::DPCTL_LEVEL_ZERO:
+        return backend::level_zero;
+    case DPCTLSyclBackendType::DPCTL_OPENCL:
+        return backend::ocl;
+    case DPCTLSyclBackendType::DPCTL_OPENMP:
+        return backend::omp;
+#endif
     default:
         throw std::runtime_error("Unsupported backend type");
     }
@@ -102,6 +115,7 @@ backend DPCTL_DPCTLBackendTypeToSyclBackend(DPCTLSyclBackendType BeTy)
 DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
 {
     switch (B) {
+#ifndef __ADAPTIVECPP__
     case backend::ext_oneapi_cuda:
         return DPCTLSyclBackendType::DPCTL_CUDA;
     case backend::ext_oneapi_level_zero:
@@ -110,6 +124,18 @@ DPCTLSyclBackendType DPCTL_SyclBackendToDPCTLBackendType(backend B)
         return DPCTLSyclBackendType::DPCTL_OPENCL;
     case backend::ext_oneapi_hip:
         return DPCTLSyclBackendType::DPCTL_HIP;
+#else
+    case backend::cuda:
+        return DPCTLSyclBackendType::DPCTL_CUDA;
+    case backend::hip:
+        return DPCTLSyclBackendType::DPCTL_HIP;
+    case backend::level_zero:
+        return DPCTLSyclBackendType::DPCTL_LEVEL_ZERO;
+    case backend::ocl:
+        return DPCTLSyclBackendType::DPCTL_OPENCL;
+    case backend::omp:
+        return DPCTLSyclBackendType::DPCTL_OPENMP;
+#endif
     default:
         return DPCTLSyclBackendType::DPCTL_UNKNOWN_BACKEND;
     }
@@ -219,12 +245,14 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
     case aspect::emulated:
         ss << "emulated";
         break;
+#ifndef __ADAPTIVECPP__
     case aspect::ext_oneapi_is_component:
         ss << "is_component";
         break;
     case aspect::ext_oneapi_is_composite:
         ss << "is_composite";
         break;
+#endif
 #ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case aspect::ext_oneapi_ipc_memory:
         ss << "ext_oneapi_ipc_memory";
@@ -299,12 +327,14 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
     else if (aspectTyStr == "emulated") {
         aspectTy = aspect::emulated;
     }
+#ifndef __ADAPTIVECPP__
     else if (aspectTyStr == "is_component") {
         aspectTy = aspect::ext_oneapi_is_component;
     }
     else if (aspectTyStr == "is_composite") {
         aspectTy = aspect::ext_oneapi_is_composite;
     }
+#endif
 #ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     else if (aspectTyStr == "ext_oneapi_ipc_memory") {
         aspectTy = aspect::ext_oneapi_ipc_memory;
@@ -358,10 +388,16 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
         return aspect::host_debuggable;
     case DPCTLSyclAspectType::emulated:
         return aspect::emulated;
+#ifndef __ADAPTIVECPP__
     case DPCTLSyclAspectType::is_component:
         return aspect::ext_oneapi_is_component;
     case DPCTLSyclAspectType::is_composite:
         return aspect::ext_oneapi_is_composite;
+#else
+    case DPCTLSyclAspectType::is_component:
+    case DPCTLSyclAspectType::is_composite:
+        throw std::runtime_error("Aspect type unsupported in AdaptiveCpp");
+#endif
 #ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case DPCTLSyclAspectType::ext_oneapi_ipc_memory:
         return aspect::ext_oneapi_ipc_memory;
@@ -412,10 +448,12 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
         return DPCTLSyclAspectType::host_debuggable;
     case aspect::emulated:
         return DPCTLSyclAspectType::emulated;
+#ifndef __ADAPTIVECPP__
     case aspect::ext_oneapi_is_composite:
         return DPCTLSyclAspectType::is_composite;
     case aspect::ext_oneapi_is_component:
         return DPCTLSyclAspectType::is_component;
+#endif
 #ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case aspect::ext_oneapi_ipc_memory:
         return DPCTLSyclAspectType::ext_oneapi_ipc_memory;
@@ -565,6 +603,7 @@ DPCTLPartitionPropertyType DPCTL_SyclPartitionPropertyToDPCTLType(
     }
 }
 
+#ifndef __ADAPTIVECPP__
 ext::oneapi::peer_access
 DPCTL_DPCTLPeerAccessTypeToSycl(DPCTLPeerAccessType PeerAccessTy)
 {
@@ -590,6 +629,7 @@ DPCTL_SyclPeerAccessToDPCTLType(ext::oneapi::peer_access PeerAccess)
         throw std::runtime_error("Unsupported peer_access type");
     }
 }
+#endif
 
 int64_t DPCTL_GetRelativeDeviceId(const device &Device)
 {
@@ -617,6 +657,7 @@ std::string DPCTL_GetDeviceFilterString(const device &Device)
 
     auto be = Device.get_platform().get_backend();
 
+#ifndef __ADAPTIVECPP__
     switch (be) {
     case backend::ext_oneapi_level_zero:
         ss << "level_zero";
@@ -633,6 +674,27 @@ std::string DPCTL_GetDeviceFilterString(const device &Device)
     default:
         ss << "unknown";
     };
+#else
+    switch (be) {
+    case backend::cuda:
+        ss << "cuda";
+        break;
+    case backend::hip:
+        ss << "hip";
+        break;
+    case backend::level_zero:
+        ss << "level_zero";
+        break;
+    case backend::ocl:
+        ss << "opencl";
+        break;
+    case backend::omp:
+        ss << "openmp";
+        break;
+    default:
+        ss << "unknown";
+    };
+#endif
 
     ss << filter_string_separator;
     ss << DPCTL_DeviceTypeToStr(Device.get_info<info::device::device_type>());

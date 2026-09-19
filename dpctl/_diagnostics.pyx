@@ -24,10 +24,26 @@
 import contextlib
 import os
 
+from ._backend cimport DPCTLCString_Delete
+
 
 cdef extern from "syclinterface/dpctl_service.h":
     cdef void DPCTLService_InitLogger(const char *, const char *)
     cdef void DPCTLService_ShutdownLogger()
+    cdef const char *DPCTLService_GetSyclProvider()
+
+
+def sycl_provider():
+    """Return the SYCL implementation `dpctl` was built with.
+
+    Returns:
+        str:
+            Either ``"Intel"`` or ``"AdaptiveCpp"``.
+    """
+    cdef const char *c_str = DPCTLService_GetSyclProvider()
+    cdef bytes byte_str = <bytes>c_str
+    DPCTLCString_Delete(c_str)
+    return byte_str.decode("utf-8")
 
 
 def _init_logger(log_dir=None):

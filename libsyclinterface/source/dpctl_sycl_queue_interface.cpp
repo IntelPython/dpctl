@@ -50,6 +50,7 @@
 
 using namespace sycl;
 
+#ifndef __ADAPTIVECPP__
 #define SET_LOCAL_ACCESSOR_ARG(CGH, NDIM, ARGTY, R, IDX)                       \
     do {                                                                       \
         switch ((ARGTY)) {                                                     \
@@ -119,11 +120,22 @@ using namespace sycl;
             return false;                                                      \
         }                                                                      \
     } while (0);
+#else
+#define SET_LOCAL_ACCESSOR_ARG(CGH, NDIM, ARGTY, R, IDX)                       \
+    do {                                                                       \
+        error_handler("Local accessors and dynamic kernel args are not "       \
+                      "supported in AdaptiveCpp.",                             \
+                      __FILE__, __func__, __LINE__, error_level::error);       \
+        return false;                                                          \
+    } while (0);
+#endif
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 
@@ -132,6 +144,8 @@ typedef struct complex
     std::uint64_t real;
     std::uint64_t imag;
 } complexNumber;
+
+#ifndef __ADAPTIVECPP__
 
 void set_dependent_events(handler &cgh,
                           __dpctl_keep const DPCTLSyclEventRef *DepEvents,
@@ -172,7 +186,7 @@ bool set_local_accessor_arg(handler &cgh,
  * @brief Set the kernel arg object
  *
  * @param cgh   SYCL command group handler using which a kernel is going to
- *              be submitted.
+ * be submitted.
  * @param idx   The position of the argument in the list of arguments passed
  * to a kernel.
  * @param Arg   A void* representing a kernel argument.
@@ -268,6 +282,8 @@ void set_kernel_args(handler &cgh,
         }
     }
 }
+
+#endif /* #ifndef __ADAPTIVECPP__ */
 
 std::unique_ptr<property_list> create_property_list(int properties)
 {
@@ -498,6 +514,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                        size_t NDepEvents)
 {
+#ifndef __ADAPTIVECPP__
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
     event e;
@@ -507,7 +524,6 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 1:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<1>{Range[0]}, *Kernel);
@@ -517,7 +533,6 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 2:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<2>{Range[0], Range[1]}, *Kernel);
@@ -527,7 +542,6 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 3:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(range<3>{Range[0], Range[1], Range[2]},
@@ -536,8 +550,7 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             return wrap<event>(new event(std::move(e)));
         }
         default:
-            error_handler("Range cannot be greater than three "
-                          "dimensions.",
+            error_handler("Range cannot be greater than three dimensions.",
                           __FILE__, __func__, __LINE__, error_level::error);
             return nullptr;
         }
@@ -549,6 +562,12 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                       __LINE__, error_level::error);
         return nullptr;
     }
+#else
+    error_handler("Dynamic OpenCL-style kernel execution is not supported in "
+                  "AdaptiveCpp.",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 __dpctl_give DPCTLSyclEventRef
@@ -563,6 +582,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                          size_t NDepEvents)
 {
+#ifndef __ADAPTIVECPP__
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
     event e;
@@ -572,7 +592,6 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 1:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(nd_range<1>{{gRange[0]}, {lRange[0]}},
@@ -583,7 +602,6 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 2:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(
@@ -595,7 +613,6 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
         case 3:
         {
             e = Queue->submit([&](handler &cgh) {
-                // Depend on any event that was specified by the caller.
                 set_dependent_events(cgh, DepEvents, NDepEvents);
                 set_kernel_args(cgh, Args, ArgTypes, NArgs);
                 cgh.parallel_for(nd_range<3>{{gRange[0], gRange[1], gRange[2]},
@@ -605,8 +622,7 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             return wrap<event>(new event(std::move(e)));
         }
         default:
-            error_handler("Range cannot be greater than three "
-                          "dimensions.",
+            error_handler("Range cannot be greater than three dimensions.",
                           __FILE__, __func__, __LINE__, error_level::error);
             return nullptr;
         }
@@ -618,6 +634,12 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                       __LINE__, error_level::error);
         return nullptr;
     }
+#else
+    error_handler("Dynamic OpenCL-style kernel execution is not supported in "
+                  "AdaptiveCpp.",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
@@ -860,7 +882,12 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
                     for (auto i = 0ul; i < NDepEvents; ++i)
                         cgh.depends_on(*unwrap<event>(DepEvents[i]));
 
+#ifndef __ADAPTIVECPP__
                 cgh.ext_oneapi_barrier();
+#else
+                class dpctl_barrier_task;
+                cgh.single_task<dpctl_barrier_task>([=]() {});
+#endif
             });
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);

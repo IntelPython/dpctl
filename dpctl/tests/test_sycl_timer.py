@@ -31,6 +31,10 @@ def profiling_queue():
         pytest.skip(
             "Could not created profiling queue " "for default-selected device"
         )
+    ev = q.submit_barrier()
+    ev.wait()
+    if ev.profiling_info_end == 0:
+        pytest.skip("Device does not report profiling timestamps")
     return q
 
 
@@ -86,19 +90,18 @@ def test_sycl_timer_order_manager(profiling_queue):
             count=x.nbytes,
             dEvents=om.submitted_events,
         )
-        ht1 = q._submit_keep_args_alive((x_usm, x), [e1])
-        om.add_event_pair(ht1, e1)
+        q.keep_args_alive((x_usm, x), [e1])
+        om.add_event(e1)
         e2 = q.memcpy_async(
             dest=res,
             src=x_usm,
             count=res.nbytes,
             dEvents=om.submitted_events,
         )
-        ht2 = q._submit_keep_args_alive((res, x_usm), [e2])
-        om.add_event_pair(ht2, e2)
+        q.keep_args_alive((res, x_usm), [e2])
+        om.add_event(e2)
 
     e2.wait()
-    ht2.wait()
     host_dt, device_dt = timer.dt
 
     assert np.all(res == x)
@@ -131,18 +134,17 @@ def test_sycl_timer_accumulation(profiling_queue):
                 count=x.nbytes,
                 dEvents=depends,
             )
-            ht1 = q._submit_keep_args_alive((x_usm, x), [e1])
-            om.add_event_pair(ht1, e1)
+            q.keep_args_alive((x_usm, x), [e1])
+            om.add_event(e1)
             e2 = q.memcpy_async(
                 dest=res,
                 src=x_usm,
                 count=res.nbytes,
                 dEvents=[e1],
             )
-            ht2 = q._submit_keep_args_alive((res, x_usm), [e2])
-            om.add_event_pair(ht2, e2)
+            q.keep_args_alive((res, x_usm), [e2])
+            om.add_event(e2)
     e2.wait()
-    ht2.wait()
     assert np.all(res == x)
 
     dev_dt = timer.dt.device_dt

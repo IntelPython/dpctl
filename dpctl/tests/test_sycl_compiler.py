@@ -218,6 +218,7 @@ def _check_multi_kernel_bundle(kb):
     assert kb2.has_sycl_kernel("axpy")
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_from_source_ocl():
     oclSrc = "                                                             \
     kernel void add(global int* a, global int* b, global int* c) {         \
@@ -233,6 +234,7 @@ def test_create_kernel_bundle_from_source_ocl():
     _check_multi_kernel_bundle(kb)
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_from_spirv_ocl():
     q = _get_opencl_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")
@@ -242,6 +244,7 @@ def test_create_kernel_bundle_from_spirv_ocl():
     _check_multi_kernel_bundle(kb)
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_from_spirv_l0():
     q = _get_level_zero_queue_or_skip()
     spirv_file = get_spirv_abspath("multi_kernel.spv")
@@ -278,6 +281,7 @@ def test_create_kernel_bundle_from_invalid_src_ocl():
         dpc.create_kernel_bundle_from_source(q, invalid_oclSrc)
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_with_spec_const():
     try:
         q = dpctl.SyclQueue()
@@ -305,14 +309,14 @@ def test_create_kernel_bundle_with_spec_const():
     e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
     e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
 
-    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+    q.keep_args_alive([x_usm], [e3])
 
     e3.wait()
-    ht_e.wait()
 
     assert np.all(y == 43)
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_with_composite_spec_const():
     try:
         q = dpctl.SyclQueue()
@@ -345,10 +349,9 @@ def test_create_kernel_bundle_with_composite_spec_const():
     e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
     e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
 
-    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+    q.keep_args_alive([x_usm], [e3])
 
     e3.wait()
-    ht_e.wait()
 
     # 1.0 * 10 + 2.5 = 12.5
     assert np.all(y == 12.5)
@@ -729,6 +732,7 @@ def test_program_all_names_are_reachable():
             assert getattr(dpp, name) is not None
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_program_from_source_is_deprecated():
     q = _get_opencl_queue_or_skip()
     oclSrc = "                                                             \
@@ -745,6 +749,7 @@ def test_create_program_from_source_is_deprecated():
     assert kb.has_sycl_kernel("add")
 
 
+@pytest.mark.unsupported_on_acpp
 def test_create_program_from_spirv_is_deprecated():
     import dpctl.program as dpp
 

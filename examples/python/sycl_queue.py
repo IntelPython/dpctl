@@ -41,7 +41,11 @@ def create_queue_from_device():
     """
     Create a queue from SyclDevice instance.
     """
-    cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    try:
+        cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    except dpctl.SyclDeviceCreationError:
+        print("An OpenCL CPU driver needs to be installed on the system")
+        return
     q = dpctl.SyclQueue(cpu_d, property="enable_profiling")
     assert q.sycl_device == cpu_d
     print(
@@ -54,7 +58,11 @@ def create_queue_from_subdevice():
     """
     Create a queue from a sub-device.
     """
-    cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    try:
+        cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    except dpctl.SyclDeviceCreationError:
+        print("An OpenCL CPU driver needs to be installed on the system")
+        return
     try:
         sub_devs = cpu_d.create_sub_devices(partition=2)
     except dpctl.SyclSubDeviceCreationError:
@@ -73,7 +81,11 @@ def create_queue_from_subdevice_multidevice_context():
     """
     Create a queue from a sub-device.
     """
-    cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    try:
+        cpu_d = dpctl.SyclDevice("opencl:cpu:0")
+    except dpctl.SyclDeviceCreationError:
+        print("An OpenCL CPU driver needs to be installed on the system")
+        return
     try:
         sub_devs = cpu_d.create_sub_devices(partition=2)
     except dpctl.SyclSubDeviceCreationError:
