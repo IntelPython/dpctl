@@ -64,9 +64,14 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(void, DPCTLSyclUSMRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(sycl::platform, DPCTLSyclPlatformRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(sycl::event, DPCTLSyclEventRef)
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(sycl::kernel, DPCTLSyclKernelRef)
+
+#ifndef __ADAPTIVECPP__
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(
     sycl::kernel_bundle<sycl::bundle_state::executable>,
     DPCTLSyclKernelBundleRef)
+#endif
+
+#include "dpctl_sycl_device_manager.h"
 
 #include "dpctl_sycl_device_manager.h"
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,

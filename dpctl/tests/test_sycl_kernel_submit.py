@@ -40,6 +40,7 @@ from dpctl._sycl_queue import kernel_arg_type
         ("double", np.dtype("f8"), ctypes.c_double),
     ],
 )
+@pytest.mark.unsupported_on_acpp
 def test_create_kernel_bundle_from_source(ctype_str, dtype, ctypes_ctor):
     try:
         q = dpctl.SyclQueue("opencl", property="enable_profiling")
@@ -123,6 +124,7 @@ def test_create_kernel_bundle_from_source(ctype_str, dtype, ctypes_ctor):
         assert np.allclose(c, ref_c), f"Failed for {gr}, {lr}"
 
 
+@pytest.mark.unsupported_on_acpp
 def test_submit_async():
     try:
         q = dpctl.SyclQueue("opencl")
@@ -313,6 +315,7 @@ def get_spirv_abspath(fn):
 # the process for generating the .spv files in this test is documented in
 # libsyclinterface/tests/test_sycl_queue_submit_local_accessor_arg.cpp
 # in a comment starting on line 123
+@pytest.mark.unsupported_on_acpp
 def test_submit_local_accessor_arg():
     try:
         q = dpctl.SyclQueue("level_zero")

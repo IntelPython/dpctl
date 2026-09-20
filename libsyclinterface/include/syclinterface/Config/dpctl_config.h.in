@@ -34,6 +34,9 @@
 /* The DPCPP version used to build dpctl */
 #define DPCTL_DPCPP_VERSION "@IntelSyclCompiler_VERSION@"
 
+/* The SYCL implementation used to build dpctl, "Intel" or "AdaptiveCpp" */
+#define DPCTL_SYCL_PROVIDER "@DPCTL_SYCL_PROVIDER@"
+
 #define DPCTL_LIBZE_LOADER_FILENAME "@LIBZE_LOADER_FILENAME@"
 #define DPCTL_LIBCL_LOADER_FILENAME "@LIBCL_LOADER_FILENAME@"
 /* Defined when the SYCL runtime supports IPC memory (ipc::memory API). */

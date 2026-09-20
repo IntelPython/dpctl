@@ -41,6 +41,12 @@ __dpctl_give const char *DPCTLService_GetDPCPPVersion(void)
     return dpctl::helper::cstring_from_string(version);
 }
 
+__dpctl_give const char *DPCTLService_GetSyclProvider(void)
+{
+    std::string provider = DPCTL_SYCL_PROVIDER;
+    return dpctl::helper::cstring_from_string(provider);
+}
+
 #ifdef ENABLE_GLOG
 
 void DPCTLService_InitLogger(const char *app_name, const char *log_dir)

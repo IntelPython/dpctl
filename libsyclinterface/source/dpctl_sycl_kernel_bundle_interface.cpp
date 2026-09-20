@@ -25,20 +25,25 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "dpctl_sycl_kernel_bundle_interface.h"
+#ifndef __ADAPTIVECPP__
+#include <CL/cl.h> /* OpenCL headers     */
+#include <sycl/backend/opencl.hpp>
+#endif
+
 #include "Config/dpctl_config.h"
 #include "dpctl_dynamic_lib_helper.h"
 #include "dpctl_error_handlers.h"
+#include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
 #include <CL/cl.h> /* OpenCL headers     */
 #include <cstdint>
 #include <sstream>
 #include <stddef.h>
-#include <sycl/backend/opencl.hpp>
 #include <sycl/sycl.hpp> /* Sycl headers       */
 #include <utility>
 
 #ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
+#ifndef __ADAPTIVECPP__
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 // clang-format off
@@ -46,15 +51,20 @@
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 // clang-format on
 #endif
+#endif
 
 using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
+
+#ifndef __ADAPTIVECPP__
 
 #ifdef __linux__
 static const char *clLoaderName = DPCTL_LIBCL_LOADER_FILENAME;
@@ -678,6 +688,8 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
 
 #endif /* #ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION */
 
+#endif /* #ifndef __ADAPTIVECPP__ */
+
 } /* end of anonymous namespace */
 
 __dpctl_give DPCTLSyclKernelBundleRef
@@ -689,6 +701,7 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                                   size_t NumSpecConsts,
                                   const DPCTLSpecConst *SpecConsts)
 {
+#ifndef __ADAPTIVECPP__
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     if (!CtxRef) {
         error_handler("Cannot create kernel bundle from SPIR-V as the supplied "
@@ -737,6 +750,12 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
         return nullptr;
     }
     return KBRef;
+#else
+    error_handler(
+        "Dynamic kernel bundle creation is not supported in AdaptiveCpp",
+        __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
@@ -745,6 +764,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
     __dpctl_keep const char *Source,
     __dpctl_keep const char *CompileOpts)
 {
+#ifndef __ADAPTIVECPP__
     context *SyclCtx = nullptr;
     device *SyclDev = nullptr;
 
@@ -786,12 +806,19 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromOCLSource(
                       __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler(
+        "Dynamic kernel bundle creation is not supported in AdaptiveCpp",
+        __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelRef
 DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                             __dpctl_keep const char *KernelName)
 {
+#ifndef __ADAPTIVECPP__
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return nullptr;
@@ -816,11 +843,17 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         error_handler(os.str(), __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler("Dynamic kernel querying is not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                                  __dpctl_keep const char *KernelName)
 {
+#ifndef __ADAPTIVECPP__
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
@@ -846,16 +879,24 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         error_handler(os.str(), __FILE__, __func__, __LINE__);
         return false;
     }
+#else
+    error_handler("Dynamic kernel querying is not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return false;
+#endif
 }
 
 void DPCTLKernelBundle_Delete(__dpctl_take DPCTLSyclKernelBundleRef KBRef)
 {
+#ifndef __ADAPTIVECPP__
     delete unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
+#endif
 }
 
 __dpctl_give DPCTLSyclKernelBundleRef
 DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
 {
+#ifndef __ADAPTIVECPP__
     auto Bundle = unwrap<kernel_bundle<bundle_state::executable>>(KBRef);
     if (!Bundle) {
         error_handler(
@@ -871,6 +912,11 @@ DPCTLKernelBundle_Copy(__dpctl_keep const DPCTLSyclKernelBundleRef KBRef)
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
+#else
+    error_handler("Kernel bundle copies are not supported in AdaptiveCpp",
+                  __FILE__, __func__, __LINE__, error_level::error);
+    return nullptr;
+#endif
 }
 
 using build_option_list_t = std::vector<std::string>;
@@ -965,8 +1011,6 @@ const char *DPCTLKernelBuildLog_Get(__dpctl_keep DPCTLKernelBuildLogRef Ref)
     return reinterpret_cast<kernel_build_log_t *>(Ref)->data();
 }
 
-namespace syclex = sycl::ext::oneapi::experimental;
-
 #if defined(SYCL_EXT_ONEAPI_KERNEL_COMPILER) &&                                \
     defined(__SYCL_COMPILER_VERSION) && !defined(SUPPORTS_SYCL_COMPILATION)
 // SYCL source code compilation is supported from 2025.1 onwards.
@@ -987,6 +1031,8 @@ bool DPCTLKernelBundle_CreateFromSYCLSource_Available()
 }
 
 #if (SUPPORTS_SYCL_COMPILATION > 0)
+namespace syclex = sycl::ext::oneapi::experimental;
+
 // The property for registering names was renamed between DPC++ versions 2025.1
 // and 2025.2. The original name was `registered_kernel_names`, the new name is
 // `registered_names`. To select the correct name without being overly reliant

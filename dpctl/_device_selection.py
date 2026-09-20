@@ -66,7 +66,9 @@ def select_device_with_aspects(required_aspects, excluded_aspects=None):
         if not hasattr(SyclDevice, "has_aspect_" + asp):
             raise AttributeError(f"The {asp} aspect is not supported in dpctl")
     devs = get_devices()
-    max_score = 0
+    # get_devices only reports devices with a non-negative score, and a score
+    # of zero is a valid one
+    max_score = -1
     selected_dev = None
 
     for dev in devs:

@@ -248,6 +248,7 @@ DPCTL_API
 DPCTLPartitionPropertyType DPCTL_SyclPartitionPropertyToDPCTLType(
     sycl::info::partition_property PartitionProperty);
 
+#ifndef __ADAPTIVECPP__
 /*!
  * @brief Converts a DPCTLPeerAccessType enum value to its corresponding
  * sycl::ext::oneapi::peer_access enum value.
@@ -274,6 +275,7 @@ DPCTL_DPCTLPeerAccessTypeToSycl(DPCTLPeerAccessType PeerAccessTy);
 DPCTL_API
 DPCTLPeerAccessType
 DPCTL_SyclPeerAccessToDPCTLType(sycl::ext::oneapi::peer_access PeerAccess);
+#endif
 
 /*!
  * @brief Gives the index of the given device with respective to all the other
