@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.copy\_to\_host
-===========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMShared.copy_to_host

@@ -1,6 +1,0 @@
-dpctl.SyclQueue.sycl\_context
-=============================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclQueue.sycl_context

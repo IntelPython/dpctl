@@ -1,6 +1,0 @@
-dpctl.memory.IPCMemoryHandle.open
-=================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: IPCMemoryHandle.open

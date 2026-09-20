@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.copy\_from\_device
-===============================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMShared.copy_from_device

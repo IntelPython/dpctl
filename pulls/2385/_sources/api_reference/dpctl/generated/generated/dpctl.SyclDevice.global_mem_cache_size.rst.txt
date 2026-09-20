@@ -1,6 +1,0 @@
-dpctl.SyclDevice.global\_mem\_cache\_size
-=========================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.global_mem_cache_size
