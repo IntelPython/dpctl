@@ -1,6 +1,0 @@
-dpctl.SyclDevice.max\_compute\_units
-====================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.max_compute_units

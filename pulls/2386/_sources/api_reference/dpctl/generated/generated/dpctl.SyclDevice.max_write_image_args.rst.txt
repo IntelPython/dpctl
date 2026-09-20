@@ -1,6 +1,0 @@
-dpctl.SyclDevice.max\_write\_image\_args
-========================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.max_write_image_args

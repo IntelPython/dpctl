@@ -1,6 +1,0 @@
-dpctl.SyclDevice.print\_device\_info
-====================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclDevice.print_device_info

@@ -1,6 +1,0 @@
-dpctl.SyclDevice.vendor\_id
-===========================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.vendor_id
