@@ -371,3 +371,347 @@ jobs:
         working-directory: ${{ env.workdir }}\test_tmp
         run: >-
           conda activate ${{ env.TEST_ENV_NAME }} && python -m pytest -v -s --pyargs ${{ env.MODULE_NAME }}
+
+  test_examples_linux:
+    needs: build_linux
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        python: ['3.14']
+        python_spec: ['3.14.* *_cp314']
+        runner: [ubuntu-latest]
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+            runner: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      EXAMPLES_ENV_NAME: examples
+      BUILD_ENV_NAME: build_env
+      DPCPP_CMPLR: "dpcpp_linux-64>=2026.0"
+      # keep in sync with conda-recipe-cf/conda_build_config.yaml
+      GCC_CMPLR_VERSION: '15'
+
+    steps:
+      - name: Install conda-index
+        # Needed to be able to run conda index
+        run: |
+          conda update -n base --all
+          conda install conda-index=${{ env.CONDA_INDEX_VERSION }} ${{ env.CHANNELS }}
+      - name: Checkout dpctl repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+      - name: Add conda to system path
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+      - name: Create conda channel
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/channel/linux-64"
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          mv "${{ env.PACKAGE_NAME }}"-*.conda "$GITHUB_WORKSPACE/channel/linux-64" || exit 1
+          conda index "$GITHUB_WORKSPACE/channel" || exit 1
+          # Test channel
+          conda search "$PACKAGE_NAME" -c "$GITHUB_WORKSPACE/channel" --override-channels --info --json > "$GITHUB_WORKSPACE/ver.json"
+          cat ver.json
+      - name: Collect dependencies
+        run: |
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          export PYTHON_VER
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python="${PYTHON_VER}" $CHANNELS --only-deps --dry-run > lockfile
+          cat lockfile
+      - name: Set pkgs_dirs
+        run: |
+          echo "pkgs_dirs: [~/.conda/pkgs]" >> ~/.condarc
+      - name: Cache conda packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        env:
+          CACHE_NUMBER: 3  # Increase to reset cache
+        with:
+          path: ~/.conda/pkgs
+          key:
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-${{hashFiles('lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-
+      - name: Install example requirements
+        shell: bash -ex -l {0}
+        run: |
+          CHANNELS="${{ env.CHANNELS }}"
+          export CHANNELS
+          . "$CONDA/etc/profile.d/conda.sh"
+          PYTHON_VER="${{ matrix.python_spec }}"
+          if [ -z "${PYTHON_VER}" ]; then
+            PYTHON_VER="${{ matrix.python }}"
+          fi
+          # shellcheck disable=SC2086
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python="${PYTHON_VER}" "setuptools<72.2.0" $CHANNELS
+          echo "Environment created"
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
+          echo "Cmake and Ninja installed"
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
+          echo "scikit-build installed"
+          # tbb-devel carries TBBConfig.cmake, which the oneMKL example looks for,
+          # and intel-opencl-rt provides the OpenCL CPU device to run examples on
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp \
+              tbb-devel intel-opencl-rt $CHANNELS || exit 1
+          echo "IPL installed"
+          # shellcheck disable=SC2086
+          conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS \
+              "gcc_linux-64=${{ env.GCC_CMPLR_VERSION }}" "gxx_linux-64=${{ env.GCC_CMPLR_VERSION }}" \
+              "${{ env.DPCPP_CMPLR }}" "sysroot_linux-64>=2.28"
+          echo "Compiler installed"
+          conda list -n "${{ env.BUILD_ENV_NAME }}"
+      - name: Install dpctl
+        shell: bash -l {0}
+        run: |
+          source "$CONDA/etc/profile.d/conda.sh"
+          CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
+          export CHANNELS
+          PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
+          export PACKAGE_VERSION
+          # shellcheck disable=SC2086
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y $CHANNELS ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} || exit 1
+          conda list -n ${{ env.EXAMPLES_ENV_NAME }}
+      - name: Build and run examples of pybind11 extensions
+        shell: bash -l {0}
+        run: |
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
+          cd examples/pybind11
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
+            conda activate --stack "${{ env.BUILD_ENV_NAME }}"
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            conda deactivate
+            if [ -e tests ]; then
+               LD_LIBRARY_PATH="${CONDA_PREFIX}/lib" python -m pytest tests || exit 1
+            else
+               LD_LIBRARY_PATH="${CONDA_PREFIX}/lib" python example.py || exit 1
+            fi
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
+      - name: Build and run examples of Cython extensions
+        shell: bash -l {0}
+        run: |
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
+          cd examples/cython
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
+            conda activate --stack "${{ env.BUILD_ENV_NAME }}"
+            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            conda deactivate
+            python -m pytest tests || exit 1
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
+      - name: Build and run examples of C-extensions
+        shell: bash -l {0}
+        run: |
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
+          cd examples/c
+          while IFS= read -r d; do
+            pushd "$d" > /dev/null
+            conda activate --stack "${{ env.BUILD_ENV_NAME }}"
+            python setup.py build_ext --inplace || exit 1
+            conda deactivate
+            python -m pytest tests || exit 1
+            popd > /dev/null
+          done < <(find . -maxdepth 1 -type d -not -path ".")
+      - name: Run Python examples
+        shell: bash -l {0}
+        run: |
+          cd examples/python
+          source "$CONDA/etc/profile.d/conda.sh"
+          conda activate "${{ env.EXAMPLES_ENV_NAME }}"
+          while IFS= read -r script; do
+            echo "Executing ${script}"
+            python "${script}" --run all || exit 1
+          done < <(find . \( -not -name "_*" -and -name "*.py" \))
+
+  test_examples_windows:
+    needs: build_windows
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+    strategy:
+      matrix:
+        python: ['3.14']
+        python_spec: ['3.14.* *_cp314']
+        runner: [windows-latest]
+        include:
+          - python: '3.14'
+            python_spec: '3.14.* *_cp314t'
+            runner: windows-latest
+    timeout-minutes: 120
+    env:
+      EXAMPLES_ENV_NAME: examples
+      BUILD_ENV_NAME: build_env
+      DPCPP_CMPLR: "dpcpp_win-64>=2026.0"
+      workdir: '${{ github.workspace }}'
+
+    steps:
+      - name: Checkout dpctl repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python == '3.14' && (contains(matrix.python_spec, 'cp314t') && '3.14t' || '3.14') || matrix.python }}
+
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: true
+          activate-environment: ${{ env.EXAMPLES_ENV_NAME }}
+          python-version: ${{ matrix.python }}
+
+      - name: Install conda-index
+        run: |
+          conda install -n base conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: Create conda channel with the artifact bit
+        run: |
+          @echo on
+          mkdir ${{ env.workdir }}\channel\win-64
+          move ${{ env.PACKAGE_NAME }}-*.conda ${{ env.workdir }}\channel\win-64
+          conda index ${{ env.workdir }}\channel
+          dir ${{ env.workdir }}\channel\win-64\
+
+      - name: Dump dpctl version info from created channel into ver.json
+        run: |
+          @echo on
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.workdir }}/channel --override-channels --info --json > ${{ env.workdir }}\ver.json
+
+      - name: Output content of produced ver.json
+        shell: pwsh
+        run: Get-Content -Path ${{ env.workdir }}\ver.json
+
+      - name: Install example requirements
+        run: |
+          @echo on
+          SET "PYTHON_VER=${{ matrix.python_spec }}"
+          IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
+          REM intel-opencl-rt provides the OpenCL CPU device to run the examples on
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y python="%PYTHON_VER%" pytest ^
+              "setuptools<72.2.0" cmake ninja pybind11 cython scikit-build ^
+              mkl-dpcpp mkl-devel-dpcpp tbb-devel intel-opencl-rt ${{ env.CHANNELS }} || exit /b 1
+          REM the compiler lives in its own environment, stacked on top of the
+          REM examples environment while extensions are being built
+          conda create -n ${{ env.BUILD_ENV_NAME }} -y "${{ env.DPCPP_CMPLR }}" vs2022_win-64 ${{ env.CHANNELS }} || exit /b 1
+          conda list -n ${{ env.BUILD_ENV_NAME }}
+
+      - name: Install dpctl
+        run: |
+          @echo on
+          set "SCRIPT=%VER_SCRIPT1% %VER_SCRIPT2%"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+             SET PACKAGE_VERSION=%%F
+          )
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% ^
+              -c ${{ env.workdir }}/channel ${{ env.CHANNELS }} || exit /b 1
+          conda list -n ${{ env.EXAMPLES_ENV_NAME }}
+
+      - name: Register the OpenCL CPU driver with the ICD loader
+        shell: pwsh
+        run: |
+          $vendors = "HKLM:\SOFTWARE\Khronos\OpenCL\Vendors"
+          $drivers = @(Get-ChildItem -Recurse -ErrorAction SilentlyContinue -Filter intelocl64.dll -Path "$env:CONDA_PREFIX\Library\bin")
+          if ($drivers.Count -eq 0) { throw "intel-opencl-rt installed no OpenCL CPU driver under $env:CONDA_PREFIX" }
+          if (-not (Test-Path $vendors)) { New-Item -Path $vendors -Force | Out-Null }
+          foreach ($driver in $drivers) {
+            New-ItemProperty -Path $vendors -Name $driver.FullName -Value 0 -PropertyType DWord -Force | Out-Null
+          }
+          Get-ItemProperty -Path $vendors
+
+      - name: Smoke test
+        # run from outside the checkout, the dpctl source directory in it
+        # shadows the installed package
+        working-directory: ${{ env.workdir }}\examples
+        run: >-
+          conda activate ${{ env.EXAMPLES_ENV_NAME }} && python -m dpctl -f
+
+      - name: Build and run examples of pybind11 extensions
+        working-directory: ${{ env.workdir }}\examples\pybind11
+        env:
+          CC: icx
+          CXX: icx
+        run: |
+          @echo on
+          call conda activate ${{ env.EXAMPLES_ENV_NAME }} || exit /b 1
+          conda list
+          for /d %%d in (*) do (
+            pushd %%d || exit /b 1
+            call conda activate --stack ${{ env.BUILD_ENV_NAME }} || exit /b 1
+            python setup.py build_ext --inplace -G Ninja || exit /b 1
+            call conda deactivate || exit /b 1
+            if exist tests (
+              python -m pytest -v tests || exit /b 1
+            ) else (
+              python example.py || exit /b 1
+            )
+            popd
+          )
+
+      - name: Build and run examples of Cython extensions
+        working-directory: ${{ env.workdir }}\examples\cython
+        env:
+          CC: icx
+          CXX: icx
+        run: |
+          @echo on
+          call conda activate ${{ env.EXAMPLES_ENV_NAME }} || exit /b 1
+          conda list
+          for /d %%d in (*) do (
+            pushd %%d || exit /b 1
+            call conda activate --stack ${{ env.BUILD_ENV_NAME }} || exit /b 1
+            python setup.py build_ext --inplace -G Ninja || exit /b 1
+            call conda deactivate || exit /b 1
+            python -m pytest -v tests || exit /b 1
+            popd
+          )
+
+      - name: Build and run examples of C-extensions
+        working-directory: ${{ env.workdir }}\examples\c
+        run: |
+          @echo on
+          call conda activate ${{ env.EXAMPLES_ENV_NAME }} || exit /b 1
+          conda list
+          for /d %%d in (*) do (
+            pushd %%d || exit /b 1
+            python setup.py build_ext --inplace || exit /b 1
+            python -m pytest -v tests || exit /b 1
+            popd
+          )
+
+      - name: Run Python examples
+        working-directory: ${{ env.workdir }}\examples\python
+        run: |
+          @echo on
+          call conda activate ${{ env.EXAMPLES_ENV_NAME }} || exit /b 1
+          for /f "delims=" %%f in ('dir /b *.py ^| findstr /v "^_"') do (
+            echo Executing %%f
+            python %%f --run all || exit /b 1
+          )
