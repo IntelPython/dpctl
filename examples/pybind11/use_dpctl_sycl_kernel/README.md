@@ -3,7 +3,7 @@
 ## Description
 
 This extension demonstrates how you can use dpctl Python types,
-such as ``dpctl.SyclQueue`` and ``dpctl.program.SyclKernel``, in
+such as ``dpctl.SyclQueue`` and ``dpctl.compiler.SyclKernel``, in
 Pybind11 extensions.
 
 

@@ -20,8 +20,8 @@ import numpy as np
 import use_kernel as eg
 
 import dpctl
-import dpctl.memory as dpmem
-import dpctl.program as dppr
+import dpctl.compiler as dpc
+import dpctl.memory as dpm
 
 # create execution queue, targeting default selected device
 q = dpctl.SyclQueue()
@@ -30,19 +30,19 @@ q = dpctl.SyclQueue()
 with open("resource/double_it.spv", "br") as fh:
     il = fh.read()
 
-# Build the program for the selected device
-pr = dppr.create_kernel_bundle_from_spirv(q, il, "")
-assert pr.has_sycl_kernel("double_it")
+# Build the kernel bundle for the selected device
+kb = dpc.create_kernel_bundle_from_spirv(q, il, "")
+assert kb.has_sycl_kernel("double_it")
 
-# Retrieve the kernel from the problem
-krn = pr.get_sycl_kernel("double_it")
+# Retrieve the kernel from the kernel bundle
+krn = kb.get_sycl_kernel("double_it")
 assert krn.num_args == 2
 
 # Construct the argument, and allocate memory for the result
 x = np.arange(0, stop=13, step=1, dtype="i4")
 y = np.empty_like(x)
-x_dev = dpmem.MemoryUSMDevice(x.nbytes, queue=q)
-y_dev = dpmem.MemoryUSMDevice(y.nbytes, queue=q)
+x_dev = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+y_dev = dpm.MemoryUSMDevice(y.nbytes, queue=q)
 
 # Copy input data to the device
 q.memcpy(dest=x_dev, src=x, count=x.nbytes)

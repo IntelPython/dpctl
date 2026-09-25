@@ -32,7 +32,7 @@ from ._backend cimport (
 from ._sycl_context cimport SyclContext
 from ._sycl_device cimport SyclDevice
 from ._sycl_event cimport SyclEvent
-from .program._program cimport SyclKernel
+from .compiler._compiler cimport SyclKernel
 
 
 cdef public api class _SyclQueue [
@@ -106,6 +106,10 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef copy(self, dest, src, size_t count, str dtype=*)
     cpdef SyclEvent copy_async(
         self, dest, src, size_t count, list dEvents=*, str dtype=*
+    )
+    cpdef fill(self, dest, value, size_t count, str dtype=*)
+    cpdef SyclEvent fill_async(
+        self, dest, value, size_t count, list dEvents=*, str dtype=*
     )
     cpdef memset(self, mem, int val, size_t count=*)
     cpdef SyclEvent memset_async(

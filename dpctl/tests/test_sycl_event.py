@@ -20,8 +20,8 @@ import numpy as np
 import pytest
 
 import dpctl
-import dpctl.memory as dpctl_mem
-import dpctl.program as dpctl_prog
+import dpctl.compiler as dpc
+import dpctl.memory as dpm
 from dpctl import event_status_type as esty
 
 from .helper import create_invalid_capsule
@@ -37,12 +37,12 @@ def produce_event(profiling=False):
         q = dpctl.SyclQueue("opencl:cpu", property="enable_profiling")
     else:
         q = dpctl.SyclQueue("opencl:cpu")
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     addKernel = kb.get_sycl_kernel("add")
 
     n = 1024 * 1024
     a = np.arange(n, dtype="i")
-    a_usm = dpctl_mem.MemoryUSMDevice(a.nbytes, queue=q)
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
     ev1 = q.memcpy_async(dest=a_usm, src=a, count=a.nbytes)
     args = [a_usm]
 
@@ -158,14 +158,14 @@ def test_get_wait_list():
             size_t index = get_global_id(0);                               \
             a[index] = sin(a[index]);                                      \
         }"
-    kb = dpctl_prog.create_kernel_bundle_from_source(q, oclSrc)
+    kb = dpc.create_kernel_bundle_from_source(q, oclSrc)
     addKernel = kb.get_sycl_kernel("add_k")
     sqrtKernel = kb.get_sycl_kernel("sqrt_k")
     sinKernel = kb.get_sycl_kernel("sin_k")
 
     n = 1024 * 1024
     a = np.arange(n, dtype="f")
-    a_usm = dpctl_mem.MemoryUSMDevice(a.nbytes, queue=q)
+    a_usm = dpm.MemoryUSMDevice(a.nbytes, queue=q)
     ev_1 = q.memcpy_async(dest=a_usm, src=a, count=a.nbytes)
 
     args = [a_usm]
@@ -200,8 +200,8 @@ def test_sycl_timer():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue creation of default device failed")
     timer = dpctl.SyclTimer()
-    m1 = dpctl_mem.MemoryUSMDevice(1024 * 1024, queue=q)
-    m2 = dpctl_mem.MemoryUSMDevice(1024 * 1024, queue=q)
+    m1 = dpm.MemoryUSMDevice(1024 * 1024, queue=q)
+    m2 = dpm.MemoryUSMDevice(1024 * 1024, queue=q)
     with timer(q):
         # device task
         m1.copy_from_device(m2)

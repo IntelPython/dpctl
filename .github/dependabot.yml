@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     labels: ["autoupdate"]
     groups:
       github-actions:
@@ -15,6 +17,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "saturday"
+    cooldown:
+      default-days: 7
     labels: ["autoupdate"]
     groups:
       pre-commit:

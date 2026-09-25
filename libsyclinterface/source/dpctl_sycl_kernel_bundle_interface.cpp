@@ -38,7 +38,7 @@
 #include <sycl/sycl.hpp> /* Sycl headers       */
 #include <utility>
 
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
 // Note: include ze_api.h before level_zero.hpp. Make sure clang-format does
 // not reorder the includes.
 // clang-format off
@@ -63,7 +63,7 @@ static const int clLibLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 static const char *clLoaderName = "OpenCL.dll";
 static const int clLibLoadFlags = 0;
 #else
-#error "OpenCL program compilation is unavailable for this platform"
+#error "OpenCL kernel bundle compilation is unavailable for this platform"
 #endif
 
 #define CodeStringSuffix(code)                                                 \
@@ -408,7 +408,7 @@ _GetKernel_ocl_impl(const kernel_bundle<bundle_state::executable> &kb,
     }
 }
 
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
 
 #ifdef __linux__
 static const char *zeLoaderName = DPCTL_LIBZE_LOADER_FILENAME;
@@ -417,7 +417,7 @@ static const int zeLibLoadFlags = RTLD_NOLOAD | RTLD_NOW | RTLD_LOCAL;
 static const char *zeLoaderName = "ze_loader.dll";
 static const int zeLibLoadFlags = 0;
 #else
-#error "Level Zero program compilation is unavailable for this platform"
+#error "Level Zero kernel bundle compilation is unavailable for this platform"
 #endif
 
 static constexpr sycl::backend ze_be = sycl::backend::ext_oneapi_level_zero;
@@ -676,7 +676,7 @@ bool _HasKernel_ze_impl(const kernel_bundle<bundle_state::executable> &kb,
     return false;
 }
 
-#endif /* #ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION */
+#endif /* #ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION */
 
 } /* end of anonymous namespace */
 
@@ -691,19 +691,19 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
 {
     DPCTLSyclKernelBundleRef KBRef = nullptr;
     if (!CtxRef) {
-        error_handler("Cannot create program from SPIR-V as the supplied SYCL "
-                      "context is NULL.",
+        error_handler("Cannot create kernel bundle from SPIR-V as the supplied "
+                      "SYCL context is NULL.",
                       __FILE__, __func__, __LINE__);
         return KBRef;
     }
     if (!DevRef) {
-        error_handler("Cannot create program from SPIR-V as the supplied SYCL "
-                      "device is NULL.",
+        error_handler("Cannot create kernel bundle from SPIR-V as the supplied "
+                      "SYCL device is NULL.",
                       __FILE__, __func__, __LINE__);
         return KBRef;
     }
     if ((!IL) || (length == 0)) {
-        error_handler("Cannot create program from null SPIR-V buffer.",
+        error_handler("Cannot create kernel bundle from null SPIR-V buffer.",
                       __FILE__, __func__, __LINE__);
         return KBRef;
     }
@@ -720,7 +720,7 @@ DPCTLKernelBundle_CreateFromSpirv(__dpctl_keep const DPCTLSyclContextRef CtxRef,
                 SpecConsts);
             break;
         case backend::ext_oneapi_level_zero:
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
             KBRef = _CreateKernelBundleWithIL_ze_impl(
                 *SyclCtx, *SyclDev, IL, length, CompileOpts, NumSpecConsts,
                 SpecConsts);
@@ -807,7 +807,7 @@ DPCTLKernelBundle_GetKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _GetKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
         return _GetKernel_ze_impl(*SyclKB, KernelName);
 #endif
     default:
@@ -837,7 +837,7 @@ bool DPCTLKernelBundle_HasKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
     case sycl::backend::opencl:
         return _HasKernel_ocl_impl(*SyclKB, KernelName);
     case sycl::backend::ext_oneapi_level_zero:
-#ifdef DPCTL_ENABLE_L0_PROGRAM_CREATION
+#ifdef DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION
         return _HasKernel_ze_impl(*SyclKB, KernelName);
 #endif
     default:

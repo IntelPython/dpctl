@@ -15,7 +15,7 @@ requires = [
 ]
 
 [project]
-authors = [{name = "Intel Corporation"}]
+authors = [{ name = "Intel Corporation", email = "scripting@intel.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
@@ -57,10 +57,11 @@ keywords = [
 ]
 license = "Apache-2.0"
 name = "dpctl"
-readme = {file = "README.md", content-type = "text/markdown"}
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
+benchmark = ["asv>=0.6", "numpy"]
 coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli"]
 docs = [
   "Cython>=3.1.0",

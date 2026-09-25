@@ -7,7 +7,8 @@ on:
         required: true
         type: string
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
   CHECK_CONFIG_SCRIPT: "import sys; from packaging.version import parse; print('true' if parse('0.17.0') <= parse(sys.argv[1]) < parse('0.22.0') else 'false')"
@@ -67,8 +68,10 @@ jobs:
           persist-credentials: false
       - name: Inject new docs configuration
         shell: bash -l {0}
+        env:
+          TAG: ${{ github.event.inputs.tag }}
         run: |
-          NEEDS_CONFIG=$(python -c "${{ env.CHECK_CONFIG_SCRIPT }}" "${{ github.event.inputs.tag }}")
+          NEEDS_CONFIG=$(python -c "$CHECK_CONFIG_SCRIPT" "$TAG")
 
           if [[ "${NEEDS_CONFIG}" == "true" ]]; then
             git fetch origin master

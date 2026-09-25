@@ -14,13 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-A collection of utility functions for dpctl.program module.
-"""
+"""ASV benchmarks for dpctl."""
 
-from ._utils import SpecializationConstantInfo, parse_spirv_specializations
+import os
 
-__all__ = [
-    "parse_spirv_specializations",
-    "SpecializationConstantInfo",
-]
+# Disable the persistent JIT cache before dpctl is imported, so cold-compile
+# benchmarks in bench_compile.py measure a real compile, not a cache hit.
+os.environ.setdefault("SYCL_CACHE_PERSISTENT", "0")

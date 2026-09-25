@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(use_queue_device VERSION 0.1 LANGUAGES CXX
-  DESCRIPTION "Example of using dpctl.program.SyclKernel <-> sycl::kernel type casting")
+  DESCRIPTION "Example of using dpctl.compiler.SyclKernel <-> sycl::kernel type casting")
 
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})

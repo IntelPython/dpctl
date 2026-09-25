@@ -9,7 +9,8 @@ on:
     - cron: '28 2 * * *'
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 env:
   MODULE_NAME: dpctl

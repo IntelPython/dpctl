@@ -13,11 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `create_kernel_bundle_from_sycl_source`, `is_sycl_source_compilation_available`, and `dpctl.SyclDevice.can_compile` for supporting the creation of `dpctl.SyclKernelBundle`s from SYCL source strings via DPC++ extension, as well as corresponding C-API functions to support it [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
 * Added `dpctl.SyclQueue.memset` and `dpctl.SyclQueue.memset_async` methods [gh-2361](https://github.com/IntelPython/dpctl/pull/2361)
 * Added `DPCTLQueue_MemsetWithEvents` C-API function to support `dpctl.SyclQueue.memset_async` [gh-2361](https://github.com/IntelPython/dpctl/pull/2361)
+* Added `dpctl.SyclQueue.fill` and `dpctl.SyclQueue.fill_async` methods [gh-2365](https://github.com/IntelPython/dpctl/pull/2365)
+* Added `DPCTLQueue_Fill8/16/32/64/128WithEvents` C-API functions to support `dpctl.SyclQueue.fill_async` [gh-2365](https://github.com/IntelPython/dpctl/pull/2365)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
+
+### Deprecated
+* Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+
+### Removed
+* Removed Cython API for `dpctl.program` submodule, as the submodule is now deprecated, with functionality migrated to `dpctl.compiler` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
 ### Fixed
 * Fixed incorrect paths in `GetLevelZeroHeaders.cmake` [gh-2366](https://github.com/IntelPython/dpctl/pull/2366)
