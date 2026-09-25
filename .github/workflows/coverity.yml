@@ -1,0 +1,138 @@
+name: Coverity Scan
+
+on:
+  schedule:
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coverity-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COVERITY_PROJECT: IntelPython/dpctl
+  ONEAPI_ROOT: /opt/intel/oneapi
+
+jobs:
+  coverity-scan:
+    if: github.repository == 'IntelPython/dpctl'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # versioneer needs the tags to compute the package version
+          fetch-depth: 0
+
+      - name: Add Intel repository
+        run: |
+          wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+            | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+            | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
+
+      - name: Install latest Intel OneAPI
+        run: |
+          sudo apt install intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install intel-oneapi-tbb
+          sudo apt install intel-oneapi-umf
+          sudo apt install hwloc
+
+      - name: Install CMake and Ninja
+        run: |
+          sudo apt-get install ninja-build
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          architecture: x64
+
+      - name: Install dpctl dependencies
+        run: |
+          pip install numpy cython setuptools"<80" scikit-build cmake ninja versioneer[toml]==0.29
+
+      - name: Report compiler version
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          icpx --version
+
+      - name: Download Coverity Build Tool
+        timeout-minutes: 15
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        run: |
+          curl --location --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --data-urlencode "token=${COVERITY_SCAN_TOKEN}" \
+               --data-urlencode "project=${COVERITY_PROJECT}" \
+               --output cov-analysis.tar.gz \
+               https://scan.coverity.com/download/linux64
+          mkdir -p cov-analysis
+          tar -xzf cov-analysis.tar.gz --strip 1 -C cov-analysis
+          echo "${PWD}/cov-analysis/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Coverity for the DPC++ compiler
+        env:
+          # icx/icpx are not in Coverity's list of known compilers, so the
+          # clang-based templates below have to be accepted explicitly
+          COVERITY_UNSUPPORTED: 1
+        run: |
+          source "${ONEAPI_ROOT}/setvars.sh"
+          # Cython-generated sources and the pybind11 extensions go through
+          # icpx, the sysroot/driver probing bits still use gcc
+          cov-configure --gcc
+          cov-configure --template --comptype clangcc --compiler icx
+          cov-configure --template --comptype clangcxx --compiler icpx
+
+      - name: Build under cov-build
+        timeout-minutes: 90
+        env:
+          COVERITY_UNSUPPORTED: 1
+        run: |
+          set -o pipefail
+          source "${ONEAPI_ROOT}/setvars.sh"
+          rm -rf _skbuild
+          # --skip-editable: the in-place build_ext already compiled everything
+          # Coverity needs to see, a pip install would only repeat it
+          cov-build --dir cov-int \
+              python scripts/build_locally.py --oneapi --skip-editable --verbose \
+              2>&1 | tee cov-build.log
+          if ! grep -qE "Emitted [1-9][0-9]* .*compilation unit" cov-build.log; then
+            echo "::error::Coverity captured 0 compilation units — the C++ build did not run under cov-build."
+            exit 1
+          fi
+
+      - name: Upload Coverity build log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverity-build-log
+          path: |
+            cov-build.log
+            cov-int/build-log.txt
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Submit results to Coverity Scan
+        timeout-minutes: 15
+        env:
+          COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+          COVERITY_SCAN_EMAIL: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        run: |
+          tar -czf cov-int.tgz cov-int
+          curl --no-progress-meter --fail-with-body \
+               --retry 5 --retry-connrefused --retry-delay 5 \
+               --form token="${COVERITY_SCAN_TOKEN}" \
+               --form email="${COVERITY_SCAN_EMAIL}" \
+               --form file=@cov-int.tgz \
+               --form version="${GITHUB_SHA}" \
+               --form description="GitHub Actions ${GITHUB_REF_NAME} (run ${GITHUB_RUN_ID})" \
+               --form project="${COVERITY_PROJECT}" \
+               https://scan.coverity.com/builds
