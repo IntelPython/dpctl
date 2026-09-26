@@ -1,6 +1,0 @@
-dpctl.SyclDevice.is\_gpu
-========================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.is_gpu
