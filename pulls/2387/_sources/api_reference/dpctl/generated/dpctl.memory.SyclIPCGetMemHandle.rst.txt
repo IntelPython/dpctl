@@ -1,0 +1,6 @@
+﻿dpctl.memory.SyclIPCGetMemHandle
+================================
+
+.. currentmodule:: dpctl.memory
+
+.. autofunction:: SyclIPCGetMemHandle
