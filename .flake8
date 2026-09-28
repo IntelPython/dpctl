@@ -6,8 +6,6 @@ extend-ignore = E203, W503
 show-source = True
 
 exclude =
-    versioneer.py
-    dpctl/_version.py
     build
     conda.recipe
     .git

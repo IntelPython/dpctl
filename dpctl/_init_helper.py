@@ -41,7 +41,7 @@ is_linux = sys.platform.startswith("linux")
 
 if is_linux:
     # forking is not supported by device drivers
-    # Configure subprocess (used by versioneer) to
+    # Configure subprocess to
     # use SPAWN method over FORK method to enable
     # use of gdb-oneapi to debug code launched by
     # native extensions that used dpctl C/C++ API

@@ -131,7 +131,7 @@ One way to create such environment is as follows:
 
     conda create -n dev_dpctl -c conda-forge python=3.12 pip
     conda activate dev_dpctl
-    pip install --no-cache-dir numpy cython scikit-build cmake ninja pytest
+    pip install --no-cache-dir numpy cython cython-cmake scikit-build-core setuptools-scm cmake ninja pytest
 
 Using such environment and with DPC++ compiler activated, build the project using
 
