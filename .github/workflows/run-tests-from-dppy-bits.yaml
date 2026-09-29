@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         dependencies: [conda-forge, intel]
-        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t']
+        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t', '3.15.* *_cp315', '3.15.* *_cp315t']
         runner: [ubuntu-22.04, ubuntu-24.04]
 
     steps:
@@ -87,7 +87,7 @@ jobs:
       matrix:
         # see the comment on the dependencies of test_linux
         dependencies: [conda-forge, intel]
-        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t']
+        python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t', '3.15.* *_cp315', '3.15.* *_cp315t']
         runner: [windows-latest]
     env:
       workdir: '${{ github.workspace }}'
