@@ -148,7 +148,10 @@ def get_include():
     Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.
     """
-    return os.path.join(os.path.dirname(__file__), "include")
+    # Not __file__: editable installs keep Python files in the source tree
+    from . import _sycl_context
+
+    return os.path.join(os.path.dirname(_sycl_context.__file__), "include")
 
 
 del _init_helper

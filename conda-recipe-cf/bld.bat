@@ -20,6 +20,9 @@ set "CC=icx"
 set "CXX=icx"
 
 set "CMAKE_GENERATOR=Ninja"
+:: Set by the VS activation, but not supported by Ninja
+set "CMAKE_GENERATOR_PLATFORM="
+set "CMAKE_GENERATOR_TOOLSET="
 :: Make CMake verbose
 set "VERBOSE=1"
 

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib.util
 import os
 import os.path
 import sys
@@ -24,7 +25,9 @@ is_venv = sys.base_exec_prefix != sys.exec_prefix and os.path.isfile(
 
 if sys.platform == "win32":  # pragma: no cover
     # Include folder containing DPCTLSyclInterface.dll to search path
-    os.add_dll_directory(os.path.dirname(__file__))
+    # Not __file__: editable installs keep Python files in the source tree
+    _origin = importlib.util.find_spec("dpctl._sycl_context").origin
+    os.add_dll_directory(os.path.dirname(_origin))
     if is_venv:
         # For virtual environments on Windows, add folder
         # with DPC++ libraries to the DLL search path gh-1745
