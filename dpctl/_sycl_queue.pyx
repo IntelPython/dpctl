@@ -1457,6 +1457,9 @@ cdef class SyclQueue(_SyclQueue):
             ValueError:
                 If the number of arguments in ``args`` differs from the number
                 of arguments the kernel takes.
+            SyclKernelSubmitError:
+                If ``kernel`` does not reference a ``sycl::kernel``, or if
+                submission to the queue fails.
         """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
