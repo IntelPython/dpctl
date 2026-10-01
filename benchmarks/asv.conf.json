@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "project": "dpctl",
+    "project_url": "https://github.com/IntelPython/dpctl",
+    "show_commit_url": "https://github.com/IntelPython/dpctl/commit/",
+    "repo": "..",
+    "branches": [
+        "master",
+        "dev-milestone"
+    ],
+    "environment_type": "conda",
+    "conda_channels": [
+        "https://software.repos.intel.com/python/conda/",
+        "conda-forge"
+    ],
+    "benchmark_dir": "benchmarks",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html",
+    "build_cache_size": 2,
+    "default_benchmark_timeout": 900,
+    "regressions_thresholds": {
+        ".*": 0.2
+    }
+}
