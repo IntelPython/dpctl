@@ -14,15 +14,13 @@ PYBIND11_MODULE(_seq_order_keeper, m, py::mod_gil_not_used())
         .def(py::init<SequentialOrder>())
         .def("get_num_submitted_events",
              &SequentialOrder::get_num_submitted_events)
-        .def("get_num_host_task_events",
-             &SequentialOrder::get_num_host_task_events)
+        .def("get_num_cleanup_events", &SequentialOrder::get_num_cleanup_events)
         .def("get_submitted_events", &SequentialOrder::get_submitted_events)
-        .def("get_host_task_events", &SequentialOrder::get_host_task_events)
+        .def("get_cleanup_events", &SequentialOrder::get_cleanup_events)
         .def("add_to_both_events", &SequentialOrder::add_to_both_events)
         .def("add_vector_to_both_events",
              &SequentialOrder::add_vector_to_both_events)
-        .def("add_to_host_task_events",
-             &SequentialOrder::add_to_host_task_events)
+        .def("add_to_cleanup_events", &SequentialOrder::add_to_cleanup_events)
         .def("add_to_submitted_events",
              &SequentialOrder::add_to_submitted_events)
         .def("wait", &SequentialOrder::wait,

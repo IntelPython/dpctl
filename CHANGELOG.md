@@ -15,21 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `DPCTLQueue_MemsetWithEvents` C-API function to support `dpctl.SyclQueue.memset_async` [gh-2361](https://github.com/IntelPython/dpctl/pull/2361)
 * Added `dpctl.SyclQueue.fill` and `dpctl.SyclQueue.fill_async` methods [gh-2365](https://github.com/IntelPython/dpctl/pull/2365)
 * Added `DPCTLQueue_Fill8/16/32/64/128WithEvents` C-API functions to support `dpctl.SyclQueue.fill_async` [gh-2365](https://github.com/IntelPython/dpctl/pull/2365)
+* Added `dpctl.SyclQueue.keep_args_alive` method, which keeps Python objects alive until the work on that queue using them completes [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Added `add_event` and `add_cleanup_event` methods and `cleanup_events` and `num_cleanup_events` properties to the order manager, for tracking the events that gate the release of objects used by offloaded tasks [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Changed
 * Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 
 ### Deprecated
 * Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Deprecated the order manager's `add_event_pair`, `host_task_events` and `num_host_task_events`, as `host_task` is no longer used for managing object lifetimes, in favor of `add_event`, `add_cleanup_event`, `cleanup_events` and `num_cleanup_events` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Removed
 * Removed Cython API for `dpctl.program` submodule, as the submodule is now deprecated, with functionality migrated to `dpctl.compiler` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
 ### Fixed
 * Fixed incorrect paths in `GetLevelZeroHeaders.cmake` [gh-2366](https://github.com/IntelPython/dpctl/pull/2366)
+* A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Maintenance
 * Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
