@@ -1630,6 +1630,14 @@ cdef class SyclQueue(_SyclQueue):
         .. note::
             :meth:`dpctl.SyclQueue.submit` is a synchronizing method.
             Use :meth:`dpctl.SyclQueue.submit_async` to avoid synchronization.
+
+        Raises:
+            ValueError:
+                If the number of arguments in ``args`` differs from the number
+                of arguments the kernel takes.
+            SyclKernelSubmitError:
+                If ``kernel`` does not reference a ``sycl::kernel``, or if
+                submission to the queue fails.
         """
         cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
         e.wait()
