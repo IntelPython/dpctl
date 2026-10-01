@@ -872,8 +872,8 @@ jobs:
           $cl_cfg="$env:CONDA_PREFIX\Library\bin\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
       - name: Smoke test
-        # run from outside the checkout, the dpctl source directory in it
-        # shadows the installed package
+        # dpctl source directory shadows the package, so don't run from the
+        # checkout root
         working-directory: ${{ env.workdir }}\examples
         run: >-
           conda activate ${{ env.EXAMPLES_ENV_NAME }} && python -m dpctl -f
