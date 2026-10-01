@@ -1,6 +1,0 @@
-dpctl.SyclDevice.atomic\_fence\_order\_capabilities
-===================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.atomic_fence_order_capabilities

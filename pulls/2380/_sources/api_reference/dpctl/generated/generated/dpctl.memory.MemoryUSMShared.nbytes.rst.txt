@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.nbytes
-===================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMShared.nbytes

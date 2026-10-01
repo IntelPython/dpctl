@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.vendor
-=========================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.vendor
