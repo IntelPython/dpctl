@@ -647,6 +647,9 @@ jobs:
           Get-ItemProperty -Path $vendors
 
       - name: Smoke test
+        # run from outside the checkout, the dpctl source directory in it
+        # shadows the installed package
+        working-directory: ${{ env.workdir }}\examples
         run: >-
           conda activate ${{ env.EXAMPLES_ENV_NAME }} && python -m dpctl -f
 
