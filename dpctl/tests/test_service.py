@@ -156,7 +156,7 @@ def should_skip_syclinterface(request):
 
 
 def test_syclinterface(should_skip_syclinterface):
-    install_dir = os.path.dirname(os.path.abspath(dpctl.__file__))
+    install_dir = os.path.dirname(dpctl.get_include())
     paths = glob.glob(os.path.join(install_dir, "*DPCTLSyclInterface*"))
     if "linux" in sys.platform:
         if should_skip_syclinterface:

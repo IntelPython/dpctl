@@ -24,7 +24,9 @@ import warnings
 
 
 def _dpctl_dir() -> str:
-    dpctl_dir = importlib.util.find_spec("dpctl").submodule_search_locations[0]
+    # Compiled modules are next to the installed data, also in editable mode
+    origin = importlib.util.find_spec("dpctl._sycl_context").origin
+    dpctl_dir = os.path.dirname(origin)
     abs_dpctl_dir = os.path.abspath(dpctl_dir)
     return abs_dpctl_dir
 

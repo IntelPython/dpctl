@@ -687,8 +687,8 @@ jobs:
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
           echo "Cmake and Ninja installed"
           # shellcheck disable=SC2086
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
-          echo "scikit-build installed"
+          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython cython-cmake scikit-build-core $CHANNELS || exit 1
+          echo "scikit-build-core installed"
           # shellcheck disable=SC2086
           conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp \
               mkl-devel-dpcpp dpcpp_cpp_rt "${DPCTL_DEPENDS}" \
@@ -720,7 +720,7 @@ jobs:
           while IFS= read -r d; do
             pushd "$d" > /dev/null
             conda activate --stack build_env
-            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja || exit 1
+            CC=icx CXX=icpx python -m pip install --no-build-isolation --no-deps -e . || exit 1
             conda deactivate
             if [ -e tests ]; then
                LD_LIBRARY_PATH="${CONDA_PREFIX}/lib" python -m pytest tests || exit 1
@@ -739,7 +739,7 @@ jobs:
           while IFS= read -r d; do
             pushd "$d" > /dev/null
             conda activate --stack "${{ env.BUILD_ENV_NAME }}"
-            CC=icx CXX=icpx python setup.py build_ext --inplace -G Ninja  || exit 1
+            CC=icx CXX=icpx python -m pip install --no-build-isolation --no-deps -e . || exit 1
             conda deactivate
             python -m pytest tests || exit 1
             popd > /dev/null

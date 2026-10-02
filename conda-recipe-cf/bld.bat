@@ -2,8 +2,6 @@ REM A workaround for activate-dpcpp.bat issue to be addressed in 2021.4
 set "LIB=%BUILD_PREFIX%\Library\lib;%BUILD_PREFIX%\compiler\lib;%LIB%"
 set "INCLUDE=%BUILD_PREFIX%\include;%INCLUDE%"
 
-"%PYTHON%" setup.py clean --all
-
 REM useful for building in resources constrained VMs (public CI)
 set "CMAKE_ARGS=%CMAKE_ARGS% -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE"
 
@@ -22,6 +20,9 @@ set "CC=icx"
 set "CXX=icx"
 
 set "CMAKE_GENERATOR=Ninja"
+:: Set by the VS activation, but not supported by Ninja
+set "CMAKE_GENERATOR_PLATFORM="
+set "CMAKE_GENERATOR_TOOLSET="
 :: Make CMake verbose
 set "VERBOSE=1"
 

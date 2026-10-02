@@ -1,17 +1,12 @@
 [build-system]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 requires = [
   # TODO: keep in sync with [project.dependencies]
-  "wheel>=0.43",
-  "build>=1.1",
-  "setuptools>=63.0.0",
-  "scikit-build>=0.17.0",
-  "ninja>=1.11.1; platform_system!='Windows'",
-  "cmake>=3.29.0",
+  "scikit-build-core>=0.11",
+  "setuptools-scm>=8",
   "cython>=3.1.0",
-  "numpy >=1.26.0",
-  # WARNING: check with doc how to upgrade
-  "versioneer[toml]==0.29"
+  "cython-cmake>=0.2",
+  "numpy >=1.26.0"
 ]
 
 [project]
@@ -85,7 +80,6 @@ Issues = "https://github.com/IntelPython/dpctl/issues"
 Repository = "https://github.com/IntelPython/dpctl.git"
 
 [tool.black]
-exclude = "dpctl/_version.py"
 line-length = 80
 
 [tool.codespell]
@@ -124,13 +118,11 @@ force_grid_wrap = 0
 include_trailing_comma = true
 line_length = 80
 multi_line_output = 3
-skip = ["dpctl/_version.py"]
 use_parentheses = true
 
 [tool.pytest.ini_options]
 addopts = [
   "--junitxml=junit.xml",
-  "--ignore=setup.py",
   "--ignore=run_test.py",
   "--tb=native",
   "--strict-markers",
@@ -150,9 +142,31 @@ norecursedirs = [
   "conda-recipe"
 ]
 
-[tool.versioneer]
-VCS = "git"
-parentdir_prefix = "dpctl-"
-style = "pep440"
-versionfile_build = "dpctl/_version.py"
-versionfile_source = "dpctl/_version.py"
+[tool.scikit-build]
+build-dir = "build/{wheel_tag}"
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+minimum-version = "build-system.requires"
+sdist.include = [
+  "dpctl/apis/include/*.h",
+  "dpctl/tests/_c_ext.c"
+]
+wheel.exclude = [
+  "dpctl/**/CMakeLists.txt",
+  "dpctl/**/*.pyx",
+  "!dpctl/tests/*.pyx",
+  "dpctl/**/*.pxi",
+  "dpctl/**/*.hpp",
+  "!dpctl/include/**",
+  "dpctl/.gitignore",
+  "dpctl/apis/",
+  "dpctl/utils/src/"
+]
+wheel.packages = ["dpctl"]
+
+[[tool.scikit-build.generate]]
+path = "dpctl/_version.py"
+template = '''
+__version__ = version = "${version}"
+'''
+
+[tool.setuptools_scm]

@@ -13,7 +13,6 @@ __pycache__/
 
 # CMake build and local install directory
 build
-_skbuild
 build_cmake
 install
 
