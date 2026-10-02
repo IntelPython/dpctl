@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMDevice.sycl\_context
-==========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMDevice.sycl_context

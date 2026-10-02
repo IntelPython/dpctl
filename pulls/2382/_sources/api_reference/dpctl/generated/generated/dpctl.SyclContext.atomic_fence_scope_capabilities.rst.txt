@@ -1,6 +1,0 @@
-dpctl.SyclContext.atomic\_fence\_scope\_capabilities
-====================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclContext.atomic_fence_scope_capabilities
