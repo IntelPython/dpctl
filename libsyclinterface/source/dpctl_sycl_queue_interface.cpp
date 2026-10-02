@@ -498,6 +498,17 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                        size_t NDepEvents)
 {
+    if (!KRef) {
+        error_handler("Cannot submit the kernel as the kernel is a nullptr.",
+                      __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    }
+    if (!QRef) {
+        error_handler("Cannot submit the kernel as the queue is a nullptr.",
+                      __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    }
+
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
     event e;
@@ -563,6 +574,17 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                          size_t NDepEvents)
 {
+    if (!KRef) {
+        error_handler("Cannot submit the kernel as the kernel is a nullptr.",
+                      __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    }
+    if (!QRef) {
+        error_handler("Cannot submit the kernel as the queue is a nullptr.",
+                      __FILE__, __func__, __LINE__, error_level::error);
+        return nullptr;
+    }
+
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
     event e;

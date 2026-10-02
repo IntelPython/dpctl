@@ -389,6 +389,47 @@ TEST_F(TestQueueSubmit, CheckForUnsupportedArgTy)
     ASSERT_TRUE(ERef == nullptr);
 }
 
+TEST_F(TestQueueSubmit, CheckForNullKernel)
+{
+    std::size_t Range[] = {SIZE};
+    std::size_t lRange[] = {1};
+    std::size_t RANGE_NDIMS = 1;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_SubmitRange(nullptr, QRef, nullptr, nullptr, 0, Range,
+                                      RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_SubmitNDRange(
+                                nullptr, QRef, nullptr, nullptr, 0, Range,
+                                lRange, RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef == nullptr);
+}
+
+TEST_F(TestQueueSubmit, CheckForNullQueue)
+{
+    std::size_t Range[] = {SIZE};
+    std::size_t lRange[] = {1};
+    std::size_t RANGE_NDIMS = 1;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS11RangeKernelIiE");
+    ASSERT_TRUE(kernel != nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_SubmitRange(kernel, nullptr, nullptr, nullptr, 0,
+                                      Range, RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_SubmitNDRange(
+                                kernel, nullptr, nullptr, nullptr, 0, Range,
+                                lRange, RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef == nullptr);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(kernel));
+}
+
 struct TestQueueSubmitBarrier : public ::testing::Test
 {
     DPCTLSyclQueueRef QRef = nullptr;

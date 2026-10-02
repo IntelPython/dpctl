@@ -1452,6 +1452,14 @@ cdef class SyclQueue(_SyclQueue):
 
             One way of accomplishing this is to use
             :meth:`dpctl.SyclQueue._submit_keep_args_alive`.
+
+        Raises:
+            ValueError:
+                If the number of arguments in ``args`` differs from the number
+                of arguments the kernel takes.
+            SyclKernelSubmitError:
+                If ``kernel`` does not reference a ``sycl::kernel``, or if
+                submission to the queue fails.
         """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
@@ -1463,6 +1471,21 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nGS = len(gS)
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
+        cdef size_t nKA = 0
+
+        if kernel.get_kernel_ref() is NULL:
+            raise SyclKernelSubmitError(
+                "The kernel can not be submitted, as it does not reference a "
+                "``sycl::kernel``."
+            )
+        # the backend can not detect that the correct number of arguments were
+        # provided, so check it here
+        nKA = kernel.num_args
+        if <size_t>len(args) != nKA:
+            raise ValueError(
+                f"Kernel '{kernel.get_function_name()}' takes {nKA} "
+                f"argument(s), got {len(args)}."
+            )
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1607,6 +1630,14 @@ cdef class SyclQueue(_SyclQueue):
         .. note::
             :meth:`dpctl.SyclQueue.submit` is a synchronizing method.
             Use :meth:`dpctl.SyclQueue.submit_async` to avoid synchronization.
+
+        Raises:
+            ValueError:
+                If the number of arguments in ``args`` differs from the number
+                of arguments the kernel takes.
+            SyclKernelSubmitError:
+                If ``kernel`` does not reference a ``sycl::kernel``, or if
+                submission to the queue fails.
         """
         cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
         e.wait()
