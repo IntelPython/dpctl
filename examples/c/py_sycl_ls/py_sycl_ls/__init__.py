@@ -14,7 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ._py_sycl_ls import sycl_ls
+import os
+import os.path
+import sys
+
+import dpctl
+
+if sys.platform == "win32":
+    # the extension links against DPCTLSyclInterface.dll
+    os.add_dll_directory(os.path.dirname(dpctl.__file__))
+
+from ._py_sycl_ls import sycl_ls  # noqa: E402
 
 __all__ = [
     "sycl_ls",
