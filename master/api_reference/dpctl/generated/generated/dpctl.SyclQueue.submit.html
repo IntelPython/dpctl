@@ -729,6 +729,16 @@ to tasks associated with specified events.</p></li>
 <p><a class="reference internal" href="#dpctl.SyclQueue.submit" title="dpctl.SyclQueue.submit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit()</span></code></a> is a synchronizing method.
 Use <a class="reference internal" href="dpctl.SyclQueue.submit_async.html#dpctl.SyclQueue.submit_async" title="dpctl.SyclQueue.submit_async"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.submit_async()</span></code></a> to avoid synchronization.</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the number of arguments in <code class="docutils literal notranslate"><span class="pre">args</span></code> differs from the number
+    of arguments the kernel takes.</p></li>
+<li><p><strong>SyclKernelSubmitError</strong> – If <code class="docutils literal notranslate"><span class="pre">kernel</span></code> does not reference a <code class="docutils literal notranslate"><span class="pre">sycl::kernel</span></code>, or if
+    submission to the queue fails.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
