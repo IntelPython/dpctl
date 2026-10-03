@@ -1,0 +1,6 @@
+dpctl.SyclQueue.submit\_async
+=============================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.submit_async
