@@ -1,0 +1,6 @@
+dpctl.SyclDevice.mem\_base\_addr\_align
+=======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.mem_base_addr_align

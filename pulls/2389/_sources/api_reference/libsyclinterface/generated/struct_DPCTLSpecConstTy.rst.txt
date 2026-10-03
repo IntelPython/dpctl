@@ -1,0 +1,25 @@
+.. index:: pair: struct; DPCTLSpecConstTy
+.. _doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty:
+
+struct DPCTLSpecConstTy
+=======================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_kernel_bundle_interface.h>
+	
+	struct DPCTLSpecConstTy
+	{
+		// fields
+	
+		uint32_t :target:`id<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty_1acd2b7da1b4e185e2a4f2ec5a1948d65b>`;
+		size_t :target:`size<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty_1ad746c2f87dc98c6cac6d3636e9e42793>`;
+		const void* :target:`value<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty_1aa1248478e25136e7c2ffe9ca5c021d3e>`;
+	};

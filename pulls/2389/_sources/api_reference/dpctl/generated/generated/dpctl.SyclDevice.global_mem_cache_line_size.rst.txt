@@ -1,0 +1,6 @@
+dpctl.SyclDevice.global\_mem\_cache\_line\_size
+===============================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.global_mem_cache_line_size

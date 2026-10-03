@@ -1,0 +1,6 @@
+dpctl.SyclDevice.preferred\_vector\_width\_float
+================================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.preferred_vector_width_float

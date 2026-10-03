@@ -1,0 +1,44 @@
+.. index:: pair: class; dpctl::syclinterface::dpctl_cpu_selector
+.. _doxid-d4/d09/classdpctl_1_1syclinterface_1_1dpctl__cpu__selector:
+
+class dpctl::syclinterface::dpctl_cpu_selector
+==============================================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_device_selection.hpp>
+	
+	class dpctl_cpu_selector: public :ref:`dpctl::syclinterface::dpctl_device_selector<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector>`
+	{
+	public:
+		// methods
+	
+		virtual
+		int
+		:target:`operator ()<doxid-d4/d09/classdpctl_1_1syclinterface_1_1dpctl__cpu__selector_1ad4b3a3d5d7697a5d322b76b9e4ddb9b5>` (const sycl::device& d) const;
+	};
+
+Inherited Members
+-----------------
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-inherited-code-block
+
+	public:
+		// fields
+	
+		static constexpr int :ref:`REJECT_DEVICE<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a3803a4a44ef1315dbb40f5c78ed9e326>` = -1;
+
+		// methods
+	
+		virtual
+		int
+		:ref:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a897941b230c0931aaab9d513be091136>` (const sycl::device&) const;
+
