@@ -1,6 +1,0 @@
-dpctl.SyclDevice.partition\_type\_property
-==========================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.partition_type_property

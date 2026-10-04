@@ -1,6 +1,0 @@
-dpctl.SyclDevice.has\_aspect\_host\_debuggable
-==============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.has_aspect_host_debuggable
