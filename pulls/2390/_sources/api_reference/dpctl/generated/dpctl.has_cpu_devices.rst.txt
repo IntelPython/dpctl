@@ -1,6 +1,0 @@
-﻿dpctl.has\_cpu\_devices
-=======================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: has_cpu_devices
