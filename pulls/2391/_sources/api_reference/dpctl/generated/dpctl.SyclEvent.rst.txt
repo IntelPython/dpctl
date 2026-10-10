@@ -1,0 +1,35 @@
+﻿dpctl.SyclEvent
+===============
+
+.. currentmodule:: dpctl
+
+.. autoclass:: SyclEvent
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclEvent.addressof_ref
+      ~SyclEvent.get_wait_list
+      ~SyclEvent.wait
+      ~SyclEvent.wait_for
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclEvent.backend
+      ~SyclEvent.execution_status
+      ~SyclEvent.profiling_info_end
+      ~SyclEvent.profiling_info_start
+      ~SyclEvent.profiling_info_submit
+   
+   

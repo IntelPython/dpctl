@@ -1,0 +1,6 @@
+dpctl.SyclDevice.addressof\_ref
+===============================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclDevice.addressof_ref

@@ -1,0 +1,6 @@
+dpctl.SyclDevice.atomic\_memory\_order\_capabilities
+====================================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.atomic_memory_order_capabilities
