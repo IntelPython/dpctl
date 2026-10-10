@@ -34,5 +34,3 @@ target_include_directories(${py_module_name} PUBLIC ${Dpctl_INCLUDE_DIRS})
 install(TARGETS ${py_module_name}
   DESTINATION use_queue_device
 )
-
-set(ignoreMe "${SKBUILD}")

@@ -93,7 +93,7 @@ jobs:
       - name: Install dpctl dependencies
         shell: bash -l {0}
         run: |
-          pip install numpy cython setuptools"<80" pytest pytest-cov scikit-build cmake coverage[toml] versioneer[toml]==0.29
+          pip install numpy cython pytest pytest-cov scikit-build-core setuptools-scm cython-cmake cmake ninja coverage[toml]
 
       - name: Build dpctl with coverage
         shell: bash -l {0}
@@ -113,7 +113,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "Processing c-api-coverage"
-          DPCTL_LCOV_FN=$(find _skbuild -name dpctl.lcov)
+          DPCTL_LCOV_FN=$(find build/coverage -name dpctl.lcov)
           export DPCTL_LCOV_FN
           grep "/tmp" "$DPCTL_LCOV_FN"
           coveralls-lcov -v -n \

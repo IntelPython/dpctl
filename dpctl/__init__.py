@@ -60,7 +60,7 @@ from ._sycl_queue import (
 )
 from ._sycl_queue_manager import get_device_cached_queue
 from ._sycl_timer import SyclTimer
-from ._version import get_versions
+from ._version import __version__  # noqa: F401
 from .enum_types import (
     backend_type,
     device_type,
@@ -148,9 +148,10 @@ def get_include():
     Extension modules that need to be compiled against dpctl should use
     this function to locate the appropriate include directory.
     """
-    return os.path.join(os.path.dirname(__file__), "include")
+    # Not __file__: editable installs keep Python files in the source tree
+    from . import _sycl_context
+
+    return os.path.join(os.path.dirname(_sycl_context.__file__), "include")
 
 
-__version__ = get_versions()["version"]
-del get_versions
 del _init_helper
