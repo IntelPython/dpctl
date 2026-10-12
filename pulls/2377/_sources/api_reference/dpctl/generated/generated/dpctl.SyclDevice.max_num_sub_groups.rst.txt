@@ -1,0 +1,6 @@
+dpctl.SyclDevice.max\_num\_sub\_groups
+======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.max_num_sub_groups
