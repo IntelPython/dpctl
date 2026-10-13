@@ -17,21 +17,23 @@
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 import sysconfig
 
 from _build_helper import (
-    build_extension,
+    build_and_install,
     capture_cmd_output,
     clean_build_dir,
     err,
-    install_editable,
     log_cmake_args,
     make_cmake_args,
     resolve_compilers,
     run,
 )
+
+BUILD_DIR = "build/coverage"
 
 
 def find_bin_llvm(compiler):
@@ -148,7 +150,7 @@ def main():
     bin_llvm = find_bin_llvm(c_compiler)
 
     if args.clean:
-        clean_build_dir(setup_dir)
+        clean_build_dir(setup_dir, BUILD_DIR)
 
     # Level Zero state (on unless explicitly disabled)
     level_zero_enabled = False if args.no_level_zero else True
@@ -176,22 +178,28 @@ def main():
 
     log_cmake_args(cmake_args, "gen_coverage")
 
-    build_extension(
+    build_and_install(
         setup_dir,
         env,
         cmake_args,
+        build_dir=BUILD_DIR,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Coverage",
     )
-    install_editable(setup_dir, env)
 
-    cmake_build_dir = capture_cmd_output(
-        ["find", "_skbuild", "-name", "cmake-build"],
-        cwd=setup_dir,
-    )
+    cmake_build_dir = os.path.join(setup_dir, BUILD_DIR)
 
-    print(f"[gen_coverage] Found CMake build dir: {cmake_build_dir}")
+    # Cython.Coverage looks for the generated sources next to the .pyx files
+    cmake_pkg_dir = os.path.join(cmake_build_dir, "dpctl")
+    for root, _, files in os.walk(cmake_pkg_dir):
+        for file in files:
+            if file.endswith(".cxx"):
+                rel_dir = os.path.relpath(root, cmake_build_dir)
+                shutil.copy2(
+                    os.path.join(root, file),
+                    os.path.join(setup_dir, rel_dir, file),
+                )
 
     run(
         ["cmake", "--build", ".", "--target", "llvm-cov-report"],
@@ -228,7 +236,7 @@ def main():
             def is_py_ext(fn):
                 return re.match(regexp, fn)
 
-            for root, _, files in os.walk("dpctl"):
+            for root, _, files in os.walk(cmake_build_dir):
                 for file in files:
                     if not file.endswith(".so"):
                         continue

@@ -34,7 +34,7 @@ Generating The Documentation
 
 The helper script ``scripts/gen_docs.py`` is the preferred way to generate the
 documentation. The generated documentation HTML pages are installed to the
-``CMAKE_INSTALL_PREFIX/docs`` directory.
+``docs`` directory in the CMake build directory.
 
 ----------------------------
 ```bash

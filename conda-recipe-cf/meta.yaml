@@ -29,19 +29,13 @@ requirements:
     - pybind11 >=3.0.2
     - intel-sycl-rt
     - intel-cmplr-lib-rt
-    # Ensure we are using latest version of setuptools, since we don't need
-    # editable environments for release.
-    - setuptools >=69
-    - wheel >=0.43
     - python-build >=1.1
-    - scikit-build >=0.17.0
+    - scikit-build-core >=0.11
+    - setuptools-scm >=8
+    - cython-cmake >=0.2
     - cython >=3.1.0  # [py>=313]
     - cython >=3.0.10         # [py<313]
     - numpy
-    # WARNING: check with doc how to upgrade
-    - versioneer ==0.29
-    # versioneer dependency
-    - tomli                   # [py<311]
   run:
     - python
     - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}

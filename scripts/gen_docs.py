@@ -16,20 +16,19 @@
 
 import argparse
 import os
-import subprocess
 import sys
 
 from _build_helper import (
-    build_extension,
-    capture_cmd_output,
+    build_and_install,
     clean_build_dir,
     err,
-    install_editable,
     log_cmake_args,
     make_cmake_args,
     resolve_compilers,
     run,
 )
+
+BUILD_DIR = "build/docs"
 
 
 def parse_args():
@@ -125,7 +124,7 @@ def main():
     )
 
     if args.clean:
-        clean_build_dir(setup_dir)
+        clean_build_dir(setup_dir, BUILD_DIR)
 
     # Level Zero state (on unless explicitly disabled)
     level_zero_enabled = False if args.no_level_zero else True
@@ -151,33 +150,23 @@ def main():
 
     env = os.environ.copy()
 
-    build_extension(
+    build_and_install(
         setup_dir,
         env,
         cmake_args,
+        build_dir=BUILD_DIR,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type="Release",
     )
-    install_editable(setup_dir, env)
-    cmake_build_dir = capture_cmd_output(
-        ["find", "_skbuild", "-name", "cmake-build"], cwd=setup_dir
-    )
-
-    print(f"[gen_docs] Found CMake build dir: {cmake_build_dir}")
+    cmake_build_dir = os.path.join(setup_dir, BUILD_DIR)
 
     run(
         ["cmake", "--build", ".", "--target", "Sphinx"],
         cwd=cmake_build_dir,
     )
 
-    generated_doc_dir = (
-        subprocess.check_output(
-            ["find", "_skbuild", "-name", "index.html"], cwd=setup_dir
-        )
-        .decode("utf-8")
-        .strip("\n")
-    )
+    generated_doc_dir = os.path.join(cmake_build_dir, "docs", "docs")
     print("Generated documentation placed under ", generated_doc_dir)
 
     print("[gen_docs] Done")

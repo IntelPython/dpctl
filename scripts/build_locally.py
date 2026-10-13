@@ -19,10 +19,9 @@ import os
 import sys
 
 from _build_helper import (
-    build_extension,
+    build_and_install,
     clean_build_dir,
     err,
-    install_editable,
     log_cmake_args,
     make_cmake_args,
     resolve_compilers,
@@ -126,7 +125,7 @@ def parse_args():
     p.add_argument(
         "--skip-editable",
         action="store_true",
-        help="Skip pip editable install step",
+        help="Use a regular pip install instead of an editable install",
     )
 
     return p.parse_args()
@@ -170,22 +169,19 @@ def main():
 
     log_cmake_args(cmake_args, "build_locally")
 
-    print("[build_locally] Building extensions in-place...")
+    print("[build_locally] Building and installing dpctl...")
 
     env = os.environ.copy()
 
-    build_extension(
+    build_and_install(
         setup_dir,
         env,
         cmake_args,
         cmake_executable=args.cmake_executable,
         generator=args.generator,
         build_type=args.build_type,
+        editable=not args.skip_editable,
     )
-    if not args.skip_editable:
-        install_editable(setup_dir, env)
-    else:
-        print("[build_locally] Skipping editable install (--skip-editable)")
 
     print("[build_locally] Build complete")
 

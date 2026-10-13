@@ -110,7 +110,7 @@ target_link_libraries(DpctlCAPI INTERFACE DPCTLSyclInterfaceHeaders)
 
 install(DIRECTORY
     ${CMAKE_CURRENT_SOURCE_DIR}/dpctl/apis/include/
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/dpctl/include
+    DESTINATION dpctl/include
     FILES_MATCHING REGEX "\\.h(pp)?$"
 )
 
@@ -137,9 +137,15 @@ file(GLOB _cmake_scripts ${CMAKE_SOURCE_DIR}/cmake/*.cmake)
 install(FILES ${_cmake_scripts}
     DESTINATION dpctl/resources/cmake
 )
+# Installed into the environment prefix, not site-packages
+if(DEFINED SKBUILD_DATA_DIR)
+  set(_dpctl_config_dest ${SKBUILD_DATA_DIR}/lib/cmake/dpctl)
+else()
+  set(_dpctl_config_dest lib/cmake/dpctl)
+endif()
 install(FILES
   ${CMAKE_SOURCE_DIR}/cmake/dpctl-config.cmake
-  DESTINATION lib/cmake/dpctl
+  DESTINATION ${_dpctl_config_dest}
 )
 
 if (DPCTL_GENERATE_DOCS)

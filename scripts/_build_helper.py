@@ -110,55 +110,42 @@ def make_cmake_args(
     return args
 
 
-def build_extension(
+def build_and_install(
     setup_dir: str,
     env: dict[str, str],
     cmake_args: list[str],
+    build_dir: str = None,
     cmake_executable: str = None,
     generator: str = None,
     build_type: str = None,
+    editable: bool = True,
 ):
-    cmd = [sys.executable, "setup.py", "build_ext", "--inplace"]
-    if cmake_executable:
-        cmd.append(f"--cmake-executable={cmake_executable}")
-    if generator:
-        cmd.append(f"--generator={generator}")
+    cmd = [sys.executable, "-m", "pip", "install", "--no-build-isolation", "-v"]
+    if editable:
+        cmd.append("-e")
+    cmd.append(".")
+    if build_dir:
+        cmd.append(f"--config-settings=build-dir={build_dir}")
     if build_type:
-        cmd.append(f"--build-type={build_type}")
+        cmd.append(f"--config-settings=cmake.build-type={build_type}")
+    cmake_args = [arg for arg in cmake_args if arg]
     if cmake_args:
-        cmd.append("--")
-        cmd += cmake_args
-    run(
-        cmd,
-        env=env,
-        cwd=setup_dir,
-    )
+        cmd.append(f"--config-settings=cmake.args={';'.join(cmake_args)}")
+    if cmake_executable:
+        env["CMAKE_EXECUTABLE"] = cmake_executable
+    if generator:
+        env["CMAKE_GENERATOR"] = generator
+    run(cmd, env=env, cwd=setup_dir)
 
 
-def install_editable(setup_dir: str, env: dict[str, str]):
-    run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "-e",
-            ".",
-            "--no-build-isolation",
-        ],
-        env=env,
-        cwd=setup_dir,
-    )
-
-
-def clean_build_dir(setup_dir: str):
+def clean_build_dir(setup_dir: str, build_dir: str = "build"):
     if (
         not isinstance(setup_dir, str)
         or not setup_dir
         or not os.path.isdir(setup_dir)
     ):
         raise RuntimeError(f"Invalid setup directory provided: '{setup_dir}'")
-    target = os.path.join(setup_dir, "_skbuild")
+    target = os.path.join(setup_dir, build_dir)
     if os.path.exists(target):
         print(f"Cleaning build directory: {target}")
         try:

@@ -84,22 +84,21 @@ After building the Conda package, install it by executing:
     conda install dpctl
 
 
-Build and Install with scikit-build
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Build and Install with scikit-build-core
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build using Python ``setuptools`` and ``scikit-build``, install the following Python packages:
+To build with ``scikit-build-core``, install the following Python packages:
 
 - ``cython``
+- ``cython-cmake``
 - ``numpy``
 - ``cmake``
-- ``scikit-build``
+- ``scikit-build-core``
+- ``setuptools-scm``
 - ``ninja``
-- ``versioneer``
 - ``gtest`` (optional to run C API tests)
 - ``gmock`` (optional to run C API tests)
 - ``pytest`` (optional to run Python API tests)
-
-Once the prerequisites are installed, building using ``scikit-build`` involves the usual steps.
 
 To build and install, run:
 
@@ -110,36 +109,19 @@ To build and install, run:
 
         .. code-block:: bash
 
-            python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
+            CC=icx CXX=icpx python -m pip install --no-build-isolation .
 
     .. tab-item:: Windows
         :sync: win
 
         .. code-block:: bat
 
-            python setup.py install -- -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
+            set CC=icx
+            set CXX=icx
+            python -m pip install --no-build-isolation .
 
 
-To develop, run:
-
-.. tab-set::
-
-    .. tab-item:: Linux
-        :sync: lnx
-
-        .. code-block:: bash
-
-            python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icpx
-            python -m pip install -e .
-
-    .. tab-item:: Windows
-        :sync: win
-
-        .. code-block:: bat
-
-            python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=icx -DCMAKE_CXX_COMPILER:PATH=icx
-            python -m pip install -e .
-
+To develop, add ``-e`` to make an editable install.
 
 Developing can be streamlined using the driver script:
 
@@ -166,13 +148,12 @@ Building Using Custom DPC++
 You can build dpctl from the source using the `DPC++ toolchain <https://github.com/intel/llvm/blob/sycl/sycl/doc/GetStartedGuide.md>`_
 instead of the DPC++ compiler that comes with oneAPI.
 
-Following steps in the `Build and install with scikit-build`_ use a command-line option to set
-the relevant CMake variables, for example:
+Following steps in the `Build and install with scikit-build-core`_ set the compilers
+with environment variables, for example:
 
 .. code-block:: bash
 
-    python setup.py build_ext --inplace -G Ninja -DCMAKE_C_COMPILER:PATH=$(which clang) -DCMAKE_CXX_COMPILER:PATH=$(which clang++)
-    python -m pip install -e .
+    CC=$(which clang) CXX=$(which clang++) python -m pip install --no-build-isolation -e .
 
 
 Or you can use the driver script:

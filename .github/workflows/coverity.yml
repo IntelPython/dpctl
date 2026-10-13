@@ -26,7 +26,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # versioneer needs the tags to compute the package version
+          # setuptools-scm needs the tags to compute the package version
           fetch-depth: 0
 
       - name: Add Intel repository
@@ -56,7 +56,7 @@ jobs:
 
       - name: Install dpctl dependencies
         run: |
-          pip install numpy cython setuptools"<80" scikit-build cmake ninja versioneer[toml]==0.29
+          pip install numpy cython scikit-build-core setuptools-scm cython-cmake cmake ninja
 
       - name: Report compiler version
         run: |
@@ -98,9 +98,9 @@ jobs:
         run: |
           set -o pipefail
           source "${ONEAPI_ROOT}/setvars.sh"
-          rm -rf _skbuild
-          # --skip-editable: the in-place build_ext already compiled everything
-          # Coverity needs to see, a pip install would only repeat it
+          rm -rf build
+          # --skip-editable: a regular install is enough for Coverity to see
+          # all compilation units
           cov-build --dir cov-int \
               python scripts/build_locally.py --oneapi --skip-editable --verbose \
               2>&1 | tee cov-build.log

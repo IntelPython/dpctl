@@ -33,22 +33,13 @@ requirements:
         - pybind11 >=2.13
         - {{ pin_compatible('intel-sycl-rt', min_pin='x.x', max_pin='x') }}
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
-        # Ensure we are using latest version of setuptools, since we don't need
-        # editable environments for release.
-        - setuptools >=69
+        - python-build >=1.1
+        - wheel >=0.43
+        - cmake >=3.29.0
+        - ninja >=1.11.1 # [not win]
         {% for dep in py_build_deps %}
-        {% if dep.startswith('ninja') %}
-        - {{ dep.split(';')[0] }} # [not win]
-        {% elif dep.startswith('cmake') %}
-        - {{ dep }}
-        {% elif dep.startswith('build>=') %}
-        - {{ 'python-' ~ dep }}
-        {% else %}
         - {{ dep|replace('_','-') }}
-        {% endif %}
         {% endfor %}
-        # versioneer dependency
-        - tomli # [py<311]
         - opencl-headers >=2025.06.13 # [win]
     run:
         - python

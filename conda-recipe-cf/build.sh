@@ -10,10 +10,6 @@ export ICPXCFG
 ICXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG
 
-if [ -e "_skbuild" ]; then
-    ${PYTHON} setup.py clean --all
-fi
-
 export CC=icx
 export CXX=icpx
 

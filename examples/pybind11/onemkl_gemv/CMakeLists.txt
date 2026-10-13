@@ -65,5 +65,3 @@ target_compile_options(standalone_cpp
 )
 target_include_directories(standalone_cpp PUBLIC sycl_gemm)
 target_link_libraries(standalone_cpp PRIVATE MKL::MKL_SYCL)
-
-set(ignoreMe "${SKBUILD}")
