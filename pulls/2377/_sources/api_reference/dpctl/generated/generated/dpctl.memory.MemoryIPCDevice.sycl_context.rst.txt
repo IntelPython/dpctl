@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.sycl\_context
-==========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryIPCDevice.sycl_context
