@@ -36,6 +36,7 @@ jobs:
             python_spec: '3.14.* *_cp314t'
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
+          # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -106,6 +107,7 @@ jobs:
             python_spec: '3.14.* *_cp314t'
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
+          # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
@@ -171,6 +173,7 @@ jobs:
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
             runner: ubuntu-latest
+          # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
         runner: [ubuntu-latest]
 
     steps:
@@ -284,6 +287,7 @@ jobs:
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
             runner: windows-latest
+          # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
         runner: [windows-latest]
     env:
       workdir: '${{ github.workspace }}'

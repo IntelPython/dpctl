@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         dependencies: [conda-forge, intel]
+        # TODO: add '3.15.* *_cp315t' when NumPy cp315t builds are available on conda-forge
         python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t', '3.15.* *_cp315']
         runner: [ubuntu-22.04, ubuntu-24.04]
 
@@ -87,6 +88,7 @@ jobs:
       matrix:
         # see the comment on the dependencies of test_linux
         dependencies: [conda-forge, intel]
+        # TODO: add '3.15.* *_cp315t' when NumPy cp315t builds are available on conda-forge
         python_spec: ['3.10', '3.11', '3.12', '3.13', '3.14.* *_cp314', '3.14.* *_cp314t', '3.15.* *_cp315']
         runner: [windows-latest]
     env:
