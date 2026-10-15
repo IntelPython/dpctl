@@ -6,10 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.23.0] - XXX. XX, XXXX
 
+This release extends the SYCL interface exposed by `dpctl` in several directions: `dpctl.compiler.SyclKernelBundle` objects can now be built from SYCL source strings via the DPC++ `kernel_compiler` extension, SPIR-V specialization constants are supported, USM-device allocations can be shared between processes using the SYCL IPC memory extension, and `dpctl.SyclQueue` gained `copy`, `memset`, and `fill` methods along with their asynchronous counterparts. The package can now be used with free-threaded builds of CPython 3.14 and supports Python 3.15. The `dpctl.program` submodule is deprecated in favor of `dpctl.compiler`, which better describes its purpose.
+
+**NOTE**: This release contains breaking changes:
+
+* Device and platform collection APIs, as well as `dpctl.SyclDevice.sub_group_sizes`, return a `tuple` instead of a `list` [gh-2322](https://github.com/IntelPython/dpctl/pull/2322)
+* `dpctl.SyclDevice.sub_group_independent_forward_progress` property and `DPCTLDevice_GetSubGroupIndependentForwardProgress` C-API function were removed [gh-2353](https://github.com/IntelPython/dpctl/pull/2353)
+* The signature of `DPCTLKernelBundle_CreateFromSpirv` C-API function changed [gh-2304](https://github.com/IntelPython/dpctl/pull/2304)
+* The values of `DPCTLPartitionAffinityDomainType` enumerators shifted, as `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` was added as the zero value [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
+* `SyclProgram` names in the `dpctl` Python C-API and `dpctl4pybind11.hpp` (e.g. `PySyclKernelBundleObject`, `SyclKernelBundle_Make`) were renamed to `SyclKernelBundle` ones without keeping aliases, while the Python names remain available as deprecated aliases [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
+* The Cython API of the `dpctl.program` submodule was removed [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Minimum required versions were raised: NumPy to 1.26 and Cython to 3.1.0 for building the project, and the DPC++ compiler to 2026.0.0 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192), [gh-2250](https://github.com/IntelPython/dpctl/pull/2250), [gh-2360](https://github.com/IntelPython/dpctl/pull/2360)
+
 ### Added
-* Added `create_kernel_bundle_from_sycl_source`, `is_sycl_source_compilation_available`, and `dpctl.SyclDevice.can_compile` for supporting the creation of `dpctl.SyclKernelBundle`s from SYCL source strings via DPC++ extension, as well as corresponding C-API functions to support it [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
-* Added support for free-threaded builds of CPython [gh-2250](https://github.com/IntelPython/dpctl/pull/2250)
-* `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
+* Added `dpctl.compiler.create_kernel_bundle_from_sycl_source`, `dpctl.compiler.is_sycl_source_compilation_available`, and `dpctl.SyclDevice.can_compile` for creating `dpctl.compiler.SyclKernelBundle` objects from SYCL source strings via the DPC++ `kernel_compiler` extension, as well as corresponding C-API functions [gh-2206](https://github.com/IntelPython/dpctl/pull/2206)
+* Added support for free-threaded builds of CPython 3.14 [gh-2250](https://github.com/IntelPython/dpctl/pull/2250)
+* Added `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` methods [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
+* Added `DPCTLQueue_CopyData` and `DPCTLQueue_CopyDataWithEvents` C-API functions to support `dpctl.SyclQueue.copy` and `dpctl.SyclQueue.copy_async` [gh-2273](https://github.com/IntelPython/dpctl/pull/2273)
 * Added support for SPIR-V specialization constants via `dpctl.compiler.SpecializationConstant` and the `specializations` keyword of `create_kernel_bundle_from_spirv`, as well as `dpctl.compiler.utils` submodule for inspecting them [gh-2304](https://github.com/IntelPython/dpctl/pull/2304)
 * Added a number of `sycl::device` info queries to `dpctl.SyclDevice` [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 * Added `dpctl.memory.MemoryIPCDevice` and `dpctl.memory.IPCMemoryHandle`, along with `SyclIPCGetMemHandle`, `SyclIPCOpenMemHandle`, and `SyclIPCCloseMemHandle` functions, for sharing USM-device allocations between processes, as well as supporting C-API functions and the `dpctl.SyclDevice.has_aspect_ext_oneapi_ipc_memory` aspect query [gh-2331](https://github.com/IntelPython/dpctl/pull/2331)
@@ -21,18 +34,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added support for Python 3.15 [gh-2377](https://github.com/IntelPython/dpctl/pull/2377)
 
 ### Changed
-* Bump minimum NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
+* Bumped the minimum required NumPy version to 1.26 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192)
 * Bumped the minimum required Cython version to 3.1.0 [gh-2250](https://github.com/IntelPython/dpctl/pull/2250)
-* Renamed `dpctl.program.SyclProgram` to `dpctl.compiler.SyclKernelBundle` and `SyclProgramCompilationError` to `SyclKernelBundleCompilationError`, with corresponding renaming in the C-API [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
+* Renamed `dpctl.program.SyclProgram` to `dpctl.compiler.SyclKernelBundle`, `SyclProgramCompilationError` to `SyclKernelBundleCompilationError`, and `create_program_from_source`/`create_program_from_spirv` to `create_kernel_bundle_from_source`/`create_kernel_bundle_from_spirv`, with corresponding renaming in the `dpctl` Python C-API (e.g. `PySyclKernelBundleObject`, `SyclKernelBundle_Make`) and `dpctl4pybind11.hpp` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291), [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * Removed a work-around for `custom` and `automatic` device types in `dpctl.SyclPlatform.get_devices`, as it is no longer needed [gh-2303](https://github.com/IntelPython/dpctl/pull/2303)
 * `DPCTLKernelBundle_CreateFromSpirv` C-API function now also takes an array of `DPCTLSpecConst` specialization constants [gh-2304](https://github.com/IntelPython/dpctl/pull/2304)
-* Device and platform collection APIs, such as `dpctl.get_devices` and `dpctl.SyclPlatform.get_devices`, now return a `tuple` instead of a `list` [gh-2322](https://github.com/IntelPython/dpctl/pull/2322)
-* Registered `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` enumerator when `DPCTLDevice_GetPartitionAffinityDomains` receives an unrecognized value from the SYCL runtime [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
+* Device and platform collection APIs, such as `dpctl.get_devices` and `dpctl.SyclPlatform.get_devices`, as well as `dpctl.SyclDevice.sub_group_sizes`, now return a `tuple` instead of a `list`; this is a backward-incompatible change [gh-2322](https://github.com/IntelPython/dpctl/pull/2322)
+* Added `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` as the first enumerator (`= 0`) of `DPCTLPartitionAffinityDomainType`, used when the SYCL runtime reports an unrecognized partition affinity domain; this shifts the values of the existing enumerators [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 * Bumped the minimum required DPC++ compiler version to 2026.0.0 [gh-2360](https://github.com/IntelPython/dpctl/pull/2360)
 
 ### Deprecated
 * Deprecated `dpctl.program.SyclProgram` and `dpctl.program.SyclProgramCompilationError` aliases in favor of `dpctl.compiler.SyclKernelBundle` and `dpctl.compiler.SyclKernelBundleCompilationError` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
+* Deprecated `dpctl.program.create_program_from_source` and `dpctl.program.create_program_from_spirv`, which are kept as aliases emitting a `DeprecationWarning` in favor of `dpctl.compiler.create_kernel_bundle_from_source` and `dpctl.compiler.create_kernel_bundle_from_spirv` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
 * Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
@@ -42,18 +56,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed `dpctl.SyclDevice.sub_group_independent_forward_progress` property and the corresponding `DPCTLDevice_GetSubGroupIndependentForwardProgress` C-API function [gh-2353](https://github.com/IntelPython/dpctl/pull/2353)
 
 ### Fixed
-* Fixed formatting of error messages raised by `dpctl.SyclQueue` methods [gh-2290](https://github.com/IntelPython/dpctl/pull/2290)
+* Fixed a typo in the error message and the docstring of `dpctl.SyclDevice.create_sub_devices` [gh-2285](https://github.com/IntelPython/dpctl/pull/2285)
+* Fixed formatting of `TypeError` messages raised by `dpctl.WorkGroupMemory` and `dpctl.RawKernelArg` constructors, as well as of error messages raised by `dpctl.SyclQueue` methods [gh-2290](https://github.com/IntelPython/dpctl/pull/2290)
 * Fixed rendering issues and warnings in the documentation build [gh-2333](https://github.com/IntelPython/dpctl/pull/2333)
 * Fixed search for the OpenCL loader in CMake [gh-2356](https://github.com/IntelPython/dpctl/pull/2356)
 * Fixed incorrect paths in `GetLevelZeroHeaders.cmake` [gh-2366](https://github.com/IntelPython/dpctl/pull/2366)
-* Fixed an incorrect `memset` call in the "Basic concepts" user guide [gh-2368](https://github.com/IntelPython/dpctl/pull/2368)
-* Fixed bugs in kernel creation and submission that could lead to crashes, raising `ValueError` instead when the kernel cannot be created or the number of arguments does not match [gh-2382](https://github.com/IntelPython/dpctl/pull/2382)
+* Fixed an incorrect `dpctl.memory.MemoryUSMShared.memset` call in the "Heterogeneous Systems and Programming Concepts" user guide [gh-2368](https://github.com/IntelPython/dpctl/pull/2368)
+* Fixed bugs in kernel creation and submission: `dpctl.compiler.SyclKernelBundle.get_sycl_kernel` now raises `ValueError` instead of returning a kernel wrapping a null reference, which deferred the failure to the submission of the kernel; `dpctl.SyclQueue.submit` and `dpctl.SyclQueue.submit_async` now raise `ValueError` when the number of arguments does not match the number of kernel arguments, instead of appearing to succeed; and submitting an invalid kernel now raises `dpctl.SyclKernelSubmitError` [gh-2382](https://github.com/IntelPython/dpctl/pull/2382)
 
 ### Maintenance
 * Added an example of using `dpctl.utils.SequentialOrderManager` [gh-2250](https://github.com/IntelPython/dpctl/pull/2250)
+* Replaced uses of `str.format` with f-strings [gh-2282](https://github.com/IntelPython/dpctl/pull/2282), and constructors of empty Python containers with literals [gh-2289](https://github.com/IntelPython/dpctl/pull/2289)
+* Added more `pre-commit` hooks, including `codespell`, `shellcheck`, `gitleaks`, and `actionlint` [gh-2285](https://github.com/IntelPython/dpctl/pull/2285)
+* Added documentation of older releases to the version drop-down, along with a workflow to backfill it [gh-2312](https://github.com/IntelPython/dpctl/pull/2312), [gh-2380](https://github.com/IntelPython/dpctl/pull/2380)
+* Removed copyright year ranges from file headers [gh-2319](https://github.com/IntelPython/dpctl/pull/2319)
 * Marked SYCL compiler include directories as system ones in `IntelSYCLConfig.cmake` and `dpctl` targets to suppress deprecation warnings coming from compiler headers on Windows [gh-2334](https://github.com/IntelPython/dpctl/pull/2334)
+* Added `opencl-headers` as a Windows host requirement of the conda recipe [gh-2349](https://github.com/IntelPython/dpctl/pull/2349)
 * Updated pybind11 version used by `dpctl` and examples [gh-2357](https://github.com/IntelPython/dpctl/pull/2357)
+* Added a `conda-recipe-cf` recipe and a workflow for building and testing `dpctl` with conda-forge packages only [gh-2367](https://github.com/IntelPython/dpctl/pull/2367), [gh-2383](https://github.com/IntelPython/dpctl/pull/2383)
+* Added an `asv` benchmark suite for `dpctl`, along with a `benchmark` optional dependency group in `pyproject.toml` [gh-2378](https://github.com/IntelPython/dpctl/pull/2378)
 * Added a weekly `Coverity Scan` workflow that builds `dpctl` with the DPC++ compiler under `cov-build` and submits the results to Coverity Scan [gh-2379](https://github.com/IntelPython/dpctl/pull/2379)
+* Miscellaneous changes to continuous integration/delivery (CI/CD) supporting scripts:
+[gh-2300](https://github.com/IntelPython/dpctl/pull/2300),
+[gh-2308](https://github.com/IntelPython/dpctl/pull/2308),
+[gh-2310](https://github.com/IntelPython/dpctl/pull/2310),
+[gh-2311](https://github.com/IntelPython/dpctl/pull/2311),
+[gh-2340](https://github.com/IntelPython/dpctl/pull/2340),
+[gh-2346](https://github.com/IntelPython/dpctl/pull/2346),
+[gh-2347](https://github.com/IntelPython/dpctl/pull/2347),
+[gh-2350](https://github.com/IntelPython/dpctl/pull/2350),
+[gh-2352](https://github.com/IntelPython/dpctl/pull/2352),
+[gh-2362](https://github.com/IntelPython/dpctl/pull/2362),
+[gh-2363](https://github.com/IntelPython/dpctl/pull/2363),
+[gh-2373](https://github.com/IntelPython/dpctl/pull/2373),
+[gh-2374](https://github.com/IntelPython/dpctl/pull/2374),
+[gh-2381](https://github.com/IntelPython/dpctl/pull/2381)
 
 ## [0.22.1] - Apr. 24, 2026
 
