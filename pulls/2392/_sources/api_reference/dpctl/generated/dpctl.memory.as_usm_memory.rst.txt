@@ -1,0 +1,6 @@
+﻿dpctl.memory.as\_usm\_memory
+============================
+
+.. currentmodule:: dpctl.memory
+
+.. autofunction:: as_usm_memory

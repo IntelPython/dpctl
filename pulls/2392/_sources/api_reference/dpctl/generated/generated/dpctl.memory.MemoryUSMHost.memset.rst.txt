@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMHost.memset
+=================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMHost.memset
