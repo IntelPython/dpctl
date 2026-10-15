@@ -14,7 +14,7 @@ This release extends the SYCL interface exposed by `dpctl` in several directions
 * `dpctl.SyclDevice.sub_group_independent_forward_progress` property and `DPCTLDevice_GetSubGroupIndependentForwardProgress` C-API function were removed [gh-2353](https://github.com/IntelPython/dpctl/pull/2353)
 * The signature of `DPCTLKernelBundle_CreateFromSpirv` C-API function changed [gh-2304](https://github.com/IntelPython/dpctl/pull/2304)
 * The values of `DPCTLPartitionAffinityDomainType` enumerators shifted, as `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` was added as the zero value [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
-* `SyclProgram` names in the `dpctl` Python C-API and `dpctl4pybind11.hpp` (e.g. `PySyclKernelBundleObject`, `SyclKernelBundle_Make`) were renamed to `SyclKernelBundle` ones without keeping aliases, while the Python names remain available as deprecated aliases [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
+* `SyclProgram` names in the `dpctl` Python C-API and `dpctl4pybind11.hpp` were renamed to `SyclKernelBundle` ones (e.g. `PySyclProgramObject` to `PySyclKernelBundleObject`, `SyclProgram_Make` to `SyclKernelBundle_Make`) without keeping aliases, while the Python names remain available as deprecated aliases [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
 * The Cython API of the `dpctl.program` submodule was removed [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Minimum required versions were raised: NumPy to 1.26 and Cython to 3.1.0 for building the project, and the DPC++ compiler to 2026.0.0 [gh-2192](https://github.com/IntelPython/dpctl/pull/2192), [gh-2250](https://github.com/IntelPython/dpctl/pull/2250), [gh-2360](https://github.com/IntelPython/dpctl/pull/2360)
 
@@ -40,13 +40,13 @@ This release extends the SYCL interface exposed by `dpctl` in several directions
 * Rewrote USM Python examples into a single example [gh-2292](https://github.com/IntelPython/dpctl/pull/2292)
 * `dpctl.SyclPlatform.get_devices` no longer relies on a work-around for `custom` and `automatic` device types, as it is not needed with the supported compiler versions [gh-2303](https://github.com/IntelPython/dpctl/pull/2303)
 * `DPCTLKernelBundle_CreateFromSpirv` C-API function now also takes an array of `DPCTLSpecConst` specialization constants [gh-2304](https://github.com/IntelPython/dpctl/pull/2304)
-* Device and platform collection APIs, such as `dpctl.get_devices` and `dpctl.SyclPlatform.get_devices`, as well as `dpctl.SyclDevice.sub_group_sizes`, now return a `tuple` instead of a `list`; this is a backward-incompatible change [gh-2322](https://github.com/IntelPython/dpctl/pull/2322)
+* Device and platform collection APIs, such as `dpctl.get_devices` and `dpctl.SyclPlatform.get_devices`, as well as `dpctl.SyclDevice.sub_group_sizes`, now return a `tuple` instead of a `list` [gh-2322](https://github.com/IntelPython/dpctl/pull/2322)
 * Added `DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN` as the first enumerator (`= 0`) of `DPCTLPartitionAffinityDomainType`, used when the SYCL runtime reports an unrecognized partition affinity domain; this shifts the values of the existing enumerators [gh-2324](https://github.com/IntelPython/dpctl/pull/2324)
 * Bumped the minimum required DPC++ compiler version to 2026.0.0 [gh-2360](https://github.com/IntelPython/dpctl/pull/2360)
 
 ### Deprecated
-* Deprecated `dpctl.program.SyclProgram` and `dpctl.program.SyclProgramCompilationError` aliases in favor of `dpctl.compiler.SyclKernelBundle` and `dpctl.compiler.SyclKernelBundleCompilationError` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
-* Deprecated `dpctl.program.create_program_from_source` and `dpctl.program.create_program_from_spirv`, which are kept as aliases emitting a `DeprecationWarning` in favor of `dpctl.compiler.create_kernel_bundle_from_source` and `dpctl.compiler.create_kernel_bundle_from_spirv` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291)
+* Deprecated `dpctl.program.SyclProgram` and `dpctl.program.SyclProgramCompilationError` in favor of `dpctl.compiler.SyclKernelBundle` and `dpctl.compiler.SyclKernelBundleCompilationError`; the old names are kept as aliases that emit a `DeprecationWarning` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291), [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
+* Deprecated `dpctl.program.create_program_from_source` and `dpctl.program.create_program_from_spirv` in favor of `dpctl.compiler.create_kernel_bundle_from_source` and `dpctl.compiler.create_kernel_bundle_from_spirv`; the old functions are kept as aliases that emit a `DeprecationWarning` [gh-2291](https://github.com/IntelPython/dpctl/pull/2291), [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `dpctl.program` submodule in favor of `dpctl.compiler`, which provides a better description of the purpose of the submodule in exposing DPC++ compilation-related functionality [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 * Deprecated `DPCTL_ENABLE_L0_PROGRAM_CREATION` CMake option in favor of `DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION` [gh-2317](https://github.com/IntelPython/dpctl/pull/2317)
 
