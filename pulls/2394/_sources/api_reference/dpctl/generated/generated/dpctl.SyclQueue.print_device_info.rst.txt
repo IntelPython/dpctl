@@ -1,0 +1,6 @@
+dpctl.SyclQueue.print\_device\_info
+===================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.print_device_info

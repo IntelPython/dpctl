@@ -1,0 +1,6 @@
+dpctl.SyclDevice.local\_mem\_size
+=================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.local_mem_size
