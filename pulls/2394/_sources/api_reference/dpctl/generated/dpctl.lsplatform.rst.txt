@@ -1,6 +1,0 @@
-﻿dpctl.lsplatform
-================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: lsplatform
