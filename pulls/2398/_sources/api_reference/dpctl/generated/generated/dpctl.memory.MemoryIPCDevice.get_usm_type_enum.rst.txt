@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.get\_usm\_type\_enum
-=================================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryIPCDevice.get_usm_type_enum
