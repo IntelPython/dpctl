@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpctl
-    VERSION 0.23
+    VERSION 0.24
     LANGUAGES CXX
     DESCRIPTION "Python interface for XPU programming"
 )
