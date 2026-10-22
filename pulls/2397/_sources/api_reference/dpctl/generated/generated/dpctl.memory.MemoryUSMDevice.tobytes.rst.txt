@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.tobytes
+====================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryUSMDevice.tobytes

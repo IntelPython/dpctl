@@ -1,0 +1,34 @@
+﻿dpctl.SyclContext
+=================
+
+.. currentmodule:: dpctl
+
+.. autoclass:: SyclContext
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclContext.addressof_ref
+      ~SyclContext.get_devices
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclContext.atomic_fence_order_capabilities
+      ~SyclContext.atomic_fence_scope_capabilities
+      ~SyclContext.atomic_memory_order_capabilities
+      ~SyclContext.atomic_memory_scope_capabilities
+      ~SyclContext.device_count
+      ~SyclContext.sycl_platform
+   
+   
