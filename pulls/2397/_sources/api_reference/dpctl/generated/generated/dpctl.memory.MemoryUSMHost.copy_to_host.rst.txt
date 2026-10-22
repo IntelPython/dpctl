@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.copy\_to\_host
-=========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMHost.copy_to_host
