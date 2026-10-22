@@ -1,0 +1,6 @@
+dpctl.SyclPlatform.version
+==========================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclPlatform.version
