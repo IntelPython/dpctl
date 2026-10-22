@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.23.0] - XXX. XX, XXXX
+## [0.23.0] - Oct. 22, 2026
 
 This release extends the SYCL interface exposed by `dpctl` in several directions: `dpctl.compiler.SyclKernelBundle` objects can now be built from SYCL source strings via the DPC++ `kernel_compiler` extension, SPIR-V specialization constants are supported, USM-device allocations can be shared between processes using the SYCL IPC memory extension, and `dpctl.SyclQueue` gained `copy`, `memset`, and `fill` methods along with their asynchronous counterparts. The package can now be used with free-threaded builds of CPython 3.14 and supports Python 3.15. The `dpctl.program` submodule is deprecated in favor of `dpctl.compiler`, which better describes its purpose.
 
