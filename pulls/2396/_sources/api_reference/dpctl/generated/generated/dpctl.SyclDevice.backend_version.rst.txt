@@ -1,0 +1,6 @@
+dpctl.SyclDevice.backend\_version
+=================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.backend_version

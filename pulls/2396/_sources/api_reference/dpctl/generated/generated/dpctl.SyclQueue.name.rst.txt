@@ -1,0 +1,6 @@
+dpctl.SyclQueue.name
+====================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclQueue.name
