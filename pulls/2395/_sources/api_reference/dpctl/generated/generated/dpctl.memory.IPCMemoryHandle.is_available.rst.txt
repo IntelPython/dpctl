@@ -1,0 +1,6 @@
+dpctl.memory.IPCMemoryHandle.is\_available
+==========================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: IPCMemoryHandle.is_available

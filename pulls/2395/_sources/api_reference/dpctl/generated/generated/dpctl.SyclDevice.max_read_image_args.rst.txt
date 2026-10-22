@@ -1,0 +1,6 @@
+dpctl.SyclDevice.max\_read\_image\_args
+=======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.max_read_image_args
