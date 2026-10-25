@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMHost.tobytes
-==================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMHost.tobytes

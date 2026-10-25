@@ -1,6 +1,0 @@
-﻿dpctl.memory.USMAllocationError
-===============================
-
-.. currentmodule:: dpctl.memory
-
-.. autoexception:: USMAllocationError
