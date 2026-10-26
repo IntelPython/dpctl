@@ -1,0 +1,6 @@
+dpctl.SyclDevice.max\_work\_item\_sizes1d
+=========================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.max_work_item_sizes1d
