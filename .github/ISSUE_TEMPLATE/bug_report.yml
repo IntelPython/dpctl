@@ -1,0 +1,47 @@
+name: Bug report
+description: Report incorrect behavior, a crash, or a build failure
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Reproducer
+      description: Minimal code or commands that trigger the problem.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: Full traceback or error output. Run with `DPCTL_VERBOSITY=warning` for C API diagnostics.
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: dpctl version
+      description: Output of `python -c "import dpctl; print(dpctl.__version__)"`
+    validations:
+      required: true
+  - type: textarea
+    id: devices
+    attributes:
+      label: Devices
+      description: Output of `python -m dpctl -f`
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version (and whether free-threaded), how dpctl was installed (conda/pip/source), DPC++ compiler version if built from source.
+    validations:
+      required: true

@@ -104,3 +104,7 @@ dpctl/resources/cmake
 
 # asv artifacts
 *.asv*
+
+# agent-related
+.agents/*
+.claude/*
