@@ -106,5 +106,11 @@ dpctl/resources/cmake
 *.asv*
 
 # agent-related
-.agents/*
-.claude/*
+.claude/settings.local.json
+.claude/worktrees/
+
+# virtual environments, test caches, local env files
+.venv/
+venv/
+.pytest_cache/
+.env
