@@ -1,0 +1,6 @@
+dpctl.SyclDevice.default\_selector\_score
+=========================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.default_selector_score

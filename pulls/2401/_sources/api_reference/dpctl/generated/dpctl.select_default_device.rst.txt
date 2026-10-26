@@ -1,0 +1,6 @@
+﻿dpctl.select\_default\_device
+=============================
+
+.. currentmodule:: dpctl
+
+.. autofunction:: select_default_device
