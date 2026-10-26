@@ -21,10 +21,9 @@ library (`libsyclinterface`). It is compiled with Intel oneAPI DPC++ (`icx`/`icp
     `--cmake-opts="-D..."`
 - Python tests: `python -m pytest dpctl/tests`
   - one file: `python -m pytest dpctl/tests/test_sycl_queue.py`
-  - one test: `python -m pytest dpctl/tests/test_sycl_queue.py -k memset`
+  - one test: `python -m pytest dpctl/tests/test_sycl_queue_memset.py::test_memset_partial_count`
   - without a C compiler/Cython: add `-k "not test_cython_api and not test_c_headers"`
-- C API tests (GoogleTest, needs `GTEST_ROOT`): `bash libsyclinterface/dbg_build.sh`
-  (runs `make check`)
+- C API tests (GoogleTest, needs `GTEST_ROOT`): `(cd libsyclinterface && bash dbg_build.sh)`
 - Coverage (C + Python, rebuilds with `-DDPCTL_BUILD_CAPI_TESTS=ON`):
   `python scripts/gen_coverage.py --oneapi`
 - Docs (needs doxyrest): `python scripts/gen_docs.py --doxyrest-root=<path>`
