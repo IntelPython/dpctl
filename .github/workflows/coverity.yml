@@ -79,33 +79,80 @@ jobs:
           echo "${PWD}/cov-analysis/bin" >> "$GITHUB_PATH"
 
       - name: Configure Coverity for the DPC++ compiler
-        env:
-          # icx/icpx are not in Coverity's list of known compilers, so the
-          # clang-based templates below have to be accepted explicitly
-          COVERITY_UNSUPPORTED: 1
         run: |
           source "${ONEAPI_ROOT}/setvars.sh"
           # Cython-generated sources and the pybind11 extensions go through
           # icpx, the sysroot/driver probing bits still use gcc
           cov-configure --gcc
-          cov-configure --template --comptype clangcc --compiler icx
-          cov-configure --template --comptype clangcxx --compiler icpx
+          # Register icx/icpx with Coverity's native Intel oneAPI compiler type.
+          # The generic clangcc/clangcxx templates parse <sycl/sycl.hpp> without
+          # SYCL mode and fail on device-only builtins (__ocl_sampler_t,
+          # __ocl_image2d_ro_t, ...), which left 21 of 30 sources uncaptured.
+          # The native type emits each SYCL source twice, as a host pass and a
+          # spir64 device pass; see the capture check below for the latter.
+          # intel_oneapi_icx is current; intel_icx:linux is the older spelling
+          # the Scan build tool still ships (what mkl_umath's scan resolves to).
+          comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
+          comptype=""
+          for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
+            if grep -qxF "${candidate}" <<< "${comptypes}"; then
+              comptype="${candidate}"
+              break
+            fi
+          done
+          if [ -z "${comptype}" ]; then
+            echo "::error::No Intel oneAPI compiler type in this cov-analysis; refusing to fall back to the generic Clang configuration."
+            exit 1
+          fi
+          echo "Using Coverity compiler type: ${comptype}"
+          # With --template, --compiler takes a bare executable name; capture
+          # matches on the name of the spawned executable, so this also covers
+          # the absolute icx/icpx paths CMake resolves.
+          cov-configure --template --comptype "${comptype}" --compiler icx
+          cov-configure --template --comptype "${comptype}" --compiler icpx
 
       - name: Build under cov-build
         timeout-minutes: 90
-        env:
-          COVERITY_UNSUPPORTED: 1
         run: |
           set -o pipefail
           source "${ONEAPI_ROOT}/setvars.sh"
-          rm -rf _skbuild
           # --skip-editable: the in-place build_ext already compiled everything
           # Coverity needs to see, a pip install would only repeat it
           cov-build --dir cov-int \
               python scripts/build_locally.py --oneapi --skip-editable --verbose \
               2>&1 | tee cov-build.log
-          if ! grep -qE "Emitted [1-9][0-9]* .*compilation unit" cov-build.log; then
-            echo "::error::Coverity captured 0 compilation units — the C++ build did not run under cov-build."
+          {
+            echo "### Coverity capture"
+            echo '```'
+            grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # A partial capture still uploads happily and uses up a scan, so
+          # require every project source to be emitted. This is checked per
+          # source rather than via the "Emitted N (P%)" total because that
+          # total also counts the spir64 device passes, which the Scan build
+          # tool's emitter cannot parse (it trips over and then crashes in the
+          # SPIR-V builtin headers), capping P at 66% here. The host pass of
+          # each source is what gets analyzed. CMake's own try-compile probes
+          # under CMakeFiles/ are not project code and often fail.
+          # `|| true` because a no-match grep would otherwise trip pipefail and
+          # end the step before the errors below are printed.
+          log=cov-int/build-log.txt
+          compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
+          # Unanchored: parallel compiles can splice another unit's output onto
+          # the same line of the log.
+          emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
+          missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
+          total="$(grep -c . <<< "${compiled}" || true)"
+          nmissing="$(grep -c . <<< "${missing}" || true)"
+          echo "Coverity emitted $(( total - nmissing )) of ${total} project sources" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "${total}" -eq 0 ]; then
+            echo "::error::No project sources were compiled under cov-build."
+            exit 1
+          fi
+          if [ "${nmissing}" -gt 0 ]; then
+            echo "${missing}"
+            echo "::error::Coverity did not emit ${nmissing} of ${total} project sources (listed above)."
             exit 1
           fi
 
@@ -121,6 +168,9 @@ jobs:
           if-no-files-found: warn
 
       - name: Submit results to Coverity Scan
+        # Scan keeps only the latest build, so a run dispatched on a feature
+        # branch would replace master's results; such runs stop after capture.
+        if: github.ref == 'refs/heads/master'
         timeout-minutes: 15
         env:
           COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
