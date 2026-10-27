@@ -22,7 +22,9 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is moving to Ubuntu 26.04, whose image has no
+    # preinstalled Miniconda ($CONDA is empty), and Linux jobs below rely on it
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
 
     strategy:
@@ -166,15 +168,15 @@ jobs:
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
-        runner: [ubuntu-latest]
+        runner: [ubuntu-24.04]
 
     steps:
       - name: Download artifact
@@ -393,11 +395,11 @@ jobs:
       matrix:
         python: ['3.14']
         python_spec: ['3.14.* *_cp314']
-        runner: [ubuntu-latest]
+        runner: [ubuntu-24.04]
         include:
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
     timeout-minutes: 60
     env:
       EXAMPLES_ENV_NAME: examples
