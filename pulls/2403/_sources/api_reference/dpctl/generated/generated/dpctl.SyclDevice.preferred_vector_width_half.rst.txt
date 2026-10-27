@@ -1,0 +1,6 @@
+dpctl.SyclDevice.preferred\_vector\_width\_half
+===============================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.preferred_vector_width_half
