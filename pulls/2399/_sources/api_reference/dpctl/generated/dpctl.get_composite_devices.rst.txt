@@ -1,6 +1,0 @@
-﻿dpctl.get\_composite\_devices
-=============================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: get_composite_devices

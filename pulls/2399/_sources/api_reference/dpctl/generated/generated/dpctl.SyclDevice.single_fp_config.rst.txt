@@ -1,6 +1,0 @@
-dpctl.SyclDevice.single\_fp\_config
-===================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.single_fp_config

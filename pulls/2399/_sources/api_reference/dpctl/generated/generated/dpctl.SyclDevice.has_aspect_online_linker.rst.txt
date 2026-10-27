@@ -1,6 +1,0 @@
-dpctl.SyclDevice.has\_aspect\_online\_linker
-============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.has_aspect_online_linker
