@@ -22,7 +22,9 @@ env:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is moving to Ubuntu 26.04, whose image has no
+    # preinstalled Miniconda ($CONDA is empty), and Linux jobs below rely on it
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
 
     strategy:
@@ -195,18 +197,18 @@ jobs:
           - python: '3.14'
             python_spec: '3.14.* *_cp314'
             experimental: false
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
             experimental: false
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - python: '3.15'
             python_spec: '3.15.* *_cp315'
             experimental: false
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           # TODO: add 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
         experimental: [false]
-        runner: [ubuntu-latest]
+        runner: [ubuntu-24.04]
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
@@ -507,7 +509,7 @@ jobs:
     if: |
       (github.repository == 'IntelPython/dpctl') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
       matrix:
@@ -616,13 +618,13 @@ jobs:
         python: ['3.15']
         python_spec: ['3.15.* *_cp315']
         experimental: [false]
-        runner: [ubuntu-latest]
+        runner: [ubuntu-24.04]
         include:
           # TODO: switch to 3.15t (cp315t) when NumPy cp315t builds are available on conda-forge
           - python: '3.14'
             python_spec: '3.14.* *_cp314t'
             experimental: false
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
     continue-on-error: ${{ matrix.experimental }}
     timeout-minutes: 60
     env:
