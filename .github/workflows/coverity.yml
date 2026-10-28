@@ -81,17 +81,8 @@ jobs:
       - name: Configure Coverity for the DPC++ compiler
         run: |
           source "${ONEAPI_ROOT}/setvars.sh"
-          # Cython-generated sources and the pybind11 extensions go through
-          # icpx, the sysroot/driver probing bits still use gcc
           cov-configure --gcc
-          # Register icx/icpx with Coverity's native Intel oneAPI compiler type.
-          # The generic clangcc/clangcxx templates parse <sycl/sycl.hpp> without
-          # SYCL mode and fail on device-only builtins (__ocl_sampler_t,
-          # __ocl_image2d_ro_t, ...), which left 21 of 30 sources uncaptured.
-          # The native type emits each SYCL source twice, as a host pass and a
-          # spir64 device pass; see the capture check below for the latter.
-          # intel_oneapi_icx is current; intel_icx:linux is the older spelling
-          # the Scan build tool still ships (what mkl_umath's scan resolves to).
+          # Generic clang templates can't parse SYCL headers, see https://github.com/IntelPython/dpctl/pull/2401
           comptypes="$(cov-configure --list-compiler-types | cut -d, -f1)"
           comptype=""
           for candidate in intel_oneapi_icx intel_oneapi_icx:linux intel_icx:linux; do
@@ -105,9 +96,6 @@ jobs:
             exit 1
           fi
           echo "Using Coverity compiler type: ${comptype}"
-          # With --template, --compiler takes a bare executable name; capture
-          # matches on the name of the spawned executable, so this also covers
-          # the absolute icx/icpx paths CMake resolves.
           cov-configure --template --comptype "${comptype}" --compiler icx
           cov-configure --template --comptype "${comptype}" --compiler icpx
 
@@ -116,8 +104,7 @@ jobs:
         run: |
           set -o pipefail
           source "${ONEAPI_ROOT}/setvars.sh"
-          # --skip-editable: the in-place build_ext already compiled everything
-          # Coverity needs to see, a pip install would only repeat it
+          # --skip-editable: build_ext --inplace already compiled everything
           cov-build --dir cov-int \
               python scripts/build_locally.py --oneapi --skip-editable --verbose \
               2>&1 | tee cov-build.log
@@ -127,20 +114,10 @@ jobs:
             grep -E "Emitted .*compilation unit|are ready for analysis" cov-build.log || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          # A partial capture still uploads happily and uses up a scan, so
-          # require every project source to be emitted. This is checked per
-          # source rather than via the "Emitted N (P%)" total because that
-          # total also counts the spir64 device passes, which the Scan build
-          # tool's emitter cannot parse (it trips over and then crashes in the
-          # SPIR-V builtin headers), capping P at 66% here. The host pass of
-          # each source is what gets analyzed. CMake's own try-compile probes
-          # under CMakeFiles/ are not project code and often fail.
-          # `|| true` because a no-match grep would otherwise trip pipefail and
-          # end the step before the errors below are printed.
+          # Gate on per-source emits, not the P% total, see https://github.com/IntelPython/dpctl/pull/2401
           log=cov-int/build-log.txt
           compiled="$(grep -oP '\[STATUS\] Compiling \K\S+' "${log}" | grep -F "${GITHUB_WORKSPACE}/" | grep -vF /CMakeFiles/ | sort -u || true)"
-          # Unanchored: parallel compiles can splice another unit's output onto
-          # the same line of the log.
+          # Unanchored: parallel compiles can splice output onto the same log line
           emitted="$(grep -oP "Emit for file '\K[^']+(?=' \(TU [0-9]+\) complete\.)" "${log}" | sort -u || true)"
           missing="$(comm -23 <(echo "${compiled}") <(echo "${emitted}"))"
           total="$(grep -c . <<< "${compiled}" || true)"
@@ -168,8 +145,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Submit results to Coverity Scan
-        # Scan keeps only the latest build, so a run dispatched on a feature
-        # branch would replace master's results; such runs stop after capture.
+        # A branch submit would replace master's results on the Scan dashboard
         if: github.ref == 'refs/heads/master'
         timeout-minutes: 15
         env:
