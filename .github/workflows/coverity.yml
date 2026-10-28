@@ -28,6 +28,7 @@ jobs:
         with:
           # versioneer needs the tags to compute the package version
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Add Intel repository
         run: |
