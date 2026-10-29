@@ -1,6 +1,0 @@
-dpctl.SyclContext.addressof\_ref
-================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclContext.addressof_ref

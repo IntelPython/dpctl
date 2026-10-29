@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.size
-=================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryIPCDevice.size
