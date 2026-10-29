@@ -16,7 +16,7 @@
         <link rel="prefetch" href="../../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
-        <title>dpctl.SyclQueue.fill_async - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
+        <title>dpctl.SyclQueue.fill_async - Data Parallel Control (dpctl) 0.24.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -174,7 +174,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.23.0dev0 documentation</div></a>
+      <a href="../../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.24.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -198,7 +198,7 @@
     <img class="sidebar-logo" src="../../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.23.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.24.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -212,6 +212,10 @@
     
     <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.23.0/index.html" >
+      0.23.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
@@ -720,13 +724,13 @@ may be freed mid-operation, causing a use-after-free.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dest</strong> (<em>dpctl.memory._Memory</em>) – Destination USM allocation to fill.</p></li>
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.14)"><em>complex</em></a>) – Value used to fill <code class="docutils literal notranslate"><span class="pre">dest</span></code>. It is reinterpreted according to
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.15)"><em>complex</em></a>) – Value used to fill <code class="docutils literal notranslate"><span class="pre">dest</span></code>. It is reinterpreted according to
 <code class="docutils literal notranslate"><span class="pre">dtype</span></code>: integral <code class="docutils literal notranslate"><span class="pre">dtype</span></code> values expect a Python integer,
 <code class="docutils literal notranslate"><span class="pre">&quot;f4&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;f8&quot;</span></code> expect a Python float, and <code class="docutils literal notranslate"><span class="pre">&quot;c8&quot;</span></code> and
 <code class="docutils literal notranslate"><span class="pre">&quot;c16&quot;</span></code> expect a Python complex.</p></li>
-<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of elements to fill.</p></li>
+<li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Number of elements to fill.</p></li>
 <li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – Events that this fill depends on.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Data type string of the fill elements. Determines the element
+<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – Data type string of the fill elements. Determines the element
 size and how <code class="docutils literal notranslate"><span class="pre">value</span></code> is interpreted.
 Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).
 Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
@@ -741,12 +745,12 @@ c16.</p></li>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dest</span></code> is not a <code class="docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code> USM allocation,
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.15)"><strong>TypeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dest</span></code> is not a <code class="docutils literal notranslate"><span class="pre">dpctl.memory._Memory</span></code> USM allocation,
     or <code class="docutils literal notranslate"><span class="pre">dEvents</span></code> is not a sequence of <a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclEvent</span></code></a>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is unrecognized, or <code class="docutils literal notranslate"><span class="pre">value</span></code> cannot be
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is unrecognized, or <code class="docutils literal notranslate"><span class="pre">value</span></code> cannot be
     represented as <code class="docutils literal notranslate"><span class="pre">dtype</span></code>.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#OverflowError" title="(in Python v3.14)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">count</span></code> is negative.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If the fill operation encountered an error.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#OverflowError" title="(in Python v3.15)"><strong>OverflowError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">count</span></code> is negative.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.15)"><strong>RuntimeError</strong></a> – If the fill operation encountered an error.</p></li>
 </ul>
 </dd>
 </dl>
@@ -822,7 +826,7 @@ c16.</p></li>
       
     </aside>
   </div>
-</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=2f0e9483"></script>
+</div><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=5ed53ee9"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../../_static/scripts/furo.js?v=46bd48cc"></script>

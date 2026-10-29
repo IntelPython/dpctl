@@ -16,7 +16,7 @@
         <link rel="prefetch" href="../../../_static/dpctl.svg" as="image">
 
     <link rel="shortcut icon" href="../../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
-        <title>Todo List - Data Parallel Control (dpctl) 0.23.0dev0 documentation</title>
+        <title>Todo List - Data Parallel Control (dpctl) 0.24.0dev0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -174,7 +174,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.23.0dev0 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.24.0dev0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -198,7 +198,7 @@
     <img class="sidebar-logo" src="../../../_static/dpctl.svg" alt="Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.23.0dev0 documentation</span>
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.24.0dev0 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -212,6 +212,10 @@
     
     <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
       latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.23.0/index.html" >
+      0.23.0
     </option>
     
     <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
@@ -711,12 +715,12 @@
 <tr class="row-odd"><td><p>Global <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a></p></td>
 <td><p><span class="target" id="doxid-dd-da0-todo-1-todo000001"></span> Add support for sycl::buffer</p></td>
 </tr>
-<tr class="row-even"><td><p>Global <span class="xref std std-ref">DPCTLQueue_SubmitNDRange</span> (__dpctl_keep const DPCTLSyclKernelRef KRef, __dpctl_keep const DPCTLSyclQueueRef QRef, __dpctl_keep void **Args, __dpctl_keep const DPCTLKernelArgType *ArgTypes, size_t NArgs, __dpctl_keep const size_t gRange[3], __dpctl_keep const size_t lRange[3], size_t NDims, __dpctl_keep const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</p></td>
+<tr class="row-even"><td><p>Global <span class="xref std std-ref">DPCTLQueue_SubmitNDRange</span> (__dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a> KRef, __dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a> QRef, __dpctl_keep void **Args, __dpctl_keep const <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a> *ArgTypes, size_t NArgs, __dpctl_keep const size_t gRange[3], __dpctl_keep const size_t lRange[3], size_t NDims, __dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a> *DepEvents, size_t NDepEvents)</p></td>
 <td><p><span class="target" id="doxid-dd-da0-todo-1-todo000003"></span> sycl::buffer arguments are not supported yet.</p>
 <p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
 </td>
 </tr>
-<tr class="row-odd"><td><p>Global <span class="xref std std-ref">DPCTLQueue_SubmitRange</span> (__dpctl_keep const DPCTLSyclKernelRef KRef, __dpctl_keep const DPCTLSyclQueueRef QRef, __dpctl_keep void **Args, __dpctl_keep const DPCTLKernelArgType *ArgTypes, size_t NArgs, __dpctl_keep const size_t Range[3], size_t NRange, __dpctl_keep const DPCTLSyclEventRef *DepEvents, size_t NDepEvents)</p></td>
+<tr class="row-odd"><td><p>Global <span class="xref std std-ref">DPCTLQueue_SubmitRange</span> (__dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a3f6be07fdf695c015719ce0b0c237844"><span class="std std-ref">DPCTLSyclKernelRef</span></a> KRef, __dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a> QRef, __dpctl_keep void **Args, __dpctl_keep const <a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089"><span class="std std-ref">DPCTLKernelArgType</span></a> *ArgTypes, size_t NArgs, __dpctl_keep const size_t Range[3], size_t NRange, __dpctl_keep const <a class="reference internal" href="global.html#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a> *DepEvents, size_t NDepEvents)</p></td>
 <td><p><span class="target" id="doxid-dd-da0-todo-1-todo000002"></span> <code class="docutils literal notranslate"><span class="pre">sycl::buffer</span></code> arguments are not supported yet.</p>
 <p>Add support for id&lt;Dims&gt; WorkItemOffset</p>
 </td>
@@ -775,7 +779,7 @@
       
     </aside>
   </div>
-</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2f0e9483"></script>
+</div><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=5ed53ee9"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
