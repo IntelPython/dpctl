@@ -29,7 +29,9 @@
 #include <atomic>
 #include <chrono>
 #include <functional>
+#include <memory>
 #include <mutex>
+#include <new>
 #include <thread>
 #include <vector>
 
@@ -42,16 +44,20 @@ namespace dpctl
 namespace detail
 {
 
+inline void start_watcher_if_enabled();
+
 /*!
  * @brief The deferred releases submitted.
  *
- * Reached from elsewhere through the module's `DeferredReleases_Get`.
+ * Reached from elsewhere through the module's `DeferredReleases_Get`. The
+ * first release deferred starts `dpctl`'s thread.
  */
 inline DeferredReleases &local_deferred_releases()
 {
     // leaked: releasing what the list holds runs Python code, which a static
     // destructor could not do once the interpreter has shut down
-    static DeferredReleases *instance = new DeferredReleases();
+    static DeferredReleases *instance =
+        new DeferredReleases(&start_watcher_if_enabled);
     return *instance;
 }
 
@@ -74,52 +80,89 @@ inline bool interpreter_is_live()
  * Looks over the list for releases that have come due and takes the GIL to run
  * them.
  *
- * The thread is ended by the `atexit` hook `dpctl` registers at import, or by
- * the destructor in a process that never finalizes the interpreter. In either
- * case, it stops running releases once shutdown has begun, leaving whatever is
- * still held for the process to reclaim.
+ * The thread is started by the first release deferred, and ended by the
+ * `atexit` hook `dpctl` registers at import, or by the destructor in a process
+ * that never finalizes the interpreter. In either case, it stops running
+ * releases once shutdown has begun, leaving whatever is still held for the
+ * process to reclaim.
  */
 class DeferredReleaseWatcher
 {
 public:
     /*!
-     * @brief Start the thread, if it is not already running.
+     * @brief Start the thread, and start it again whenever it is needed.
      */
     void start()
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        if (thread_.joinable()) {
+        enabled_ = true;
+        start_nolock();
+    }
+
+    /*!
+     * @brief Start the thread if it is not running and has not been stopped.
+     */
+    void start_if_enabled()
+    {
+        if (!finished().load(std::memory_order_acquire)) {
             return;
         }
 
-        local_deferred_releases().resume_waiting();
-        finished().store(false, std::memory_order_release);
+        std::lock_guard<std::mutex> lock(mutex_);
 
-        try {
-            thread_ = std::thread([]() { watch(); });
-        } catch (...) {
-            // without the thread the releases are left to the drains, so
-            // failing to start one is not fatal
+        if (enabled_) {
+            start_nolock();
         }
     }
 
     /*!
-     * @brief End the thread and wait for it, if it is running.
+     * @brief End the thread, and keep it from being started until `start`.
+     *
+     * Waits up to `stop_timeout` for the release in progress, if any, and
+     * detaches the thread if it has not finished by then. The releases not
+     * yet run are left on the list.
      *
      * Expects the caller not to hold the GIL, which the thread may be waiting
-     * for..
+     * for.
      */
     void stop()
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::thread thread;
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
 
-        if (!thread_.joinable()) {
-            return;
+            enabled_ = false;
+            if (!thread_.joinable()) {
+                return;
+            }
+            stopping_ = true;
+            thread = std::move(thread_);
         }
 
-        local_deferred_releases().stop_waiting();
-        thread_.join();
+        // not under `mutex_`, which a thread holding the GIL may be waiting on
+        end_without_hanging(thread, /* may_join */ true, stop_timeout);
+
+        std::lock_guard<std::mutex> lock(mutex_);
+        stopping_ = false;
+    }
+
+    /*!
+     * @brief Make the thread startable in the child of a `fork`.
+     *
+     * The thread is not copied into the child, so its handle is dropped
+     * without being joined or detached, and the lock it may have held is
+     * replaced. The list is reset as well, and the thread is started by the
+     * next release deferred.
+     */
+    void reset_after_fork()
+    {
+        new (&thread_) std::thread();
+        new (&mutex_) std::mutex();
+        stopping_ = false;
+        finished().store(true, std::memory_order_release);
+
+        local_deferred_releases().reset_after_fork();
     }
 
     /*!
@@ -135,7 +178,8 @@ public:
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        end_without_hanging(/* may_join */ joining_at_unload_is_safe);
+        enabled_ = false;
+        end_without_hanging(thread_, joining_at_unload_is_safe, abandon_after);
     }
 
     DeferredReleaseWatcher(const DeferredReleaseWatcher &) = delete;
@@ -155,12 +199,24 @@ private:
         std::chrono::milliseconds(5);
 
     /*!
+     * @brief How long the thread sleeps between passes, at the most.
+     */
+    static constexpr clock::duration max_poll_interval =
+        std::chrono::milliseconds(100);
+
+    /*!
      * @brief How many times a pass over the list its own duration buys.
      *
      * The sleep is stretched with the cost of a pass, which grows with the
-     * number of items, so the thread costs about a `1 / poll_share` of a core.
+     * number of items, so the thread costs about a `1 / poll_share` of a core
+     * until `max_poll_interval` is reached.
      */
     static constexpr clock::duration::rep poll_share = 20;
+
+    /*!
+     * @brief How long `stop` waits for the release in progress.
+     */
+    static constexpr clock::duration stop_timeout = std::chrono::seconds(1);
 
     /*!
      * @brief How long an exit waits for the thread before detaching it.
@@ -181,16 +237,50 @@ private:
 #endif
 
     /*!
-     * @brief Stop the thread and let go of it, waiting only so long for it.
+     * @brief Start the thread, unless one is running or still finishing.
      *
-     * A thread that does not report itself finished within `abandon_after` is
-     * detached, so that an exit cannot hang on one the interpreter parked for
-     * asking for the GIL. Expects `mutex_` to be held, and the caller not to
+     * A thread that ended on its own is joined and replaced, unless the
+     * interpreter is shutting down. Expects `mutex_` to be held.
+     */
+    void start_nolock()
+    {
+        if (stopping_ || !finished().load(std::memory_order_acquire)) {
+            return;
+        }
+
+        if (thread_.joinable()) {
+            // a new thread would end at once
+            if (!interpreter_is_live()) {
+                return;
+            }
+            thread_.join();
+        }
+
+        local_deferred_releases().resume_waiting();
+        finished().store(false, std::memory_order_release);
+
+        try {
+            thread_ = std::thread([]() { watch(); });
+        } catch (...) {
+            // without the thread the releases are left to the drains, so
+            // failing to start one is not fatal
+            finished().store(true, std::memory_order_release);
+        }
+    }
+
+    /*!
+     * @brief Stop `thread` and let go of it, waiting only `timeout` for it.
+     *
+     * A thread that does not report itself finished in time is detached, so
+     * that an exit cannot hang on a release that blocks, or on a thread the
+     * interpreter parked for asking for the GIL. Expects the caller not to
      * hold the GIL.
      */
-    void end_without_hanging(bool may_join)
+    static void end_without_hanging(std::thread &thread,
+                                    bool may_join,
+                                    clock::duration timeout)
     {
-        if (!thread_.joinable()) {
+        if (!thread.joinable()) {
             return;
         }
 
@@ -198,45 +288,77 @@ private:
 
         // waited for whether or not it may be joined: the report says the
         // thread is done with this object, which is what makes detaching safe
-        const bool reported_finished = wait_for_thread(abandon_after);
+        const bool reported_finished = wait_for_thread(timeout);
 
         if (may_join && reported_finished) {
-            thread_.join();
+            thread.join();
         }
         else {
-            thread_.detach();
+            thread.detach();
         }
     }
 
     /*!
-     * @brief Whether the thread has left its loop.
+     * @brief Whether no thread is running the loop.
      *
      * In static storage, so that a detached thread can report itself without
      * reaching a destroyed object.
      */
     static std::atomic<bool> &finished()
     {
-        static std::atomic<bool> flag{false};
+        static std::atomic<bool> flag{true};
         return flag;
     }
 
     /*!
-     * @brief Run the releases that come due, until the list is stopped or the
-     * interpreter begins shutting down.
+     * @brief Run the releases that come due, until the list is stopped, the
+     * interpreter begins shutting down, or the list throws.
+     *
+     * A thread ended by an exception is replaced by the next release deferred.
      */
     static void watch()
     {
+        std::unique_ptr<std::vector<std::function<void()>>> due;
+
+        try {
+            due = std::make_unique<std::vector<std::function<void()>>>();
+            run_due_until_stopped(*due);
+        }
+#if defined(__GLIBCXX__)
+        catch (abi::__forced_unwind &)
+        {
+            // the interpreter ending this thread, which must not be stopped
+            static_cast<void>(due.release());
+            finished().store(true, std::memory_order_release);
+            throw;
+        }
+#endif
+        catch (...)
+        {
+            // an exception escaping the thread would terminate the process.
+            // What was collected is leaked rather than destroyed, as the
+            // destructors of releases not run may need the GIL
+            static_cast<void>(due.release());
+        }
+
+        finished().store(true, std::memory_order_release);
+    }
+
+    /*!
+     * @brief The loop run by `watch`, collecting releases onto `due`.
+     */
+    static void run_due_until_stopped(std::vector<std::function<void()>> &due)
+    {
         DeferredReleases &releases = local_deferred_releases();
         clock::duration poll_interval = min_poll_interval;
-        std::vector<std::function<void()>> due;
 
         while (releases.wait_for_due(poll_interval)) {
             const clock::time_point started = clock::now();
             const bool any = releases.collect_due(due);
             const clock::duration looked_for = clock::now() - started;
 
-            poll_interval =
-                std::max(min_poll_interval, looked_for * poll_share);
+            poll_interval = std::clamp<clock::duration>(
+                looked_for * poll_share, min_poll_interval, max_poll_interval);
 
             if (!any) {
                 continue;
@@ -244,23 +366,37 @@ private:
 
             // what was collected is not run, like everything else still held
             if (!interpreter_is_live()) {
+                releases.put_back(due);
                 break;
             }
 
             const PyGILState_STATE gstate = PyGILState_Ensure();
             // shutdown may have begun while the GIL was waited for
             const bool live = interpreter_is_live();
-            if (live) {
-                releases.run_collected(due);
+            try {
+                if (live) {
+                    releases.run_collected(due, /* until_stopped */ true);
+                }
+            }
+#if defined(__GLIBCXX__)
+            catch (abi::__forced_unwind &)
+            {
+                // the GIL was dropped by the interpreter ending this thread
+                throw;
+            }
+#endif
+            catch (...)
+            {
+                PyGILState_Release(gstate);
+                throw;
             }
             PyGILState_Release(gstate);
 
             if (!live) {
+                releases.put_back(due);
                 break;
             }
         }
-
-        finished().store(true, std::memory_order_release);
     }
 
     /*!
@@ -282,6 +418,8 @@ private:
 
     std::thread thread_;
     std::mutex mutex_;
+    bool enabled_ = true;
+    bool stopping_ = false;
 };
 
 /*!
@@ -294,6 +432,14 @@ inline DeferredReleaseWatcher &deferred_release_watcher()
 {
     static DeferredReleaseWatcher instance;
     return instance;
+}
+
+/*!
+ * @brief Start `dpctl`'s thread if it is needed and has not been stopped.
+ */
+inline void start_watcher_if_enabled()
+{
+    deferred_release_watcher().start_if_enabled();
 }
 
 } // namespace detail
@@ -325,7 +471,16 @@ inline bool drain_deferred_releases()
 {
     try {
         return dpctl::detail::local_deferred_releases().drain();
-    } catch (...) {
+    }
+#if defined(__GLIBCXX__)
+    catch (abi::__forced_unwind &)
+    {
+        // the interpreter ending this thread, which must not be stopped
+        throw;
+    }
+#endif
+    catch (...)
+    {
         // no exception may escape into the calling Cython code
         return false;
     }
@@ -344,7 +499,7 @@ inline void start_deferred_release_watcher()
 }
 
 /*!
- * @brief Stop running deferred releases, and wait for the thread to end.
+ * @brief Stop running deferred releases, waiting a bounded time for the thread.
  *
  * Expects the caller not to hold the GIL.
  */
@@ -352,6 +507,18 @@ inline void stop_deferred_release_watcher()
 {
     try {
         dpctl::detail::deferred_release_watcher().stop();
+    } catch (...) {
+        // no exception may escape into the calling Cython code
+    }
+}
+
+/*!
+ * @brief Make deferred releases work again in the child of a `fork`.
+ */
+inline void reset_deferred_releases_after_fork()
+{
+    try {
+        dpctl::detail::deferred_release_watcher().reset_after_fork();
     } catch (...) {
         // no exception may escape into the calling Cython code
     }

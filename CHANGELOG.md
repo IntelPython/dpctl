@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `add_event` and `add_cleanup_event` methods and `cleanup_events` and `num_cleanup_events` properties to the order manager, for tracking the events that gate the release of objects used by offloaded tasks [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Changed
-* Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
 ### Deprecated
