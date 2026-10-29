@@ -1,0 +1,22 @@
+name: Feature request
+description: Propose new SYCL functionality or an API change
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: What do you need to do that dpctl does not support today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: Python, Cython, or C API you would like, and the SYCL feature it maps to.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
