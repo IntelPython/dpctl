@@ -318,12 +318,11 @@ private:
  */
 inline DeferredReleases &get_deferred_releases()
 {
-    static DeferredReleases *releases = []() -> DeferredReleases * {
-        // get dpctl_capi to prevent nullptr return
-        static_cast<void>(dpctl_capi::get());
+    // get dpctl_capi to prevent nullptr return, but not in the initializer
+    static_cast<void>(dpctl_capi::get());
 
-        return static_cast<DeferredReleases *>(DeferredReleases_Get());
-    }();
+    static DeferredReleases *releases =
+        static_cast<DeferredReleases *>(DeferredReleases_Get());
 
     if (!releases) {
         throw std::runtime_error(

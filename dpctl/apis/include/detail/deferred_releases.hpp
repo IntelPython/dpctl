@@ -27,15 +27,24 @@
 
 #pragma once
 
+#include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <cstddef>
 #include <functional>
+#include <iterator>
+#include <memory>
 #include <mutex>
+#include <new>
 #include <utility>
 #include <vector>
 
 #include <sycl/sycl.hpp>
+
+#if defined(__GLIBCXX__)
+#include <cxxabi.h>
+#endif
 
 namespace dpctl
 {
@@ -80,45 +89,68 @@ public:
      */
     void defer(std::vector<sycl::event> depends, std::function<void()> release)
     {
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            deferred_.push_back(Item{std::move(depends), std::move(release)});
-        }
+        push(Item{std::move(depends), std::move(release)});
 
-        // there is now something that can come due, which a waiter has to be
-        // told about: nothing else announces the first item
-        deferred_or_stopped_.notify_all();
+        if (on_defer_) {
+            try {
+                on_defer_();
+            } catch (...) {
+                // the release is already deferred, so a failure is not reported
+            }
+        }
     }
 
     /*!
      * @brief Move the releases that have come due onto `due`.
      *
      * Takes them off the list, so the caller is responsible for running them.
+     * The events are queried without holding the list's lock, so a long list
+     * does not hold up `defer`.
      *
      * @return Whether anything was added to `due`.
      */
     bool collect_due(std::vector<std::function<void()>> &due)
     {
-        const std::size_t n_before = due.size();
-
-        std::lock_guard<std::mutex> lock(mutex_);
-
-        for (std::size_t i = 0; i < deferred_.size();) {
-            if (!is_complete(deferred_[i])) {
-                ++i;
-                continue;
-            }
-
-            due.push_back(std::move(deferred_[i].release));
-            // the item at the back takes the place of the one taken, leaving
-            // `i` on an item that has not been looked at
-            if (i + 1 != deferred_.size()) {
-                deferred_[i] = std::move(deferred_.back());
-            }
-            deferred_.pop_back();
+        auto items = std::make_unique<std::vector<Item>>();
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            items->swap(deferred_);
         }
 
-        return due.size() != n_before;
+        bool any = false;
+        bool any_left = false;
+        try {
+            const auto due_begin = std::partition(
+                items->begin(), items->end(),
+                [](const Item &item) { return !is_complete(item); });
+            any = due_begin != items->end();
+
+            due.reserve(due.size() + (items->end() - due_begin));
+            for (auto it = due_begin; it != items->end(); ++it) {
+                due.push_back(std::move(it->release));
+            }
+            items->erase(due_begin, items->end());
+
+            std::lock_guard<std::mutex> lock(mutex_);
+            // add what was deferred during the scan
+            items->insert(items->end(),
+                          std::make_move_iterator(deferred_.begin()),
+                          std::make_move_iterator(deferred_.end()));
+            deferred_.swap(*items);
+            any_left = !deferred_.empty();
+        } catch (...) {
+            // leaked rather than destroyed, as a task may still be using what
+            // the items hold
+            static_cast<void>(items.release());
+            throw;
+        }
+
+        // a waiter may have seen the list empty while it was taken off
+        if (any_left) {
+            deferred_or_stopped_.notify_all();
+        }
+
+        return any;
     }
 
     /*!
@@ -128,17 +160,36 @@ public:
      * Python code, which is free to defer more releases and to call back in
      * here. A release that does call back in runs nothing itself, so releases
      * do not nest on one thread.
+     *
+     * If `until_stopped`, the releases not yet run once `stop_waiting` has
+     * been called are put back on the list instead.
      */
-    void run_collected(std::vector<std::function<void()>> &due)
+    void run_collected(std::vector<std::function<void()>> &due,
+                       bool until_stopped = false)
     {
         bool &running = running_here();
         const bool was_running = running;
         running = true;
 
-        for (auto &release : due) {
+        for (std::size_t i = 0; i < due.size(); ++i) {
+            if (until_stopped && stop_waiting_.load(std::memory_order_acquire))
+            {
+                put_back(due, i);
+                break;
+            }
+
             try {
-                release();
-            } catch (...) {
+                due[i]();
+            }
+#if defined(__GLIBCXX__)
+            catch (abi::__forced_unwind &)
+            {
+                // the interpreter ending this thread, which must not be stopped
+                throw;
+            }
+#endif
+            catch (...)
+            {
                 // the rest must still run
             }
         }
@@ -148,13 +199,28 @@ public:
     }
 
     /*!
+     * @brief Put the releases in `due` from `first` on back on the list.
+     *
+     * They are held for no events, so they run on the next pass.
+     */
+    void put_back(std::vector<std::function<void()>> &due,
+                  std::size_t first = 0)
+    {
+        for (std::size_t i = first; i < due.size(); ++i) {
+            push(Item{{}, std::move(due[i])});
+        }
+        due.clear();
+    }
+
+    /*!
      * @brief Run every release that has come due, on the calling thread.
      *
      * Expects the caller to have a Python thread state, and does nothing if it
      * is itself called from a release.
      *
-     * Makes one pass, leaving what a release defers, and what a drain called
-     * from inside one skipped, to the thread looking over the list.
+     * Makes one pass, leaving what a release defers, what a drain called from
+     * inside one skipped, and what another pass has taken off the list at the
+     * time, to the thread looking over the list.
      *
      * @return Whether there was anything to run.
      */
@@ -189,15 +255,18 @@ public:
         std::unique_lock<std::mutex> lock(mutex_);
 
         if (deferred_.empty()) {
-            deferred_or_stopped_.wait(
-                lock, [this]() { return stop_waiting_ || !deferred_.empty(); });
+            deferred_or_stopped_.wait(lock, [this]() {
+                return stop_waiting_.load(std::memory_order_relaxed) ||
+                       !deferred_.empty();
+            });
         }
         else {
-            deferred_or_stopped_.wait_for(lock, poll_interval,
-                                          [this]() { return stop_waiting_; });
+            deferred_or_stopped_.wait_for(lock, poll_interval, [this]() {
+                return stop_waiting_.load(std::memory_order_relaxed);
+            });
         }
 
-        return !stop_waiting_;
+        return !stop_waiting_.load(std::memory_order_relaxed);
     }
 
     /*!
@@ -207,7 +276,7 @@ public:
     {
         {
             std::lock_guard<std::mutex> lock(mutex_);
-            stop_waiting_ = true;
+            stop_waiting_.store(true, std::memory_order_release);
         }
 
         deferred_or_stopped_.notify_all();
@@ -219,7 +288,23 @@ public:
     void resume_waiting()
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        stop_waiting_ = false;
+        stop_waiting_.store(false, std::memory_order_release);
+    }
+
+    /*!
+     * @brief Make the list usable in the child of a `fork`.
+     *
+     * Replaces the lock and condition variable, which a thread that does not
+     * exist in the child may have held, and leaks the parent's items, whose
+     * events belong to the parent.
+     */
+    void reset_after_fork()
+    {
+        new (&mutex_) std::mutex();
+        new (&deferred_or_stopped_) std::condition_variable();
+        static_cast<void>(new std::vector<Item>(std::move(deferred_)));
+        deferred_.clear();
+        stop_waiting_.store(false, std::memory_order_release);
     }
 
     DeferredReleases(const DeferredReleases &) = delete;
@@ -242,7 +327,28 @@ private:
      */
     friend DeferredReleases &local_deferred_releases();
 
-    DeferredReleases() = default;
+    /*!
+     * @brief Create a list that calls `on_defer` after every `defer`.
+     */
+    explicit DeferredReleases(void (*on_defer)()) : on_defer_(on_defer) {}
+
+    /*!
+     * @brief Add `item` to the list, waking a waiter if it was empty.
+     */
+    void push(Item item)
+    {
+        bool was_empty = false;
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            was_empty = deferred_.empty();
+            deferred_.push_back(std::move(item));
+        }
+
+        // only an empty list is waited on without a timeout
+        if (was_empty) {
+            deferred_or_stopped_.notify_all();
+        }
+    }
 
     /*!
      * @brief Whether a release is running on this thread.
@@ -282,9 +388,16 @@ private:
     }
 
     std::vector<Item> deferred_;
-    bool stop_waiting_ = false;
+    std::atomic<bool> stop_waiting_{false};
     std::mutex mutex_;
     std::condition_variable deferred_or_stopped_;
+
+    /*!
+     * @brief Called after every `defer`.
+     *
+     * `dpctl` uses it to start its thread on the first release deferred.
+     */
+    void (*on_defer_)() = nullptr;
 };
 
 /*!

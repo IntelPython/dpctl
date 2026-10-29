@@ -104,16 +104,18 @@ from libc.stdlib cimport free, malloc
 import atexit
 import collections.abc
 import logging
+import os
 import struct
 import sys
 import warnings
 
 
 cdef extern from "_async_dec_ref.hpp":
+    # defers the decrements without running any, so touches no Python object
     DPCTLSyclEventRef async_dec_ref(
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
-    )
+    ) nogil
     void *deferred_releases_ptr() nogil
     # runs the releases that have come due, and so arbitrary Python code:
     # requires the GIL
@@ -121,6 +123,7 @@ cdef extern from "_async_dec_ref.hpp":
     void start_deferred_release_watcher() nogil
     # waits for the thread, which may be waiting for the GIL
     void stop_deferred_release_watcher() nogil
+    void reset_deferred_releases_after_fork() nogil
 
 
 __all__ = [
@@ -1405,12 +1408,15 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nDE = 0
         cdef DPCTLSyclEventRef *depEvents = NULL
         cdef DPCTLSyclEventRef ERef = NULL
+        cdef DPCTLSyclQueueRef QRef = self.get_queue_ref()
         cdef PyObject *args_raw = NULL
         cdef int status = -1
+        cdef tuple dep_events = ()
 
-        if depends is None:
-            depends = ()
-        nDE = len(depends)
+        if depends is not None:
+            # a copy, so that its length is that of what it iterates over
+            dep_events = tuple(depends)
+        nDE = len(dep_events)
 
         if nDE > 0:
             depEvents = (
@@ -1418,7 +1424,7 @@ cdef class SyclQueue(_SyclQueue):
             )
             if not depEvents:
                 raise MemoryError()
-            for idx, de in enumerate(depends):
+            for idx, de in enumerate(dep_events):
                 if isinstance(de, SyclEvent):
                     depEvents[idx] = (<SyclEvent>de).get_event_ref()
                 else:
@@ -1432,9 +1438,10 @@ cdef class SyclQueue(_SyclQueue):
         args_raw = <PyObject *>args
 
         # schedule decrement
-        ERef = async_dec_ref(
-            self.get_queue_ref(), &args_raw, 1, depEvents, nDE, &status
-        )
+        with nogil:
+            ERef = async_dec_ref(
+                QRef, &args_raw, 1, depEvents, nDE, &status
+            )
 
         free(depEvents)
         if status != 0:
@@ -2393,22 +2400,35 @@ def _start_deferred_release_watcher():
 
     Run deferred releases on dpctl's own thread, starting it if it is stopped.
     """
-    start_deferred_release_watcher()
+    with nogil:
+        start_deferred_release_watcher()
 
 
 def _stop_deferred_release_watcher():
     """_stop_deferred_release_watcher()
 
-    Stop dpctl's thread and wait for it, leaving whatever it still holds held.
+    Stop dpctl's thread, waiting up to a second for the release in progress,
+    and keep it stopped until it is started again. What is still held stays
+    held.
     """
     with nogil:
         stop_deferred_release_watcher()
 
 
-start_deferred_release_watcher()
+def _reset_deferred_releases_after_fork():
+    """_reset_deferred_releases_after_fork()
+
+    Make deferred releases work in the child of a fork, which has no copy of
+    dpctl's thread.
+    """
+    reset_deferred_releases_after_fork()
+
 
 # runs while the interpreter is still up so the thread can be waited for
 atexit.register(_stop_deferred_release_watcher)
+
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_deferred_releases_after_fork)
 
 
 cdef class _WorkGroupMemory:
