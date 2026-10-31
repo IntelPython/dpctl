@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpctl.SyclQueue.get_last_event` and `dpctl.SyclQueue.is_get_last_event_available`, and the `DPCTLQueue_GetLastEvent` and `DPCTLQueue_GetLastEvent_Available` C-API functions, wrapping the DPC++ `sycl_ext_oneapi_in_order_queue_events` extension [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
 * Added `dpctl.SyclPlatform.has_aspect_*` properties and the `DPCTLPlatform_HasAspect` C-API function for querying aspects supported by all devices of a platform [gh-2412](https://github.com/IntelPython/dpctl/pull/2412)
 
+* `dpctl.SyclDevice` and `dpctl.SyclQueue` can be pickled; root devices are restored by filter string, queues by device and properties into the device's default context. `copy.copy` and `copy.deepcopy` return the same object
+
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)

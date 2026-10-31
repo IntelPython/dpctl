@@ -16,12 +16,15 @@
 
 """Defines unit test cases for the SyclDevice class."""
 
+import copy
+import pickle
+
 import pytest
 
 import dpctl
 from dpctl import SyclDeviceCreationError
 
-from .helper import get_queue_or_skip
+from .helper import get_queue_or_skip, get_sub_device_or_skip
 
 
 def test_standard_selectors(device_selector, check):
@@ -455,3 +458,38 @@ def test_peer_access_value_keyword_validation():
     bad_value = "wrong"
     with pytest.raises(ValueError):
         dev0.can_access_peer(dev1, value=bad_value)
+
+
+def test_device_pickling():
+    devs = dpctl.get_devices()
+    if not devs:
+        pytest.skip("No devices available")
+    for dev in devs:
+        dev2 = pickle.loads(pickle.dumps(dev))
+        assert dev2 == dev
+        assert dev2.filter_string == dev.filter_string
+
+
+def test_device_pickling_sub_device():
+    sub_dev = get_sub_device_or_skip()
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(sub_dev)
+
+
+def test_device_unpickling_name_mismatch():
+    from dpctl._sycl_device import _rebuild_device
+
+    try:
+        dev = dpctl.SyclDevice()
+    except SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    with pytest.raises(pickle.UnpicklingError):
+        _rebuild_device(dev.filter_string, dev.name + " (other)")
+
+
+def test_device_copy():
+    sub_dev = get_sub_device_or_skip()
+    root_dev = sub_dev.parent_device
+    for dev in (root_dev, sub_dev):
+        assert copy.copy(dev) is dev
+        assert copy.deepcopy(dev) is dev

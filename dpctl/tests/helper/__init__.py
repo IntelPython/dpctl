@@ -19,6 +19,7 @@
 from ._helper import (
     create_invalid_capsule,
     get_queue_or_skip,
+    get_sub_device_or_skip,
     has_cpu,
     has_gpu,
     has_sycl_platforms,
@@ -30,4 +31,5 @@ __all__ = [
     "has_gpu",
     "has_sycl_platforms",
     "get_queue_or_skip",
+    "get_sub_device_or_skip",
 ]

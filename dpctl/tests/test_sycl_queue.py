@@ -16,7 +16,10 @@
 
 """Defines unit test cases for the SyclQueue class."""
 
+import copy
 import ctypes
+import pickle
+import subprocess
 import sys
 
 import pytest
@@ -24,7 +27,11 @@ import pytest
 import dpctl
 import dpctl.memory
 
-from .helper import create_invalid_capsule
+from .helper import (
+    create_invalid_capsule,
+    get_queue_or_skip,
+    get_sub_device_or_skip,
+)
 
 
 def test_standard_selectors(device_selector, check):
@@ -480,3 +487,67 @@ def test_submit_keep_args_alive_deprecated():
     ht_ev.wait()
     # attributed to the caller
     assert record[0].filename == __file__
+
+
+@pytest.mark.parametrize(
+    "props",
+    [
+        (),
+        ("in_order",),
+        ("enable_profiling",),
+        ("in_order", "enable_profiling"),
+    ],
+)
+def test_queue_pickling(props):
+    try:
+        q = dpctl.SyclQueue(property=props or "default")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default-constructed queue could not be created")
+    q2 = pickle.loads(pickle.dumps(q))
+    assert isinstance(q2, dpctl.SyclQueue)
+    assert q2.sycl_device == q.sycl_device
+    assert q2.sycl_context == q.sycl_context
+    assert q2.is_in_order == ("in_order" in props)
+    assert q2.has_enable_profiling == ("enable_profiling" in props)
+
+
+def test_queue_pickling_non_default_context():
+    q = get_queue_or_skip()
+    dev = q.sycl_device
+    ctx = dpctl.SyclContext([dev])
+    if ctx == q.sycl_context:
+        pytest.skip("Context created from device list is the default context")
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(dpctl.SyclQueue(ctx, dev))
+
+
+def test_queue_pickling_sub_device():
+    sub_dev = get_sub_device_or_skip()
+    q = dpctl.SyclQueue(sub_dev)
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(q)
+
+
+def test_queue_unpickling_in_subprocess():
+    q = get_queue_or_skip()
+    q = dpctl.SyclQueue(q.sycl_device, property="in_order")
+    script = (
+        "import pickle, sys\n"
+        "q = pickle.loads(sys.stdin.buffer.read())\n"
+        "print(q.sycl_device.filter_string, q.is_in_order)\n"
+    )
+    res = subprocess.run(
+        [sys.executable, "-c", script],
+        input=pickle.dumps(q),
+        capture_output=True,
+        check=True,
+    )
+    assert res.stdout.decode().split() == [q.sycl_device.filter_string, "True"]
+
+
+def test_queue_copy():
+    q = get_queue_or_skip()
+    assert copy.copy(q) is q
+    assert copy.deepcopy(q) is q
+    d = copy.deepcopy({"queue": q})
+    assert d["queue"] is q
