@@ -1,0 +1,6 @@
+dpctl.memory.MemoryIPCDevice.reference\_obj
+===========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryIPCDevice.reference_obj
