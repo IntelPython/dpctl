@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.size
-=================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMShared.size

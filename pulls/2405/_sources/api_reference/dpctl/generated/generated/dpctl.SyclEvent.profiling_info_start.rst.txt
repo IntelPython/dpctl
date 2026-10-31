@@ -1,6 +1,0 @@
-dpctl.SyclEvent.profiling\_info\_start
-======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclEvent.profiling_info_start

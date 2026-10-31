@@ -1,6 +1,0 @@
-dpctl.SyclQueue.get\_sycl\_context
-==================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.get_sycl_context
