@@ -114,3 +114,4 @@ dpctl/resources/cmake
 venv/
 .pytest_cache/
 .env
+.env.*

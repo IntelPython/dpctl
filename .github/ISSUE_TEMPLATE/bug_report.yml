@@ -27,14 +27,14 @@ body:
     id: version
     attributes:
       label: dpctl version
-      description: Output of `python -c "import dpctl; print(dpctl.__version__)"`
+      description: Output of `python -c "import dpctl; print(dpctl.__version__)"`, or N/A if dpctl fails to build or import
     validations:
       required: true
   - type: textarea
     id: devices
     attributes:
       label: Devices
-      description: Output of `python -m dpctl -f`
+      description: Output of `python -m dpctl -f` (or `sycl-ls` if dpctl fails to import)
       render: shell
     validations:
       required: true
@@ -42,6 +42,6 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: OS, Python version (and whether free-threaded), how dpctl was installed (conda/pip/source), DPC++ compiler version if built from source.
+      description: OS, Python version (and whether free-threaded), how dpctl was installed (conda/pip/source), DPC++ runtime version (`intel-sycl-rt` in `conda list`/`pip list`), DPC++ compiler version if built from source.
     validations:
       required: true

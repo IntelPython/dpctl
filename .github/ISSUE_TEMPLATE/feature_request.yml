@@ -20,3 +20,4 @@ body:
     id: alternatives
     attributes:
       label: Alternatives considered
+      description: Optional. Workarounds you use today, or other designs you considered.

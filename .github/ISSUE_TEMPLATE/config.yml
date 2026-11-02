@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Questions and discussions
-    url: https://github.com/IntelPython/dpctl/discussions
+    url: https://github.com/IntelPython/dpctl/discussions/categories/q-a
     about: Ask usage questions here.
   - name: Security vulnerabilities
     url: https://github.com/IntelPython/dpctl/blob/master/SECURITY.md
