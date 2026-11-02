@@ -23,7 +23,6 @@
 """
 
 from ._backend cimport (  # noqa: E211
-    DPCTLContext_AreEq,
     DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
@@ -106,7 +105,6 @@ import atexit
 import collections.abc
 import logging
 import os
-import pickle
 import struct
 import sys
 import warnings
@@ -792,11 +790,9 @@ cdef DPCTLSyclEventRef _memset_impl(
     return ERef
 
 
-def _rebuild_queue(SyclDevice dev, tuple props):
-    """Unpickles a :class:`dpctl.SyclQueue` into the default context of
-    ``dev``.
-    """
-    return SyclQueue(dev, property=props)
+def _rebuild_queue(SyclContext ctx, SyclDevice dev, tuple props):
+    """Unpickles a :class:`dpctl.SyclQueue`."""
+    return SyclQueue(ctx, dev, property=props)
 
 
 cdef class _SyclQueue:
@@ -2283,36 +2279,18 @@ cdef class SyclQueue(_SyclQueue):
         return DPCTLQueue_Hash(self._queue_ref)
 
     def __reduce__(self):
-        """Pickles the queue's device and properties. The unpickled queue
-        uses the default context of the device.
+        """Pickles the queue's context, device, and properties.
 
         Raises:
             pickle.PicklingError: if the queue's context is not the default
                 context of its device, or the device is not a root device.
         """
-        cdef DPCTLSyclContextRef CRef = NULL
-        cdef bint is_default_ctx = False
-        # sub-devices have no cached context, SyclDevice.__reduce__ rejects them
-        if self._device.parent_device is None:
-            CRef = DPCTLDeviceMgr_GetCachedContext(
-                self._device.get_device_ref()
-            )
-            if CRef is not NULL:
-                is_default_ctx = DPCTLContext_AreEq(
-                    CRef, self._context.get_context_ref()
-                )
-                DPCTLContext_Delete(CRef)
-            if not is_default_ctx:
-                raise pickle.PicklingError(
-                    f"Cannot pickle {self!r}: its context is not the default "
-                    "context of its device"
-                )
         props = []
         if DPCTLQueue_IsInOrder(self._queue_ref):
             props.append("in_order")
         if DPCTLQueue_HasEnableProfiling(self._queue_ref):
             props.append("enable_profiling")
-        return _rebuild_queue, (self._device, tuple(props))
+        return _rebuild_queue, (self._context, self._device, tuple(props))
 
     def __copy__(self):
         return self

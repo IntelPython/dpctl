@@ -12,12 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `SyclQueue_DeferRelease` C-API function, which defers a release callback until work submitted to a queue completes, and through which `dpctl::utils::keep_args_alive` keeps its arguments alive [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl::utils::defer_release` to `dpctl4pybind11.hpp`, which calls a release callback once the given events have completed [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
-* `dpctl.SyclDevice` and `dpctl.SyclQueue` can be pickled; root devices are restored by filter string, queues by device and properties into the device's default context. `copy.copy` and `copy.deepcopy` return the same object
+* `dpctl.SyclDevice`, `dpctl.SyclContext`, and `dpctl.SyclQueue` can be pickled; root devices are restored by filter string, default contexts by one of their devices, and queues by context, device, and properties. `copy.copy` and `copy.deepcopy` return the same object
 
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+
+* Pickled `dpctl.memory.MemoryUSMShared`, `MemoryUSMDevice`, and `MemoryUSMHost` objects keep their queue instead of being restored on the default device; pickling memory whose queue can not be pickled raises `pickle.PicklingError`
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
