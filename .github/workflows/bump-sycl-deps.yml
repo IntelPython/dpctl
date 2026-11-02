@@ -1,0 +1,132 @@
+name: Bump open source SYCL build deps
+
+# Syncs the oclcpuexp and oneTBB pins in .github/sycl-build-deps.env, used by
+# os-llvm-sycl-build.yml, with intel/llvm devops/dependencies.json.
+
+on:
+  schedule:
+    - cron: "0 6 * * 6"
+  workflow_dispatch:
+    inputs:
+      llvm-ref:
+        description: "intel/llvm branch, tag or commit to read dependencies.json from"
+        required: false
+        default: sycl
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    name: Bump oclcpuexp and oneTBB pins
+    # disable scheduled workflow to be run in forks
+    if: github.event_name != 'schedule' || github.repository == 'IntelPython/dpctl'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      # push the branch with the updated pins
+      contents: write
+      # open a pull request from that branch
+      pull-requests: write
+
+    env:
+      PINS: .github/sycl-build-deps.env
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read intel/llvm dependencies.json
+        id: resolve
+        env:
+          LLVM_REF: ${{ inputs.llvm-ref || 'sycl' }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$*"; exit 1; }
+
+          [[ "${LLVM_REF}" =~ ^[A-Za-z0-9._/-]+$ ]] || fail "invalid intel/llvm ref: ${LLVM_REF}"
+          LLVM_SHA=$(gh api "repos/intel/llvm/commits/${LLVM_REF}" --jq .sha)
+          DEPS="${RUNNER_TEMP}/dependencies.json"
+          gh api -H "Accept: application/vnd.github.raw" \
+              "repos/intel/llvm/contents/devops/dependencies.json?ref=${LLVM_SHA}" > "${DEPS}"
+
+          OCL_TAG=$(jq -er '.linux.oclcpu.github_tag' "${DEPS}")
+          OCL_URL=$(jq -er '.linux.oclcpu.url' "${DEPS}")
+          TBB_VER=$(jq -er '.linux.tbb.version' "${DEPS}")
+          TBB_FULL_URL=$(jq -er '.linux.tbb.url' "${DEPS}")
+          OCLCPUEXP_FN=${OCL_URL##*/}
+
+          # os-llvm-sycl-build.yml rebuilds these URLs from the pins
+          [[ "${OCL_TAG}" =~ ^[0-9]{4}-WW[0-9]+$ ]] || fail "unexpected oclcpu tag: ${OCL_TAG}"
+          [[ "${OCLCPUEXP_FN}" =~ ^oclcpuexp-[0-9A-Za-z._]+_rel\.tar\.gz$ ]] \
+              || fail "unexpected oclcpu asset: ${OCLCPUEXP_FN}"
+          [[ "${OCL_URL}" == "https://github.com/intel/llvm/releases/download/${OCL_TAG}/${OCLCPUEXP_FN}" ]] \
+              || fail "unexpected oclcpu url: ${OCL_URL}"
+          [[ "${TBB_VER}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "unexpected tbb version: ${TBB_VER}"
+          [[ "${TBB_FULL_URL}" == "https://github.com/uxlfoundation/oneTBB/releases/download/v${TBB_VER}/oneapi-tbb-${TBB_VER}-lin.tgz" ]] \
+              || fail "unexpected tbb url: ${TBB_FULL_URL}"
+
+          {
+            echo "llvm_sha=${LLVM_SHA}"
+            echo "driver_tag=${OCL_TAG}"
+            echo "oclcpuexp_fn=${OCLCPUEXP_FN}"
+            echo "tbb_ver=${TBB_VER}"
+            echo "tbb_url=${TBB_FULL_URL%/*}/"
+            echo "tbb_fn=${TBB_FULL_URL##*/}"
+            echo "tbb_dir=oneapi-tbb-${TBB_VER}"
+          } | tee -a "${GITHUB_OUTPUT}"
+
+      - name: Apply pins
+        env:
+          DRIVER_TAG: ${{ steps.resolve.outputs.driver_tag }}
+          OCLCPUEXP_FN: ${{ steps.resolve.outputs.oclcpuexp_fn }}
+          TBB_URL: ${{ steps.resolve.outputs.tbb_url }}
+          TBB_FN: ${{ steps.resolve.outputs.tbb_fn }}
+          TBB_DIR: ${{ steps.resolve.outputs.tbb_dir }}
+        run: |
+          set -euo pipefail
+          sed -i -E \
+            -e "s|^(DRIVER_PATH=).*|\1${DRIVER_TAG}|" \
+            -e "s|^(OCLCPUEXP_FN=).*|\1${OCLCPUEXP_FN}|" \
+            -e "s|^(TBB_URL=).*|\1${TBB_URL}|" \
+            -e "s|^(TBB_INSTALL_DIR=).*|\1${TBB_DIR}|" \
+            -e "s|^(TBB_FN=).*|\1${TBB_FN}|" \
+            "${PINS}"
+          git diff -- "${PINS}"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ github.token }}
+          add-paths: ${{ env.PINS }}
+          branch: bot/bump-sycl-build-deps
+          delete-branch: true
+          labels: autoupdate
+          commit-message: |
+            Bump oclcpuexp/oneTBB pins for os-llvm-sycl-build workflow
+
+            oclcpuexp: ${{ steps.resolve.outputs.driver_tag }} / ${{ steps.resolve.outputs.oclcpuexp_fn }}
+            oneTBB: ${{ steps.resolve.outputs.tbb_ver }}
+            intel/llvm: ${{ steps.resolve.outputs.llvm_sha }}
+          title: "Bump open source SYCL build dependencies"
+          body: |
+            Syncs `.github/sycl-build-deps.env` with intel/llvm
+            [`devops/dependencies.json`](https://github.com/intel/llvm/blob/${{ steps.resolve.outputs.llvm_sha }}/devops/dependencies.json).
+
+            | dependency | version |
+            | --- | --- |
+            | intel/llvm driver release | `${{ steps.resolve.outputs.driver_tag }}` |
+            | oclcpuexp | `${{ steps.resolve.outputs.oclcpuexp_fn }}` |
+            | oneTBB | `${{ steps.resolve.outputs.tbb_ver }}` |
+
+            Pull requests opened by this workflow don't trigger CI: run
+            **Build with Open Source LLVM SYCL compiler** on this branch before merging.
