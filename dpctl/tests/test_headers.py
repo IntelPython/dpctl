@@ -49,3 +49,21 @@ def test_c_headers(dpctl_c_extension):
 
     assert dpctl_c_extension.is_sycl_queue(q)
     assert dpctl_c_extension.check_queue_ref(q)
+
+
+def test_c_memory_pool(dpctl_c_extension):
+    import dpctl.memory as dpm
+
+    try:
+        q = dpctl.SyclQueue()
+    except (dpctl.SyclDeviceCreationError, dpctl.SyclQueueCreationError):
+        pytest.skip()
+
+    limit = dpm.get_cache_limit()
+    dpm.set_cache_limit(None)
+    try:
+        dpm.empty_cache()
+        first, second = dpctl_c_extension.pool_roundtrip(q, 3 * 1024 + 17)
+    finally:
+        dpm.set_cache_limit(limit)
+    assert first == second

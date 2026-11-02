@@ -99,6 +99,10 @@ void *OpaqueSmartPtr_Allocate(std::size_t nbytes,
                               DPCTLSyclUSMType kind,
                               DPCTLSyclQueueRef QRef) noexcept
 {
+    if (nbytes == 0) {
+        return nullptr;
+    }
+
     sycl::usm::alloc usm_kind;
     switch (kind) {
     case DPCTL_USM_DEVICE:

@@ -178,6 +178,34 @@ API for :c:struct:`Py_MemoryObject`
         or a `nullptr` if the USM allocation represented by `o` is not managed by the smart
         pointer.
 
+Memory pool API
+---------------
+
+.. c:function:: void * Memory_PoolAllocate(size_t nbytes, DPCTLSyclUSMType kind, DPCTLSyclQueueRef QRef)
+
+    :param nbytes: The size of allocation in bytes
+    :param kind: USM allocation kind, ``DPCTL_USM_DEVICE``, ``DPCTL_USM_SHARED`` or ``DPCTL_USM_HOST``
+    :param QRef: Queue whose context and device the allocation is bound to
+    :returns: Opaque pointer to `std::shared_ptr<void>` which manages a USM allocation from
+        the memory pool of :py:mod:`dpctl.memory`, or a `nullptr` if it could not be allocated.
+        Does not need the GIL.
+
+.. c:function:: DPCTLSyclUSMRef Memory_PoolGetPointer(void *opaque)
+
+    :param opaque: Opaque pointer returned by :c:func:`Memory_PoolAllocate`
+    :returns: Pointer of the USM allocation.
+
+.. c:function:: void Memory_PoolRelease(void *opaque)
+
+    :param opaque: Opaque pointer returned by :c:func:`Memory_PoolAllocate`
+
+    Deletes the opaque pointer. The USM allocation returns to the pool once nothing else
+    owns it, so no work may still be using it.
+
+.. c:function:: void Memory_PoolEmptyCache(void)
+
+    Frees the USM allocations cached by the memory pool.
+
 API for :c:struct:`PySyclKernelObject`
 --------------------------------------
 

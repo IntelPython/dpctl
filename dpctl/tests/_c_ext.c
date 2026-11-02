@@ -80,11 +80,57 @@ PyObject *py_check_queue_ref(PyObject *self_unused, PyObject *args)
     return res;
 }
 
+PyObject *py_pool_roundtrip(PyObject *self_unused, PyObject *args)
+{
+    PyObject *arg = NULL;
+    Py_ssize_t nbytes = 0;
+    int status = -1;
+    DPCTLSyclQueueRef qref = NULL;
+    void *first = NULL;
+    void *second = NULL;
+    size_t first_ptr = 0;
+    size_t second_ptr = 0;
+
+    (void)(self_unused); // avoid unused arguments warning
+    status = PyArg_ParseTuple(args, "O!n", &PySyclQueueType, &arg, &nbytes);
+    if (!status) {
+        return NULL;
+    }
+    qref = SyclQueue_GetQueueRef((struct PySyclQueueObject *)arg);
+
+    if (Memory_PoolAllocate(0, DPCTL_USM_DEVICE, qref) != NULL) {
+        PyErr_SetString(PyExc_RuntimeError, "Allocated zero bytes");
+        return NULL;
+    }
+
+    first = Memory_PoolAllocate((size_t)nbytes, DPCTL_USM_DEVICE, qref);
+    if (first == NULL) {
+        PyErr_SetString(PyExc_MemoryError, "Pool allocation failed");
+        return NULL;
+    }
+    first_ptr = (size_t)Memory_PoolGetPointer(first);
+    Memory_PoolRelease(first);
+
+    second = Memory_PoolAllocate((size_t)nbytes, DPCTL_USM_DEVICE, qref);
+    if (second == NULL) {
+        PyErr_SetString(PyExc_MemoryError, "Pool allocation failed");
+        return NULL;
+    }
+    second_ptr = (size_t)Memory_PoolGetPointer(second);
+    Memory_PoolRelease(second);
+    Memory_PoolEmptyCache();
+
+    return Py_BuildValue("(nn)", (Py_ssize_t)first_ptr, (Py_ssize_t)second_ptr);
+}
+
 static PyMethodDef CExtMethods[] = {
     {"is_sycl_queue", py_is_sycl_queue, METH_VARARGS,
      "Checks if input object is a dpctl.SyclQueue instance"},
     {"check_queue_ref", py_check_queue_ref, METH_VARARGS,
      "Checks that queue ref obtained via C-API is not NULL"},
+    {"pool_roundtrip", py_pool_roundtrip, METH_VARARGS,
+     "Allocates from the memory pool twice, releasing in between, and "
+     "returns both pointers"},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 

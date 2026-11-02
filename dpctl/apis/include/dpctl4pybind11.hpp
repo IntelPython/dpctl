@@ -111,6 +111,10 @@ public:
                               size_t,
                               DPCTLSyclQueueRef,
                               PyObject *);
+    void *(*Memory_PoolAllocate_)(size_t, DPCTLSyclUSMType, DPCTLSyclQueueRef);
+    DPCTLSyclUSMRef (*Memory_PoolGetPointer_)(void *);
+    void (*Memory_PoolRelease_)(void *);
+    void (*Memory_PoolEmptyCache_)();
 
     // compiler
     DPCTLSyclKernelRef (*SyclKernel_GetKernelRef_)(PySyclKernelObject *);
@@ -222,7 +226,9 @@ private:
           SyclQueue_DeferRelease_(nullptr), Memory_GetUsmPointer_(nullptr),
           Memory_GetOpaquePointer_(nullptr), Memory_GetContextRef_(nullptr),
           Memory_GetQueueRef_(nullptr), Memory_GetNumBytes_(nullptr),
-          Memory_Make_(nullptr), SyclKernel_GetKernelRef_(nullptr),
+          Memory_Make_(nullptr), Memory_PoolAllocate_(nullptr),
+          Memory_PoolGetPointer_(nullptr), Memory_PoolRelease_(nullptr),
+          Memory_PoolEmptyCache_(nullptr), SyclKernel_GetKernelRef_(nullptr),
           SyclKernel_Make_(nullptr),
           SyclKernelBundle_GetKernelBundleRef_(nullptr),
           SyclKernelBundle_Make_(nullptr), default_sycl_queue_{},
@@ -278,6 +284,10 @@ private:
         this->Memory_GetQueueRef_ = Memory_GetQueueRef;
         this->Memory_GetNumBytes_ = Memory_GetNumBytes;
         this->Memory_Make_ = Memory_Make;
+        this->Memory_PoolAllocate_ = Memory_PoolAllocate;
+        this->Memory_PoolGetPointer_ = Memory_PoolGetPointer;
+        this->Memory_PoolRelease_ = Memory_PoolRelease;
+        this->Memory_PoolEmptyCache_ = Memory_PoolEmptyCache;
 
         // dpctl.compiler API
         this->SyclKernel_GetKernelRef_ = SyclKernel_GetKernelRef;
@@ -783,6 +793,59 @@ protected:
     }
 };
 
+/*!
+ * @brief Allocates `nbytes` of USM of `kind` for `q` from dpctl's memory pool.
+ *
+ * The memory returns to the pool once the last copy of the result is
+ * destroyed, which must not happen before the work using it completes. See
+ * `dpctl::utils::keep_usm_alive`.
+ *
+ * Needs the GIL only if dpctl's C-API is not initialized yet. Throws
+ * `std::bad_alloc` if the memory could not be allocated.
+ */
+inline std::shared_ptr<void>
+pool_allocate(std::size_t nbytes, sycl::usm::alloc kind, const sycl::queue &q)
+{
+    DPCTLSyclUSMType usm_kind;
+    switch (kind) {
+    case sycl::usm::alloc::device:
+        usm_kind = DPCTL_USM_DEVICE;
+        break;
+    case sycl::usm::alloc::shared:
+        usm_kind = DPCTL_USM_SHARED;
+        break;
+    case sycl::usm::alloc::host:
+        usm_kind = DPCTL_USM_HOST;
+        break;
+    default:
+        throw std::invalid_argument("Unrecognized USM allocation kind");
+    }
+    if (nbytes == 0) {
+        throw std::invalid_argument("Number of bytes must be positive");
+    }
+
+    auto const &api = ::dpctl::detail::dpctl_capi::get();
+    // only read through
+    DPCTLSyclQueueRef QRef =
+        reinterpret_cast<DPCTLSyclQueueRef>(const_cast<sycl::queue *>(&q));
+
+    void *opaque = api.Memory_PoolAllocate_(nbytes, usm_kind, QRef);
+    if (!opaque) {
+        throw std::bad_alloc();
+    }
+    std::shared_ptr<void> owner =
+        *reinterpret_cast<std::shared_ptr<void> *>(opaque);
+    api.Memory_PoolRelease_(opaque);
+
+    return owner;
+}
+
+/*! @brief Frees the USM allocations cached by dpctl's memory pool */
+inline void pool_empty_cache()
+{
+    ::dpctl::detail::dpctl_capi::get().Memory_PoolEmptyCache_();
+}
+
 } // end namespace memory
 
 namespace utils
@@ -914,6 +977,32 @@ sycl::event keep_args_alive(sycl::queue &q,
     }
 
     return defer_release(q, depends, &held_t::release, held);
+}
+
+/*!
+ * @brief Keeps `owners` alive until the work covered by `depends` completes.
+ *
+ * Returns an event for an empty kernel submitted to `q` after `depends`, which
+ * is what the release waits for.
+ *
+ * `q` is intended to be the queue running the work that uses the allocations.
+ *
+ * Throws if the release could not be scheduled, in which case `owners` are
+ * leaked rather than released.
+ */
+inline sycl::event keep_usm_alive(sycl::queue &q,
+                                  std::vector<std::shared_ptr<void>> owners,
+                                  const std::vector<sycl::event> &depends = {})
+{
+    using held_t = std::vector<std::shared_ptr<void>>;
+
+    // leaked if defer_release throws, as the work in `depends` may still be
+    // using the allocations
+    held_t *held = new held_t(std::move(owners));
+
+    return defer_release(
+        q, depends, [](void *self) { delete static_cast<held_t *>(self); },
+        held);
 }
 
 /*! @brief Check if all allocation queues are the same as the

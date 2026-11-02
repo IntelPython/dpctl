@@ -1150,6 +1150,33 @@ cdef api object Memory_Make(
     )
 
 
+cdef api void *Memory_PoolAllocate(
+    size_t nbytes,
+    _usm_type kind,
+    DPCTLSyclQueueRef QRef
+) noexcept nogil:
+    """Allocates USM through the memory pool, returning the opaque pointer
+    owning it, or NULL if it could not be allocated. Does not need the GIL."""
+    cdef void *opaque = OpaqueSmartPtr_Allocate(nbytes, kind, QRef)
+    if opaque is NULL:
+        MemoryPool_EmptyCache()
+        opaque = OpaqueSmartPtr_Allocate(nbytes, kind, QRef)
+    return opaque
+
+cdef api DPCTLSyclUSMRef Memory_PoolGetPointer(void *opaque) noexcept nogil:
+    "USM pointer owned by an opaque pointer from Memory_PoolAllocate"
+    return <DPCTLSyclUSMRef>OpaqueSmartPtr_Get(opaque)
+
+cdef api void Memory_PoolRelease(void *opaque) noexcept nogil:
+    """Deletes an opaque pointer from Memory_PoolAllocate. The USM returns to
+    the pool once nothing else owns it, so no work may still be using it."""
+    OpaqueSmartPtr_Delete(opaque)
+
+cdef api void Memory_PoolEmptyCache() noexcept nogil:
+    "Frees the USM allocations cached by the memory pool"
+    MemoryPool_EmptyCache()
+
+
 # ─── IPC Memory Handle ────────────────────────────────────────────────
 
 cdef class IPCMemoryHandle:
