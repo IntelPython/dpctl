@@ -1,0 +1,1493 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TCKS5BHYE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-7TCKS5BHYE');
+    </script>
+    <link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="prefetch" href="../../_static/dpctl.svg" as="image">
+
+    <link rel="shortcut icon" href="../../_static/dpctl.svg"><!-- Generated with Sphinx 7.1.2 and Furo 2025.12.19 -->
+        <title>dpctl._dtypes - Data Parallel Control (dpctl) 0.24.0dev0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/doxyrest-pygments.css?v=ff3f4257" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Data Parallel Control (dpctl) 0.24.0dev0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><div class="sidebar-scroll"><a class="sidebar-brand" href="../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../_static/dpctl.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Data Parallel Control (dpctl) 0.24.0dev0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div>
+<div class="sidebar-versions" style="padding: 1em; border-top: 1px solid var (--color-sidebar-brand-text);">
+  <strong>Docs Version</strong>
+  <select onchange="window.location.href=this.value" style="width: 100%; margin-top: 0.5em; padding: 0.25em;">
+    
+    <option value="https://intelpython.github.io/dpctl/latest/index.html" selected>
+      latest
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.23.0/index.html" >
+      0.23.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.1/index.html" >
+      0.22.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.22.0/index.html" >
+      0.22.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.21.1/index.html" >
+      0.21.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.21.0/index.html" >
+      0.21.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.2/index.html" >
+      0.20.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.1/index.html" >
+      0.20.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.20.0/index.html" >
+      0.20.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.19.0/index.html" >
+      0.19.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.2/index.html" >
+      0.18.2
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.1/index.html" >
+      0.18.1
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.18.0/index.html" >
+      0.18.0
+    </option>
+    
+    <option value="https://intelpython.github.io/dpctl/0.17.0/index.html" >
+      0.17.0
+    </option>
+    
+  </select>
+</div>
+<div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../beginners_guides/index.html">Beginner’s guides</a><input aria-label="Toggle navigation of Beginner’s guides" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../beginners_guides/installation.html">Installing <code class="docutils literal notranslate"><span class="pre">dpctl</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../beginners_guides/managing_devices.html">Managing devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../beginners_guides/misc.html">History of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> name</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guides/index.html">User guides</a><input aria-label="Toggle navigation of User guides" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guides/basic_concepts.html">Heterogeneous Systems and Programming Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guides/environment_variables.html">Environment variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api_reference/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api_reference/dpctl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of dpctl" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclDevice.html">dpctl.SyclDevice</a><input aria-label="Toggle navigation of dpctl.SyclDevice" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.addressof_ref.html">dpctl.SyclDevice.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_access_peer.html">dpctl.SyclDevice.can_access_peer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.can_compile.html">dpctl.SyclDevice.can_compile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.component_devices.html">dpctl.SyclDevice.component_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.create_sub_devices.html">dpctl.SyclDevice.create_sub_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.disable_peer_access.html">dpctl.SyclDevice.disable_peer_access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.enable_peer_access.html">dpctl.SyclDevice.enable_peer_access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_device_id.html">dpctl.SyclDevice.get_device_id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_filter_string.html">dpctl.SyclDevice.get_filter_string</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.get_unpartitioned_parent_device.html">dpctl.SyclDevice.get_unpartitioned_parent_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.print_device_info.html">dpctl.SyclDevice.print_device_info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.address_bits.html">dpctl.SyclDevice.address_bits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.atomic_fence_order_capabilities.html">dpctl.SyclDevice.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.atomic_fence_scope_capabilities.html">dpctl.SyclDevice.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.atomic_memory_order_capabilities.html">dpctl.SyclDevice.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.atomic_memory_scope_capabilities.html">dpctl.SyclDevice.atomic_memory_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.backend.html">dpctl.SyclDevice.backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.backend_version.html">dpctl.SyclDevice.backend_version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.composite_device.html">dpctl.SyclDevice.composite_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.default_selector_score.html">dpctl.SyclDevice.default_selector_score</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.device_type.html">dpctl.SyclDevice.device_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.double_fp_config.html">dpctl.SyclDevice.double_fp_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.driver_version.html">dpctl.SyclDevice.driver_version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.error_correction_support.html">dpctl.SyclDevice.error_correction_support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.filter_string.html">dpctl.SyclDevice.filter_string</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.global_mem_cache_line_size.html">dpctl.SyclDevice.global_mem_cache_line_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.global_mem_cache_size.html">dpctl.SyclDevice.global_mem_cache_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.global_mem_cache_type.html">dpctl.SyclDevice.global_mem_cache_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.global_mem_size.html">dpctl.SyclDevice.global_mem_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.half_fp_config.html">dpctl.SyclDevice.half_fp_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_accelerator.html">dpctl.SyclDevice.has_aspect_accelerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_atomic64.html">dpctl.SyclDevice.has_aspect_atomic64</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_cpu.html">dpctl.SyclDevice.has_aspect_cpu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_custom.html">dpctl.SyclDevice.has_aspect_custom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_emulated.html">dpctl.SyclDevice.has_aspect_emulated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_ext_oneapi_ipc_memory.html">dpctl.SyclDevice.has_aspect_ext_oneapi_ipc_memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_fp16.html">dpctl.SyclDevice.has_aspect_fp16</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_fp64.html">dpctl.SyclDevice.has_aspect_fp64</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_gpu.html">dpctl.SyclDevice.has_aspect_gpu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_host_debuggable.html">dpctl.SyclDevice.has_aspect_host_debuggable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_image.html">dpctl.SyclDevice.has_aspect_image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_is_component.html">dpctl.SyclDevice.has_aspect_is_component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_is_composite.html">dpctl.SyclDevice.has_aspect_is_composite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_online_compiler.html">dpctl.SyclDevice.has_aspect_online_compiler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_online_linker.html">dpctl.SyclDevice.has_aspect_online_linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_queue_profiling.html">dpctl.SyclDevice.has_aspect_queue_profiling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations.html">dpctl.SyclDevice.has_aspect_usm_atomic_host_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations.html">dpctl.SyclDevice.has_aspect_usm_atomic_shared_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_device_allocations.html">dpctl.SyclDevice.has_aspect_usm_device_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_host_allocations.html">dpctl.SyclDevice.has_aspect_usm_host_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_shared_allocations.html">dpctl.SyclDevice.has_aspect_usm_shared_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.has_aspect_usm_system_allocations.html">dpctl.SyclDevice.has_aspect_usm_system_allocations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_2d_max_height.html">dpctl.SyclDevice.image_2d_max_height</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_2d_max_width.html">dpctl.SyclDevice.image_2d_max_width</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_3d_max_depth.html">dpctl.SyclDevice.image_3d_max_depth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_3d_max_height.html">dpctl.SyclDevice.image_3d_max_height</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_3d_max_width.html">dpctl.SyclDevice.image_3d_max_width</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.image_max_buffer_size.html">dpctl.SyclDevice.image_max_buffer_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_accelerator.html">dpctl.SyclDevice.is_accelerator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_available.html">dpctl.SyclDevice.is_available</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_cpu.html">dpctl.SyclDevice.is_cpu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.is_gpu.html">dpctl.SyclDevice.is_gpu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.local_mem_size.html">dpctl.SyclDevice.local_mem_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.local_mem_type.html">dpctl.SyclDevice.local_mem_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_clock_frequency.html">dpctl.SyclDevice.max_clock_frequency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_compute_units.html">dpctl.SyclDevice.max_compute_units</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_mem_alloc_size.html">dpctl.SyclDevice.max_mem_alloc_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_num_sub_groups.html">dpctl.SyclDevice.max_num_sub_groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_parameter_size.html">dpctl.SyclDevice.max_parameter_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_read_image_args.html">dpctl.SyclDevice.max_read_image_args</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_samplers.html">dpctl.SyclDevice.max_samplers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_group_size.html">dpctl.SyclDevice.max_work_group_size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_item_dims.html">dpctl.SyclDevice.max_work_item_dims</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_item_sizes.html">dpctl.SyclDevice.max_work_item_sizes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_item_sizes1d.html">dpctl.SyclDevice.max_work_item_sizes1d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_item_sizes2d.html">dpctl.SyclDevice.max_work_item_sizes2d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_work_item_sizes3d.html">dpctl.SyclDevice.max_work_item_sizes3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.max_write_image_args.html">dpctl.SyclDevice.max_write_image_args</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.mem_base_addr_align.html">dpctl.SyclDevice.mem_base_addr_align</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.name.html">dpctl.SyclDevice.name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_char.html">dpctl.SyclDevice.native_vector_width_char</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_double.html">dpctl.SyclDevice.native_vector_width_double</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_float.html">dpctl.SyclDevice.native_vector_width_float</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_half.html">dpctl.SyclDevice.native_vector_width_half</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_int.html">dpctl.SyclDevice.native_vector_width_int</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_long.html">dpctl.SyclDevice.native_vector_width_long</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.native_vector_width_short.html">dpctl.SyclDevice.native_vector_width_short</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.parent_device.html">dpctl.SyclDevice.parent_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.partition_affinity_domains.html">dpctl.SyclDevice.partition_affinity_domains</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.partition_max_sub_devices.html">dpctl.SyclDevice.partition_max_sub_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.partition_properties.html">dpctl.SyclDevice.partition_properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.partition_type_affinity_domain.html">dpctl.SyclDevice.partition_type_affinity_domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.partition_type_property.html">dpctl.SyclDevice.partition_type_property</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_char.html">dpctl.SyclDevice.preferred_vector_width_char</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_double.html">dpctl.SyclDevice.preferred_vector_width_double</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_float.html">dpctl.SyclDevice.preferred_vector_width_float</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_half.html">dpctl.SyclDevice.preferred_vector_width_half</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_int.html">dpctl.SyclDevice.preferred_vector_width_int</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_long.html">dpctl.SyclDevice.preferred_vector_width_long</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.preferred_vector_width_short.html">dpctl.SyclDevice.preferred_vector_width_short</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.profiling_timer_resolution.html">dpctl.SyclDevice.profiling_timer_resolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.single_fp_config.html">dpctl.SyclDevice.single_fp_config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.sub_group_sizes.html">dpctl.SyclDevice.sub_group_sizes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.sycl_platform.html">dpctl.SyclDevice.sycl_platform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.vendor.html">dpctl.SyclDevice.vendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.vendor_id.html">dpctl.SyclDevice.vendor_id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclDevice.version.html">dpctl.SyclDevice.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclContext.html">dpctl.SyclContext</a><input aria-label="Toggle navigation of dpctl.SyclContext" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.addressof_ref.html">dpctl.SyclContext.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.get_devices.html">dpctl.SyclContext.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_fence_order_capabilities.html">dpctl.SyclContext.atomic_fence_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_fence_scope_capabilities.html">dpctl.SyclContext.atomic_fence_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_memory_order_capabilities.html">dpctl.SyclContext.atomic_memory_order_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.atomic_memory_scope_capabilities.html">dpctl.SyclContext.atomic_memory_scope_capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.device_count.html">dpctl.SyclContext.device_count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclContext.sycl_platform.html">dpctl.SyclContext.sycl_platform</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclQueue.html">dpctl.SyclQueue</a><input aria-label="Toggle navigation of dpctl.SyclQueue" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.addressof_ref.html">dpctl.SyclQueue.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.copy.html">dpctl.SyclQueue.copy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.fill.html">dpctl.SyclQueue.fill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memset.html">dpctl.SyclQueue.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.memset_async.html">dpctl.SyclQueue.memset_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.prefetch.html">dpctl.SyclQueue.prefetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.print_device_info.html">dpctl.SyclQueue.print_device_info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.submit.html">dpctl.SyclQueue.submit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.submit_async.html">dpctl.SyclQueue.submit_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.submit_barrier.html">dpctl.SyclQueue.submit_barrier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.wait.html">dpctl.SyclQueue.wait</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.backend.html">dpctl.SyclQueue.backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.driver_version.html">dpctl.SyclQueue.driver_version</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.has_enable_profiling.html">dpctl.SyclQueue.has_enable_profiling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.is_in_order.html">dpctl.SyclQueue.is_in_order</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.name.html">dpctl.SyclQueue.name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.sycl_context.html">dpctl.SyclQueue.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclQueue.sycl_device.html">dpctl.SyclQueue.sycl_device</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclEvent.html">dpctl.SyclEvent</a><input aria-label="Toggle navigation of dpctl.SyclEvent" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.addressof_ref.html">dpctl.SyclEvent.addressof_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.get_wait_list.html">dpctl.SyclEvent.get_wait_list</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.wait.html">dpctl.SyclEvent.wait</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.wait_for.html">dpctl.SyclEvent.wait_for</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.backend.html">dpctl.SyclEvent.backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.execution_status.html">dpctl.SyclEvent.execution_status</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.profiling_info_end.html">dpctl.SyclEvent.profiling_info_end</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.profiling_info_start.html">dpctl.SyclEvent.profiling_info_start</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclEvent.profiling_info_submit.html">dpctl.SyclEvent.profiling_info_submit</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclPlatform.html">dpctl.SyclPlatform</a><input aria-label="Toggle navigation of dpctl.SyclPlatform" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.get_composite_devices.html">dpctl.SyclPlatform.get_composite_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.get_devices.html">dpctl.SyclPlatform.get_devices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.print_platform_info.html">dpctl.SyclPlatform.print_platform_info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.backend.html">dpctl.SyclPlatform.backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.default_context.html">dpctl.SyclPlatform.default_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.name.html">dpctl.SyclPlatform.name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.vendor.html">dpctl.SyclPlatform.vendor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclPlatform.version.html">dpctl.SyclPlatform.version</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclTimer.html">dpctl.SyclTimer</a><input aria-label="Toggle navigation of dpctl.SyclTimer" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclTimer.__init__.html">dpctl.SyclTimer.__init__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.SyclTimer.dt.html">dpctl.SyclTimer.dt</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.select_default_device.html">dpctl.select_default_device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.select_cpu_device.html">dpctl.select_cpu_device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.select_gpu_device.html">dpctl.select_gpu_device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.select_accelerator_device.html">dpctl.select_accelerator_device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.select_device_with_aspects.html">dpctl.select_device_with_aspects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.get_devices.html">dpctl.get_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.lsplatform.html">dpctl.lsplatform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.get_num_devices.html">dpctl.get_num_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.has_gpu_devices.html">dpctl.has_gpu_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.dtype.html">dpctl.dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.register_dtype.html">dpctl.register_dtype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.SyclSubDeviceCreationError.html">dpctl.SyclSubDeviceCreationError</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.get_include.html">dpctl.get_include</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/constants.html">Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/filter_selector_string.html">Filter Selector String</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api_reference/dpctl/memory.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.memory</span></code></a><input aria-label="Toggle navigation of dpctl.memory" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.MemoryUSMDevice.html">dpctl.memory.MemoryUSMDevice</a><input aria-label="Toggle navigation of dpctl.memory.MemoryUSMDevice" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.copy_from_device.html">dpctl.memory.MemoryUSMDevice.copy_from_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.copy_from_host.html">dpctl.memory.MemoryUSMDevice.copy_from_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.copy_to_host.html">dpctl.memory.MemoryUSMDevice.copy_to_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.get_usm_type.html">dpctl.memory.MemoryUSMDevice.get_usm_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.get_usm_type_enum.html">dpctl.memory.MemoryUSMDevice.get_usm_type_enum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.memset.html">dpctl.memory.MemoryUSMDevice.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.tobytes.html">dpctl.memory.MemoryUSMDevice.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.nbytes.html">dpctl.memory.MemoryUSMDevice.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.reference_obj.html">dpctl.memory.MemoryUSMDevice.reference_obj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.size.html">dpctl.memory.MemoryUSMDevice.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.sycl_context.html">dpctl.memory.MemoryUSMDevice.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.sycl_device.html">dpctl.memory.MemoryUSMDevice.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.sycl_queue.html">dpctl.memory.MemoryUSMDevice.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMDevice.__sycl_usm_array_interface__.html">dpctl.memory.MemoryUSMDevice.__sycl_usm_array_interface__</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.MemoryUSMShared.html">dpctl.memory.MemoryUSMShared</a><input aria-label="Toggle navigation of dpctl.memory.MemoryUSMShared" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.copy_from_device.html">dpctl.memory.MemoryUSMShared.copy_from_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.copy_from_host.html">dpctl.memory.MemoryUSMShared.copy_from_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.copy_to_host.html">dpctl.memory.MemoryUSMShared.copy_to_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.get_usm_type.html">dpctl.memory.MemoryUSMShared.get_usm_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.get_usm_type_enum.html">dpctl.memory.MemoryUSMShared.get_usm_type_enum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.memset.html">dpctl.memory.MemoryUSMShared.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.tobytes.html">dpctl.memory.MemoryUSMShared.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.nbytes.html">dpctl.memory.MemoryUSMShared.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.reference_obj.html">dpctl.memory.MemoryUSMShared.reference_obj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.size.html">dpctl.memory.MemoryUSMShared.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.sycl_context.html">dpctl.memory.MemoryUSMShared.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.sycl_device.html">dpctl.memory.MemoryUSMShared.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.sycl_queue.html">dpctl.memory.MemoryUSMShared.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMShared.__sycl_usm_array_interface__.html">dpctl.memory.MemoryUSMShared.__sycl_usm_array_interface__</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.MemoryUSMHost.html">dpctl.memory.MemoryUSMHost</a><input aria-label="Toggle navigation of dpctl.memory.MemoryUSMHost" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.copy_from_device.html">dpctl.memory.MemoryUSMHost.copy_from_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.copy_from_host.html">dpctl.memory.MemoryUSMHost.copy_from_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.copy_to_host.html">dpctl.memory.MemoryUSMHost.copy_to_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.get_usm_type.html">dpctl.memory.MemoryUSMHost.get_usm_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.get_usm_type_enum.html">dpctl.memory.MemoryUSMHost.get_usm_type_enum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.memset.html">dpctl.memory.MemoryUSMHost.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.tobytes.html">dpctl.memory.MemoryUSMHost.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.nbytes.html">dpctl.memory.MemoryUSMHost.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.reference_obj.html">dpctl.memory.MemoryUSMHost.reference_obj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.size.html">dpctl.memory.MemoryUSMHost.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.sycl_context.html">dpctl.memory.MemoryUSMHost.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.sycl_device.html">dpctl.memory.MemoryUSMHost.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.sycl_queue.html">dpctl.memory.MemoryUSMHost.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryUSMHost.__sycl_usm_array_interface__.html">dpctl.memory.MemoryUSMHost.__sycl_usm_array_interface__</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.as_usm_memory.html">dpctl.memory.as_usm_memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.USMAllocationError.html">dpctl.memory.USMAllocationError</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.IPCMemoryHandle.html">dpctl.memory.IPCMemoryHandle</a><input aria-label="Toggle navigation of dpctl.memory.IPCMemoryHandle" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.IPCMemoryHandle.close.html">dpctl.memory.IPCMemoryHandle.close</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.IPCMemoryHandle.close_mapping.html">dpctl.memory.IPCMemoryHandle.close_mapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.IPCMemoryHandle.is_available.html">dpctl.memory.IPCMemoryHandle.is_available</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.IPCMemoryHandle.open.html">dpctl.memory.IPCMemoryHandle.open</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.IPCMemoryHandle.to_bytes.html">dpctl.memory.IPCMemoryHandle.to_bytes</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.MemoryIPCDevice.html">dpctl.memory.MemoryIPCDevice</a><input aria-label="Toggle navigation of dpctl.memory.MemoryIPCDevice" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.copy_from_device.html">dpctl.memory.MemoryIPCDevice.copy_from_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.copy_from_host.html">dpctl.memory.MemoryIPCDevice.copy_from_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.copy_to_host.html">dpctl.memory.MemoryIPCDevice.copy_to_host</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.get_usm_type.html">dpctl.memory.MemoryIPCDevice.get_usm_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.get_usm_type_enum.html">dpctl.memory.MemoryIPCDevice.get_usm_type_enum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.memset.html">dpctl.memory.MemoryIPCDevice.memset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.tobytes.html">dpctl.memory.MemoryIPCDevice.tobytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.is_closed.html">dpctl.memory.MemoryIPCDevice.is_closed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.nbytes.html">dpctl.memory.MemoryIPCDevice.nbytes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.reference_obj.html">dpctl.memory.MemoryIPCDevice.reference_obj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.size.html">dpctl.memory.MemoryIPCDevice.size</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.sycl_context.html">dpctl.memory.MemoryIPCDevice.sycl_context</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.sycl_device.html">dpctl.memory.MemoryIPCDevice.sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.sycl_queue.html">dpctl.memory.MemoryIPCDevice.sycl_queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/dpctl/generated/generated/dpctl.memory.MemoryIPCDevice.__sycl_usm_array_interface__.html">dpctl.memory.MemoryIPCDevice.__sycl_usm_array_interface__</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.SyclIPCGetMemHandle.html">dpctl.memory.SyclIPCGetMemHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.SyclIPCOpenMemHandle.html">dpctl.memory.SyclIPCOpenMemHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.memory.SyclIPCCloseMemHandle.html">dpctl.memory.SyclIPCCloseMemHandle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/sycl_usm_array_interface.html"><code class="docutils literal notranslate"><span class="pre">__sycl_usm_array_interface__</span></code> attribute</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api_reference/dpctl/compiler.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.compiler</span></code></a><input aria-label="Toggle navigation of dpctl.compiler" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_source.html">dpctl.compiler.create_kernel_bundle_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_spirv.html">dpctl.compiler.create_kernel_bundle_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.create_kernel_bundle_from_sycl_source.html">dpctl.compiler.create_kernel_bundle_from_sycl_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.is_sycl_source_compilation_available.html">dpctl.compiler.is_sycl_source_compilation_available</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.SyclKernelBundle.html">dpctl.compiler.SyclKernelBundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.SyclKernel.html">dpctl.compiler.SyclKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.SpecializationConstant.html">dpctl.compiler.SpecializationConstant</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.compiler.SyclKernelBundleCompilationError.html">dpctl.compiler.SyclKernelBundleCompilationError</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api_reference/dpctl/program.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.program</span></code> (deprecated)</a><input aria-label="Toggle navigation of dpctl.program (deprecated)" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.program.create_program_from_source.html">dpctl.program.create_program_from_source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.program.create_program_from_spirv.html">dpctl.program.create_program_from_spirv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.program.SyclKernel.html">dpctl.program.SyclKernel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.program.SyclProgram.html">dpctl.program.SyclProgram</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api_reference/dpctl/generated/dpctl.program.SyclProgramCompilationError.html">dpctl.program.SyclProgramCompilationError</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/dpctl/utils.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.utils</span></code></a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/index.html">C Library SyclInterface</a><input aria-label="Toggle navigation of C Library SyclInterface" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/index.html">libsyclinterface</a><input aria-label="Toggle navigation of libsyclinterface" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/group_DeviceManager.html">Device class helper functions</a><input aria-label="Toggle navigation of Device class helper functions" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/group_PlatformManager.html">Platform class helper functions</a><input aria-label="Toggle navigation of Platform class helper functions" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/page_todo.html">Todo List</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/global.html">Global Namespace</a><input aria-label="Toggle navigation of Global Namespace" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/namespace_dpctl.html">namespace dpctl</a><input aria-label="Toggle navigation of namespace dpctl" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/namespace_dpctl_syclinterface.html">namespace dpctl::syclinterface</a><input aria-label="Toggle navigation of namespace dpctl::syclinterface" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_accelerator_selector.html">class dpctl::syclinterface::dpctl_accelerator_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_accelerator_selector" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_cpu_selector.html">class dpctl::syclinterface::dpctl_cpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_cpu_selector" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_default_selector.html">class dpctl::syclinterface::dpctl_default_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_default_selector" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_device_selector.html">class dpctl::syclinterface::dpctl_device_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_device_selector" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_filter_selector.html">class dpctl::syclinterface::dpctl_filter_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_filter_selector" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l7 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/class_dpctl_syclinterface_dpctl_gpu_selector.html">class dpctl::syclinterface::dpctl_gpu_selector</a><input aria-label="Toggle navigation of class dpctl::syclinterface::dpctl_gpu_selector" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLFPConfigType.html">enum DPCTLFPConfigType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLGlobalMemCacheType.html">enum DPCTLGlobalMemCacheType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLKernelArgType.html">enum DPCTLKernelArgType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLLocalMemType.html">enum DPCTLLocalMemType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLMemoryOrderType.html">enum DPCTLMemoryOrderType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLMemoryScopeType.html">enum DPCTLMemoryScopeType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLPartitionAffinityDomainType.html">enum DPCTLPartitionAffinityDomainType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLPartitionPropertyType.html">enum DPCTLPartitionPropertyType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLPeerAccessType.html">enum DPCTLPeerAccessType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLQueuePropertyType.html">enum DPCTLQueuePropertyType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLSyclAspectType.html">enum DPCTLSyclAspectType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLSyclBackendType.html">enum DPCTLSyclBackendType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLSyclDeviceType.html">enum DPCTLSyclDeviceType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLSyclEventStatusType.html">enum DPCTLSyclEventStatusType</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/enum_DPCTLSyclUSMType.html">enum DPCTLSyclUSMType</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/struct_DPCTLSpecConstTy.html">struct DPCTLSpecConstTy</a><input aria-label="Toggle navigation of struct DPCTLSpecConstTy" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/struct_MDLocalAccessorTy.html">struct MDLocalAccessorTy</a><input aria-label="Toggle navigation of struct MDLocalAccessorTy" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../api_reference/libsyclinterface/generated/struct_RawWorkGroupMemoryTy.html">struct RawWorkGroupMemoryTy</a><input aria-label="Toggle navigation of struct RawWorkGroupMemoryTy" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/dpctl_capi.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> C API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/dpctl_cython.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code> Cython API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/dpctl_pybind11.html">pybind11 API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_reference/dpctl_cmake.html">CMake support</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../contributor_guides/index.html">Contributing to <code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a><input aria-label="Toggle navigation of Contributing to dpctl" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributor_guides/building.html">Building from the Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributor_guides/building.html#building-the-libsyclinterface-library">Building the libsyclinterface Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributor_guides/memory_ownership_sycl_interface.html">Working with DPCTLSyclInterface library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../license.html">Licenses</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for dpctl._dtypes</h1><div class="highlight"><pre>
+<span></span><span class="c1">#                      Data Parallel Control (dpctl)</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2026 Intel Corporation</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the "License");</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+
+<span class="sd">"""Scalar types and dtype descriptors for dpctl kernel arguments.</span>
+
+<span class="sd">Every data type known to :mod:`dpctl` is created by :func:`register_dtype`,</span>
+<span class="sd">including the ones :mod:`dpctl` defines itself. A data type consists of</span>
+
+<span class="sd">- static metadata (name, element size, kind, short type code),</span>
+<span class="sd">- a pair of functions converting between Python objects and the bytes a device</span>
+<span class="sd">  expects, and</span>
+<span class="sd">- the identifier of the kernel argument type used to pass such a value to a</span>
+<span class="sd">  kernel, or no identifier at all, in which case the bytes are passed using the</span>
+<span class="sd">  ``raw_kernel_arg`` DPC++ extension.</span>
+
+<span class="sd">Because that is all a data type is, types that :mod:`numpy` can not describe,</span>
+<span class="sd">such as :class:`bfloat16`, are ordinary data types here, and so are data types</span>
+<span class="sd">defined outside of :mod:`dpctl`.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">builtins</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_dtypes_impl</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"dtype"</span><span class="p">,</span>
+    <span class="s2">"DpctlScalar"</span><span class="p">,</span>
+    <span class="s2">"register_dtype"</span><span class="p">,</span>
+    <span class="s2">"registered_dtypes"</span><span class="p">,</span>
+    <span class="s2">"is_dtype_available"</span><span class="p">,</span>
+    <span class="s2">"bool"</span><span class="p">,</span>
+    <span class="s2">"int8"</span><span class="p">,</span>
+    <span class="s2">"uint8"</span><span class="p">,</span>
+    <span class="s2">"int16"</span><span class="p">,</span>
+    <span class="s2">"uint16"</span><span class="p">,</span>
+    <span class="s2">"int32"</span><span class="p">,</span>
+    <span class="s2">"uint32"</span><span class="p">,</span>
+    <span class="s2">"int64"</span><span class="p">,</span>
+    <span class="s2">"uint64"</span><span class="p">,</span>
+    <span class="s2">"float16"</span><span class="p">,</span>
+    <span class="s2">"float32"</span><span class="p">,</span>
+    <span class="s2">"float64"</span><span class="p">,</span>
+    <span class="s2">"bfloat16"</span><span class="p">,</span>
+    <span class="s2">"complex64"</span><span class="p">,</span>
+    <span class="s2">"complex128"</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_arg_type_ids</span> <span class="o">=</span> <span class="n">_dtypes_impl</span><span class="o">.</span><span class="n">KERNEL_ARG_TYPE_IDS</span>
+
+<span class="c1">#: Identifier of the kernel argument type used for data types that do not have</span>
+<span class="c1">#: a dedicated one.</span>
+<span class="n">_RAW_KERNEL_ARG_TYPE_ID</span> <span class="o">=</span> <span class="n">_arg_type_ids</span><span class="p">[</span><span class="s2">"raw_kernel_arg"</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_DTypeInfo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Immutable description of a registered data type."""</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"name"</span><span class="p">,</span>
+        <span class="s2">"itemsize"</span><span class="p">,</span>
+        <span class="s2">"kind"</span><span class="p">,</span>
+        <span class="s2">"code"</span><span class="p">,</span>
+        <span class="s2">"arg_type_id"</span><span class="p">,</span>
+        <span class="s2">"pack"</span><span class="p">,</span>
+        <span class="s2">"unpack"</span><span class="p">,</span>
+        <span class="s2">"numpy_dtype"</span><span class="p">,</span>
+        <span class="s2">"scalar_type"</span><span class="p">,</span>
+        <span class="s2">"aliases"</span><span class="p">,</span>
+        <span class="s2">"available"</span><span class="p">,</span>
+        <span class="s2">"unavailable_reason"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_attr</span><span class="p">,</span> <span class="n">_value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_attr</span><span class="p">,</span> <span class="n">_value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;dpctl dtype info for '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'&gt;"</span>
+
+
+<span class="n">_by_name</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_by_code</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_by_scalar_type</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_by_numpy_num</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="DpctlScalar"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.DpctlScalar.html#dpctl.DpctlScalar">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DpctlScalar</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Base class for dpctl scalar kernel argument types.</span>
+
+<span class="sd">    A scalar holds the bytes a device expects for a value of its data type.</span>
+<span class="sd">    Instances are created by calling a data type, either its scalar class</span>
+<span class="sd">    (``dpctl.int32(5)``) or a :class:`dtype` describing it</span>
+<span class="sd">    (``dpctl.dtype("int32")(5)``).</span>
+
+<span class="sd">    Subclasses are created by :func:`register_dtype` and should not be defined</span>
+<span class="sd">    directly, since only a registered subclass carries a data type.</span>
+<span class="sd">    """</span>
+
+    <span class="c1">#: Description of the data type of instances of this class.</span>
+    <span class="n">_dtype_info</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">#: Value of the ``DPCTLKernelArgType`` enumerator used to pass instances of</span>
+    <span class="c1">#: this class to a kernel, or ``None`` if instances are passed using the</span>
+    <span class="c1">#: ``raw_kernel_arg`` extension.</span>
+    <span class="n">_arg_type_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_raw"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_dtype_info</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> does not describe a registered dpctl "</span>
+                <span class="s2">"data type and can not be instantiated"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">info</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">unavailable_reason</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Data type '</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' packed </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> into "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, expected bytes"</span>
+            <span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span> <span class="o">!=</span> <span class="n">info</span><span class="o">.</span><span class="n">itemsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Data type '</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' packed </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> into "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes, expected </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span> <span class="o">=</span> <span class="n">raw</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_available</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns whether this data type is supported by this build of</span>
+<span class="sd">        ``dpctl``.</span>
+<span class="sd">        """</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dtype_info</span>
+        <span class="k">return</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">available</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The value of this scalar, as a Python object."""</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_dtype_info</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The :class:`dpctl.dtype` of this scalar."""</span>
+        <span class="k">return</span> <span class="n">dtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The bytes a device expects for this value."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"dpctl.</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">)"</span></div>
+
+
+<div class="viewcode-block" id="register_dtype"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.register_dtype.html#dpctl.register_dtype">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">register_dtype</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">itemsize</span><span class="p">,</span>
+    <span class="n">kind</span><span class="p">,</span>
+    <span class="n">code</span><span class="p">,</span>
+    <span class="n">pack</span><span class="p">,</span>
+    <span class="n">unpack</span><span class="p">,</span>
+    <span class="n">arg_type_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">numpy_dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">aliases</span><span class="o">=</span><span class="p">(),</span>
+    <span class="n">scalar_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">doc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">available</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">unavailable_reason</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""register_dtype(name, *, itemsize, kind, code, pack, unpack, \</span>
+<span class="sd">arg_type_id=None, numpy_dtype=None, aliases=(), scalar_type=None, doc=None, \</span>
+<span class="sd">available=True, unavailable_reason=None)</span>
+
+<span class="sd">    Adds a data type to the data types :mod:`dpctl` knows, and returns its</span>
+<span class="sd">    scalar class.</span>
+
+<span class="sd">    Once registered, the data type can be looked up by name, by short type</span>
+<span class="sd">    code, and by its :mod:`numpy` equivalent if it has one, its scalar class</span>
+<span class="sd">    can be used as a kernel argument, and its short type code is accepted by</span>
+<span class="sd">    :class:`dpctl.LocalAccessor` and :class:`dpctl.WorkGroupMemory`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str):</span>
+<span class="sd">            Name of the data type, unique among registered data types.</span>
+<span class="sd">        itemsize (int):</span>
+<span class="sd">            Size in bytes of a value of this data type. Every :class:`bytes`</span>
+<span class="sd">            object ``pack`` returns must be of this length.</span>
+<span class="sd">        kind (str):</span>
+<span class="sd">            Single character identifying the family the data type belongs to,</span>
+<span class="sd">            following :attr:`numpy.dtype.kind` where applicable, e.g. ``'f'``</span>
+<span class="sd">            for a floating-point type or ``'V'`` for an opaque one.</span>
+<span class="sd">        code (str):</span>
+<span class="sd">            Short type code of the data type, unique among registered data</span>
+<span class="sd">            types, e.g. ``'f4'``. Where a data type has a :mod:`numpy`</span>
+<span class="sd">            equivalent this should be the :mod:`numpy` type code.</span>
+<span class="sd">        pack (callable):</span>
+<span class="sd">            Called with a value and returning the ``itemsize`` bytes a device</span>
+<span class="sd">            expects for it.</span>
+<span class="sd">        unpack (callable):</span>
+<span class="sd">            Called with ``itemsize`` bytes and returning the value they hold.</span>
+<span class="sd">        arg_type_id (int, optional):</span>
+<span class="sd">            Value of the ``DPCTLKernelArgType`` enumerator used to pass such a</span>
+<span class="sd">            value to a kernel. If ``None``, values are passed to kernels using</span>
+<span class="sd">            the ``raw_kernel_arg`` DPC++ extension, which does not require the</span>
+<span class="sd">            type to be known to ``dpctl``, but does require that extension to</span>
+<span class="sd">            be available.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        numpy_dtype (optional):</span>
+<span class="sd">            The :mod:`numpy` data type equivalent to this one, if there is one.</span>
+<span class="sd">            Making it known here is what lets the data type be looked up from</span>
+<span class="sd">            its :mod:`numpy` equivalent, and lets :mod:`numpy` scalars of it be</span>
+<span class="sd">            used as kernel arguments.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        aliases (tuple, optional):</span>
+<span class="sd">            Additional names the data type can be looked up by.</span>
+<span class="sd">            Default: ``()``.</span>
+<span class="sd">        scalar_type (type, optional):</span>
+<span class="sd">            A subclass of :class:`DpctlScalar` to use as the scalar class of</span>
+<span class="sd">            this data type. If ``None``, one is created.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        doc (str, optional):</span>
+<span class="sd">            Docstring of the created scalar class.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        available (bool, optional):</span>
+<span class="sd">            Whether the data type is supported by this build of ``dpctl``. An</span>
+<span class="sd">            unavailable data type is registered, so that it can be reported as</span>
+<span class="sd">            unsupported rather than as unknown, but constructing a scalar of it</span>
+<span class="sd">            or a :class:`dtype` for it raises :exc:`RuntimeError`.</span>
+<span class="sd">            Default: ``True``.</span>
+<span class="sd">        unavailable_reason (str, optional):</span>
+<span class="sd">            Message of that :exc:`RuntimeError`.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        type:</span>
+<span class="sd">            The scalar class of the data type, a subclass of</span>
+<span class="sd">            :class:`DpctlScalar`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If an argument is of an unexpected type.</span>
+<span class="sd">        ValueError:</span>
+<span class="sd">            If a name, an alias, or the type code is already registered, or if</span>
+<span class="sd">            an argument has an invalid value.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type `name` must be a non-empty string"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data type `kind` must be a single character"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">code</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type `code` must be a non-empty string"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">itemsize</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">itemsize</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data type `itemsize` must be a positive integer"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">pack</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">unpack</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type `pack` and `unpack` must be callable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arg_type_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_type_id</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type `arg_type_id` must be an integer or None"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aliases</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type `aliases` must be a sequence of strings"</span><span class="p">)</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">aliases</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Data type names must be non-empty strings"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_name</span> <span class="ow">in</span> <span class="n">_by_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data type '</span><span class="si">{</span><span class="n">_name</span><span class="si">}</span><span class="s2">' is already registered"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">_by_code</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Type code '</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">' is already used by data type "</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">_by_code</span><span class="p">[</span><span class="n">code</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span>
+        <span class="p">)</span>
+
+    <span class="n">np_dtype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">numpy_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">numpy_dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np_dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">!=</span> <span class="n">itemsize</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"NumPy data type </span><span class="si">{</span><span class="n">np_dtype</span><span class="si">}</span><span class="s2"> is of </span><span class="si">{</span><span class="n">np_dtype</span><span class="o">.</span><span class="n">itemsize</span><span class="si">}</span><span class="s2"> bytes, "</span>
+                <span class="sa">f</span><span class="s2">"while `itemsize` is </span><span class="si">{</span><span class="n">itemsize</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np_dtype</span><span class="o">.</span><span class="n">num</span> <span class="ow">in</span> <span class="n">_by_numpy_num</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"NumPy data type </span><span class="si">{</span><span class="n">np_dtype</span><span class="si">}</span><span class="s2"> is already used by data type "</span>
+                <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">_by_numpy_num</span><span class="p">[</span><span class="n">np_dtype</span><span class="o">.</span><span class="n">num</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scalar_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar_type</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">scalar_type</span><span class="p">,</span> <span class="n">DpctlScalar</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">scalar_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">DpctlScalar</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"Data type `scalar_type` must be a subclass of DpctlScalar"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">scalar_type</span> <span class="ow">in</span> <span class="n">_by_scalar_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Class </span><span class="si">{</span><span class="n">scalar_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is already the scalar class of "</span>
+                <span class="sa">f</span><span class="s2">"data type '</span><span class="si">{</span><span class="n">_by_scalar_type</span><span class="p">[</span><span class="n">scalar_type</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">scalar_type</span><span class="o">.</span><span class="n">_dtype_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Class </span><span class="si">{</span><span class="n">scalar_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> already carries a data type"</span>
+            <span class="p">)</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_DTypeInfo</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">itemsize</span><span class="o">=</span><span class="n">itemsize</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+        <span class="n">arg_type_id</span><span class="o">=</span><span class="n">arg_type_id</span><span class="p">,</span>
+        <span class="n">pack</span><span class="o">=</span><span class="n">pack</span><span class="p">,</span>
+        <span class="n">unpack</span><span class="o">=</span><span class="n">unpack</span><span class="p">,</span>
+        <span class="n">numpy_dtype</span><span class="o">=</span><span class="n">np_dtype</span><span class="p">,</span>
+        <span class="n">scalar_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">aliases</span><span class="p">),</span>
+        <span class="n">available</span><span class="o">=</span><span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">available</span><span class="p">),</span>
+        <span class="n">unavailable_reason</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">unavailable_reason</span>
+            <span class="ow">or</span> <span class="sa">f</span><span class="s2">"Data type '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' is not supported by this build of dpctl"</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">scalar_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scalar_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">DpctlScalar</span><span class="p">,),</span>
+            <span class="p">{</span>
+                <span class="s2">"__slots__"</span><span class="p">:</span> <span class="p">(),</span>
+                <span class="s2">"__doc__"</span><span class="p">:</span> <span class="n">doc</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"Scalar of dpctl data type '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'."</span><span class="p">,</span>
+                <span class="s2">"__module__"</span><span class="p">:</span> <span class="s2">"dpctl"</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="n">info</span><span class="o">.</span><span class="n">scalar_type</span> <span class="o">=</span> <span class="n">scalar_type</span>
+    <span class="n">scalar_type</span><span class="o">.</span><span class="n">_dtype_info</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="n">scalar_type</span><span class="o">.</span><span class="n">_arg_type_id</span> <span class="o">=</span> <span class="n">arg_type_id</span>
+
+    <span class="k">for</span> <span class="n">_name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">_by_name</span><span class="p">[</span><span class="n">_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="n">_by_code</span><span class="p">[</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="n">_by_scalar_type</span><span class="p">[</span><span class="n">scalar_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="k">if</span> <span class="n">np_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_by_numpy_num</span><span class="p">[</span><span class="n">np_dtype</span><span class="o">.</span><span class="n">num</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+
+    <span class="k">return</span> <span class="n">scalar_type</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unregister_dtype</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Removes a data type registered by :func:`register_dtype`.</span>
+
+<span class="sd">    Existing :class:`dtype` instances and scalars of the data type keep</span>
+<span class="sd">    working, but the data type can no longer be looked up.</span>
+<span class="sd">    """</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_by_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Data type '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' is not registered"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span> <span class="o">+</span> <span class="n">info</span><span class="o">.</span><span class="n">aliases</span><span class="p">:</span>
+        <span class="n">_by_name</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">_by_code</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">_by_scalar_type</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">scalar_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">numpy_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_by_numpy_num</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">numpy_dtype</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="registered_dtypes"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.registered_dtypes.html#dpctl.registered_dtypes">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">registered_dtypes</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""registered_dtypes()</span>
+
+<span class="sd">    Returns the data types registered with :func:`register_dtype` and supported</span>
+<span class="sd">    by this build of ``dpctl``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple:</span>
+<span class="sd">            A tuple of :class:`dpctl.dtype` instances.</span>
+<span class="sd">    """</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">_by_name</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+            <span class="n">seen</span><span class="p">[</span><span class="n">info</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dtype</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">scalar_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">seen</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="is_dtype_available"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.is_dtype_available.html#dpctl.is_dtype_available">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_dtype_available</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""is_dtype_available(arg)</span>
+
+<span class="sd">    Returns whether ``arg`` describes a data type that is registered and</span>
+<span class="sd">    supported by this build of ``dpctl``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arg:</span>
+<span class="sd">            Anything :class:`dpctl.dtype` accepts.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool:</span>
+<span class="sd">            ``True`` if a :class:`dpctl.dtype` can be created from ``arg``,</span>
+<span class="sd">            ``False`` otherwise.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dtype</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_available</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">info</span><span class="o">.</span><span class="n">available</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">unavailable_reason</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_info_from_numpy</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolves a NumPy data type, or anything NumPy accepts, to the data type</span>
+<span class="sd">    it is equivalent to.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+        <span class="n">np_dt</span> <span class="o">=</span> <span class="n">arg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">np_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot create a dpctl.dtype from </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np_dt</span><span class="o">.</span><span class="n">byteorder</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"&lt;"</span><span class="p">,</span> <span class="s2">"&gt;"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Only native byte order is supported."</span><span class="p">)</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_by_numpy_num</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">np_dt</span><span class="o">.</span><span class="n">num</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot create a dpctl.dtype from </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_check_available</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_info_from_code</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolves a short type code, or a data type name, to a data type,</span>
+<span class="sd">    returning ``None`` if it is not registered.</span>
+<span class="sd">    """</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_by_code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_by_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_info_from_numpy_num</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Resolves the ``num`` of a NumPy data type to the data type it is</span>
+<span class="sd">    equivalent to, returning ``None`` if there is none.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_by_numpy_num</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">arg</span><span class="o">.</span><span class="n">_info</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">DpctlScalar</span><span class="p">):</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">DpctlScalar</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_by_scalar_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cannot create a dpctl.dtype from </span><span class="si">{</span><span class="n">arg</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_check_available</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_by_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">_by_code</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_check_available</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_info_from_numpy</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="dtype"><a class="viewcode-back" href="../../api_reference/dpctl/generated/dpctl.dtype.html#dpctl.dtype">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">dtype</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    dtype(arg)</span>
+
+<span class="sd">    Dpctl dtype descriptor class.</span>
+
+<span class="sd">    Analogous to :class:`numpy.dtype`, a :class:`dpctl.dtype` identifies a</span>
+<span class="sd">    data type and carries static metadata.</span>
+
+<span class="sd">    A ``dpctl.dtype`` can be constructed from:</span>
+
+<span class="sd">    - A dpctl scalar class, or a scalar of one</span>
+<span class="sd">    - A data type name, e.g. ``"float32"``, or short type code, e.g. ``"f4"``</span>
+<span class="sd">    - A NumPy dtype or type equivalent to a registered data type</span>
+<span class="sd">    - Another :class:`dpctl.dtype`</span>
+
+<span class="sd">    Non-native byte orders are rejected.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arg:</span>
+<span class="sd">            Object to create the data type descriptor from.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError:</span>
+<span class="sd">            If ``arg`` does not describe a registered data type.</span>
+<span class="sd">        RuntimeError:</span>
+<span class="sd">            If ``arg`` describes a data type that this build of ``dpctl`` does</span>
+<span class="sd">            not support, such as :class:`dpctl.bfloat16` when the DPC++</span>
+<span class="sd">            compiler used to build ``dpctl`` did not provide it.</span>
+<span class="sd">    """</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"_info"</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">_resolve</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The short name of this dtype"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">itemsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Element size in bytes."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">itemsize</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Single-character kind code"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">kind</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Short dtype string"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">code</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scalar_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The dpctl scalar class for this dtype"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">scalar_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">numpy_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The equivalent :class:`numpy.dtype`, or ``None`` if this data type</span>
+<span class="sd">        has no NumPy equivalent.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">numpy_dtype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">arg_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The internal ``DPCTLKernelArgType`` enum value, or ``None`` if</span>
+<span class="sd">        values of this dtype are passed to kernels as raw kernel arguments.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">arg_type_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">uses_raw_kernel_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Whether values of this dtype are passed to kernels using the</span>
+<span class="sd">        ``raw_kernel_arg`` DPC++ extension.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">arg_type_id</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"dpctl.dtype('</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">')"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">other</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">NotImplemented</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Construct a scalar of this dtype"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">scalar_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_numpy_pack</span><span class="p">(</span><span class="n">np_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pack</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">pack</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_numpy_unpack</span><span class="p">(</span><span class="n">np_dtype</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unpack</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np_dtype</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">unpack</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pack_bool</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\x01</span><span class="s2">"</span> <span class="k">if</span> <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">else</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unpack_bool</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_numpy_backed</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">itemsize</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">np_type</span><span class="p">,</span> <span class="n">doc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Registers a data type that a NumPy data type is the equivalent of."""</span>
+    <span class="n">np_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">register_dtype</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">itemsize</span><span class="o">=</span><span class="n">itemsize</span><span class="p">,</span>
+        <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span>
+        <span class="n">pack</span><span class="o">=</span><span class="n">_numpy_pack</span><span class="p">(</span><span class="n">np_type</span><span class="p">),</span>
+        <span class="n">unpack</span><span class="o">=</span><span class="n">_numpy_unpack</span><span class="p">(</span><span class="n">np_dtype</span><span class="p">),</span>
+        <span class="n">arg_type_id</span><span class="o">=</span><span class="n">_arg_type_ids</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+        <span class="n">numpy_dtype</span><span class="o">=</span><span class="n">np_dtype</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="n">doc</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># `bool` is passed to kernels as an 8-bit integer, per SYCL, in which</span>
+<span class="c1"># `sizeof(bool)` is 1. It is the one NumPy-backed data type that does not</span>
+<span class="c1"># convert through its NumPy data type, since `numpy.bool_` is not guaranteed to</span>
+<span class="c1"># be stored as 0 or 1.</span>
+<span class="nb">bool</span> <span class="o">=</span> <span class="n">register_dtype</span><span class="p">(</span>
+    <span class="s2">"bool"</span><span class="p">,</span>
+    <span class="n">itemsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"b"</span><span class="p">,</span>
+    <span class="n">code</span><span class="o">=</span><span class="s2">"b1"</span><span class="p">,</span>
+    <span class="n">pack</span><span class="o">=</span><span class="n">_pack_bool</span><span class="p">,</span>
+    <span class="n">unpack</span><span class="o">=</span><span class="n">_unpack_bool</span><span class="p">,</span>
+    <span class="n">arg_type_id</span><span class="o">=</span><span class="n">_arg_type_ids</span><span class="p">[</span><span class="s2">"bool"</span><span class="p">],</span>
+    <span class="n">numpy_dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span>
+    <span class="n">doc</span><span class="o">=</span><span class="s2">"Boolean scalar."</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">int8</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"int8"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"i"</span><span class="p">,</span> <span class="s2">"i1"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="s2">"Signed 8-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">uint8</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"uint8"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">,</span> <span class="s2">"u1"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s2">"Unsigned 8-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">int16</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"int16"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"i"</span><span class="p">,</span> <span class="s2">"i2"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="s2">"Signed 16-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">uint16</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"uint16"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">,</span> <span class="s2">"u2"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span> <span class="s2">"Unsigned 16-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">int32</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"int32"</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">"i"</span><span class="p">,</span> <span class="s2">"i4"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="s2">"Signed 32-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">uint32</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"uint32"</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">,</span> <span class="s2">"u4"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span> <span class="s2">"Unsigned 32-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">int64</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"int64"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">"i"</span><span class="p">,</span> <span class="s2">"i8"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">"Signed 64-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">uint64</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"uint64"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">,</span> <span class="s2">"u8"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="s2">"Unsigned 64-bit integer scalar."</span>
+<span class="p">)</span>
+<span class="n">float16</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"float16"</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"f"</span><span class="p">,</span>
+    <span class="s2">"f2"</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+    <span class="s2">"IEEE 754 half-precision (16-bit) floating-point scalar."</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">float32</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"float32"</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">"f"</span><span class="p">,</span>
+    <span class="s2">"f4"</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"IEEE 754 single-precision (32-bit) floating-point scalar."</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">float64</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"float64"</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">"f"</span><span class="p">,</span>
+    <span class="s2">"f8"</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+    <span class="s2">"IEEE 754 double-precision (64-bit) floating-point scalar."</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">complex64</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"complex64"</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">"c"</span><span class="p">,</span>
+    <span class="s2">"c8"</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
+    <span class="s2">"Complex type with two float32 components (64 bits total)."</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">complex128</span> <span class="o">=</span> <span class="n">_register_numpy_backed</span><span class="p">(</span>
+    <span class="s2">"complex128"</span><span class="p">,</span>
+    <span class="mi">16</span><span class="p">,</span>
+    <span class="s2">"c"</span><span class="p">,</span>
+    <span class="s2">"c16"</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
+    <span class="s2">"Complex type with two float64 components (128 bits total)."</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># NumPy spells 64-bit integers `longlong` on some platforms, which is a</span>
+<span class="c1"># distinct data type as far as NumPy is concerned, but not as far as a device</span>
+<span class="c1"># is concerned.</span>
+<span class="k">for</span> <span class="n">_np_type</span><span class="p">,</span> <span class="n">_name</span> <span class="ow">in</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">longlong</span><span class="p">,</span> <span class="s2">"int64"</span><span class="p">),</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ulonglong</span><span class="p">,</span> <span class="s2">"uint64"</span><span class="p">)):</span>
+    <span class="n">_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">_np_type</span><span class="p">)</span><span class="o">.</span><span class="n">num</span>
+    <span class="k">if</span> <span class="n">_num</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_by_numpy_num</span><span class="p">:</span>
+        <span class="n">_by_numpy_num</span><span class="p">[</span><span class="n">_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">_by_name</span><span class="p">[</span><span class="n">_name</span><span class="p">]</span>
+<span class="k">del</span> <span class="n">_np_type</span><span class="p">,</span> <span class="n">_name</span><span class="p">,</span> <span class="n">_num</span>
+
+<span class="c1"># `bfloat16` is a first-class data type when the DPC++ compiler used to build</span>
+<span class="c1"># dpctl provided the `sycl_ext_oneapi_bfloat16` extension, and a data type</span>
+<span class="c1"># reported as unsupported when it did not.</span>
+<span class="n">_bfloat16_available</span> <span class="o">=</span> <span class="n">_dtypes_impl</span><span class="o">.</span><span class="n">bfloat16_available</span><span class="p">()</span>
+
+<span class="n">bfloat16</span> <span class="o">=</span> <span class="n">register_dtype</span><span class="p">(</span>
+    <span class="s2">"bfloat16"</span><span class="p">,</span>
+    <span class="n">itemsize</span><span class="o">=</span><span class="n">_dtypes_impl</span><span class="o">.</span><span class="n">BFLOAT16_ITEMSIZE</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"f"</span><span class="p">,</span>
+    <span class="n">code</span><span class="o">=</span><span class="s2">"bf2"</span><span class="p">,</span>
+    <span class="n">pack</span><span class="o">=</span><span class="n">_dtypes_impl</span><span class="o">.</span><span class="n">bfloat16_pack</span><span class="p">,</span>
+    <span class="n">unpack</span><span class="o">=</span><span class="n">_dtypes_impl</span><span class="o">.</span><span class="n">bfloat16_unpack</span><span class="p">,</span>
+    <span class="n">arg_type_id</span><span class="o">=</span><span class="n">_arg_type_ids</span><span class="p">[</span><span class="s2">"bfloat16"</span><span class="p">],</span>
+    <span class="n">doc</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">"Brain floating-point (16-bit) scalar, holding a value of the "</span>
+        <span class="s2">"``sycl::ext::oneapi::bfloat16`` type of the DPC++ ``bfloat16`` "</span>
+        <span class="s2">"extension.</span><span class="se">\n\n</span><span class="s2">"</span>
+        <span class="s2">"A ``bfloat16`` has the exponent range of a ``float32`` and 8 bits of "</span>
+        <span class="s2">"mantissa, so a value is rounded to nearest, ties to even, when it is "</span>
+        <span class="s2">"converted. The conversion is performed by the ``bfloat16`` type "</span>
+        <span class="s2">"itself, so it rounds exactly as the corresponding device-side "</span>
+        <span class="s2">"conversion does."</span>
+    <span class="p">),</span>
+    <span class="n">available</span><span class="o">=</span><span class="n">_bfloat16_available</span><span class="p">,</span>
+    <span class="n">unavailable_reason</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">"Type bfloat16 is not supported by this build of dpctl: the DPC++ "</span>
+        <span class="s2">"compiler it was built with does not provide the "</span>
+        <span class="s2">"sycl_ext_oneapi_bfloat16 extension"</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Intel Corp.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=5ed53ee9"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=4ea706d9"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/target-highlight.js?v=df7d332b"></script>
+    </body>
+</html>

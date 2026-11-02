@@ -1,0 +1,36 @@
+﻿dpctl.dtype
+===========
+
+.. currentmodule:: dpctl
+
+
+
+.. autoclass:: dtype
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~dtype.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~dtype.arg_type_id
+      ~dtype.itemsize
+      ~dtype.kind
+      ~dtype.name
+      ~dtype.numpy_dtype
+      ~dtype.scalar_type
+      ~dtype.str
+      ~dtype.uses_raw_kernel_arg
+   
+   

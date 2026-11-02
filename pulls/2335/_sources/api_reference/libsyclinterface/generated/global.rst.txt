@@ -8,9 +8,14 @@ Global Namespace
 	:hidden:
 
 	namespace_dpctl.rst
+	enum_DPCTLFPConfigType.rst
 	enum_DPCTLGlobalMemCacheType.rst
 	enum_DPCTLKernelArgType.rst
+	enum_DPCTLLocalMemType.rst
+	enum_DPCTLMemoryOrderType.rst
+	enum_DPCTLMemoryScopeType.rst
 	enum_DPCTLPartitionAffinityDomainType.rst
+	enum_DPCTLPartitionPropertyType.rst
 	enum_DPCTLPeerAccessType.rst
 	enum_DPCTLQueuePropertyType.rst
 	enum_DPCTLSyclAspectType.rst
@@ -43,7 +48,11 @@ Overview
 	typedef struct DPCTLOpaqueSyclRawKernelArg* :target:`DPCTLSyclRawKernelArgRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a72d61960f9c803f28ada3994d6b50f76>`;
 	typedef struct DPCTLOpaqueSyclWorkGroupMemory* :target:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>`;
 	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`RawWorkGroupMemoryTy<doxid-db/d1d/struct_raw_work_group_memory_ty>` :target:`RawWorkGroupMemory<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ace3e58dbaa53288d9b7272fe9a6d03b3>`;
+	typedef struct DPCTLBuildOptionList* :target:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>`;
+	typedef struct DPCTLKernelBuildLog* :target:`DPCTLKernelBuildLogRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a04b2b63e0b03dd61914248868778fdde>`;
+	typedef struct DPCTLKernelNameList* :target:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>`;
 	typedef :ref:`DPCTL_C_EXTERN_C_BEGIN<doxid-d7/d31/_extern_c_8h_1ad85f54ad0bab1d5206255e5920261be3>` struct :ref:`DPCTLSpecConstTy<doxid-dd/dc9/struct_d_p_c_t_l_spec_const_ty>` :target:`DPCTLSpecConst<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a1286c730db79d69a9ce8a88d4c356290>`;
+	typedef struct DPCTLVirtualHeaderList* :target:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>`;
 	typedef struct :ref:`MDLocalAccessorTy<doxid-db/dfd/struct_m_d_local_accessor_ty>` :ref:`MDLocalAccessor<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a7779ae83e3fd4db1174768e1ba62f30b>`;
 	typedef  struct DPCTLOpaqueSyclContext* :ref:`DPCTLSyclContextRef<doxid-df/d57/dpctl__sycl__types_8h_1accf78808322af80b73da617cb2f15f08>`;
 	typedef struct DPCTLOpaqueSyclDevice* :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`;
@@ -57,9 +66,14 @@ Overview
 
 	// enums
 
+	enum :ref:`DPCTLFPConfigType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a6bea3eb7816008b7be6557e706994c11>`;
 	enum :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`;
 	enum :ref:`DPCTLKernelArgType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`;
+	enum :ref:`DPCTLLocalMemType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2c26c723e80fbd559de156e1f6f149ae>`;
+	enum :ref:`DPCTLMemoryOrderType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a89297dedd89f3857c0f4edbaffafc672>`;
+	enum :ref:`DPCTLMemoryScopeType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a7f0278eb8132efc8b8c393b6da27d231>`;
 	enum :ref:`DPCTLPartitionAffinityDomainType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670>`;
+	enum :ref:`DPCTLPartitionPropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229cf67d5e7cdfbf8f4173ef96f1f8b3>`;
 	enum :ref:`DPCTLPeerAccessType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2abd5871b3207b5249bab61f0731e878>`;
 	enum :ref:`DPCTLQueuePropertyType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a439a88c8e537df22ac3e2c66fce3ad4f>`;
 	enum :ref:`DPCTLSyclAspectType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a5f57a140cfab264daf4500bdac0be389>`;
@@ -128,6 +142,15 @@ Overview
 	:ref:`DPCTLDevice_Hash<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
+	:ref:`DPCTLBfloat16_Available<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1affdec3d9222e35981fb5fbfc65b8f8bb>`();
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint16_t
+	:ref:`DPCTLBfloat16_FromDouble<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a9cfcd176114eaef07cbbbc6204ac120d>`(double Value);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` double
+	:ref:`DPCTLBfloat16_ToDouble<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ac53aeed00c43817613883f1de6c9d724>`(uint16_t Bits);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
 	:target:`DPCTLIPCMem_Available<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a78d8de34943f03209685d26056e85f5e>`();
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
@@ -151,6 +174,25 @@ Overview
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:target:`DPCTLWorkGroupMemory_Delete<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a7a9cad89e434a7becb710176e7be9117>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` :ref:`DPCTLSyclWorkGroupMemoryRef<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ab3a8275f34098811f89278732d5dc8a7>` Ref);
 
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLBuildOptionList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af383b94be34e6790bdbefdfa85e32036>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLKernelNameList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af9ad93ab19fd359b70e5603afe368109>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLVirtualHeaderList_Append<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a2c23ffa355e4ac5596ed682eab2c4817>`(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Name,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Content
+		);
+
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclEventRef<doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>`
 	:ref:`DPCTLQueue_SubmitBarrier<doxid-da/db8/dpctl__sycl__queue__interface_8h_1a2453786e50a7d7e51a0d240b2ce52f53>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclQueueRef<doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef);
 
@@ -165,6 +207,9 @@ Overview
 	:ref:`DPCTLCString_Delete<doxid-da/d48/dpctl__utils_8h_1a33267597953b5a15fc3a052e0d09ef06>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` const char* str);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	:ref:`DPCTLInt_Array_Delete<doxid-da/d48/dpctl__utils_8h_1ab52ed226b4ed6e0c83337a0aecaf6d4e>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` int* arr);
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
 	:ref:`DPCTLSize_t_Array_Delete<doxid-da/d48/dpctl__utils_8h_1a8666dbbe5583326eb3b57293be168ffc>`(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` size_t* arr);
 
 	// macros
@@ -175,7 +220,7 @@ Overview
 	#define :target:`DPCTL_DECLARE_VECTOR_FN<doxid-d4/d64/dpctl__vector_8h_1acc5c1c7aff23c0d01882e6e82e0eea9d>`(EL)
 	#define :ref:`DPCTL_DECLARE_VECTOR_TYPE<doxid-d4/d64/dpctl__vector_8h_1a83a0669601a2adec6b227cc2276a1538>`(EL)
 	#define :target:`DPCTL_DPCPP_VERSION<doxid-d5/dc8/dpctl__config_8h_1a00ca2e61d36794f041736396d1e20124>`
-	#define :target:`DPCTL_ENABLE_L0_PROGRAM_CREATION<doxid-d5/dc8/dpctl__config_8h_1a182f8dae06ea22e2c65172f1fb1182ea>`
+	#define :target:`DPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION<doxid-d5/dc8/dpctl__config_8h_1a609a19e1314f6f36eda7b216f860ef71>`
 	#define :target:`DPCTL_HAS_IPC_MEMORY<doxid-d5/dc8/dpctl__config_8h_1ae2f9c727eb0c7dd3404026fbb9cfc56d>`
 	#define :target:`DPCTL_LIBCL_LOADER_FILENAME<doxid-d5/dc8/dpctl__config_8h_1ac0275ec42e77c34f20506d43687a9748>`
 	#define :target:`DPCTL_LIBZE_LOADER_FILENAME<doxid-d5/dc8/dpctl__config_8h_1a034614d34ebcaa0b5e5dcdee4a0d2a4a>`
@@ -235,7 +280,7 @@ Structure to be used to specify dimensionality and type of local_accessor kernel
 
 	typedef  struct DPCTLOpaqueSyclContext* DPCTLSyclContextRef
 
-Opaque pointer to a ``sycl::context``
+Opaque pointer to a ``sycl::context``.
 
 .. index:: pair: typedef; DPCTLSyclDeviceRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d:
@@ -245,7 +290,7 @@ Opaque pointer to a ``sycl::context``
 
 	typedef struct DPCTLOpaqueSyclDevice* DPCTLSyclDeviceRef
 
-Opaque pointer to a ``sycl::device``
+Opaque pointer to a ``sycl::device``.
 
 .. index:: pair: typedef; DPCTLSyclDeviceSelectorRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83:
@@ -255,7 +300,7 @@ Opaque pointer to a ``sycl::device``
 
 	typedef struct DPCTLOpaqueSyclDeviceSelector* DPCTLSyclDeviceSelectorRef
 
-Opaque pointer to a ``sycl::device_selector``
+Opaque pointer to a ``sycl::device_selector``.
 
 .. index:: pair: typedef; DPCTLSyclEventRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03:
@@ -265,7 +310,7 @@ Opaque pointer to a ``sycl::device_selector``
 
 	typedef struct DPCTLOpaqueSyclEvent* DPCTLSyclEventRef
 
-Opaque pointer to a ``sycl::event``
+Opaque pointer to a ``sycl::event``.
 
 .. index:: pair: typedef; DPCTLSyclKernelBundleRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd:
@@ -275,7 +320,7 @@ Opaque pointer to a ``sycl::event``
 
 	typedef struct DPCTLOpaqueSyclKernelBundle* DPCTLSyclKernelBundleRef
 
-Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``.
 
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
@@ -285,7 +330,7 @@ Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
 
 	typedef struct DPCTLOpaqueSyclKernel* DPCTLSyclKernelRef
 
-Opaque pointer to a ``sycl::kernel``
+Opaque pointer to a ``sycl::kernel``.
 
 .. index:: pair: typedef; DPCTLSyclPlatformRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0:
@@ -295,7 +340,7 @@ Opaque pointer to a ``sycl::kernel``
 
 	typedef struct DPCTLOpaqueSyclPlatform* DPCTLSyclPlatformRef
 
-Opaque pointer to a ``sycl::platform``
+Opaque pointer to a ``sycl::platform``.
 
 .. index:: pair: typedef; DPCTLSyclQueueRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
@@ -305,7 +350,7 @@ Opaque pointer to a ``sycl::platform``
 
 	typedef struct DPCTLOpaqueSyclQueue* DPCTLSyclQueueRef
 
-Opaque pointer to a ``sycl::queue``
+Opaque pointer to a ``sycl::queue``.
 
 .. index:: pair: typedef; DPCTLSyclUSMRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6:
@@ -329,7 +374,7 @@ Global Functions
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	DPCTLDevice_GetCompositeDevice(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::parent_device>
+Wrapper over device.get_info<info::device::parent_device>.
 
 
 
@@ -358,7 +403,7 @@ Returns an opaque pointer to the composite device for a component device, or nul
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetGlobalMemCacheLineSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_line_size>
+Wrapper over device.get_info<info::device::global_mem_cache_line_size>.
 
 
 
@@ -387,7 +432,7 @@ Returns the size of global memory cache line in bytes as uint32_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint64_t
 	DPCTLDevice_GetGlobalMemCacheSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_size>
+Wrapper over device.get_info<info::device::global_mem_cache_size>.
 
 
 
@@ -416,7 +461,7 @@ Returns the size of global memory cache in bytes as uint64_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`
 	DPCTLDevice_GetGlobalMemCacheType(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_type>
+Wrapper over device.get_info<info::device::global_mem_cache_type>.
 
 
 
@@ -590,7 +635,7 @@ Returns the maximum width of a 3D image in pixels. The minimum value is 2048 if 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetMaxClockFrequency(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::max_clock_frequency>
+Wrapper over device.get_info<info::device::max_clock_frequency>.
 
 
 
@@ -619,7 +664,7 @@ Returns the maximum clock frequency in MHz as uint32_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint64_t
 	DPCTLDevice_GetMaxMemAllocSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::max_mem_alloc_size>
+Wrapper over device.get_info<info::device::max_mem_alloc_size>.
 
 
 
@@ -706,7 +751,7 @@ Returns the maximum number of simultaneous image objects that can be written to 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	DPCTLDevice_GetParentDevice(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::parent_device>
+Wrapper over device.get_info<info::device::parent_device>.
 
 
 
@@ -735,7 +780,7 @@ Returns an opaque pointer to the parent device for a sub-device, or nullptr othe
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetPartitionMaxSubDevices(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::partition_max_sub_devices>
+Wrapper over device.get_info<info::device::partition_max_sub_devices>.
 
 
 
@@ -764,7 +809,7 @@ Returns the maximum number of sub-devices that can be created when this device i
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	DPCTLDevice_GetProfilingTimerResolution(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::profiling_timer_resolution>
+Wrapper over device.get_info<info::device::profiling_timer_resolution>.
 
 
 
@@ -793,7 +838,7 @@ Returns the resolution of device timer in nanoseconds.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	DPCTLDevice_Hash(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over std::hash<sycl::device>'s operator()
+Wrapper over std::hash<sycl::device>'s operator().
 
 
 
@@ -812,6 +857,182 @@ Wrapper over std::hash<sycl::device>'s operator()
 .. rubric:: Returns:
 
 Returns hash value.
+
+.. index:: pair: function; DPCTLBfloat16_Available
+.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1affdec3d9222e35981fb5fbfc65b8f8bb:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
+	DPCTLBfloat16_Available()
+
+Checks whether ``:ref:`dpctl <doxid-d2/df1/namespacedpctl>``` was built with support for the ``sycl::ext::oneapi::bfloat16`` type.
+
+
+
+.. rubric:: Returns:
+
+True if the ``bfloat16`` extension was available at build time, in which case ``:ref:`DPCTL_BFLOAT16_T <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089acbf9d9cd126e1d5b4702eba1a5e1029c>``` kernel arguments are supported.
+
+.. index:: pair: function; DPCTLBfloat16_FromDouble
+.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a9cfcd176114eaef07cbbbc6204ac120d:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint16_t
+	DPCTLBfloat16_FromDouble(double Value)
+
+Converts a double-precision value to the bit pattern of the ``sycl::ext::oneapi::bfloat16`` value nearest to it.
+
+The conversion is performed by the ``bfloat16`` type itself, so the rounding behavior matches that of the corresponding device-side conversion.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Value
+
+		- Value to convert.
+
+
+
+.. rubric:: Returns:
+
+The 16 bits of the corresponding ``bfloat16`` value, or 0 if the ``bfloat16`` extension is not available.
+
+.. index:: pair: function; DPCTLBfloat16_ToDouble
+.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ac53aeed00c43817613883f1de6c9d724:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` double
+	DPCTLBfloat16_ToDouble(uint16_t Bits)
+
+Converts the bit pattern of a ``sycl::ext::oneapi::bfloat16`` value to double precision.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Bits
+
+		- The 16 bits of a ``bfloat16`` value.
+
+
+
+.. rubric:: Returns:
+
+The value as a ``double``, or 0 if the ``bfloat16`` extension is not available.
+
+.. index:: pair: function; DPCTLBuildOptionList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af383b94be34e6790bdbefdfa85e32036:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLBuildOptionList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLBuildOptionListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aa14b2d87a202a810c0f46bcc168fa393>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		)
+
+Append a build option to the list of build options.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of build options
+
+	*
+		- Option
+
+		- Option to append
+
+.. index:: pair: function; DPCTLKernelNameList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af9ad93ab19fd359b70e5603afe368109:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLKernelNameList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLKernelNameListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a67f271d8d385392efe2307f228bba8ec>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Option
+		)
+
+Append a kernel name to register to the list of build options.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of kernel names
+
+	*
+		- Option
+
+		- Kernel name to append
+
+.. index:: pair: function; DPCTLVirtualHeaderList_Append
+.. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1a2c23ffa355e4ac5596ed682eab2c4817:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLVirtualHeaderList_Append(
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` :ref:`DPCTLVirtualHeaderListRef<doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1aed5a35b5dcddc97d8897ccf136efb9a0>` Ref,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Name,
+		:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const char* Content
+		)
+
+Append a kernel name to register to the list of virtual header files.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Ref
+
+		- Opaque pointer to the list of header files
+
+	*
+		- Name
+
+		- Name of the virtual header file
+
+	*
+		- Content
+
+		- Content of the virtual header
 
 .. index:: pair: function; DPCTLQueue_SubmitBarrier
 .. _doxid-da/db8/dpctl__sycl__queue__interface_8h_1a2453786e50a7d7e51a0d240b2ce52f53:
@@ -872,7 +1093,7 @@ C-API wrapper for ``sycl::queue::submit_barrier(event_vector)``.
 	*
 		- DepEvents
 
-		- List of dependent DPCTLSyclEventRef objects (events) for the barrier. We call ``sycl::handler.depends_on`` for each of the provided events.
+		- List of dependent :ref:`DPCTLSyclEventRef <doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` objects (events) for the barrier. We call ``sycl::handler.depends_on`` for each of the provided events.
 
 	*
 		- NDepEvents
@@ -907,6 +1128,29 @@ Deletes the C String argument.
 		- str
 
 		- C string to be deleted
+
+.. index:: pair: function; DPCTLInt_Array_Delete
+.. _doxid-da/d48/dpctl__utils_8h_1ab52ed226b4ed6e0c83337a0aecaf6d4e:
+
+.. ref-code-block:: cpp
+	:class: doxyrest-title-code-block
+
+	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` void
+	DPCTLInt_Array_Delete(:ref:`__dpctl_take<doxid-d2/d43/group___memory_semantics_1ga17fe5722d78d8ce138ca952889d07bc6>` int* arr)
+
+Deletes an array of int elements.
+
+
+
+.. rubric:: Parameters:
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- arr
+
+		- Array to be deleted.
 
 .. index:: pair: function; DPCTLSize_t_Array_Delete
 .. _doxid-da/d48/dpctl__utils_8h_1a8666dbbe5583326eb3b57293be168ffc:

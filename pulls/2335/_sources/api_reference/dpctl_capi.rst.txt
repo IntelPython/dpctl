@@ -177,7 +177,7 @@ API for :c:struct:`PySyclKernelObject`
 
 
 API for :c:struct:`PySyclKernelBundleObject`
----------------------------------------
+--------------------------------------------
 
 .. c:function:: DPCTLSyclKernelBundleRef SyclKernelBundle_GetKernelBundleRef(struct PySyclKernelBundleObject *prog)
 

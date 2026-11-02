@@ -13,6 +13,7 @@ DPCTL analogue of ``sycl::info::partition_affinity_domain`` enum.
 
 	enum DPCTLPartitionAffinityDomainType
 	{
+	    :target:`DPCTL_PARTITION_AFFINITY_DOMAIN_UNKNOWN<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670a71f43686da9d64910b16c44825f6023f>` = 0,
 	    :target:`not_applicable<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670adfdf5aee2b344ddcbb05eec6b8ac6527>`,
 	    :target:`numa<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670ac0dad2a8daa7c1a5c29c13b44c58f5fe>`,
 	    :target:`L4_cache<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a27908eb4caace370bd771904e6a48670a6de123a8f5577ea7cba48552a72f31d1>`,

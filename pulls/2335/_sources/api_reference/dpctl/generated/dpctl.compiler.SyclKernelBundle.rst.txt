@@ -1,0 +1,26 @@
+﻿dpctl.compiler.SyclKernelBundle
+===============================
+
+.. currentmodule:: dpctl.compiler
+
+
+
+.. autoclass:: SyclKernelBundle
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SyclKernelBundle.__init__
+      ~SyclKernelBundle.addressof_ref
+      ~SyclKernelBundle.get_sycl_kernel
+      ~SyclKernelBundle.has_sycl_kernel
+   
+   
+
+   
+   
+   

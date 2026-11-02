@@ -1,0 +1,6 @@
+﻿dpctl.register\_dtype
+=====================
+
+.. currentmodule:: dpctl
+
+.. autofunction:: register_dtype

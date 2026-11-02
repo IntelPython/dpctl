@@ -14,8 +14,10 @@
 
     * - :py:mod:`dpctl.memory`
       - Unified Shared Memory operations
-    * - :py:mod:`dpctl.program`
+    * - :py:mod:`dpctl.compiler`
       - Support for working with SYCL kernels
+    * - :py:mod:`dpctl.program`
+      - (deprecated, use :py:mod:`dpctl.compiler`)
     * - :py:mod:`dpctl.utils`
       - A collection of utility functions
 
@@ -75,6 +77,49 @@
     * - :py:class:`dpctl.global_mem_cache_type`
       - An :class:`enum.Enum` of global memory cache types for a device.
 
+.. rubric:: Data types
+
+.. _dpctl_data_types:
+
+A :py:class:`dpctl.dtype` identifies the type of a value passed to a kernel.
+Every data type is created by :py:func:`dpctl.register_dtype`, including the
+ones :py:mod:`dpctl` defines itself, so a data type that :py:mod:`numpy` can not
+describe, such as :py:class:`dpctl.bfloat16`, is an ordinary data type here, and
+so is a data type defined outside of :py:mod:`dpctl`.
+
+.. autosummary::
+    :toctree: generated
+    :nosignatures:
+
+    dtype
+    DpctlScalar
+    register_dtype
+    registered_dtypes
+    is_dtype_available
+
+The data types :py:mod:`dpctl` defines are
+
+.. list-table::
+    :widths: 10 50
+
+    * - :py:class:`dpctl.bool`
+      - Boolean, passed to kernels as an 8-bit integer
+    * - :py:class:`dpctl.int8`, :py:class:`dpctl.int16`,
+        :py:class:`dpctl.int32`, :py:class:`dpctl.int64`
+      - Signed integers
+    * - :py:class:`dpctl.uint8`, :py:class:`dpctl.uint16`,
+        :py:class:`dpctl.uint32`, :py:class:`dpctl.uint64`
+      - Unsigned integers
+    * - :py:class:`dpctl.float16`, :py:class:`dpctl.float32`,
+        :py:class:`dpctl.float64`
+      - IEEE 754 floating-point types
+    * - :py:class:`dpctl.bfloat16`
+      - Brain floating-point type of the DPC++ ``bfloat16`` extension,
+        available when the DPC++ compiler used to build :py:mod:`dpctl`
+        provided that extension
+    * - :py:class:`dpctl.complex64`, :py:class:`dpctl.complex128`
+      - Complex types
+
 .. rubric:: Exceptions
 
 .. autosummary::
@@ -96,4 +141,5 @@
 .. toctree::
     :hidden:
 
+    constants
     filter_selector_string
