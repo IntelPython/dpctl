@@ -28,7 +28,10 @@
 #pragma once
 
 #include "Support/DllExport.h"
+#include <optional>
+#include <string>
 #include <sycl/sycl.hpp>
+#include <vector>
 
 namespace dpctl
 {
@@ -71,14 +74,31 @@ public:
     int operator()(const sycl::device &d) const override;
 };
 
+/*!
+ * @brief Selects devices matching a filter selector string.
+ *
+ * The string is a comma-separated list of filters, each of the form
+ * ``backend:device_type:device_num`` with every component optional and in
+ * any order. ``device_num`` counts devices from ``sycl::device::get_devices()``
+ * that match the filter's backend and device type. Matching devices are
+ * scored by ``sycl::default_selector_v``.
+ *
+ * Throws ``std::invalid_argument`` if the string is malformed.
+ */
 class DPCTL_API dpctl_filter_selector : public dpctl_device_selector
 {
 public:
-    dpctl_filter_selector(const std::string &fs) : _impl(fs) {}
+    explicit dpctl_filter_selector(const std::string &fs);
     int operator()(const sycl::device &d) const override;
 
 private:
-    sycl::ext::oneapi::filter_selector _impl;
+    struct filter
+    {
+        std::optional<sycl::backend> backend;
+        std::optional<sycl::info::device_type> device_type;
+        std::optional<sycl::device> device;
+    };
+    std::vector<filter> _filters;
 };
 
 } // namespace syclinterface
