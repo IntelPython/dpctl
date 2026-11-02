@@ -165,6 +165,28 @@ def test_dot():
     assert np.allclose(dot_res, np.dot(anp, bnp))
 
 
+def test_dot_complex():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created")
+
+    dtype = np.result_type(_real_dtype_for_device(q), np.complex64)
+
+    anp = (np.random.randn(5) + 1j * np.random.randn(5)).astype(dtype)
+    bnp = (np.random.randn(5) + 1j * np.random.randn(5)).astype(dtype)
+
+    a = dpm.MemoryUSMDevice(anp.nbytes, queue=q)
+    ev1 = q.memcpy_async(dest=a, src=anp, count=anp.nbytes)
+
+    b = dpm.MemoryUSMDevice(bnp.nbytes, queue=q)
+    ev2 = q.memcpy_async(dest=b, src=bnp, count=bnp.nbytes)
+
+    dot_res = dot_blocking(q, a, b, 5, np.dtype(anp.dtype), [ev1, ev2])
+
+    assert np.allclose(dot_res, np.vdot(anp, bnp), rtol=1e-4)
+
+
 def test_norm_squared():
     try:
         q = dpctl.SyclQueue()

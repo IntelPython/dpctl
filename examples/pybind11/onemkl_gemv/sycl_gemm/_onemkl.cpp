@@ -31,6 +31,7 @@
 #include <oneapi/mkl.hpp>
 #include "cg_solver.hpp"
 #include <cstdint>
+#include <type_traits>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -388,6 +389,49 @@ py::object py_norm_squared_blocking(sycl::queue &q,
     return res;
 }
 
+template <typename T> struct is_complex : std::false_type
+{
+};
+template <typename T> struct is_complex<std::complex<T>> : std::true_type
+{
+};
+
+template <typename T>
+T dot_blocking_impl(sycl::queue &q,
+                    std::int64_t n,
+                    const char *v1_typeless,
+                    const char *v2_typeless,
+                    const std::vector<sycl::event> &depends)
+{
+    const T *v1 = reinterpret_cast<const T *>(v1_typeless);
+    const T *v2 = reinterpret_cast<const T *>(v2_typeless);
+
+    // scratch from dpctl's memory pool, returned to it when the owner goes
+    std::shared_ptr<void> res_owner =
+        dpctl::memory::pool_allocate(sizeof(T), sycl::usm::alloc::device, q);
+    T *res_usm = static_cast<T *>(res_owner.get());
+
+    sycl::event dot_ev;
+    if constexpr (is_complex<T>::value) {
+        dot_ev = oneapi::mkl::blas::row_major::dotc(q, n, v1, 1, v2, 1, res_usm,
+                                                    depends);
+    }
+    else {
+        dot_ev = oneapi::mkl::blas::row_major::dot(q, n, v1, 1, v2, 1, res_usm,
+                                                   depends);
+    }
+
+    T res_v{};
+    try {
+        q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
+    } catch (...) {
+        // the dot product may still be writing to the scratch
+        dpctl::utils::keep_usm_alive(q, {res_owner}, {dot_ev});
+        throw;
+    }
+    return res_v;
+}
+
 py::object py_dot_blocking(sycl::queue q,
                            dpctl::memory::usm_memory v1,
                            dpctl::memory::usm_memory v2,
@@ -415,48 +459,20 @@ py::object py_dot_blocking(sycl::queue q,
     const char dtype_char = dtype.char_();
 
     if (dtype_char == 'd') {
-        using T = double;
-        T *res_usm = sycl::malloc_device<T>(1, q);
-        sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
-            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
-            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
-        T res_v{};
-        q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
-        sycl::free(res_usm, q);
-        res = py::float_(res_v);
+        res = py::float_(dot_blocking_impl<double>(q, n, v1_typeless_ptr,
+                                                   v2_typeless_ptr, depends));
     }
     else if (dtype_char == 'f') {
-        using T = float;
-        T *res_usm = sycl::malloc_device<T>(1, q);
-        sycl::event dot_ev = oneapi::mkl::blas::row_major::dot(
-            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
-            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
-        T res_v(0);
-        q.copy<T>(res_usm, &res_v, 1, {dot_ev}).wait_and_throw();
-        sycl::free(res_usm, q);
-        res = py::float_(res_v);
+        res = py::float_(dot_blocking_impl<float>(q, n, v1_typeless_ptr,
+                                                  v2_typeless_ptr, depends));
     }
     else if (dtype_char == 'D') {
-        using T = std::complex<double>;
-        T *res_usm = sycl::malloc_device<T>(1, q);
-        sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
-            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
-            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
-        T res_v{};
-        q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
-        sycl::free(res_usm, q);
-        res = py::cast(res_v);
+        res = py::cast(dot_blocking_impl<std::complex<double>>(
+            q, n, v1_typeless_ptr, v2_typeless_ptr, depends));
     }
     else if (dtype_char == 'F') {
-        using T = std::complex<float>;
-        T *res_usm = sycl::malloc_device<T>(1, q);
-        sycl::event dotc_ev = oneapi::mkl::blas::row_major::dotc(
-            q, n, reinterpret_cast<const T *>(v1_typeless_ptr), 1,
-            reinterpret_cast<const T *>(v2_typeless_ptr), 1, res_usm, depends);
-        T res_v{};
-        q.copy<T>(res_usm, &res_v, 1, {dotc_ev}).wait_and_throw();
-        sycl::free(res_usm, q);
-        res = py::cast(res_v);
+        res = py::cast(dot_blocking_impl<std::complex<float>>(
+            q, n, v1_typeless_ptr, v2_typeless_ptr, depends));
     }
     else {
         throw std::runtime_error("Unsupported data type for dot_blocking.");
