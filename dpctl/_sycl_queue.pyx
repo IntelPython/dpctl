@@ -87,6 +87,9 @@ from .memory._memory cimport _Memory
 import ctypes
 import numbers
 
+import numpy as np
+
+from ._dtype_utils import as_dtype, as_scalar, is_supported_dtype, pack_value
 from .enum_types import backend_type
 
 from cpython cimport pycapsule
@@ -99,6 +102,7 @@ from cpython.buffer cimport (
     PyObject_CheckBuffer,
     PyObject_GetBuffer,
 )
+from cpython.bytes cimport PyBytes_AS_STRING
 from cpython.ref cimport Py_INCREF, PyObject
 from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t
 from libc.stdlib cimport free, malloc
@@ -107,7 +111,6 @@ import atexit
 import collections.abc
 import logging
 import os
-import struct
 import sys
 import warnings
 
@@ -140,6 +143,16 @@ __all__ = [
 
 
 _logger = logging.getLogger(__name__)
+
+
+# kernel argument type used to pass a value of the given size in bytes
+cdef dict _arg_type_by_itemsize = {
+    1: <int>_arg_data_type._UINT8_T,
+    2: <int>_arg_data_type._UINT16_T,
+    4: <int>_arg_data_type._UINT32_T,
+    8: <int>_arg_data_type._UINT64_T,
+    16: <int>_arg_data_type._BYTES16,
+}
 
 
 cdef class kernel_arg_type_attribute:
@@ -175,18 +188,11 @@ cdef class LocalAccessor:
     ``sycl::local_accessor``, to be used as a kernel argument type.
 
     Args:
-        dtype (str):
-            the data type of the local memory.
-            The permitted values are
-
-                `'i1'`, `'i2'`, `'i4'`, `'i8'`:
-                    signed integral types int8_t, int16_t, int32_t, int64_t
-                `'u1'`, `'u2'`, `'u4'`, `'u8'`
-                    unsigned integral types uint8_t, uint16_t, uint32_t,
-                    uint64_t
-                `'f4'`, `'f8'`,
-                    single- and double-precision floating-point types float and
-                    double
+        dtype:
+            the data type of the local memory, anything accepted by
+            :class:`numpy.dtype`, e.g. `'f4'`, `numpy.float16`, or a
+            structured data type. Its item size must be 1, 2, 4, 8, or 16
+            bytes.
         shape (tuple, list):
             Size of LocalAccessor dimensions. Dimension of the LocalAccessor is
             determined by the length of the tuple. Must be of length 1, 2, or 3,
@@ -203,11 +209,11 @@ cdef class LocalAccessor:
         ValueError:
             If the shape contains a negative integer.
         ValueError:
-            If the dtype string is unrecognized.
+            If the dtype is unrecognized or of an unsupported size.
     """
     cdef _md_local_accessor lacc
 
-    def __cinit__(self, str dtype, shape):
+    def __cinit__(self, dtype, shape):
         if not isinstance(shape, (list, tuple)):
             raise TypeError(
                 f"`shape` must be a list or tuple, got {type(shape)}"
@@ -231,28 +237,14 @@ cdef class LocalAccessor:
         self.lacc.dim1 = <size_t> shape[1] if ndim > 1 else 1
         self.lacc.dim2 = <size_t> shape[2] if ndim > 2 else 1
 
-        if dtype == "i1":
-            self.lacc.dpctl_type_id = _arg_data_type._INT8_T
-        elif dtype == "u1":
-            self.lacc.dpctl_type_id = _arg_data_type._UINT8_T
-        elif dtype == "i2":
-            self.lacc.dpctl_type_id = _arg_data_type._INT16_T
-        elif dtype == "u2":
-            self.lacc.dpctl_type_id = _arg_data_type._UINT16_T
-        elif dtype == "i4":
-            self.lacc.dpctl_type_id = _arg_data_type._INT32_T
-        elif dtype == "u4":
-            self.lacc.dpctl_type_id = _arg_data_type._UINT32_T
-        elif dtype == "i8":
-            self.lacc.dpctl_type_id = _arg_data_type._INT64_T
-        elif dtype == "u8":
-            self.lacc.dpctl_type_id = _arg_data_type._UINT64_T
-        elif dtype == "f4":
-            self.lacc.dpctl_type_id = _arg_data_type._FLOAT
-        elif dtype == "f8":
-            self.lacc.dpctl_type_id = _arg_data_type._DOUBLE
-        else:
-            raise ValueError(f"Unrecognized type value: '{dtype}'")
+        dt = as_dtype(dtype)
+        argty = _arg_type_by_itemsize.get(dt.itemsize)
+        if argty is None:
+            raise ValueError(
+                f"Data type '{dt}' of {dt.itemsize} bytes can not be the type "
+                "of a local accessor"
+            )
+        self.lacc.dpctl_type_id = <_arg_data_type><int>argty
 
     def __repr__(self):
         return f"LocalAccessor({self.lacc.ndim})"
@@ -411,6 +403,15 @@ cdef class _kernel_arg_type:
             _arg_data_type._RAW_KERNEL_ARG
         )
 
+    @property
+    def dpctl_bytes16(self):
+        cdef str p_name = "dpctl_bytes16"
+        return kernel_arg_type_attribute(
+            self._name,
+            p_name,
+            _arg_data_type._BYTES16
+        )
+
 
 kernel_arg_type = _kernel_arg_type()
 
@@ -505,24 +506,12 @@ ctypedef DPCTLSyclEventRef (*queue_copy_with_events_fn)(
 )
 
 
-cdef size_t _get_dtype_size(str dtype) except *:
+cdef size_t _get_dtype_size(object dtype) except *:
     """
-    Parse numpy-style dtype string and return element size in bytes.
-    Supports: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8
+    Return the element size in bytes of a data type accepted by
+    ``numpy.dtype``.
     """
-    if dtype == "i1" or dtype == "u1":
-        return 1
-    elif dtype == "i2" or dtype == "u2":
-        return 2
-    elif dtype == "i4" or dtype == "u4" or dtype == "f4":
-        return 4
-    elif dtype == "i8" or dtype == "u8" or dtype == "f8":
-        return 8
-    else:
-        raise ValueError(
-            f"Unrecognized dtype '{dtype}'. "
-            "Expected one of: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8"
-        )
+    return <size_t>(as_dtype(dtype).itemsize)
 
 
 cdef DPCTLSyclEventRef _copy_memcpy_impl(
@@ -600,48 +589,19 @@ cdef DPCTLSyclEventRef _copy_memcpy_impl(
 
     return ERef
 
-# struct format per dtype used to pack the fill value into its byte pattern.
-# The pattern's length is the element size.
-# Complex types are packed as (real, imag).
-_fill_dtype_formats = {
-    "i1": "b",
-    "u1": "B",
-    "i2": "h",
-    "u2": "H",
-    "i4": "i",
-    "u4": "I",
-    "f4": "f",
-    "i8": "q",
-    "u8": "Q",
-    "f8": "d",
-    "c8": "ff",
-    "c16": "dd",
-}
-
-
-cdef bytes _pack_fill_pattern(object value, str dtype):
+cdef bytes _pack_fill_pattern(object value, object dtype):
     """
     Return the native-byte-order byte pattern of ``value`` interpreted as a
     single element of ``dtype``. ``sycl::queue::fill`` replicates this pattern
     across the destination allocation.
     """
-    cdef str fmt
-    if dtype not in _fill_dtype_formats:
+    cdef object dt = as_dtype(dtype)
+    if dt.itemsize not in (1, 2, 4, 8, 16):
         raise ValueError(
-            f"Unrecognized dtype '{dtype}'. Expected one of: "
-            "i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8, c16"
+            f"Fill with dtype '{dt}' of {dt.itemsize} bytes is not supported, "
+            "the element size must be 1, 2, 4, 8, or 16 bytes"
         )
-    fmt = _fill_dtype_formats[dtype]
-    try:
-        if dtype == "c8" or dtype == "c16":
-            # complex: pack real then imag
-            cval = complex(value)
-            return struct.pack("=" + fmt, cval.real, cval.imag)
-        return struct.pack("=" + fmt, value)
-    except (struct.error, OverflowError, TypeError, ValueError) as e:
-        raise ValueError(
-            f"Value {value!r} cannot be represented as dtype '{dtype}': {e}"
-        )
+    return pack_value(value, dt)
 
 
 cdef DPCTLSyclEventRef _fill_impl(
@@ -649,7 +609,7 @@ cdef DPCTLSyclEventRef _fill_impl(
      object dst,
      object value,
      size_t count,
-     str dtype,
+     object dtype,
      DPCTLSyclEventRef *dep_events,
      size_t dep_events_count
 ) except *:
@@ -751,7 +711,7 @@ cdef DPCTLSyclEventRef _copy_impl(
      size_t count,
      DPCTLSyclEventRef *dep_events,
      size_t dep_events_count,
-     str dtype="u1"
+     object dtype="u1"
 ) except *:
     # ``count`` is in elements of ``dtype`` (default "u1" => bytes).
     cdef size_t element_size = _get_dtype_size(dtype)
@@ -1198,11 +1158,35 @@ cdef class SyclQueue(_SyclQueue):
         self,
         list args,
         void **kargs,
-        _arg_data_type *kargty
+        _arg_data_type *kargty,
+        list _converted
     ):
         cdef int ret = 0
+        cdef bytes raw
+        cdef object argty
+        cdef object raw_arg
         for idx, arg in enumerate(args):
-            if isinstance(arg, ctypes.c_char):
+            if isinstance(arg, np.generic):
+                # NumPy scalars are passed as their bytes, which are kept
+                # alive in ``_converted`` until the arguments are set
+                dt = arg.dtype
+                if not is_supported_dtype(dt):
+                    ret = -1
+                    continue
+                raw = <bytes>(arg.tobytes())
+                argty = _arg_type_by_itemsize.get(len(raw))
+                if argty is not None:
+                    _converted.append(raw)
+                    kargs[idx] = <void*>PyBytes_AS_STRING(raw)
+                    kargty[idx] = <_arg_data_type><int>argty
+                elif DPCTLRawKernelArg_Available():
+                    raw_arg = RawKernelArg(raw)
+                    _converted.append(raw_arg)
+                    kargs[idx] = <void*>(<size_t>raw_arg._ref)
+                    kargty[idx] = _arg_data_type._RAW_KERNEL_ARG
+                else:
+                    ret = -1
+            elif isinstance(arg, ctypes.c_char):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._INT8_T
             elif isinstance(arg, ctypes.c_uint8):
@@ -1233,7 +1217,7 @@ cdef class SyclQueue(_SyclQueue):
                 kargs[idx] = <void*><size_t>(ctypes.addressof(arg))
                 kargty[idx] = _arg_data_type._DOUBLE
             elif isinstance(arg, _Memory):
-                kargs[idx]= <void*>(<size_t>arg._pointer)
+                kargs[idx] = <void*>(<size_t>arg._pointer)
                 kargty[idx] = _arg_data_type._VOID_PTR
             elif isinstance(arg, WorkGroupMemory):
                 kargs[idx] = <void*>(<size_t>arg._ref)
@@ -1513,7 +1497,11 @@ cdef class SyclQueue(_SyclQueue):
             kernel (dpctl.compiler.SyclKernel):
                 SYCL kernel object
             args (List[object]):
-                List of kernel arguments
+                List of kernel arguments. A NumPy scalar is passed as its
+                bytes. A Python ``bool``, ``int``, ``float`` or ``complex`` is
+                passed as a ``numpy.bool``, ``numpy.int64``, ``numpy.float64``
+                or ``numpy.complex128`` respectively, which must match the type
+                of the kernel parameter.
             gS (List[int]):
                 Global iteration range. Must be a list of length 1, 2, or 3.
             lS (List[int], optional):
@@ -1557,6 +1545,7 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nLS = len(lS) if lS is not None else 0
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
         cdef size_t nKA = 0
+        cdef list _converted = []
 
         if kernel.get_kernel_ref() is NULL:
             raise SyclKernelSubmitError(
@@ -1571,6 +1560,9 @@ cdef class SyclQueue(_SyclQueue):
                 f"Kernel '{kernel.get_function_name()}' takes {nKA} "
                 f"argument(s), got {len(args)}."
             )
+
+        # Python scalars are passed as the NumPy scalars they convert to
+        args = [as_scalar(arg) for arg in args]
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1604,7 +1596,7 @@ cdef class SyclQueue(_SyclQueue):
                         )
 
         # populate the args and argstype arrays
-        ret = self._populate_args(args, kargs, kargty)
+        ret = self._populate_args(args, kargs, kargty, _converted)
         if ret == -1:
             free(kargs)
             free(kargty)
@@ -1697,7 +1689,11 @@ cdef class SyclQueue(_SyclQueue):
             kernel (dpctl.compiler.SyclKernel):
                 SYCL kernel object
             args (List[object]):
-                List of kernel arguments
+                List of kernel arguments. A NumPy scalar is passed as its
+                bytes. A Python ``bool``, ``int``, ``float`` or ``complex`` is
+                passed as a ``numpy.bool``, ``numpy.int64``, ``numpy.float64``
+                or ``numpy.complex128`` respectively, which must match the type
+                of the kernel parameter.
             gS (List[int]):
                 Global iteration range. Must be a list of length 1, 2, or 3.
             lS (List[int], optional):
@@ -1781,7 +1777,7 @@ cdef class SyclQueue(_SyclQueue):
 
         return SyclEvent._create(ERef)
 
-    cpdef copy(self, dest, src, size_t count, str dtype="u1"):
+    cpdef copy(self, dest, src, size_t count, dtype="u1"):
         """Copy ``count`` elements of type ``dtype`` from ``src`` to
         ``dest`` and wait.
 
@@ -1802,11 +1798,11 @@ cdef class SyclQueue(_SyclQueue):
                 protocol.
             count (int):
                 Number of elements to copy.
-            dtype (str, optional):
-                Data type string of the elements to copy. Determines the
-                element size used to convert ``count`` into a byte count.
+            dtype (optional):
+                Data type of the elements to copy, anything accepted by
+                :class:`numpy.dtype`. Determines the element size used to
+                convert ``count`` into a byte count.
                 Defaults to ``"u1"`` (one byte per element).
-                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8.
         """
         cdef DPCTLSyclEventRef ERef = NULL
 
@@ -1820,7 +1816,7 @@ cdef class SyclQueue(_SyclQueue):
         DPCTLEvent_Delete(ERef)
 
     cpdef SyclEvent copy_async(
-        self, dest, src, size_t count, list dEvents=None, str dtype="u1"
+        self, dest, src, size_t count, list dEvents=None, dtype="u1"
     ):
         """Copy ``count`` elements of type ``dtype`` from ``src`` to
         ``dest`` asynchronously.
@@ -1841,11 +1837,11 @@ cdef class SyclQueue(_SyclQueue):
                 Number of elements to copy.
             dEvents (List[dpctl.SyclEvent], optional):
                 Events that this copy depends on.
-            dtype (str, optional):
-                Data type string of the elements to copy. Determines the
-                element size used to convert ``count`` into a byte count.
+            dtype (optional):
+                Data type of the elements to copy, anything accepted by
+                :class:`numpy.dtype`. Determines the element size used to
+                convert ``count`` into a byte count.
                 Defaults to ``"u1"`` (one byte per element).
-                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8.
 
         Returns:
             dpctl.SyclEvent:
@@ -1883,7 +1879,7 @@ cdef class SyclQueue(_SyclQueue):
 
         return SyclEvent._create(ERef)
 
-    cpdef fill(self, dest, value, size_t count, str dtype="u1"):
+    cpdef fill(self, dest, value, size_t count, dtype="u1"):
         """Fill ``dest`` with ``count`` copies of ``value`` and wait.
 
         Internally, this dispatches ``sycl::queue::fill``, which sets each of
@@ -1898,19 +1894,18 @@ cdef class SyclQueue(_SyclQueue):
         Args:
             dest (dpctl.memory._Memory):
                 Destination USM allocation to fill.
-            value (int, float, complex):
-                Value used to fill ``dest``. It is reinterpreted according to
-                ``dtype``: integral ``dtype`` values expect a Python integer,
-                ``"f4"`` and ``"f8"`` expect a Python float, and ``"c8"`` and
-                ``"c16"`` expect a Python complex.
+            value:
+                Value used to fill ``dest``, converted to ``dtype``. Integral
+                ``dtype`` values expect an integer, floating-point ones a real
+                number and complex ones a complex number. Other data types are
+                converted by NumPy.
             count (int):
                 Number of elements to fill.
-            dtype (str, optional):
-                Data type string of the fill elements. Determines the element
-                size and how ``value`` is interpreted.
+            dtype (optional):
+                Data type of the fill elements, anything accepted by
+                :class:`numpy.dtype` of 1, 2, 4, 8, or 16 bytes. Determines
+                the element size and how ``value`` is interpreted.
                 Defaults to ``"u1"`` (one byte per element).
-                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
-                c16.
 
         Raises:
             TypeError:
@@ -1935,7 +1930,7 @@ cdef class SyclQueue(_SyclQueue):
         DPCTLEvent_Delete(ERef)
 
     cpdef SyclEvent fill_async(
-        self, dest, value, size_t count, list dEvents=None, str dtype="u1"
+        self, dest, value, size_t count, list dEvents=None, dtype="u1"
     ):
         """Fill ``dest`` with ``count`` copies of ``value`` asynchronously.
 
@@ -1953,21 +1948,20 @@ cdef class SyclQueue(_SyclQueue):
         Args:
             dest (dpctl.memory._Memory):
                 Destination USM allocation to fill.
-            value (int, float, complex):
-                Value used to fill ``dest``. It is reinterpreted according to
-                ``dtype``: integral ``dtype`` values expect a Python integer,
-                ``"f4"`` and ``"f8"`` expect a Python float, and ``"c8"`` and
-                ``"c16"`` expect a Python complex.
+            value:
+                Value used to fill ``dest``, converted to ``dtype``. Integral
+                ``dtype`` values expect an integer, floating-point ones a real
+                number and complex ones a complex number. Other data types are
+                converted by NumPy.
             count (int):
                 Number of elements to fill.
             dEvents (List[dpctl.SyclEvent], optional):
                 Events that this fill depends on.
-            dtype (str, optional):
-                Data type string of the fill elements. Determines the element
-                size and how ``value`` is interpreted.
+            dtype (optional):
+                Data type of the fill elements, anything accepted by
+                :class:`numpy.dtype` of 1, 2, 4, 8, or 16 bytes. Determines
+                the element size and how ``value`` is interpreted.
                 Defaults to ``"u1"`` (one byte per element).
-                Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
-                c16.
 
         Returns:
             dpctl.SyclEvent:
@@ -2520,8 +2514,8 @@ cdef class WorkGroupMemory:
       memory.
 
     - If the constructor is invoked with two arguments, the first argument is
-      interpreted as the datatype of the local memory, using the numpy type
-      naming scheme.
+      interpreted as the datatype of the local memory, anything accepted by
+      :class:`numpy.dtype`, e.g. ``"f4"``.
       The second argument is interpreted as the number of elements to allocate.
       The number of bytes to allocate is then computed from the byte size of
       the data type and the element count.
@@ -2553,26 +2547,18 @@ cdef class WorkGroupMemory:
                 )
             nbytes = <size_t>(args[0])
         else:
-            if not isinstance(args[0], str):
-                raise TypeError(
-                    "WorkGroupMemory constructor expects first argument to be "
-                    f"`str`, but got {type(args[0])}"
-                )
             if not isinstance(args[1], numbers.Integral):
                 raise TypeError(
                     "WorkGroupMemory constructor expects second argument to "
                     f"be `int`, but got {type(args[1])}"
                 )
-            dtype = <str>(args[0])
+            dtype = args[0]
             count = <size_t>(args[1])
-            if not dtype[0] in ["i", "u", "f"]:
-                raise TypeError(f"Unrecognized type value: '{dtype}'")
             try:
-                bit_width = int(dtype[1:])
+                byte_size = as_dtype(dtype).itemsize
             except ValueError:
                 raise TypeError(f"Unrecognized type value: '{dtype}'")
 
-            byte_size = <size_t>bit_width
             nbytes = count * byte_size
 
         self._mem_ref = DPCTLWorkGroupMemory_Create(nbytes)

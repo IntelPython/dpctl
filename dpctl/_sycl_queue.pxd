@@ -63,7 +63,8 @@ cdef public api class SyclQueue (_SyclQueue) [
         self,
         list args,
         void **kargs,
-        _arg_data_type *kargty
+        _arg_data_type *kargty,
+        list _converted
     )
     cdef int _populate_range(self, size_t Range[3], list gS, size_t nGS)
 
@@ -103,13 +104,13 @@ cdef public api class SyclQueue (_SyclQueue) [
     cdef DPCTLSyclQueueRef get_queue_ref(self)
     cpdef memcpy(self, dest, src, size_t count)
     cpdef SyclEvent memcpy_async(self, dest, src, size_t count, list dEvents=*)
-    cpdef copy(self, dest, src, size_t count, str dtype=*)
+    cpdef copy(self, dest, src, size_t count, dtype=*)
     cpdef SyclEvent copy_async(
-        self, dest, src, size_t count, list dEvents=*, str dtype=*
+        self, dest, src, size_t count, list dEvents=*, dtype=*
     )
-    cpdef fill(self, dest, value, size_t count, str dtype=*)
+    cpdef fill(self, dest, value, size_t count, dtype=*)
     cpdef SyclEvent fill_async(
-        self, dest, value, size_t count, list dEvents=*, str dtype=*
+        self, dest, value, size_t count, list dEvents=*, dtype=*
     )
     cpdef memset(self, mem, int val, size_t count=*)
     cpdef SyclEvent memset_async(

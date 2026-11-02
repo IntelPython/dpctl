@@ -75,6 +75,58 @@
     * - :py:class:`dpctl.global_mem_cache_type`
       - An :class:`enum.Enum` of global memory cache types for a device.
 
+.. rubric:: Data types of kernel arguments
+
+.. _dpctl_data_types:
+
+Every :py:mod:`dpctl` function or class taking a data type, such as
+:py:meth:`dpctl.SyclQueue.copy`, :py:meth:`dpctl.SyclQueue.fill`,
+:py:class:`dpctl.LocalAccessor`, :py:class:`dpctl.WorkGroupMemory` and
+:py:class:`dpctl.program.SpecializationConstant`, accepts it in any form
+:py:class:`numpy.dtype` accepts, e.g. ``"f4"``, ``"float32"``,
+:py:class:`numpy.float32` or a :py:class:`numpy.dtype`. Any data type whose
+values are plain bytes is supported, including structured data types and data
+types registered with :py:mod:`numpy` by other packages, such as those of
+``ml_dtypes``. Extended precision ``numpy.longdouble`` is not supported.
+
+A NumPy scalar kernel argument is passed as its bytes, so the kernel determines
+how they are interpreted.
+
+.. code-block:: python
+
+    import ml_dtypes
+
+    bf16 = ml_dtypes.bfloat16(1.5)   # sycl::ext::oneapi::bfloat16
+    c = ml_dtypes.complex32(1 - 2j)  # std::complex<sycl::half>
+
+    q.submit(kernel, [x_usm, bf16, c], [n])
+
+Scalars of 1, 2, 4, 8 or 16 bytes are always supported. Scalars of other sizes,
+such as a structured scalar matching a C++ ``struct``, require the
+``raw_kernel_arg`` DPC++ extension.
+
+Python scalars are converted to a NumPy scalar of a fixed data type, which must
+match the type of the kernel parameter:
+
+.. list-table::
+    :widths: 20 30 30
+
+    * - Python type
+      - NumPy type
+      - C++ type
+    * - :py:class:`bool`
+      - :py:class:`numpy.bool`
+      - ``bool``
+    * - :py:class:`int`
+      - :py:class:`numpy.int64`
+      - ``std::int64_t``
+    * - :py:class:`float`
+      - :py:class:`numpy.float64`
+      - ``double``
+    * - :py:class:`complex`
+      - :py:class:`numpy.complex128`
+      - ``std::complex<double>``
+
 .. rubric:: Exceptions
 
 .. autosummary::

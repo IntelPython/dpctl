@@ -85,6 +85,64 @@ offloaded_array_mod(sycl::queue q,
     return res;
 }
 
+#ifdef DPCTL_HAS_BFLOAT16
+using bfloat16_t = sycl::ext::oneapi::bfloat16;
+
+bfloat16_t bfloat16_round_trip(bfloat16_t value) { return value; }
+
+py::array_t<float>
+offloaded_bfloat16_scale(sycl::queue q,
+                         py::array_t<float, py::array::c_style> array,
+                         bfloat16_t factor)
+{
+    py::buffer_info arg_pybuf = array.request();
+    if (arg_pybuf.ndim != 1) {
+        throw std::runtime_error("Expecting a vector");
+    }
+
+    size_t n = arg_pybuf.size;
+
+    auto res = py::array_t<float>(n);
+    py::buffer_info res_pybuf = res.request();
+
+    float *a = static_cast<float *>(arg_pybuf.ptr);
+    float *r = static_cast<float *>(res_pybuf.ptr);
+
+    {
+        const sycl::property_list props = {
+            sycl::property::buffer::use_host_ptr()};
+        sycl::buffer<float, 1> a_buf(a, sycl::range<1>(n), props);
+        sycl::buffer<float, 1> r_buf(r, sycl::range<1>(n), props);
+
+        q.submit([&](sycl::handler &cgh) {
+             sycl::accessor a_acc(a_buf, cgh, sycl::read_only);
+             sycl::accessor r_acc(r_buf, cgh, sycl::write_only, sycl::no_init);
+
+             cgh.parallel_for(sycl::range<1>(n), [=](sycl::id<1> idx) {
+                 // the product is not rounded to a bfloat16 on the device,
+                 // since float to bfloat16 conversion gives wrong results on
+                 // some Intel GPUs
+                 r_acc[idx] = a_acc[idx] * static_cast<float>(factor);
+             });
+         }).wait_and_throw();
+    }
+
+    return res;
+}
+#else
+py::object bfloat16_round_trip(py::object)
+{
+    throw std::runtime_error("The DPC++ compiler this extension was built with "
+                             "does not provide the bfloat16 extension");
+}
+
+py::object offloaded_bfloat16_scale(sycl::queue, py::object, py::object)
+{
+    throw std::runtime_error("The DPC++ compiler this extension was built with "
+                             "does not provide the bfloat16 extension");
+}
+#endif
+
 std::vector<std::size_t> get_sub_group_sizes(const sycl::device &d)
 {
     return d.get_info<sycl::info::device::sub_group_sizes>();
@@ -116,4 +174,15 @@ PYBIND11_MODULE(_use_queue_device, m, py::mod_gil_not_used())
     m.def("get_partition_max_sub_devices", &get_partition_max_sub_devices,
           "Gets info::device::partition_max_sub_devices for given "
           "dpctl.SyclDevice");
+#ifdef DPCTL_HAS_BFLOAT16
+    m.attr("has_bfloat16") = true;
+#else
+    m.attr("has_bfloat16") = false;
+#endif
+    m.def("bfloat16_round_trip", &bfloat16_round_trip,
+          "Converts a Python float, or an ml_dtypes.bfloat16 scalar, to a "
+          "sycl::ext::oneapi::bfloat16 and back");
+    m.def("offloaded_bfloat16_scale", &offloaded_bfloat16_scale,
+          "Compute offloaded scaling of a NumPy array of float32 by a "
+          "bfloat16 factor");
 }
