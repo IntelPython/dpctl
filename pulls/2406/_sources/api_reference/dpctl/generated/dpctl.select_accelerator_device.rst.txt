@@ -1,0 +1,6 @@
+﻿dpctl.select\_accelerator\_device
+=================================
+
+.. currentmodule:: dpctl
+
+.. autofunction:: select_accelerator_device
