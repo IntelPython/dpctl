@@ -136,7 +136,6 @@ __all__ += [
 __all__ += [
     "memory",
     "compiler",
-    "program",
     "utils",
 ]
 
