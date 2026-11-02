@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Maintenance
 
+* Added Intel Python CI (`.github/workflows/intel-ci.yml` and `ci/`), which builds and tests the conda packages and wheels; `conda-recipe/` is now the only, conda-forge, recipe and `conda-package.yml` is removed [gh-2409](https://github.com/IntelPython/dpctl/pull/2409)
+
 ## [0.23.0] - Oct. 22, 2026
 
 This release extends the SYCL interface exposed by `dpctl` in several directions: `dpctl.compiler.SyclKernelBundle` objects can now be built from SYCL source strings via the DPC++ `kernel_compiler` extension, SPIR-V specialization constants are supported, USM-device allocations can be shared between processes using the SYCL IPC memory extension, and `dpctl.SyclQueue` gained `copy`, `memset`, and `fill` methods along with their asynchronous counterparts. The package can now be used with free-threaded builds of CPython 3.14 and supports Python 3.15. The `dpctl.program` submodule is deprecated in favor of `dpctl.compiler`, which better describes its purpose.
