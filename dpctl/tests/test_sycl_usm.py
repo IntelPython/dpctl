@@ -202,6 +202,22 @@ def test_pickling_preserves_queue(memory_ctor):
         assert q2.is_in_order
 
 
+def test_pickling_restores_onto_cached_queue(memory_ctor):
+    import pickle
+
+    from dpctl._sycl_queue_manager import get_device_cached_queue
+
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    m0 = memory_ctor(64, queue=dpctl.SyclQueue(dev))
+    m1 = memory_ctor(64, queue=dpctl.SyclQueue(dev))
+    m2 = pickle.loads(pickle.dumps(m0))
+    m3 = pickle.loads(pickle.dumps(m1))
+    assert m2.sycl_queue == m3.sycl_queue == get_device_cached_queue(dev)
+
+
 def test_pickling_non_default_context(memory_ctor):
     import pickle
 
