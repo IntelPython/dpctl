@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+* Removed the deprecated `dpctl.program` submodule, use `dpctl.compiler` instead [gh-2407](https://github.com/IntelPython/dpctl/pull/2407)
 
 ### Fixed
 
