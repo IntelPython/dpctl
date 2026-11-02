@@ -472,11 +472,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api_reference/dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -732,28 +727,6 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_init_helper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._device_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">select_device_with_aspects</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._dtypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">DpctlScalar</span><span class="p">,</span>
-    <span class="n">bfloat16</span><span class="p">,</span>
-    <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">complex64</span><span class="p">,</span>
-    <span class="n">complex128</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="p">,</span>
-    <span class="n">float16</span><span class="p">,</span>
-    <span class="n">float32</span><span class="p">,</span>
-    <span class="n">float64</span><span class="p">,</span>
-    <span class="n">int8</span><span class="p">,</span>
-    <span class="n">int16</span><span class="p">,</span>
-    <span class="n">int32</span><span class="p">,</span>
-    <span class="n">int64</span><span class="p">,</span>
-    <span class="n">is_dtype_available</span><span class="p">,</span>
-    <span class="n">register_dtype</span><span class="p">,</span>
-    <span class="n">registered_dtypes</span><span class="p">,</span>
-    <span class="n">uint8</span><span class="p">,</span>
-    <span class="n">uint16</span><span class="p">,</span>
-    <span class="n">uint32</span><span class="p">,</span>
-    <span class="n">uint64</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyclContext</span><span class="p">,</span> <span class="n">SyclContextCreationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._sycl_device</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SyclDevice</span><span class="p">,</span>
@@ -856,28 +829,6 @@
 <span class="p">]</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>
     <span class="s2">"get_include"</span><span class="p">,</span>
-<span class="p">]</span>
-<span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>
-    <span class="s2">"dtype"</span><span class="p">,</span>
-    <span class="s2">"DpctlScalar"</span><span class="p">,</span>
-    <span class="s2">"register_dtype"</span><span class="p">,</span>
-    <span class="s2">"registered_dtypes"</span><span class="p">,</span>
-    <span class="s2">"is_dtype_available"</span><span class="p">,</span>
-    <span class="s2">"bool"</span><span class="p">,</span>
-    <span class="s2">"int8"</span><span class="p">,</span>
-    <span class="s2">"uint8"</span><span class="p">,</span>
-    <span class="s2">"int16"</span><span class="p">,</span>
-    <span class="s2">"uint16"</span><span class="p">,</span>
-    <span class="s2">"int32"</span><span class="p">,</span>
-    <span class="s2">"uint32"</span><span class="p">,</span>
-    <span class="s2">"int64"</span><span class="p">,</span>
-    <span class="s2">"uint64"</span><span class="p">,</span>
-    <span class="s2">"float16"</span><span class="p">,</span>
-    <span class="s2">"float32"</span><span class="p">,</span>
-    <span class="s2">"float64"</span><span class="p">,</span>
-    <span class="s2">"bfloat16"</span><span class="p">,</span>
-    <span class="s2">"complex64"</span><span class="p">,</span>
-    <span class="s2">"complex128"</span><span class="p">,</span>
 <span class="p">]</span>
 <span class="c1"># add submodules</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="p">[</span>

@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -727,10 +722,10 @@ writable buffer protocol.</p></li>
 protocol.</p></li>
 <li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Number of elements to copy.</p></li>
 <li><p><strong>dEvents</strong> (<em>List</em><em>[</em><a class="reference internal" href="../dpctl.SyclEvent.html#dpctl.SyclEvent" title="dpctl.SyclEvent"><em>dpctl.SyclEvent</em></a><em>]</em><em>, </em><em>optional</em>) – Events that this copy depends on.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – Data type string of the elements to copy. Determines the
-element size used to convert <code class="docutils literal notranslate"><span class="pre">count</span></code> into a byte count.
-Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).
-Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – Data type of the elements to copy, anything accepted by
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>. Determines the element size used to
+convert <code class="docutils literal notranslate"><span class="pre">count</span></code> into a byte count.
+Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

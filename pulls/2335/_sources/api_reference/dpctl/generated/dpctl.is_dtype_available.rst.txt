@@ -1,6 +1,0 @@
-﻿dpctl.is\_dtype\_available
-==========================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: is_dtype_available

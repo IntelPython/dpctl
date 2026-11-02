@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -724,16 +719,15 @@ fill, analogous to <code class="docutils literal notranslate"><span class="pre">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dest</strong> (<em>dpctl.memory._Memory</em>) – Destination USM allocation to fill.</p></li>
-<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.15)"><em>complex</em></a>) – Value used to fill <code class="docutils literal notranslate"><span class="pre">dest</span></code>. It is reinterpreted according to
-<code class="docutils literal notranslate"><span class="pre">dtype</span></code>: integral <code class="docutils literal notranslate"><span class="pre">dtype</span></code> values expect a Python integer,
-<code class="docutils literal notranslate"><span class="pre">&quot;f4&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;f8&quot;</span></code> expect a Python float, and <code class="docutils literal notranslate"><span class="pre">&quot;c8&quot;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">&quot;c16&quot;</span></code> expect a Python complex.</p></li>
+<li><p><strong>value</strong> – Value used to fill <code class="docutils literal notranslate"><span class="pre">dest</span></code>, converted to <code class="docutils literal notranslate"><span class="pre">dtype</span></code>. Integral
+<code class="docutils literal notranslate"><span class="pre">dtype</span></code> values expect an integer, floating-point ones a real
+number and complex ones a complex number. Other data types are
+converted by NumPy.</p></li>
 <li><p><strong>count</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a>) – Number of elements to fill.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>, </em><em>optional</em>) – Data type string of the fill elements. Determines the element
-size and how <code class="docutils literal notranslate"><span class="pre">value</span></code> is interpreted.
-Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).
-Supported types: i1, u1, i2, u2, i4, u4, i8, u8, f4, f8, c8,
-c16.</p></li>
+<li><p><strong>dtype</strong> (<em>optional</em>) – Data type of the fill elements, anything accepted by
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> of 1, 2, 4, 8, or 16 bytes. Determines
+the element size and how <code class="docutils literal notranslate"><span class="pre">value</span></code> is interpreted.
+Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;u1&quot;</span></code> (one byte per element).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>

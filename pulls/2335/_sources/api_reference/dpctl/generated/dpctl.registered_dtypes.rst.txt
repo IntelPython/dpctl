@@ -1,6 +1,0 @@
-﻿dpctl.registered\_dtypes
-========================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: registered_dtypes

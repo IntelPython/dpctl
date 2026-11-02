@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -717,7 +712,11 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>kernel</strong> (<a class="reference internal" href="../dpctl.compiler.SyclKernel.html#dpctl.compiler.SyclKernel" title="dpctl.compiler.SyclKernel"><em>dpctl.compiler.SyclKernel</em></a>) – SYCL kernel object</p></li>
-<li><p><strong>args</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><em>object</em></a><em>]</em>) – List of kernel arguments</p></li>
+<li><p><strong>args</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><em>object</em></a><em>]</em>) – List of kernel arguments. A NumPy scalar is passed as its
+bytes. A Python <code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">complex</span></code> is
+passed as a <code class="docutils literal notranslate"><span class="pre">numpy.bool</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.float64</span></code>
+or <code class="docutils literal notranslate"><span class="pre">numpy.complex128</span></code> respectively, which must match the type
+of the kernel parameter.</p></li>
 <li><p><strong>gS</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em>) – Global iteration range. Must be a list of length 1, 2, or 3.</p></li>
 <li><p><strong>lS</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – Local iteration range. Must be <code class="docutils literal notranslate"><span class="pre">None</span></code> or have the same
 length as <code class="docutils literal notranslate"><span class="pre">gS</span></code> and each element of <code class="docutils literal notranslate"><span class="pre">gS</span></code> must be divisible

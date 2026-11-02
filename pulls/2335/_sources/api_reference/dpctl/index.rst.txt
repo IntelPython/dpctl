@@ -77,48 +77,57 @@
     * - :py:class:`dpctl.global_mem_cache_type`
       - An :class:`enum.Enum` of global memory cache types for a device.
 
-.. rubric:: Data types
+.. rubric:: Data types of kernel arguments
 
 .. _dpctl_data_types:
 
-A :py:class:`dpctl.dtype` identifies the type of a value passed to a kernel.
-Every data type is created by :py:func:`dpctl.register_dtype`, including the
-ones :py:mod:`dpctl` defines itself, so a data type that :py:mod:`numpy` can not
-describe, such as :py:class:`dpctl.bfloat16`, is an ordinary data type here, and
-so is a data type defined outside of :py:mod:`dpctl`.
+Every :py:mod:`dpctl` function or class taking a data type, such as
+:py:meth:`dpctl.SyclQueue.copy`, :py:meth:`dpctl.SyclQueue.fill`,
+:py:class:`dpctl.LocalAccessor`, :py:class:`dpctl.WorkGroupMemory` and
+:py:class:`dpctl.program.SpecializationConstant`, accepts it in any form
+:py:class:`numpy.dtype` accepts, e.g. ``"f4"``, ``"float32"``,
+:py:class:`numpy.float32` or a :py:class:`numpy.dtype`. Any data type whose
+values are plain bytes is supported, including structured data types and data
+types registered with :py:mod:`numpy` by other packages, such as those of
+``ml_dtypes``. Extended precision ``numpy.longdouble`` is not supported.
 
-.. autosummary::
-    :toctree: generated
-    :nosignatures:
+A NumPy scalar kernel argument is passed as its bytes, so the kernel determines
+how they are interpreted.
 
-    dtype
-    DpctlScalar
-    register_dtype
-    registered_dtypes
-    is_dtype_available
+.. code-block:: python
 
-The data types :py:mod:`dpctl` defines are
+    import ml_dtypes
+
+    bf16 = ml_dtypes.bfloat16(1.5)   # sycl::ext::oneapi::bfloat16
+    c = ml_dtypes.complex32(1 - 2j)  # std::complex<sycl::half>
+
+    q.submit(kernel, [x_usm, bf16, c], [n])
+
+Scalars of 1, 2, 4, 8 or 16 bytes are always supported. Scalars of other sizes,
+such as a structured scalar matching a C++ ``struct``, require the
+``raw_kernel_arg`` DPC++ extension.
+
+Python scalars are converted to a NumPy scalar of a fixed data type, which must
+match the type of the kernel parameter:
 
 .. list-table::
-    :widths: 10 50
+    :widths: 20 30 30
 
-    * - :py:class:`dpctl.bool`
-      - Boolean, passed to kernels as an 8-bit integer
-    * - :py:class:`dpctl.int8`, :py:class:`dpctl.int16`,
-        :py:class:`dpctl.int32`, :py:class:`dpctl.int64`
-      - Signed integers
-    * - :py:class:`dpctl.uint8`, :py:class:`dpctl.uint16`,
-        :py:class:`dpctl.uint32`, :py:class:`dpctl.uint64`
-      - Unsigned integers
-    * - :py:class:`dpctl.float16`, :py:class:`dpctl.float32`,
-        :py:class:`dpctl.float64`
-      - IEEE 754 floating-point types
-    * - :py:class:`dpctl.bfloat16`
-      - Brain floating-point type of the DPC++ ``bfloat16`` extension,
-        available when the DPC++ compiler used to build :py:mod:`dpctl`
-        provided that extension
-    * - :py:class:`dpctl.complex64`, :py:class:`dpctl.complex128`
-      - Complex types
+    * - Python type
+      - NumPy type
+      - C++ type
+    * - :py:class:`bool`
+      - :py:class:`numpy.bool`
+      - ``bool``
+    * - :py:class:`int`
+      - :py:class:`numpy.int64`
+      - ``std::int64_t``
+    * - :py:class:`float`
+      - :py:class:`numpy.float64`
+      - ``double``
+    * - :py:class:`complex`
+      - :py:class:`numpy.complex128`
+      - ``std::complex<double>``
 
 .. rubric:: Exceptions
 

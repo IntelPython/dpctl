@@ -51,10 +51,9 @@ When the DPC++ compiler used to compile an extension provides the
 ``sycl_ext_oneapi_bfloat16`` extension, ``dpctl4pybind11.hpp`` defines the macro
 ``DPCTL_HAS_BFLOAT16`` and a type caster connecting
 ``sycl::ext::oneapi::bfloat16`` to Python. A function taking such an argument
-accepts a :py:class:`dpctl.bfloat16` scalar, whose value is used as it is, as
-well as any Python object convertible to a :py:class:`float`, whose value is
-rounded to the nearest ``bfloat16``. A returned ``bfloat16`` becomes a Python
-:py:class:`float`, which represents its value exactly.
+accepts any Python object convertible to a :py:class:`float`, such as an
+``ml_dtypes.bfloat16`` scalar, and rounds its value to the nearest
+``bfloat16``. A returned ``bfloat16`` becomes a Python :py:class:`float`.
 
 Since the caster is only defined when the extension is available, code that has
 to build with compilers that do not provide it should guard its use:

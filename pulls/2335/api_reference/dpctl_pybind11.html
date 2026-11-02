@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -752,10 +747,9 @@
 <code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_bfloat16</span></code> extension, <code class="docutils literal notranslate"><span class="pre">dpctl4pybind11.hpp</span></code> defines the macro
 <code class="docutils literal notranslate"><span class="pre">DPCTL_HAS_BFLOAT16</span></code> and a type caster connecting
 <code class="docutils literal notranslate"><span class="pre">sycl::ext::oneapi::bfloat16</span></code> to Python. A function taking such an argument
-accepts a <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.bfloat16</span></code> scalar, whose value is used as it is, as
-well as any Python object convertible to a <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, whose value is
-rounded to the nearest <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code>. A returned <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> becomes a Python
-<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, which represents its value exactly.</p>
+accepts any Python object convertible to a <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, such as an
+<code class="docutils literal notranslate"><span class="pre">ml_dtypes.bfloat16</span></code> scalar, and rounds its value to the nearest
+<code class="docutils literal notranslate"><span class="pre">bfloat16</span></code>. A returned <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> becomes a Python <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>.</p>
 <p>Since the caster is only defined when the extension is available, code that has
 to build with compilers that do not provide it should guard its use:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifdef DPCTL_HAS_BFLOAT16</span>

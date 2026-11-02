@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -830,63 +825,58 @@
 </tbody>
 </table>
 </div>
-<p class="rubric">Data types</p>
-<p id="dpctl-data-types">A <a class="reference internal" href="generated/dpctl.dtype.html#dpctl.dtype" title="dpctl.dtype"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.dtype</span></code></a> identifies the type of a value passed to a kernel.
-Every data type is created by <a class="reference internal" href="generated/dpctl.register_dtype.html#dpctl.register_dtype" title="dpctl.register_dtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpctl.register_dtype()</span></code></a>, including the
-ones <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> defines itself, so a data type that <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> can not
-describe, such as <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.bfloat16</span></code>, is an ordinary data type here, and
-so is a data type defined outside of <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>.</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.dtype.html#dpctl.dtype" title="dpctl.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></a></p></td>
-<td><p>Dpctl dtype descriptor class.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.DpctlScalar.html#dpctl.DpctlScalar" title="dpctl.DpctlScalar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DpctlScalar</span></code></a></p></td>
-<td><p>Base class for dpctl scalar kernel argument types.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.register_dtype.html#dpctl.register_dtype" title="dpctl.register_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_dtype</span></code></a></p></td>
-<td><p>Adds a data type to the data types <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> knows, and returns its scalar class.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.registered_dtypes.html#dpctl.registered_dtypes" title="dpctl.registered_dtypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">registered_dtypes</span></code></a></p></td>
-<td><p>Returns the data types registered with <a class="reference internal" href="generated/dpctl.register_dtype.html#dpctl.register_dtype" title="dpctl.register_dtype"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_dtype()</span></code></a> and supported by this build of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.is_dtype_available.html#dpctl.is_dtype_available" title="dpctl.is_dtype_available"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dtype_available</span></code></a></p></td>
-<td><p>Returns whether <code class="docutils literal notranslate"><span class="pre">arg</span></code> describes a data type that is registered and supported by this build of <code class="docutils literal notranslate"><span class="pre">dpctl</span></code>.</p></td>
-</tr>
-</tbody>
-</table>
+<p class="rubric">Data types of kernel arguments</p>
+<p id="dpctl-data-types">Every <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> function or class taking a data type, such as
+<a class="reference internal" href="generated/generated/dpctl.SyclQueue.copy.html#dpctl.SyclQueue.copy" title="dpctl.SyclQueue.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.copy()</span></code></a>, <a class="reference internal" href="generated/generated/dpctl.SyclQueue.fill.html#dpctl.SyclQueue.fill" title="dpctl.SyclQueue.fill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.fill()</span></code></a>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.LocalAccessor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.WorkGroupMemory</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SpecializationConstant</span></code>, accepts it in any form
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> accepts, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;f4&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;float32&quot;</span></code>,
+<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.float32</span></code> or a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>. Any data type whose
+values are plain bytes is supported, including structured data types and data
+types registered with <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.5)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> by other packages, such as those of
+<code class="docutils literal notranslate"><span class="pre">ml_dtypes</span></code>. Extended precision <code class="docutils literal notranslate"><span class="pre">numpy.longdouble</span></code> is not supported.</p>
+<p>A NumPy scalar kernel argument is passed as its bytes, so the kernel determines
+how they are interpreted.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ml_dtypes</span>
+
+<span class="n">bf16</span> <span class="o">=</span> <span class="n">ml_dtypes</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>   <span class="c1"># sycl::ext::oneapi::bfloat16</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">ml_dtypes</span><span class="o">.</span><span class="n">complex32</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span><span class="n">j</span><span class="p">)</span>  <span class="c1"># std::complex&lt;sycl::half&gt;</span>
+
+<span class="n">q</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="p">[</span><span class="n">x_usm</span><span class="p">,</span> <span class="n">bf16</span><span class="p">,</span> <span class="n">c</span><span class="p">],</span> <span class="p">[</span><span class="n">n</span><span class="p">])</span>
+</pre></div>
 </div>
-<p>The data types <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> defines are</p>
+<p>Scalars of 1, 2, 4, 8 or 16 bytes are always supported. Scalars of other sizes,
+such as a structured scalar matching a C++ <code class="docutils literal notranslate"><span class="pre">struct</span></code>, require the
+<code class="docutils literal notranslate"><span class="pre">raw_kernel_arg</span></code> DPC++ extension.</p>
+<p>Python scalars are converted to a NumPy scalar of a fixed data type, which must
+match the type of the kernel parameter:</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16.7%" />
-<col style="width: 83.3%" />
+<col style="width: 25.0%" />
+<col style="width: 37.5%" />
+<col style="width: 37.5%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.bool</span></code></p></td>
-<td><p>Boolean, passed to kernels as an 8-bit integer</p></td>
+<tr class="row-odd"><td><p>Python type</p></td>
+<td><p>NumPy type</p></td>
+<td><p>C++ type</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.int8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.int16</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.int32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.int64</span></code></p></td>
-<td><p>Signed integers</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p></td>
+<td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.bool" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.bool</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.uint8</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.uint16</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.uint32</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.uint64</span></code></p></td>
-<td><p>Unsigned integers</p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.int64</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std::int64_t</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.float16</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.float32</span></code>,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.float64</span></code></p></td>
-<td><p>IEEE 754 floating-point types</p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.float64</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.bfloat16</span></code></p></td>
-<td><p>Brain floating-point type of the DPC++ <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> extension,
-available when the DPC++ compiler used to build <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>
-provided that extension</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.complex64</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.complex128</span></code></p></td>
-<td><p>Complex types</p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#complex" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.complex128</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std::complex&lt;double&gt;</span></code></p></td>
 </tr>
 </tbody>
 </table>

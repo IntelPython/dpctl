@@ -142,15 +142,6 @@ Overview
 	:ref:`DPCTLDevice_Hash<doxid-d4/d5a/dpctl__sycl__device__interface_8h_1a28538fa8029a6d4c7ff4d972ec690b97>`(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef);
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
-	:ref:`DPCTLBfloat16_Available<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1affdec3d9222e35981fb5fbfc65b8f8bb>`();
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint16_t
-	:ref:`DPCTLBfloat16_FromDouble<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a9cfcd176114eaef07cbbbc6204ac120d>`(double Value);
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` double
-	:ref:`DPCTLBfloat16_ToDouble<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ac53aeed00c43817613883f1de6c9d724>`(uint16_t Bits);
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
 	:target:`DPCTLIPCMem_Available<doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a78d8de34943f03209685d26056e85f5e>`();
 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
@@ -857,83 +848,6 @@ Wrapper over std::hash<sycl::device>'s operator().
 .. rubric:: Returns:
 
 Returns hash value.
-
-.. index:: pair: function; DPCTLBfloat16_Available
-.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1affdec3d9222e35981fb5fbfc65b8f8bb:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` bool
-	DPCTLBfloat16_Available()
-
-Checks whether ``:ref:`dpctl <doxid-d2/df1/namespacedpctl>``` was built with support for the ``sycl::ext::oneapi::bfloat16`` type.
-
-
-
-.. rubric:: Returns:
-
-True if the ``bfloat16`` extension was available at build time, in which case ``:ref:`DPCTL_BFLOAT16_T <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089acbf9d9cd126e1d5b4702eba1a5e1029c>``` kernel arguments are supported.
-
-.. index:: pair: function; DPCTLBfloat16_FromDouble
-.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1a9cfcd176114eaef07cbbbc6204ac120d:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint16_t
-	DPCTLBfloat16_FromDouble(double Value)
-
-Converts a double-precision value to the bit pattern of the ``sycl::ext::oneapi::bfloat16`` value nearest to it.
-
-The conversion is performed by the ``bfloat16`` type itself, so the rounding behavior matches that of the corresponding device-side conversion.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- Value
-
-		- Value to convert.
-
-
-
-.. rubric:: Returns:
-
-The 16 bits of the corresponding ``bfloat16`` value, or 0 if the ``bfloat16`` extension is not available.
-
-.. index:: pair: function; DPCTLBfloat16_ToDouble
-.. _doxid-dd/db8/dpctl__sycl__extension__interface_8h_1ac53aeed00c43817613883f1de6c9d724:
-
-.. ref-code-block:: cpp
-	:class: doxyrest-title-code-block
-
-	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` double
-	DPCTLBfloat16_ToDouble(uint16_t Bits)
-
-Converts the bit pattern of a ``sycl::ext::oneapi::bfloat16`` value to double precision.
-
-
-
-.. rubric:: Parameters:
-
-.. list-table::
-	:widths: 20 80
-
-	*
-		- Bits
-
-		- The 16 bits of a ``bfloat16`` value.
-
-
-
-.. rubric:: Returns:
-
-The value as a ``double``, or 0 if the ``bfloat16`` extension is not available.
 
 .. index:: pair: function; DPCTLBuildOptionList_Append
 .. _doxid-d2/d9d/dpctl__sycl__kernel__bundle__interface_8h_1af383b94be34e6790bdbefdfa85e32036:

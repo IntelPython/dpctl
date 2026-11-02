@@ -473,11 +473,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.has_cpu_devices.html">dpctl.has_cpu_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.has_accelerator_devices.html">dpctl.has_accelerator_devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.get_composite_devices.html">dpctl.get_composite_devices</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.dtype.html">dpctl.dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.DpctlScalar.html">dpctl.DpctlScalar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.register_dtype.html">dpctl.register_dtype</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.registered_dtypes.html">dpctl.registered_dtypes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.is_dtype_available.html">dpctl.is_dtype_available</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.SyclDeviceCreationError.html">dpctl.SyclDeviceCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.SyclContextCreationError.html">dpctl.SyclContextCreationError</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../dpctl/generated/dpctl.SyclQueueCreationError.html">dpctl.SyclQueueCreationError</a></li>
@@ -816,15 +811,6 @@ DPCTL_API<span></span> <span class="kt">size_t</span>
 
 DPCTL_API<span></span> <span class="kt">size_t</span>
 <a class="reference internal" href="#doxid-d4-d5a-dpctl-sycl-device-interface-8h-1a28538fa8029a6d4c7ff4d972ec690b97"><span class="std std-ref">DPCTLDevice_Hash</span></a><span></span><span class="p">(</span>__dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a8dae76b436012ecbdebbd568e77f440d"><span class="std std-ref">DPCTLSyclDeviceRef</span></a><span></span> <span class="n">DRef</span><span class="p">);</span>
-
-DPCTL_API<span></span> <span class="kt">bool</span>
-<a class="reference internal" href="#doxid-dd-db8-dpctl-sycl-extension-interface-8h-1affdec3d9222e35981fb5fbfc65b8f8bb"><span class="std std-ref">DPCTLBfloat16_Available</span></a><span></span><span class="p">();</span>
-
-DPCTL_API<span></span> <span class="kt">uint16_t</span>
-<a class="reference internal" href="#doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a9cfcd176114eaef07cbbbc6204ac120d"><span class="std std-ref">DPCTLBfloat16_FromDouble</span></a><span></span><span class="p">(</span><span class="kt">double</span> <span class="n">Value</span><span class="p">);</span>
-
-DPCTL_API<span></span> <span class="kt">double</span>
-<a class="reference internal" href="#doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ac53aeed00c43817613883f1de6c9d724"><span class="std std-ref">DPCTLBfloat16_ToDouble</span></a><span></span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">Bits</span><span class="p">);</span>
 
 DPCTL_API<span></span> <span class="kt">bool</span>
 <span class="doxyrest-code-target target" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a78d8de34943f03209685d26056e85f5e"><span></span><span class="n">DPCTLIPCMem_Available</span></span><span></span><span class="p">();</span>
@@ -1272,51 +1258,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </div>
 <p class="rubric">Returns:</p>
 <p>Returns hash value.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1affdec3d9222e35981fb5fbfc65b8f8bb"><span id="index-29"></span>DPCTL_API<span></span> <span class="kt">bool</span>
-<span class="n">DPCTLBfloat16_Available</span><span class="p">()</span></pre>
-<p>Checks whether <code class="docutils literal notranslate"><a class="reference internal" href="namespace_dpctl.html#doxid-d2-df1-namespacedpctl"><span class="std std-ref"><span class="pre">dpctl</span></span></a></code> was built with support for the <code class="docutils literal notranslate"><span class="pre">sycl::ext::oneapi::bfloat16</span></code> type.</p>
-<p class="rubric">Returns:</p>
-<p>True if the <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> extension was available at build time, in which case <code class="docutils literal notranslate"><a class="reference internal" href="enum_DPCTLKernelArgType.html#doxid-d3-d94-dpctl-sycl-enum-types-8h-1a2b3d2dd8e0c358370eac0a59fb3fe089acbf9d9cd126e1d5b4702eba1a5e1029c"><span class="std std-ref"><span class="pre">DPCTL_BFLOAT16_T</span></span></a></code> kernel arguments are supported.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1a9cfcd176114eaef07cbbbc6204ac120d"><span id="index-30"></span>DPCTL_API<span></span> <span class="kt">uint16_t</span>
-<span class="n">DPCTLBfloat16_FromDouble</span><span class="p">(</span><span class="kt">double</span> <span class="n">Value</span><span class="p">)</span></pre>
-<p>Converts a double-precision value to the bit pattern of the <code class="docutils literal notranslate"><span class="pre">sycl::ext::oneapi::bfloat16</span></code> value nearest to it.</p>
-<p>The conversion is performed by the <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> type itself, so the rounding behavior matches that of the corresponding device-side conversion.</p>
-<p class="rubric">Parameters:</p>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 80.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Value</p></td>
-<td><p>Value to convert.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Returns:</p>
-<p>The 16 bits of the corresponding <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> value, or 0 if the <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> extension is not available.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-db8-dpctl-sycl-extension-interface-8h-1ac53aeed00c43817613883f1de6c9d724"><span id="index-31"></span>DPCTL_API<span></span> <span class="kt">double</span>
-<span class="n">DPCTLBfloat16_ToDouble</span><span class="p">(</span><span class="kt">uint16_t</span> <span class="n">Bits</span><span class="p">)</span></pre>
-<p>Converts the bit pattern of a <code class="docutils literal notranslate"><span class="pre">sycl::ext::oneapi::bfloat16</span></code> value to double precision.</p>
-<p class="rubric">Parameters:</p>
-<div class="table-wrapper colwidths-given docutils container">
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 80.0%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p>Bits</p></td>
-<td><p>The 16 bits of a <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> value.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Returns:</p>
-<p>The value as a <code class="docutils literal notranslate"><span class="pre">double</span></code>, or 0 if the <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> extension is not available.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1af383b94be34e6790bdbefdfa85e32036"><span id="index-32"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1af383b94be34e6790bdbefdfa85e32036"><span id="index-29"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLBuildOptionList_Append</span><span class="p">(</span>
     __dpctl_keep<span></span> <a class="reference internal" href="#doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1aa14b2d87a202a810c0f46bcc168fa393"><span class="std std-ref">DPCTLBuildOptionListRef</span></a><span></span> <span class="n">Ref</span><span class="p">,</span>
     __dpctl_keep<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Option</span>
@@ -1339,7 +1281,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </tbody>
 </table>
 </div>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1af9ad93ab19fd359b70e5603afe368109"><span id="index-33"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1af9ad93ab19fd359b70e5603afe368109"><span id="index-30"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLKernelNameList_Append</span><span class="p">(</span>
     __dpctl_keep<span></span> <a class="reference internal" href="#doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1a67f271d8d385392efe2307f228bba8ec"><span class="std std-ref">DPCTLKernelNameListRef</span></a><span></span> <span class="n">Ref</span><span class="p">,</span>
     __dpctl_keep<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Option</span>
@@ -1362,7 +1304,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </tbody>
 </table>
 </div>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1a2c23ffa355e4ac5596ed682eab2c4817"><span id="index-34"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1a2c23ffa355e4ac5596ed682eab2c4817"><span id="index-31"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLVirtualHeaderList_Append</span><span class="p">(</span>
     __dpctl_keep<span></span> <a class="reference internal" href="#doxid-d2-d9d-dpctl-sycl-kernel-bundle-interface-8h-1aed5a35b5dcddc97d8897ccf136efb9a0"><span class="std std-ref">DPCTLVirtualHeaderListRef</span></a><span></span> <span class="n">Ref</span><span class="p">,</span>
     __dpctl_keep<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">Name</span><span class="p">,</span>
@@ -1389,7 +1331,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </tbody>
 </table>
 </div>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a2453786e50a7d7e51a0d240b2ce52f53"><span id="index-35"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a2453786e50a7d7e51a0d240b2ce52f53"><span id="index-32"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLQueue_SubmitBarrier</span><span class="p">(</span>__dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">)</span></pre>
 <p>C-API wrapper for <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code>.</p>
 <p class="rubric">Parameters:</p>
@@ -1408,7 +1350,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </div>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code> function.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a1666c1e2da52e7736cfc662a7c0ad6fb"><span id="index-36"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-db8-dpctl-sycl-queue-interface-8h-1a1666c1e2da52e7736cfc662a7c0ad6fb"><span id="index-33"></span>DPCTL_API<span></span> __dpctl_give<span></span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span>
 <span class="n">DPCTLQueue_SubmitBarrierForEvents</span><span class="p">(</span>
     __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1af23137a8bf20ff63b10db9f7f987799a"><span class="std std-ref">DPCTLSyclQueueRef</span></a><span></span> <span class="n">QRef</span><span class="p">,</span>
     __dpctl_keep<span></span> <span class="k">const</span> <a class="reference internal" href="#doxid-df-d57-dpctl-sycl-types-8h-1a42590892ae4324c54f6ddef34009ca03"><span class="std std-ref">DPCTLSyclEventRef</span></a><span></span><span class="o">*</span> <span class="n">DepEvents</span><span class="p">,</span>
@@ -1437,7 +1379,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </div>
 <p class="rubric">Returns:</p>
 <p>An opaque pointer to the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> returned by the <code class="docutils literal notranslate"><span class="pre">sycl::queue::submit_barrier()</span></code> function.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1a33267597953b5a15fc3a052e0d09ef06"><span id="index-37"></span><a class="reference internal" href="#doxid-d7-d31-extern-c-8h-1ad85f54ad0bab1d5206255e5920261be3"><span class="std std-ref">DPCTL_C_EXTERN_C_BEGIN</span></a><span></span> DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1a33267597953b5a15fc3a052e0d09ef06"><span id="index-34"></span><a class="reference internal" href="#doxid-d7-d31-extern-c-8h-1ad85f54ad0bab1d5206255e5920261be3"><span class="std std-ref">DPCTL_C_EXTERN_C_BEGIN</span></a><span></span> DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLCString_Delete</span><span class="p">(</span>__dpctl_take<span></span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">str</span><span class="p">)</span></pre>
 <p>Deletes the C String argument.</p>
 <p class="rubric">Parameters:</p>
@@ -1454,7 +1396,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </tbody>
 </table>
 </div>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1ab52ed226b4ed6e0c83337a0aecaf6d4e"><span id="index-38"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1ab52ed226b4ed6e0c83337a0aecaf6d4e"><span id="index-35"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLInt_Array_Delete</span><span class="p">(</span>__dpctl_take<span></span> <span class="kt">int</span><span class="o">*</span> <span class="n">arr</span><span class="p">)</span></pre>
 <p>Deletes an array of int elements.</p>
 <p class="rubric">Parameters:</p>
@@ -1471,7 +1413,7 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </tbody>
 </table>
 </div>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1a8666dbbe5583326eb3b57293be168ffc"><span id="index-39"></span>DPCTL_API<span></span> <span class="kt">void</span>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-da-d48-dpctl-utils-8h-1a8666dbbe5583326eb3b57293be168ffc"><span id="index-36"></span>DPCTL_API<span></span> <span class="kt">void</span>
 <span class="n">DPCTLSize_t_Array_Delete</span><span class="p">(</span>__dpctl_take<span></span> <span class="kt">size_t</span><span class="o">*</span> <span class="n">arr</span><span class="p">)</span></pre>
 <p>Deletes an array of size_t elements.</p>
 <p class="rubric">Parameters:</p>
@@ -1491,15 +1433,15 @@ DPCTL_API<span></span> <span class="kt">void</span>
 </section>
 <section id="macros">
 <h3>Macros<a class="headerlink" href="#macros" title="Permalink to this heading">¶</a></h3>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d64-dpctl-vector-8h-1a83a0669601a2adec6b227cc2276a1538"><span id="index-40"></span><span></span><span class="cp">#define DPCTL_DECLARE_VECTOR_TYPE(EL)</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-d4-d64-dpctl-vector-8h-1a83a0669601a2adec6b227cc2276a1538"><span id="index-37"></span><span></span><span class="cp">#define DPCTL_DECLARE_VECTOR_TYPE(EL)</span></pre>
 <p>Declare an opaque pointer type for a std::vector of opaque pointers wrapping SYCL data types.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1acd69981d54c27fe0ff514645dbfc6359"><span id="index-41"></span><span></span><span class="cp">#define HUGE_VALF</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1acd69981d54c27fe0ff514645dbfc6359"><span id="index-38"></span><span></span><span class="cp">#define HUGE_VALF</span></pre>
 <p>Represents a positive expression of type float.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1ad0d744f05898e32d01f73f8af3cd2071"><span id="index-42"></span><span></span><span class="cp">#define INT64_MAX</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1ad0d744f05898e32d01f73f8af3cd2071"><span id="index-39"></span><span></span><span class="cp">#define INT64_MAX</span></pre>
 <p>Represents the largest possible value of a 64 bit signed integer.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1ab21f12f372f67b8ff0aa3432336ede67"><span id="index-43"></span><span></span><span class="cp">#define INT64_MIN</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1ab21f12f372f67b8ff0aa3432336ede67"><span id="index-40"></span><span></span><span class="cp">#define INT64_MIN</span></pre>
 <p>Represents the smallest possible value of a 64 bit signed integer.</p>
-<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1a30654b4b67d97c42ca3f9b6052dda916"><span id="index-44"></span><span></span><span class="cp">#define UINT64_MAX</span></pre>
+<pre class="highlight doxyrest-title-code-block literal-block" id="doxid-dd-d1c-dpctl-data-types-8h-1a30654b4b67d97c42ca3f9b6052dda916"><span id="index-41"></span><span></span><span class="cp">#define UINT64_MAX</span></pre>
 <p>Represents the largest possible value of a 64bit unsigned integer.</p>
 </section>
 </section>
