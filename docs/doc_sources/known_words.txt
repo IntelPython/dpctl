@@ -81,3 +81,5 @@ profiler
 keepdims
 broadcasted
 broadcastable
+bfloat
+dtypes

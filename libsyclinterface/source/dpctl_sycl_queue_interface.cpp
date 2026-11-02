@@ -36,6 +36,7 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <cstring>
 #include <exception>
 #include <sstream>
 #include <stdexcept>
@@ -110,6 +111,12 @@ using namespace sycl;
         case DPCTL_FLOAT64_T:                                                  \
         {                                                                      \
             auto la = local_accessor<double, NDIM>(R, CGH);                    \
+            CGH.set_arg(IDX, la);                                              \
+            return true;                                                       \
+        }                                                                      \
+        case DPCTL_BYTES16_T:                                                  \
+        {                                                                      \
+            auto la = local_accessor<complexNumber, NDIM>(R, CGH);             \
             CGH.set_arg(IDX, la);                                              \
             return true;                                                       \
         }                                                                      \
@@ -216,6 +223,13 @@ bool set_kernel_arg(handler &cgh,
     case DPCTL_FLOAT64_T:
         cgh.set_arg(idx, *(double *)Arg);
         break;
+    case DPCTL_BYTES16_T:
+    {
+        complexNumber Val;
+        std::memcpy(&Val, Arg, sizeof(Val));
+        cgh.set_arg(idx, Val);
+        break;
+    }
     case DPCTL_VOID_PTR:
         cgh.set_arg(idx, Arg);
         break;
