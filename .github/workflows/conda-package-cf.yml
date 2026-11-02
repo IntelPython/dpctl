@@ -472,21 +472,13 @@ jobs:
           if [ -z "${PYTHON_VER}" ]; then
             PYTHON_VER="${{ matrix.python }}"
           fi
-          # shellcheck disable=SC2086
-          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python="${PYTHON_VER}" "setuptools<72.2.0" $CHANNELS
-          echo "Environment created"
-          # shellcheck disable=SC2086
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y cmake ninja $CHANNELS || exit 1
-          echo "Cmake and Ninja installed"
-          # shellcheck disable=SC2086
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y pybind11 cython scikit-build $CHANNELS || exit 1
-          echo "scikit-build installed"
           # tbb-devel carries TBBConfig.cmake, which the oneMKL example looks for,
           # and intel-opencl-rt provides the OpenCL CPU device to run examples on
           # shellcheck disable=SC2086
-          conda install -n ${{ env.EXAMPLES_ENV_NAME }} -y mkl-dpcpp mkl-devel-dpcpp \
-              tbb-devel intel-opencl-rt $CHANNELS || exit 1
-          echo "IPL installed"
+          conda create -n ${{ env.EXAMPLES_ENV_NAME }} -y pytest python="${PYTHON_VER}" \
+              "setuptools<72.2.0" cmake ninja pybind11 cython scikit-build \
+              mkl-dpcpp mkl-devel-dpcpp tbb-devel intel-opencl-rt $CHANNELS || exit 1
+          echo "Environment created"
           # shellcheck disable=SC2086
           conda create -y -n ${{ env.BUILD_ENV_NAME }} $CHANNELS \
               "gcc_linux-64=${{ env.GCC_CMPLR_VERSION }}" "gxx_linux-64=${{ env.GCC_CMPLR_VERSION }}" \
