@@ -37,6 +37,7 @@
 
 #include <cstdint>
 #include <exception>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <sycl/sycl.hpp> /* SYCL headers   */
@@ -842,6 +843,46 @@ bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef)
     }
     else
         return false;
+}
+
+bool DPCTLQueue_GetLastEvent_Available(void)
+{
+#ifdef SYCL_EXT_ONEAPI_IN_ORDER_QUEUE_EVENTS
+    return true;
+#else
+    return false;
+#endif
+}
+
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_GetLastEvent(__dpctl_keep const DPCTLSyclQueueRef QRef)
+{
+#ifdef SYCL_EXT_ONEAPI_IN_ORDER_QUEUE_EVENTS
+    auto Q = unwrap<queue>(QRef);
+    if (!Q) {
+        error_handler("QRef passed to GetLastEvent was NULL.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+    if (!Q->is_in_order()) {
+        error_handler("Queue passed to GetLastEvent is not in-order.", __FILE__,
+                      __func__, __LINE__);
+        return nullptr;
+    }
+    try {
+        std::optional<event> ev = Q->ext_oneapi_get_last_event();
+        if (!ev.has_value()) {
+            return nullptr;
+        }
+        return wrap<event>(new event(std::move(*ev)));
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return nullptr;
+    }
+#else
+    (void)QRef;
+    return nullptr;
+#endif
 }
 
 bool DPCTLQueue_HasEnableProfiling(__dpctl_keep const DPCTLSyclQueueRef QRef)

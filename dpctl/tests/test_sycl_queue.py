@@ -169,6 +169,37 @@ def test_queue_submit_barrier(valid_filter):
         q.submit_barrier(range(3))
 
 
+def test_queue_is_get_last_event_available():
+    assert isinstance(dpctl.SyclQueue.is_get_last_event_available(), bool)
+
+
+def test_queue_get_last_event():
+    if not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
+    try:
+        q = dpctl.SyclQueue(property="in_order")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+    assert q.get_last_event() is None
+    buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
+    ev = q.memset_async(buf, 1, 1024)
+    last_ev = q.get_last_event()
+    assert isinstance(last_ev, dpctl.SyclEvent)
+    last_ev.wait()
+    assert ev.execution_status == dpctl.event_status_type.complete
+
+
+def test_queue_get_last_event_out_of_order():
+    if not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+    with pytest.raises(ValueError):
+        q.get_last_event()
+
+
 def test_queue__repr__():
     try:
         q1 = dpctl.SyclQueue(property=0)
