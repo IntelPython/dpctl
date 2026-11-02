@@ -1,6 +1,0 @@
-dpctl.SyclContext.sycl\_platform
-================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclContext.sycl_platform
