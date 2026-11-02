@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 
+* `dpctl.utils.SequentialOrderManager` keeps only the most recently added events for in-order queues, and `submitted_events` returns the queue's last event when `sycl_ext_oneapi_in_order_queue_events` is available [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
+
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Deprecated the order manager's `add_event_pair`, `host_task_events` and `num_host_task_events`, as `host_task` is no longer used for managing object lifetimes, in favor of `add_event`, `add_cleanup_event`, `cleanup_events` and `num_cleanup_events`; they do not yet emit a `DeprecationWarning` [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)

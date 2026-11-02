@@ -31,6 +31,14 @@
     best-effort: references that thread is already dropping are left to it, so
     they may still be held when ``wait`` returns.
 
+    For an in-order queue, the queue orders the tasks, and the order manager
+    keeps only the most recently added events. ``submitted_events`` is the
+    event of the last command submitted to the queue if
+    :meth:`dpctl.SyclQueue.is_get_last_event_available` is ``True``, and the
+    most recently added computation events otherwise. Only in the first case
+    does it cover tasks submitted to the queue without being added to the
+    order manager, e.g. by other threads. ``wait`` waits on the queue.
+
     .. deprecated:: 0.24.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``
         are deprecated. Tasks are no longer paired with a host task event, so

@@ -24,6 +24,7 @@ import threading
 import time
 import warnings
 
+import numpy as np
 import pytest
 
 import dpctl
@@ -34,6 +35,7 @@ from dpctl._sycl_queue import (
     _start_deferred_release_watcher,
     _stop_deferred_release_watcher,
 )
+from dpctl.utils import _order_manager
 
 _free_threaded = bool(sysconfig.get_config_var("Py_GIL_DISABLED"))
 
@@ -503,3 +505,112 @@ if __name__ == "__main__":
         timeout=120,
     )
     assert out == "4"
+
+
+def _in_order_queue(*args, cls=dpctl.SyclQueue):
+    try:
+        return cls(*args, property="in_order")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+
+
+@pytest.fixture(params=[True, False], ids=["last_event", "added_events"])
+def use_last_event(request, monkeypatch):
+    if request.param and not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
+    monkeypatch.setattr(_order_manager, "_use_last_event", request.param)
+    return request.param
+
+
+def test_in_order_order_manager(use_last_event):
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    assert _som[q] is _mngr
+    assert _mngr.num_host_task_events == 0
+    assert _mngr.num_submitted_events == 0
+    assert isinstance(_mngr.submitted_events, list)
+    assert isinstance(_mngr.host_task_events, list)
+    _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+    _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+    ht_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
+    _mngr.add_event_pair(ht_ev, [comp_ev])
+    # only the most recently added events are kept
+    assert _mngr.host_task_events == [ht_ev]
+    assert _mngr.num_host_task_events == 1
+    # nothing was submitted to the queue, so both modes return added events
+    assert _mngr.submitted_events == [comp_ev]
+    assert _mngr.num_submitted_events == 1
+    _mngr.wait()
+    cpy = _mngr.__copy__()
+    assert cpy.host_task_events == [ht_ev]
+    assert cpy.submitted_events == [comp_ev]
+    _som.clear()
+    del cpy
+
+
+def test_in_order_order_manager_submitted_events(use_last_event):
+    q = _in_order_queue()
+    _mngr = dpctl.utils.SequentialOrderManager[q]
+    buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
+    comp_ev = q.memset_async(buf, 1, 1024)
+    ht_ev = q._submit_keep_args_alive((buf,), [comp_ev])
+    _mngr.add_event_pair(ht_ev, comp_ev)
+    if use_last_event:
+        # the keep-alive task is the last command submitted to the queue
+        assert len(_mngr.submitted_events) == 1
+        assert _mngr.submitted_events[0] is not comp_ev
+    else:
+        assert _mngr.submitted_events == [comp_ev]
+    # work which is not added to the order manager
+    q.memset_async(buf, 2, 1024)
+    if use_last_event:
+        assert len(_mngr.submitted_events) == 1
+    else:
+        assert _mngr.submitted_events == [comp_ev]
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+def test_in_order_order_manager_other_queue_depends(use_last_event):
+    q_in = _in_order_queue()
+    q_other = dpctl.SyclQueue(q_in.sycl_context, q_in.sycl_device)
+    _mngr = dpctl.utils.SequentialOrderManager[q_in]
+    nbytes, n_fills = 32 * 1024 * 1024, 8
+    buf = dpctl.memory.MemoryUSMDevice(nbytes, queue=q_in)
+    host = np.empty(nbytes, dtype=np.uint8)
+    for _ in range(3):
+        q_in.memset(buf, 0, nbytes)
+        for v in range(1, n_fills + 1):
+            comp_ev = q_in.memset_async(buf, v, nbytes)
+            ht_ev = q_in._submit_keep_args_alive((buf,), [comp_ev])
+            _mngr.add_event_pair(ht_ev, comp_ev)
+        # work on another queue must wait for work done on the in-order queue
+        deps = _mngr.submitted_events
+        assert deps
+        q_other.memcpy_async(host, buf, nbytes, dEvents=deps).wait()
+        assert np.all(host == n_fills)
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+class _WaitCountingQueue(dpctl.SyclQueue):
+    def __init__(self, *args, **kwargs):
+        self.num_waits = 0
+
+    def wait(self):
+        self.num_waits += 1
+        super().wait()
+
+
+def test_in_order_order_manager_waits_on_queue():
+    q = _in_order_queue(cls=_WaitCountingQueue)
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    _mngr.wait()
+    assert q.num_waits == 1
+    cpy = _mngr.__copy__()
+    del cpy
+    assert q.num_waits == 2
+    del _mngr
+    # clear() runs at exit, and must wait on in-order queues as well
+    _som.clear()
+    assert q.num_waits > 2
