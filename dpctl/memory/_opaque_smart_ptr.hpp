@@ -127,17 +127,16 @@ void *OpaqueSmartPtr_Allocate(std::size_t nbytes,
         return nullptr;
     }
 
-    std::size_t block_size = 0;
-    void *ptr = pool->allocate(nbytes, block_size);
-    if (!ptr) {
+    dpctl::memory::MemoryPool::Block *block = pool->allocate(nbytes);
+    if (!block) {
         return nullptr;
     }
     try {
         auto sptr = new std::shared_ptr<void>(
-            ptr, dpctl::memory::USMPoolDeleter(pool, block_size));
+            block->ptr, dpctl::memory::USMPoolDeleter(pool, block));
         return reinterpret_cast<void *>(sptr);
     } catch (...) {
-        pool->release(ptr, block_size);
+        pool->release(block);
         return nullptr;
     }
 }

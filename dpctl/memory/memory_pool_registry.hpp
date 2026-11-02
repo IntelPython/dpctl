@@ -52,21 +52,22 @@ public:
     /*! @brief Empties the caches and stops caching for good */
     static void shutdown() noexcept;
 
-    /*! @brief Total bytes the pools may cache. Zero disables caching. */
+    /*! @brief Total bytes the pools may cache. Zero disables caching. Only
+     * USM allocations with no block in use can be freed to stay within it.
+     */
     static std::size_t get_cache_limit() noexcept;
     /*! @brief Sets the cache limit, emptying the caches if they exceed it */
     static void set_cache_limit(std::size_t nbytes) noexcept;
 
-    /*! @brief Bytes in blocks allocated by the pools and not released */
+    /*! @brief Bytes in blocks handed out by the pools and not released */
     static std::size_t used_bytes() noexcept;
-    /*! @brief Bytes in blocks cached by the pools */
+    /*! @brief Bytes in free blocks of the pools' USM allocations */
     static std::size_t cached_bytes() noexcept;
 
-    /*! @brief Accounts for caching `nbytes`, returning false if that would
-     * exceed the limit.
-     */
-    static bool try_cache(std::size_t nbytes) noexcept;
-    static void uncache(std::size_t nbytes) noexcept;
+    /*! @brief Whether the cached bytes exceed the limit */
+    static bool cache_exceeded() noexcept;
+    static void add_cached(std::size_t nbytes) noexcept;
+    static void remove_cached(std::size_t nbytes) noexcept;
     static void add_used(std::size_t nbytes) noexcept;
     static void remove_used(std::size_t nbytes) noexcept;
 };

@@ -28,10 +28,9 @@
 #include <exception>
 #include <iostream>
 #include <limits>
-#include <map>
 #include <mutex>
+#include <new>
 #include <sycl/sycl.hpp>
-#include <utility>
 #include <vector>
 
 #include "memory_pool.hpp"
@@ -45,10 +44,11 @@ namespace memory
 namespace
 {
 
-constexpr std::size_t small_block_granularity = 512;
+constexpr std::size_t block_granularity = 512;
+// requests up to this size come from small allocations, and blocks of large
+// allocations are only split if more than this would be left over
 constexpr std::size_t small_block_limit = std::size_t(1) << 20;
-// steps between consecutive powers of two for large blocks
-constexpr std::size_t large_block_divisions = 8;
+constexpr std::size_t small_allocation_size = std::size_t(2) << 20;
 
 std::size_t round_up(std::size_t n, std::size_t step)
 {
@@ -57,122 +57,191 @@ std::size_t round_up(std::size_t n, std::size_t step)
         return n;
     }
     if (n > std::numeric_limits<std::size_t>::max() - (step - rem)) {
-        return n;
+        return 0;
     }
     return n + (step - rem);
 }
 
-// largest block this pool hands out for a request of block size `n`
-std::size_t max_reuse_size(std::size_t n)
-{
-    const std::size_t slack = n / 4;
-    if (n > std::numeric_limits<std::size_t>::max() - slack) {
-        return std::numeric_limits<std::size_t>::max();
-    }
-    return n + slack;
-}
-
 } // namespace
 
-std::size_t pool_block_size(std::size_t nbytes)
+MemoryPool::Block *MemoryPool::allocate(std::size_t nbytes) noexcept
 {
-    if (nbytes <= small_block_limit) {
-        return round_up(nbytes, small_block_granularity);
+    if (nbytes == 0) {
+        return nullptr;
     }
-    std::size_t pow2 = small_block_limit;
-    while (pow2 <= nbytes / 2) {
-        pow2 <<= 1;
-    }
-    return round_up(nbytes, pow2 / large_block_divisions);
-}
 
-void *MemoryPool::allocate(std::size_t nbytes, std::size_t &block_size)
-{
     const bool caching = MemoryPoolRegistry::get_cache_limit() > 0;
-    const std::size_t size = caching ? pool_block_size(nbytes) : nbytes;
+    std::size_t size = nbytes;
+    bool small = false;
 
     if (caching) {
-        std::size_t found_size = 0;
-        void *ptr = nullptr;
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-            ptr = take_cached(size, found_size);
+        size = round_up(nbytes, block_granularity);
+        if (size == 0) {
+            return nullptr;
         }
-        if (ptr) {
-            MemoryPoolRegistry::uncache(found_size);
-            MemoryPoolRegistry::add_used(found_size);
-            block_size = found_size;
-            return ptr;
+        small = size <= small_block_limit;
+
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (Block *block = take_free(size, small)) {
+            split(block, size);
+            MemoryPoolRegistry::add_used(block->size);
+            return block;
         }
     }
 
-    void *ptr = sycl_malloc(size);
-    if (ptr) {
-        MemoryPoolRegistry::add_used(size);
-        block_size = size;
+    const std::size_t alloc_size = small ? small_allocation_size : size;
+    char *ptr = sycl_malloc(alloc_size);
+    if (!ptr) {
+        return nullptr;
     }
-    return ptr;
+    Block *block = new (std::nothrow)
+        Block{ptr, alloc_size, false, small, nullptr, nullptr};
+    if (!block) {
+        sycl_free(ptr);
+        return nullptr;
+    }
+    if (caching) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        split(block, size);
+    }
+    MemoryPoolRegistry::add_used(block->size);
+    return block;
 }
 
-void MemoryPool::release(void *ptr, std::size_t block_size) noexcept
+void MemoryPool::release(Block *block) noexcept
 {
-    if (!ptr) {
-        return;
-    }
-    MemoryPoolRegistry::remove_used(block_size);
+    void *to_free = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        FreeBlocks &free_set = free_blocks(block->small);
 
-    if (MemoryPoolRegistry::try_cache(block_size)) {
-        try {
-            std::lock_guard<std::mutex> lock(mutex_);
-            cached_[block_size].push_back(ptr);
-            return;
-        } catch (...) {
-            MemoryPoolRegistry::uncache(block_size);
+        MemoryPoolRegistry::remove_used(block->size);
+        MemoryPoolRegistry::add_cached(block->size);
+        block->free = true;
+
+        if (Block *prev = block->prev; prev && prev->free) {
+            free_set.erase(prev);
+            prev->size += block->size;
+            prev->next = block->next;
+            if (block->next) {
+                block->next->prev = prev;
+            }
+            delete block;
+            block = prev;
+        }
+        if (Block *next = block->next; next && next->free) {
+            free_set.erase(next);
+            block->size += next->size;
+            block->next = next->next;
+            if (next->next) {
+                next->next->prev = block;
+            }
+            delete next;
+        }
+
+        const bool whole = !block->prev && !block->next;
+        if (whole && MemoryPoolRegistry::cache_exceeded()) {
+            MemoryPoolRegistry::remove_cached(block->size);
+            to_free = block->ptr;
+            delete block;
+        }
+        else {
+            try {
+                free_set.insert(block);
+            } catch (...) {
+                // leaked, never merged with its neighbours again
+                block->free = false;
+                MemoryPoolRegistry::remove_cached(block->size);
+            }
         }
     }
-    sycl_free(ptr);
+    if (to_free) {
+        sycl_free(to_free);
+    }
 }
 
 void MemoryPool::empty_cache() noexcept
 {
-    std::map<std::size_t, std::vector<void *>> blocks;
+    std::vector<void *> to_free;
     {
         std::lock_guard<std::mutex> lock(mutex_);
-        blocks.swap(cached_);
-    }
-    for (auto &[block_size, ptrs] : blocks) {
-        MemoryPoolRegistry::uncache(block_size * ptrs.size());
-        for (void *ptr : ptrs) {
-            sycl_free(ptr);
+        for (FreeBlocks *free_set : {&free_small_, &free_large_}) {
+            for (auto it = free_set->begin(); it != free_set->end();) {
+                Block *block = *it;
+                if (block->prev || block->next) {
+                    ++it;
+                    continue;
+                }
+                try {
+                    to_free.push_back(block->ptr);
+                } catch (...) {
+                    break;
+                }
+                MemoryPoolRegistry::remove_cached(block->size);
+                it = free_set->erase(it);
+                delete block;
+            }
         }
     }
+    for (void *ptr : to_free) {
+        sycl_free(ptr);
+    }
 }
 
-void *MemoryPool::take_cached(std::size_t block_size, std::size_t &found_size)
+// expects mutex_ to be held
+MemoryPool::Block *MemoryPool::take_free(std::size_t size, bool small)
 {
-    auto it = cached_.lower_bound(block_size);
-    if (it == cached_.end() || it->first > max_reuse_size(block_size)) {
+    FreeBlocks &free_set = free_blocks(small);
+    Block probe{nullptr, size, true, small, nullptr, nullptr};
+    auto it = free_set.lower_bound(&probe);
+    if (it == free_set.end()) {
         return nullptr;
     }
-    void *ptr = it->second.back();
-    it->second.pop_back();
-    found_size = it->first;
-    if (it->second.empty()) {
-        cached_.erase(it);
-    }
-    return ptr;
+    Block *block = *it;
+    free_set.erase(it);
+    block->free = false;
+    MemoryPoolRegistry::remove_cached(block->size);
+    return block;
 }
 
-void *MemoryPool::sycl_malloc(std::size_t nbytes) noexcept
+// expects mutex_ to be held; leaves `block` whole if splitting fails
+void MemoryPool::split(Block *block, std::size_t size)
+{
+    const std::size_t rem = block->size - size;
+    const bool worth_it =
+        block->small ? rem >= block_granularity : rem > small_block_limit;
+    if (!worth_it) {
+        return;
+    }
+    Block *rest = new (std::nothrow)
+        Block{block->ptr + size, rem, true, block->small, block, block->next};
+    if (!rest) {
+        return;
+    }
+    try {
+        free_blocks(block->small).insert(rest);
+    } catch (...) {
+        delete rest;
+        return;
+    }
+    if (block->next) {
+        block->next->prev = rest;
+    }
+    block->next = rest;
+    block->size = size;
+    MemoryPoolRegistry::add_cached(rem);
+}
+
+char *MemoryPool::sycl_malloc(std::size_t nbytes) noexcept
 {
     try {
         switch (kind_) {
         case sycl::usm::alloc::host:
-            return sycl::malloc_host(nbytes, ctx_);
+            return static_cast<char *>(sycl::malloc_host(nbytes, ctx_));
         case sycl::usm::alloc::device:
-            return sycl::malloc_device(nbytes, dev_, ctx_);
+            return static_cast<char *>(sycl::malloc_device(nbytes, dev_, ctx_));
         case sycl::usm::alloc::shared:
-            return sycl::malloc_shared(nbytes, dev_, ctx_);
+            return static_cast<char *>(sycl::malloc_shared(nbytes, dev_, ctx_));
         default:
             return nullptr;
         }

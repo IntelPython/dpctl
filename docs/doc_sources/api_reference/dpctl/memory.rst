@@ -68,8 +68,8 @@ Should the USM allocation fail, the following Python exception will be raised:
 
 .. rubric:: Memory pool
 
-USM allocations made without an alignment come from a pool that caches them for reuse
-once they are freed. Setting the environment variable ``DPCTL_USM_POOL=0`` disables caching.
+USM allocations made without an alignment come from a pool that carves them out of larger
+USM allocations, and caches them for reuse once they are freed. Setting the environment variable ``DPCTL_USM_POOL=0`` disables caching.
 
 .. autosummary::
     :toctree: generated

@@ -76,13 +76,42 @@ def test_block_of_nearby_size_is_reused(queue, caching):
     assert m.nbytes == _LARGE - 4096
 
 
-def test_much_larger_block_is_not_reused(queue, caching):
+def _rounded(nbytes):
+    return -(-nbytes // 512) * 512
+
+
+def test_larger_block_is_split(queue, caching):
     dpm.empty_cache()
     m = dpm.MemoryUSMDevice(4 * _LARGE, queue=queue)
     ptr = m._pointer
     del m
-    m = dpm.MemoryUSMDevice(_LARGE, queue=queue)
-    assert m._pointer != ptr
+    a = dpm.MemoryUSMDevice(_LARGE, queue=queue)
+    b = dpm.MemoryUSMDevice(_LARGE, queue=queue)
+    assert a._pointer == ptr
+    assert b._pointer == ptr + _rounded(_LARGE)
+
+
+def test_split_blocks_merge_when_freed(queue, caching):
+    dpm.empty_cache()
+    m = dpm.MemoryUSMDevice(8 * 1024 * 1024, queue=queue)
+    ptr = m._pointer
+    del m
+    a = dpm.MemoryUSMDevice(3 * 1024 * 1024, queue=queue)
+    b = dpm.MemoryUSMDevice(3 * 1024 * 1024, queue=queue)
+    reserved = dpm.get_pool_stats()["reserved_bytes"]
+    del a, b
+    c = dpm.MemoryUSMDevice(8 * 1024 * 1024, queue=queue)
+    assert c._pointer == ptr
+    assert dpm.get_pool_stats()["reserved_bytes"] == reserved
+
+
+@pytest.mark.parametrize("cls", _MEMORY_CLASSES)
+def test_small_blocks_share_allocations(cls, queue, caching):
+    reserved = dpm.get_pool_stats()["reserved_bytes"]
+    live = [cls(_SMALL, queue=queue) for _ in range(100)]
+    assert len({m._pointer for m in live}) == 100
+    grown = dpm.get_pool_stats()["reserved_bytes"] - reserved
+    assert grown <= 2 * 1024 * 1024
 
 
 def test_block_is_not_shared_across_usm_kinds(queue, caching):
@@ -97,14 +126,17 @@ def test_block_is_not_shared_across_usm_kinds(queue, caching):
 def test_pool_stats(queue, caching):
     dpm.empty_cache()
     before = dpm.get_pool_stats()
+    assert before["reserved_bytes"] == (
+        before["used_bytes"] + before["cached_bytes"]
+    )
     m = dpm.MemoryUSMDevice(_LARGE, queue=queue)
     during = dpm.get_pool_stats()
     assert during["used_bytes"] >= before["used_bytes"] + _LARGE
     del m
     after = dpm.get_pool_stats()
-    assert after["cached_bytes"] >= _LARGE
+    assert after["cached_bytes"] >= before["cached_bytes"] + _LARGE
     dpm.empty_cache()
-    assert dpm.get_pool_stats()["cached_bytes"] == 0
+    assert dpm.get_pool_stats()["cached_bytes"] == before["cached_bytes"]
 
 
 def test_aligned_allocation_bypasses_pool(queue, caching):
@@ -116,22 +148,25 @@ def test_aligned_allocation_bypasses_pool(queue, caching):
 
 def test_cache_limit(queue, caching):
     assert dpm.get_cache_limit() is None
+    dpm.empty_cache()
+    cached = dpm.get_pool_stats()["cached_bytes"]
     m = dpm.MemoryUSMDevice(_LARGE, queue=queue)
     del m
-    assert dpm.get_pool_stats()["cached_bytes"] > 0
+    assert dpm.get_pool_stats()["cached_bytes"] >= cached + _LARGE
 
     dpm.set_cache_limit(0)
     assert dpm.get_cache_limit() == 0
-    assert dpm.get_pool_stats()["cached_bytes"] == 0
+    assert dpm.get_pool_stats()["cached_bytes"] == cached
     m = dpm.MemoryUSMDevice(_LARGE, queue=queue)
+    assert dpm.get_pool_stats()["used_bytes"] >= _LARGE
     del m
-    assert dpm.get_pool_stats()["cached_bytes"] == 0
+    assert dpm.get_pool_stats()["cached_bytes"] == cached
 
-    dpm.set_cache_limit(1024)
-    assert dpm.get_cache_limit() == 1024
+    dpm.set_cache_limit(cached + 1024)
+    assert dpm.get_cache_limit() == cached + 1024
     m = dpm.MemoryUSMDevice(_LARGE, queue=queue)
     del m
-    assert dpm.get_pool_stats()["cached_bytes"] <= 1024
+    assert dpm.get_pool_stats()["cached_bytes"] == cached
 
 
 def test_set_cache_limit_validation():

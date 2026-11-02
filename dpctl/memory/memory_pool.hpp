@@ -27,22 +27,31 @@
 #pragma once
 
 #include <cstddef>
-#include <map>
+#include <functional>
 #include <mutex>
+#include <set>
 #include <sycl/sycl.hpp>
-#include <vector>
 
 namespace dpctl
 {
 namespace memory
 {
 
-/*! @brief Size of the block allocated for a request of `nbytes` */
-std::size_t pool_block_size(std::size_t nbytes);
-
 class MemoryPool
 {
 public:
+    /*! @brief A part of a USM allocation made by the pool */
+    struct Block
+    {
+        char *ptr;
+        std::size_t size;
+        bool free;
+        bool small;
+        // neighbours within the same USM allocation
+        Block *prev;
+        Block *next;
+    };
+
     MemoryPool(const sycl::context &ctx,
                const sycl::device &dev,
                sycl::usm::alloc kind)
@@ -54,48 +63,62 @@ public:
     MemoryPool &operator=(const MemoryPool &) = delete;
 
     /*! @brief Returns a block of at least `nbytes`, or nullptr if it could
-     * not be allocated. Stores the size of the block in `block_size`.
+     * not be allocated.
      */
-    void *allocate(std::size_t nbytes, std::size_t &block_size);
+    Block *allocate(std::size_t nbytes) noexcept;
 
-    /*! @brief Caches a block returned by `allocate`, or frees it if the cache
-     * is full. The block must have no work pending on it.
+    /*! @brief Returns a block from `allocate` to the pool. No work may be
+     * pending on it.
      */
-    void release(void *ptr, std::size_t block_size) noexcept;
+    void release(Block *block) noexcept;
 
-    /*! @brief Frees the cached blocks */
+    /*! @brief Frees the USM allocations that have no block in use */
     void empty_cache() noexcept;
 
 private:
+    struct BlockLess
+    {
+        bool operator()(const Block *a, const Block *b) const
+        {
+            if (a->size != b->size) {
+                return a->size < b->size;
+            }
+            return std::less<char *>()(a->ptr, b->ptr);
+        }
+    };
+    using FreeBlocks = std::set<Block *, BlockLess>;
+
     sycl::context ctx_;
     sycl::device dev_;
     sycl::usm::alloc kind_;
 
     std::mutex mutex_;
-    // block size -> cached blocks of that size, no entry is empty
-    std::map<std::size_t, std::vector<void *>> cached_;
+    FreeBlocks free_small_;
+    FreeBlocks free_large_;
 
-    void *take_cached(std::size_t block_size, std::size_t &found_size);
-    void *sycl_malloc(std::size_t nbytes) noexcept;
+    FreeBlocks &free_blocks(bool small)
+    {
+        return small ? free_small_ : free_large_;
+    }
+    Block *take_free(std::size_t size, bool small);
+    void split(Block *block, std::size_t size);
+    char *sycl_malloc(std::size_t nbytes) noexcept;
     void sycl_free(void *ptr) noexcept;
 };
 
 class USMPoolDeleter
 {
 public:
-    USMPoolDeleter(MemoryPool *pool, std::size_t block_size)
-        : pool_(pool), block_size_(block_size)
+    USMPoolDeleter(MemoryPool *pool, MemoryPool::Block *block)
+        : pool_(pool), block_(block)
     {
     }
 
-    void operator()(void *ptr) const noexcept
-    {
-        pool_->release(ptr, block_size_);
-    }
+    void operator()(void *) const noexcept { pool_->release(block_); }
 
 private:
     MemoryPool *pool_;
-    std::size_t block_size_;
+    MemoryPool::Block *block_;
 };
 
 } // namespace memory

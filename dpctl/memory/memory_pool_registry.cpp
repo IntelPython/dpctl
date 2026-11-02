@@ -178,20 +178,18 @@ std::size_t MemoryPoolRegistry::cached_bytes() noexcept
     return get_state().cached.load();
 }
 
-bool MemoryPoolRegistry::try_cache(std::size_t nbytes) noexcept
+bool MemoryPoolRegistry::cache_exceeded() noexcept
 {
     auto &state = get_state();
-    std::size_t cur = state.cached.load();
-    do {
-        const std::size_t limit = state.cache_limit.load();
-        if (cur > limit || nbytes > limit - cur) {
-            return false;
-        }
-    } while (!state.cached.compare_exchange_weak(cur, cur + nbytes));
-    return true;
+    return state.cached.load() > state.cache_limit.load();
 }
 
-void MemoryPoolRegistry::uncache(std::size_t nbytes) noexcept
+void MemoryPoolRegistry::add_cached(std::size_t nbytes) noexcept
+{
+    get_state().cached.fetch_add(nbytes);
+}
+
+void MemoryPoolRegistry::remove_cached(std::size_t nbytes) noexcept
 {
     get_state().cached.fetch_sub(nbytes);
 }

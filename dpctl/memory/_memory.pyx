@@ -1051,8 +1051,9 @@ def as_usm_memory(obj):
 def empty_cache():
     """empty_cache()
 
-    Frees the USM allocations that dpctl caches for reuse, after releasing
-    the objects held for offloaded tasks that have completed.
+    Frees the USM allocations that dpctl caches for reuse and that have no
+    part in use, after releasing the objects held for offloaded tasks that
+    have completed.
     """
     drain_releases()
     with nogil:
@@ -1076,7 +1077,8 @@ def set_cache_limit(nbytes):
 
     Sets the number of bytes dpctl may cache for reuse in total. ``None``
     removes the limit, and ``0`` stops caching. The cache is emptied if it
-    holds more than the new limit.
+    holds more than the new limit. Free parts of USM allocations that are
+    partly in use stay cached until the rest is released.
 
     The initial limit is ``0`` if the environment variable ``DPCTL_USM_POOL``
     is ``0``, and no limit otherwise.
@@ -1093,13 +1095,16 @@ def set_cache_limit(nbytes):
 def get_pool_stats():
     """get_pool_stats()
 
-    Returns a dictionary with the bytes in USM allocations made through
-    dpctl's pool that are in use, ``"used_bytes"``, and that are cached for
-    reuse, ``"cached_bytes"``.
+    Returns a dictionary with the bytes of the USM allocations made by
+    dpctl's pool that are in use, ``"used_bytes"``, that are cached for
+    reuse, ``"cached_bytes"``, and in total, ``"reserved_bytes"``.
     """
+    cdef size_t used = MemoryPool_UsedBytes()
+    cdef size_t cached = MemoryPool_CachedBytes()
     return {
-        "used_bytes": MemoryPool_UsedBytes(),
-        "cached_bytes": MemoryPool_CachedBytes(),
+        "used_bytes": used,
+        "cached_bytes": cached,
+        "reserved_bytes": used + cached,
     }
 
 
