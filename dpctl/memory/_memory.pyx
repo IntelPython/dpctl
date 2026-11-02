@@ -143,18 +143,18 @@ cdef void copy_via_host(void *dest_ptr, SyclQueue dest_queue,
     DPCTLEvent_Delete(E2Ref)
 
 
-def _to_memory(unsigned char[::1] b, str usm_kind):
+def _to_memory(unsigned char[::1] b, str usm_kind, SyclQueue queue=None):
     """
-    Constructs Memory of the same size as the argument
+    Constructs Memory of the same size as the argument on ``queue``
     and copies data into it"""
     cdef _Memory res
 
     if (usm_kind == "shared"):
-        res = MemoryUSMShared(len(b))
+        res = MemoryUSMShared(len(b), queue=queue)
     elif (usm_kind == "device"):
-        res = MemoryUSMDevice(len(b))
+        res = MemoryUSMDevice(len(b), queue=queue)
     elif (usm_kind == "host"):
-        res = MemoryUSMHost(len(b))
+        res = MemoryUSMHost(len(b), queue=queue)
     else:
         raise ValueError(
             f"Unrecognized usm_kind={usm_kind} stored in the pickle"
@@ -394,7 +394,9 @@ cdef class _Memory:
         return self.tobytes()
 
     def __reduce__(self):
-        return _to_memory, (self.copy_to_host(), self.get_usm_type())
+        return (
+            _to_memory, (self.copy_to_host(), self.get_usm_type(), self.queue)
+        )
 
     @property
     def __sycl_usm_array_interface__(self):

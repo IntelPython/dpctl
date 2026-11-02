@@ -179,19 +179,56 @@ def test_pickling(memory_ctor):
     ), "Pickling/unpickling should be changing pointer"
 
 
-def test_pickling_reconstructor_invalid_type(memory_ctor):
+def test_pickling_reconstructor_invalid_type():
+    from dpctl.memory._memory import _to_memory
+
+    with pytest.raises(ValueError):
+        _to_memory(bytearray(8), "unknown")
+
+
+def test_pickling_preserves_queue(memory_ctor):
+    import pickle
+
+    devs = dpctl.get_devices()
+    if not devs:
+        pytest.skip("No SYCL devices available")
+    for dev in devs:
+        q = dpctl.SyclQueue(dev, property="in_order")
+        mobj = memory_ctor(64, queue=q)
+        mobj2 = pickle.loads(pickle.dumps(mobj))
+        q2 = mobj2.sycl_queue
+        assert q2.sycl_device == dev
+        assert q2.sycl_context == q.sycl_context
+        assert q2.is_in_order
+
+
+def test_pickling_non_default_context(memory_ctor):
     import pickle
 
     try:
-        mobj = memory_ctor(1024, alignment=64)
+        dev = dpctl.SyclDevice()
     except dpctl.SyclDeviceCreationError:
         pytest.skip("No SYCL devices available")
-    good_pickle_bytes = pickle.dumps(mobj)
-    usm_types = expected_usm_type_str(memory_ctor).encode("utf-8")
-    i = good_pickle_bytes.rfind(usm_types)
-    bad_pickle_bytes = good_pickle_bytes[:i] + b"u" + good_pickle_bytes[i + 1 :]
-    with pytest.raises(ValueError):
-        pickle.loads(bad_pickle_bytes)
+    ctx = dpctl.SyclContext([dev])
+    if ctx == dpctl.SyclContext(dev):
+        pytest.skip("Context created from device list is the default context")
+    mobj = memory_ctor(64, queue=dpctl.SyclQueue(ctx, dev))
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(mobj)
+
+
+def test_pickling_reconstructor_without_queue(memory_ctor):
+    from dpctl.memory._memory import _to_memory
+
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No SYCL devices available")
+    usm_type = expected_usm_type_str(memory_ctor)
+    mobj = _to_memory(bytearray(b"abcdefgh"), usm_type)
+    assert type(mobj) is memory_ctor
+    assert mobj.sycl_device == dev
+    assert mobj.tobytes() == b"abcdefgh"
 
 
 @pytest.fixture(params=[MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost])
