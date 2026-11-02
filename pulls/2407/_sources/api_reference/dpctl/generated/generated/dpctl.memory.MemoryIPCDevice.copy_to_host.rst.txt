@@ -1,0 +1,6 @@
+dpctl.memory.MemoryIPCDevice.copy\_to\_host
+===========================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryIPCDevice.copy_to_host
