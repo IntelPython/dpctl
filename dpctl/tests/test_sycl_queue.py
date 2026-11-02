@@ -26,6 +26,7 @@ import pytest
 
 import dpctl
 import dpctl.memory
+from dpctl._sycl_queue_manager import get_device_cached_queue
 
 from .helper import (
     create_invalid_capsule,
@@ -479,6 +480,18 @@ def test_queue_pickling(props):
     assert q2.sycl_context == q.sycl_context
     assert q2.is_in_order == ("in_order" in props)
     assert q2.has_enable_profiling == ("enable_profiling" in props)
+    assert (q2 == get_device_cached_queue(q.sycl_device)) == (not props)
+
+
+def test_queue_unpickling_cached_queue():
+    dev = get_queue_or_skip().sycl_device
+    cached = get_device_cached_queue(dev)
+    q0, q1 = dpctl.SyclQueue(dev), dpctl.SyclQueue(dev)
+    assert q0 != q1
+    assert pickle.loads(pickle.dumps(q0)) == cached
+    assert pickle.loads(pickle.dumps(q1)) == cached
+    q2 = dpctl.SyclQueue(dev, property="in_order")
+    assert pickle.loads(pickle.dumps(q2)) != pickle.loads(pickle.dumps(q2))
 
 
 def test_queue_pickling_non_default_context():

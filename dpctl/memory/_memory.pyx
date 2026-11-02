@@ -394,6 +394,9 @@ cdef class _Memory:
         return self.tobytes()
 
     def __reduce__(self):
+        """Pickles a host copy of the data and the queue. See
+        :class:`dpctl.SyclQueue` for how the queue is restored.
+        """
         return (
             _to_memory, (self.copy_to_host(), self.get_usm_type(), self.queue)
         )

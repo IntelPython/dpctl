@@ -791,7 +791,13 @@ cdef DPCTLSyclEventRef _memset_impl(
 
 
 def _rebuild_queue(SyclContext ctx, SyclDevice dev, tuple props):
-    """Unpickles a :class:`dpctl.SyclQueue`."""
+    """Unpickles a :class:`dpctl.SyclQueue`. Queues with default properties
+    are restored as the cached queue of ``(ctx, dev)``.
+    """
+    if not props:
+        # local import, _sycl_queue_manager cimports this module
+        from ._sycl_queue_manager import get_device_cached_queue
+        return get_device_cached_queue((ctx, dev))
     return SyclQueue(ctx, dev, property=props)
 
 
@@ -874,6 +880,22 @@ cdef class SyclQueue(_SyclQueue):
       object. The capsule will be renamed upon successful consumption
       to ensure one-time use. A new named capsule can be constructed by
       using :func:`dpctl.SyclQueue._get_capsule` method.
+
+    A queue can be pickled if its device is a root device and its context is
+    the default context of that device. Unpickling creates or looks up a
+    queue rather than restoring the original one:
+
+    - a queue with default properties is restored as the cached queue of its
+      device, as returned by
+      :func:`dpctl._sycl_queue_manager.get_device_cached_queue`. Distinct
+      queues on the same device, and USM memory allocated on them, are all
+      restored onto that one queue.
+    - a queue with ``"in_order"`` or ``"enable_profiling"`` is restored as a
+      new queue on every unpickling. Only objects pickled in one
+      :func:`pickle.dumps` call that share a :class:`dpctl.SyclQueue` object
+      are restored onto one queue.
+    - the restored queue is equal to the original only if the original is the
+      cached queue.
 
     Args:
         ctx (:class:`dpctl.SyclContext`, optional): Sycl context to create
