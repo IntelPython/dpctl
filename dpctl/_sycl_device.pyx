@@ -379,7 +379,7 @@ cdef class SyclDevice(_SyclDevice):
 
     - by directly passing in a filter string to the class
       constructor. The filter string needs to conform to the
-      :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
+      :ref:`filter selector string <filter_selector_string>` syntax.
 
     :Example:
 

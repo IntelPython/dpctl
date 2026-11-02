@@ -65,12 +65,12 @@ DPCTL_API
 __dpctl_give DPCTLSyclDeviceSelectorRef DPCTLCPUSelector_Create(void);
 
 /*!
- * @brief Returns an opaque wrapper for sycl::ext::oneapi::filter_selector
- * object based on the passed in filter string.
+ * @brief Returns a device selector for the passed in filter string.
  *
  * @param    filter_str     A C string providing a filter based on which to
  *                          create a device selector.
- * @return   An opaque pointer to a sycl::ext::oneapi::filter_selector object.
+ * @return   An opaque pointer to a device selector, or nullptr if the
+ *           filter string is malformed.
  * @ingroup DeviceSelectors
  */
 DPCTL_API
