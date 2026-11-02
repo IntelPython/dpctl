@@ -34,7 +34,7 @@ Inherited Members
 	public:
 		// fields
 	
-		static constexpr int :ref:`REJECT_DEVICE<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a3803a4a44ef1315dbb40f5c78ed9e326>` = -1;
+		static int :ref:`REJECT_DEVICE<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a3803a4a44ef1315dbb40f5c78ed9e326>` = -1;
 
 		// methods
 	
