@@ -40,6 +40,10 @@ from ._memory import (
     SyclIPCOpenMemHandle,
     USMAllocationError,
     as_usm_memory,
+    empty_cache,
+    get_cache_limit,
+    get_pool_stats,
+    set_cache_limit,
 )
 
 __all__ = [
@@ -53,4 +57,8 @@ __all__ = [
     "SyclIPCGetMemHandle",
     "SyclIPCOpenMemHandle",
     "SyclIPCCloseMemHandle",
+    "empty_cache",
+    "get_cache_limit",
+    "set_cache_limit",
+    "get_pool_stats",
 ]

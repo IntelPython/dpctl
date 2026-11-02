@@ -29,6 +29,7 @@ import dpctl
 
 from cpython cimport Py_buffer, pycapsule
 from cpython.bytes cimport PyBytes_AS_STRING, PyBytes_FromStringAndSize
+from libc.stdint cimport SIZE_MAX
 
 from dpctl._backend cimport (  # noqa: E211
     DPCTLaligned_alloc_device,
@@ -44,9 +45,6 @@ from dpctl._backend cimport (  # noqa: E211
     DPCTLIPCMem_FreeHandleData,
     DPCTLIPCMem_GetHandle,
     DPCTLIPCMem_OpenHandle,
-    DPCTLmalloc_device,
-    DPCTLmalloc_host,
-    DPCTLmalloc_shared,
     DPCTLQueue_Copy,
     DPCTLQueue_Create,
     DPCTLQueue_Delete,
@@ -69,6 +67,7 @@ from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue, drain_releases
 from .._sycl_queue_manager cimport get_device_cached_queue
 
+import atexit
 import collections
 import numbers
 
@@ -84,15 +83,26 @@ __all__ = [
     "SyclIPCGetMemHandle",
     "SyclIPCOpenMemHandle",
     "SyclIPCCloseMemHandle",
+    "empty_cache",
+    "get_cache_limit",
+    "set_cache_limit",
+    "get_pool_stats",
 ]
 
 include "_sycl_usm_array_interface_utils.pxi"
 
 cdef extern from "_opaque_smart_ptr.hpp":
     void * OpaqueSmartPtr_Make(void *, DPCTLSyclQueueRef) nogil
+    void * OpaqueSmartPtr_Allocate(size_t, _usm_type, DPCTLSyclQueueRef) nogil
     void * OpaqueSmartPtr_Copy(void *) nogil
     void OpaqueSmartPtr_Delete(void *) nogil
     void * OpaqueSmartPtr_Get(void *) nogil
+    void MemoryPool_EmptyCache() nogil
+    void MemoryPool_Shutdown() nogil
+    size_t MemoryPool_GetCacheLimit() nogil
+    void MemoryPool_SetCacheLimit(size_t) nogil
+    size_t MemoryPool_UsedBytes() nogil
+    size_t MemoryPool_CachedBytes() nogil
 
 
 class USMAllocationError(Exception):
@@ -164,43 +174,28 @@ def _to_memory(unsigned char[::1] b, str usm_kind):
     return res
 
 
-cdef DPCTLSyclUSMRef _usm_alloc(Py_ssize_t alignment, Py_ssize_t nbytes,
-                                bytes ptr_type, DPCTLSyclQueueRef QRef):
+cdef void *_usm_alloc(Py_ssize_t alignment, Py_ssize_t nbytes,
+                      _usm_type kind, DPCTLSyclQueueRef QRef) noexcept nogil:
     """
-    Allocates `nbytes` of USM of `ptr_type`, returning NULL if it could not
-    be done. `ptr_type` must be one of b"shared", b"host" or b"device".
+    Allocates `nbytes` of USM of `kind`, returning the opaque pointer owning
+    it, or NULL if it could not be done. Allocations without an alignment
+    come from the memory pool.
     """
     cdef DPCTLSyclUSMRef p = NULL
 
-    if (ptr_type == b"shared"):
-        if alignment > 0:
-            with nogil:
-                p = DPCTLaligned_alloc_shared(
-                    alignment, nbytes, QRef
-                )
-        else:
-            with nogil:
-                p = DPCTLmalloc_shared(nbytes, QRef)
-    elif (ptr_type == b"host"):
-        if alignment > 0:
-            with nogil:
-                p = DPCTLaligned_alloc_host(
-                    alignment, nbytes, QRef
-                )
-        else:
-            with nogil:
-                p = DPCTLmalloc_host(nbytes, QRef)
-    else:
-        if (alignment > 0):
-            with nogil:
-                p = DPCTLaligned_alloc_device(
-                    alignment, nbytes, QRef
-                )
-        else:
-            with nogil:
-                p = DPCTLmalloc_device(nbytes, QRef)
+    if alignment <= 0:
+        return OpaqueSmartPtr_Allocate(<size_t>nbytes, kind, QRef)
 
-    return p
+    if kind == _usm_type._USM_SHARED:
+        p = DPCTLaligned_alloc_shared(alignment, nbytes, QRef)
+    elif kind == _usm_type._USM_HOST:
+        p = DPCTLaligned_alloc_host(alignment, nbytes, QRef)
+    else:
+        p = DPCTLaligned_alloc_device(alignment, nbytes, QRef)
+
+    if p is NULL:
+        return NULL
+    return OpaqueSmartPtr_Make(<void *>p, QRef)
 
 
 cdef class _Memory:
@@ -216,13 +211,20 @@ cdef class _Memory:
 
     cdef _cinit_alloc(self, Py_ssize_t alignment, Py_ssize_t nbytes,
                       bytes ptr_type, SyclQueue queue):
-        cdef DPCTLSyclUSMRef p = NULL
+        cdef void *opaque = NULL
+        cdef _usm_type kind
         cdef DPCTLSyclQueueRef QRef = NULL
 
         self._cinit_empty()
 
         if (nbytes > 0):
-            if ptr_type not in (b"shared", b"host", b"device"):
+            if ptr_type == b"shared":
+                kind = _usm_type._USM_SHARED
+            elif ptr_type == b"host":
+                kind = _usm_type._USM_HOST
+            elif ptr_type == b"device":
+                kind = _usm_type._USM_DEVICE
+            else:
                 raise RuntimeError(
                     f"Pointer type '{ptr_type.decode('UTF-8')}' is not "
                     "recognized"
@@ -232,18 +234,25 @@ cdef class _Memory:
                 queue = get_device_cached_queue(dpctl.SyclDevice())
 
             QRef = queue.get_queue_ref()
-            p = _usm_alloc(alignment, nbytes, ptr_type, QRef)
+            with nogil:
+                opaque = _usm_alloc(alignment, nbytes, kind, QRef)
 
-            if not p:
+            if opaque is NULL:
                 # the objects held for tasks that have completed may account
                 # for enough memory for a second attempt to succeed, and
                 # dpctl's thread may not have got to them yet
                 if drain_releases():
-                    p = _usm_alloc(alignment, nbytes, ptr_type, QRef)
+                    with nogil:
+                        opaque = _usm_alloc(alignment, nbytes, kind, QRef)
 
-            if (p):
-                self._memory_ptr = p
-                self._opaque_ptr = OpaqueSmartPtr_Make(p, QRef)
+            if opaque is NULL:
+                with nogil:
+                    MemoryPool_EmptyCache()
+                    opaque = _usm_alloc(alignment, nbytes, kind, QRef)
+
+            if opaque is not NULL:
+                self._opaque_ptr = opaque
+                self._memory_ptr = <DPCTLSyclUSMRef>OpaqueSmartPtr_Get(opaque)
                 self.nbytes = nbytes
                 self.queue = queue
             else:
@@ -1037,6 +1046,75 @@ def as_usm_memory(obj):
             "USM allocation represented by argument {}".
             format(obj)
         )
+
+
+def empty_cache():
+    """empty_cache()
+
+    Frees the USM allocations that dpctl caches for reuse, after releasing
+    the objects held for offloaded tasks that have completed.
+    """
+    drain_releases()
+    with nogil:
+        MemoryPool_EmptyCache()
+
+
+def get_cache_limit():
+    """get_cache_limit()
+
+    Returns the number of bytes dpctl may cache for reuse in total, or
+    ``None`` if there is no limit.
+    """
+    cdef size_t limit = MemoryPool_GetCacheLimit()
+    if limit == SIZE_MAX:
+        return None
+    return limit
+
+
+def set_cache_limit(nbytes):
+    """set_cache_limit(nbytes)
+
+    Sets the number of bytes dpctl may cache for reuse in total. ``None``
+    removes the limit, and ``0`` stops caching. The cache is emptied if it
+    holds more than the new limit.
+
+    The initial limit is ``0`` if the environment variable ``DPCTL_USM_POOL``
+    is ``0``, and no limit otherwise.
+    """
+    cdef size_t limit = SIZE_MAX
+    if nbytes is not None:
+        if nbytes < 0:
+            raise ValueError("Cache limit must be non-negative")
+        limit = <size_t>nbytes
+    with nogil:
+        MemoryPool_SetCacheLimit(limit)
+
+
+def get_pool_stats():
+    """get_pool_stats()
+
+    Returns a dictionary with the bytes in USM allocations made through
+    dpctl's pool that are in use, ``"used_bytes"``, and that are cached for
+    reuse, ``"cached_bytes"``.
+    """
+    return {
+        "used_bytes": MemoryPool_UsedBytes(),
+        "cached_bytes": MemoryPool_CachedBytes(),
+    }
+
+
+def _shutdown_memory_pool():
+    """_shutdown_memory_pool()
+
+    Frees the cached USM allocations and frees those released from now on
+    directly.
+    """
+    with nogil:
+        MemoryPool_Shutdown()
+
+
+# runs while the SYCL runtime is still up
+atexit.register(_shutdown_memory_pool)
 
 
 cdef api void * Memory_GetOpaquePointer(_Memory obj):

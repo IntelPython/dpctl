@@ -30,8 +30,12 @@
 #error "C++ is required to compile this file"
 #endif
 
+#include "memory_pool.hpp"
+#include "memory_pool_registry.hpp"
+#include "syclinterface/dpctl_sycl_enum_types.h"
 #include "syclinterface/dpctl_sycl_type_casters.hpp"
 #include "syclinterface/dpctl_sycl_types.h"
+#include <cstddef>
 #include <memory>
 #include <sycl/sycl.hpp>
 #include <utility>
@@ -85,6 +89,83 @@ void *OpaqueSmartPtr_Make(void *usm_ptr, DPCTLSyclQueueRef QRef)
     void *res = OpaqueSmartPtr_Make(usm_ptr, q);
 
     return res;
+}
+
+/*! @brief Allocates `nbytes` of USM of `kind` through the pool for the
+ * queue's context and device. Returns the opaque pointer, or nullptr if the
+ * memory could not be allocated.
+ */
+void *OpaqueSmartPtr_Allocate(std::size_t nbytes,
+                              DPCTLSyclUSMType kind,
+                              DPCTLSyclQueueRef QRef) noexcept
+{
+    sycl::usm::alloc usm_kind;
+    switch (kind) {
+    case DPCTL_USM_DEVICE:
+        usm_kind = sycl::usm::alloc::device;
+        break;
+    case DPCTL_USM_SHARED:
+        usm_kind = sycl::usm::alloc::shared;
+        break;
+    case DPCTL_USM_HOST:
+        usm_kind = sycl::usm::alloc::host;
+        break;
+    default:
+        return nullptr;
+    }
+
+    dpctl::memory::MemoryPool *pool = nullptr;
+    try {
+        const sycl::queue *q = dpctl::syclinterface::unwrap<sycl::queue>(QRef);
+        pool = dpctl::memory::MemoryPoolRegistry::get_pool(
+            q->get_context(), q->get_device(), usm_kind);
+    } catch (...) {
+        return nullptr;
+    }
+
+    std::size_t block_size = 0;
+    void *ptr = pool->allocate(nbytes, block_size);
+    if (!ptr) {
+        return nullptr;
+    }
+    try {
+        auto sptr = new std::shared_ptr<void>(
+            ptr, dpctl::memory::USMPoolDeleter(pool, block_size));
+        return reinterpret_cast<void *>(sptr);
+    } catch (...) {
+        pool->release(ptr, block_size);
+        return nullptr;
+    }
+}
+
+void MemoryPool_EmptyCache() noexcept
+{
+    dpctl::memory::MemoryPoolRegistry::empty_cache();
+}
+
+void MemoryPool_Shutdown() noexcept
+{
+    dpctl::memory::MemoryPoolRegistry::shutdown();
+}
+
+std::size_t MemoryPool_GetCacheLimit() noexcept
+{
+    return dpctl::memory::MemoryPoolRegistry::get_cache_limit();
+}
+
+void MemoryPool_SetCacheLimit(std::size_t nbytes) noexcept
+{
+    dpctl::memory::MemoryPoolRegistry::set_cache_limit(nbytes);
+}
+
+std::size_t MemoryPool_UsedBytes() noexcept
+{
+    return dpctl::memory::MemoryPoolRegistry::used_bytes();
+}
+
+std::size_t MemoryPool_CachedBytes() noexcept
+{
+    return dpctl::memory::MemoryPoolRegistry::cached_bytes();
 }
 
 void OpaqueSmartPtr_Delete(void *opaque_ptr)
