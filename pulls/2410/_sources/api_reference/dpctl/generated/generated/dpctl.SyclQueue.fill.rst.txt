@@ -1,6 +1,0 @@
-dpctl.SyclQueue.fill
-====================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.fill

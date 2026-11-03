@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.sycl\_device
-=========================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryIPCDevice.sycl_device
