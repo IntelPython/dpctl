@@ -23,6 +23,7 @@
 """
 
 from ._backend cimport (  # noqa: E211
+    DPCTLContext_AreEq,
     DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
@@ -107,6 +108,7 @@ import atexit
 import collections.abc
 import logging
 import os
+import pickle
 import struct
 import sys
 import warnings
@@ -2306,9 +2308,26 @@ cdef class SyclQueue(_SyclQueue):
         """Pickles the queue's context, device, and properties.
 
         Raises:
-            pickle.PicklingError: if the queue's context is not the default
-                context of its device, or the device is not a root device.
+            pickle.PicklingError: if the queue's device is not a root device,
+                or its context is not the default context of that device.
         """
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef bint is_default_ctx = False
+        if self._device.parent_device is not None:
+            raise pickle.PicklingError(
+                f"Cannot pickle {self!r}: its device is not a root device"
+            )
+        CRef = DPCTLDeviceMgr_GetCachedContext(self._device.get_device_ref())
+        if CRef is not NULL:
+            is_default_ctx = DPCTLContext_AreEq(
+                CRef, self._context.get_context_ref()
+            )
+            DPCTLContext_Delete(CRef)
+        if not is_default_ctx:
+            raise pickle.PicklingError(
+                f"Cannot pickle {self!r}: its context is not the default "
+                "context of its device"
+            )
         props = []
         if DPCTLQueue_IsInOrder(self._queue_ref):
             props.append("in_order")

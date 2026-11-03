@@ -376,10 +376,15 @@ def _rebuild_device(str filter_string, str name):
     """Unpickles a :class:`dpctl.SyclDevice`.
 
     Raises:
-        pickle.UnpicklingError: if the device selected by ``filter_string``
-            is not named ``name``.
+        pickle.UnpicklingError: if no device matches ``filter_string``, or
+            the device it selects is not named ``name``.
     """
-    dev = SyclDevice(filter_string)
+    try:
+        dev = SyclDevice(filter_string)
+    except SyclDeviceCreationError as e:
+        raise pickle.UnpicklingError(
+            f"Device '{filter_string}' ('{name}') is not available"
+        ) from e
     if dev.name != name:
         raise pickle.UnpicklingError(
             f"Device '{filter_string}' is '{dev.name}', expected '{name}'"
@@ -1670,6 +1675,11 @@ cdef class SyclDevice(_SyclDevice):
 
     def __reduce__(self):
         """Pickles a root device by its filter string and name.
+
+        The filter string's device id is relative to the devices visible
+        under ``ONEAPI_DEVICE_SELECTOR``. If the loading process sees a
+        different set of devices, the pickle may load onto another device
+        of the same name.
 
         Raises:
             pickle.PicklingError: if the device is not a root device.
