@@ -3,6 +3,7 @@ on:
   pull_request:
   push:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,17 +18,32 @@ jobs:
 
     env:
       DOWNLOAD_URL_PREFIX: https://github.com/intel/llvm/releases/download
-      DRIVER_PATH: 2026-WW28
-      OCLCPUEXP_FN: oclcpuexp-2026.22.6.1.17_160000_rel.tar.gz
-      TBB_URL: https://github.com/uxlfoundation/oneTBB/releases/download/v2023.1.0/
-      TBB_INSTALL_DIR: oneapi-tbb-2023.1.0
-      TBB_FN: oneapi-tbb-2023.1.0-lin.tgz
 
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@d07a454dad7609a92316b57b23c9ccfd4f59af66 # 0.13.1
         with:
           access_token: ${{ github.token }}
+
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Load pinned SYCL build deps
+        shell: bash -l {0}
+        env:
+          PINS: .github/sycl-build-deps.env
+        run: |
+          set -euo pipefail
+          VARS=$(grep -E '^(DRIVER_PATH|OCLCPUEXP_FN|TBB_URL|TBB_INSTALL_DIR|TBB_FN)=' "${PINS}" || true)
+          if [[ $(wc -l <<< "${VARS}") -ne 5 ]]; then
+              echo "::error::expected 5 pins in ${PINS}, got:"
+              echo "${VARS}"
+              exit 1
+          fi
+          echo "${VARS}" | tee -a "${GITHUB_ENV}"
 
       - name: Install hwloc
         shell: bash -l {0}
@@ -45,7 +61,7 @@ jobs:
         with:
           path: |
             /home/runner/work/sycl_bundle
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/sycl_bundle/bundle_id.txt') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/sycl-build-deps.env') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -106,16 +122,25 @@ jobs:
               else
                 rm -rf bundle_id.txt
               fi
-              [ -f "${OCLCPUEXP_FN}" ] || wget "${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN}" || rm -rf bundle_id.txt
-              [ -f "${TBB_FN}" ] || wget "${TBB_URL}/${TBB_FN}" || rm -rf bundle_id.txt
               rm -rf dpcpp_compiler
               mkdir -p dpcpp_compiler
               tar xf "${ARTIFACT_NAME}.tar.gz" -C dpcpp_compiler
-              mkdir -p oclcpuexp
-              [ -d oclcpuexp/x64 ] || tar xf "${OCLCPUEXP_FN}" -C oclcpuexp
-              [ -d "${TBB_INSTALL_DIR}/lib" ] || tar xf "${TBB_FN}"
-              cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
           fi
+
+          # pinned deps are fetched independently of the nightly, so a pin
+          # change replaces whatever the cache restored
+          if [ ! -f "${OCLCPUEXP_FN}" ]; then
+              rm -rf oclcpuexp oclcpuexp-*.tar.gz
+              wget "${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN}" || exit 1
+          fi
+          if [ ! -f "${TBB_FN}" ]; then
+              rm -rf oneapi-tbb-*
+              wget "${TBB_URL}/${TBB_FN}" || exit 1
+          fi
+          mkdir -p oclcpuexp
+          [ -d oclcpuexp/x64 ] || tar xf "${OCLCPUEXP_FN}" -C oclcpuexp
+          [ -d "${TBB_INSTALL_DIR}/lib" ] || tar xf "${TBB_FN}"
+          cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
 
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -127,12 +152,6 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install numpy cython setuptools"<80" pytest scikit-build cmake ninja versioneer[toml]==0.29
-
-      - name: Checkout repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       - name: Create set_allvars.sh
         shell: bash -l {0}
