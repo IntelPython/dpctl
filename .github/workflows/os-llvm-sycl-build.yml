@@ -61,7 +61,7 @@ jobs:
         with:
           path: |
             /home/runner/work/sycl_bundle
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('/home/runner/work/sycl_bundle/bundle_id.txt') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.github/sycl-build-deps.env') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-

@@ -53,8 +53,10 @@ jobs:
           set -euo pipefail
           fail() { echo "::error::$*"; exit 1; }
 
-          [[ "${LLVM_REF}" =~ ^[A-Za-z0-9._/-]+$ ]] || fail "invalid intel/llvm ref: ${LLVM_REF}"
+          [[ "${LLVM_REF}" =~ ^[A-Za-z0-9._/-]+$ && "${LLVM_REF}" != *..* ]] \
+              || fail "invalid intel/llvm ref: ${LLVM_REF}"
           LLVM_SHA=$(gh api "repos/intel/llvm/commits/${LLVM_REF}" --jq .sha)
+          [[ "${LLVM_SHA}" =~ ^[0-9a-f]{40}$ ]] || fail "unexpected intel/llvm sha: ${LLVM_SHA}"
           DEPS="${RUNNER_TEMP}/dependencies.json"
           gh api -H "Accept: application/vnd.github.raw" \
               "repos/intel/llvm/contents/devops/dependencies.json?ref=${LLVM_SHA}" > "${DEPS}"
