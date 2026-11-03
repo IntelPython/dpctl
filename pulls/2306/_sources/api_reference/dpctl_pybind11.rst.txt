@@ -19,7 +19,7 @@ pybind11 API
         return dev.get_info<sycl::info::device::name>();
     }
 
-    PYBIND11_MODULE(_example, m) {
+    PYBIND11_MODULE(_example, m, py::mod_gil_not_used()) {
         m.def("get_device_name", &get_device_name);
     }
 

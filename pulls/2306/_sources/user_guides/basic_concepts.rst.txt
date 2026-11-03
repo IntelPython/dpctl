@@ -111,7 +111,7 @@ backend. The context is required to map unified address space pointer to the dev
 where it was allocated unambiguously.
 
 In order for two DPC++-based Python extensions to share USM allocations, they each
-must use the `same` SYCL context when submitting for execution programs that would
+must use the *same* SYCL context when submitting for execution programs that would
 access this allocation.
 
 Since ``sycl::context`` is dynamically constructed by each extension  sharing a USM allocation,
@@ -192,7 +192,7 @@ expose Python buffer interface.
    >>> mem_d.copy_from_host(b"abcdefghijklmnopqrstuvwxyz")
 
    >>> mem_s = dpm.MemoryUSMShared(30)
-   >>> mem_s.memset(value=ord(b"-""))
+   >>> mem_s.memset(val=ord(b"-"))
    >>> mem_s.copy_from_device(mem_d)
 
    >>> # since USM-shared is host-accessible,
