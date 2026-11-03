@@ -17,7 +17,6 @@
 """Defines unit test cases for the SyclKernelBundle and SyclKernel classes"""
 
 import os
-import warnings
 
 import numpy as np
 import pytest
@@ -25,7 +24,6 @@ import pytest
 import dpctl
 import dpctl.compiler as dpc
 import dpctl.memory as dpm
-import dpctl.program as dpp
 from dpctl.compiler.utils import parse_spirv_specializations
 
 
@@ -721,57 +719,3 @@ def test_sycl_source_vector_add_correctness(queue_selector):
     ev4 = q.memcpy_async(dest=out, src=out_usm, count=out.nbytes, dEvents=[ev3])
     ev4.wait()
     assert np.array_equal(out, expected)
-
-
-@pytest.mark.parametrize(
-    "deprecated_name, replacement",
-    [
-        ("SyclProgram", dpc.SyclKernelBundle),
-        ("SyclProgramCompilationError", dpc.SyclKernelBundleCompilationError),
-    ],
-)
-def test_program_deprecated_aliases(deprecated_name, replacement):
-    with pytest.warns(DeprecationWarning, match=deprecated_name):
-        alias = getattr(dpp, deprecated_name)
-
-    assert alias is replacement
-
-
-def test_program_all_names_are_reachable():
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        for name in dpp.__all__:
-            assert getattr(dpp, name) is not None
-
-
-def test_create_program_from_source_is_deprecated():
-    q = _get_opencl_queue_or_skip()
-    oclSrc = "                                                             \
-    kernel void add(global int* a, global int* b, global int* c) {         \
-        size_t index = get_global_id(0);                                   \
-        c[index] = a[index] + b[index];                                    \
-    }"
-    with pytest.warns(
-        DeprecationWarning, match="create_program_from_source is deprecated"
-    ):
-        kb = dpp.create_program_from_source(q, oclSrc)
-
-    assert type(kb) is dpc.SyclKernelBundle
-    assert kb.has_sycl_kernel("add")
-
-
-def test_create_program_from_spirv_is_deprecated():
-    import dpctl.program as dpp
-
-    q = _get_opencl_queue_or_skip()
-    spirv_file = get_spirv_abspath("multi_kernel.spv")
-    with open(spirv_file, "rb") as fin:
-        spirv = fin.read()
-    with pytest.warns(
-        DeprecationWarning, match="create_program_from_spirv is deprecated"
-    ):
-        kb = dpp.create_program_from_spirv(q, spirv)
-
-    assert type(kb) is dpc.SyclKernelBundle
-    assert kb.has_sycl_kernel("add")
-    assert kb.has_sycl_kernel("axpy")

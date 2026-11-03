@@ -60,7 +60,6 @@ SyclContext
 SyclEvent
 SyclKernel
 SyclKernelBundle
-SyclProgram
 SyclPlatform
 dtype
 ndarray

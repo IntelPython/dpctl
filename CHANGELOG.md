@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+* Removed the deprecated `dpctl.program` submodule, use `dpctl.compiler` instead [gh-2407](https://github.com/IntelPython/dpctl/pull/2407)
 
 ### Fixed
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
