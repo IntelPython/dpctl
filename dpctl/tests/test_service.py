@@ -123,6 +123,12 @@ def test___version__():
     assert re.match(reg_expr, dpctl_ver) is not None
 
 
+def test_star_import():
+    ns = {}
+    exec("from dpctl import *", ns)
+    assert all(name in ns for name in dpctl.__all__)
+
+
 def test_dev_utils():
     import tempfile
 

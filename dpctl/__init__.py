@@ -88,13 +88,11 @@ __all__ += [
     "select_cpu_device",
     "select_default_device",
     "select_gpu_device",
-    "select_host_device",
     "select_device_with_aspects",
     "get_num_devices",
     "has_cpu_devices",
     "has_gpu_devices",
     "has_accelerator_devices",
-    "has_host_device",
     "get_composite_devices",
 ]
 __all__ += [
