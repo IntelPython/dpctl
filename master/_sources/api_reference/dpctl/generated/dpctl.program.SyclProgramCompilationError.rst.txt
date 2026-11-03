@@ -1,6 +1,0 @@
-﻿dpctl.program.SyclProgramCompilationError
-=========================================
-
-.. currentmodule:: dpctl.program
-
-.. autoexception:: SyclProgramCompilationError
