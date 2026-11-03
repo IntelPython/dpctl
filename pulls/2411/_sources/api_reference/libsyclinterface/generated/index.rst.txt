@@ -1,0 +1,35 @@
+libsyclinterface
+================
+
+.. toctree::
+	:hidden:
+
+	group_DeviceManager.rst
+	group_PlatformManager.rst
+
+.. rubric:: Further Reading:
+
+|	:ref:`Device class helper functions<doxid-dc/ddc/group___device_manager>`
+|	:ref:`Platform class helper functions<doxid-d5/dcf/group___platform_manager>`
+
+
+.. toctree::
+	:hidden:
+
+	page_todo.rst
+
+.. rubric:: Related Pages:
+
+|	:doc:`page_todo`
+
+
+.. rubric:: Reference and Index:
+
+.. toctree::
+	:hidden:
+
+	global.rst
+
+|	:doc:`global`
+|	:ref:`genindex`
+

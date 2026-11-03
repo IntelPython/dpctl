@@ -1,0 +1,6 @@
+dpctl.SyclDevice.error\_correction\_support
+===========================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.error_correction_support
