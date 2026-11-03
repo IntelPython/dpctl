@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 * A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* `dpctl.SyclPlatform.get_devices` no longer prints Unified Runtime warnings for `device_type="custom"` on non-OpenCL platforms, where custom devices are not supported [gh-2306](https://github.com/IntelPython/dpctl/pull/2306)
 
 ### Maintenance
 * Removed the `-fno-sycl-id-queries-fit-in-int` compile option, which none of the `dpctl` extensions need since `dpctl.tensor` moved to `dpnp` [gh-2413](https://github.com/IntelPython/dpctl/pull/2413)
