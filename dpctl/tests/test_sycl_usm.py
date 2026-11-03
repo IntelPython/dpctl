@@ -229,7 +229,7 @@ def test_pickling_non_default_context(memory_ctor):
     if ctx == dpctl.SyclContext(dev):
         pytest.skip("Context created from device list is the default context")
     mobj = memory_ctor(64, queue=dpctl.SyclQueue(ctx, dev))
-    with pytest.raises(pickle.PicklingError):
+    with pytest.raises(pickle.PicklingError, match="SyclQueue"):
         pickle.dumps(mobj)
 
 

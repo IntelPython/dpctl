@@ -500,14 +500,14 @@ def test_queue_pickling_non_default_context():
     ctx = dpctl.SyclContext([dev])
     if ctx == q.sycl_context:
         pytest.skip("Context created from device list is the default context")
-    with pytest.raises(pickle.PicklingError):
+    with pytest.raises(pickle.PicklingError, match="SyclQueue.*context"):
         pickle.dumps(dpctl.SyclQueue(ctx, dev))
 
 
 def test_queue_pickling_sub_device():
     sub_dev = get_sub_device_or_skip()
     q = dpctl.SyclQueue(sub_dev)
-    with pytest.raises(pickle.PicklingError):
+    with pytest.raises(pickle.PicklingError, match="not a root device"):
         pickle.dumps(q)
 
 

@@ -487,6 +487,13 @@ def test_device_unpickling_name_mismatch():
         _rebuild_device(dev.filter_string, dev.name + " (other)")
 
 
+def test_device_unpickling_missing_device():
+    from dpctl._sycl_device import _rebuild_device
+
+    with pytest.raises(pickle.UnpicklingError, match="is not available"):
+        _rebuild_device("opencl:gpu:999", "Missing device")
+
+
 def test_device_copy():
     sub_dev = get_sub_device_or_skip()
     root_dev = sub_dev.parent_device
