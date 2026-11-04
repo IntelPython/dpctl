@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `SyclQueue_DeferRelease` C-API function, which defers a release callback until work submitted to a queue completes, and through which `dpctl::utils::keep_args_alive` keeps its arguments alive [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl::utils::defer_release` to `dpctl4pybind11.hpp`, which calls a release callback once the given events have completed [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl.SyclQueue.get_last_event` and `dpctl.SyclQueue.is_get_last_event_available`, and the `DPCTLQueue_GetLastEvent` and `DPCTLQueue_GetLastEvent_Available` C-API functions, wrapping the DPC++ `sycl_ext_oneapi_in_order_queue_events` extension [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
+* Added `dpctl.SyclPlatform.has_aspect_*` properties and the `DPCTLPlatform_HasAspect` C-API function for querying aspects supported by all devices of a platform [gh-2412](https://github.com/IntelPython/dpctl/pull/2412)
 
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)

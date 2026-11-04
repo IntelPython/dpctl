@@ -216,7 +216,8 @@ DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @param    PRef           Opaque pointer to a ``sycl::platform``
  * @param    AT             DPCTLSyclAspectType of ``device::aspect``.
  * @return   True if all ``sycl::device`` objects associated with the
- * ``sycl::platform`` have the given ``device::aspect``, else false.
+ * ``sycl::platform`` have the given ``device::aspect``, else false. Also
+ * returns false if ``PRef`` is NULL or the aspect query throws.
  * @ingroup PlatformInterface
  */
 DPCTL_API

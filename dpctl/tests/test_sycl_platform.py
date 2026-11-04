@@ -132,6 +132,9 @@ list_of_platform_aspects = [
     "usm_atomic_shared_allocations",
     "host_debuggable",
     "emulated",
+    "is_component",
+    "is_composite",
+    "ext_oneapi_ipc_memory",
 ]
 
 
