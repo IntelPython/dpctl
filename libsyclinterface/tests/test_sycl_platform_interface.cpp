@@ -155,6 +155,9 @@ const std::vector<DPCTLSyclAspectType> aspect_types = {
     DPCTLSyclAspectType::usm_atomic_shared_allocations,
     DPCTLSyclAspectType::host_debuggable,
     DPCTLSyclAspectType::emulated,
+    DPCTLSyclAspectType::is_component,
+    DPCTLSyclAspectType::is_composite,
+    DPCTLSyclAspectType::ext_oneapi_ipc_memory,
 };
 
 void check_platform_has_aspect(__dpctl_keep const DPCTLSyclPlatformRef PRef,

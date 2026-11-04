@@ -317,8 +317,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_cpu(self):
-        """ Returns ``True`` if all devices of this platform are CPU devices,
-        ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) are CPU
+        devices, ``False`` otherwise.
 
         :Example:
 
@@ -338,8 +338,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_gpu(self):
-        """ Returns ``True`` if all devices of this platform are GPU devices,
-        ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) are GPU
+        devices, ``False`` otherwise.
 
         Returns:
             bool:
@@ -350,8 +350,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_accelerator(self):
-        """ Returns ``True`` if all devices of this platform are accelerator
-        devices, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) are
+        accelerator devices, ``False`` otherwise.
 
         SYCL considers an accelerator to be a device that usually uses a
         peripheral interconnect for communication.
@@ -366,8 +366,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_custom(self):
-        """ Returns ``True`` if all devices of this platform are custom
-        devices, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) are
+        custom devices, ``False`` otherwise.
 
         A custom device can be a dedicated accelerator that can use the
         SYCL API, but programmable kernels cannot be dispatched to the device,
@@ -383,7 +383,7 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_fp16(self):
-        """ Returns ``True`` if all devices of this platform support
+        """ Returns ``True`` if all devices of this platform (if any) support
         half-precision floating point operations, ``False`` otherwise.
 
         Returns:
@@ -396,8 +396,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_fp64(self):
-        """ Returns ``True`` if all devices of this platform support 64-bit
-        precision floating point operations, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        64-bit precision floating point operations, ``False`` otherwise.
 
         Returns:
             bool:
@@ -409,8 +409,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_atomic64(self):
-        """ Returns ``True`` if all devices of this platform support a basic
-        set of atomic operations, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support a
+        basic set of atomic operations, ``False`` otherwise.
 
         Indicates that the devices support the following atomic operations on
         64-bit values:
@@ -433,8 +433,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_image(self):
-        """ Returns ``True`` if all devices of this platform support images,
-        ``False`` otherwise (refer Sec 4.15.3 of SYCL 2020 spec).
+        """ Returns ``True`` if all devices of this platform (if any) support
+        images, ``False`` otherwise (refer Sec 4.15.3 of SYCL 2020 spec).
 
         Returns:
             bool:
@@ -445,8 +445,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_online_compiler(self):
-        """ Returns ``True`` if all devices of this platform support online
-        compilation of device code, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        online compilation of device code, ``False`` otherwise.
 
         Returns:
             bool:
@@ -458,8 +458,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_online_linker(self):
-        """ Returns ``True`` if all devices of this platform support online
-        linking of device code, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        online linking of device code, ``False`` otherwise.
 
         Returns:
             bool:
@@ -471,8 +471,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_queue_profiling(self):
-        """ Returns ``True`` if all devices of this platform support queue
-        profiling, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        queue profiling, ``False`` otherwise.
 
         Returns:
             bool:
@@ -484,8 +484,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_usm_device_allocations(self):
-        """ Returns ``True`` if all devices of this platform support explicit
-        USM allocations, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        explicit USM allocations, ``False`` otherwise.
 
         Returns:
             bool:
@@ -497,8 +497,9 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_usm_host_allocations(self):
-        """ Returns ``True`` if all devices of this platform can access USM
-        memory allocated via ``sycl::malloc_host``, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) can
+        access USM memory allocated via ``sycl::malloc_host``, ``False``
+        otherwise.
 
         Returns:
             bool:
@@ -510,8 +511,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_usm_shared_allocations(self):
-        """ Returns ``True`` if all devices of this platform support USM
-        memory allocated via ``sycl::malloc_shared``, ``False`` otherwise.
+        """ Returns ``True`` if all devices of this platform (if any) support
+        USM memory allocated via ``sycl::malloc_shared``, ``False`` otherwise.
 
         Returns:
             bool:
@@ -525,7 +526,7 @@ cdef class SyclPlatform(_SyclPlatform):
     def has_aspect_usm_system_allocations(self):
         """ Returns ``True`` if the system allocator may be used instead of
         SYCL USM allocation mechanisms for ``shared`` allocations on all
-        devices of this platform, ``False`` otherwise.
+        devices of this platform (if any), ``False`` otherwise.
 
         Returns:
             bool:
@@ -537,8 +538,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_usm_atomic_host_allocations(self):
-        """ Returns ``True`` if all devices of this platform support USM
-        memory allocated via ``sycl::malloc_host`` and can be accessed
+        """ Returns ``True`` if all devices of this platform (if any) support
+        USM memory allocated via ``sycl::malloc_host`` and can be accessed
         atomically, ``False`` otherwise.
 
         Returns:
@@ -552,8 +553,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_usm_atomic_shared_allocations(self):
-        """ Returns ``True`` if all devices of this platform support USM
-        memory allocated via ``sycl::malloc_shared`` and can be accessed
+        """ Returns ``True`` if all devices of this platform (if any) support
+        USM memory allocated via ``sycl::malloc_shared`` and can be accessed
         atomically, ``False`` otherwise.
 
         Returns:
@@ -567,8 +568,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_host_debuggable(self):
-        """ Returns ``True`` if kernels running on all devices of this
-        platform can be debugged using standard debuggers that are normally
+        """ Returns ``True`` if kernels running on all devices of this platform
+        (if any) can be debugged using standard debuggers that are normally
         available on the host system, ``False`` otherwise.
 
         Returns:
@@ -582,8 +583,8 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_emulated(self):
-        """ Returns ``True`` if all devices of this platform are somehow
-        emulated, ``False`` otherwise. A device with this aspect is not
+        """ Returns ``True`` if all devices of this platform (if any) are
+        somehow emulated, ``False`` otherwise. A device with this aspect is not
         intended for performance, and instead will generally have another
         non-emulated platform as a better representation for performance.
 
@@ -596,9 +597,9 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_is_component(self):
-        """ Returns ``True`` if all devices of this platform are component
-        devices, ``False`` otherwise. A device with this aspect will have a
-        composite device from which it is descended.
+        """ Returns ``True`` if all devices of this platform (if any) are
+        component devices, ``False`` otherwise. A device with this aspect will
+        have a composite device from which it is descended.
 
         Returns:
             bool:
@@ -609,9 +610,9 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_is_composite(self):
-        """ Returns ``True`` if all devices of this platform are composite
-        devices, ``False`` otherwise. A device with this aspect contains
-        component devices.
+        """ Returns ``True`` if all devices of this platform (if any) are
+        composite devices, ``False`` otherwise. A device with this aspect
+        contains component devices.
 
         Returns:
             bool:
@@ -622,7 +623,7 @@ cdef class SyclPlatform(_SyclPlatform):
 
     @property
     def has_aspect_ext_oneapi_ipc_memory(self):
-        """ Returns ``True`` if all devices of this platform support
+        """ Returns ``True`` if all devices of this platform (if any) support
         inter-process communication (IPC) memory handles, ``False`` otherwise.
 
         Returns:
