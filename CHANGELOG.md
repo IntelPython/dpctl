@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dev] - XXX. XX, XXXX
 
 ### Added
+* Added `dpctl.SyclDevice` aspect queries `has_aspect_ext_oneapi_is_integrated_gpu`, `has_aspect_ext_oneapi_clock_sub_group`, `has_aspect_ext_oneapi_clock_work_group`, `has_aspect_ext_oneapi_clock_device`, `has_aspect_ext_oneapi_native_assert` and `has_aspect_ext_oneapi_register_host_memory`, along with the matching `DPCTLSyclAspectType` values; `has_aspect_ext_oneapi_register_host_memory` is always `False` when dpctl is built with a DPC++ compiler older than 2026.2 [gh-2416](https://github.com/IntelPython/dpctl/pull/2416)
 
 ### Changed
 

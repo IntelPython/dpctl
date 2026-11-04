@@ -103,6 +103,12 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _is_component                       "is_component",
         _is_composite                       "is_composite",
         _ext_oneapi_ipc_memory              "ext_oneapi_ipc_memory",
+        _ext_oneapi_is_integrated_gpu       "ext_oneapi_is_integrated_gpu",
+        _ext_oneapi_clock_sub_group         "ext_oneapi_clock_sub_group",
+        _ext_oneapi_clock_work_group        "ext_oneapi_clock_work_group",
+        _ext_oneapi_clock_device            "ext_oneapi_clock_device",
+        _ext_oneapi_native_assert           "ext_oneapi_native_assert",
+        _ext_oneapi_register_host_memory    "ext_oneapi_register_host_memory",
 
     ctypedef enum _partition_affinity_domain_type \
             "DPCTLPartitionAffinityDomainType":
