@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [dev] - XXX. XX, XXXX
 
 ### Added
+* Added `DPCTLQueue_GetLastSubmitError` C-API function, which returns the reason why the last kernel submission in the calling thread failed [gh-2414](https://github.com/IntelPython/dpctl/pull/2414)
 
 ### Changed
 
@@ -16,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed the deprecated `dpctl.program` submodule, use `dpctl.compiler` instead [gh-2407](https://github.com/IntelPython/dpctl/pull/2407)
 
 ### Fixed
+* `dpctl.SyclKernelSubmitError` raised by `dpctl.SyclQueue.submit` and `dpctl.SyclQueue.submit_async` now includes the reason reported by the SYCL runtime, and the `dpctl.compiler.create_kernel_bundle_from_sycl_source` docstring documents the `-fno-sycl-id-queries-fit-in-int` option needed with DPC++ 2026.2 to launch kernels over more than `INT_MAX` work-items [gh-2414](https://github.com/IntelPython/dpctl/pull/2414)
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 
 ### Maintenance

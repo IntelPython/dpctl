@@ -39,6 +39,7 @@
 #include <exception>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <sycl/sycl.hpp> /* SYCL headers   */
 #include <utility>
 #include <vector>
@@ -119,6 +120,22 @@ using namespace sycl;
             return false;                                                      \
         }                                                                      \
     } while (0);
+
+namespace
+{
+// Reason for the last failed DPCTLQueue_SubmitRange or
+// DPCTLQueue_SubmitNDRange call in the calling thread, or an empty string if
+// the last call succeeded.
+thread_local std::string last_submit_error;
+
+std::nullptr_t
+submit_failed(const std::string &Msg, const char *func_name, int line_num)
+{
+    last_submit_error = Msg;
+    error_handler(Msg, __FILE__, func_name, line_num, error_level::error);
+    return nullptr;
+}
+} // namespace
 
 namespace
 {
@@ -498,16 +515,15 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                        __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                        size_t NDepEvents)
 {
-    if (!KRef) {
-        error_handler("Cannot submit the kernel as the kernel is a nullptr.",
-                      __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
-    }
-    if (!QRef) {
-        error_handler("Cannot submit the kernel as the queue is a nullptr.",
-                      __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
-    }
+    last_submit_error.clear();
+    if (!KRef)
+        return submit_failed(
+            "Cannot submit the kernel as the kernel is a nullptr.", __func__,
+            __LINE__);
+    if (!QRef)
+        return submit_failed(
+            "Cannot submit the kernel as the queue is a nullptr.", __func__,
+            __LINE__);
 
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
@@ -547,18 +563,15 @@ DPCTLQueue_SubmitRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             return wrap<event>(new event(std::move(e)));
         }
         default:
-            error_handler("Range cannot be greater than three "
-                          "dimensions.",
-                          __FILE__, __func__, __LINE__, error_level::error);
-            return nullptr;
+            return submit_failed("Range cannot be greater than three "
+                                 "dimensions.",
+                                 __func__, __LINE__);
         }
     } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
+        return submit_failed(e.what(), __func__, __LINE__);
     } catch (...) {
-        error_handler("Unknown exception encountered", __FILE__, __func__,
-                      __LINE__, error_level::error);
-        return nullptr;
+        return submit_failed("Unknown exception encountered", __func__,
+                             __LINE__);
     }
 }
 
@@ -574,16 +587,15 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          __dpctl_keep const DPCTLSyclEventRef *DepEvents,
                          size_t NDepEvents)
 {
-    if (!KRef) {
-        error_handler("Cannot submit the kernel as the kernel is a nullptr.",
-                      __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
-    }
-    if (!QRef) {
-        error_handler("Cannot submit the kernel as the queue is a nullptr.",
-                      __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
-    }
+    last_submit_error.clear();
+    if (!KRef)
+        return submit_failed(
+            "Cannot submit the kernel as the kernel is a nullptr.", __func__,
+            __LINE__);
+    if (!QRef)
+        return submit_failed(
+            "Cannot submit the kernel as the queue is a nullptr.", __func__,
+            __LINE__);
 
     auto Kernel = unwrap<kernel>(KRef);
     auto Queue = unwrap<queue>(QRef);
@@ -627,19 +639,21 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
             return wrap<event>(new event(std::move(e)));
         }
         default:
-            error_handler("Range cannot be greater than three "
-                          "dimensions.",
-                          __FILE__, __func__, __LINE__, error_level::error);
-            return nullptr;
+            return submit_failed("Range cannot be greater than three "
+                                 "dimensions.",
+                                 __func__, __LINE__);
         }
     } catch (std::exception const &e) {
-        error_handler(e, __FILE__, __func__, __LINE__, error_level::error);
-        return nullptr;
+        return submit_failed(e.what(), __func__, __LINE__);
     } catch (...) {
-        error_handler("Unknown exception encountered", __FILE__, __func__,
-                      __LINE__, error_level::error);
-        return nullptr;
+        return submit_failed("Unknown exception encountered", __func__,
+                             __LINE__);
     }
+}
+
+const char *DPCTLQueue_GetLastSubmitError(void)
+{
+    return last_submit_error.c_str();
 }
 
 void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
