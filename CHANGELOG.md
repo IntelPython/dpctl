@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 
 ### Maintenance
+* Removed the `-fno-sycl-id-queries-fit-in-int` compile option, which none of the `dpctl` extensions need since `dpctl.tensor` moved to `dpnp` [gh-2413](https://github.com/IntelPython/dpctl/pull/2413)
 
 ## [0.23.0] - Oct. 22, 2026
 
