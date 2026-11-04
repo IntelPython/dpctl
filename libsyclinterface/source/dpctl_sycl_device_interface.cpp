@@ -62,12 +62,8 @@ DPCTLDevice__GetMaxWorkItemSizes(__dpctl_keep const DPCTLSyclDeviceRef DRef)
     auto D = unwrap<device>(DRef);
     if (D) {
         try {
-#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_MAX_WORK_ITEM_SIZE_THRESHOLD
             auto id_sizes =
                 D->get_info<info::device::max_work_item_sizes<dim>>();
-#else
-            auto id_sizes = D->get_info<info::device::max_work_item_sizes>();
-#endif
             sizes = new size_t[dim];
             for (auto i = 0ul; i < dim; ++i) {
                 sizes[i] = id_sizes[i];

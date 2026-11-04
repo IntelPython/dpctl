@@ -625,7 +625,8 @@ def check_device_type(device):
 def check_max_clock_frequency(device):
     freq = device.max_clock_frequency
     assert isinstance(freq, int)
-    # FIXME: Change to freq > 0 after transition to 2024.1
+    # The value may be 0, e.g. the OpenCL CPU device (runtime 2026.22) reports
+    # 0 under WSL, where /sys/devices/system/cpu/*/cpufreq is not available
     assert freq >= 0
 
 
