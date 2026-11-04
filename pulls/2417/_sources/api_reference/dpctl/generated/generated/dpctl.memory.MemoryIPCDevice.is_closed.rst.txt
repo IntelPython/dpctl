@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.is\_closed
-=======================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryIPCDevice.is_closed
