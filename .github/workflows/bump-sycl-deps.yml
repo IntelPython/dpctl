@@ -1,7 +1,8 @@
 name: Bump open source SYCL build deps
 
 # Syncs the oclcpuexp and oneTBB pins in .github/sycl-build-deps.env, used by
-# os-llvm-sycl-build.yml, with intel/llvm devops/dependencies.json.
+# os-llvm-sycl-build.yml and os-llvm-sycl-build-windows.yml, with intel/llvm
+# devops/dependencies.json.
 
 on:
   schedule:
@@ -63,9 +64,11 @@ jobs:
 
           OCL_TAG=$(jq -er '.linux.oclcpu.github_tag' "${DEPS}")
           OCL_URL=$(jq -er '.linux.oclcpu.url' "${DEPS}")
+          WIN_OCL_URL=$(jq -er '.windows.oclcpu.url' "${DEPS}")
           TBB_VER=$(jq -er '.linux.tbb.version' "${DEPS}")
           TBB_FULL_URL=$(jq -er '.linux.tbb.url' "${DEPS}")
           OCLCPUEXP_FN=${OCL_URL##*/}
+          WIN_OCLCPUEXP_FN=${WIN_OCL_URL##*/}
 
           # os-llvm-sycl-build.yml rebuilds these URLs from the pins
           [[ "${OCL_TAG}" =~ ^[0-9]{4}-WW[0-9]+$ ]] || fail "unexpected oclcpu tag: ${OCL_TAG}"
@@ -73,6 +76,11 @@ jobs:
               || fail "unexpected oclcpu asset: ${OCLCPUEXP_FN}"
           [[ "${OCL_URL}" == "https://github.com/intel/llvm/releases/download/${OCL_TAG}/${OCLCPUEXP_FN}" ]] \
               || fail "unexpected oclcpu url: ${OCL_URL}"
+          # both platforms download from the same DRIVER_PATH release
+          [[ "${WIN_OCLCPUEXP_FN}" =~ ^win-oclcpuexp-[0-9A-Za-z._]+_rel\.zip$ ]] \
+              || fail "unexpected Windows oclcpu asset: ${WIN_OCLCPUEXP_FN}"
+          [[ "${WIN_OCL_URL}" == "https://github.com/intel/llvm/releases/download/${OCL_TAG}/${WIN_OCLCPUEXP_FN}" ]] \
+              || fail "unexpected Windows oclcpu url: ${WIN_OCL_URL}"
           [[ "${TBB_VER}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "unexpected tbb version: ${TBB_VER}"
           [[ "${TBB_FULL_URL}" == "https://github.com/uxlfoundation/oneTBB/releases/download/v${TBB_VER}/oneapi-tbb-${TBB_VER}-lin.tgz" ]] \
               || fail "unexpected tbb url: ${TBB_FULL_URL}"
@@ -81,6 +89,7 @@ jobs:
             echo "llvm_sha=${LLVM_SHA}"
             echo "driver_tag=${OCL_TAG}"
             echo "oclcpuexp_fn=${OCLCPUEXP_FN}"
+            echo "win_oclcpuexp_fn=${WIN_OCLCPUEXP_FN}"
             echo "tbb_ver=${TBB_VER}"
             echo "tbb_url=${TBB_FULL_URL%/*}/"
             echo "tbb_fn=${TBB_FULL_URL##*/}"
@@ -91,6 +100,7 @@ jobs:
         env:
           DRIVER_TAG: ${{ steps.resolve.outputs.driver_tag }}
           OCLCPUEXP_FN: ${{ steps.resolve.outputs.oclcpuexp_fn }}
+          WIN_OCLCPUEXP_FN: ${{ steps.resolve.outputs.win_oclcpuexp_fn }}
           TBB_URL: ${{ steps.resolve.outputs.tbb_url }}
           TBB_FN: ${{ steps.resolve.outputs.tbb_fn }}
           TBB_DIR: ${{ steps.resolve.outputs.tbb_dir }}
@@ -99,6 +109,7 @@ jobs:
           sed -i -E \
             -e "s|^(DRIVER_PATH=).*|\1${DRIVER_TAG}|" \
             -e "s|^(OCLCPUEXP_FN=).*|\1${OCLCPUEXP_FN}|" \
+            -e "s|^(WIN_OCLCPUEXP_FN=).*|\1${WIN_OCLCPUEXP_FN}|" \
             -e "s|^(TBB_URL=).*|\1${TBB_URL}|" \
             -e "s|^(TBB_INSTALL_DIR=).*|\1${TBB_DIR}|" \
             -e "s|^(TBB_FN=).*|\1${TBB_FN}|" \
@@ -114,9 +125,10 @@ jobs:
           delete-branch: true
           labels: autoupdate
           commit-message: |
-            Bump oclcpuexp/oneTBB pins for os-llvm-sycl-build workflow
+            Bump oclcpuexp/oneTBB pins for os-llvm-sycl-build workflows
 
             oclcpuexp: ${{ steps.resolve.outputs.driver_tag }} / ${{ steps.resolve.outputs.oclcpuexp_fn }}
+            oclcpuexp (Windows): ${{ steps.resolve.outputs.win_oclcpuexp_fn }}
             oneTBB: ${{ steps.resolve.outputs.tbb_ver }}
             intel/llvm: ${{ steps.resolve.outputs.llvm_sha }}
           title: "Bump open source SYCL build dependencies"
@@ -128,7 +140,10 @@ jobs:
             | --- | --- |
             | intel/llvm driver release | `${{ steps.resolve.outputs.driver_tag }}` |
             | oclcpuexp | `${{ steps.resolve.outputs.oclcpuexp_fn }}` |
+            | oclcpuexp (Windows) | `${{ steps.resolve.outputs.win_oclcpuexp_fn }}` |
             | oneTBB | `${{ steps.resolve.outputs.tbb_ver }}` |
 
             Pull requests opened by this workflow don't trigger CI: run
-            **Build with Open Source LLVM SYCL compiler** on this branch before merging.
+            **Build with Open Source LLVM SYCL compiler** and
+            **Build with Open Source LLVM SYCL compiler on Windows** on this
+            branch before merging.

@@ -1,0 +1,162 @@
+name: Build with Open Source LLVM SYCL compiler on Windows
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      nightly-tag:
+        description: "intel/llvm nightly tag, e.g. nightly-2026-11-03 (default: latest with a Windows build)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  install-compiler:
+    name: Build with nightly build of DPC++ toolchain on Windows
+    runs-on: windows-latest
+    timeout-minutes: 120
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PINS: .github/sycl-build-deps.env
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Load pinned SYCL build deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          # checkout may convert line endings to CRLF
+          VARS=$(grep -E '^(DRIVER_PATH|WIN_OCLCPUEXP_FN)=' "${PINS}" | tr -d '\r' || true)
+          if [[ $(wc -l <<< "${VARS}") -ne 2 ]]; then
+              echo "::error::expected 2 pins in ${PINS}, got:"
+              echo "${VARS}"
+              exit 1
+          fi
+          echo "${VARS}" | tee -a "${GITHUB_ENV}"
+
+      - name: Resolve nightly build
+        shell: bash
+        env:
+          NIGHTLY_TAG: ${{ inputs.nightly-tag }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${NIGHTLY_TAG}" ]]; then
+              NIGHTLY_TAG=$(gh api 'repos/intel/llvm/releases?per_page=30' \
+                  --jq '[.[] | select(.tag_name | startswith("nightly-"))
+                             | select(any(.assets[]; .name == "sycl_windows.tar.gz"))][0].tag_name // empty')
+          fi
+          if [[ ! "${NIGHTLY_TAG}" =~ ^nightly-[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+              echo "::error::unexpected nightly tag: ${NIGHTLY_TAG}"
+              exit 1
+          fi
+          echo "NIGHTLY_TAG=${NIGHTLY_TAG}" | tee -a "${GITHUB_ENV}"
+
+      - name: Download and install nightly and components
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          $ProgressPreference = 'SilentlyContinue'
+
+          $root = Join-Path $env:RUNNER_TEMP 'sycl_bundle'
+          $compiler = Join-Path $root 'dpcpp_compiler'
+          $oclcpu = Join-Path $root 'oclcpuexp'
+          New-Item -ItemType Directory -Force -Path $compiler, $oclcpu | Out-Null
+
+          gh release download $env:NIGHTLY_TAG -R intel/llvm -p sycl_windows.tar.gz -D $root
+          $bundle = Join-Path $root 'sycl_windows.tar.gz'
+          & "$env:SystemRoot\System32\tar.exe" -xzf $bundle -C $compiler
+          Remove-Item $bundle
+
+          gh release download $env:DRIVER_PATH -R intel/llvm -p $env:WIN_OCLCPUEXP_FN -D $root
+          $zip = Join-Path $root $env:WIN_OCLCPUEXP_FN
+          Expand-Archive -Path $zip -DestinationPath $oclcpu
+          Remove-Item $zip
+
+          # register the CPU runtime with the ICD loader without install.bat;
+          # the runtime directory on PATH also provides tbb12.dll
+          Add-Content -Path $env:GITHUB_ENV -Value "SYCL_BUNDLE_FOLDER=$root"
+          Add-Content -Path $env:GITHUB_ENV -Value "OCL_ICD_FILENAMES=$(Join-Path $oclcpu 'intelocl64.dll')"
+          Add-Content -Path $env:GITHUB_PATH -Value $oclcpu
+          Add-Content -Path $env:GITHUB_PATH -Value (Join-Path $compiler 'bin')
+
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.15'
+          architecture: x64
+
+      - name: Create virtual environment
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+
+          $venv = Join-Path $env:RUNNER_TEMP 'venv'
+          python -m venv $venv
+          # dpctl adds <venv>\Library\bin to the DLL search path, so link it to
+          # the DPC++ runtime
+          New-Item -ItemType Directory -Path (Join-Path $venv 'Library') | Out-Null
+          New-Item -ItemType Junction -Path (Join-Path $venv 'Library\bin') `
+              -Target (Join-Path $env:SYCL_BUNDLE_FOLDER 'dpcpp_compiler\bin') | Out-Null
+          Add-Content -Path $env:GITHUB_ENV -Value "VIRTUAL_ENV=$venv"
+          Add-Content -Path $env:GITHUB_PATH -Value (Join-Path $venv 'Scripts')
+
+      - name: Install dpctl dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          python -m pip install numpy cython "setuptools<80" pytest scikit-build cmake ninja "versioneer[toml]==0.29"
+
+      - name: Report compiler version
+        shell: pwsh
+        run: clang-cl --version
+
+      - name: Run sycl-ls
+        shell: pwsh
+        run: sycl-ls
+
+      - name: Build dpctl
+        shell: cmd
+        run: |
+          set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VS_PATH=%%i"
+          if not defined VS_PATH (
+              echo ::error::Visual Studio with MSVC x64 tools not found
+              exit /b 1
+          )
+          call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" || exit /b 1
+          rem -fsycl links sycl9.lib, which the linker looks up on LIB
+          set "LIB=%SYCL_BUNDLE_FOLDER%\dpcpp_compiler\lib;%LIB%"
+          python scripts\build_locally.py --c-compiler=clang-cl.exe --cxx-compiler=clang-cl.exe ^
+              --compiler-root="%SYCL_BUNDLE_FOLDER%\dpcpp_compiler\bin" || exit /b 1
+
+      - name: Run lsplatforms
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          python -m dpctl -f
+
+      - name: Run dpctl/tests
+        shell: pwsh
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
+          python -m pytest -sv dpctl/tests
