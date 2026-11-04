@@ -90,7 +90,8 @@ jobs:
           # runner steps are elevated, so the loader ignores OCL_ICD_FILENAMES
           $vendors = 'HKLM:\SOFTWARE\Khronos\OpenCL\Vendors'
           if (-not (Test-Path $vendors)) {
-              New-Item -Path $vendors | Out-Null
+              # -Force creates the missing parent keys
+              New-Item -Path $vendors -Force | Out-Null
           }
           New-ItemProperty -Path $vendors -Name (Join-Path $oclcpu 'intelocl64.dll') `
               -PropertyType DWord -Value 0 -Force | Out-Null
