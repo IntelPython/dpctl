@@ -1,0 +1,6 @@
+dpctl.SyclDevice.has\_aspect\_ext\_oneapi\_clock\_work\_group
+=============================================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.has_aspect_ext_oneapi_clock_work_group

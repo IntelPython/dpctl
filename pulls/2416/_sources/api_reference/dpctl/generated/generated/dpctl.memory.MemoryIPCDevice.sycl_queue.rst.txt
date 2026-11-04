@@ -1,0 +1,6 @@
+dpctl.memory.MemoryIPCDevice.sycl\_queue
+========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryIPCDevice.sycl_queue
