@@ -1,0 +1,6 @@
+dpctl.SyclDevice.image\_max\_buffer\_size
+=========================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.image_max_buffer_size
