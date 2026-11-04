@@ -53,6 +53,7 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_GetLastSubmitError,
     DPCTLQueue_HasEnableProfiling,
     DPCTLQueue_Hash,
     DPCTLQueue_IsInOrder,
@@ -1459,7 +1460,8 @@ cdef class SyclQueue(_SyclQueue):
                 of arguments the kernel takes.
             SyclKernelSubmitError:
                 If ``kernel`` does not reference a ``sycl::kernel``, or if
-                submission to the queue fails.
+                submission to the queue fails. The message includes the
+                reason reported by the SYCL runtime, if any.
         """
         cdef void **kargs = NULL
         cdef _arg_data_type *kargty = NULL
@@ -1591,8 +1593,13 @@ cdef class SyclQueue(_SyclQueue):
         free(depEvents)
 
         if Eref is NULL:
+            # the C API keeps the reason, e.g. the text of the SYCL exception
+            reason = DPCTLQueue_GetLastSubmitError().decode(
+                "utf-8", errors="replace"
+            )
+            msg = "Kernel submission to Sycl queue failed"
             raise SyclKernelSubmitError(
-                "Kernel submission to Sycl queue failed."
+                f"{msg}: {reason}" if reason else f"{msg}."
             )
 
         return SyclEvent._create(Eref)
@@ -1637,7 +1644,8 @@ cdef class SyclQueue(_SyclQueue):
                 of arguments the kernel takes.
             SyclKernelSubmitError:
                 If ``kernel`` does not reference a ``sycl::kernel``, or if
-                submission to the queue fails.
+                submission to the queue fails. The message includes the
+                reason reported by the SYCL runtime, if any.
         """
         cdef SyclEvent e = self.submit_async(kernel, args, gS, lS, dEvents)
         e.wait()

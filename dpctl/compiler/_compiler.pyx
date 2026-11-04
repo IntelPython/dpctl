@@ -720,6 +720,16 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
                 when compiling the program.
                 Default: ``None``
 
+                .. note::
+                    By default, kernels are compiled under the assumption
+                    that every global ID, range and offset fits into an
+                    ``int``. Starting with DPC++ 2026.2 the runtime checks
+                    this at each launch, so submitting such a kernel over
+                    more than ``INT_MAX`` (2,147,483,647) work-items raises
+                    :class:`dpctl.SyclKernelSubmitError`. Pass
+                    ``"-fno-sycl-id-queries-fit-in-int"`` in ``copts`` to
+                    compile kernels that are launched over larger ranges.
+
         Returns:
             kernel_bundle (:class:`.SyclKernelBundle`)
                 A :class:`.SyclKernelBundle` object wrapping the

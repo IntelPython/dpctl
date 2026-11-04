@@ -649,6 +649,7 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
         size_t NDims,
         const DPCTLSyclEventRef *DepEvents,
         size_t NDepEvents)
+    cdef const char *DPCTLQueue_GetLastSubmitError()
     cdef void DPCTLQueue_Wait(const DPCTLSyclQueueRef QRef) nogil
     cdef DPCTLSyclEventRef DPCTLQueue_Memcpy(
         const DPCTLSyclQueueRef Q,

@@ -368,3 +368,28 @@ def test_submit_wrong_number_of_args():
             [x_usm, x_usm, x_usm, ctypes.c_int(2), ctypes.c_int(3)],
             [n],
         )
+
+
+def test_submit_error_message():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    fn = get_spirv_abspath("multi_kernel.spv")
+    with open(fn, "br") as f:
+        spirv_bytes = f.read()
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
+    krn = kb.get_sycl_kernel("axpy")
+
+    n = 16
+    x_usm = dpm.MemoryUSMDevice(n * 4, queue=q)
+    # the SYCL runtime rejects a global range that is not a multiple of
+    # the local range, and its reason must reach the Python exception
+    prefix = "Kernel submission to Sycl queue failed: "
+    with pytest.raises(dpctl.SyclKernelSubmitError) as excinfo:
+        q.submit_async(
+            krn, [x_usm, x_usm, x_usm, ctypes.c_int(2)], [n + 1], [n]
+        )
+    msg = str(excinfo.value)
+    assert msg.startswith(prefix)
+    assert len(msg) > len(prefix)

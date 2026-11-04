@@ -277,6 +277,23 @@ DPCTLQueue_SubmitNDRange(__dpctl_keep const DPCTLSyclKernelRef KRef,
                          size_t NDepEvents);
 
 /*!
+ * @brief Returns the reason why the last call to DPCTLQueue_SubmitRange or
+ * DPCTLQueue_SubmitNDRange made in the calling thread failed.
+ *
+ * Both functions return NULL on failure and store the reason, e.g. the
+ * ``what()`` text of the SYCL exception thrown by ``sycl::queue::submit``.
+ * A successful call clears it.
+ *
+ * @return   A NUL-terminated string, empty if the last call succeeded or no
+ *           call has been made in this thread. The string is owned by
+ *           libsyclinterface and is valid until the next call to either
+ *           submit function in the same thread.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+const char *DPCTLQueue_GetLastSubmitError(void);
+
+/*!
  * @brief Calls the ``sycl::queue::submit`` function to do a blocking wait on
  * all enqueued tasks in the queue.
  *

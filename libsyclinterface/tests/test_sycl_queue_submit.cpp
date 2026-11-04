@@ -400,11 +400,56 @@ TEST_F(TestQueueSubmit, CheckForNullKernel)
         ERef = DPCTLQueue_SubmitRange(nullptr, QRef, nullptr, nullptr, 0, Range,
                                       RANGE_NDIMS, nullptr, 0));
     ASSERT_TRUE(ERef == nullptr);
+    EXPECT_STRNE(DPCTLQueue_GetLastSubmitError(), "");
 
     EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_SubmitNDRange(
                                 nullptr, QRef, nullptr, nullptr, 0, Range,
                                 lRange, RANGE_NDIMS, nullptr, 0));
     ASSERT_TRUE(ERef == nullptr);
+    EXPECT_STRNE(DPCTLQueue_GetLastSubmitError(), "");
+}
+
+TEST_F(TestQueueSubmit, CheckLastSubmitError)
+{
+    // a global range that is not a multiple of the local range makes
+    // sycl::queue::submit throw
+    std::size_t gRange[] = {SIZE + 1};
+    std::size_t lRange[] = {SIZE};
+    std::size_t RANGE_NDIMS = 1;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    auto kernel = DPCTLKernelBundle_GetKernel(KBRef, "_ZTS11RangeKernelIiE");
+    ASSERT_TRUE(kernel != nullptr);
+
+    auto a = DPCTLmalloc_shared(SIZE * sizeof(int), QRef);
+    auto b = DPCTLmalloc_shared(SIZE * sizeof(int), QRef);
+    auto c = DPCTLmalloc_shared(SIZE * sizeof(int), QRef);
+    ASSERT_TRUE(a && b && c);
+    int scalarVal = 3;
+    void *args[] = {unwrap<void>(a), unwrap<void>(b), unwrap<void>(c),
+                    (void *)&scalarVal};
+    DPCTLKernelArgType argTypes[] = {DPCTL_VOID_PTR, DPCTL_VOID_PTR,
+                                     DPCTL_VOID_PTR, DPCTL_INT32_T};
+
+    EXPECT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_SubmitNDRange(kernel, QRef, args, argTypes, 4, gRange,
+                                        lRange, RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef == nullptr);
+    EXPECT_STRNE(DPCTLQueue_GetLastSubmitError(), "");
+
+    // a successful submission clears the error
+    EXPECT_NO_FATAL_FAILURE(
+        ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, argTypes, 4, lRange,
+                                      RANGE_NDIMS, nullptr, 0));
+    ASSERT_TRUE(ERef != nullptr);
+    EXPECT_STREQ(DPCTLQueue_GetLastSubmitError(), "");
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(ERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(a, QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(b, QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(c, QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLKernel_Delete(kernel));
 }
 
 TEST_F(TestQueueSubmit, CheckForNullQueue)
