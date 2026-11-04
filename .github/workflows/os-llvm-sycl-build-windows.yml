@@ -142,8 +142,10 @@ jobs:
           call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" || exit /b 1
           rem -fsycl links sycl9.lib, which the linker looks up on LIB
           set "LIB=%SYCL_BUNDLE_FOLDER%\dpcpp_compiler\lib;%LIB%"
+          rem link.exe can't link the LTO bitcode pybind11 would otherwise build
           python scripts\build_locally.py --c-compiler=clang-cl.exe --cxx-compiler=clang-cl.exe ^
-              --compiler-root="%SYCL_BUNDLE_FOLDER%\dpcpp_compiler\bin" || exit /b 1
+              --compiler-root="%SYCL_BUNDLE_FOLDER%\dpcpp_compiler\bin" ^
+              --cmake-opts="-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF" || exit /b 1
 
       - name: Run lsplatforms
         shell: pwsh

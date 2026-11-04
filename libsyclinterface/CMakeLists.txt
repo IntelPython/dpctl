@@ -181,8 +181,14 @@ configure_file(
 set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
+    # clang-cl reads -Wall as /Wall, i.e. -Weverything
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(_dpctl_wall_flag "/W3 ")
+    else()
+        set(_dpctl_wall_flag "-Wall ")
+    endif()
     string(CONCAT WARNING_FLAGS
-        "-Wall "
+        "${_dpctl_wall_flag}"
         "-Wextra "
         "-Winit-self "
         "-Wunused-function "
