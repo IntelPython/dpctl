@@ -189,9 +189,12 @@ def test_pickling_reconstructor_invalid_type():
 def test_pickling_preserves_queue(memory_ctor):
     import pickle
 
-    devs = dpctl.get_devices()
+    aspect = f"usm_{expected_usm_type_str(memory_ctor)}_allocations"
+    devs = [
+        d for d in dpctl.get_devices() if getattr(d, f"has_aspect_{aspect}")
+    ]
     if not devs:
-        pytest.skip("No SYCL devices available")
+        pytest.skip(f"No SYCL devices with {aspect} available")
     for dev in devs:
         q = dpctl.SyclQueue(dev, property="in_order")
         mobj = memory_ctor(64, queue=q)
