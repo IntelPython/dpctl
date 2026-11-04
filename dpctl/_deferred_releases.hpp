@@ -1,4 +1,4 @@
-//===--- deferred_releases.hpp - keeps owners alive during offload --------===//
+//===--- _deferred_releases.hpp - keeps owners alive during offload -------===//
 //
 //                      Data Parallel Control (dpctl)
 //
@@ -321,9 +321,8 @@ private:
     /*!
      * @brief The only place a list is created.
      *
-     * `dpctl._sycl_queue` defines it and hands the list out through
-     * `DeferredReleases_Get`. Only the name is befriended, so a translation
-     * unit that declares it gets a list of its own, which nothing drains.
+     * Defined by `dpctl._sycl_queue`, which other modules defer to through
+     * `SyclQueue_DeferRelease`.
      */
     friend DeferredReleases &local_deferred_releases();
 
@@ -399,28 +398,6 @@ private:
      */
     void (*on_defer_)() = nullptr;
 };
-
-/*!
- * @brief Name of the kernel submitted by `submit_keep_alive_marker`.
- */
-class keep_alive_marker;
-
-/*!
- * @brief An event that gates the release of objects used by work on `q`.
- *
- * Submits an empty kernel after `deps`. On an in-order queue the submission is
- * also ordered after everything already submitted there, so the event covers
- * uses of the objects that the caller never tracked (gating on `deps` alone
- * would release them while that work still runs). On an out-of-order queue it
- * adds nothing over `deps` beyond collapsing them into one event.
- *
- * @return An event that completes once the objects have stopped being used.
- */
-inline sycl::event
-submit_keep_alive_marker(sycl::queue &q, const std::vector<sycl::event> &deps)
-{
-    return q.single_task<keep_alive_marker>(deps, []() {});
-}
 
 } // namespace detail
 } // namespace dpctl

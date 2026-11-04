@@ -445,6 +445,8 @@ def test_submit_keep_args_alive_deprecated():
         pytest.skip("Queue could not be created for default-selected device")
 
     usm = dpctl.memory.MemoryUSMDevice(4096, queue=q)
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns(DeprecationWarning) as record:
         ht_ev = q._submit_keep_args_alive((usm,), [])
     ht_ev.wait()
+    # attributed to the caller
+    assert record[0].filename == __file__

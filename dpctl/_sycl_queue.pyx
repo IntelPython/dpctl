@@ -116,7 +116,10 @@ cdef extern from "_async_dec_ref.hpp":
         DPCTLSyclQueueRef, PyObject **,
         size_t, DPCTLSyclEventRef *, size_t, int *
     ) nogil
-    void *deferred_releases_ptr() nogil
+    int defer_release(
+        DPCTLSyclQueueRef, DPCTLSyclEventRef *, size_t,
+        void (*)(void *) noexcept nogil, void *, DPCTLSyclEventRef
+    ) nogil
     # runs the releases that have come due, and so arbitrary Python code:
     # requires the GIL
     bint drain_deferred_releases()
@@ -1359,7 +1362,7 @@ cdef class SyclQueue(_SyclQueue):
             args (object):
                 Python object to keep alive, typically a tuple of the arguments
                 passed to an offloaded task.
-            depends (List[dpctl.SyclEvent], optional):
+            depends (Iterable[dpctl.SyclEvent], optional):
                 Gating events. On an out-of-order queue these decide when the
                 objects stop being used, so every task using them must be
                 covered. Default: ``None``.
@@ -1372,7 +1375,7 @@ cdef class SyclQueue(_SyclQueue):
 
         Raises:
             TypeError:
-                If ``depends`` is not a sequence of :class:`dpctl.SyclEvent`.
+                If ``depends`` is not an iterable of :class:`dpctl.SyclEvent`.
             RuntimeError:
                 If the release could not be scheduled. The reference taken on
                 ``args`` is then leaked deliberately, as the work using them
@@ -1430,7 +1433,7 @@ cdef class SyclQueue(_SyclQueue):
                 else:
                     free(depEvents)
                     raise TypeError(
-                        "A sequence of dpctl.SyclEvent is expected"
+                        "An iterable of dpctl.SyclEvent is expected"
                     )
 
         # increment reference counts to list of arguments
@@ -1477,7 +1480,7 @@ cdef class SyclQueue(_SyclQueue):
                were released: see :meth:`dpctl.SyclQueue.keep_args_alive` for
                when the reference taken is dropped.
 
-        .. deprecated:: 0.23.0
+        .. deprecated:: 0.24.0
            The method is deprecated, use
            :meth:`dpctl.SyclQueue.keep_args_alive` instead, which this now
            calls and which behaves identically.
@@ -1487,7 +1490,8 @@ cdef class SyclQueue(_SyclQueue):
             "be removed in a future release. Use "
             "dpctl.SyclQueue.keep_args_alive instead.",
             DeprecationWarning,
-            stacklevel=2,
+            # a cpdef method has no frame, so the caller's is the first
+            stacklevel=1,
         )
 
         return self.keep_args_alive(args, dEvents)
@@ -2372,8 +2376,25 @@ cdef api SyclQueue SyclQueue_Make(DPCTLSyclQueueRef QRef):
     return SyclQueue._create(copied_QRef)
 
 
-cdef api void *DeferredReleases_Get() noexcept nogil:
-    return deferred_releases_ptr()
+cdef api int SyclQueue_DeferRelease(
+    DPCTLSyclQueueRef QRef,
+    DPCTLSyclEventRef *depERefs,
+    size_t nDepERefs,
+    void (*release)(void *) noexcept nogil,
+    void *data,
+    DPCTLSyclEventRef markerERef
+) noexcept nogil:
+    """
+    C-API function to call ``release(data)`` once an empty kernel, submitted
+    to ``QRef`` after ``depERefs``, has completed. The kernel's event is
+    assigned to the ``sycl::event`` behind ``markerERef``.
+
+    ``release`` is called with the GIL held. Returns 0 on success, and 1 if
+    nothing was deferred, in which case ``release`` is never called.
+    """
+    return defer_release(
+        QRef, depERefs, nDepERefs, release, data, markerERef
+    )
 
 
 cdef bint drain_releases():

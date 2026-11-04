@@ -18,7 +18,11 @@
 
 import subprocess
 import sys
+import sysconfig
 import textwrap
+import threading
+import time
+import warnings
 
 import pytest
 
@@ -26,9 +30,12 @@ import dpctl
 import dpctl.memory
 import dpctl.utils
 from dpctl._sycl_queue import (
+    _drain_deferred_releases,
     _start_deferred_release_watcher,
     _stop_deferred_release_watcher,
 )
+
+_free_threaded = bool(sysconfig.get_config_var("Py_GIL_DISABLED"))
 
 
 @pytest.fixture
@@ -41,6 +48,40 @@ def stopped_release_watcher():
     _stop_deferred_release_watcher()
     yield
     _start_deferred_release_watcher()
+
+
+def _queue(**kwargs):
+    try:
+        return dpctl.SyclQueue(**kwargs)
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+
+
+def _submit_long_work(q, usm):
+    """Copy into `usm` repeatedly, returning the event of the last copy."""
+    # the first keep_args_alive on a device builds its kernel, which can take
+    # longer than the copies
+    q.keep_args_alive(()).wait()
+    host_buf = bytearray(usm.nbytes)
+    ev = None
+    for _ in range(8):
+        ev = q.copy_async(usm, host_buf, usm.nbytes, [ev] if ev else None)
+    q.keep_args_alive((host_buf,), [ev])
+    return ev
+
+
+def _complete(ev):
+    return ev.execution_status == dpctl.event_status_type.complete
+
+
+class _Sentinel:
+    """Appends to `released` when it is destroyed."""
+
+    def __init__(self, released):
+        self._released = released
+
+    def __del__(self):
+        self._released.append(True)
 
 
 @pytest.mark.filterwarnings("ignore:.*:RuntimeWarning")
@@ -117,43 +158,31 @@ def test_order_manager():
 
 
 def test_order_manager_waits_for_cleanup_events():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created for default-selected device")
+    q = _queue()
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
 
-    n_bytes = 4 * 1024 * 1024
-    host_buf = bytearray(n_bytes)
-    usm = dpctl.memory.MemoryUSMDevice(n_bytes, queue=q)
-
-    copy_ev = q.copy_async(usm, host_buf, n_bytes)
+    usm = dpctl.memory.MemoryUSMDevice(32 * 1024 * 1024, queue=q)
+    copy_ev = _submit_long_work(q, usm)
     cleanup_ev = q.keep_args_alive((usm,), [copy_ev])
     # only the cleanup event is recorded, so waiting on the manager can only
-    # wait for the copy through it
+    # wait for the copies through it
     _mngr.add_cleanup_event(cleanup_ev)
+    if _mngr.num_cleanup_events == 0:
+        pytest.skip("The copies completed before the event was recorded")
     _mngr.wait()
-    assert copy_ev.execution_status == dpctl.event_status_type.complete
+    assert _complete(copy_ev)
     assert _mngr.num_cleanup_events == 0
     _som.clear()
 
 
 def test_order_manager_wait_drops_references(stopped_release_watcher):
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created for default-selected device")
+    q = _queue()
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
 
     released = []
-
-    class Sentinel:
-        def __del__(self):
-            released.append(True)
-
-    args = (Sentinel(),)
+    args = (_Sentinel(released),)
     ev = q.keep_args_alive(args)
     del args
     ev.wait()
@@ -166,26 +195,114 @@ def test_order_manager_wait_drops_references(stopped_release_watcher):
     _som.clear()
 
 
-def test_order_manager_deprecated_host_task_api():
-    try:
-        q = dpctl.SyclQueue()
-    except dpctl.SyclQueueCreationError:
-        pytest.skip("Queue could not be created for default-selected device")
+def test_order_manager_wait_with_release_watcher_running():
+    q = _queue()
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
 
-    with pytest.warns(DeprecationWarning):
+    n = 200
+    released = []
+    for _ in range(n):
+        args = (_Sentinel(released),)
+        _mngr.add_cleanup_event(q.keep_args_alive(args))
+        del args
+        # races the thread for the same releases
+        _mngr.wait()
+
+    # what the thread took up is released by it rather than by `wait`
+    deadline = time.monotonic() + 10
+    while len(released) < n and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert len(released) == n
+    _som.clear()
+
+
+def test_keep_args_alive_on_in_order_queue_waits_for_earlier_work(
+    stopped_release_watcher,
+):
+    q = _queue(property="in_order")
+
+    usm = dpctl.memory.MemoryUSMDevice(32 * 1024 * 1024, queue=q)
+    copy_ev = _submit_long_work(q, usm)
+
+    released = []
+    args = (_Sentinel(released),)
+    # no events: the queue orders the release after the copies
+    q.keep_args_alive(args)
+    del args
+
+    _drain_deferred_releases()
+    if not _complete(copy_ev):
+        assert not released
+    q.wait()
+    _drain_deferred_releases()
+    assert released == [True]
+
+
+def test_failed_allocation_drains_releases(stopped_release_watcher):
+    q = _queue()
+
+    released = []
+    args = (_Sentinel(released),)
+    q.keep_args_alive(args).wait()
+    del args
+    assert not released
+
+    with pytest.raises(dpctl.memory.USMAllocationError):
+        dpctl.memory.MemoryUSMDevice(1 << 62, queue=q)
+    assert released == [True]
+
+
+def test_order_manager_host_task_api():
+    q = _queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+
+    # deprecated in the documentation only, as dpnp still calls them
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         assert isinstance(_mngr.num_host_task_events, int)
-    with pytest.warns(DeprecationWarning):
         assert isinstance(_mngr.host_task_events, list)
-    with pytest.warns(DeprecationWarning):
         _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
-    with pytest.warns(DeprecationWarning):
         _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
-    with pytest.warns(DeprecationWarning):
         _mngr.add_event_pair(dpctl.SyclEvent(), [dpctl.SyclEvent()])
     _mngr.wait()
     _som.clear()
+
+
+@pytest.mark.skipif(
+    _free_threaded,
+    reason="The thread owning the object runs its __del__",
+)
+def test_release_watcher_is_one_named_python_thread():
+    q = _queue()
+
+    ran_on = []
+
+    class Records:
+        def __del__(self):
+            ran_on.append(threading.current_thread())
+
+    def watcher_threads():
+        main = threading.main_thread()
+        return [t for t in ran_on if t is not main]
+
+    # the caller drops the last reference instead if the release runs before
+    # the call returns, so a release is repeated until two ran on the thread
+    for _ in range(50):
+        if len(watcher_threads()) >= 2:
+            break
+        n = len(ran_on)
+        q.keep_args_alive((Records(),)).wait()
+        deadline = time.monotonic() + 5
+        while len(ran_on) == n and time.monotonic() < deadline:
+            time.sleep(0.01)
+
+    seen = watcher_threads()
+    if len(seen) < 2:
+        pytest.skip("The releases did not run on dpctl's thread")
+    assert seen[0] is seen[1]
+    assert seen[0].name == "dpctl-deferred-releases"
 
 
 def _run_python(script, timeout):
@@ -287,6 +404,39 @@ print("hung" if stopper.is_alive() or starter.is_alive() else "ok")
         timeout=30,
     )
     assert out == "ok"
+
+
+def test_start_after_timed_out_stop_runs_releases():
+    # the stop gives up on the blocking release after a second
+    out = _run_python(
+        _BLOCKING_RELEASE + """
+_stop_deferred_release_watcher()
+starter = threading.Thread(target=_start_deferred_release_watcher)
+starter.start()
+
+released = []
+
+
+class Sentinel:
+    def __del__(self):
+        released.append(True)
+
+
+# deferred while the thread the stop let go of is still running
+args = (Sentinel(),)
+q.keep_args_alive(args).wait()
+del args
+unblock.set()
+starter.join(10)
+
+deadline = time.monotonic() + 5
+while not released and time.monotonic() < deadline:
+    time.sleep(0.01)
+print("released" if released else "held")
+""",
+        timeout=30,
+    )
+    assert out == "released"
 
 
 @pytest.mark.skipif(

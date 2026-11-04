@@ -1,6 +1,5 @@
 import sys
 import threading
-import warnings
 import weakref
 from collections import defaultdict
 
@@ -32,14 +31,6 @@ class _SequentialOrderManager:
         SyclEvent.wait_for(_local.get_cleanup_events())
 
     def add_event_pair(self, host_task_ev, comp_ev):
-        warnings.warn(
-            "add_event_pair is deprecated and will be removed in a future "
-            "release. dpctl no longer submits host tasks. Use "
-            "add_event(comp_ev), and add_cleanup_event for an event that "
-            "gates the release of objects used by a task.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         _local = self._state
         if isinstance(host_task_ev, SyclEvent) and isinstance(
             comp_ev, SyclEvent
@@ -74,13 +65,6 @@ class _SequentialOrderManager:
 
     @property
     def num_host_task_events(self):
-        warnings.warn(
-            "num_host_task_events is deprecated and will be removed in a "
-            "future release. dpctl no longer submits host tasks. Use "
-            "num_cleanup_events instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.num_cleanup_events
 
     @property
@@ -95,13 +79,6 @@ class _SequentialOrderManager:
 
     @property
     def host_task_events(self):
-        warnings.warn(
-            "host_task_events is deprecated and will be removed in a future "
-            "release. dpctl no longer submits host tasks. Use cleanup_events "
-            "instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         return self.cleanup_events
 
     @property
@@ -118,8 +95,8 @@ class _SequentialOrderManager:
         _local = self._state
         res = _local.wait()
         # the events are complete, so what was held for those tasks is released
-        # here rather than left for dpctl's thread; a release runs Python code,
-        # which finalization rules out
+        # here, unless dpctl's thread has already taken it to release; a release
+        # runs Python code, which finalization rules out
         if not sys.is_finalizing():
             _drain_deferred_releases()
         return res

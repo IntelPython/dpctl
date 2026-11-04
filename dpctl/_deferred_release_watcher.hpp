@@ -25,7 +25,14 @@
 //===----------------------------------------------------------------------===//
 
 #pragma once
-#include <algorithm>
+
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+
 #include <atomic>
 #include <chrono>
 #include <functional>
@@ -37,7 +44,7 @@
 
 #include "Python.h"
 
-#include "detail/deferred_releases.hpp"
+#include "_deferred_releases.hpp"
 
 namespace dpctl
 {
@@ -49,8 +56,8 @@ inline void start_watcher_if_enabled();
 /*!
  * @brief The deferred releases submitted.
  *
- * Reached from elsewhere through the module's `DeferredReleases_Get`. The
- * first release deferred starts `dpctl`'s thread.
+ * Other modules reach it through `SyclQueue_DeferRelease`. The first release
+ * deferred starts `dpctl`'s thread.
  */
 inline DeferredReleases &local_deferred_releases()
 {
@@ -59,19 +66,6 @@ inline DeferredReleases &local_deferred_releases()
     static DeferredReleases *instance =
         new DeferredReleases(&start_watcher_if_enabled);
     return *instance;
-}
-
-/*!
- * @brief Whether the interpreter can still be called into.
- */
-inline bool interpreter_is_live()
-{
-    const bool initialized = Py_IsInitialized();
-#if PY_VERSION_HEX < 0x30d0000
-    return initialized && !_Py_IsFinalizing();
-#else
-    return initialized && !Py_IsFinalizing();
-#endif
 }
 
 /*!
@@ -91,13 +85,30 @@ class DeferredReleaseWatcher
 public:
     /*!
      * @brief Start the thread, and start it again whenever it is needed.
+     *
+     * Waits up to `stop_timeout` for a thread that a timed-out `stop` let go
+     * of, so expects the caller not to hold the GIL.
      */
     void start()
     {
-        std::lock_guard<std::mutex> lock(mutex_);
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
 
-        enabled_ = true;
-        start_nolock();
+            enabled_ = true;
+            if (thread_.joinable() || stopping_ ||
+                finished().load(std::memory_order_acquire))
+            {
+                start_nolock();
+                return;
+            }
+        }
+
+        wait_for_thread(stop_timeout);
+
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (enabled_) {
+            start_nolock();
+        }
     }
 
     /*!
@@ -145,6 +156,10 @@ public:
 
         std::lock_guard<std::mutex> lock(mutex_);
         stopping_ = false;
+        // a `start` made while stopping
+        if (enabled_) {
+            start_nolock();
+        }
     }
 
     /*!
@@ -179,6 +194,7 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
 
         enabled_ = false;
+        unloading().store(true, std::memory_order_release);
         end_without_hanging(thread_, joining_at_unload_is_safe, abandon_after);
     }
 
@@ -193,23 +209,30 @@ private:
     using clock = DeferredReleases::clock;
 
     /*!
+     * @brief Whether the interpreter can still be called into.
+     */
+    static bool interpreter_is_live()
+    {
+        const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+        return initialized && !_Py_IsFinalizing();
+#else
+        return initialized && !Py_IsFinalizing();
+#endif
+    }
+
+    /*!
      * @brief How long the thread sleeps between passes, at the least.
      */
     static constexpr clock::duration min_poll_interval =
         std::chrono::milliseconds(5);
 
     /*!
-     * @brief How long the thread sleeps between passes, at the most.
-     */
-    static constexpr clock::duration max_poll_interval =
-        std::chrono::milliseconds(100);
-
-    /*!
      * @brief How many times a pass over the list its own duration buys.
      *
      * The sleep is stretched with the cost of a pass, which grows with the
      * number of items, so the thread costs about a `1 / poll_share` of a core
-     * until `max_poll_interval` is reached.
+     * however many there are.
      */
     static constexpr clock::duration::rep poll_share = 20;
 
@@ -223,6 +246,11 @@ private:
      */
     static constexpr clock::duration abandon_after =
         std::chrono::milliseconds(200);
+
+    /*!
+     * @brief The thread's name in Python's `threading`.
+     */
+    static constexpr const char *thread_name = "dpctl-deferred-releases";
 
     /*!
      * @brief Whether a thread may be joined as this module is unloaded.
@@ -288,9 +316,9 @@ private:
 
         // waited for whether or not it may be joined: the report says the
         // thread is done with this object, which is what makes detaching safe
-        const bool reported_finished = wait_for_thread(timeout);
+        const bool done = has_exited(thread) || wait_for_thread(timeout);
 
-        if (may_join && reported_finished) {
+        if (may_join && done) {
             thread.join();
         }
         else {
@@ -308,6 +336,43 @@ private:
     {
         static std::atomic<bool> flag{true};
         return flag;
+    }
+
+    /*!
+     * @brief Whether the module's static objects are being destroyed.
+     *
+     * The interpreter may then be up but not running, so the thread must not
+     * wait for the GIL.
+     */
+    static std::atomic<bool> &unloading()
+    {
+        static std::atomic<bool> flag{false};
+        return flag;
+    }
+
+    /*!
+     * @brief Name the calling thread in Python's `threading`.
+     *
+     * Expects the caller to hold the GIL. Failing to is not reported.
+     */
+    static void name_python_thread()
+    {
+        PyObject *threading = PyImport_ImportModule("threading");
+        PyObject *current =
+            threading
+                ? PyObject_CallMethod(threading, "current_thread", nullptr)
+                : nullptr;
+        if (current) {
+            PyObject *name = PyUnicode_FromString(thread_name);
+            if (name) {
+                static_cast<void>(
+                    PyObject_SetAttrString(current, "name", name));
+                Py_DECREF(name);
+            }
+        }
+        Py_XDECREF(current);
+        Py_XDECREF(threading);
+        PyErr_Clear();
     }
 
     /*!
@@ -346,28 +411,37 @@ private:
 
     /*!
      * @brief The loop run by `watch`, collecting releases onto `due`.
+     *
+     * The Python thread state made for the first releases run is kept until
+     * the loop ends, so that the thread is one Python thread throughout.
      */
     static void run_due_until_stopped(std::vector<std::function<void()>> &due)
     {
         DeferredReleases &releases = local_deferred_releases();
         clock::duration poll_interval = min_poll_interval;
 
+        bool keeps_thread_state = false;
+        PyGILState_STATE kept = PyGILState_UNLOCKED;
+
         while (releases.wait_for_due(poll_interval)) {
             const clock::time_point started = clock::now();
             const bool any = releases.collect_due(due);
             const clock::duration looked_for = clock::now() - started;
 
-            poll_interval = std::clamp<clock::duration>(
-                looked_for * poll_share, min_poll_interval, max_poll_interval);
+            poll_interval = looked_for * poll_share;
+            if (poll_interval < min_poll_interval) {
+                poll_interval = min_poll_interval;
+            }
 
             if (!any) {
                 continue;
             }
 
-            // what was collected is not run, like everything else still held
+            // what was collected is not run, like everything else still held,
+            // and the thread state is left to the interpreter's shutdown
             if (!interpreter_is_live()) {
                 releases.put_back(due);
-                break;
+                return;
             }
 
             const PyGILState_STATE gstate = PyGILState_Ensure();
@@ -375,6 +449,11 @@ private:
             const bool live = interpreter_is_live();
             try {
                 if (live) {
+                    if (!keeps_thread_state) {
+                        kept = PyGILState_Ensure();
+                        keeps_thread_state = true;
+                        name_python_thread();
+                    }
                     releases.run_collected(due, /* until_stopped */ true);
                 }
             }
@@ -387,6 +466,11 @@ private:
 #endif
             catch (...)
             {
+                // `kept` first, so that the release deleting the thread state
+                // is the one dropping the GIL
+                if (keeps_thread_state) {
+                    PyGILState_Release(kept);
+                }
                 PyGILState_Release(gstate);
                 throw;
             }
@@ -394,9 +478,35 @@ private:
 
             if (!live) {
                 releases.put_back(due);
-                break;
+                return;
             }
         }
+
+        // stopped by `stop`, which waits for this without the GIL
+        if (keeps_thread_state &&
+            !unloading().load(std::memory_order_acquire) &&
+            interpreter_is_live())
+        {
+            const PyGILState_STATE gstate = PyGILState_Ensure();
+            PyGILState_Release(kept);
+            PyGILState_Release(gstate);
+        }
+    }
+
+    /*!
+     * @brief Whether `thread` no longer runs, without having reported so.
+     *
+     * Only known on Windows, where an exiting process kills its other threads
+     * before destroying the module's static objects.
+     */
+    static bool has_exited(std::thread &thread)
+    {
+#ifdef _WIN32
+        return WaitForSingleObject(thread.native_handle(), 0) == WAIT_OBJECT_0;
+#else
+        static_cast<void>(thread);
+        return false;
+#endif
     }
 
     /*!
@@ -444,21 +554,6 @@ inline void start_watcher_if_enabled()
 
 } // namespace detail
 } // namespace dpctl
-
-/*!
- * @brief Address of the module's `DeferredReleases`.
- *
- * Returns nullptr if the list could not be created.
- */
-inline void *deferred_releases_ptr()
-{
-    try {
-        return static_cast<void *>(&dpctl::detail::local_deferred_releases());
-    } catch (...) {
-        // no exception may escape into Cython
-        return nullptr;
-    }
-}
 
 /*!
  * @brief Run the releases that have come due, dropping the references held.
