@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMDevice.size
-=================================
-
-.. currentmodule:: dpctl.memory
-
-.. autoattribute:: MemoryUSMDevice.size
