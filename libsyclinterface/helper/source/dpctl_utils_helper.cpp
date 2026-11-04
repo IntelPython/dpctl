@@ -230,6 +230,26 @@ std::string DPCTL_AspectToStr(aspect aspectTy)
         ss << "ext_oneapi_ipc_memory";
         break;
 #endif
+    case aspect::ext_oneapi_is_integrated_gpu:
+        ss << "ext_oneapi_is_integrated_gpu";
+        break;
+    case aspect::ext_oneapi_clock_sub_group:
+        ss << "ext_oneapi_clock_sub_group";
+        break;
+    case aspect::ext_oneapi_clock_work_group:
+        ss << "ext_oneapi_clock_work_group";
+        break;
+    case aspect::ext_oneapi_clock_device:
+        ss << "ext_oneapi_clock_device";
+        break;
+    case aspect::ext_oneapi_native_assert:
+        ss << "ext_oneapi_native_assert";
+        break;
+#ifdef SYCL_EXT_ONEAPI_REGISTER_HOST_MEMORY
+    case aspect::ext_oneapi_register_host_memory:
+        ss << "ext_oneapi_register_host_memory";
+        break;
+#endif
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -310,6 +330,26 @@ aspect DPCTL_StrToAspectType(const std::string &aspectTyStr)
         aspectTy = aspect::ext_oneapi_ipc_memory;
     }
 #endif
+    else if (aspectTyStr == "ext_oneapi_is_integrated_gpu") {
+        aspectTy = aspect::ext_oneapi_is_integrated_gpu;
+    }
+    else if (aspectTyStr == "ext_oneapi_clock_sub_group") {
+        aspectTy = aspect::ext_oneapi_clock_sub_group;
+    }
+    else if (aspectTyStr == "ext_oneapi_clock_work_group") {
+        aspectTy = aspect::ext_oneapi_clock_work_group;
+    }
+    else if (aspectTyStr == "ext_oneapi_clock_device") {
+        aspectTy = aspect::ext_oneapi_clock_device;
+    }
+    else if (aspectTyStr == "ext_oneapi_native_assert") {
+        aspectTy = aspect::ext_oneapi_native_assert;
+    }
+#ifdef SYCL_EXT_ONEAPI_REGISTER_HOST_MEMORY
+    else if (aspectTyStr == "ext_oneapi_register_host_memory") {
+        aspectTy = aspect::ext_oneapi_register_host_memory;
+    }
+#endif
     else {
         // \todo handle the error
         throw std::runtime_error("Unsupported aspect type");
@@ -366,6 +406,20 @@ aspect DPCTL_DPCTLAspectTypeToSyclAspect(DPCTLSyclAspectType AspectTy)
     case DPCTLSyclAspectType::ext_oneapi_ipc_memory:
         return aspect::ext_oneapi_ipc_memory;
 #endif
+    case DPCTLSyclAspectType::ext_oneapi_is_integrated_gpu:
+        return aspect::ext_oneapi_is_integrated_gpu;
+    case DPCTLSyclAspectType::ext_oneapi_clock_sub_group:
+        return aspect::ext_oneapi_clock_sub_group;
+    case DPCTLSyclAspectType::ext_oneapi_clock_work_group:
+        return aspect::ext_oneapi_clock_work_group;
+    case DPCTLSyclAspectType::ext_oneapi_clock_device:
+        return aspect::ext_oneapi_clock_device;
+    case DPCTLSyclAspectType::ext_oneapi_native_assert:
+        return aspect::ext_oneapi_native_assert;
+#ifdef SYCL_EXT_ONEAPI_REGISTER_HOST_MEMORY
+    case DPCTLSyclAspectType::ext_oneapi_register_host_memory:
+        return aspect::ext_oneapi_register_host_memory;
+#endif
     default:
         throw std::runtime_error("Unsupported aspect type");
     }
@@ -419,6 +473,20 @@ DPCTLSyclAspectType DPCTL_SyclAspectToDPCTLAspectType(aspect Aspect)
 #ifdef SYCL_EXT_ONEAPI_INTER_PROCESS_COMMUNICATION
     case aspect::ext_oneapi_ipc_memory:
         return DPCTLSyclAspectType::ext_oneapi_ipc_memory;
+#endif
+    case aspect::ext_oneapi_is_integrated_gpu:
+        return DPCTLSyclAspectType::ext_oneapi_is_integrated_gpu;
+    case aspect::ext_oneapi_clock_sub_group:
+        return DPCTLSyclAspectType::ext_oneapi_clock_sub_group;
+    case aspect::ext_oneapi_clock_work_group:
+        return DPCTLSyclAspectType::ext_oneapi_clock_work_group;
+    case aspect::ext_oneapi_clock_device:
+        return DPCTLSyclAspectType::ext_oneapi_clock_device;
+    case aspect::ext_oneapi_native_assert:
+        return DPCTLSyclAspectType::ext_oneapi_native_assert;
+#ifdef SYCL_EXT_ONEAPI_REGISTER_HOST_MEMORY
+    case aspect::ext_oneapi_register_host_memory:
+        return DPCTLSyclAspectType::ext_oneapi_register_host_memory;
 #endif
     default:
         throw std::runtime_error("Unsupported aspect type");

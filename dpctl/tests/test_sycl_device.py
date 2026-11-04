@@ -164,6 +164,13 @@ list_of_supported_aspects = [
     "emulated",
     "is_component",
     "is_composite",
+    "ext_oneapi_ipc_memory",
+    "ext_oneapi_is_integrated_gpu",
+    "ext_oneapi_clock_sub_group",
+    "ext_oneapi_clock_work_group",
+    "ext_oneapi_clock_device",
+    "ext_oneapi_native_assert",
+    "ext_oneapi_register_host_memory",
 ]
 
 # SYCL 2020 spec aspects not presently

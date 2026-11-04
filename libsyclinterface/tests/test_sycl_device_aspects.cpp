@@ -131,7 +131,23 @@ auto build_params()
             std::make_pair("is_component",
                            sycl::aspect::ext_oneapi_is_component),
             std::make_pair("is_composite",
-                           sycl::aspect::ext_oneapi_is_composite));
+                           sycl::aspect::ext_oneapi_is_composite),
+            std::make_pair("ext_oneapi_is_integrated_gpu",
+                           sycl::aspect::ext_oneapi_is_integrated_gpu),
+            std::make_pair("ext_oneapi_clock_sub_group",
+                           sycl::aspect::ext_oneapi_clock_sub_group),
+            std::make_pair("ext_oneapi_clock_work_group",
+                           sycl::aspect::ext_oneapi_clock_work_group),
+            std::make_pair("ext_oneapi_clock_device",
+                           sycl::aspect::ext_oneapi_clock_device),
+            std::make_pair("ext_oneapi_native_assert",
+                           sycl::aspect::ext_oneapi_native_assert)
+#ifdef SYCL_EXT_ONEAPI_REGISTER_HOST_MEMORY
+                ,
+            std::make_pair("ext_oneapi_register_host_memory",
+                           sycl::aspect::ext_oneapi_register_host_memory)
+#endif
+        );
 
     auto pairs =
         build_param_pairs<const char *, std::pair<const char *, sycl::aspect>,

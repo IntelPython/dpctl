@@ -252,6 +252,48 @@ def check_has_aspect_emulated(device):
         pytest.fail("has_aspect_emulated call failed")
 
 
+def check_has_aspect_ext_oneapi_is_integrated_gpu(device):
+    try:
+        device.has_aspect_ext_oneapi_is_integrated_gpu
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_is_integrated_gpu call failed")
+
+
+def check_has_aspect_ext_oneapi_clock_sub_group(device):
+    try:
+        device.has_aspect_ext_oneapi_clock_sub_group
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_clock_sub_group call failed")
+
+
+def check_has_aspect_ext_oneapi_clock_work_group(device):
+    try:
+        device.has_aspect_ext_oneapi_clock_work_group
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_clock_work_group call failed")
+
+
+def check_has_aspect_ext_oneapi_clock_device(device):
+    try:
+        device.has_aspect_ext_oneapi_clock_device
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_clock_device call failed")
+
+
+def check_has_aspect_ext_oneapi_native_assert(device):
+    try:
+        device.has_aspect_ext_oneapi_native_assert
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_native_assert call failed")
+
+
+def check_has_aspect_ext_oneapi_register_host_memory(device):
+    try:
+        device.has_aspect_ext_oneapi_register_host_memory
+    except Exception:
+        pytest.fail("has_aspect_ext_oneapi_register_host_memory call failed")
+
+
 def check_is_accelerator(device):
     try:
         device.is_accelerator
@@ -838,6 +880,12 @@ list_of_checks = [
     check_has_aspect_usm_atomic_shared_allocations,
     check_has_aspect_host_debuggable,
     check_has_aspect_emulated,
+    check_has_aspect_ext_oneapi_is_integrated_gpu,
+    check_has_aspect_ext_oneapi_clock_sub_group,
+    check_has_aspect_ext_oneapi_clock_work_group,
+    check_has_aspect_ext_oneapi_clock_device,
+    check_has_aspect_ext_oneapi_native_assert,
+    check_has_aspect_ext_oneapi_register_host_memory,
     check_max_read_image_args,
     check_max_write_image_args,
     check_image_2d_max_width,

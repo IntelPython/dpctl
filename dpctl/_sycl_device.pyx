@@ -961,6 +961,86 @@ cdef class SyclDevice(_SyclDevice):
         return DPCTLDevice_HasAspect(self._device_ref, AT)
 
     @property
+    def has_aspect_ext_oneapi_is_integrated_gpu(self):
+        """ Returns ``True`` if this device is a GPU integrated with
+        the host processor, sharing its memory, ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if device is an integrated GPU.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_is_integrated_gpu
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_clock_sub_group(self):
+        """ Returns ``True`` if this device supports reading a clock
+        counter of ``sub_group`` scope in kernels
+        (``sycl_ext_oneapi_clock``), ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if device supports a sub-group scope clock.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_clock_sub_group
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_clock_work_group(self):
+        """ Returns ``True`` if this device supports reading a clock
+        counter of ``work_group`` scope in kernels
+        (``sycl_ext_oneapi_clock``), ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if device supports a work-group scope clock.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_clock_work_group
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_clock_device(self):
+        """ Returns ``True`` if this device supports reading a clock
+        counter of ``device`` scope in kernels
+        (``sycl_ext_oneapi_clock``), ``False`` otherwise.
+
+        Returns:
+            bool:
+                Indicates if device supports a device scope clock.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_clock_device
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_native_assert(self):
+        """ Returns ``True`` if this device supports ``assert`` in
+        kernels natively, ``False`` otherwise. On devices without this
+        aspect, ``assert`` statements in kernels are ignored.
+
+        Returns:
+            bool:
+                Indicates if device supports native ``assert`` in kernels.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_native_assert
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
+    def has_aspect_ext_oneapi_register_host_memory(self):
+        """ Returns ``True`` if host memory allocated outside of SYCL
+        can be registered for faster transfers to this device
+        (``sycl_ext_oneapi_register_host_memory``), ``False`` otherwise.
+
+        Always ``False`` if dpctl was built with a DPC++ compiler that
+        does not support this extension (older than 2026.2).
+
+        Returns:
+            bool:
+                Indicates if device supports registering host memory.
+        """
+        cdef _aspect_type AT = _aspect_type._ext_oneapi_register_host_memory
+        return DPCTLDevice_HasAspect(self._device_ref, AT)
+
+    @property
     def image_2d_max_width(self):
         """ Returns the maximum width of a 2D image or 1D image in pixels.
             The minimum value is 8192 if the SYCL device has
