@@ -967,53 +967,7 @@ const char *DPCTLKernelBuildLog_Get(__dpctl_keep DPCTLKernelBuildLogRef Ref)
 
 namespace syclex = sycl::ext::oneapi::experimental;
 
-#if defined(SYCL_EXT_ONEAPI_KERNEL_COMPILER) &&                                \
-    defined(__SYCL_COMPILER_VERSION) && !defined(SUPPORTS_SYCL_COMPILATION)
-// SYCL source code compilation is supported from 2025.1 onwards.
-#if __SYCL_COMPILER_VERSION >= 20250317u
-#define SUPPORTS_SYCL_COMPILATION 1
-#else
-#define SUPPORTS_SYCL_COMPILATION 0
-#endif
-#endif
-
-bool DPCTLKernelBundle_CreateFromSYCLSource_Available()
-{
-#if (SUPPORTS_SYCL_COMPILATION > 0)
-    return true;
-#else
-    return false;
-#endif
-}
-
-#if (SUPPORTS_SYCL_COMPILATION > 0)
-// The property for registering names was renamed between DPC++ versions 2025.1
-// and 2025.2. The original name was `registered_kernel_names`, the new name is
-// `registered_names`. To select the correct name without being overly reliant
-// on the SYCL compiler version definition, we forward declare both names and
-// then select the new name if it is defined (i.e., not only declared).
-namespace sycl::ext::oneapi::experimental
-{
-struct registered_names;
-struct registered_kernel_names;
-} // namespace sycl::ext::oneapi::experimental
-
-template <typename NewT, typename FallbackT, typename = void>
-struct new_type_if_defined
-{
-    using type = FallbackT;
-};
-
-template <typename NewT, typename FallbackT>
-struct new_type_if_defined<NewT, FallbackT, std::void_t<decltype(sizeof(NewT))>>
-{
-    using type = NewT;
-};
-
-using registered_names_property_t =
-    new_type_if_defined<syclex::registered_names,
-                        syclex::registered_kernel_names>::type;
-#endif
+bool DPCTLKernelBundle_CreateFromSYCLSource_Available() { return true; }
 
 __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     __dpctl_keep const DPCTLSyclContextRef Ctx,
@@ -1024,7 +978,6 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
     __dpctl_keep DPCTLBuildOptionListRef BuildOptions,
     __dpctl_keep DPCTLKernelBuildLogRef BuildLog)
 {
-#if (SUPPORTS_SYCL_COMPILATION > 0)
     // optional arguments and BuildLog may be NULL, which is equivalent to
     // passing an empty list or discarding the log
     // Writing to the log is routed through a helper
@@ -1100,7 +1053,7 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
                     *SyclCtx, syclex::source_language::sycl, Src));
         }
 
-        registered_names_property_t RegisteredNames;
+        syclex::registered_names RegisteredNames;
         for (const std::string &Name : KernelNames) {
             RegisteredNames.add(Name);
         }
@@ -1120,16 +1073,12 @@ __dpctl_give DPCTLSyclKernelBundleRef DPCTLKernelBundle_CreateFromSYCLSource(
         set_build_log(e.what());
         return nullptr;
     }
-#else
-    return nullptr;
-#endif
 }
 
 __dpctl_give DPCTLSyclKernelRef
 DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
                                 __dpctl_keep const char *KernelName)
 {
-#if (SUPPORTS_SYCL_COMPILATION > 0)
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return nullptr;
@@ -1148,16 +1097,12 @@ DPCTLKernelBundle_GetSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef KBRef,
         error_handler(e, __FILE__, __func__, __LINE__);
         return nullptr;
     }
-#else
-    return nullptr;
-#endif
 }
 
 bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
                                          KBRef,
                                      __dpctl_keep const char *KernelName)
 {
-#if (SUPPORTS_SYCL_COMPILATION > 0)
     if (!KBRef) {
         error_handler("Input KBRef is nullptr", __FILE__, __func__, __LINE__);
         return false;
@@ -1175,7 +1120,4 @@ bool DPCTLKernelBundle_HasSyclKernel(__dpctl_keep DPCTLSyclKernelBundleRef
         error_handler(e, __FILE__, __func__, __LINE__);
         return false;
     }
-#else
-    return false;
-#endif
 }

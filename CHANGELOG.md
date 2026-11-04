@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 
 ### Maintenance
+* Removed compiler version checks made obsolete by the DPC++ 2026.0 minimum [gh-2415](https://github.com/IntelPython/dpctl/pull/2415)
 
 ## [0.23.0] - Oct. 22, 2026
 
