@@ -128,19 +128,23 @@ jobs:
           fi
 
           # pinned deps are fetched independently of the nightly, so a pin
-          # change replaces whatever the cache restored
+          # change replaces whatever the cache restored; the oclcpuexp
+          # tarball extracts read-only directories, so restore write access
+          # before removing them
           if [ ! -f "${OCLCPUEXP_FN}" ]; then
-              rm -rf oclcpuexp oclcpuexp-*.tar.gz
+              chmod -R u+w oclcpuexp 2>/dev/null
+              rm -rf oclcpuexp oclcpuexp-*.tar.gz || exit 1
               wget "${DOWNLOAD_URL_PREFIX}/${DRIVER_PATH}/${OCLCPUEXP_FN}" || exit 1
           fi
           if [ ! -f "${TBB_FN}" ]; then
-              rm -rf oneapi-tbb-*
+              chmod -R u+w oneapi-tbb-* 2>/dev/null
+              rm -rf oneapi-tbb-* || exit 1
               wget "${TBB_URL}/${TBB_FN}" || exit 1
           fi
           mkdir -p oclcpuexp
-          [ -d oclcpuexp/x64 ] || tar xf "${OCLCPUEXP_FN}" -C oclcpuexp
-          [ -d "${TBB_INSTALL_DIR}/lib" ] || tar xf "${TBB_FN}"
-          cp oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/
+          [ -d oclcpuexp/x64 ] || tar xf "${OCLCPUEXP_FN}" -C oclcpuexp || exit 1
+          [ -d "${TBB_INSTALL_DIR}/lib" ] || tar xf "${TBB_FN}" || exit 1
+          cp -f oclcpuexp/x64/libOpenCL.so* dpcpp_compiler/lib/ || exit 1
 
       - name: Setup Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
