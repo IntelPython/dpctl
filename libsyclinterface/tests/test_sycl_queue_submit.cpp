@@ -411,10 +411,19 @@ TEST_F(TestQueueSubmit, CheckForNullKernel)
 
 TEST_F(TestQueueSubmit, CheckLastSubmitError)
 {
-    // a global range that is not a multiple of the local range makes
-    // sycl::queue::submit throw
-    std::size_t gRange[] = {SIZE + 1};
-    std::size_t lRange[] = {SIZE};
+    // a local range that exceeds the device's maximum work-group size makes
+    // sycl::queue::submit throw; a global range that is not a multiple of
+    // the local range does not, as OpenCL devices may support non-uniform
+    // work-groups
+    auto DRef = DPCTLQueue_GetDevice(QRef);
+    ASSERT_TRUE(DRef != nullptr);
+    std::size_t maxWGSize = DPCTLDevice_GetMaxWorkGroupSize(DRef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    ASSERT_TRUE(maxWGSize > 0);
+
+    std::size_t gRange[] = {2 * maxWGSize};
+    std::size_t lRange[] = {2 * maxWGSize};
+    std::size_t Range[] = {SIZE};
     std::size_t RANGE_NDIMS = 1;
     DPCTLSyclEventRef ERef = nullptr;
 
@@ -439,7 +448,7 @@ TEST_F(TestQueueSubmit, CheckLastSubmitError)
 
     // a successful submission clears the error
     EXPECT_NO_FATAL_FAILURE(
-        ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, argTypes, 4, lRange,
+        ERef = DPCTLQueue_SubmitRange(kernel, QRef, args, argTypes, 4, Range,
                                       RANGE_NDIMS, nullptr, 0));
     ASSERT_TRUE(ERef != nullptr);
     EXPECT_STREQ(DPCTLQueue_GetLastSubmitError(), "");

@@ -383,13 +383,14 @@ def test_submit_error_message():
 
     n = 16
     x_usm = dpm.MemoryUSMDevice(n * 4, queue=q)
-    # the SYCL runtime rejects a global range that is not a multiple of
-    # the local range, and its reason must reach the Python exception
+    # the SYCL runtime rejects a local range that exceeds the device's
+    # maximum work-group size, and its reason must reach the Python
+    # exception; a global range that is not a multiple of the local range
+    # is not rejected, as OpenCL devices may support non-uniform work-groups
+    wg = 2 * q.sycl_device.max_work_group_size
     prefix = "Kernel submission to Sycl queue failed: "
     with pytest.raises(dpctl.SyclKernelSubmitError) as excinfo:
-        q.submit_async(
-            krn, [x_usm, x_usm, x_usm, ctypes.c_int(2)], [n + 1], [n]
-        )
+        q.submit_async(krn, [x_usm, x_usm, x_usm, ctypes.c_int(2)], [wg], [wg])
     msg = str(excinfo.value)
     assert msg.startswith(prefix)
     assert len(msg) > len(prefix)
