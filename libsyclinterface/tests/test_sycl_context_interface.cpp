@@ -81,6 +81,22 @@ TEST_P(TestDPCTLContextInterface, ChkCreate)
     EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
 }
 
+TEST_P(TestDPCTLContextInterface, ChkCreateReleasesHandlerOnce)
+{
+    int released = 0;
+    DPCTLAsyncErrorHandlerSpec spec{nullptr, &released,
+                                    [](void *p) { ++*static_cast<int *>(p); }};
+    DPCTLSyclContextRef CRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(CRef = DPCTLContext_Create(DRef, &spec, 0));
+    ASSERT_TRUE(CRef);
+    EXPECT_EQ(released, 0);
+    EXPECT_NO_FATAL_FAILURE(DPCTLContext_Delete(CRef));
+    EXPECT_EQ(released, 1);
+
+    EXPECT_EQ(DPCTLContext_Create(nullptr, &spec, 0), nullptr);
+    EXPECT_EQ(released, 2);
+}
+
 TEST_P(TestDPCTLContextInterface, ChkCreateWithDevices)
 {
     size_t nCUs = 0;

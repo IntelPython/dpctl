@@ -24,6 +24,7 @@
 
 from ._async_error_handler cimport get_async_error_handler
 from ._backend cimport (  # noqa: E211
+    DPCTLAsyncErrorHandlerSpec,
     DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
@@ -80,7 +81,6 @@ from ._backend cimport (  # noqa: E211
     _backend_type,
     _md_local_accessor,
     _queue_property_type,
-    error_handler_callback,
 )
 from .memory._memory cimport _Memory
 
@@ -1006,20 +1006,20 @@ cdef class SyclQueue(_SyclQueue):
         """
         cdef DPCTLSyclContextRef CRef
         cdef DPCTLSyclQueueRef QRef
-        cdef error_handler_callback * eh_callback = get_async_error_handler()
+        cdef const DPCTLAsyncErrorHandlerSpec *eh = get_async_error_handler()
 
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
             # look-up failed (was not a root device?)
             # create a new context
-            CRef = DPCTLContext_Create(DRef, eh_callback, 0)
+            CRef = DPCTLContext_Create(DRef, eh, 0)
             if (CRef is NULL):
                 DPCTLDevice_Delete(DRef)
                 return -3
         QRef = DPCTLQueue_Create(
             CRef,
             DRef,
-            eh_callback,
+            eh,
             props
         )
         if QRef is NULL:

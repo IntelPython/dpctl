@@ -17,10 +17,10 @@
 # distutils: language = c++
 # cython: language_level=3
 
-""" This file declares the default SYCL asynchronous error handler.
+""" Declares the asynchronous error handler of dpctl queues and contexts.
 """
 
-from ._backend cimport error_handler_callback
+from ._backend cimport DPCTLAsyncErrorHandlerSpec
 
 
-cdef error_handler_callback * get_async_error_handler() noexcept nogil
+cdef const DPCTLAsyncErrorHandlerSpec *get_async_error_handler() noexcept nogil

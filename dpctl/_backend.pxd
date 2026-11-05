@@ -26,7 +26,12 @@ from libcpp cimport bool
 
 
 cdef extern from "syclinterface/dpctl_error_handler_type.h":
-    ctypedef void error_handler_callback(int err_code, const char *err_msg)
+    ctypedef void error_handler_callback(
+        int err_code, const char *err_msg, void *user_data)
+    ctypedef struct DPCTLAsyncErrorHandlerSpec:
+        error_handler_callback *callback
+        void *user_data
+        void (*release)(void *user_data)
 
 cdef extern from "syclinterface/dpctl_utils.h":
     cdef void DPCTLCString_Delete(const char *str)
@@ -496,11 +501,11 @@ cdef extern from "syclinterface/dpctl_sycl_platform_interface.h":
 cdef extern from "syclinterface/dpctl_sycl_context_interface.h":
     cdef DPCTLSyclContextRef DPCTLContext_Create(
         const DPCTLSyclDeviceRef DRef,
-        error_handler_callback *handler,
+        const DPCTLAsyncErrorHandlerSpec *handler,
         int properties)
     cdef DPCTLSyclContextRef DPCTLContext_CreateFromDevices(
         const DPCTLDeviceVectorRef DVRef,
-        error_handler_callback *handler,
+        const DPCTLAsyncErrorHandlerSpec *handler,
         int properties)
     cdef DPCTLSyclContextRef DPCTLContext_Copy(
         const DPCTLSyclContextRef CRef)
@@ -616,11 +621,11 @@ cdef extern from "syclinterface/dpctl_sycl_queue_interface.h":
     cdef DPCTLSyclQueueRef DPCTLQueue_Create(
         const DPCTLSyclContextRef CRef,
         const DPCTLSyclDeviceRef DRef,
-        error_handler_callback *handler,
+        const DPCTLAsyncErrorHandlerSpec *handler,
         int properties)
     cdef DPCTLSyclQueueRef DPCTLQueue_CreateForDevice(
         const DPCTLSyclDeviceRef dRef,
-        error_handler_callback *handler,
+        const DPCTLAsyncErrorHandlerSpec *handler,
         int properties)
     cdef void DPCTLQueue_Delete(DPCTLSyclQueueRef QRef)
     cdef DPCTLSyclQueueRef DPCTLQueue_Copy(DPCTLSyclQueueRef QRef)

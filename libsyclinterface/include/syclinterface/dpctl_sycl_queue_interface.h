@@ -45,10 +45,9 @@ DPCTL_C_EXTERN_C_BEGIN
  *
  * @param    CRef           An opaque pointer to a sycl::context.
  * @param    DRef           An opaque pointer to a sycl::device
- * @param    handler        A callback function that will be invoked by the
- *                          async_handler used during queue creation. Can be
- *                          NULL, in which case asynchronous errors are only
- *                          reported to the dpctl error log.
+ * @param    handler        Asynchronous error handler of the queue, or
+ *                          NULL. Asynchronous errors are reported to the dpctl
+ *                          error log either way.
  * @param    properties     A combination of bit flags using the values defined
  *                          in the DPCTLQueuePropertyType enum. The bit flags
  *                          are used to create a sycl::property_list that is
@@ -61,7 +60,7 @@ DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
                   __dpctl_keep const DPCTLSyclDeviceRef DRef,
-                  error_handler_callback *handler,
+                  const DPCTLAsyncErrorHandlerSpec *handler,
                   int properties);
 
 /*!
@@ -85,10 +84,10 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
  * function behaves the same way as the SYCL constructor.
  *
  * @param    DRef           An opaque pointer to a ``sycl::device``.
- * @param    handler        A callback function that will be invoked by the
- *                          async_handler used during queue creation. Can be
- *                          NULL, in which case asynchronous errors are only
- *                          reported to the dpctl error log.
+ * @param    handler        Asynchronous error handler of the queue, and of the
+ *                          context created for a non-root device, or NULL.
+ *                          Asynchronous errors are reported to the dpctl error
+ *                          log either way.
  * @param    properties     A combination of bit flags using the values defined
  *                          in the DPCTLQueuePropertyType enum. The bit flags
  *                          are used to create a ``sycl::property_list`` that is
@@ -101,7 +100,7 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
 DPCTL_API
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                           error_handler_callback *handler,
+                           const DPCTLAsyncErrorHandlerSpec *handler,
                            int properties);
 
 /*!

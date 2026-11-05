@@ -28,6 +28,7 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <string>
 #ifdef _WIN32
 #include <cstdlib>
 #include <stddef.h>
@@ -36,19 +37,40 @@
 #include <glog/logging.h>
 #endif
 
-void DPCTL_AsyncErrorHandler::operator()(const sycl::exception_list &exceptions)
+DPCTL_AsyncErrorHandler::DPCTL_AsyncErrorHandler(
+    const DPCTLAsyncErrorHandlerSpec *spec)
 {
-    for (std::exception_ptr const &e : exceptions) {
+    if (!spec)
+        return;
+    callback_ = spec->callback;
+    if (spec->release)
+        user_data_ = std::shared_ptr<void>(spec->user_data, spec->release);
+    else
+        user_data_ = std::shared_ptr<void>(spec->user_data, [](void *) {});
+}
+
+void DPCTL_AsyncErrorHandler::operator()(
+    const sycl::exception_list &exceptions) const
+{
+    for (std::exception_ptr const &eptr : exceptions) {
+        int err_code = -1;
+        std::string what;
         try {
-            std::rethrow_exception(e);
+            std::rethrow_exception(eptr);
         } catch (sycl::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
-            if (handler_) {
-                auto err_code = e.code().value();
-                const char *what = e.what();
-                handler_(static_cast<int>(err_code), (what) ? what : "");
-            }
+            err_code = static_cast<int>(e.code().value());
+            what = e.what();
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+            what = e.what();
+        } catch (...) {
+            what = "Unknown asynchronous error";
+            error_handler(what, __FILE__, __func__, __LINE__,
+                          error_level::error);
         }
+        if (callback_)
+            callback_(err_code, what.c_str(), user_data_.get());
     }
 }
 

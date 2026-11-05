@@ -27,26 +27,25 @@
 
 #include "Support/DllExport.h"
 #include "dpctl_error_handler_type.h"
+#include <memory>
 #include <sycl/sycl.hpp>
 
 /*!
  * @brief Functor class used by DPCTL to handle SYCL asynchronous errors.
  *
- * Every asynchronous error is always reported through ``error_handler``. When
- * a non-NULL callback was supplied at construction, it is additionally invoked
- * with the error code and message of each asynchronous error.
+ * Reports each asynchronous error through ``error_handler``, then passes it to
+ * the callback of the ``DPCTLAsyncErrorHandlerSpec``, if any. Copies share
+ * ``user_data``, which is released once the last copy is destroyed.
  */
 class DPCTL_API DPCTL_AsyncErrorHandler
 {
-    error_handler_callback *handler_ = nullptr;
+    error_handler_callback *callback_ = nullptr;
+    std::shared_ptr<void> user_data_;
 
 public:
-    DPCTL_AsyncErrorHandler(error_handler_callback *err_handler)
-        : handler_(err_handler)
-    {
-    }
+    explicit DPCTL_AsyncErrorHandler(const DPCTLAsyncErrorHandlerSpec *spec);
 
-    void operator()(const sycl::exception_list &exceptions);
+    void operator()(const sycl::exception_list &exceptions) const;
 };
 
 enum error_level : int

@@ -305,24 +305,10 @@ std::unique_ptr<property_list> create_property_list(int properties)
 }
 
 __dpctl_give DPCTLSyclQueueRef
-getQueueImpl(__dpctl_keep DPCTLSyclContextRef cRef,
-             __dpctl_keep DPCTLSyclDeviceRef dRef,
-             error_handler_callback *handler,
+create_queue(__dpctl_keep const DPCTLSyclContextRef CRef,
+             __dpctl_keep const DPCTLSyclDeviceRef DRef,
+             const DPCTL_AsyncErrorHandler &AsyncHandler,
              int properties)
-{
-    DPCTLSyclQueueRef qRef = nullptr;
-    qRef = DPCTLQueue_Create(cRef, dRef, handler, properties);
-    return qRef;
-}
-
-} /* end of anonymous namespace */
-
-DPCTL_API
-__dpctl_give DPCTLSyclQueueRef
-DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
-                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
-                  error_handler_callback *handler,
-                  int properties)
 {
     DPCTLSyclQueueRef q = nullptr;
     auto dev = unwrap<device>(DRef);
@@ -336,12 +322,8 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     }
     auto propList = create_property_list(properties);
 
-    // The async handler is installed unconditionally so that asynchronous
-    // errors are always reported through error_handler. A NULL `handler` simply
-    // means no additional callback is invoked.
     try {
-        auto Queue =
-            new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(handler), *propList);
+        auto Queue = new queue(*ctx, *dev, AsyncHandler, *propList);
         q = wrap<queue>(Queue);
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
@@ -350,11 +332,26 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     return q;
 }
 
+} /* end of anonymous namespace */
+
+DPCTL_API
+__dpctl_give DPCTLSyclQueueRef
+DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
+                  __dpctl_keep const DPCTLSyclDeviceRef DRef,
+                  const DPCTLAsyncErrorHandlerSpec *handler,
+                  int properties)
+{
+    return create_queue(CRef, DRef, DPCTL_AsyncErrorHandler(handler),
+                        properties);
+}
+
 __dpctl_give DPCTLSyclQueueRef
 DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                           error_handler_callback *handler,
+                           const DPCTLAsyncErrorHandlerSpec *handler,
                            int properties)
 {
+    // one functor for the queue and the context, so user_data is released once
+    DPCTL_AsyncErrorHandler AsyncHandler(handler);
     DPCTLSyclContextRef CRef = nullptr;
     DPCTLSyclQueueRef QRef = nullptr;
     auto Device = unwrap<device>(DRef);
@@ -373,7 +370,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
     if (!CRef) {
         context *ContextPtr = nullptr;
         try {
-            ContextPtr = new context(*Device, DPCTL_AsyncErrorHandler(handler));
+            ContextPtr = new context(*Device, AsyncHandler);
             CRef = wrap<context>(ContextPtr);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
@@ -382,7 +379,7 @@ DPCTLQueue_CreateForDevice(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         }
     }
     // At this point we have a valid context and the queue can be allocated.
-    QRef = getQueueImpl(CRef, DRef, handler, properties);
+    QRef = create_queue(CRef, DRef, AsyncHandler, properties);
     // Free the context
     DPCTLContext_Delete(CRef);
     return QRef;
@@ -643,8 +640,6 @@ void DPCTLQueue_Wait(__dpctl_keep DPCTLSyclQueueRef QRef)
             if (SyclQueue)
                 SyclQueue->wait();
         } catch (std::exception const &e) {
-            // wait() invokes the async handler, which may rethrow. Report the
-            // error rather than let a C++ exception escape the C API.
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }

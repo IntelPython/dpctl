@@ -19,21 +19,17 @@
 # cython: linetrace=True
 # cython: freethreading_compatible = True
 
-""" Implements the default SYCL asynchronous error handler used by dpctl.
-
-SYCL reports asynchronous errors by invoking an async handler, which the SYCL
-runtime may call on a thread of its choosing, at any point where errors are
-flushed (typically ``queue::wait()``, or queue/context destruction).
-
-The handler installed here logs the error through the standard :mod:`logging`
-machinery. It deliberately does not raise: an exception raised on a
-SYCL-internal thread cannot be delivered to the code that submitted the work,
-and would terminate the process.
+""" Implements the asynchronous error handler of dpctl queues and contexts,
+which logs each error as a warning of the ``dpctl._async_error_handler``
+logger.
 """
 
 import logging
 
-from ._backend cimport error_handler_callback  # noqa: E211
+from ._backend cimport (  # noqa: E211
+    DPCTLAsyncErrorHandlerSpec,
+    error_handler_callback,
+)
 
 __all__ = [
     "_get_async_error_logger",
@@ -64,51 +60,36 @@ cdef extern from *:
 def _get_async_error_logger():
     """_get_async_error_logger()
 
-    Returns the :class:`logging.Logger` instance used to report SYCL
-    asynchronous errors. Provided so that applications and tests can attach
-    handlers to it, or adjust its level.
-
     Returns:
         logging.Logger:
-            Logger used by the default asynchronous error handler.
+            Logger that SYCL asynchronous errors are reported to.
     """
     return _logger
 
 
 cdef void _async_error_handler(
-    int err_code, const char *err_msg
+    int err_code, const char *err_msg, void *user_data
 ) noexcept nogil:
-    """Default async error handler, called by libDPCTLSyclInterface.
-
-    Must never raise, and must tolerate being called while the interpreter is
-    shutting down, since queues and contexts may outlive it.
-    """
+    # the error is already in the dpctl error log, so it is fine to drop it
+    # once the interpreter is finalizing
     if not dpctl_interpreter_is_usable():
-        # The interpreter is gone or going away; touching Python objects now
-        # would crash. The error has already been reported by the C++
-        # error_handler, so there is nothing further to do.
         return
     with gil:
         try:
             _logger.warning(
                 "Asynchronous SYCL error (code %d): %s",
                 err_code,
-                (<bytes>err_msg).decode("utf-8", "replace")
-                if err_msg is not NULL else "<no message>",
+                (<bytes>err_msg).decode("utf-8", "replace"),
             )
         except Exception:
-            # Logging must not turn an asynchronous error into a crash. This
-            # can legitimately happen late in interpreter shutdown, when the
-            # logging module has already been torn down.
             pass
 
 
-cdef error_handler_callback * get_async_error_handler() noexcept nogil:
-    """Returns a pointer to the default async error handler.
+cdef DPCTLAsyncErrorHandlerSpec _spec
+_spec.callback = <error_handler_callback *>&_async_error_handler
+_spec.user_data = NULL
+_spec.release = NULL
 
-    This accessor exists because taking the address of a ``cdef`` function
-    defined in another Cython module yields the address of the imported
-    function *pointer*, not of the function itself. Resolving ``&`` here, in
-    the module that defines the handler, gives callers the correct address.
-    """
-    return <error_handler_callback *>&_async_error_handler
+
+cdef const DPCTLAsyncErrorHandlerSpec *get_async_error_handler() noexcept nogil:
+    return &_spec

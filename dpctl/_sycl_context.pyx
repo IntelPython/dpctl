@@ -27,6 +27,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from ._async_error_handler cimport get_async_error_handler
 from ._backend cimport (  # noqa: E211
+    DPCTLAsyncErrorHandlerSpec,
     DPCTLContext_AreEq,
     DPCTLContext_Copy,
     DPCTLContext_Create,
@@ -50,11 +51,11 @@ from ._backend cimport (  # noqa: E211
     DPCTLSyclContextRef,
     DPCTLSyclDeviceRef,
     DPCTLSyclPlatformRef,
-    error_handler_callback,
 )
 from ._sycl_device cimport SyclDevice
 
 from ._sycl_device import SyclDeviceCreationError
+
 from ._sycl_platform cimport SyclPlatform
 
 from .enum_types import memory_order, memory_scope
@@ -236,12 +237,12 @@ cdef class SyclContext(_SyclContext):
     cdef int _init_context_from_one_device(self, SyclDevice device, int props):
         cdef DPCTLSyclDeviceRef DRef = device.get_device_ref()
         cdef DPCTLSyclContextRef CRef = NULL
-        cdef error_handler_callback * eh_callback = get_async_error_handler()
+        cdef const DPCTLAsyncErrorHandlerSpec *eh = get_async_error_handler()
         # look up cached contexts for root devices first
         CRef = DPCTLDeviceMgr_GetCachedContext(DRef)
         if (CRef is NULL):
             # look-up failed, create a new one
-            CRef = DPCTLContext_Create(DRef, eh_callback, props)
+            CRef = DPCTLContext_Create(DRef, eh, props)
             if (CRef is NULL):
                 return -1
         _init_helper(<_SyclContext> self, CRef)
@@ -252,7 +253,7 @@ cdef class SyclContext(_SyclContext):
         cdef int i = 0
         cdef size_t num_bytes
         cdef DPCTLDeviceVectorRef DVRef = NULL
-        cdef error_handler_callback * eh_callback = get_async_error_handler()
+        cdef const DPCTLAsyncErrorHandlerSpec *eh = get_async_error_handler()
         cdef DPCTLSyclContextRef CRef = NULL
         cdef DPCTLSyclDeviceRef *elems
 
@@ -278,7 +279,7 @@ cdef class SyclContext(_SyclContext):
             PyMem_Free(elems)
         else:
             return -2
-        CRef = DPCTLContext_CreateFromDevices(DVRef, eh_callback, props)
+        CRef = DPCTLContext_CreateFromDevices(DVRef, eh, props)
         DPCTLDeviceVector_Delete(DVRef)
         if (CRef is NULL):
             return -1

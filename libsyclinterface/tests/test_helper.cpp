@@ -28,7 +28,7 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
-#include <memory>
+#include <stdexcept>
 #include <string>
 #include <sycl/sycl.hpp>
 
@@ -39,36 +39,103 @@ struct TestHelperFns : public ::testing::Test
 namespace
 {
 
-void noop_error_handler_fn(int /*err_code*/, const char * /*err_msg*/) {}
+struct AsyncErrors
+{
+    int count = 0;
+    int last_code = 0;
+    std::string last_msg;
+    int released = 0;
+};
+
+void record_async_error(int err_code, const char *err_msg, void *user_data)
+{
+    auto errors = static_cast<AsyncErrors *>(user_data);
+    ++errors->count;
+    errors->last_code = err_code;
+    errors->last_msg = err_msg;
+}
+
+void record_release(void *user_data)
+{
+    ++static_cast<AsyncErrors *>(user_data)->released;
+}
+
+template <typename ExceptionT>
+void throw_from_host_task(sycl::queue &q, ExceptionT exc)
+{
+    q.submit(
+        [&](sycl::handler &cgh) { cgh.host_task([exc]() { throw exc; }); });
+}
 
 } // namespace
 
-// Note: DPCTL_AsyncErrorHandler::operator() cannot be unit tested directly,
-// because sycl::exception_list has no public constructor -- only the SYCL
-// scheduler can populate one. These tests cover installing the functor on a
-// queue, which is the path that would previously dereference a NULL callback.
-
-TEST_F(TestHelperFns, ChkAsyncErrorHandlerWithCallbackIsInstallable)
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerPassesSyclException)
 {
-    std::unique_ptr<sycl::queue> Q;
-    EXPECT_NO_FATAL_FAILURE(
-        Q = std::make_unique<sycl::queue>(
-            sycl::default_selector_v,
-            DPCTL_AsyncErrorHandler(&noop_error_handler_fn)));
-    ASSERT_TRUE(Q != nullptr);
-    EXPECT_NO_FATAL_FAILURE(Q->wait());
+    AsyncErrors errors;
+    DPCTLAsyncErrorHandlerSpec spec{&record_async_error, &errors, nullptr};
+    sycl::queue q(sycl::default_selector_v, DPCTL_AsyncErrorHandler(&spec));
+
+    throw_from_host_task(
+        q, sycl::exception(sycl::make_error_code(sycl::errc::invalid),
+                           "async sycl error"));
+    EXPECT_NO_THROW(q.wait_and_throw());
+
+    EXPECT_EQ(errors.count, 1);
+    EXPECT_EQ(errors.last_code, static_cast<int>(sycl::errc::invalid));
+    EXPECT_NE(errors.last_msg.find("async sycl error"), std::string::npos);
+}
+
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerPassesOtherException)
+{
+    AsyncErrors errors;
+    DPCTLAsyncErrorHandlerSpec spec{&record_async_error, &errors, nullptr};
+    sycl::queue q(sycl::default_selector_v, DPCTL_AsyncErrorHandler(&spec));
+
+    throw_from_host_task(q, std::runtime_error("async std error"));
+    EXPECT_NO_THROW(q.wait_and_throw());
+
+    EXPECT_EQ(errors.count, 1);
+    EXPECT_EQ(errors.last_code, -1);
+    EXPECT_EQ(errors.last_msg, "async std error");
+}
+
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerToleratesNullSpec)
+{
+    sycl::queue q(sycl::default_selector_v, DPCTL_AsyncErrorHandler(nullptr));
+
+    throw_from_host_task(q, std::runtime_error("async std error"));
+    EXPECT_NO_THROW(q.wait_and_throw());
 }
 
 TEST_F(TestHelperFns, ChkAsyncErrorHandlerToleratesNullCallback)
 {
-    // A NULL callback is documented as valid and must not be dereferenced
-    // when the handler runs.
-    std::unique_ptr<sycl::queue> Q;
-    EXPECT_NO_FATAL_FAILURE(
-        Q = std::make_unique<sycl::queue>(sycl::default_selector_v,
-                                          DPCTL_AsyncErrorHandler(nullptr)));
-    ASSERT_TRUE(Q != nullptr);
-    EXPECT_NO_FATAL_FAILURE(Q->wait());
+    AsyncErrors errors;
+    DPCTLAsyncErrorHandlerSpec spec{nullptr, &errors, nullptr};
+    sycl::queue q(sycl::default_selector_v, DPCTL_AsyncErrorHandler(&spec));
+
+    throw_from_host_task(q, std::runtime_error("async std error"));
+    EXPECT_NO_THROW(q.wait_and_throw());
+    EXPECT_EQ(errors.count, 0);
+}
+
+TEST_F(TestHelperFns, ChkAsyncErrorHandlerReleasesOnceForAllCopies)
+{
+    AsyncErrors errors;
+    DPCTLAsyncErrorHandlerSpec spec{&record_async_error, &errors,
+                                    &record_release};
+    // no work is submitted, as the runtime can hold a queue until it has
+    // cleaned up after its work
+    {
+        DPCTL_AsyncErrorHandler handler(&spec);
+        auto handler_copy = handler;
+        sycl::queue q(sycl::default_selector_v, handler);
+        auto q_copy = q;
+        sycl::queue q2(q.get_context(), q.get_device(), handler_copy);
+        q.wait();
+        q2.wait();
+        EXPECT_EQ(errors.released, 0);
+    }
+    EXPECT_EQ(errors.released, 1);
 }
 
 TEST_F(TestHelperFns, ChkDeviceTypeToStr)

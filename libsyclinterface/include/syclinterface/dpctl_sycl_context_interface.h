@@ -46,10 +46,9 @@ DPCTL_C_EXTERN_C_BEGIN
  * optional async error handler and properties bit flags.
  *
  * @param    DRef           Opaque pointer to a SYCL device.
- * @param    handler        A callback function that will be invoked by the
- *                          async_handler used during context creation. Can be
- *                          NULL, in which case asynchronous errors are only
- *                          reported to the dpctl error log.
+ * @param    handler        Asynchronous error handler of the context, or
+ *                          NULL. Asynchronous errors are reported to the dpctl
+ *                          error log either way.
  * @param    properties     An optional combination of bit flags to define
  *                          context properties. Currently, dpctl does not use
  *                          this argument.
@@ -59,7 +58,7 @@ DPCTL_C_EXTERN_C_BEGIN
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                    error_handler_callback *handler,
+                    const DPCTLAsyncErrorHandlerSpec *handler,
                     int properties);
 
 /*!
@@ -68,10 +67,9 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
  *
  * @param    DVRef          An opaque pointer to a std::vector of
  *                          DPCTLSyclDeviceRef opaque pointers.
- * @param    handler        A callback function that will be invoked by the
- *                          async_handler used during context creation. Can be
- *                          NULL, in which case asynchronous errors are only
- *                          reported to the dpctl error log.
+ * @param    handler        Asynchronous error handler of the context, or
+ *                          NULL. Asynchronous errors are reported to the dpctl
+ *                          error log either way.
  * @param    properties     An optional combination of bit flags to define
  *                          context properties. Currently, dpctl does not use
  *                          this argument.
@@ -81,7 +79,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 DPCTL_API
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
-                               error_handler_callback *handler,
+                               const DPCTLAsyncErrorHandlerSpec *handler,
                                int properties);
 
 /*!

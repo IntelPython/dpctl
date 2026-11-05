@@ -35,6 +35,7 @@
 #include "dpctl_sycl_usm_interface.h"
 
 #include <stddef.h>
+#include <stdexcept>
 
 #include <gtest/gtest.h>
 #include <sycl/sycl.hpp>
@@ -45,7 +46,26 @@ using namespace dpctl::syclinterface;
 namespace
 {
 
-void error_handler_fn(int /*err*/, const char * /*err_msg*/) { return; }
+void error_handler_fn(int /*err*/, const char * /*err_msg*/, void *) {}
+
+DPCTLAsyncErrorHandlerSpec error_handler_spec{&error_handler_fn, nullptr,
+                                              nullptr};
+
+struct AsyncHandlerUse
+{
+    int errors = 0;
+    int released = 0;
+};
+
+void count_error(int /*err*/, const char * /*err_msg*/, void *user_data)
+{
+    ++static_cast<AsyncHandlerUse *>(user_data)->errors;
+}
+
+void count_release(void *user_data)
+{
+    ++static_cast<AsyncHandlerUse *>(user_data)->released;
+}
 
 struct TestDPCTLQueueMemberFunctions
     : public ::testing::TestWithParam<
@@ -64,7 +84,7 @@ protected:
             EXPECT_NO_FATAL_FAILURE(
                 QRef = DPCTLQueue_CreateForDevice(
                     DRef,
-                    (std::get<2>(param_tuple)) ? &error_handler_fn : nullptr,
+                    (std::get<2>(param_tuple)) ? &error_handler_spec : nullptr,
                     std::get<1>(param_tuple)));
         }
         DPCTLDevice_Delete(DRef);
@@ -125,6 +145,89 @@ TEST(TestDPCTLSyclQueueInterface, CheckCreateForDevice)
     EXPECT_NO_FATAL_FAILURE(
         QRef = DPCTLQueue_CreateForDevice(nullptr, nullptr, 0));
     ASSERT_TRUE(QRef == nullptr);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckCreateReleasesHandlerOnFailure)
+{
+    AsyncHandlerUse use;
+    DPCTLAsyncErrorHandlerSpec spec{&count_error, &use, &count_release};
+
+    EXPECT_EQ(DPCTLQueue_Create(nullptr, nullptr, &spec, 0), nullptr);
+    EXPECT_EQ(use.released, 1);
+    EXPECT_EQ(DPCTLQueue_CreateForDevice(nullptr, &spec, 0), nullptr);
+    EXPECT_EQ(use.released, 2);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckCreateForDeviceReleasesHandlerOnce)
+{
+    AsyncHandlerUse use;
+    DPCTLAsyncErrorHandlerSpec spec{&count_error, &use, &count_release};
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    if (!DRef)
+        GTEST_SKIP_("Skipping as no default device is available.");
+
+    DPCTLSyclQueueRef QRef = DPCTLQueue_CreateForDevice(DRef, &spec, 0);
+    ASSERT_TRUE(QRef);
+    DPCTLSyclQueueRef QRef2 = DPCTLQueue_Copy(QRef);
+    DPCTLQueue_Delete(QRef);
+    EXPECT_EQ(use.released, 0);
+    DPCTLQueue_Delete(QRef2);
+    EXPECT_EQ(use.released, 1);
+
+    DPCTLDevice_Delete(DRef);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckCreateForSubDeviceReleasesHandlerOnce)
+{
+    AsyncHandlerUse use;
+    DPCTLAsyncErrorHandlerSpec spec{&count_error, &use, &count_release};
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    if (!DRef)
+        GTEST_SKIP_("Skipping as no default device is available.");
+    size_t nCUs = DPCTLDevice_GetMaxComputeUnits(DRef);
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    if (nCUs > 1)
+        DVRef = DPCTLDevice_CreateSubDevicesEqually(DRef, nCUs / 2);
+    DPCTLDevice_Delete(DRef);
+    if (!DVRef)
+        GTEST_SKIP_("Skipping as the device can not be partitioned.");
+
+    // not a root device, so a context is created with the same handler
+    DPCTLSyclDeviceRef SubDRef = DPCTLDeviceVector_GetAt(DVRef, 0);
+    DPCTLDeviceVector_Delete(DVRef);
+    DPCTLSyclQueueRef QRef = DPCTLQueue_CreateForDevice(SubDRef, &spec, 0);
+    DPCTLDevice_Delete(SubDRef);
+    ASSERT_TRUE(QRef);
+    EXPECT_EQ(use.released, 0);
+    DPCTLQueue_Delete(QRef);
+    EXPECT_EQ(use.released, 1);
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckAsyncErrorReachesCallback)
+{
+    AsyncHandlerUse use;
+    DPCTLAsyncErrorHandlerSpec spec{&count_error, &use, nullptr};
+    DPCTLSyclDeviceSelectorRef DSRef = DPCTLDefaultSelector_Create();
+    DPCTLSyclDeviceRef DRef = DPCTLDevice_CreateFromSelector(DSRef);
+    DPCTLDeviceSelector_Delete(DSRef);
+    if (!DRef)
+        GTEST_SKIP_("Skipping as no default device is available.");
+
+    DPCTLSyclQueueRef QRef = DPCTLQueue_CreateForDevice(DRef, &spec, 0);
+    DPCTLDevice_Delete(DRef);
+    ASSERT_TRUE(QRef);
+    sycl::queue *Q = unwrap<sycl::queue>(QRef);
+    Q->submit([](sycl::handler &cgh) {
+        cgh.host_task([]() { throw std::runtime_error("async error"); });
+    });
+    EXPECT_NO_THROW(Q->wait_and_throw());
+    EXPECT_EQ(use.errors, 1);
+
+    DPCTLQueue_Delete(QRef);
 }
 
 TEST(TestDPCTLSyclQueueInterface, CheckCopy)

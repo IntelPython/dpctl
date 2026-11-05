@@ -46,9 +46,10 @@ using namespace dpctl::syclinterface;
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
-                    error_handler_callback *handler,
+                    const DPCTLAsyncErrorHandlerSpec *handler,
                     int /**/)
 {
+    DPCTL_AsyncErrorHandler AsyncHandler(handler);
     DPCTLSyclContextRef CRef = nullptr;
     auto Device = unwrap<device>(DRef);
     if (!Device) {
@@ -58,8 +59,7 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
         return nullptr;
     }
     try {
-        CRef = wrap<context>(
-            new context(*Device, DPCTL_AsyncErrorHandler(handler)));
+        CRef = wrap<context>(new context(*Device, AsyncHandler));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
@@ -69,9 +69,10 @@ DPCTLContext_Create(__dpctl_keep const DPCTLSyclDeviceRef DRef,
 
 __dpctl_give DPCTLSyclContextRef
 DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
-                               error_handler_callback *handler,
+                               const DPCTLAsyncErrorHandlerSpec *handler,
                                int /**/)
 {
+    DPCTL_AsyncErrorHandler AsyncHandler(handler);
     DPCTLSyclContextRef CRef = nullptr;
     std::vector<device> Devices;
     auto DeviceRefs = unwrap<std::vector<DPCTLSyclDeviceRef>>(DVRef);
@@ -88,8 +89,7 @@ DPCTLContext_CreateFromDevices(__dpctl_keep const DPCTLDeviceVectorRef DVRef,
     }
 
     try {
-        CRef = wrap<context>(
-            new context(std::move(Devices), DPCTL_AsyncErrorHandler(handler)));
+        CRef = wrap<context>(new context(std::move(Devices), AsyncHandler));
     } catch (std::exception const &e) {
         error_handler(e, __FILE__, __func__, __LINE__);
     }
