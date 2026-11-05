@@ -12,12 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `SyclQueue_DeferRelease` C-API function, which defers a release callback until work submitted to a queue completes, and through which `dpctl::utils::keep_args_alive` keeps its arguments alive [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl::utils::defer_release` to `dpctl4pybind11.hpp`, which calls a release callback once the given events have completed [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl.SyclQueue.get_last_event` and `dpctl.SyclQueue.is_get_last_event_available`, and the `DPCTLQueue_GetLastEvent` and `DPCTLQueue_GetLastEvent_Available` C-API functions, wrapping the DPC++ `sycl_ext_oneapi_in_order_queue_events` extension [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
+* Added `custom` device type to filter selector strings [gh-2420](https://github.com/IntelPython/dpctl/pull/2420)
 
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.utils.SequentialOrderManager[q].submitted_events` includes the queue's last event for in-order queues when `sycl_ext_oneapi_in_order_queue_events` is available, and `wait()` waits for all work on an in-order queue [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
+* Filter selector strings are implemented in `dpctl` instead of relying on the deprecated DPC++ `sycl_ext_oneapi_filter_selector` extension, and device numbers in a list of filters, such as `"0,1"`, now refer to the same devices as when used in separate filters [gh-2420](https://github.com/IntelPython/dpctl/pull/2420)
+* `dpctl.SyclDevice.filter_string` and `dpctl.SyclDevice.get_filter_string` raise `ValueError` for backends and device types not supported in filter selector strings, instead of returning a string containing `"unknown"` [gh-2420](https://github.com/IntelPython/dpctl/pull/2420)
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
@@ -30,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 * A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.SyclPlatform.get_devices` no longer prints Unified Runtime warnings for `device_type="custom"` on non-OpenCL platforms, where custom devices are not supported [gh-2306](https://github.com/IntelPython/dpctl/pull/2306)
+* `DPCTLDeviceSelector_Score` returns correct scores for filter selectors with device numbers [gh-2420](https://github.com/IntelPython/dpctl/pull/2420)
 
 ### Maintenance
 * Removed the `-fno-sycl-id-queries-fit-in-int` compile option, which none of the `dpctl` extensions need since `dpctl.tensor` moved to `dpnp` [gh-2413](https://github.com/IntelPython/dpctl/pull/2413)
