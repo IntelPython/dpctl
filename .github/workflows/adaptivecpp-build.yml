@@ -95,14 +95,16 @@ jobs:
       - name: Run dpctl/tests on the OpenMP device
         env:
           ACPP_VISIBILITY_MASK: omp
+          DPCTL_VERBOSITY: error
         run: |
-          python -m pytest -q dpctl/tests
+          python -m pytest -q --capture=sys dpctl/tests
 
       - name: Run dpctl/tests on the OpenCL CPU device
         env:
           ACPP_VISIBILITY_MASK: ocl
+          DPCTL_VERBOSITY: error
         run: |
-          python -m pytest -q dpctl/tests
+          python -m pytest -q --capture=sys dpctl/tests
 
       - name: Build examples of extensions
         env:
