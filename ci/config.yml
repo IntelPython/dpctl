@@ -10,6 +10,7 @@ test:
   # A wheel's environment has the system's compilers only, and the SYCL runtime comes with the wheel.
   wheel_requires: [pytest, cython, setuptools, intel-opencl-rt]
 benchmark:
-  requires: [numpy, intel-opencl-rt]
+  # PyYAML, which asv needs, has no PyPI wheel for every Python the recipe declares.
+  requires: [numpy, intel-opencl-rt, pyyaml]
   # conda-forge lacks asv for some Python the recipe declares; the abi3 wheel on PyPI fits all.
   pip_requires: [asv]
