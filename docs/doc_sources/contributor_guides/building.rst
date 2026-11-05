@@ -8,7 +8,8 @@ To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
 available as part of oneAPI Base-Kit. However, it is possible to use a custom
 build of DPC++ to build :py:mod:`dpctl`, especially if you want to enable
-CUDA support or try latest features.
+CUDA support or try latest features. On Linux OS, AdaptiveCpp can be used
+instead of DPC++, see `Building Using AdaptiveCpp`_.
 
 Building using oneAPI DPC++
 ---------------------------
@@ -208,6 +209,89 @@ as the ``level_zero`` and ``oclcpu`` entries.
 Should a loader be installed under a different file name, override the name that
 :py:mod:`dpctl` uses with the ``LIBCL_SET_LOADER_FILENAME`` and
 ``LIBZE_SET_LOADER_FILENAME`` CMake variables.
+
+
+Building Using AdaptiveCpp
+--------------------------
+
+:py:mod:`dpctl` can also be built with `AdaptiveCpp <https://adaptivecpp.github.io/>`_
+as the SYCL implementation, on Linux OS. The build was tested with AdaptiveCpp
+25.10.
+
+Prerequisites for AdaptiveCpp
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Install AdaptiveCpp, the ``clang`` that it was built against, and a runtime for
+the devices you intend to use. The conda packages, for example:
+
+.. code-block:: bash
+
+    conda install -c conda-forge "adaptivecpp=*=cpu_llvm19*" "clang=19.*" \
+        "clangxx=19.*" intel-opencl-rt tbb
+
+The ``clang`` version must match the LLVM version AdaptiveCpp was built with,
+which the build string of the ``adaptivecpp`` package states, as in
+``cpu_llvm19_h8255587_10``, hence the pins above. The ``intel-opencl-rt``
+package provides an OpenCL CPU device; AdaptiveCpp always provides its own
+OpenMP host device, which needs no runtime.
+
+Run ``acpp-info -l`` to list the backends of the installed AdaptiveCpp, and set
+the ``ACPP_VISIBILITY_MASK`` environment variable to select among them, for
+example ``ACPP_VISIBILITY_MASK=omp`` for the OpenMP host device, or
+``ACPP_VISIBILITY_MASK=ocl`` for the OpenCL devices.
+
+Build and Install Using AdaptiveCpp
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the driver script with the provider option:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --sycl-provider=AdaptiveCpp
+
+The option defaults the compilers to ``clang`` and ``acpp``, which are taken
+from the ``PATH`` unless ``--c-compiler`` and ``--cxx-compiler`` are given, and
+it disables Level Zero kernel bundle creation, which only DPC++ implements.
+Leaving it on would only check out the Level Zero headers for code that an
+AdaptiveCpp build excludes; it does not affect whether a Level Zero device is
+available, which depends on the backends AdaptiveCpp itself was built with.
+
+Building with ``setuptools`` directly takes the equivalent CMake variables:
+
+.. code-block:: bash
+
+    python setup.py build_ext --inplace -G Ninja -- \
+        -DCMAKE_C_COMPILER:PATH=clang -DCMAKE_CXX_COMPILER:PATH=acpp \
+        -DDPCTL_SYCL_PROVIDER=AdaptiveCpp \
+        -DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION=OFF
+    python -m pip install -e .
+
+Differences from a DPC++ build
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An AdaptiveCpp build reports its SYCL implementation through
+``dpctl._diagnostics.sycl_provider()``. The following is unavailable in such a
+build:
+
+- kernel bundle creation from OpenCL source and from SPIR-V, hence the
+  :py:mod:`dpctl.compiler` functions and kernel submission through them, both
+  through the OpenCL and the Level Zero backend
+- the raw kernel argument extension
+- the atomic memory order, fence order and scope capability descriptors of
+  devices and of contexts
+- the DPC++ version, the backend version and the default selector score
+
+A few behaviors differ as well: a context can span platforms, and a platform is
+reported for every backend AdaptiveCpp was built with, including backends with
+no device.
+
+Tests covering the above carry the ``unsupported_on_acpp`` pytest marker and are
+skipped automatically.
+
+The extension examples under ``examples/`` that build SYCL kernels take
+``-DDPCTL_SYCL_PROVIDER=AdaptiveCpp`` as well, with the exception of
+``pybind11/onemkl_gemv`` and ``pybind11/use_dpctl_sycl_kernel``, which are
+DPC++ only.
 
 
 Building the libsyclinterface Library
