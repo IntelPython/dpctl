@@ -363,7 +363,14 @@ DPCTLQueue_Create(__dpctl_keep const DPCTLSyclContextRef CRef,
     }
     else {
         try {
+#ifdef __ADAPTIVECPP__
+            // a queue with no handler of its own inherits the default handler
+            // of the AdaptiveCpp context, which calls std::terminate
+            auto Queue = new queue(*ctx, *dev, DPCTL_AsyncErrorHandler(nullptr),
+                                   *propList);
+#else
             auto Queue = new queue(*ctx, *dev, *propList);
+#endif
             q = wrap<queue>(Queue);
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
