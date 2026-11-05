@@ -702,7 +702,8 @@ To run examples and test suite you would need GPU drivers and/or CPU
 OpenCL drivers. It is preferable to use the Intel(R) oneAPI DPC++ compiler
 available as part of oneAPI Base-Kit. However, it is possible to use a custom
 build of DPC++ to build <a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>, especially if you want to enable
-CUDA support or try latest features.</p>
+CUDA support or try latest features. On Linux OS, AdaptiveCpp can be used
+instead of DPC++, see <a class="reference internal" href="#building-using-adaptivecpp">Building Using AdaptiveCpp</a>.</p>
 <section id="building-using-oneapi-dpc">
 <h2>Building using oneAPI DPC++<a class="headerlink" href="#building-using-oneapi-dpc" title="Permalink to this heading">¶</a></h2>
 <section id="prerequisites">
@@ -868,6 +869,75 @@ as the <code class="docutils literal notranslate"><span class="pre">level_zero</
 <code class="docutils literal notranslate"><span class="pre">LIBZE_SET_LOADER_FILENAME</span></code> CMake variables.</p>
 </section>
 </section>
+<section id="building-using-adaptivecpp">
+<h2>Building Using AdaptiveCpp<a class="headerlink" href="#building-using-adaptivecpp" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../api_reference/dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> can also be built with <a class="reference external" href="https://adaptivecpp.github.io/">AdaptiveCpp</a>
+as the SYCL implementation, on Linux OS. The build was tested with AdaptiveCpp
+25.10.</p>
+<section id="prerequisites-for-adaptivecpp">
+<h3>Prerequisites for AdaptiveCpp<a class="headerlink" href="#prerequisites-for-adaptivecpp" title="Permalink to this heading">¶</a></h3>
+<p>Install AdaptiveCpp, the <code class="docutils literal notranslate"><span class="pre">clang</span></code> that it was built against, and a runtime for
+the devices you intend to use. The conda packages, for example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="s2">"adaptivecpp=*=cpu_llvm19*"</span><span class="w"> </span><span class="s2">"clang=19.*"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s2">"clangxx=19.*"</span><span class="w"> </span>intel-opencl-rt<span class="w"> </span>tbb
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">clang</span></code> version must match the LLVM version AdaptiveCpp was built with,
+which the build string of the <code class="docutils literal notranslate"><span class="pre">adaptivecpp</span></code> package states, as in
+<code class="docutils literal notranslate"><span class="pre">cpu_llvm19_h8255587_10</span></code>, hence the pins above. The <code class="docutils literal notranslate"><span class="pre">intel-opencl-rt</span></code>
+package provides an OpenCL CPU device; AdaptiveCpp always provides its own
+OpenMP host device, which needs no runtime.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">acpp-info</span> <span class="pre">-l</span></code> to list the backends of the installed AdaptiveCpp, and set
+the <code class="docutils literal notranslate"><span class="pre">ACPP_VISIBILITY_MASK</span></code> environment variable to select among them, for
+example <code class="docutils literal notranslate"><span class="pre">ACPP_VISIBILITY_MASK=omp</span></code> for the OpenMP host device, or
+<code class="docutils literal notranslate"><span class="pre">ACPP_VISIBILITY_MASK=ocl</span></code> for the OpenCL devices.</p>
+</section>
+<section id="build-and-install-using-adaptivecpp">
+<h3>Build and Install Using AdaptiveCpp<a class="headerlink" href="#build-and-install-using-adaptivecpp" title="Permalink to this heading">¶</a></h3>
+<p>Use the driver script with the provider option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--sycl-provider<span class="o">=</span>AdaptiveCpp
+</pre></div>
+</div>
+<p>The option defaults the compilers to <code class="docutils literal notranslate"><span class="pre">clang</span></code> and <code class="docutils literal notranslate"><span class="pre">acpp</span></code>, which are taken
+from the <code class="docutils literal notranslate"><span class="pre">PATH</span></code> unless <code class="docutils literal notranslate"><span class="pre">--c-compiler</span></code> and <code class="docutils literal notranslate"><span class="pre">--cxx-compiler</span></code> are given, and
+it disables Level Zero kernel bundle creation, which only DPC++ implements.
+Leaving it on would only check out the Level Zero headers for code that an
+AdaptiveCpp build excludes; it does not affect whether a Level Zero device is
+available, which depends on the backends AdaptiveCpp itself was built with.</p>
+<p>Building with <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> directly takes the equivalent CMake variables:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DCMAKE_C_COMPILER:PATH<span class="o">=</span>clang<span class="w"> </span>-DCMAKE_CXX_COMPILER:PATH<span class="o">=</span>acpp<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DDPCTL_SYCL_PROVIDER<span class="o">=</span>AdaptiveCpp<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION<span class="o">=</span>OFF
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="differences-from-a-dpc-build">
+<h3>Differences from a DPC++ build<a class="headerlink" href="#differences-from-a-dpc-build" title="Permalink to this heading">¶</a></h3>
+<p>An AdaptiveCpp build reports its SYCL implementation through
+<code class="docutils literal notranslate"><span class="pre">dpctl._diagnostics.sycl_provider()</span></code>. The following is unavailable in such a
+build:</p>
+<ul class="simple">
+<li><p>kernel bundle creation from OpenCL source and from SPIR-V, hence the
+<a class="reference internal" href="../api_reference/dpctl/compiler.html#module-dpctl.compiler" title="dpctl.compiler"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl.compiler</span></code></a> functions and kernel submission through them, both
+through the OpenCL and the Level Zero backend</p></li>
+<li><p>the raw kernel argument extension</p></li>
+<li><p>the atomic memory order, fence order and scope capability descriptors of
+devices and of contexts</p></li>
+<li><p>the DPC++ version, the backend version and the default selector score</p></li>
+</ul>
+<p>A few behaviors differ as well: a context can span platforms, and a platform is
+reported for every backend AdaptiveCpp was built with, including backends with
+no device.</p>
+<p>Tests covering the above carry the <code class="docutils literal notranslate"><span class="pre">unsupported_on_acpp</span></code> pytest marker and are
+skipped automatically.</p>
+<p>The extension examples under <code class="docutils literal notranslate"><span class="pre">examples/</span></code> that build SYCL kernels take
+<code class="docutils literal notranslate"><span class="pre">-DDPCTL_SYCL_PROVIDER=AdaptiveCpp</span></code> as well, with the exception of
+<code class="docutils literal notranslate"><span class="pre">pybind11/onemkl_gemv</span></code> and <code class="docutils literal notranslate"><span class="pre">pybind11/use_dpctl_sycl_kernel</span></code>, which are
+DPC++ only.</p>
+</section>
+</section>
 </section>
 <section id="building-the-libsyclinterface-library">
 <h1>Building the libsyclinterface Library<a class="headerlink" href="#building-the-libsyclinterface-library" title="Permalink to this heading">¶</a></h1>
@@ -982,6 +1052,12 @@ make<span class="w"> </span><span class="nv">V</span><span class="o">=</span><sp
 </li>
 <li><a class="reference internal" href="#building-using-custom-dpc">Building Using Custom DPC++</a><ul>
 <li><a class="reference internal" href="#runtime-loaders-when-using-a-nightly-dpc-build">Runtime loaders when using a nightly DPC++ build</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-using-adaptivecpp">Building Using AdaptiveCpp</a><ul>
+<li><a class="reference internal" href="#prerequisites-for-adaptivecpp">Prerequisites for AdaptiveCpp</a></li>
+<li><a class="reference internal" href="#build-and-install-using-adaptivecpp">Build and Install Using AdaptiveCpp</a></li>
+<li><a class="reference internal" href="#differences-from-a-dpc-build">Differences from a DPC++ build</a></li>
 </ul>
 </li>
 </ul>
