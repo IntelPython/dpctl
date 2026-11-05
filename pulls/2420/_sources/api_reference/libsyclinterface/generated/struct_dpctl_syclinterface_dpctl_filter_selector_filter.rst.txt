@@ -1,0 +1,24 @@
+.. index:: pair: struct; dpctl::syclinterface::dpctl_filter_selector::filter
+.. _doxid-d0/d56/structdpctl_1_1syclinterface_1_1dpctl__filter__selector_1_1filter:
+
+struct dpctl::syclinterface::dpctl_filter_selector::filter
+==========================================================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	
+	struct filter
+	{
+		// fields
+	
+		std::optional<sycl::backend> :target:`backend<doxid-d0/d56/structdpctl_1_1syclinterface_1_1dpctl__filter__selector_1_1filter_1a5aee90460986f288d315aae7b42eaf6d>`;
+		std::optional<sycl::device> :target:`device<doxid-d0/d56/structdpctl_1_1syclinterface_1_1dpctl__filter__selector_1_1filter_1abce1cab884f2776baf7299c5a2622cd5>`;
+		std::optional<sycl::info::device_type> :target:`device_type<doxid-d0/d56/structdpctl_1_1syclinterface_1_1dpctl__filter__selector_1_1filter_1a8fb87214b58f447fd043360bb5170c93>`;
+	};

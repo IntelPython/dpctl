@@ -1,0 +1,68 @@
+.. index:: pair: class; dpctl::syclinterface::dpctl_filter_selector
+.. _doxid-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector:
+
+class dpctl::syclinterface::dpctl_filter_selector
+=================================================
+
+.. toctree::
+	:hidden:
+
+	struct_dpctl_syclinterface_dpctl_filter_selector_filter.rst
+
+Overview
+~~~~~~~~
+
+Selects devices matching a filter selector string. :ref:`More...<details-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector>`
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_device_selection.hpp>
+	
+	class dpctl_filter_selector: public :ref:`dpctl::syclinterface::dpctl_device_selector<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector>`
+	{
+	public:
+		// structs
+	
+		struct :ref:`filter<doxid-d0/d56/structdpctl_1_1syclinterface_1_1dpctl__filter__selector_1_1filter>`;
+
+		// construction
+	
+		:target:`dpctl_filter_selector<doxid-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector_1a93c9058521f996803ee5db31dcdf07ba>`(const std::string& fs);
+
+		// methods
+	
+		virtual
+		int
+		:target:`operator ()<doxid-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector_1a6dbeb11ad48e990ee60adcd6dd2538c3>` (const sycl::device& d) const;
+	};
+
+Inherited Members
+-----------------
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-inherited-code-block
+
+	public:
+		// fields
+	
+		static int :ref:`REJECT_DEVICE<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a3803a4a44ef1315dbb40f5c78ed9e326>` = -1;
+
+		// methods
+	
+		virtual
+		int
+		:ref:`operator ()<doxid-d0/dbb/classdpctl_1_1syclinterface_1_1dpctl__device__selector_1a897941b230c0931aaab9d513be091136>` (const sycl::device&) const;
+
+.. _details-d9/dba/classdpctl_1_1syclinterface_1_1dpctl__filter__selector:
+
+Detailed Documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Selects devices matching a filter selector string.
+
+The string is a comma-separated list of filters, each of the form ``backend:device_type:device_num`` with every component optional and in any order. ``device_num`` counts devices from ``sycl::device::get_devices()`` that match the filter's backend and device type. Matching devices are scored by ``sycl::default_selector_v``.
+
+Throws ``std::invalid_argument`` if the string is malformed.
+
