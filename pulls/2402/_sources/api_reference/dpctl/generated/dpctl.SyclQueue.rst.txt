@@ -19,6 +19,7 @@
       ~SyclQueue.fill_async
       ~SyclQueue.get_sycl_context
       ~SyclQueue.get_sycl_device
+      ~SyclQueue.keep_args_alive
       ~SyclQueue.mem_advise
       ~SyclQueue.memcpy
       ~SyclQueue.memcpy_async
