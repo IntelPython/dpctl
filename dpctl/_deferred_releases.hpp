@@ -172,19 +172,18 @@ public:
      * here. A release that does call back in runs nothing itself, so releases
      * do not nest on one thread.
      *
-     * If `until_stopped`, the releases not yet run once `stop_waiting` has
-     * been called are put back on the list instead.
+     * If `stopped` is given, the releases not yet run once it returns true are
+     * put back on the list instead.
      */
     void run_collected(std::vector<std::function<void()>> &due,
-                       bool until_stopped = false)
+                       const std::function<bool()> &stopped = {})
     {
         bool &running = running_here();
         const bool was_running = running;
         running = true;
 
         for (std::size_t i = 0; i < due.size(); ++i) {
-            if (until_stopped && stop_waiting_.load(std::memory_order_acquire))
-            {
+            if (stopped && stopped()) {
                 put_back(due, i);
                 break;
             }
@@ -291,6 +290,15 @@ public:
         }
 
         deferred_or_stopped_.notify_all();
+    }
+
+    /*!
+     * @brief Whether `stop_waiting` has been called since the last
+     * `resume_waiting`.
+     */
+    bool waiting_stopped() const
+    {
+        return stop_waiting_.load(std::memory_order_acquire);
     }
 
     /*!

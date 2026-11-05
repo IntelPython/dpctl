@@ -36,6 +36,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -87,29 +88,14 @@ public:
     /*!
      * @brief Start the thread, and start it again whenever it is needed.
      *
-     * Waits up to `stop_timeout` for a thread that a timed-out `stop` let go
-     * of, so expects the caller not to hold the GIL.
+     * A `start` made while `stop` is waiting takes effect once it returns.
      */
     void start()
     {
-        {
-            std::lock_guard<std::mutex> lock(mutex_);
-
-            enabled_ = true;
-            if (thread_.joinable() || stopping_ ||
-                finished().load(std::memory_order_acquire))
-            {
-                start_nolock();
-                return;
-            }
-        }
-
-        wait_for_thread(stop_timeout);
-
         std::lock_guard<std::mutex> lock(mutex_);
-        if (enabled_) {
-            start_nolock();
-        }
+
+        enabled_ = true;
+        start_nolock();
     }
 
     /*!
@@ -117,7 +103,7 @@ public:
      */
     void start_if_enabled()
     {
-        if (!finished().load(std::memory_order_acquire)) {
+        if (!no_current_thread()) {
             return;
         }
 
@@ -132,8 +118,9 @@ public:
      * @brief End the thread, and keep it from being started until `start`.
      *
      * Waits up to `stop_timeout` for the release in progress, if any, and
-     * detaches the thread if it has not finished by then. The releases not
-     * yet run are left on the list.
+     * lets go of the thread if it has not finished by then. A thread let go
+     * of ends after that release, and does not keep a later `start` from
+     * starting another. The releases not yet run are left on the list.
      *
      * Expects the caller not to hold the GIL, which the thread may be waiting
      * for.
@@ -176,7 +163,9 @@ public:
         new (&thread_) std::thread();
         new (&mutex_) std::mutex();
         stopping_ = false;
-        finished().store(true, std::memory_order_release);
+        finished_generation().store(
+            started_generation().load(std::memory_order_acquire),
+            std::memory_order_release);
 
         local_deferred_releases().reset_after_fork();
     }
@@ -267,14 +256,14 @@ private:
 #endif
 
     /*!
-     * @brief Start the thread, unless one is running or still finishing.
+     * @brief Start the thread, unless one is running or being stopped.
      *
      * A thread that ended on its own is joined and replaced, unless the
      * interpreter is shutting down. Expects `mutex_` to be held.
      */
     void start_nolock()
     {
-        if (stopping_ || !finished().load(std::memory_order_acquire)) {
+        if (stopping_ || !no_current_thread()) {
             return;
         }
 
@@ -287,19 +276,21 @@ private:
         }
 
         local_deferred_releases().resume_waiting();
-        finished().store(false, std::memory_order_release);
+        const std::uint64_t generation =
+            started_generation().fetch_add(1, std::memory_order_acq_rel) + 1;
 
         try {
-            thread_ = std::thread([]() { watch(); });
+            thread_ = std::thread([generation]() { watch(generation); });
         } catch (...) {
             // without the thread the releases are left to the drains, so
             // failing to start one is not fatal
-            finished().store(true, std::memory_order_release);
+            let_go_of(generation);
         }
     }
 
     /*!
-     * @brief Stop `thread` and let go of it, waiting only `timeout` for it.
+     * @brief Stop `thread`, the latest started, and let go of it, waiting only
+     * `timeout` for it.
      *
      * A thread that does not report itself finished in time is detached, so
      * that an exit cannot hang on a release that blocks, or on a thread the
@@ -314,6 +305,9 @@ private:
             return;
         }
 
+        const std::uint64_t generation =
+            started_generation().load(std::memory_order_acquire);
+
         // checked first, as a thread killed by an exiting process may have
         // held the list's lock, which `stop_waiting` takes
         bool done = has_exited(thread);
@@ -323,8 +317,9 @@ private:
             // waited for whether or not it may be joined: the report says the
             // thread is done with this object, which is what makes detaching
             // safe
-            done = wait_for_thread(timeout);
+            done = wait_for_thread(generation, timeout);
         }
+        let_go_of(generation);
 
         if (may_join && done) {
             thread.join();
@@ -335,15 +330,58 @@ private:
     }
 
     /*!
-     * @brief Whether no thread is running the loop.
+     * @brief The number of the latest thread started.
+     */
+    static std::atomic<std::uint64_t> &started_generation()
+    {
+        static std::atomic<std::uint64_t> generation{0};
+        return generation;
+    }
+
+    /*!
+     * @brief The number of the latest thread that finished or was let go of.
      *
      * In static storage, so that a detached thread can report itself without
      * reaching a destroyed object.
      */
-    static std::atomic<bool> &finished()
+    static std::atomic<std::uint64_t> &finished_generation()
     {
-        static std::atomic<bool> flag{true};
-        return flag;
+        static std::atomic<std::uint64_t> generation{0};
+        return generation;
+    }
+
+    /*!
+     * @brief Whether the latest thread started has finished or was let go of.
+     */
+    static bool no_current_thread()
+    {
+        return finished_generation().load(std::memory_order_acquire) >=
+               started_generation().load(std::memory_order_acquire);
+    }
+
+    /*!
+     * @brief Whether thread `generation` has finished or was let go of.
+     */
+    static bool is_let_go(std::uint64_t generation)
+    {
+        return finished_generation().load(std::memory_order_acquire) >=
+               generation;
+    }
+
+    /*!
+     * @brief Mark thread `generation`, and any before it, as no longer
+     * running for this object.
+     */
+    static void let_go_of(std::uint64_t generation)
+    {
+        std::atomic<std::uint64_t> &finished = finished_generation();
+        std::uint64_t seen = finished.load(std::memory_order_acquire);
+        while (seen < generation &&
+               !finished.compare_exchange_weak(seen, generation,
+                                               std::memory_order_acq_rel,
+                                               std::memory_order_acquire))
+        {
+        }
     }
 
     /*!
@@ -384,25 +422,26 @@ private:
     }
 
     /*!
-     * @brief Run the releases that come due, until the list is stopped, the
-     * interpreter begins shutting down, or the list throws.
+     * @brief Run the releases that come due as thread `generation`, until the
+     * list is stopped, the thread is let go of, the interpreter begins
+     * shutting down, or the list throws.
      *
      * A thread ended by an exception is replaced by the next release deferred.
      */
-    static void watch()
+    static void watch(std::uint64_t generation)
     {
         std::unique_ptr<std::vector<std::function<void()>>> due;
 
         try {
             due = std::make_unique<std::vector<std::function<void()>>>();
-            run_due_until_stopped(*due);
+            run_due_until_stopped(*due, generation);
         }
 #if defined(__GLIBCXX__)
         catch (abi::__forced_unwind &)
         {
             // the interpreter ending this thread, which must not be stopped
             static_cast<void>(due.release());
-            finished().store(true, std::memory_order_release);
+            let_go_of(generation);
             throw;
         }
 #endif
@@ -414,7 +453,7 @@ private:
             static_cast<void>(due.release());
         }
 
-        finished().store(true, std::memory_order_release);
+        let_go_of(generation);
     }
 
     /*!
@@ -423,15 +462,19 @@ private:
      * The Python thread state made for the first releases run is kept until
      * the loop ends, so that the thread is one Python thread throughout.
      */
-    static void run_due_until_stopped(std::vector<std::function<void()>> &due)
+    static void run_due_until_stopped(std::vector<std::function<void()>> &due,
+                                      std::uint64_t generation)
     {
         DeferredReleases &releases = local_deferred_releases();
         clock::duration poll_interval = min_poll_interval;
+        const auto stopped = [&releases, generation]() {
+            return releases.waiting_stopped() || is_let_go(generation);
+        };
 
         bool keeps_thread_state = false;
         PyGILState_STATE kept = PyGILState_UNLOCKED;
 
-        while (releases.wait_for_due(poll_interval)) {
+        while (!is_let_go(generation) && releases.wait_for_due(poll_interval)) {
             std::size_t scanned = 0;
             std::size_t not_due = 0;
             const clock::time_point started = clock::now();
@@ -467,7 +510,7 @@ private:
                         keeps_thread_state = true;
                         name_python_thread();
                     }
-                    releases.run_collected(due, /* until_stopped */ true);
+                    releases.run_collected(due, stopped);
                 }
             }
 #if defined(__GLIBCXX__)
@@ -495,7 +538,7 @@ private:
             }
         }
 
-        // stopped by `stop`, which waits for this without the GIL
+        // stopped or let go of by `stop`, which waits for this without the GIL
         if (keeps_thread_state &&
             !unloading().load(std::memory_order_acquire) &&
             interpreter_is_live())
@@ -523,13 +566,14 @@ private:
     }
 
     /*!
-     * @brief Whether the thread left its loop within `timeout`.
+     * @brief Whether thread `generation` left its loop within `timeout`.
      */
-    static bool wait_for_thread(clock::duration timeout)
+    static bool wait_for_thread(std::uint64_t generation,
+                                clock::duration timeout)
     {
         const clock::time_point deadline = clock::now() + timeout;
 
-        while (!finished().load(std::memory_order_acquire)) {
+        while (!is_let_go(generation)) {
             if (clock::now() >= deadline) {
                 return false;
             }

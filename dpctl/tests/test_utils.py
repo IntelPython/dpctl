@@ -408,14 +408,7 @@ print("hung" if stopper.is_alive() or starter.is_alive() else "ok")
     assert out == "ok"
 
 
-def test_start_after_timed_out_stop_runs_releases():
-    # the stop gives up on the blocking release after a second
-    out = _run_python(
-        _BLOCKING_RELEASE + """
-_stop_deferred_release_watcher()
-starter = threading.Thread(target=_start_deferred_release_watcher)
-starter.start()
-
+_RELEASED_AFTER_RESTART = """
 released = []
 
 
@@ -424,18 +417,41 @@ class Sentinel:
         released.append(True)
 
 
-# deferred while the thread the stop let go of is still running
+# deferred while the thread the stop let go of is still blocked
 args = (Sentinel(),)
 q.keep_args_alive(args).wait()
 del args
-unblock.set()
-starter.join(10)
 
 deadline = time.monotonic() + 5
 while not released and time.monotonic() < deadline:
     time.sleep(0.01)
 print("released" if released else "held")
-""",
+unblock.set()
+"""
+
+
+def test_start_after_timed_out_stop_runs_releases():
+    # the stop gives up on the blocking release after a second
+    out = _run_python(
+        _BLOCKING_RELEASE + """
+_stop_deferred_release_watcher()
+_start_deferred_release_watcher()
+""" + _RELEASED_AFTER_RESTART,
+        timeout=30,
+    )
+    assert out == "released"
+
+
+def test_start_during_timed_out_stop_runs_releases():
+    out = _run_python(
+        _BLOCKING_RELEASE + """
+stopper = threading.Thread(target=_stop_deferred_release_watcher)
+stopper.start()
+time.sleep(0.1)
+_start_deferred_release_watcher()
+# the stop gives up on the blocking release after a second
+stopper.join(10)
+""" + _RELEASED_AFTER_RESTART,
         timeout=30,
     )
     assert out == "released"
