@@ -1,0 +1,6 @@
+dpctl.SyclQueue.keep\_args\_alive
+=================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.keep_args_alive
