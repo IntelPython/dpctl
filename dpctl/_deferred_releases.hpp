@@ -107,9 +107,14 @@ public:
      * The events are queried without holding the list's lock, so a long list
      * does not hold up `defer`.
      *
+     * If `scanned` is given, it is set to how many items were looked over, and
+     * `not_due`, if given, to how many of them were not yet due.
+     *
      * @return Whether anything was added to `due`.
      */
-    bool collect_due(std::vector<std::function<void()>> &due)
+    bool collect_due(std::vector<std::function<void()>> &due,
+                     std::size_t *scanned = nullptr,
+                     std::size_t *not_due = nullptr)
     {
         auto items = std::make_unique<std::vector<Item>>();
         {
@@ -124,6 +129,12 @@ public:
                 items->begin(), items->end(),
                 [](const Item &item) { return !is_complete(item); });
             any = due_begin != items->end();
+            if (scanned) {
+                *scanned = items->size();
+            }
+            if (not_due) {
+                *not_due = static_cast<std::size_t>(due_begin - items->begin());
+            }
 
             due.reserve(due.size() + (items->end() - due_begin));
             for (auto it = due_begin; it != items->end(); ++it) {

@@ -169,7 +169,9 @@ def test_order_manager_waits_for_cleanup_events():
     # wait for the copies through it
     _mngr.add_cleanup_event(cleanup_ev)
     if _mngr.num_cleanup_events == 0:
-        pytest.skip("The copies completed before the event was recorded")
+        if _complete(cleanup_ev):
+            pytest.skip("The copies completed before the event was recorded")
+        pytest.fail("A pending cleanup event was not recorded")
     _mngr.wait()
     assert _complete(copy_ev)
     assert _mngr.num_cleanup_events == 0

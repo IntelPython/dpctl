@@ -35,6 +35,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -230,9 +231,10 @@ private:
     /*!
      * @brief How many times a pass over the list its own duration buys.
      *
-     * The sleep is stretched with the cost of a pass, which grows with the
-     * number of items, so the thread costs about a `1 / poll_share` of a core
-     * however many there are.
+     * The sleep is stretched with the cost of a pass, scaled by the share of
+     * items not yet due, so the thread costs about a `1 / poll_share` of a
+     * core while waiting on long-running work, and keeps up with releases
+     * that come due as fast as they are deferred.
      */
     static constexpr clock::duration::rep poll_share = 20;
 
@@ -312,11 +314,17 @@ private:
             return;
         }
 
-        local_deferred_releases().stop_waiting();
+        // checked first, as a thread killed by an exiting process may have
+        // held the list's lock, which `stop_waiting` takes
+        bool done = has_exited(thread);
+        if (!done) {
+            local_deferred_releases().stop_waiting();
 
-        // waited for whether or not it may be joined: the report says the
-        // thread is done with this object, which is what makes detaching safe
-        const bool done = has_exited(thread) || wait_for_thread(timeout);
+            // waited for whether or not it may be joined: the report says the
+            // thread is done with this object, which is what makes detaching
+            // safe
+            done = wait_for_thread(timeout);
+        }
 
         if (may_join && done) {
             thread.join();
@@ -424,11 +432,16 @@ private:
         PyGILState_STATE kept = PyGILState_UNLOCKED;
 
         while (releases.wait_for_due(poll_interval)) {
+            std::size_t scanned = 0;
+            std::size_t not_due = 0;
             const clock::time_point started = clock::now();
-            const bool any = releases.collect_due(due);
+            const bool any = releases.collect_due(due, &scanned, &not_due);
             const clock::duration looked_for = clock::now() - started;
 
-            poll_interval = looked_for * poll_share;
+            const double not_due_share =
+                scanned ? static_cast<double>(not_due) / scanned : 0.0;
+            poll_interval = std::chrono::duration_cast<clock::duration>(
+                looked_for * (poll_share * not_due_share));
             if (poll_interval < min_poll_interval) {
                 poll_interval = min_poll_interval;
             }

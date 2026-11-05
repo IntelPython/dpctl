@@ -234,7 +234,9 @@ private:
         // static variables such as function pointers for C-API,
         // e.g. SyclDevice_GetDeviceRef, etc.
         // and pointers to Python types, i.e. PySyclDeviceType, etc.
-        import_dpctl();
+        if (import_dpctl() < 0) {
+            throw py::error_already_set();
+        }
 
         // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
@@ -815,6 +817,34 @@ struct ManagedMemory
 };
 
 /*!
+ * @brief What `keep_args_alive` holds for the work using its objects.
+ */
+template <std::size_t num> struct held_args
+{
+    std::size_t n_usm_owners = 0;
+    std::array<std::shared_ptr<void>, num> usm_owners{};
+    std::size_t n_objects = 0;
+    std::array<py::handle, num> objects{};
+
+    /*!
+     * @brief Drop what `self` holds, and delete it.
+     */
+    static void release(void *self)
+    {
+        std::unique_ptr<held_args> held(static_cast<held_args *>(self));
+
+        for (std::size_t i = 0; i < held->n_usm_owners; ++i) {
+            held->usm_owners[i].reset();
+        }
+        for (std::size_t i = 0; i < held->n_objects; ++i) {
+            held->objects[i].dec_ref();
+        }
+    }
+};
+
+} // end of namespace detail
+
+/*!
  * @brief Call `release(data)` once the work covered by `depends` completes.
  *
  * Submits an empty kernel to `q` after `depends`, and returns its event, which
@@ -846,34 +876,6 @@ inline sycl::event defer_release(sycl::queue &q,
 
     return marker;
 }
-
-/*!
- * @brief What `keep_args_alive` holds for the work using its objects.
- */
-template <std::size_t num> struct held_args
-{
-    std::size_t n_usm_owners = 0;
-    std::array<std::shared_ptr<void>, num> usm_owners{};
-    std::size_t n_objects = 0;
-    std::array<py::handle, num> objects{};
-
-    /*!
-     * @brief Drop what `self` holds, and delete it.
-     */
-    static void release(void *self)
-    {
-        std::unique_ptr<held_args> held(static_cast<held_args *>(self));
-
-        for (std::size_t i = 0; i < held->n_usm_owners; ++i) {
-            held->usm_owners[i].reset();
-        }
-        for (std::size_t i = 0; i < held->n_objects; ++i) {
-            held->objects[i].dec_ref();
-        }
-    }
-};
-
-} // end of namespace detail
 
 /*!
  * @brief Keeps `py_objs` alive until the work covered by `depends` completes.
@@ -911,7 +913,7 @@ sycl::event keep_args_alive(sycl::queue &q,
         }
     }
 
-    return detail::defer_release(q, depends, &held_t::release, held);
+    return defer_release(q, depends, &held_t::release, held);
 }
 
 /*! @brief Check if all allocation queues are the same as the
