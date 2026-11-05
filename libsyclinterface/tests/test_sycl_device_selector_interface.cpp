@@ -257,6 +257,23 @@ TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorList)
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
 }
 
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorCustom)
+{
+    for (const char *fs : {"custom", "opencl:custom", "custom:0"}) {
+        DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(fs));
+        ASSERT_TRUE(DSRef != nullptr) << fs;
+        for (auto D : sycl::device::get_devices()) {
+            if (D.get_info<sycl::info::device::device_type>() ==
+                sycl::info::device_type::custom)
+                continue;
+            auto DRef = dpctl::syclinterface::wrap<sycl::device>(&D);
+            EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef, DRef) < 0) << fs;
+        }
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    }
+}
+
 INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                          TestFilterSelector,
                          ::testing::Values("opencl",

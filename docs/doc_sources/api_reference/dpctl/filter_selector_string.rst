@@ -46,6 +46,7 @@ Supported values for ``DeviceType`` are:
 
     * - accelerator
       - cpu
+      - custom
       - gpu
 
 Filter selector strings can be used as arguments to constructors of

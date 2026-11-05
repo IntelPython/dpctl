@@ -258,6 +258,8 @@ cdef str _device_type_to_filter_string_part(_device_type DTy):
         return "accelerator"
     elif DTy == _device_type._CPU:
         return "cpu"
+    elif DTy == _device_type._CUSTOM:
+        return "custom"
     elif DTy == _device_type._GPU:
         return "gpu"
     else:
