@@ -1,0 +1,6 @@
+dpctl.SyclContext.device\_count
+===============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclContext.device_count
