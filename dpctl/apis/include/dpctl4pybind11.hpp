@@ -46,6 +46,24 @@ namespace dpctl
 namespace detail
 {
 
+/*!
+ * @brief Whether the interpreter can still be called into.
+ *
+ * A destructor that may run at shutdown, such as the one releasing
+ * `dpctl_capi`'s objects, must check this before touching Python: asking for
+ * the GIL while finalization runs may not return, and once finalization is over
+ * the call is not safe at all.
+ */
+inline bool interpreter_is_live()
+{
+    const bool initialized = Py_IsInitialized();
+#if PY_VERSION_HEX < 0x30d0000
+    return initialized && !_Py_IsFinalizing();
+#else
+    return initialized && !Py_IsFinalizing();
+#endif
+}
+
 class dpctl_capi
 {
 public:
@@ -76,6 +94,12 @@ public:
 
     DPCTLSyclQueueRef (*SyclQueue_GetQueueRef_)(PySyclQueueObject *);
     PySyclQueueObject *(*SyclQueue_Make_)(DPCTLSyclQueueRef);
+    int (*SyclQueue_DeferRelease_)(DPCTLSyclQueueRef,
+                                   DPCTLSyclEventRef *,
+                                   size_t,
+                                   void (*)(void *),
+                                   void *,
+                                   DPCTLSyclEventRef);
 
     // memory
     DPCTLSyclUSMRef (*Memory_GetUsmPointer_)(Py_MemoryObject *);
@@ -173,15 +197,7 @@ private:
     {
         void operator()(py::object *p) const
         {
-            const bool initialized = Py_IsInitialized();
-#if PY_VERSION_HEX < 0x30d0000
-            const bool finalizing = _Py_IsFinalizing();
-#else
-            const bool finalizing = Py_IsFinalizing();
-#endif
-            const bool guard = initialized && !finalizing;
-
-            if (guard) {
+            if (interpreter_is_live()) {
                 delete p;
             }
         }
@@ -203,10 +219,11 @@ private:
           SyclContext_GetContextRef_(nullptr), SyclContext_Make_(nullptr),
           SyclEvent_GetEventRef_(nullptr), SyclEvent_Make_(nullptr),
           SyclQueue_GetQueueRef_(nullptr), SyclQueue_Make_(nullptr),
-          Memory_GetUsmPointer_(nullptr), Memory_GetOpaquePointer_(nullptr),
-          Memory_GetContextRef_(nullptr), Memory_GetQueueRef_(nullptr),
-          Memory_GetNumBytes_(nullptr), Memory_Make_(nullptr),
-          SyclKernel_GetKernelRef_(nullptr), SyclKernel_Make_(nullptr),
+          SyclQueue_DeferRelease_(nullptr), Memory_GetUsmPointer_(nullptr),
+          Memory_GetOpaquePointer_(nullptr), Memory_GetContextRef_(nullptr),
+          Memory_GetQueueRef_(nullptr), Memory_GetNumBytes_(nullptr),
+          Memory_Make_(nullptr), SyclKernel_GetKernelRef_(nullptr),
+          SyclKernel_Make_(nullptr),
           SyclKernelBundle_GetKernelBundleRef_(nullptr),
           SyclKernelBundle_Make_(nullptr), default_sycl_queue_{},
           default_usm_memory_{}, as_usm_memory_{}
@@ -217,7 +234,9 @@ private:
         // static variables such as function pointers for C-API,
         // e.g. SyclDevice_GetDeviceRef, etc.
         // and pointers to Python types, i.e. PySyclDeviceType, etc.
-        import_dpctl();
+        if (import_dpctl() < 0) {
+            throw py::error_already_set();
+        }
 
         // Python type objects for classes implemented by dpctl
         this->Py_SyclDeviceType_ = &Py_SyclDeviceType;
@@ -250,6 +269,7 @@ private:
         // SyclQueue API
         this->SyclQueue_GetQueueRef_ = SyclQueue_GetQueueRef;
         this->SyclQueue_Make_ = SyclQueue_Make;
+        this->SyclQueue_DeferRelease_ = SyclQueue_DeferRelease;
 
         // dpctl.memory API
         this->Memory_GetUsmPointer_ = Memory_GetUsmPointer;
@@ -294,6 +314,7 @@ private:
     dpctl_capi &operator=(dpctl_capi &&) = default;
 
 }; // struct dpctl_capi
+
 } // namespace detail
 } // namespace dpctl
 
@@ -795,74 +816,104 @@ struct ManagedMemory
     }
 };
 
+/*!
+ * @brief What `keep_args_alive` holds for the work using its objects.
+ */
+template <std::size_t num> struct held_args
+{
+    std::size_t n_usm_owners = 0;
+    std::array<std::shared_ptr<void>, num> usm_owners{};
+    std::size_t n_objects = 0;
+    std::array<py::handle, num> objects{};
+
+    /*!
+     * @brief Drop what `self` holds, and delete it.
+     */
+    static void release(void *self)
+    {
+        std::unique_ptr<held_args> held(static_cast<held_args *>(self));
+
+        for (std::size_t i = 0; i < held->n_usm_owners; ++i) {
+            held->usm_owners[i].reset();
+        }
+        for (std::size_t i = 0; i < held->n_objects; ++i) {
+            held->objects[i].dec_ref();
+        }
+    }
+};
+
 } // end of namespace detail
 
+/*!
+ * @brief Call `release(data)` once the work covered by `depends` completes.
+ *
+ * Submits an empty kernel to `q` after `depends`, and returns its event, which
+ * is what the release waits for. `release` is called with the GIL held.
+ *
+ * Throws if nothing was deferred, in which case `release` is never called.
+ */
+inline sycl::event defer_release(sycl::queue &q,
+                                 const std::vector<sycl::event> &depends,
+                                 void (*release)(void *),
+                                 void *data)
+{
+    std::vector<DPCTLSyclEventRef> dep_refs;
+    dep_refs.reserve(depends.size());
+    for (const sycl::event &e : depends) {
+        dep_refs.push_back(
+            reinterpret_cast<DPCTLSyclEventRef>(const_cast<sycl::event *>(&e)));
+    }
+
+    sycl::event marker;
+    const auto &api = ::dpctl::detail::dpctl_capi::get();
+    if (api.SyclQueue_DeferRelease_(
+            reinterpret_cast<DPCTLSyclQueueRef>(&q), dep_refs.data(),
+            dep_refs.size(), release, data,
+            reinterpret_cast<DPCTLSyclEventRef>(&marker)) != 0)
+    {
+        throw std::runtime_error("Could not defer the release");
+    }
+
+    return marker;
+}
+
+/*!
+ * @brief Keeps `py_objs` alive until the work covered by `depends` completes.
+ *
+ * Returns an event for an empty kernel submitted to `q` after `depends`, which
+ * is what the release waits for. On an in-order queue the kernel is also
+ * ordered after the work already submitted there.
+ *
+ * `q` is intended to be the queue running the work that uses `py_objs`.
+ *
+ * Expects the caller to hold the GIL. Throws if the release could not be
+ * scheduled, having released nothing.
+ */
 template <std::size_t num>
 sycl::event keep_args_alive(sycl::queue &q,
                             const py::object (&py_objs)[num],
                             const std::vector<sycl::event> &depends = {})
 {
-    std::size_t n_objects_held = 0;
-    std::array<std::shared_ptr<py::handle>, num> shp_arr{};
+    using held_t = detail::held_args<num>;
 
-    std::size_t n_usm_owners_held = 0;
-    std::array<std::shared_ptr<void>, num> shp_usm{};
+    // leaked if anything below throws, as the work in `depends` may still be
+    // using what it holds
+    held_t *held = new held_t{};
 
     for (std::size_t i = 0; i < num; ++i) {
         const auto &py_obj_i = py_objs[i];
         if (detail::ManagedMemory::is_usm_managed_by_shared_ptr(py_obj_i)) {
-            const auto &shp =
+            held->usm_owners[held->n_usm_owners] =
                 detail::ManagedMemory::extract_shared_ptr(py_obj_i);
-            shp_usm[n_usm_owners_held] = shp;
-            ++n_usm_owners_held;
+            ++held->n_usm_owners;
         }
         else {
-            shp_arr[n_objects_held] = std::make_shared<py::handle>(py_obj_i);
-            shp_arr[n_objects_held]->inc_ref();
-            ++n_objects_held;
+            held->objects[held->n_objects] = py_obj_i.inc_ref();
+            ++held->n_objects;
         }
     }
 
-    bool use_depends = true;
-    sycl::event host_task_ev;
-
-    if (n_usm_owners_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
-            }
-            else {
-                cgh.depends_on(host_task_ev);
-            }
-            cgh.host_task([shp_usm = std::move(shp_usm)]() {
-                // no body, but shared pointers are captured in
-                // the lambda, ensuring that USM allocation is
-                // kept alive
-            });
-        });
-    }
-
-    if (n_objects_held > 0) {
-        host_task_ev = q.submit([&](sycl::handler &cgh) {
-            if (use_depends) {
-                cgh.depends_on(depends);
-                use_depends = false;
-            }
-            else {
-                cgh.depends_on(host_task_ev);
-            }
-            cgh.host_task([n_objects_held, shp_arr = std::move(shp_arr)]() {
-                py::gil_scoped_acquire acquire;
-
-                for (std::size_t i = 0; i < n_objects_held; ++i) {
-                    shp_arr[i]->dec_ref();
-                }
-            });
-        });
-    }
-
-    return host_task_ev;
+    return defer_release(q, depends, &held_t::release, held);
 }
 
 /*! @brief Check if all allocation queues are the same as the

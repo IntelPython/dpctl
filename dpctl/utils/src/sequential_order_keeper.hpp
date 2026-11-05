@@ -24,16 +24,20 @@ class SequentialOrder
 {
 private:
     mutable std::mutex mu_events;
-    std::vector<sycl::event> host_task_events;
+    // events that gate the release of objects used by offloaded tasks, such as
+    // those returned by `dpctl::utils::keep_args_alive`. They are waited on,
+    // but never used as dependencies of later tasks.
+    std::vector<sycl::event> cleanup_events;
+    // events for the offloaded tasks themselves, used as the dependencies of
+    // the tasks that follow them
     std::vector<sycl::event> submitted_events;
 
     // only called with mu_events held
     void prune_complete_nolock()
     {
-        const auto &ht_it =
-            std::remove_if(host_task_events.begin(), host_task_events.end(),
-                           is_event_complete);
-        host_task_events.erase(ht_it, host_task_events.end());
+        const auto &cl_it = std::remove_if(
+            cleanup_events.begin(), cleanup_events.end(), is_event_complete);
+        cleanup_events.erase(cl_it, cleanup_events.end());
 
         const auto &sub_it =
             std::remove_if(submitted_events.begin(), submitted_events.end(),
@@ -42,25 +46,25 @@ private:
     }
 
 public:
-    SequentialOrder() : host_task_events{}, submitted_events{} {}
-    SequentialOrder(std::size_t n) : host_task_events{}, submitted_events{}
+    SequentialOrder() : cleanup_events{}, submitted_events{} {}
+    SequentialOrder(std::size_t n) : cleanup_events{}, submitted_events{}
     {
-        host_task_events.reserve(n);
+        cleanup_events.reserve(n);
         submitted_events.reserve(n);
     }
 
     SequentialOrder(const SequentialOrder &other)
     {
         std::lock_guard<std::mutex> lock(other.mu_events);
-        host_task_events = other.host_task_events;
+        cleanup_events = other.cleanup_events;
         submitted_events = other.submitted_events;
         prune_complete_nolock();
     }
     SequentialOrder(SequentialOrder &&other)
-        : host_task_events{}, submitted_events{}
+        : cleanup_events{}, submitted_events{}
     {
         std::lock_guard<std::mutex> lock(other.mu_events);
-        host_task_events = std::move(other.host_task_events);
+        cleanup_events = std::move(other.cleanup_events);
         submitted_events = std::move(other.submitted_events);
         prune_complete_nolock();
     }
@@ -69,7 +73,7 @@ public:
     {
         if (this != &other) {
             std::scoped_lock lock(mu_events, other.mu_events);
-            host_task_events = other.host_task_events;
+            cleanup_events = other.cleanup_events;
             submitted_events = other.submitted_events;
             prune_complete_nolock();
         }
@@ -80,7 +84,7 @@ public:
     {
         if (this != &other) {
             std::scoped_lock lock(mu_events, other.mu_events);
-            host_task_events = std::move(other.host_task_events);
+            cleanup_events = std::move(other.cleanup_events);
             submitted_events = std::move(other.submitted_events);
             prune_complete_nolock();
         }
@@ -95,17 +99,17 @@ public:
 
     // returns a copy to avoid returning a reference that
     // could be modified after the lock is released
-    std::vector<sycl::event> get_host_task_events()
+    std::vector<sycl::event> get_cleanup_events()
     {
         std::lock_guard<std::mutex> lock(mu_events);
         prune_complete_nolock();
-        return host_task_events;
+        return cleanup_events;
     }
 
-    std::size_t get_num_host_task_events() const
+    std::size_t get_num_cleanup_events() const
     {
         std::lock_guard<std::mutex> lock(mu_events);
-        return host_task_events.size();
+        return cleanup_events.size();
     }
 
     // returns a copy to avoid returning a reference that
@@ -117,25 +121,25 @@ public:
         return submitted_events;
     }
 
-    void add_to_both_events(const sycl::event &ht_ev,
+    void add_to_both_events(const sycl::event &cleanup_ev,
                             const sycl::event &comp_ev)
     {
         std::lock_guard<std::mutex> lock(mu_events);
         prune_complete_nolock();
-        if (!is_event_complete(ht_ev))
-            host_task_events.push_back(ht_ev);
+        if (!is_event_complete(cleanup_ev))
+            cleanup_events.push_back(cleanup_ev);
         if (!is_event_complete(comp_ev))
             submitted_events.push_back(comp_ev);
     }
 
-    void add_vector_to_both_events(const std::vector<sycl::event> &ht_evs,
+    void add_vector_to_both_events(const std::vector<sycl::event> &cleanup_evs,
                                    const std::vector<sycl::event> &comp_evs)
     {
         std::lock_guard<std::mutex> lock(mu_events);
         prune_complete_nolock();
-        for (const auto &e : ht_evs) {
+        for (const auto &e : cleanup_evs) {
             if (!is_event_complete(e))
-                host_task_events.push_back(e);
+                cleanup_events.push_back(e);
         }
         for (const auto &e : comp_evs) {
             if (!is_event_complete(e))
@@ -143,12 +147,12 @@ public:
         }
     }
 
-    void add_to_host_task_events(const sycl::event &ht_ev)
+    void add_to_cleanup_events(const sycl::event &cleanup_ev)
     {
         std::lock_guard<std::mutex> lock(mu_events);
         prune_complete_nolock();
-        if (!is_event_complete(ht_ev)) {
-            host_task_events.push_back(ht_ev);
+        if (!is_event_complete(cleanup_ev)) {
+            cleanup_events.push_back(cleanup_ev);
         }
     }
 
@@ -162,14 +166,14 @@ public:
     }
 
     template <std::size_t num>
-    void add_list_to_host_task_events(const sycl::event (&ht_events)[num])
+    void add_list_to_cleanup_events(const sycl::event (&cleanup_evs)[num])
     {
         std::lock_guard<std::mutex> lock(mu_events);
         prune_complete_nolock();
         for (std::size_t i = 0; i < num; ++i) {
-            const auto &e = ht_events[i];
+            const auto &e = cleanup_evs[i];
             if (!is_event_complete(e))
-                host_task_events.push_back(e);
+                cleanup_events.push_back(e);
         }
     }
 
@@ -190,14 +194,14 @@ public:
         // snapshot events outside of mutex to avoid
         // calling wait inside mutex
         std::vector<sycl::event> sub_copy;
-        std::vector<sycl::event> ht_copy;
+        std::vector<sycl::event> cl_copy;
         {
             std::lock_guard<std::mutex> lock(mu_events);
             sub_copy = submitted_events;
-            ht_copy = host_task_events;
+            cl_copy = cleanup_events;
         }
         sycl::event::wait(sub_copy);
-        sycl::event::wait(ht_copy);
+        sycl::event::wait(cl_copy);
         {
             std::lock_guard<std::mutex> lock(mu_events);
             prune_complete_nolock();

@@ -56,16 +56,19 @@
  * shared objects defining this symbols, if they call `import_dpctl()`
  * prior to using those symbols.
  *
+ * Returns 0 on success, and -1 with a Python exception set otherwise.
+ *
  * It is declared inline to allow multiple definitions in
  * different translation units
  */
-static inline void import_dpctl(void)
+static inline int import_dpctl(void)
 {
-    import_dpctl___sycl_device();
-    import_dpctl___sycl_context();
-    import_dpctl___sycl_event();
-    import_dpctl___sycl_queue();
-    import_dpctl__memory___memory();
-    import_dpctl__compiler___compiler();
-    return;
+    if (import_dpctl___sycl_device() < 0 || import_dpctl___sycl_context() < 0 ||
+        import_dpctl___sycl_event() < 0 || import_dpctl___sycl_queue() < 0 ||
+        import_dpctl__memory___memory() < 0 ||
+        import_dpctl__compiler___compiler() < 0)
+    {
+        return -1;
+    }
+    return 0;
 }

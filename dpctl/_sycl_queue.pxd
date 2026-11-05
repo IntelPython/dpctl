@@ -118,6 +118,8 @@ cdef public api class SyclQueue (_SyclQueue) [
     cpdef prefetch(self, ptr, size_t count=*)
     cpdef mem_advise(self, ptr, size_t count, int mem)
     cpdef SyclEvent submit_barrier(self, dependent_events=*)
+    # after existing methods, to keep their vtable slots
+    cpdef SyclEvent keep_args_alive(self, object args, object depends=*)
 
 cdef public api class _WorkGroupMemory [
     object Py_WorkGroupMemoryObject, type Py_WorkGroupMemoryType
@@ -138,3 +140,5 @@ cdef public api class RawKernelArg(_RawKernelArg) [
     object PyRawKernelArgObject, type PyRawKernelArgType
 ]:
     pass
+
+cdef bint drain_releases()
