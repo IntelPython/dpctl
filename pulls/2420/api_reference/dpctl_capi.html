@@ -413,6 +413,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl/generated/generated/dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
@@ -888,6 +889,33 @@ the caller remains responsible for freeing <code class="docutils literal notrans
 </dl>
 <p>Note that function does not change the ownership of the <code class="docutils literal notranslate"><span class="pre">QRef</span></code> instance and
 the caller remains responsible for freeing <code class="docutils literal notranslate"><span class="pre">QRef</span></code> as appropriate.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SyclQueue_DeferRelease">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SyclQueue_DeferRelease</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">DPCTLSyclQueueRef</span></span><span class="w"> </span><span class="n"><span class="pre">QRef</span></span>, <span class="n"><span class="pre">DPCTLSyclEventRef</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">depERefs</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">nDepERefs</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">release</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span>, <span class="n"><span class="pre">DPCTLSyclEventRef</span></span><span class="w"> </span><span class="n"><span class="pre">markerERef</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SyclQueue_DeferRelease" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>QRef</strong> – queue running the work that uses what <code class="docutils literal notranslate"><span class="pre">release</span></code> frees</p></li>
+<li><p><strong>depERefs</strong> – array of events for that work</p></li>
+<li><p><strong>nDepERefs</strong> – number of events in <code class="docutils literal notranslate"><span class="pre">depERefs</span></code></p></li>
+<li><p><strong>release</strong> – function to call once the work has completed</p></li>
+<li><p><strong>data</strong> – argument passed to <code class="docutils literal notranslate"><span class="pre">release</span></code></p></li>
+<li><p><strong>markerERef</strong> – existing event the marker event is assigned to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0 on success, and 1 if nothing was deferred, in which case
+<code class="docutils literal notranslate"><span class="pre">release</span></code> is never called.</p>
+</dd>
+</dl>
+<p>Submits an empty kernel to <code class="docutils literal notranslate"><span class="pre">QRef</span></code> after <code class="docutils literal notranslate"><span class="pre">depERefs</span></code>, assigns its event to
+the <code class="docutils literal notranslate"><span class="pre">sycl::event</span></code> behind <code class="docutils literal notranslate"><span class="pre">markerERef</span></code>, and calls <code class="docutils literal notranslate"><span class="pre">release(data)</span></code> once
+that kernel has completed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">release</span></code> is called with the GIL held, on a thread owned by <a class="reference internal" href="dpctl/index.html#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a>
+or on one draining the completed releases. Calling the function does not
+require the GIL.</p>
 </dd></dl>
 
 </section>

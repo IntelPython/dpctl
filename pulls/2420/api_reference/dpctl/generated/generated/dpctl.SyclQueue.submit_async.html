@@ -413,6 +413,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpctl.SyclQueue.memcpy_async.html">dpctl.SyclQueue.memcpy_async</a></li>
@@ -731,7 +732,7 @@ scalar arguments since they are passed by value, but for
 objects representing USM allocations which are passed to the kernel
 as unified address space pointers.</p>
 <p>One way of accomplishing this is to use
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue._submit_keep_args_alive()</span></code>.</p>
+<a class="reference internal" href="dpctl.SyclQueue.keep_args_alive.html#dpctl.SyclQueue.keep_args_alive" title="dpctl.SyclQueue.keep_args_alive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.keep_args_alive()</span></code></a>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
