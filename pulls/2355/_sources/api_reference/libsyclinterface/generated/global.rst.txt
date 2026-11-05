@@ -271,7 +271,7 @@ Structure to be used to specify dimensionality and type of local_accessor kernel
 
 	typedef  struct DPCTLOpaqueSyclContext* DPCTLSyclContextRef
 
-Opaque pointer to a ``sycl::context``
+Opaque pointer to a ``sycl::context``.
 
 .. index:: pair: typedef; DPCTLSyclDeviceRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d:
@@ -281,7 +281,7 @@ Opaque pointer to a ``sycl::context``
 
 	typedef struct DPCTLOpaqueSyclDevice* DPCTLSyclDeviceRef
 
-Opaque pointer to a ``sycl::device``
+Opaque pointer to a ``sycl::device``.
 
 .. index:: pair: typedef; DPCTLSyclDeviceSelectorRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a50a1c6c98f4ca4a27a88e53a7f3eeb83:
@@ -291,7 +291,7 @@ Opaque pointer to a ``sycl::device``
 
 	typedef struct DPCTLOpaqueSyclDeviceSelector* DPCTLSyclDeviceSelectorRef
 
-Opaque pointer to a ``sycl::device_selector``
+Opaque pointer to a ``sycl::device_selector``.
 
 .. index:: pair: typedef; DPCTLSyclEventRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03:
@@ -301,7 +301,7 @@ Opaque pointer to a ``sycl::device_selector``
 
 	typedef struct DPCTLOpaqueSyclEvent* DPCTLSyclEventRef
 
-Opaque pointer to a ``sycl::event``
+Opaque pointer to a ``sycl::event``.
 
 .. index:: pair: typedef; DPCTLSyclKernelBundleRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a6d9c52ea7d2e9394ddf7ba7e7f01bebd:
@@ -311,7 +311,7 @@ Opaque pointer to a ``sycl::event``
 
 	typedef struct DPCTLOpaqueSyclKernelBundle* DPCTLSyclKernelBundleRef
 
-Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
+Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``.
 
 .. index:: pair: typedef; DPCTLSyclKernelRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844:
@@ -321,7 +321,7 @@ Opaque pointer to a ``sycl::kernel_bundle<sycl::bundle_state::executable>``
 
 	typedef struct DPCTLOpaqueSyclKernel* DPCTLSyclKernelRef
 
-Opaque pointer to a ``sycl::kernel``
+Opaque pointer to a ``sycl::kernel``.
 
 .. index:: pair: typedef; DPCTLSyclPlatformRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1aae750289dcff2c3739f4870086ac7ed0:
@@ -331,7 +331,7 @@ Opaque pointer to a ``sycl::kernel``
 
 	typedef struct DPCTLOpaqueSyclPlatform* DPCTLSyclPlatformRef
 
-Opaque pointer to a ``sycl::platform``
+Opaque pointer to a ``sycl::platform``.
 
 .. index:: pair: typedef; DPCTLSyclQueueRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a:
@@ -341,7 +341,7 @@ Opaque pointer to a ``sycl::platform``
 
 	typedef struct DPCTLOpaqueSyclQueue* DPCTLSyclQueueRef
 
-Opaque pointer to a ``sycl::queue``
+Opaque pointer to a ``sycl::queue``.
 
 .. index:: pair: typedef; DPCTLSyclUSMRef
 .. _doxid-df/d57/dpctl__sycl__types_8h_1a8c78ad1413045f90e15f5b6a2727d2e6:
@@ -365,7 +365,7 @@ Global Functions
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	DPCTLDevice_GetCompositeDevice(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::parent_device>
+Wrapper over device.get_info<info::device::parent_device>.
 
 
 
@@ -394,7 +394,7 @@ Returns an opaque pointer to the composite device for a component device, or nul
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetGlobalMemCacheLineSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_line_size>
+Wrapper over device.get_info<info::device::global_mem_cache_line_size>.
 
 
 
@@ -423,7 +423,7 @@ Returns the size of global memory cache line in bytes as uint32_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint64_t
 	DPCTLDevice_GetGlobalMemCacheSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_size>
+Wrapper over device.get_info<info::device::global_mem_cache_size>.
 
 
 
@@ -452,7 +452,7 @@ Returns the size of global memory cache in bytes as uint64_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`DPCTLGlobalMemCacheType<doxid-d3/d94/dpctl__sycl__enum__types_8h_1a229ff3945c2347aa0999fe2e28aaa94d>`
 	DPCTLDevice_GetGlobalMemCacheType(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::global_mem_cache_type>
+Wrapper over device.get_info<info::device::global_mem_cache_type>.
 
 
 
@@ -626,7 +626,7 @@ Returns the maximum width of a 3D image in pixels. The minimum value is 2048 if 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetMaxClockFrequency(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::max_clock_frequency>
+Wrapper over device.get_info<info::device::max_clock_frequency>.
 
 
 
@@ -655,7 +655,7 @@ Returns the maximum clock frequency in MHz as uint32_t.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint64_t
 	DPCTLDevice_GetMaxMemAllocSize(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::max_mem_alloc_size>
+Wrapper over device.get_info<info::device::max_mem_alloc_size>.
 
 
 
@@ -742,7 +742,7 @@ Returns the maximum number of simultaneous image objects that can be written to 
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` :ref:`__dpctl_give<doxid-d2/d43/group___memory_semantics_1ga836492a42cdfef6419378dbf8d81f452>` :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>`
 	DPCTLDevice_GetParentDevice(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::parent_device>
+Wrapper over device.get_info<info::device::parent_device>.
 
 
 
@@ -771,7 +771,7 @@ Returns an opaque pointer to the parent device for a sub-device, or nullptr othe
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` uint32_t
 	DPCTLDevice_GetPartitionMaxSubDevices(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::partition_max_sub_devices>
+Wrapper over device.get_info<info::device::partition_max_sub_devices>.
 
 
 
@@ -800,7 +800,7 @@ Returns the maximum number of sub-devices that can be created when this device i
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	DPCTLDevice_GetProfilingTimerResolution(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over device.get_info<info::device::profiling_timer_resolution>
+Wrapper over device.get_info<info::device::profiling_timer_resolution>.
 
 
 
@@ -829,7 +829,7 @@ Returns the resolution of device timer in nanoseconds.
 	:ref:`DPCTL_API<doxid-d3/daa/_dll_export_8h_1aed0c117c235d99c414e0b5033d096785>` size_t
 	DPCTLDevice_Hash(:ref:`__dpctl_keep<doxid-d2/d43/group___memory_semantics_1gadd48a0161309931574aed2025a16ade7>` const :ref:`DPCTLSyclDeviceRef<doxid-df/d57/dpctl__sycl__types_8h_1a8dae76b436012ecbdebbd568e77f440d>` DRef)
 
-Wrapper over std::hash<sycl::device>'s operator()
+Wrapper over std::hash<sycl::device>'s operator().
 
 
 
@@ -1007,7 +1007,7 @@ C-API wrapper for ``sycl::queue::submit_barrier(event_vector)``.
 	*
 		- DepEvents
 
-		- List of dependent DPCTLSyclEventRef objects (events) for the barrier. We call ``sycl::handler.depends_on`` for each of the provided events.
+		- List of dependent :ref:`DPCTLSyclEventRef <doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` objects (events) for the barrier. We call ``sycl::handler.depends_on`` for each of the provided events.
 
 	*
 		- NDepEvents
