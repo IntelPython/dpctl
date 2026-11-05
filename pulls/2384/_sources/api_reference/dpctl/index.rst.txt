@@ -16,8 +16,6 @@
       - Unified Shared Memory operations
     * - :py:mod:`dpctl.compiler`
       - Support for working with SYCL kernels
-    * - :py:mod:`dpctl.program`
-      - (deprecated, use :py:mod:`dpctl.compiler`)
     * - :py:mod:`dpctl.utils`
       - A collection of utility functions
 

@@ -27,9 +27,11 @@
 
     Waiting with ``wait`` also drops the references that
     :meth:`dpctl.SyclQueue.keep_args_alive` took for tasks that have since
-    completed, which ``dpctl`` otherwise does on a thread of its own.
+    completed, which ``dpctl`` otherwise does on a thread of its own. This is
+    best-effort: references that thread is already dropping are left to it, so
+    they may still be held when ``wait`` returns.
 
-    .. deprecated:: 0.23.0
+    .. deprecated:: 0.24.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``
         are deprecated. Tasks are no longer paired with a host task event, so
         ``add_event`` takes the computational event alone, and cleanup is
