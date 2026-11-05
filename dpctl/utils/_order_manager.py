@@ -18,14 +18,26 @@ class OrderManagerProtocol(Protocol):
         comp_ev: SyclEvent | Sequence[SyclEvent],
     ) -> None: ...
 
+    def add_event(self, comp_ev: SyclEvent | Sequence[SyclEvent]) -> None: ...
+
+    def add_cleanup_event(
+        self, cleanup_ev: SyclEvent | Sequence[SyclEvent]
+    ) -> None: ...
+
     @property
     def num_host_task_events(self) -> int: ...
+
+    @property
+    def num_cleanup_events(self) -> int: ...
 
     @property
     def num_submitted_events(self) -> int: ...
 
     @property
     def host_task_events(self) -> list[SyclEvent]: ...
+
+    @property
+    def cleanup_events(self) -> list[SyclEvent]: ...
 
     @property
     def submitted_events(self) -> list[SyclEvent]: ...
@@ -156,7 +168,7 @@ class _InOrderManager:
 
     def __init__(self, q: SyclQueue):
         self._queue = q
-        self._host_task_evs = []
+        self._cleanup_evs = []
         self._comp_evs = []
 
     def __del__(self):
@@ -165,12 +177,22 @@ class _InOrderManager:
         self._queue.wait()
 
     def add_event_pair(self, host_task_ev, comp_ev):
-        self._host_task_evs = _as_event_list(host_task_ev)
+        self._cleanup_evs = _as_event_list(host_task_ev)
         self._comp_evs = _as_event_list(comp_ev)
+
+    def add_event(self, comp_ev):
+        self._comp_evs = _as_event_list(comp_ev)
+
+    def add_cleanup_event(self, cleanup_ev):
+        self._cleanup_evs = _as_event_list(cleanup_ev)
 
     @property
     def num_host_task_events(self):
-        return len(self._host_task_evs)
+        return self.num_cleanup_events
+
+    @property
+    def num_cleanup_events(self):
+        return len(self._cleanup_evs)
 
     @property
     def num_submitted_events(self):
@@ -178,7 +200,11 @@ class _InOrderManager:
 
     @property
     def host_task_events(self):
-        return list(self._host_task_evs)
+        return self.cleanup_events
+
+    @property
+    def cleanup_events(self):
+        return list(self._cleanup_evs)
 
     @property
     def submitted_events(self):
@@ -190,10 +216,13 @@ class _InOrderManager:
 
     def wait(self):
         self._queue.wait()
+        # see _SequentialOrderManager.wait
+        if not sys.is_finalizing():
+            _drain_deferred_releases()
 
     def __copy__(self):
         res = _InOrderManager(self._queue)
-        res._host_task_evs = list(self._host_task_evs)
+        res._cleanup_evs = list(self._cleanup_evs)
         res._comp_evs = list(self._comp_evs)
         return res
 

@@ -527,26 +527,62 @@ def test_in_order_order_manager(use_last_event):
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
     assert _som[q] is _mngr
-    assert _mngr.num_host_task_events == 0
+    assert _mngr.num_cleanup_events == 0
     assert _mngr.num_submitted_events == 0
     assert isinstance(_mngr.submitted_events, list)
-    assert isinstance(_mngr.host_task_events, list)
-    _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
-    _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
-    ht_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
-    _mngr.add_event_pair(ht_ev, [comp_ev])
+    assert isinstance(_mngr.cleanup_events, list)
+    _mngr.add_event(dpctl.SyclEvent())
+    _mngr.add_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
+    _mngr.add_cleanup_event(dpctl.SyclEvent())
+    _mngr.add_cleanup_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
+    cl_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
+    _mngr.add_event([comp_ev])
+    _mngr.add_cleanup_event(cl_ev)
     # only the most recently added events are kept
-    assert _mngr.host_task_events == [ht_ev]
-    assert _mngr.num_host_task_events == 1
+    assert _mngr.cleanup_events == [cl_ev]
+    assert _mngr.num_cleanup_events == 1
     # nothing was submitted to the queue, so both modes return added events
     assert _mngr.submitted_events == [comp_ev]
     assert _mngr.num_submitted_events == 1
     _mngr.wait()
     cpy = _mngr.__copy__()
-    assert cpy.host_task_events == [ht_ev]
+    assert cpy.cleanup_events == [cl_ev]
     assert cpy.submitted_events == [comp_ev]
     _som.clear()
     del cpy
+
+
+def test_in_order_order_manager_host_task_api():
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    ht_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+        _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+        _mngr.add_event_pair(ht_ev, [comp_ev])
+        assert _mngr.host_task_events == [ht_ev]
+        assert _mngr.num_host_task_events == 1
+    assert _mngr.cleanup_events == [ht_ev]
+    _som.clear()
+
+
+def test_in_order_order_manager_wait_drops_references(stopped_release_watcher):
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+
+    released = []
+    args = (_Sentinel(released),)
+    ev = q.keep_args_alive(args)
+    del args
+    ev.wait()
+    assert not released, "dpctl's thread is stopped, so nothing has run it"
+
+    _mngr.wait()
+    assert released == [True]
+    _som.clear()
 
 
 def test_in_order_order_manager_submitted_events(use_last_event):
@@ -554,8 +590,9 @@ def test_in_order_order_manager_submitted_events(use_last_event):
     _mngr = dpctl.utils.SequentialOrderManager[q]
     buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
     comp_ev = q.memset_async(buf, 1, 1024)
-    ht_ev = q._submit_keep_args_alive((buf,), [comp_ev])
-    _mngr.add_event_pair(ht_ev, comp_ev)
+    ht_ev = q.keep_args_alive((buf,), [comp_ev])
+    _mngr.add_event(comp_ev)
+    _mngr.add_cleanup_event(ht_ev)
     if use_last_event:
         # the keep-alive task is the last command submitted to the queue
         assert len(_mngr.submitted_events) == 1
@@ -582,8 +619,9 @@ def test_in_order_order_manager_other_queue_depends(use_last_event):
         q_in.memset(buf, 0, nbytes)
         for v in range(1, n_fills + 1):
             comp_ev = q_in.memset_async(buf, v, nbytes)
-            ht_ev = q_in._submit_keep_args_alive((buf,), [comp_ev])
-            _mngr.add_event_pair(ht_ev, comp_ev)
+            ht_ev = q_in.keep_args_alive((buf,), [comp_ev])
+            _mngr.add_event(comp_ev)
+            _mngr.add_cleanup_event(ht_ev)
         # work on another queue must wait for work done on the in-order queue
         deps = _mngr.submitted_events
         assert deps
