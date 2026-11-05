@@ -79,6 +79,8 @@ device_type_from_token(const std::string &tok)
         return sycl::info::device_type::gpu;
     if (tok == "accelerator")
         return sycl::info::device_type::accelerator;
+    if (tok == "custom")
+        return sycl::info::device_type::custom;
     return std::nullopt;
 }
 
