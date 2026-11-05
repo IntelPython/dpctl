@@ -97,6 +97,25 @@ API for :c:struct:`PySyclQueueObject`
     Note that function does not change the ownership of the ``QRef`` instance and
     the caller remains responsible for freeing ``QRef`` as appropriate.
 
+.. c:function:: int SyclQueue_DeferRelease(DPCTLSyclQueueRef QRef, DPCTLSyclEventRef *depERefs, size_t nDepERefs, void (*release)(void *), void *data, DPCTLSyclEventRef markerERef)
+
+    :param QRef: queue running the work that uses what ``release`` frees
+    :param depERefs: array of events for that work
+    :param nDepERefs: number of events in ``depERefs``
+    :param release: function to call once the work has completed
+    :param data: argument passed to ``release``
+    :param markerERef: existing event the marker event is assigned to
+    :returns: 0 on success, and 1 if nothing was deferred, in which case
+        ``release`` is never called.
+
+    Submits an empty kernel to ``QRef`` after ``depERefs``, assigns its event to
+    the ``sycl::event`` behind ``markerERef``, and calls ``release(data)`` once
+    that kernel has completed.
+
+    ``release`` is called with the GIL held, on a thread owned by :py:mod:`dpctl`
+    or on one draining the completed releases. Calling the function does not
+    require the GIL.
+
 API for :c:struct:`PySyclEventObject`
 -------------------------------------
 
