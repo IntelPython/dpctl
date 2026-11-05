@@ -70,10 +70,12 @@ jobs:
         run: |
           # the Python build string selects the GIL or the free-threaded variant,
           # clang must come from the LLVM that adaptivecpp was built against, and
-          # intel-opencl-rt provides the OpenCL CPU device to run on
+          # intel-opencl-rt provides the OpenCL CPU device to run on; the HIP
+          # backend plugin links libamdhip64.so.6, which ROCm 7 does not provide
           conda install -y ${{ env.CHANNELS }} \
               "python=${{ matrix.python_spec }}" \
               "adaptivecpp=*=cpu_llvm19*" "clang=19.*" "clangxx=19.*" \
+              "hip-runtime-amd=6.*" \
               intel-opencl-rt \
               cmake cython ninja numpy pybind11 pytest scikit-build "setuptools<80" versioneer
 
