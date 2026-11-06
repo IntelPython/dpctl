@@ -63,7 +63,7 @@ requires-python = ">=3.10"
 
 [project.optional-dependencies]
 benchmark = ["asv>=0.6", "numpy"]
-coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli"]
+coverage = ["Cython>=3.1.0", "pytest", "coverage", "tomli", "ml_dtypes"]
 docs = [
   "Cython>=3.1.0",
   "graphviz",

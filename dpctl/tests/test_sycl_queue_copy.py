@@ -223,7 +223,18 @@ def test_copy_with_invalid_dtype():
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
-    invalid_dtypes = ["i3", "f16", "u16", "x4", "42", "", "U4", "O"]
+    invalid_dtypes = [
+        "i3",
+        "f16",
+        "u16",
+        "x4",
+        "42",
+        "",
+        "U4",
+        "O",
+        None,
+        np.dtype("i4").newbyteorder(),
+    ]
 
     for bad_dtype in invalid_dtypes:
         with pytest.raises(ValueError) as cm:

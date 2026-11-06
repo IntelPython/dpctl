@@ -17,6 +17,9 @@
 """Tests for NumPy data types as kernel arguments, local accessor and work
 group memory types."""
 
+import subprocess
+import sys
+
 import numpy as np
 import pytest
 
@@ -46,6 +49,21 @@ def _sycl_source_queue_or_skip():
         if q.sycl_device.can_compile("sycl"):
             return q
     pytest.skip("No device supporting SYCL source compilation is available")
+
+
+def _skip_if_compilation_crashes(q, src):
+    # some DPC++ runtimes crash compiling SYCL source using bfloat16
+    code = (
+        "import sys, dpctl, dpctl.compiler as dpc; "
+        "q = dpctl.SyclQueue(sys.argv[1]); "
+        "dpc.create_kernel_bundle_from_sycl_source(q, sys.argv[2])"
+    )
+    r = subprocess.run(
+        [sys.executable, "-c", code, q.sycl_device.filter_string, src],
+        capture_output=True,
+    )
+    if r.returncode != 0:
+        pytest.skip(f"Compilation of source failed for {q.sycl_device}")
 
 
 def _skip_if_no_aspect(q, ctype):
@@ -259,6 +277,7 @@ def test_bfloat16_sycl_source_arg():
             std::uint16_t(sycl::bit_cast<std::uint32_t>(p) >> 16));
     }
     """
+    _skip_if_compilation_crashes(q, src)
     try:
         kb = dpc.create_kernel_bundle_from_sycl_source(q, src)
     except Exception:
@@ -394,6 +413,8 @@ def test_local_accessor_bfloat16():
         "f16",
         object,
         [("a", "f4"), ("b", "f4"), ("c", "f4")],
+        None,
+        np.dtype("f4").newbyteorder(),
     ],
 )
 def test_local_accessor_invalid_dtypes(dtype):
@@ -408,7 +429,7 @@ def test_work_group_memory_dtypes():
         assert dpctl.WorkGroupMemory(dtype, 8)._ref != 0
     # any size is allowed
     assert dpctl.WorkGroupMemory([("a", "f4"), ("b", "i8")], 8)._ref != 0
-    for dtype in ("not_a_type", "U4", object):
+    for dtype in ("not_a_type", "U4", object, None):
         with pytest.raises(TypeError):
             dpctl.WorkGroupMemory(dtype, 8)
 

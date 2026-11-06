@@ -88,7 +88,7 @@ import numbers
 
 import numpy as np
 
-from dpctl._dtype_utils import as_dtype, as_scalar, is_supported_dtype
+from dpctl._dtype_utils import as_dtype, is_supported_dtype
 
 __all__ = [
     "create_kernel_bundle_from_source",
@@ -362,15 +362,12 @@ cdef class SpecializationConstant:
 
     - ``SpecializationConstant(spec_id, obj)``
       If the constructor is invoked with a single variadic argument, the
-      argument is expected to be a NumPy or Python scalar, or to either expose
-      the Python buffer protocol or be coercible to a NumPy array. A Python
-      ``bool``, ``int``, ``float`` or ``complex`` is converted to a
-      ``numpy.bool``, ``numpy.int64``, ``numpy.float64`` or
-      ``numpy.complex128`` respectively. If the argument is coercible to a
-      NumPy array or is one, its data type must be one whose values are plain
-      bytes, e.g. bool, integral, floating point, structured, or
-      ``ml_dtypes.bfloat16``. The specialization constant will be constructed
-      from the data in the buffer
+      argument is expected to be a NumPy scalar, or to either expose the
+      Python buffer protocol or be coercible to a NumPy array. If the argument
+      is coercible to a NumPy array or is one, its data type must be one whose
+      values are plain bytes, e.g. bool, integral, floating point, structured,
+      or ``ml_dtypes.bfloat16``. The specialization constant will be
+      constructed from the data in the buffer
 
     - ``SpecializationConstant(spec_id, dtype, obj)``
       If the constructor is invoked with two variadic arguments, and the first
@@ -456,7 +453,7 @@ cdef class SpecializationConstant:
                 target_obj = np.ascontiguousarray(args[1], dtype=target_dtype)
 
         elif len(args) == 1:
-            target_obj = as_scalar(args[0])
+            target_obj = args[0]
             if isinstance(target_obj, np.generic) or (
                 not PyObject_CheckBuffer(target_obj)
             ):

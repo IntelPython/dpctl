@@ -26,8 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.utils.SequentialOrderManager[q].submitted_events` includes the queue's last event for in-order queues when `sycl_ext_oneapi_in_order_queue_events` is available, and `wait()` waits for all work on an in-order queue [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
 * `dpctl.SyclQueue.copy`, `dpctl.SyclQueue.copy_async`, `dpctl.SyclQueue.fill`, `dpctl.SyclQueue.fill_async`, `dpctl.LocalAccessor`, `dpctl.WorkGroupMemory`, and `dpctl.compiler.SpecializationConstant` accept a data type in any form `numpy.dtype` accepts, for any data type whose values are plain bytes, rather than a fixed set of type strings [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
-* `dpctl.compiler.SpecializationConstant` accepts NumPy scalars and Python `bool`, `int`, `float`, and `complex` scalars [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
-* Added `DPCTL_BYTES16_T` to `DPCTLKernelArgType` before `DPCTL_UNSUPPORTED_KERNEL_ARG`, which shifts the value of the latter [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+* `dpctl.compiler.SpecializationConstant` accepts NumPy scalars [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)

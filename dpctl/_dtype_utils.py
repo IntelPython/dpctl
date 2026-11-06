@@ -64,14 +64,19 @@ def as_dtype(dtype):
     """Returns ``numpy.dtype(dtype)``.
 
     Raises:
-        ValueError: if ``dtype`` is not a supported data type.
+        ValueError: if ``dtype`` is ``None``, not a supported data type, or not
+            in native byte order.
     """
+    if dtype is None:
+        raise ValueError("dtype must not be None")
     try:
         dt = np.dtype(dtype)
     except TypeError:
         raise ValueError(f"Unrecognized dtype '{dtype}'") from None
     if not is_supported_dtype(dt):
         raise ValueError(f"Unsupported dtype '{dt}'")
+    if not dt.isnative:
+        raise ValueError(f"dtype '{dt}' is not in native byte order")
     return dt
 
 
