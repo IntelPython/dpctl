@@ -26,6 +26,7 @@
 
 #include "Config/dpctl_config.h"
 #include "dpctl_service.h"
+#include "dpctl_utils.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -45,4 +46,13 @@ TEST(TestServicesFns, ChkDPCPPVersion)
     // should occur as a substring in the version obtained
     // from compiler
     ASSERT_TRUE(found != std::string::npos);
+}
+
+TEST(TestServicesFns, ChkSyclProvider)
+{
+    auto c_prov = DPCTLService_GetSyclProvider();
+    std::string prov = std::string(c_prov);
+    DPCTLCString_Delete(c_prov);
+
+    ASSERT_TRUE(prov == "Intel" || prov == "AdaptiveCpp");
 }

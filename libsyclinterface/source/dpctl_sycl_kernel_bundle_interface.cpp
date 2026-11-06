@@ -35,7 +35,6 @@
 #include "dpctl_error_handlers.h"
 #include "dpctl_sycl_kernel_bundle_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
-#include <CL/cl.h> /* OpenCL headers     */
 #include <cstdint>
 #include <sstream>
 #include <stddef.h>

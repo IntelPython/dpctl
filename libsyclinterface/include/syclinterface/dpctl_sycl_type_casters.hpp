@@ -72,8 +72,6 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(
 #endif
 
 #include "dpctl_sycl_device_manager.h"
-
-#include "dpctl_sycl_device_manager.h"
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(std::vector<DPCTLSyclDeviceRef>,
                                    DPCTLDeviceVectorRef)
 
