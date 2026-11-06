@@ -11,6 +11,7 @@ def dpctl_c_extension(tmp_path_factory):
     import subprocess
     import sys
     import sysconfig
+    import warnings
 
     curr_dir = os.path.dirname(__file__)
     dr = tmp_path_factory.mktemp("_c_ext")
@@ -34,8 +35,11 @@ def dpctl_c_extension(tmp_path_factory):
         if not pth:
             pytest.fail("C extension was not built")
         spec = spec_from_file_location("_c_ext", pth[0])
-        builder_module = module_from_spec(spec)
-        spec.loader.exec_module(builder_module)
+        # fails if the module re-enables the GIL on a free-threaded build
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", RuntimeWarning)
+            builder_module = module_from_spec(spec)
+            spec.loader.exec_module(builder_module)
         return builder_module
     else:
         pytest.fail("C extension could not be built")
