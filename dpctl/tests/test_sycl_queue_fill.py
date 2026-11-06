@@ -382,12 +382,12 @@ def test_fill_with_ml_dtypes():
         pytest.skip("Default constructor for SyclQueue failed")
 
     num_elements = 8
-    for dtype, value in (
-        (ml_dtypes.bfloat16, 1.5),
-        ("bfloat16", 1.5),
-        (ml_dtypes.complex32, 1 - 2j),
-        (ml_dtypes.bcomplex32, 1 - 2j),
-    ):
+    cases = [(ml_dtypes.bfloat16, 1.5), ("bfloat16", 1.5)]
+    # complex32 and bcomplex32 need ml_dtypes 0.6
+    for name in ("complex32", "bcomplex32"):
+        if hasattr(ml_dtypes, name):
+            cases.append((getattr(ml_dtypes, name), 1 - 2j))
+    for dtype, value in cases:
         np_dt = np.dtype(dtype)
         nbytes = num_elements * np_dt.itemsize
         mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
