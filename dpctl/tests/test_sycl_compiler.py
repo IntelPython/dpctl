@@ -430,7 +430,7 @@ def test_spec_const_complex_half():
 
 
 def test_spec_const_complex32():
-    ml_dtypes = pytest.importorskip("ml_dtypes")
+    ml_dtypes = pytest.importorskip("ml_dtypes", minversion="0.6")
     sp = dpc.SpecializationConstant(0, ml_dtypes.complex32(1 - 2j))
     assert sp.size == 4
     assert sp == dpc.SpecializationConstant(0, "complex32", 1 - 2j)

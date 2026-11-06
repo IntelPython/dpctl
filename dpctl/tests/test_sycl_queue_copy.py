@@ -348,7 +348,11 @@ def test_copy_with_ml_dtypes():
         pytest.skip("Default constructor for SyclQueue failed")
 
     src = np.arange(8, dtype=np.uint16)
-    for dtype in (ml_dtypes.bfloat16, "bfloat16", ml_dtypes.complex32):
+    dtypes = [ml_dtypes.bfloat16, "bfloat16"]
+    # complex32 needs ml_dtypes 0.6
+    if hasattr(ml_dtypes, "complex32"):
+        dtypes.append(ml_dtypes.complex32)
+    for dtype in dtypes:
         dst = np.zeros_like(src)
         n = src.nbytes // np.dtype(dtype).itemsize
         q.copy(dst, src, n, dtype=dtype)

@@ -128,7 +128,7 @@ def test_numpy_scalar_arg(ctype, dtype):
 
 def _complex_half_scalar(kind, value):
     if kind == "complex32":
-        ml_dtypes = pytest.importorskip("ml_dtypes")
+        ml_dtypes = pytest.importorskip("ml_dtypes", minversion="0.6")
         return ml_dtypes.complex32(value)
     return np.array((value.real, value.imag), dtype=complex_half)[()]
 
@@ -182,7 +182,7 @@ def test_complex_scalar_arg(ctype, kind):
 
 
 def test_bcomplex32_scalar_arg():
-    ml_dtypes = pytest.importorskip("ml_dtypes")
+    ml_dtypes = pytest.importorskip("ml_dtypes", minversion="0.6")
     q = _opencl_queue_or_skip()
     src = (
         "kernel void widen(global float *out, ushort2 d) {"
@@ -398,7 +398,11 @@ def test_local_accessor_dtypes(dtype):
 
 def test_local_accessor_bfloat16():
     ml_dtypes = pytest.importorskip("ml_dtypes")
-    for dtype in (ml_dtypes.bfloat16, "bfloat16", ml_dtypes.complex32):
+    dtypes = [ml_dtypes.bfloat16, "bfloat16"]
+    # complex32 needs ml_dtypes 0.6
+    if hasattr(ml_dtypes, "complex32"):
+        dtypes.append(ml_dtypes.complex32)
+    for dtype in dtypes:
         la = dpctl.LocalAccessor(dtype, (8,))
         assert isinstance(la, dpctl.LocalAccessor)
 
