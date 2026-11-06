@@ -1,11 +1,50 @@
 import sys
 import threading
 import weakref
-from collections import defaultdict
+from collections.abc import Sequence
+from typing import Protocol
 
 from .._sycl_event import SyclEvent
 from .._sycl_queue import SyclQueue, _drain_deferred_releases
 from ._seq_order_keeper import _OrderManager
+
+
+class OrderManagerProtocol(Protocol):
+    """Interface of order managers returned by ``SequentialOrderManager``."""
+
+    def add_event_pair(
+        self,
+        host_task_ev: SyclEvent | Sequence[SyclEvent],
+        comp_ev: SyclEvent | Sequence[SyclEvent],
+    ) -> None: ...
+
+    def add_event(self, comp_ev: SyclEvent | Sequence[SyclEvent]) -> None: ...
+
+    def add_cleanup_event(
+        self, cleanup_ev: SyclEvent | Sequence[SyclEvent]
+    ) -> None: ...
+
+    @property
+    def num_host_task_events(self) -> int: ...
+
+    @property
+    def num_cleanup_events(self) -> int: ...
+
+    @property
+    def num_submitted_events(self) -> int: ...
+
+    @property
+    def host_task_events(self) -> list[SyclEvent]: ...
+
+    @property
+    def cleanup_events(self) -> list[SyclEvent]: ...
+
+    @property
+    def submitted_events(self) -> list[SyclEvent]: ...
+
+    def wait(self) -> None: ...
+
+    def __copy__(self) -> "OrderManagerProtocol": ...
 
 
 class _SequentialOrderManager:
@@ -107,13 +146,62 @@ class _SequentialOrderManager:
         return res
 
 
+_use_last_event = SyclQueue.is_get_last_event_available()
+
+
+class _InOrderManager(_SequentialOrderManager):
+    """
+    Order manager for an in-order queue.
+
+    Holds the added events which are not complete, as
+    :class:`_SequentialOrderManager` does. ``submitted_events`` also has the
+    event of the last command submitted to the queue if
+    :meth:`dpctl.SyclQueue.get_last_event` is available. ``wait`` waits on
+    the queue.
+    """
+
+    def __init__(self, q: SyclQueue):
+        super().__init__()
+        self._queue = q
+
+    def __del__(self):
+        if sys.is_finalizing():
+            return
+        self._queue.wait()
+        super().__del__()
+
+    @property
+    def num_submitted_events(self):
+        return len(self.submitted_events)
+
+    @property
+    def submitted_events(self):
+        evs = self._state.get_submitted_events()
+        if _use_last_event:
+            ev = self._queue.get_last_event()
+            if ev is not None:
+                evs.append(ev)
+        return evs
+
+    def wait(self):
+        self._queue.wait()
+        return super().wait()
+
+    def __copy__(self):
+        res = _InOrderManager.__new__(_InOrderManager)
+        res._state = _OrderManager(self._state)
+        res._queue = self._queue
+        return res
+
+
 class SyclQueueToOrderManagerMap:
     """
     Utility class used to ensure sequential ordering of offloaded tasks
     when passed to order manager.
 
     Maintains a thread-local dictionary mapping SyclQueue instances to
-    _SequentialOrderManager instances.
+    order managers: _InOrderManager for in-order queues,
+    _SequentialOrderManager otherwise.
     """
 
     def __init__(self):
@@ -128,15 +216,23 @@ class SyclQueueToOrderManagerMap:
         try:
             return self._tls.order_manager_map
         except AttributeError:
-            m = defaultdict(_SequentialOrderManager)
+            m = {}
             self._tls.order_manager_map = m
             return m
 
-    def __getitem__(self, q: SyclQueue) -> _SequentialOrderManager:
+    def __getitem__(self, q: SyclQueue) -> OrderManagerProtocol:
         """Get order manager for given SyclQueue"""
         if not isinstance(q, SyclQueue):
             raise TypeError(f"Expected `dpctl.SyclQueue`, got {type(q)}")
-        return self._get_map()[q]
+        _local = self._get_map()
+        om = _local.get(q)
+        if om is None:
+            if q.is_in_order:
+                om = _InOrderManager(q)
+            else:
+                om = _SequentialOrderManager()
+            _local[q] = om
+        return om
 
     def clear(self):
         """Clear content of internal dictionary"""
