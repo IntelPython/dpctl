@@ -157,6 +157,8 @@ import collections
 import functools
 import warnings
 
+from ._diagnostics import sycl_provider
+
 __all__ = [
     "SyclDevice", "SyclDeviceCreationError", "SyclSubDeviceCreationError",
 ]
@@ -312,6 +314,8 @@ cdef inline void _raise_invalid_peer_access(
     """
     Check peer access ahead of time and raise errors for invalid cases.
     """
+    if sycl_provider() == "AdaptiveCpp":
+        raise ValueError("Peer access is not supported by AdaptiveCpp")
     cdef list _peer_access_backends = [
         _backend_type._CUDA,
         _backend_type._HIP,

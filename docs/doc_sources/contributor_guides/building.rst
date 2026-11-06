@@ -277,6 +277,8 @@ build:
   :py:mod:`dpctl.compiler` functions and kernel submission through them, both
   through the OpenCL and the Level Zero backend
 - the raw kernel argument extension
+- peer access between devices, so ``enable_peer_access`` and
+  ``disable_peer_access`` raise ``ValueError``
 - the atomic memory order, fence order and scope capability descriptors of
   devices and of contexts
 - the DPC++ version, the backend version and the default selector score

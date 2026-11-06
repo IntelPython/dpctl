@@ -857,6 +857,8 @@ DPCTLDevice_GetComponentDevices(__dpctl_keep const DPCTLSyclDeviceRef DRef)
             error_handler(e, __FILE__, __func__, __LINE__);
             return nullptr;
         }
+#else
+        ComponentDevicesVectorPtr = new vecTy();
 #endif
     }
     return wrap<vecTy>(ComponentDevicesVectorPtr);
@@ -1341,38 +1343,34 @@ __dpctl_give int *DPCTLDevice_GetPartitionAffinityDomains(
 bool DPCTLDevice_CanCompileSPIRV(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     bool canCompile = false;
+#ifndef __ADAPTIVECPP__
     auto Dev = unwrap<device>(DRef);
     if (Dev) {
         try {
             auto Backend = Dev->get_platform().get_backend();
-#ifndef __ADAPTIVECPP__
             canCompile = Backend == backend::opencl ||
                          Backend == backend::ext_oneapi_level_zero;
-#else
-            canCompile = Backend == backend::ocl;
-#endif
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
+#endif
     return canCompile;
 }
 
 bool DPCTLDevice_CanCompileOpenCL(__dpctl_keep const DPCTLSyclDeviceRef DRef)
 {
     bool canCompile = false;
+#ifndef __ADAPTIVECPP__
     auto Dev = unwrap<device>(DRef);
     if (Dev) {
         try {
-#ifndef __ADAPTIVECPP__
             canCompile = Dev->get_platform().get_backend() == backend::opencl;
-#else
-            canCompile = Dev->get_platform().get_backend() == backend::ocl;
-#endif
         } catch (std::exception const &e) {
             error_handler(e, __FILE__, __func__, __LINE__);
         }
     }
+#endif
     return canCompile;
 }
 
