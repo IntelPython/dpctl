@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
+# link clang-cl targets through the compiler driver
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_C
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/WindowsClangClLinkRules.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/WindowsClangClLinkRules.cmake)
+
 project(dpctl
     VERSION 0.24
     LANGUAGES CXX
