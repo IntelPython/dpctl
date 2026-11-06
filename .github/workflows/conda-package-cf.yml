@@ -13,7 +13,7 @@ env:
   PACKAGE_NAME: dpctl
   MODULE_NAME: dpctl
   TEST_ENV_NAME: test_dpctl
-  RECIPE_DIR: conda-recipe-cf
+  RECIPE_DIR: conda-recipe
   CHANNELS: "-c conda-forge --override-channels"
   VER_SCRIPT1: "import json; f = open('ver.json', 'r'); j = json.load(f); f.close(); d = j['dpctl'][0];"
   VER_SCRIPT2: "print('='.join((d[s] for s in ('version', 'build'))))"
@@ -60,7 +60,7 @@ jobs:
         with:
           path: ~/.conda/pkgs
           key:
-            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-${{hashFiles('conda-recipe-cf/meta.yaml') }}
+            ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-${{hashFiles('conda-recipe/meta.yaml') }}
           restore-keys: |
             ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-spec-${{ matrix.python == '3.14' && contains(matrix.python_spec, 'cp314t') && 't' || '' }}-
             ${{ runner.os }}-conda-cf-${{ env.CACHE_NUMBER }}-
@@ -405,7 +405,7 @@ jobs:
       EXAMPLES_ENV_NAME: examples
       BUILD_ENV_NAME: build_env
       DPCPP_CMPLR: "dpcpp_linux-64>=2026.0"
-      # keep in sync with conda-recipe-cf/conda_build_config.yaml
+      # keep in sync with conda-recipe/conda_build_config.yaml
       GCC_CMPLR_VERSION: '15'
 
     steps:

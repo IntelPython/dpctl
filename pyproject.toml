@@ -5,7 +5,7 @@ requires = [
   "wheel>=0.43",
   "build>=1.1",
   "setuptools>=63.0.0",
-  "scikit-build>=0.17.0",
+  "scikit-build>=0.17.0,<1.0",
   "ninja>=1.11.1; platform_system!='Windows'",
   "cmake>=3.29.0",
   "cython>=3.1.0",
@@ -89,6 +89,31 @@ Repository = "https://github.com/IntelPython/dpctl.git"
 exclude = "dpctl/_version.py"
 line-length = 80
 
+[tool.cibuildwheel]
+build-verbosity = 1
+
+[tool.cibuildwheel.linux]
+# Intel's icx, as the conda recipe builds with, from Intel's repository, and the Level Zero headers
+before-all = [
+  "rpm --import https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB",
+  "printf '[oneAPI]\\nname=Intel oneAPI\\nbaseurl=https://yum.repos.intel.com/oneapi\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB\\n' > /etc/yum.repos.d/oneAPI.repo",
+  "dnf install -y intel-oneapi-compiler-dpcpp-cpp-2026.2",
+  "git clone --depth 1 --branch v1.34.0 https://github.com/oneapi-src/level-zero /opt/level-zero"
+]
+environment = { CC = "/opt/intel/oneapi/compiler/latest/bin/icx", CXX = "/opt/intel/oneapi/compiler/latest/bin/icpx", CMAKE_GENERATOR = "Ninja", CMAKE_ARGS = "-DDPCTL_LEVEL_ZERO_INCLUDE_DIR=/opt/level-zero/include -DDPCTL_WITH_REDIST=ON" }
+# The SYCL and icx runtime libraries come from wheels at run time, see [tool.gh-ci]
+repair-wheel-command = "auditwheel repair --exclude libsycl.so.9 --exclude libintlc.so.5 --exclude libimf.so --exclude libsvml.so --exclude libirng.so -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.windows]
+# icx from conda-forge, and the Level Zero headers
+before-all = [
+  "python {project}/ci/install_icx.py C:/icx",
+  "git clone --depth 1 --branch v1.34.0 https://github.com/oneapi-src/level-zero C:/level-zero"
+]
+environment = { CC = "C:/icx/Library/bin/icx.exe", CXX = "C:/icx/Library/bin/icx.exe", CMAKE_GENERATOR = "Ninja", CMAKE_ARGS = "-DDPCTL_LEVEL_ZERO_INCLUDE_DIR=C:/level-zero/include -DCMAKE_INTERPROCEDURAL_OPTIMIZATION:BOOL=FALSE", PATH = "C:/icx/Library/bin;C:/icx/Library/bin/compiler;$PATH", LIB = "C:/icx/Library/lib;$LIB", LINK = "/LIBPATH:C:/icx/Library/lib" }
+# The SYCL and icx runtime libraries come from wheels at run time, see [tool.gh-ci]
+repair-wheel-command = "delvewheel repair --no-dll DPCTLSyclInterface.dll;sycl9.dll;irc_msg.dll;libmmd.dll;svml_dispmd.dll;libircmd.dll;libirngmd.dll;ze_loader.dll;OpenCL.dll -w {dest_dir} {wheel}"
+
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
@@ -118,6 +143,10 @@ source = [
 
 [tool.cython-lint]
 max-line-length = 80
+
+[tool.gh-ci]
+# What the wheels need at run time, which conda packages get from the recipe
+wheel-requires = ["intel-sycl-rt >=2026.2,<2027", "intel-cmplr-lib-rt >=2026.2,<2027"]
 
 [tool.isort]
 ensure_newline_before_comments = true
