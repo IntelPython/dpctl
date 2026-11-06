@@ -221,14 +221,17 @@ TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorScore)
             EXPECT_NO_FATAL_FAILURE(DSRef =
                                         DPCTLFilterSelector_Create(fs.c_str()));
             ASSERT_TRUE(DSRef != nullptr);
-            for (std::size_t j = 0; j < devices.size(); ++j) {
-                auto D = devices[j];
-                auto DRef = wrap<sycl::device>(&D);
-                int score = DPCTLDeviceSelector_Score(DSRef, DRef);
-                if (i == j)
-                    EXPECT_TRUE(score >= 0) << fs;
-                else
-                    EXPECT_TRUE(score < 0) << fs;
+            // scores must not depend on earlier calls
+            for (int pass = 0; pass < 2; ++pass) {
+                for (std::size_t j = 0; j < devices.size(); ++j) {
+                    auto D = devices[j];
+                    auto DRef = wrap<sycl::device>(&D);
+                    int score = DPCTLDeviceSelector_Score(DSRef, DRef);
+                    if (i == j)
+                        EXPECT_TRUE(score >= 0) << fs << " pass " << pass;
+                    else
+                        EXPECT_TRUE(score < 0) << fs << " pass " << pass;
+                }
             }
             EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
         }
