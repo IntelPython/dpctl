@@ -11,6 +11,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 
 find_package(Git REQUIRED)
 
+# set by the top-level project, defaulted for a standalone build
+set(DPCTL_SYCL_PROVIDER "Intel" CACHE STRING "SYCL compiler provider (Intel or AdaptiveCpp)")
+
 if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
     if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
        find_package(IntelSYCL REQUIRED)
