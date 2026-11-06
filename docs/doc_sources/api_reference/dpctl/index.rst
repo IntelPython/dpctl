@@ -82,7 +82,7 @@
 Every :py:mod:`dpctl` function or class taking a data type, such as
 :py:meth:`dpctl.SyclQueue.copy`, :py:meth:`dpctl.SyclQueue.fill`,
 :py:class:`dpctl.LocalAccessor`, :py:class:`dpctl.WorkGroupMemory` and
-:py:class:`dpctl.program.SpecializationConstant`, accepts it in any form
+:py:class:`dpctl.compiler.SpecializationConstant`, accepts it in any form
 :py:class:`numpy.dtype` accepts, e.g. ``"f4"``, ``"float32"``,
 :py:class:`numpy.float32` or a :py:class:`numpy.dtype`. Any data type whose
 values are plain bytes is supported, including structured data types and data
@@ -106,7 +106,7 @@ such as a structured scalar matching a C++ ``struct``, require the
 ``raw_kernel_arg`` DPC++ extension.
 
 Python scalars are converted to a NumPy scalar of a fixed data type, which must
-match the type of the kernel parameter:
+match the type of the kernel parameter, as a mismatch is not detected:
 
 .. list-table::
     :widths: 20 30 30

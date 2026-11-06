@@ -263,7 +263,21 @@ def test_fill_with_invalid_dtype():
 
     mem = dpctl.memory.MemoryUSMShared(64, queue=q)
 
-    for bad_dtype in ["i3", "f16", "u16", "x4", "42", "", "U4", "O", "V12"]:
+    invalid_dtypes = [
+        "i3",
+        "f16",
+        "u16",
+        "x4",
+        "42",
+        "",
+        "U4",
+        "O",
+        "V12",
+        None,
+        np.dtype("i4").newbyteorder(),
+        np.dtype([("a", "i4")]).newbyteorder(),
+    ]
+    for bad_dtype in invalid_dtypes:
         with pytest.raises(ValueError) as cm:
             q.fill(mem, 0, 8, dtype=bad_dtype)
         assert (

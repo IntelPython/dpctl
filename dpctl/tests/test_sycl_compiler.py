@@ -393,7 +393,7 @@ def test_create_kernel_bundle_with_bfloat16_spec_const():
     e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
     e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
 
-    ht_e = q._submit_keep_args_alive([x_usm], [e3])
+    ht_e = q.keep_args_alive([x_usm], [e3])
 
     e3.wait()
     ht_e.wait()
@@ -441,7 +441,7 @@ def test_spec_const_complex32():
 
 @pytest.mark.parametrize(
     "value,dtype",
-    [(True, "?"), (42, "i8"), (2.5, "f8"), (1 - 2j, "c16")],
+    [(True, "?"), (42, "i8"), (2**63, "u8"), (2.5, "f8"), (1 - 2j, "c16")],
 )
 def test_spec_const_from_python_scalar(value, dtype):
     sp = dpc.SpecializationConstant(0, value)

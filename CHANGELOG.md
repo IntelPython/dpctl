@@ -24,8 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.SyclQueue.copy`, `dpctl.SyclQueue.copy_async`, `dpctl.SyclQueue.fill`, `dpctl.SyclQueue.fill_async`, `dpctl.LocalAccessor`, `dpctl.WorkGroupMemory`, and `dpctl.compiler.SpecializationConstant` accept a data type in any form `numpy.dtype` accepts, for any data type whose values are plain bytes, rather than a fixed set of type strings [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
-* `dpctl.compiler.SpecializationConstant` accepts NumPy scalars and Python `bool`, `int`, `float`, and `complex` scalars [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
-* Added `DPCTL_BYTES16_T` to `DPCTLKernelArgType` before `DPCTL_UNSUPPORTED_KERNEL_ARG`, which shifts the value of the latter [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+* `dpctl.compiler.SpecializationConstant` accepts NumPy scalars [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)

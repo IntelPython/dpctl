@@ -276,7 +276,7 @@ jobs:
         run: |
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export CHANNELS
-          TEST_DEPENDENCIES="pytest cython setuptools"
+          TEST_DEPENDENCIES="pytest cython setuptools ml_dtypes"
           export TEST_DEPENDENCIES
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           PYTHON_VER="${{ matrix.python_spec }}"
@@ -452,7 +452,7 @@ jobs:
           )
            SET "PYTHON_VER=${{ matrix.python_spec }}"
            IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
-          SET TEST_DEPENDENCIES=pytest"<8" cython setuptools
+          SET TEST_DEPENDENCIES=pytest"<8" cython setuptools ml_dtypes
            conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python="%PYTHON_VER%" -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
 
       - name: Report content of test environment
