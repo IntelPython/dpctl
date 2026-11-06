@@ -46,6 +46,12 @@ list_of_invalid_filter_selectors = [
     "opencl:gpu:-1",
     "cuda:cpu:0",
     "abc",
+    "OPENCL",
+    "opencl:gpu:cpu",
+    "opencl:level_zero",
+    "0:1",
+    "opencl:gpu:0:0",
+    "",
     1,
 ]
 

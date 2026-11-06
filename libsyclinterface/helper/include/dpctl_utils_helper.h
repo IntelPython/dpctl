@@ -295,7 +295,7 @@ int64_t DPCTL_GetRelativeDeviceId(const sycl::device &Device);
 
 /*!
  * @brief Gives the filter string which would select given root device if
- * used as argument to ``sycl::ext::oneapi::filter_selector``. Throws exception
+ * used as argument to ``DPCTLFilterSelector_Create``. Throws exception
  * if filter string can not be constructed.
  *
  * @param    Device         A ``sycl::device`` object whose filter selector

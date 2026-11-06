@@ -239,6 +239,7 @@ cdef tuple _to_enum_tuple(
 
 
 cdef str _backend_type_to_filter_string_part(_backend_type BTy):
+    """ Returns the filter string part for the backend, or ``None``."""
     if BTy == _backend_type._CUDA:
         return "cuda"
     elif BTy == _backend_type._HIP:
@@ -248,20 +249,57 @@ cdef str _backend_type_to_filter_string_part(_backend_type BTy):
     elif BTy == _backend_type._OPENCL:
         return "opencl"
     else:
-        return "unknown"
+        return None
 
 
 cdef str _device_type_to_filter_string_part(_device_type DTy):
+    """ Returns the filter string part for the device type, or ``None``."""
     if DTy == _device_type._ACCELERATOR:
         return "accelerator"
-    elif DTy == _device_type._AUTOMATIC:
-        return "automatic"
     elif DTy == _device_type._CPU:
         return "cpu"
+    elif DTy == _device_type._CUSTOM:
+        return "custom"
     elif DTy == _device_type._GPU:
         return "gpu"
     else:
-        return "unknown"
+        return None
+
+
+cdef str _make_filter_string(
+    DPCTLSyclDeviceRef DRef,
+    bint include_backend,
+    bint include_device_type,
+    int64_t relId,
+):
+    """ Joins the requested parts of the filter string of a root device.
+
+    Raises ``ValueError`` if the backend or device type has no filter
+    string representation.
+    """
+    cdef list parts = []
+    if include_backend:
+        be_str = _backend_type_to_filter_string_part(
+            DPCTLDevice_GetBackend(DRef)
+        )
+        if be_str is None:
+            raise ValueError(
+                "The backend of this SyclDevice is not supported in filter "
+                "strings"
+            )
+        parts.append(be_str)
+    if include_device_type:
+        dt_str = _device_type_to_filter_string_part(
+            DPCTLDevice_GetDeviceType(DRef)
+        )
+        if dt_str is None:
+            raise ValueError(
+                "The device type of this SyclDevice is not supported in "
+                "filter strings"
+            )
+        parts.append(dt_str)
+    parts.append(str(relId))
+    return ":".join(parts)
 
 
 cdef void _init_helper(_SyclDevice device, DPCTLSyclDeviceRef DRef) except *:
@@ -317,22 +355,17 @@ cdef inline void _raise_invalid_peer_access(
     ]
     cdef _backend_type BTy1 = DPCTLDevice_GetBackend(dev._device_ref)
     cdef _backend_type BTy2 = DPCTLDevice_GetBackend(peer.get_device_ref())
+    be1 = _backend_type_to_filter_string_part(BTy1) or "unknown"
+    be2 = _backend_type_to_filter_string_part(BTy2) or "unknown"
     if (BTy1 != BTy2):
         raise ValueError(
-            f"Device with backend {_backend_type_to_filter_string_part(BTy1)} "
-            "cannot peer access device with backend "
-            f"{_backend_type_to_filter_string_part(BTy2)}"
+            f"Device with backend {be1} "
+            f"cannot peer access device with backend {be2}"
         )
     if (BTy1 not in _peer_access_backends):
-        raise ValueError(
-            "Peer access not supported for backend "
-            f"{_backend_type_to_filter_string_part(BTy1)}"
-        )
+        raise ValueError(f"Peer access not supported for backend {be1}")
     if (BTy2 not in _peer_access_backends):
-        raise ValueError(
-            "Peer access not supported for backend "
-            f"{_backend_type_to_filter_string_part(BTy2)}"
-        )
+        raise ValueError(f"Peer access not supported for backend {be2}")
     if (dev == peer):
         raise ValueError(
             "Peer access cannot be enabled between a device and itself"
@@ -355,20 +388,15 @@ def _cached_filter_string(d : SyclDevice):
             if the device is a root (unpartitioned) device.
 
     Raises:
-        ValueError: if the input device is a sub-device.
+        ValueError: if the input device is a sub-device, or its backend or
+        device type is not supported in filter strings.
     """
-    cdef _backend_type BTy
-    cdef _device_type DTy
     cdef int64_t relId = -1
     cdef SyclDevice cd = <SyclDevice> d
     relId = DPCTLDeviceMgr_GetRelativeId(cd._device_ref)
     if (relId == -1):
         raise ValueError("This SyclDevice is not a root device")
-    BTy = DPCTLDevice_GetBackend(cd._device_ref)
-    br_str = _backend_type_to_filter_string_part(BTy)
-    DTy = DPCTLDevice_GetDeviceType(cd._device_ref)
-    dt_str = _device_type_to_filter_string_part(DTy)
-    return ":".join((br_str, dt_str, str(relId)))
+    return _make_filter_string(cd._device_ref, True, True, relId)
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -379,7 +407,7 @@ cdef class SyclDevice(_SyclDevice):
 
     - by directly passing in a filter string to the class
       constructor. The filter string needs to conform to the
-      :oneapi_filter_selection:`DPC++ filter selector SYCL extension <>`.
+      :ref:`filter selector string <filter_selector_string>` syntax.
 
     :Example:
 
@@ -2640,6 +2668,9 @@ cdef class SyclDevice(_SyclDevice):
             ValueError:
                 If the device is a sub-device.
 
+                If the backend or device type of the device is not
+                supported in filter strings.
+
         :Example:
             .. code-block:: python
 
@@ -2746,6 +2777,9 @@ cdef class SyclDevice(_SyclDevice):
                 If no match for the device was found in the vector
                 returned by ``sycl::device::get_devices()``
 
+                If the requested backend or device type of the device is
+                not supported in filter strings.
+
         :Example:
             .. code-block:: python
 
@@ -2760,8 +2794,6 @@ cdef class SyclDevice(_SyclDevice):
         """
         cdef int relId = -1
         cdef DPCTLSyclDeviceRef pDRef = NULL
-        cdef _device_type DTy
-        cdef _backend_type BTy
 
         if include_backend:
             if include_device_type:
@@ -2783,22 +2815,9 @@ cdef class SyclDevice(_SyclDevice):
                 DPCTLDevice_Delete(pDRef)
                 raise ValueError("This SyclDevice is not a root device")
         else:
-            if include_backend:
-                BTy = DPCTLDevice_GetBackend(self._device_ref)
-                be_str = _backend_type_to_filter_string_part(BTy)
-                if include_device_type:
-                    DTy = DPCTLDevice_GetDeviceType(self._device_ref)
-                    dt_str = _device_type_to_filter_string_part(DTy)
-                    return ":".join((be_str, dt_str, str(relId)))
-                else:
-                    return ":".join((be_str, str(relId)))
-            else:
-                if include_device_type:
-                    DTy = DPCTLDevice_GetDeviceType(self._device_ref)
-                    dt_str = _device_type_to_filter_string_part(DTy)
-                    return ":".join((dt_str, str(relId)))
-                else:
-                    return str(relId)
+            return _make_filter_string(
+                self._device_ref, include_backend, include_device_type, relId
+            )
 
     def get_unpartitioned_parent_device(self):
         """ get_unpartitioned_parent_device()

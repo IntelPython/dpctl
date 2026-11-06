@@ -28,7 +28,9 @@
 #include "dpctl_sycl_device_manager.h"
 #include "dpctl_sycl_device_selector_interface.h"
 #include "dpctl_sycl_type_casters.hpp"
+#include "dpctl_utils_helper.h"
 #include <gtest/gtest.h>
+#include <string>
 #include <sycl/sycl.hpp>
 
 using namespace sycl;
@@ -205,6 +207,76 @@ TEST_F(TestDeviceSelectorInterface, ChkDPCTLGPUSelectorScore)
     ASSERT_TRUE(score < 0);
 }
 
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorScore)
+{
+    using dpctl::syclinterface::unwrap;
+    using dpctl::syclinterface::wrap;
+
+    const auto devices = sycl::device::get_devices();
+    for (std::size_t i = 0; i < devices.size(); ++i) {
+        const std::string filters[] = {std::to_string(i),
+                                       DPCTL_GetDeviceFilterString(devices[i])};
+        for (const auto &fs : filters) {
+            DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+            EXPECT_NO_FATAL_FAILURE(DSRef =
+                                        DPCTLFilterSelector_Create(fs.c_str()));
+            ASSERT_TRUE(DSRef != nullptr);
+            // scores must not depend on earlier calls
+            for (int pass = 0; pass < 2; ++pass) {
+                for (std::size_t j = 0; j < devices.size(); ++j) {
+                    auto D = devices[j];
+                    auto DRef = wrap<sycl::device>(&D);
+                    int score = DPCTLDeviceSelector_Score(DSRef, DRef);
+                    if (i == j)
+                        EXPECT_TRUE(score >= 0) << fs << " pass " << pass;
+                    else
+                        EXPECT_TRUE(score < 0) << fs << " pass " << pass;
+                }
+            }
+            EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+        }
+    }
+}
+
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorList)
+{
+    const auto devices = sycl::device::get_devices();
+    if (devices.size() < 2)
+        GTEST_SKIP_("Need at least two devices.");
+
+    // "0,1" must accept both device 0 and device 1
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create("0,1"));
+    ASSERT_TRUE(DSRef != nullptr);
+    for (std::size_t j = 0; j < devices.size(); ++j) {
+        auto D = devices[j];
+        auto DRef = dpctl::syclinterface::wrap<sycl::device>(&D);
+        int score = DPCTLDeviceSelector_Score(DSRef, DRef);
+        if (j < 2)
+            EXPECT_TRUE(score >= 0);
+        else
+            EXPECT_TRUE(score < 0);
+    }
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
+TEST_F(TestDeviceSelectorInterface, ChkDPCTLFilterSelectorCustom)
+{
+    for (const char *fs : {"custom", "opencl:custom", "custom:0"}) {
+        DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLFilterSelector_Create(fs));
+        ASSERT_TRUE(DSRef != nullptr) << fs;
+        for (auto D : sycl::device::get_devices()) {
+            if (D.get_info<sycl::info::device::device_type>() ==
+                sycl::info::device_type::custom)
+                continue;
+            auto DRef = dpctl::syclinterface::wrap<sycl::device>(&D);
+            EXPECT_TRUE(DPCTLDeviceSelector_Score(DSRef, DRef) < 0) << fs;
+        }
+        EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+    }
+}
+
 INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                          TestFilterSelector,
                          ::testing::Values("opencl",
@@ -220,8 +292,25 @@ INSTANTIATE_TEST_SUITE_P(FilterSelectorCreation,
                                            "gpu:0",
                                            "gpu:1",
                                            "1",
-                                           "0"));
+                                           "0",
+                                           "gpu:opencl",
+                                           "0:gpu",
+                                           "opencl::0",
+                                           ":",
+                                           "gpu,cpu",
+                                           "cuda,cpu"));
 
 INSTANTIATE_TEST_SUITE_P(NegativeFilterSelectorCreation,
                          TestUnsupportedFilters,
-                         ::testing::Values("abc", "-1", "cuda:cpu:0"));
+                         ::testing::Values("abc",
+                                           "-1",
+                                           "cuda:cpu:0",
+                                           "",
+                                           ",",
+                                           "OPENCL",
+                                           " opencl",
+                                           "opencl:gpu:cpu",
+                                           "opencl:level_zero",
+                                           "0:1",
+                                           "opencl:gpu:0:0",
+                                           "99999999999"));
