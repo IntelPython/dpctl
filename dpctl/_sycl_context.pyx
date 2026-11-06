@@ -23,6 +23,7 @@
 """
 
 import logging
+import pickle
 
 from cpython cimport pycapsule
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
@@ -127,6 +128,13 @@ cdef class _SyclContext:
 
     def __dealloc__(self):
         DPCTLContext_Delete(self._ctxt_ref)
+
+
+def _rebuild_context(SyclDevice dev):
+    """Unpickles a :class:`dpctl.SyclContext` as the default context of
+    ``dev``.
+    """
+    return SyclContext(dev)
 
 
 cdef class SyclContext(_SyclContext):
@@ -407,6 +415,35 @@ cdef class SyclContext(_SyclContext):
 
         """
         return DPCTLContext_Hash(self._ctxt_ref)
+
+    def __reduce__(self):
+        """Pickles the default context of a root device by that device.
+
+        Raises:
+            pickle.PicklingError: if the context is not the default context
+                of its devices.
+        """
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef bint is_default_ctx = False
+        cdef SyclDevice dev = self.get_devices()[0]
+        # sub-devices have no cached context
+        if dev.parent_device is None:
+            CRef = DPCTLDeviceMgr_GetCachedContext(dev.get_device_ref())
+            if CRef is not NULL:
+                is_default_ctx = DPCTLContext_AreEq(CRef, self._ctxt_ref)
+                DPCTLContext_Delete(CRef)
+        if not is_default_ctx:
+            raise pickle.PicklingError(
+                f"Cannot pickle {self!r}: it is not the default context of "
+                "its devices"
+            )
+        return _rebuild_context, (dev,)
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
     cdef DPCTLSyclContextRef get_context_ref(self):
         return self._ctxt_ref

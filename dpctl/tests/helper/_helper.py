@@ -49,3 +49,13 @@ def get_queue_or_skip(args=()):
     except dpctl.SyclQueueCreationError:
         pytest.skip(f"Queue could not be created from {args}")
     return q
+
+
+def get_sub_device_or_skip():
+    for dev in dpctl.get_devices():
+        for partition in ("next_partitionable", [1, 1]):
+            try:
+                return dev.create_sub_devices(partition=partition)[0]
+            except dpctl.SyclSubDeviceCreationError:
+                pass
+    pytest.skip("No device can be partitioned")

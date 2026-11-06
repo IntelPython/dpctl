@@ -23,6 +23,7 @@
 """
 
 from ._backend cimport (  # noqa: E211
+    DPCTLContext_AreEq,
     DPCTLContext_Create,
     DPCTLContext_Delete,
     DPCTLDefaultSelector_Create,
@@ -105,6 +106,7 @@ import atexit
 import collections.abc
 import logging
 import os
+import pickle
 import struct
 import sys
 import warnings
@@ -790,6 +792,17 @@ cdef DPCTLSyclEventRef _memset_impl(
     return ERef
 
 
+def _rebuild_queue(SyclContext ctx, SyclDevice dev, tuple props):
+    """Unpickles a :class:`dpctl.SyclQueue`. Queues with default properties
+    are restored as the cached queue of ``(ctx, dev)``.
+    """
+    if not props:
+        # local import, _sycl_queue_manager cimports this module
+        from ._sycl_queue_manager import get_device_cached_queue
+        return get_device_cached_queue((ctx, dev))
+    return SyclQueue(ctx, dev, property=props)
+
+
 cdef class _SyclQueue:
     """ Barebone data owner class used by SyclQueue.
     """
@@ -869,6 +882,22 @@ cdef class SyclQueue(_SyclQueue):
       object. The capsule will be renamed upon successful consumption
       to ensure one-time use. A new named capsule can be constructed by
       using :func:`dpctl.SyclQueue._get_capsule` method.
+
+    A queue can be pickled if its device is a root device and its context is
+    the default context of that device. Unpickling creates or looks up a
+    queue rather than restoring the original one:
+
+    - a queue with default properties is restored as the cached queue of its
+      device, as returned by
+      :func:`dpctl._sycl_queue_manager.get_device_cached_queue`. Distinct
+      queues on the same device, and USM memory allocated on them, are all
+      restored onto that one queue.
+    - a queue with ``"in_order"`` or ``"enable_profiling"`` is restored as a
+      new queue on every unpickling. Only objects pickled in one
+      :func:`pickle.dumps` call that share a :class:`dpctl.SyclQueue` object
+      are restored onto one queue.
+    - the restored queue is equal to the original only if the original is the
+      cached queue.
 
     Args:
         ctx (:class:`dpctl.SyclContext`, optional): Sycl context to create
@@ -2272,6 +2301,43 @@ cdef class SyclQueue(_SyclQueue):
                 Hash value of this :class:`.SyclQueue` instance
         """
         return DPCTLQueue_Hash(self._queue_ref)
+
+    def __reduce__(self):
+        """Pickles the queue's context, device, and properties.
+
+        Raises:
+            pickle.PicklingError: if the queue's device is not a root device,
+                or its context is not the default context of that device.
+        """
+        cdef DPCTLSyclContextRef CRef = NULL
+        cdef bint is_default_ctx = False
+        if self._device.parent_device is not None:
+            raise pickle.PicklingError(
+                f"Cannot pickle {self!r}: its device is not a root device"
+            )
+        CRef = DPCTLDeviceMgr_GetCachedContext(self._device.get_device_ref())
+        if CRef is not NULL:
+            is_default_ctx = DPCTLContext_AreEq(
+                CRef, self._context.get_context_ref()
+            )
+            DPCTLContext_Delete(CRef)
+        if not is_default_ctx:
+            raise pickle.PicklingError(
+                f"Cannot pickle {self!r}: its context is not the default "
+                "context of its device"
+            )
+        props = []
+        if DPCTLQueue_IsInOrder(self._queue_ref):
+            props.append("in_order")
+        if DPCTLQueue_HasEnableProfiling(self._queue_ref):
+            props.append("enable_profiling")
+        return _rebuild_queue, (self._context, self._device, tuple(props))
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
     def _get_capsule(self):
         cdef DPCTLSyclQueueRef QRef = NULL
