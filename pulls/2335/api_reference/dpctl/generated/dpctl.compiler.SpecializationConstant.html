@@ -706,15 +706,12 @@ when creating a <a class="reference internal" href="dpctl.compiler.SyclKernelBun
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">SpecializationConstant(spec_id,</span> <span class="pre">obj)</span></code>
 If the constructor is invoked with a single variadic argument, the
-argument is expected to be a NumPy or Python scalar, or to either expose
-the Python buffer protocol or be coercible to a NumPy array. A Python
-<code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">complex</span></code> is converted to a
-<code class="docutils literal notranslate"><span class="pre">numpy.bool</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.float64</span></code> or
-<code class="docutils literal notranslate"><span class="pre">numpy.complex128</span></code> respectively. If the argument is coercible to a
-NumPy array or is one, its data type must be one whose values are plain
-bytes, e.g. bool, integral, floating point, structured, or
-<code class="docutils literal notranslate"><span class="pre">ml_dtypes.bfloat16</span></code>. The specialization constant will be constructed
-from the data in the buffer</p></li>
+argument is expected to be a NumPy scalar, or to either expose the
+Python buffer protocol or be coercible to a NumPy array. If the argument
+is coercible to a NumPy array or is one, its data type must be one whose
+values are plain bytes, e.g. bool, integral, floating point, structured,
+or <code class="docutils literal notranslate"><span class="pre">ml_dtypes.bfloat16</span></code>. The specialization constant will be
+constructed from the data in the buffer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SpecializationConstant(spec_id,</span> <span class="pre">dtype,</span> <span class="pre">obj)</span></code>
 If the constructor is invoked with two variadic arguments, and the first
 argument is not an integer, it is interpreted as a data type, anything

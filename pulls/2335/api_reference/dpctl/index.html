@@ -819,7 +819,7 @@
 <p id="dpctl-data-types">Every <a class="reference internal" href="#module-dpctl" title="dpctl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dpctl</span></code></a> function or class taking a data type, such as
 <a class="reference internal" href="generated/generated/dpctl.SyclQueue.copy.html#dpctl.SyclQueue.copy" title="dpctl.SyclQueue.copy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.copy()</span></code></a>, <a class="reference internal" href="generated/generated/dpctl.SyclQueue.fill.html#dpctl.SyclQueue.fill" title="dpctl.SyclQueue.fill"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.fill()</span></code></a>,
 <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.LocalAccessor</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.WorkGroupMemory</span></code> and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.program.SpecializationConstant</span></code>, accepts it in any form
+<a class="reference internal" href="generated/dpctl.compiler.SpecializationConstant.html#dpctl.compiler.SpecializationConstant" title="dpctl.compiler.SpecializationConstant"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.compiler.SpecializationConstant</span></code></a>, accepts it in any form
 <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a> accepts, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;f4&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;float32&quot;</span></code>,
 <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.float32</span></code> or a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>. Any data type whose
 values are plain bytes is supported, including structured data types and data
@@ -839,7 +839,7 @@ how they are interpreted.</p>
 such as a structured scalar matching a C++ <code class="docutils literal notranslate"><span class="pre">struct</span></code>, require the
 <code class="docutils literal notranslate"><span class="pre">raw_kernel_arg</span></code> DPC++ extension.</p>
 <p>Python scalars are converted to a NumPy scalar of a fixed data type, which must
-match the type of the kernel parameter:</p>
+match the type of the kernel parameter, as a mismatch is not detected:</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
