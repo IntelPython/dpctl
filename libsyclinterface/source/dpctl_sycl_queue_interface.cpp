@@ -120,14 +120,6 @@ using namespace sycl;
             return false;                                                      \
         }                                                                      \
     } while (0);
-#else
-#define SET_LOCAL_ACCESSOR_ARG(CGH, NDIM, ARGTY, R, IDX)                       \
-    do {                                                                       \
-        error_handler("Local accessors and dynamic kernel args are not "       \
-                      "supported in AdaptiveCpp.",                             \
-                      __FILE__, __func__, __LINE__, error_level::error);       \
-        return false;                                                          \
-    } while (0);
 #endif
 
 namespace
@@ -905,6 +897,11 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
     event e;
     if (Q) {
         try {
+#ifdef __ADAPTIVECPP__
+            // A kernel waits only for its dependencies, so depend on all prior
+            // work
+            auto prior = Q->get_wait_list();
+#endif
             e = Q->submit([&](handler &cgh) {
                 // Depend on any event that was specified by the caller.
                 if (NDepEvents)
@@ -914,6 +911,7 @@ __dpctl_give DPCTLSyclEventRef DPCTLQueue_SubmitBarrierForEvents(
 #ifndef __ADAPTIVECPP__
                 cgh.ext_oneapi_barrier();
 #else
+                cgh.depends_on(prior);
                 class dpctl_barrier_task;
                 cgh.single_task<dpctl_barrier_task>([=]() {});
 #endif
