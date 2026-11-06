@@ -35,7 +35,6 @@ requirements:
         - {{ pin_compatible('intel-cmplr-lib-rt', min_pin='x.x', max_pin='x') }}
         # Ensure we are using latest version of setuptools, since we don't need
         # editable environments for release.
-        - setuptools >=69
         {% for dep in py_build_deps %}
         {% if dep.startswith('ninja') %}
         - {{ dep.split(';')[0] }} # [not win]
@@ -47,8 +46,6 @@ requirements:
         - {{ dep|replace('_','-') }}
         {% endif %}
         {% endfor %}
-        # versioneer dependency
-        - tomli # [py<311]
         - opencl-headers >=2025.06.13 # [win]
     run:
         - python
@@ -62,7 +59,6 @@ test:
         - {{ compiler('cxx') }}
         - {{ stdlib('c') }}
         - cython
-        - setuptools
         - pytest
 
 about:
