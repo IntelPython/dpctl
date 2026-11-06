@@ -47,6 +47,7 @@ cdef extern from "syclinterface/dpctl_sycl_enum_types.h":
         _HIP             "DPCTL_HIP"
         _LEVEL_ZERO      "DPCTL_LEVEL_ZERO"
         _OPENCL          "DPCTL_OPENCL"
+        _OPENMP          "DPCTL_OPENMP"
         _UNKNOWN_BACKEND "DPCTL_UNKNOWN_BACKEND"
 
     ctypedef enum _device_type "DPCTLSyclDeviceType":

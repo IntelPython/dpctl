@@ -24,7 +24,7 @@ import pytest
 import dpctl
 import dpctl.memory
 
-from .helper import create_invalid_capsule
+from .helper import create_invalid_capsule, is_adaptivecpp, is_wsl_or_windows
 
 
 def test_standard_selectors(device_selector, check):
@@ -167,6 +167,24 @@ def test_queue_submit_barrier(valid_filter):
     ev2.wait()
     with pytest.raises(TypeError):
         q.submit_barrier(range(3))
+
+
+def test_queue_submit_barrier_waits_for_prior_work():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    from dpctl.memory import MemoryUSMDevice, USMAllocationError
+
+    nbytes = 256 * 1024 * 1024
+    try:
+        m1 = MemoryUSMDevice(nbytes, queue=q)
+        m2 = MemoryUSMDevice(nbytes, queue=q)
+    except USMAllocationError:
+        pytest.skip("Not enough memory")
+    ev = q.memcpy_async(m1, m2, nbytes)
+    q.submit_barrier().wait()
+    assert ev.execution_status == dpctl.event_status_type.complete
 
 
 def test_queue__repr__():
@@ -338,19 +356,32 @@ def test_queue_memops():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Failed to create device with supported filter")
-    from dpctl.memory import MemoryUSMDevice
+    from dpctl.memory import MemoryUSMShared
 
-    m1 = MemoryUSMDevice(512, queue=q)
-    m2 = MemoryUSMDevice(512, queue=q)
+    m1 = MemoryUSMShared(512, queue=q)
+    m2 = MemoryUSMShared(512, queue=q)
     q.memcpy(m1, m2, 512)
-    q.prefetch(m1, 512)
-    q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
         q.memcpy(m1, [], 512)
     with pytest.raises(TypeError):
         q.memcpy([], m2, 512)
-    with pytest.raises(TypeError):
-        q.prefetch([], 512)
+
+    # AdaptiveCpp prefetches by migrating the allocation to the device, which
+    # the OpenCL CPU runtime rejects with CL_INVALID_VALUE
+    acpp_opencl_cpu = (
+        is_adaptivecpp()
+        and q.sycl_device.backend == dpctl.backend_type.opencl
+        and q.sycl_device.has_aspect_cpu
+    )
+    acpp_skip = is_adaptivecpp() and (is_wsl_or_windows() or acpp_opencl_cpu)
+    if not acpp_skip:
+        q.prefetch(m1, 512)
+        with pytest.raises(TypeError):
+            q.prefetch([], 512)
+
+    # AdaptiveCpp does not implement mem_advise
+    if not is_adaptivecpp():
+        q.mem_advise(m1, 512, 0)
     with pytest.raises(TypeError):
         q.mem_advise([], 512, 0)
 

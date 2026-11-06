@@ -21,7 +21,7 @@ import pytest
 import dpctl
 from dpctl import SyclDeviceCreationError
 
-from .helper import get_queue_or_skip
+from .helper import get_queue_or_skip, is_adaptivecpp
 
 
 def test_standard_selectors(device_selector, check):
@@ -387,6 +387,20 @@ def test_enable_disable_peer_access(platform_name):
         pytest.skip(
             f"Provided {platform_name} devices do not support peer access"
         )
+
+
+@pytest.mark.skipif(not is_adaptivecpp(), reason="AdaptiveCpp only")
+@pytest.mark.parametrize(
+    "method", ["enable_peer_access", "disable_peer_access"]
+)
+def test_peer_access_unsupported_on_acpp(method):
+    devices = dpctl.get_devices()
+    if len(devices) < 2:
+        pytest.skip("Need two devices")
+    dev0, dev1 = devices[0], devices[1]
+    assert not dev0.can_access_peer(dev1)
+    with pytest.raises(ValueError):
+        getattr(dev0, method)(dev1)
 
 
 @pytest.mark.parametrize(
