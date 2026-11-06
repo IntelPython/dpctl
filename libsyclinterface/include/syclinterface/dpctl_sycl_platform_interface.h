@@ -183,6 +183,9 @@ size_t DPCTLPlatform_Hash(__dpctl_keep const DPCTLSyclPlatformRef PRef);
  * @brief Returns a vector of devices associated with sycl::platform referenced
  * by DPCTLSyclPlatformRef object.
  *
+ * Only OpenCL platforms support custom devices; for other platforms,
+ * DPCTL_CUSTOM returns an empty vector.
+ *
  * @param    PRef           The DPCTLSyclPlatformRef pointer.
  * @param    DTy            A DPCTLSyclDeviceType enum value.
  * @return   A DPCTLDeviceVectorRef with devices associated with given PRef.

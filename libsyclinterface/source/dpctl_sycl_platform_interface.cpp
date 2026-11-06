@@ -304,6 +304,15 @@ DPCTLPlatform_GetDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef,
         return wrap<vecTy>(DevicesVectorPtr);
     }
 
+    // Only OpenCL supports custom devices; other backends may warn when asked
+    // for them (e.g., the Unified Runtime Level Zero adapter)
+    if (DTy == DPCTLSyclDeviceType::DPCTL_CUSTOM &&
+        DPCTL_SyclBackendToDPCTLBackendType(P->get_backend()) !=
+            DPCTLSyclBackendType::DPCTL_OPENCL)
+    {
+        return wrap<vecTy>(DevicesVectorPtr);
+    }
+
     try {
         auto SyclDTy = DPCTL_DPCTLDeviceTypeToSyclDeviceType(DTy);
         auto Devices = P->get_devices(SyclDTy);

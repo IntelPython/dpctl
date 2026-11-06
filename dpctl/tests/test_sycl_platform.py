@@ -260,6 +260,24 @@ def test_platform_get_devices_enum_device_type():
                     assert (d.device_type == dty for d in devices)
 
 
+@pytest.mark.parametrize("dty", ["custom", device_type.custom])
+def test_platform_get_devices_custom_non_opencl(dty, capfd):
+    platforms = [
+        p
+        for p in dpctl.get_platforms()
+        if p.backend != dpctl.backend_type.opencl
+    ]
+    if not platforms:
+        pytest.skip("No non-OpenCL platforms available")
+    capfd.readouterr()
+    for p in platforms:
+        assert len(p.get_devices(device_type=dty)) == 0
+    out, err = capfd.readouterr()
+    # e.g., the Level Zero adapter warns on device_type::custom
+    assert out == ""
+    assert err == ""
+
+
 def test_platform_get_composite_devices():
     platforms = dpctl.get_platforms()
     if platforms:
