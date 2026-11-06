@@ -1,6 +1,0 @@
-dpctl.SyclEvent.backend
-=======================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclEvent.backend
