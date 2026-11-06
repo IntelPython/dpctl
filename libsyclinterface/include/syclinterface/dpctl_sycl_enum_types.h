@@ -102,6 +102,7 @@ typedef enum
     DPCTL_LOCAL_ACCESSOR,
     DPCTL_WORK_GROUP_MEMORY,
     DPCTL_RAW_KERNEL_ARG,
+    DPCTL_BYTES16_T, /* any trivially copyable 16-byte value */
     DPCTL_UNSUPPORTED_KERNEL_ARG
 } DPCTLKernelArgType;
 

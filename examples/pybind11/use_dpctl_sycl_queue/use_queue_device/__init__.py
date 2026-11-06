@@ -17,12 +17,15 @@
 # coding: utf-8
 
 from ._use_queue_device import (
+    bfloat16_round_trip,
     get_device_global_mem_size,
     get_device_local_mem_size,
     get_max_compute_units,
     get_partition_max_sub_devices,
     get_sub_group_sizes,
+    has_bfloat16,
     offloaded_array_mod,
+    offloaded_bfloat16_scale,
 )
 
 __all__ = [
@@ -32,6 +35,9 @@ __all__ = [
     "offloaded_array_mod",
     "get_sub_group_sizes",
     "get_partition_max_sub_devices",
+    "has_bfloat16",
+    "bfloat16_round_trip",
+    "offloaded_bfloat16_scale",
 ]
 
 __doc__ = """
@@ -39,7 +45,8 @@ Example pybind11 extension demonstrating binding of dpctl entities to
 SYCL entities.
 
 dpctl provides type casters that bind ``sycl::queue`` to `dpctl.SyclQueue`,
-``sycl::device`` to `dpctl.SyclDevice`, etc.
+``sycl::device`` to `dpctl.SyclDevice`, ``sycl::ext::oneapi::bfloat16`` to
+Python `float`, etc.
 
 Use of these type casters simplifies writing of Python extensions and compile
 then using SYCL C++ compilers, such as Intel(R) oneAPI DPC++ compiler.

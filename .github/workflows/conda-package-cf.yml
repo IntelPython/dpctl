@@ -238,7 +238,7 @@ jobs:
           CHANNELS="-c $GITHUB_WORKSPACE/channel ${{ env.CHANNELS }}"
           export CHANNELS
           # intel-opencl-rt provides the OpenCL CPU device to run the tests on
-          TEST_DEPENDENCIES="pytest cython setuptools intel-opencl-rt"
+          TEST_DEPENDENCIES="pytest cython setuptools intel-opencl-rt ml_dtypes"
           export TEST_DEPENDENCIES
           PACKAGE_VERSION=$(python -c "${VER_SCRIPT1} ${VER_SCRIPT2}")
           PYTHON_VER="${{ matrix.python_spec }}"
@@ -352,7 +352,7 @@ jobs:
           SET "PYTHON_VER=${{ matrix.python_spec }}"
           IF "%PYTHON_VER%"=="" SET "PYTHON_VER=${{ matrix.python }}"
           REM intel-opencl-rt provides the OpenCL CPU device to run the tests on
-          SET "TEST_DEPENDENCIES=pytest cython setuptools intel-opencl-rt"
+          SET "TEST_DEPENDENCIES=pytest cython setuptools intel-opencl-rt ml_dtypes"
           conda install -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% %TEST_DEPENDENCIES% python="%PYTHON_VER%" -c ${{ env.workdir }}/channel ${{ env.CHANNELS }}
 
       - name: Report content of test environment

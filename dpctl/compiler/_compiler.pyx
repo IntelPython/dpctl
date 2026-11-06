@@ -88,6 +88,8 @@ import numbers
 
 import numpy as np
 
+from dpctl._dtype_utils import as_dtype, is_supported_dtype
+
 __all__ = [
     "create_kernel_bundle_from_source",
     "create_kernel_bundle_from_spirv",
@@ -360,23 +362,29 @@ cdef class SpecializationConstant:
 
     - ``SpecializationConstant(spec_id, obj)``
       If the constructor is invoked with a single variadic argument, the
-      argument is expected to either expose the Python buffer protocol or be
-      coercible to a NumPy array. If the argument is coercible to a NumPy array
-      or is one, it must have a supported data type (bool, integral, or
-      floating point). The specialization constant will be constructed from the
-      data in the buffer
+      argument is expected to be a NumPy scalar, or to either expose the
+      Python buffer protocol or be coercible to a NumPy array. If the argument
+      is coercible to a NumPy array or is one, its data type must be one whose
+      values are plain bytes, e.g. bool, integral, floating point, structured,
+      or ``ml_dtypes.bfloat16``. The specialization constant will be
+      constructed from the data in the buffer
 
     - ``SpecializationConstant(spec_id, dtype, obj)``
       If the constructor is invoked with two variadic arguments, and the first
-      argument is a string, it is interpreted as a NumPy ``dtype`` string and
-      the second argument will be coerced to a NumPy array with that data type.
-      The data type specified by the first argument must be a supported data
-      type (bool, integral, or floating point).
+      argument is not an integer, it is interpreted as a data type, anything
+      accepted by :class:`numpy.dtype`, and the second argument will be coerced
+      to a NumPy array with that data type. The same restrictions on the data
+      type apply.
 
     - ``SpecializationConstant(spec_id, nbytes, raw_ptr)``
       If the constructor is invoked with two variadic arguments where both are
       integers, the first argument is interpreted as the number of bytes and
       the second argument is interpreted as a pointer to the data.
+
+    Note that DPC++ splits a specialization constant of a composite type into
+    one specialization constant per scalar member, each with its own
+    specialization ID. ``sycl::ext::oneapi::bfloat16`` is such a type, with a
+    single 16-bit member.
 
     Note that construction of the :class:`.SpecializationConstant` copies the
     input, so modifications made after construction of the
@@ -401,6 +409,7 @@ cdef class SpecializationConstant:
     def __cinit__(self, spec_id, *args):
         cdef int ret_code = 0
         cdef object target_obj = None
+        cdef object target_dtype = None
         cdef Py_buffer _local_buffer
         cdef void *copied_data
 
@@ -436,30 +445,34 @@ cdef class SpecializationConstant:
                 target_obj = PyBytes_FromStringAndSize(
                     <const char *><size_t>args[1], <Py_ssize_t>args[0]
                 )
-            elif isinstance(args[0], str):
-                target_obj = np.ascontiguousarray(args[1], dtype=args[0])
             else:
-                raise TypeError(
-                    "Invalid arguments."
-                )
+                try:
+                    target_dtype = as_dtype(args[0])
+                except ValueError as e:
+                    raise TypeError(f"Invalid arguments: {e}") from None
+                target_obj = np.ascontiguousarray(args[1], dtype=target_dtype)
 
         elif len(args) == 1:
             target_obj = args[0]
-            if not PyObject_CheckBuffer(target_obj):
+            if isinstance(target_obj, np.generic) or (
+                not PyObject_CheckBuffer(target_obj)
+            ):
                 # attempt to coerce to a numpy array
                 target_obj = np.ascontiguousarray(target_obj)
 
         if isinstance(target_obj, np.ndarray):
-            if target_obj.dtype.kind not in ("b", "i", "u", "f", "c"):
+            target_dtype = target_obj.dtype
+            if not is_supported_dtype(target_dtype):
                 raise TypeError(
                     "Coercion of input to buffer resulted in an unsupported "
-                    f"data type '{target_obj.dtype}'. When coercing objects, "
+                    f"data type '{target_dtype}'. When coercing objects, "
                     "`SpecializationConstant` expects the data to coerce to a "
-                    "supported type: bool, integral, or real or complex "
-                    "floating point. To pass arbitrary data, use a "
-                    "`memoryview` or `bytes` object, or pass the pointer and "
-                    "size directly."
+                    "data type whose values are plain bytes. To pass "
+                    "arbitrary data, use a `memoryview` or `bytes` object, or "
+                    "pass the pointer and size directly."
                 )
+            # not every NumPy data type supports the buffer protocol
+            target_obj = target_obj.tobytes()
 
         ret_code = PyObject_GetBuffer(
             target_obj, &(_local_buffer), PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS

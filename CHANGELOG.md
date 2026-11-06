@@ -6,16 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [dev] - XXX. XX, XXXX
 
+**NOTE**: This release contains breaking changes:
+
+* The value of the `DPCTL_UNSUPPORTED_KERNEL_ARG` enumerator of `DPCTLKernelArgType` increased by one, as `DPCTL_BYTES16_T` was added before it [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+
 ### Added
 * Added `dpctl.SyclQueue.keep_args_alive` method, which keeps Python objects alive until the work on that queue using them completes [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `add_event` and `add_cleanup_event` methods and `cleanup_events` and `num_cleanup_events` properties to the order manager, for tracking the events that gate the release of objects used by offloaded tasks [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `SyclQueue_DeferRelease` C-API function, which defers a release callback until work submitted to a queue completes, and through which `dpctl::utils::keep_args_alive` keeps its arguments alive [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl::utils::defer_release` to `dpctl4pybind11.hpp`, which calls a release callback once the given events have completed [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* `dpctl.SyclQueue.submit` and `dpctl.SyclQueue.submit_async` accept NumPy scalars of any data type whose values are plain bytes, including structured data types and those of `ml_dtypes` such as `bfloat16` and `complex32`, as well as Python `bool`, `int`, `float`, and `complex` scalars, which are passed as `numpy.bool`, `numpy.int64`, `numpy.float64`, and `numpy.complex128` respectively [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+* Added `DPCTL_BYTES16_T` enumerator to `DPCTLKernelArgType` for 16-byte scalar and local accessor kernel arguments [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+* Added a `sycl::ext::oneapi::bfloat16` type caster to `dpctl4pybind11.hpp`, defined when the compiler provides the `sycl_ext_oneapi_bfloat16` extension [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
 
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
+* `dpctl.SyclQueue.copy`, `dpctl.SyclQueue.copy_async`, `dpctl.SyclQueue.fill`, `dpctl.SyclQueue.fill_async`, `dpctl.LocalAccessor`, `dpctl.WorkGroupMemory`, and `dpctl.compiler.SpecializationConstant` accept a data type in any form `numpy.dtype` accepts, for any data type whose values are plain bytes, rather than a fixed set of type strings [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
+* `dpctl.compiler.SpecializationConstant` accepts NumPy scalars [gh-2335](https://github.com/IntelPython/dpctl/pull/2335)
 
 ### Deprecated
 * Deprecated `dpctl.SyclQueue._submit_keep_args_alive` in favor of `dpctl.SyclQueue.keep_args_alive`, which it now calls and which behaves identically [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
