@@ -32,6 +32,8 @@ from dpctl.memory import (
     SyclIPCOpenMemHandle,
 )
 
+from .helper import skip_if_usm_unsupported
+
 pytestmark = pytest.mark.skipif(
     not IPCMemoryHandle.is_available(),
     reason="IPC memory not supported in this build",
@@ -68,12 +70,14 @@ class TestIPCHandleCreation:
 
     def test_get_handle_rejects_shared_memory(self):
         q = _get_ipc_queue()
+        skip_if_usm_unsupported(MemoryUSMShared, q)
         mem = MemoryUSMShared(1024, queue=q)
         with pytest.raises(TypeError):
             SyclIPCGetMemHandle(mem)
 
     def test_get_handle_rejects_host_memory(self):
         q = _get_ipc_queue()
+        skip_if_usm_unsupported(MemoryUSMHost, q)
         mem = MemoryUSMHost(1024, queue=q)
         with pytest.raises(TypeError):
             SyclIPCGetMemHandle(mem)
@@ -136,11 +140,13 @@ class TestIPCTypeIdentity:
 
     def test_shared_memory_is_not_ipc(self):
         q = _get_ipc_queue()
+        skip_if_usm_unsupported(MemoryUSMShared, q)
         mem = MemoryUSMShared(1024, queue=q)
         assert not isinstance(mem, MemoryIPCDevice)
 
     def test_host_memory_is_not_ipc(self):
         q = _get_ipc_queue()
+        skip_if_usm_unsupported(MemoryUSMHost, q)
         mem = MemoryUSMHost(1024, queue=q)
         assert not isinstance(mem, MemoryIPCDevice)
 

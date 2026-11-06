@@ -22,9 +22,12 @@ import pytest
 import dpctl
 import dpctl.memory
 
+from .helper import skip_if_usm_unsupported
+
 
 def _create_memory(q):
     nbytes = 1024
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mobj = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     return mobj
 

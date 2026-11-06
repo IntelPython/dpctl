@@ -22,9 +22,12 @@ import pytest
 import dpctl
 import dpctl.memory
 
+from .helper import skip_if_usm_unsupported
+
 
 def _create_memory(q):
     nbytes = 1024
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mobj = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     return mobj
 
@@ -97,9 +100,9 @@ def test_copy_type_error():
 @pytest.mark.parametrize(
     "usm_type",
     [
-        lambda n, q: dpctl.memory.MemoryUSMShared(n, queue=q),
-        lambda n, q: dpctl.memory.MemoryUSMHost(n, queue=q),
-        lambda n, q: dpctl.memory.MemoryUSMDevice(n, queue=q),
+        dpctl.memory.MemoryUSMShared,
+        dpctl.memory.MemoryUSMHost,
+        dpctl.memory.MemoryUSMDevice,
     ],
     ids=["shared", "host", "device"],
 )
@@ -113,8 +116,9 @@ def test_copy_with_dtype_valid(dtype, element_size, usm_type):
     num_elements = 16
     nbytes = num_elements * element_size
 
-    src = usm_type(nbytes, q)
-    dst = usm_type(nbytes, q)
+    skip_if_usm_unsupported(usm_type, q)
+    src = usm_type(nbytes, queue=q)
+    dst = usm_type(nbytes, queue=q)
 
     # For device memory, use host buffer for init and verification
     if isinstance(src, dpctl.memory.MemoryUSMDevice):
@@ -155,6 +159,7 @@ def test_copy_async_with_dtype_valid():
     num_elements = 10
     nbytes = num_elements * element_size
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
@@ -191,6 +196,7 @@ def test_copy_count_is_in_elements(dtype, element_size):
     num_elements = 4
     nbytes = num_elements * element_size
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
@@ -220,6 +226,7 @@ def test_copy_with_invalid_dtype():
         pytest.skip("Default constructor for SyclQueue failed")
 
     nbytes = 64
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
@@ -265,6 +272,7 @@ def test_copy_with_dtype_mixed_sources():
 
     # Host to USM
     src_host = np.arange(num_elements, dtype=np.int64)
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     dst_usm = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
     q.copy(dst_usm, src_host, num_elements, dtype=dtype)
@@ -284,6 +292,7 @@ def test_copy_without_dtype_backward_compat():
         pytest.skip("Default constructor for SyclQueue failed")
 
     nbytes = 32
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 

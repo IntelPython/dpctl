@@ -27,6 +27,8 @@ from dpctl.memory import (
     as_usm_memory,
 )
 
+from .helper import skip_if_usm_unsupported
+
 
 class Dummy(MemoryUSMShared):
     """
@@ -49,6 +51,7 @@ def test_memory_create(memory_ctor):
         queue = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing...")
+    skip_if_usm_unsupported(memory_ctor, queue)
     mobj = memory_ctor(nbytes, alignment=64, queue=queue)
     assert mobj.nbytes == nbytes
     assert hasattr(mobj, "__sycl_usm_array_interface__")
@@ -65,9 +68,10 @@ def test_memory_create(memory_ctor):
 def test_memory_create_with_np():
     nbytes = 16384
     try:
-        dpctl.SyclQueue()
+        q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing...")
+    skip_if_usm_unsupported(MemoryUSMShared, q)
     mobj = dpctl.memory.MemoryUSMShared(np.int64(nbytes))
     assert mobj.nbytes == nbytes
     assert hasattr(mobj, "__sycl_usm_array_interface__")
@@ -79,6 +83,7 @@ def _create_memory():
         queue = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing...")
+    skip_if_usm_unsupported(MemoryUSMShared, queue)
     mobj = MemoryUSMShared(nbytes, alignment=64, queue=queue)
     return mobj
 
@@ -160,10 +165,8 @@ def test_zero_copy():
 def test_pickling(memory_ctor):
     import pickle
 
-    try:
-        mobj = memory_ctor(1024, alignment=64)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(memory_ctor)
+    mobj = memory_ctor(1024, alignment=64)
     host_src_obj = _create_host_buf(mobj.nbytes)
     mobj.copy_from_host(host_src_obj)
 
@@ -182,10 +185,8 @@ def test_pickling(memory_ctor):
 def test_pickling_reconstructor_invalid_type(memory_ctor):
     import pickle
 
-    try:
-        mobj = memory_ctor(1024, alignment=64)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(memory_ctor)
+    mobj = memory_ctor(1024, alignment=64)
     good_pickle_bytes = pickle.dumps(mobj)
     usm_types = expected_usm_type_str(memory_ctor).encode("utf-8")
     i = good_pickle_bytes.rfind(usm_types)
@@ -222,6 +223,7 @@ def test_create_with_size_and_alignment_and_queue(memory_ctor):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing")
+    skip_if_usm_unsupported(memory_ctor, q)
     m = memory_ctor(1024, alignment=64, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
@@ -233,6 +235,7 @@ def test_create_with_size_and_queue(memory_ctor):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("SyclQueue() failed, skip further testing")
+    skip_if_usm_unsupported(memory_ctor, q)
     m = memory_ctor(1024, queue=q)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
@@ -240,10 +243,8 @@ def test_create_with_size_and_queue(memory_ctor):
 
 
 def test_create_with_size_and_alignment(memory_ctor):
-    try:
-        m = memory_ctor(1024, alignment=64)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(memory_ctor)
+    m = memory_ctor(1024, alignment=64)
     assert m.nbytes == 1024
     assert m.get_usm_type() == expected_usm_type_str(memory_ctor)
     assert m.get_usm_type_enum() == expected_usm_type_enum(memory_ctor)
@@ -251,10 +252,8 @@ def test_create_with_size_and_alignment(memory_ctor):
 
 def test_usm_type_exceptions():
     ctor = MemoryUSMDevice
-    try:
-        m = ctor(1024)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(ctor)
+    m = ctor(1024)
     assert m.nbytes == 1024
     q = m.sycl_queue
     assert m.get_usm_type(syclobj=q) == expected_usm_type_str(ctor)
@@ -269,10 +268,9 @@ def test_usm_type_exceptions():
 
 
 def test_sycl_usm_array_interface(memory_ctor):
-    try:
-        m = memory_ctor(256)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(memory_ctor)
+    skip_if_usm_unsupported(MemoryUSMShared)
+    m = memory_ctor(256)
     m2 = Dummy(m.nbytes)
     hb = np.random.randint(0, 256, size=256, dtype="|u1")
     m2.copy_from_host(hb)
@@ -537,10 +535,8 @@ def test_cpython_api(memory_ctor):
     import ctypes
     import sys
 
-    try:
-        mobj = memory_ctor(1024)
-    except dpctl.SyclDeviceCreationError:
-        pytest.skip("No SYCL devices available")
+    skip_if_usm_unsupported(memory_ctor)
+    mobj = memory_ctor(1024)
     mod = sys.modules[mobj.__class__.__module__]
     # get capsules storing function pointers
     mem_ptr_fn_cap = mod.__pyx_capi__["Memory_GetUsmPointer"]
@@ -617,6 +613,8 @@ def test_memory_construction_from_other_memory_objects():
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default queue could not be created")
+    for mem_cls in (MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost):
+        skip_if_usm_unsupported(mem_cls, q)
     m_sh = MemoryUSMShared(256, queue=q)
     m_de = MemoryUSMDevice(256, queue=q)
     m_ho = MemoryUSMHost(256, queue=q)
@@ -638,6 +636,7 @@ def test_memory_copy_between_contexts():
         q = dpctl.SyclQueue("cpu")
     except dpctl.SyclQueueCreationError:
         pytest.skip("CPU queue could not be created")
+    skip_if_usm_unsupported(MemoryUSMDevice, q)
     d = q.sycl_device
     n = d.max_compute_units
     n_half = n // 2
@@ -660,6 +659,8 @@ def test_memset():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default queue could not be created")
 
+    for mem_cls in (MemoryUSMShared, MemoryUSMDevice, MemoryUSMHost):
+        skip_if_usm_unsupported(mem_cls, q)
     n = 4086
     m_de = MemoryUSMDevice(n, queue=q)
     m_sh = MemoryUSMShared(n, queue=q)

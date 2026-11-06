@@ -20,7 +20,7 @@ import pytest
 
 import dpctl
 
-from .helper import create_invalid_capsule
+from .helper import create_invalid_capsule, skip_if_usm_unsupported
 
 list_of_valid_filter_selectors = [
     "opencl",
@@ -170,7 +170,9 @@ def test_context_multi_device():
     q2 = dpctl.SyclQueue(ctx, d2)
     import dpctl.memory as dpm
 
+    skip_if_usm_unsupported(dpm.MemoryUSMShared, q1)
     shmem_1 = dpm.MemoryUSMShared(256, queue=q1)
+    skip_if_usm_unsupported(dpm.MemoryUSMDevice, q2)
     shmem_2 = dpm.MemoryUSMDevice(256, queue=q2)
     shmem_2.copy_from_device(shmem_1)
     # create context for single sub-device

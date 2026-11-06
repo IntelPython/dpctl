@@ -22,8 +22,11 @@ import pytest
 import dpctl
 import dpctl.memory
 
+from .helper import skip_if_usm_unsupported
+
 
 def _create_memory(q, nbytes=1024):
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     return dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
 
@@ -41,24 +44,13 @@ def _read_back(q, mobj, nbytes):
     return bytes(host)
 
 
-def _skip_if_usm_unsupported(q, mem_cls):
-    dev = q.sycl_device
-    supported = {
-        dpctl.memory.MemoryUSMShared: dev.has_aspect_usm_shared_allocations,
-        dpctl.memory.MemoryUSMHost: dev.has_aspect_usm_host_allocations,
-        dpctl.memory.MemoryUSMDevice: dev.has_aspect_usm_device_allocations,
-    }
-    if not supported[mem_cls]:
-        pytest.skip(f"{mem_cls.__name__} is not supported on this device")
-
-
 @pytest.mark.parametrize("mem_cls", _MEMORY_CLASSES)
 def test_memset_fills_whole_allocation(mem_cls):
     try:
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
-    _skip_if_usm_unsupported(q, mem_cls)
+    skip_if_usm_unsupported(mem_cls, q)
     nbytes = 256
     mobj = mem_cls(nbytes, queue=q)
 
@@ -140,7 +132,7 @@ def test_memset_async(mem_cls):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
-    _skip_if_usm_unsupported(q, mem_cls)
+    skip_if_usm_unsupported(mem_cls, q)
     nbytes = 64
     mobj = mem_cls(nbytes, queue=q)
 
