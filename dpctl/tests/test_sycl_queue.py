@@ -199,6 +199,24 @@ def test_queue_get_last_event_out_of_order():
         q.get_last_event()
 
 
+def test_queue_submit_barrier_waits_for_prior_work():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default queue could not be created")
+    from dpctl.memory import MemoryUSMDevice, USMAllocationError
+
+    nbytes = 256 * 1024 * 1024
+    try:
+        m1 = MemoryUSMDevice(nbytes, queue=q)
+        m2 = MemoryUSMDevice(nbytes, queue=q)
+    except USMAllocationError:
+        pytest.skip("Not enough memory")
+    ev = q.memcpy_async(m1, m2, nbytes)
+    q.submit_barrier().wait()
+    assert ev.execution_status == dpctl.event_status_type.complete
+
+
 def test_queue__repr__():
     try:
         q1 = dpctl.SyclQueue(property=0)
