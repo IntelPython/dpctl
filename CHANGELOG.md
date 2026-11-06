@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpctl::utils::defer_release` to `dpctl4pybind11.hpp`, which calls a release callback once the given events have completed [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * Added `dpctl.SyclQueue.get_last_event` and `dpctl.SyclQueue.is_get_last_event_available`, and the `DPCTLQueue_GetLastEvent` and `DPCTLQueue_GetLastEvent_Available` C-API functions, wrapping the DPC++ `sycl_ext_oneapi_in_order_queue_events` extension [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
 * Added `dpctl.SyclPlatform.has_aspect_*` properties and the `DPCTLPlatform_HasAspect` C-API function for querying aspects supported by all devices of a platform [gh-2412](https://github.com/IntelPython/dpctl/pull/2412)
+* Added support for building `dpctl` with AdaptiveCpp as the SYCL implementation, selected with `--sycl-provider=AdaptiveCpp` in `scripts/build_locally.py` or `-DDPCTL_SYCL_PROVIDER=AdaptiveCpp` [gh-2384](https://github.com/IntelPython/dpctl/pull/2384)
+* Added `dpctl.backend_type.openmp` for the AdaptiveCpp OpenMP host device [gh-2384](https://github.com/IntelPython/dpctl/pull/2384)
+* Added `DPCTLService_GetSyclProvider` C-API function and `dpctl._diagnostics.sycl_provider`, which report the SYCL implementation `dpctl` was built with [gh-2384](https://github.com/IntelPython/dpctl/pull/2384)
 
 ### Changed
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
@@ -28,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed the deprecated `dpctl.program` submodule, use `dpctl.compiler` instead [gh-2407](https://github.com/IntelPython/dpctl/pull/2407)
 
 ### Fixed
+* `dpctl.select_device_with_aspects` no longer raises `SyclDeviceCreationError` when every device with the required aspects has a selector score of zero [gh-2384](https://github.com/IntelPython/dpctl/pull/2384)
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 * A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.SyclPlatform.get_devices` no longer prints Unified Runtime warnings for `device_type="custom"` on non-OpenCL platforms, where custom devices are not supported [gh-2306](https://github.com/IntelPython/dpctl/pull/2306)
