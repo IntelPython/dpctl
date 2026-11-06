@@ -18,6 +18,13 @@ import pytest
 
 import dpctl
 
+from .helper import is_adaptivecpp
+
+# conftest imports this module before it registers unsupported_on_acpp
+_unsupported_on_acpp = pytest.mark.skipif(
+    is_adaptivecpp(), reason="not supported by AdaptiveCpp"
+)
+
 list_of_standard_selectors = [
     dpctl.select_accelerator_device,
     dpctl.select_cpu_device,
@@ -867,9 +874,7 @@ list_of_checks = [
     check_driver_version,
     check_name,
     # AdaptiveCpp scores the OpenMP host device 0, not a positive value
-    pytest.param(
-        check_default_selector_score, marks=pytest.mark.unsupported_on_acpp
-    ),
+    pytest.param(check_default_selector_score, marks=_unsupported_on_acpp),
     check_backend,
     check_device_type,
     check_global_mem_cache_type,
@@ -886,7 +891,7 @@ list_of_checks = [
     check_error_correction_support,
     check_is_available,
     check_version,
-    pytest.param(check_backend_version, marks=pytest.mark.unsupported_on_acpp),
+    pytest.param(check_backend_version, marks=_unsupported_on_acpp),
     check_local_mem_type,
     check_partition_type_property,
     check_partition_type_affinity_domain,
@@ -895,19 +900,19 @@ list_of_checks = [
     check_double_fp_config,
     pytest.param(
         check_atomic_memory_order_capabilities,
-        marks=pytest.mark.unsupported_on_acpp,
+        marks=_unsupported_on_acpp,
     ),
     pytest.param(
         check_atomic_fence_order_capabilities,
-        marks=pytest.mark.unsupported_on_acpp,
+        marks=_unsupported_on_acpp,
     ),
     pytest.param(
         check_atomic_memory_scope_capabilities,
-        marks=pytest.mark.unsupported_on_acpp,
+        marks=_unsupported_on_acpp,
     ),
     pytest.param(
         check_atomic_fence_scope_capabilities,
-        marks=pytest.mark.unsupported_on_acpp,
+        marks=_unsupported_on_acpp,
     ),
     check_partition_properties,
     check_partition_affinity_domains,

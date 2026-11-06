@@ -403,7 +403,8 @@ def test_queue_memops():
         and q.sycl_device.backend == dpctl.backend_type.opencl
         and q.sycl_device.has_aspect_cpu
     )
-    if not is_wsl_or_windows() and not acpp_opencl_cpu:
+    acpp_skip = is_adaptivecpp() and (is_wsl_or_windows() or acpp_opencl_cpu)
+    if not acpp_skip:
         q.prefetch(m1, 512)
         with pytest.raises(TypeError):
             q.prefetch([], 512)

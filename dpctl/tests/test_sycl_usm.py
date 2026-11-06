@@ -27,6 +27,8 @@ from dpctl.memory import (
     as_usm_memory,
 )
 
+from .helper import is_adaptivecpp
+
 
 class Dummy(MemoryUSMShared):
     """
@@ -89,7 +91,12 @@ def _skip_if_usm_types_not_reported(q=None):
     AdaptiveCpp's OpenMP backend allocates plain host memory, and reports
     every allocation as USM-host.
     """
-    m = MemoryUSMDevice(8) if q is None else MemoryUSMDevice(8, queue=q)
+    if not is_adaptivecpp():
+        return
+    try:
+        m = MemoryUSMDevice(8) if q is None else MemoryUSMDevice(8, queue=q)
+    except (dpctl.SyclDeviceCreationError, dpctl.SyclQueueCreationError):
+        pytest.skip("No SYCL device available")
     if m.get_usm_type() != "device":
         pytest.skip("Device does not report distinct USM allocation types")
 
