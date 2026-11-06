@@ -51,7 +51,6 @@ library (`libsyclinterface`). It is compiled with Intel oneAPI DPC++ (`icx`/`icp
   - `_sycl_*.pyx/.pxd` — `SyclDevice`, `SyclQueue`, `SyclContext`, `SyclEvent`, ...
   - `memory/` — USM memory objects (`MemoryUSMDevice`, ...), IPC memory
   - `compiler/` — `SyclKernelBundle` creation (SPIR-V, SYCL source)
-  - `program/` — deprecated alias of `dpctl.compiler`
   - `utils/` — order manager, device queries, Intel device info
   - `apis/include/` — Python C-API headers for extensions (`dpctl_capi.h`, `dpctl4pybind11.hpp`)
   - `tests/` — pytest suite; `tests/helper/` has `get_queue_or_skip` and friends
