@@ -311,6 +311,17 @@ def test_platform_has_aspect_agrees_with_devices():
             ), f"platform.{attr} disagrees with its devices"
 
 
+def test_platform_and_device_aspects_match():
+    def aspects(cls):
+        return {n for n in dir(cls) if n.startswith("has_aspect_")}
+
+    platform_aspects = aspects(dpctl.SyclPlatform)
+    assert aspects(dpctl.SyclDevice) == platform_aspects
+    assert {"has_aspect_" + a for a in list_of_platform_aspects} == (
+        platform_aspects
+    )
+
+
 def test_platform_get_composite_devices():
     platforms = dpctl.get_platforms()
     if platforms:
