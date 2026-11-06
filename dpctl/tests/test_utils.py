@@ -522,49 +522,49 @@ def use_last_event(request, monkeypatch):
     return request.param
 
 
-def test_in_order_order_manager(use_last_event):
+def test_in_order_order_manager():
     q = _in_order_queue()
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
     assert _som[q] is _mngr
-    assert _mngr.num_cleanup_events == 0
-    assert _mngr.num_submitted_events == 0
+    assert isinstance(_mngr, _order_manager._InOrderManager)
     assert isinstance(_mngr.submitted_events, list)
     assert isinstance(_mngr.cleanup_events, list)
     _mngr.add_event(dpctl.SyclEvent())
     _mngr.add_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
     _mngr.add_cleanup_event(dpctl.SyclEvent())
     _mngr.add_cleanup_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
-    cl_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
-    _mngr.add_event([comp_ev])
-    _mngr.add_cleanup_event(cl_ev)
-    # only the most recently added events are kept
-    assert _mngr.cleanup_events == [cl_ev]
-    assert _mngr.num_cleanup_events == 1
-    # nothing was submitted to the queue, so both modes return added events
-    assert _mngr.submitted_events == [comp_ev]
-    assert _mngr.num_submitted_events == 1
+    # complete events are not kept
+    assert _mngr.num_cleanup_events == 0
     _mngr.wait()
     cpy = _mngr.__copy__()
-    assert cpy.cleanup_events == [cl_ev]
-    assert cpy.submitted_events == [comp_ev]
+    assert isinstance(cpy, _order_manager._InOrderManager)
+    assert cpy.num_cleanup_events == 0
     _som.clear()
     del cpy
+
+
+@pytest.mark.parametrize("in_order", [True, False])
+def test_order_manager_add_non_event(in_order):
+    q = _in_order_queue() if in_order else dpctl.SyclQueue()
+    _mngr = dpctl.utils.SequentialOrderManager[q]
+    with pytest.raises(TypeError):
+        _mngr.add_event(None)
+    with pytest.raises(TypeError):
+        _mngr.add_cleanup_event([None])
+    dpctl.utils.SequentialOrderManager.clear()
 
 
 def test_in_order_order_manager_host_task_api():
     q = _in_order_queue()
     _som = dpctl.utils.SequentialOrderManager
     _mngr = _som[q]
-    ht_ev, comp_ev = dpctl.SyclEvent(), dpctl.SyclEvent()
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
         _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
-        _mngr.add_event_pair(ht_ev, [comp_ev])
-        assert _mngr.host_task_events == [ht_ev]
-        assert _mngr.num_host_task_events == 1
-    assert _mngr.cleanup_events == [ht_ev]
+        assert _mngr.host_task_events == []
+        assert _mngr.num_host_task_events == 0
     _som.clear()
 
 
@@ -589,44 +589,62 @@ def test_in_order_order_manager_submitted_events(use_last_event):
     q = _in_order_queue()
     _mngr = dpctl.utils.SequentialOrderManager[q]
     buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
-    comp_ev = q.memset_async(buf, 1, 1024)
-    ht_ev = q.keep_args_alive((buf,), [comp_ev])
-    _mngr.add_event(comp_ev)
-    _mngr.add_cleanup_event(ht_ev)
-    if use_last_event:
-        # the keep-alive task is the last command submitted to the queue
-        assert len(_mngr.submitted_events) == 1
-        assert _mngr.submitted_events[0] is not comp_ev
-    else:
-        assert _mngr.submitted_events == [comp_ev]
     # work which is not added to the order manager
-    q.memset_async(buf, 2, 1024)
+    q.memset_async(buf, 1, 1024)
     if use_last_event:
-        assert len(_mngr.submitted_events) == 1
+        assert _mngr.num_submitted_events == 1
     else:
-        assert _mngr.submitted_events == [comp_ev]
+        assert _mngr.num_submitted_events == 0
     dpctl.utils.SequentialOrderManager.clear()
 
 
-def test_in_order_order_manager_other_queue_depends(use_last_event):
+def _fill_in_steps(q, buf, n_fills, mngr=None):
+    nbytes = buf.nbytes
+    ev = None
+    for v in range(1, n_fills + 1):
+        ev = q.memset_async(buf, v, nbytes, dEvents=[ev] if ev else None)
+        if mngr is not None:
+            mngr.add_event(ev)
+            mngr.add_cleanup_event(q.keep_args_alive((buf,), [ev]))
+    return ev
+
+
+def test_in_order_order_manager_other_queue_depends():
+    if not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
     q_in = _in_order_queue()
     q_other = dpctl.SyclQueue(q_in.sycl_context, q_in.sycl_device)
     _mngr = dpctl.utils.SequentialOrderManager[q_in]
-    nbytes, n_fills = 32 * 1024 * 1024, 8
-    buf = dpctl.memory.MemoryUSMDevice(nbytes, queue=q_in)
-    host = np.empty(nbytes, dtype=np.uint8)
-    for _ in range(3):
-        q_in.memset(buf, 0, nbytes)
-        for v in range(1, n_fills + 1):
-            comp_ev = q_in.memset_async(buf, v, nbytes)
-            ht_ev = q_in.keep_args_alive((buf,), [comp_ev])
-            _mngr.add_event(comp_ev)
-            _mngr.add_cleanup_event(ht_ev)
-        # work on another queue must wait for work done on the in-order queue
-        deps = _mngr.submitted_events
-        assert deps
-        q_other.memcpy_async(host, buf, nbytes, dEvents=deps).wait()
+    n_fills = 8
+    buf = dpctl.memory.MemoryUSMDevice(64 * 1024 * 1024, queue=q_in)
+    host = np.empty(buf.nbytes, dtype=np.uint8)
+    for _ in range(5):
+        q_in.memset(buf, 0, buf.nbytes)
+        _fill_in_steps(q_in, buf, n_fills - 1, _mngr)
+        # the last fill is not added to the order manager
+        q_in.memset_async(buf, n_fills, buf.nbytes)
+        q_other.memcpy_async(
+            host, buf, buf.nbytes, dEvents=_mngr.submitted_events
+        ).wait()
         assert np.all(host == n_fills)
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+def test_in_order_order_manager_other_queue_event(use_last_event):
+    q_in = _in_order_queue()
+    q_other = dpctl.SyclQueue(q_in.sycl_context, q_in.sycl_device)
+    _mngr = dpctl.utils.SequentialOrderManager[q_in]
+    n_fills = 8
+    buf = dpctl.memory.MemoryUSMDevice(64 * 1024 * 1024, queue=q_in)
+    host = np.empty(buf.nbytes, dtype=np.uint8)
+    for _ in range(5):
+        q_in.memset(buf, 0, buf.nbytes)
+        _mngr.add_event(_fill_in_steps(q_other, buf, n_fills))
+        q_in.memcpy_async(
+            host, buf, buf.nbytes, dEvents=_mngr.submitted_events
+        ).wait()
+        assert np.all(host == n_fills)
+        q_other.wait()
     dpctl.utils.SequentialOrderManager.clear()
 
 

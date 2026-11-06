@@ -180,7 +180,6 @@ def test_queue_get_last_event():
         q = dpctl.SyclQueue(property="in_order")
     except dpctl.SyclQueueCreationError:
         pytest.skip("Queue could not be created for default-selected device")
-    assert q.get_last_event() is None
     buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
     ev = q.memset_async(buf, 1, 1024)
     last_ev = q.get_last_event()

@@ -146,84 +146,51 @@ class _SequentialOrderManager:
         return res
 
 
-def _as_event_list(ev):
-    if isinstance(ev, (list, tuple)):
-        return list(ev)
-    return [ev]
-
-
 _use_last_event = SyclQueue.is_get_last_event_available()
 
 
-class _InOrderManager:
+class _InOrderManager(_SequentialOrderManager):
     """
-    Order manager for an in-order queue. The queue orders its tasks, so only
-    the most recently added events are kept.
+    Order manager for an in-order queue.
 
-    ``submitted_events`` is the event of the last command submitted to the
-    queue if :meth:`dpctl.SyclQueue.get_last_event` is available, and the
-    most recently added computation events otherwise. ``wait`` waits on the
-    queue.
+    Holds the added events which are not complete, as
+    :class:`_SequentialOrderManager` does. ``submitted_events`` also has the
+    event of the last command submitted to the queue if
+    :meth:`dpctl.SyclQueue.get_last_event` is available. ``wait`` waits on
+    the queue.
     """
 
     def __init__(self, q: SyclQueue):
+        super().__init__()
         self._queue = q
-        self._cleanup_evs = []
-        self._comp_evs = []
 
     def __del__(self):
         if sys.is_finalizing():
             return
         self._queue.wait()
-
-    def add_event_pair(self, host_task_ev, comp_ev):
-        self._cleanup_evs = _as_event_list(host_task_ev)
-        self._comp_evs = _as_event_list(comp_ev)
-
-    def add_event(self, comp_ev):
-        self._comp_evs = _as_event_list(comp_ev)
-
-    def add_cleanup_event(self, cleanup_ev):
-        self._cleanup_evs = _as_event_list(cleanup_ev)
-
-    @property
-    def num_host_task_events(self):
-        return self.num_cleanup_events
-
-    @property
-    def num_cleanup_events(self):
-        return len(self._cleanup_evs)
+        super().__del__()
 
     @property
     def num_submitted_events(self):
         return len(self.submitted_events)
 
     @property
-    def host_task_events(self):
-        return self.cleanup_events
-
-    @property
-    def cleanup_events(self):
-        return list(self._cleanup_evs)
-
-    @property
     def submitted_events(self):
+        evs = self._state.get_submitted_events()
         if _use_last_event:
             ev = self._queue.get_last_event()
             if ev is not None:
-                return [ev]
-        return list(self._comp_evs)
+                evs.append(ev)
+        return evs
 
     def wait(self):
         self._queue.wait()
-        # see _SequentialOrderManager.wait
-        if not sys.is_finalizing():
-            _drain_deferred_releases()
+        return super().wait()
 
     def __copy__(self):
-        res = _InOrderManager(self._queue)
-        res._cleanup_evs = list(self._cleanup_evs)
-        res._comp_evs = list(self._comp_evs)
+        res = _InOrderManager.__new__(_InOrderManager)
+        res._state = _OrderManager(self._state)
+        res._queue = self._queue
         return res
 
 
