@@ -38,6 +38,11 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
 # SYCL provider selection
 set(DPCTL_SYCL_PROVIDER "Intel" CACHE STRING "SYCL compiler provider (Intel or AdaptiveCpp)")
 set_property(CACHE DPCTL_SYCL_PROVIDER PROPERTY STRINGS Intel AdaptiveCpp)
+if(NOT DPCTL_SYCL_PROVIDER MATCHES "^(Intel|AdaptiveCpp)$")
+    message(FATAL_ERROR
+        "DPCTL_SYCL_PROVIDER must be Intel or AdaptiveCpp, not '${DPCTL_SYCL_PROVIDER}'"
+    )
+endif()
 
 set(DPCTL_TARGET_CUDA
    ""
@@ -50,6 +55,16 @@ set(DPCTL_TARGET_HIP
     ""
     CACHE STRING
     "Build DPCTL to target a HIP device architecture"
+)
+option(
+     DPCTL_WITH_REDIST
+     "Build DPCTL assuming DPC++ redistributable is installed into Python prefix"
+     OFF)
+option(
+     DPCTL_OFFLOAD_COMPRESS
+     "Build using offload section compression feature of DPC++ to reduce \
+size of shared object with offloading sections"
+     OFF
 )
 
 # architecture mapping
@@ -96,6 +111,11 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
          )
       endif()
    endif()
+
+   if(_acpp_targets_list)
+      # generic runs dpctl's kernels on the OpenMP and OpenCL devices
+      list(PREPEND _acpp_targets_list generic)
+   endif()
 else()
    if ("${DPCTL_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
       message(FATAL_ERROR
@@ -126,10 +146,13 @@ if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
 elseif(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
     message(STATUS "Using AdaptiveCpp SYCL Provider")
 
-    # AdaptiveCpp reads the ACPP_TARGETS variable directly during find_package
-    if(_acpp_targets_list)
-        string(REPLACE ";" ";" ACPP_TARGETS "${_acpp_targets_list}")
-        set(ACPP_TARGETS "${ACPP_TARGETS}" CACHE STRING "AdaptiveCpp Targets" FORCE)
+    # AdaptiveCpp reads ACPP_TARGETS during find_package. The empty cache entry
+    # keeps the derived targets below out of the cache.
+    set(ACPP_TARGETS "" CACHE STRING
+        "AdaptiveCpp targets, derived from DPCTL_TARGET_CUDA, DPCTL_TARGET_HIP or DPCTL_SYCL_TARGETS if empty"
+    )
+    if(_acpp_targets_list AND NOT ACPP_TARGETS AND "$ENV{ACPP_TARGETS}" STREQUAL "")
+        set(ACPP_TARGETS "${_acpp_targets_list}")
         message(STATUS "Compiling for ACPP_TARGETS=${ACPP_TARGETS}")
     endif()
 
