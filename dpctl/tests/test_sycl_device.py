@@ -495,8 +495,15 @@ def test_device_unpickling_missing_device():
 
 
 def test_device_copy():
+    try:
+        dev = dpctl.SyclDevice()
+    except SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    assert copy.copy(dev) is dev
+    assert copy.deepcopy(dev) is dev
+
+
+def test_sub_device_copy():
     sub_dev = get_sub_device_or_skip()
-    root_dev = sub_dev.parent_device
-    for dev in (root_dev, sub_dev):
-        assert copy.copy(dev) is dev
-        assert copy.deepcopy(dev) is dev
+    assert copy.copy(sub_dev) is sub_dev
+    assert copy.deepcopy(sub_dev) is sub_dev

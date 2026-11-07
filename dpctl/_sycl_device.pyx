@@ -1682,12 +1682,18 @@ cdef class SyclDevice(_SyclDevice):
         of the same name.
 
         Raises:
-            pickle.PicklingError: if the device is not a root device.
+            pickle.PicklingError: if the device is not a root device, or its
+                filter string has an ``unknown`` backend or device type.
         """
         try:
             filter_string = self.filter_string
         except ValueError as e:
             raise pickle.PicklingError(f"Cannot pickle {self!r}: {e}") from e
+        if "unknown" in filter_string.split(":")[:2]:
+            raise pickle.PicklingError(
+                f"Cannot pickle device '{self.name}': filter string "
+                f"'{filter_string}' can not select it"
+            )
         return _rebuild_device, (filter_string, self.name)
 
     def __copy__(self):
