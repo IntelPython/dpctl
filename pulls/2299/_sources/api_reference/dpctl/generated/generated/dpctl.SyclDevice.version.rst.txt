@@ -1,6 +1,0 @@
-dpctl.SyclDevice.version
-========================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.version

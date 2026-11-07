@@ -1,6 +1,0 @@
-dpctl.memory.IPCMemoryHandle.close\_mapping
-===========================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: IPCMemoryHandle.close_mapping
