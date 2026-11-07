@@ -231,6 +231,19 @@ def test_python_int_arg_out_of_range():
         q.submit(krn, [out_usm, 2**63], [1])
 
 
+def test_python_scalar_arg_size_mismatch():
+    try:
+        q = dpctl.SyclQueue("opencl:cpu")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL CPU queue could not be created")
+    src = "kernel void put(global float *out, float d) { out[0] = d; }"
+    krn = dpc.create_kernel_bundle_from_source(q, src).get_sycl_kernel("put")
+    out_usm = dpm.MemoryUSMDevice(4, queue=q)
+    with pytest.raises(dpctl.SyclKernelSubmitError, match="NumPy scalar"):
+        q.submit(krn, [out_usm, 1.5], [1]).wait()
+    q.submit(krn, [out_usm, np.float32(1.5)], [1]).wait()
+
+
 def test_bfloat16_scalar_arg():
     ml_dtypes = pytest.importorskip("ml_dtypes")
     q = _opencl_queue_or_skip()

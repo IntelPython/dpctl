@@ -1546,6 +1546,8 @@ cdef class SyclQueue(_SyclQueue):
         cdef size_t nDE = len(dEvents) if dEvents is not None else 0
         cdef size_t nKA = 0
         cdef list _converted = []
+        cdef list scalars = []
+        cdef bint has_py_scalars = False
 
         if kernel.get_kernel_ref() is NULL:
             raise SyclKernelSubmitError(
@@ -1562,7 +1564,11 @@ cdef class SyclQueue(_SyclQueue):
             )
 
         # Python scalars are passed as the NumPy scalars they convert to
-        args = [as_scalar(arg) for arg in args]
+        for arg in args:
+            scalar = as_scalar(arg)
+            has_py_scalars |= scalar is not arg
+            scalars.append(scalar)
+        args = scalars
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1668,9 +1674,14 @@ cdef class SyclQueue(_SyclQueue):
         free(depEvents)
 
         if Eref is NULL:
-            raise SyclKernelSubmitError(
-                "Kernel submission to Sycl queue failed."
-            )
+            msg = "Kernel submission to Sycl queue failed."
+            if has_py_scalars:
+                msg += (
+                    " Python scalars are passed as numpy.int64, numpy.float64 "
+                    "or numpy.complex128; pass a NumPy scalar matching the "
+                    "kernel parameter type."
+                )
+            raise SyclKernelSubmitError(msg)
 
         return SyclEvent._create(Eref)
 
