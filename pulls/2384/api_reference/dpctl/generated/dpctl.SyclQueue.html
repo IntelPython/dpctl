@@ -411,8 +411,10 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.fill.html">dpctl.SyclQueue.fill</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_last_event.html">dpctl.SyclQueue.get_last_event</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.is_get_last_event_available.html">dpctl.SyclQueue.is_get_last_event_available</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
@@ -828,11 +830,17 @@ The argument can be either “default”, “in_order”,
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.fill_async.html#dpctl.SyclQueue.fill_async" title="dpctl.SyclQueue.fill_async"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill_async</span></code></a>(dest, value, count[, dEvents, dtype])</p></td>
 <td><p>Fill <code class="docutils literal notranslate"><span class="pre">dest</span></code> with <code class="docutils literal notranslate"><span class="pre">count</span></code> copies of <code class="docutils literal notranslate"><span class="pre">value</span></code> asynchronously.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_last_event.html#dpctl.SyclQueue.get_last_event" title="dpctl.SyclQueue.get_last_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_last_event</span></code></a>()</p></td>
+<td><p>Returns the event of the last command submitted to an in-order queue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_context.html#dpctl.SyclQueue.get_sycl_context" title="dpctl.SyclQueue.get_sycl_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_context</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_device.html#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.get_sycl_device.html#dpctl.SyclQueue.get_sycl_device" title="dpctl.SyclQueue.get_sycl_device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sycl_device</span></code></a>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.is_get_last_event_available.html#dpctl.SyclQueue.is_get_last_event_available" title="dpctl.SyclQueue.is_get_last_event_available"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_get_last_event_available</span></code></a>()</p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if dpctl was built with a compiler that supports the DPC++ <code class="docutils literal notranslate"><span class="pre">sycl_ext_oneapi_in_order_queue_events</span></code> extension used by <a class="reference internal" href="generated/dpctl.SyclQueue.get_last_event.html#dpctl.SyclQueue.get_last_event" title="dpctl.SyclQueue.get_last_event"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.get_last_event()</span></code></a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpctl.SyclQueue.keep_args_alive.html#dpctl.SyclQueue.keep_args_alive" title="dpctl.SyclQueue.keep_args_alive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_args_alive</span></code></a>(args[, depends])</p></td>
 <td><p>Keeps objects in <code class="docutils literal notranslate"><span class="pre">args</span></code> alive until the work on this queue that uses them completes.</p></td>
