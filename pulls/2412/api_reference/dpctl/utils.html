@@ -411,8 +411,10 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.copy_async.html">dpctl.SyclQueue.copy_async</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.fill.html">dpctl.SyclQueue.fill</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.fill_async.html">dpctl.SyclQueue.fill_async</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_last_event.html">dpctl.SyclQueue.get_last_event</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_context.html">dpctl.SyclQueue.get_sycl_context</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.get_sycl_device.html">dpctl.SyclQueue.get_sycl_device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.is_get_last_event_available.html">dpctl.SyclQueue.is_get_last_event_available</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.keep_args_alive.html">dpctl.SyclQueue.keep_args_alive</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.mem_advise.html">dpctl.SyclQueue.mem_advise</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/generated/dpctl.SyclQueue.memcpy.html">dpctl.SyclQueue.memcpy</a></li>
@@ -808,6 +810,14 @@ waited on, but never become dependencies of later tasks.</p>
 completed, which <code class="docutils literal notranslate"><span class="pre">dpctl</span></code> otherwise does on a thread of its own. This is
 best-effort: references that thread is already dropping are left to it, so
 they may still be held when <code class="docutils literal notranslate"><span class="pre">wait</span></code> returns.</p>
+<p>For an in-order queue, if
+<a class="reference internal" href="generated/generated/dpctl.SyclQueue.is_get_last_event_available.html#dpctl.SyclQueue.is_get_last_event_available" title="dpctl.SyclQueue.is_get_last_event_available"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.is_get_last_event_available()</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<code class="docutils literal notranslate"><span class="pre">submitted_events</span></code> also has the event of the last command submitted to
+the queue. That covers tasks submitted to the queue without being added
+to the order manager, e.g. by other threads, and may be the event of an
+empty kernel submitted by <a class="reference internal" href="generated/generated/dpctl.SyclQueue.keep_args_alive.html#dpctl.SyclQueue.keep_args_alive" title="dpctl.SyclQueue.keep_args_alive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpctl.SyclQueue.keep_args_alive()</span></code></a>.
+<code class="docutils literal notranslate"><span class="pre">wait</span></code>, <code class="docutils literal notranslate"><span class="pre">clear</span></code> and thread exit wait for all work on the queue,
+including work submitted by other threads.</p>
 <div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 0.24.0: </span><code class="docutils literal notranslate"><span class="pre">add_event_pair</span></code>, <code class="docutils literal notranslate"><span class="pre">host_task_events</span></code> and <code class="docutils literal notranslate"><span class="pre">num_host_task_events</span></code>
 are deprecated. Tasks are no longer paired with a host task event, so

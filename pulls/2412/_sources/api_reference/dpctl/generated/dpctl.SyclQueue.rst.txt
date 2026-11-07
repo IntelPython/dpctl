@@ -17,8 +17,10 @@
       ~SyclQueue.copy_async
       ~SyclQueue.fill
       ~SyclQueue.fill_async
+      ~SyclQueue.get_last_event
       ~SyclQueue.get_sycl_context
       ~SyclQueue.get_sycl_device
+      ~SyclQueue.is_get_last_event_available
       ~SyclQueue.keep_args_alive
       ~SyclQueue.mem_advise
       ~SyclQueue.memcpy
