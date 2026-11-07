@@ -365,6 +365,109 @@ def test_create_kernel_bundle_with_composite_spec_const():
     assert np.all(y == 12.5)
 
 
+def test_create_kernel_bundle_with_bfloat16_spec_const():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+
+    factor = ml_dtypes.bfloat16(1.5)
+    sp = dpc.SpecializationConstant(0, factor)
+
+    spirv_file = get_spirv_abspath("bfloat16_spec_const_kernel.spv")
+    with open(spirv_file, "br") as spv:
+        spv_bytes = spv.read()
+
+    kb = dpc.create_kernel_bundle_from_spirv(q, spv_bytes, specializations=[sp])
+    kernel = kb.get_sycl_kernel("_ZTS23Bfloat16SpecConstKernel")
+
+    n = 128
+    x = np.arange(1, n + 1, dtype="f4")
+    y = np.zeros_like(x)
+
+    x_usm = dpctl.memory.MemoryUSMDevice(x.nbytes, queue=q)
+    y_usm = dpctl.memory.MemoryUSMDevice(y.nbytes, queue=q)
+
+    e1 = q.memcpy_async(x_usm, x, x.nbytes)
+    e2 = q.submit(kernel, [x_usm, y_usm], [n], dEvents=[e1])
+    e3 = q.memcpy_async(y, y_usm, y.nbytes, [e2])
+
+    ht_e = q.keep_args_alive([x_usm], [e3])
+
+    e3.wait()
+    ht_e.wait()
+
+    assert np.array_equal(y, x * np.float32(factor))
+
+
+def test_spec_const_from_numpy_dtypes():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    bf16 = dpc.SpecializationConstant(0, ml_dtypes.bfloat16(1.5))
+    assert bf16.size == 2
+    assert dpc.SpecializationConstant(0, "bfloat16", 1.5) == bf16
+    assert dpc.SpecializationConstant(0, ml_dtypes.bfloat16, 1.5) == bf16
+    assert dpc.SpecializationConstant(0, np.uint16(0x3FC0)) == bf16
+
+    assert dpc.SpecializationConstant(0, np.int32(42)) == (
+        dpc.SpecializationConstant(0, "i4", 42)
+    )
+    assert dpc.SpecializationConstant(0, np.float32, 2.5) == (
+        dpc.SpecializationConstant(0, "f4", 2.5)
+    )
+
+
+def test_spec_const_complex_half():
+    complex_half = np.dtype([("real", "f2"), ("imag", "f2")])
+    sp = dpc.SpecializationConstant(0, complex_half, (1.0, -2.0))
+    assert sp.size == 4
+    assert sp == dpc.SpecializationConstant(
+        0, np.array([1.0, -2.0], dtype="f2")
+    )
+    assert sp == dpc.SpecializationConstant(
+        0, np.array((1.0, -2.0), dtype=complex_half)[()]
+    )
+
+
+def test_spec_const_complex32():
+    ml_dtypes = pytest.importorskip("ml_dtypes", minversion="0.6")
+    sp = dpc.SpecializationConstant(0, ml_dtypes.complex32(1 - 2j))
+    assert sp.size == 4
+    assert sp == dpc.SpecializationConstant(0, "complex32", 1 - 2j)
+    assert sp == dpc.SpecializationConstant(
+        0, np.array([1.0, -2.0], dtype="f2")
+    )
+
+
+@pytest.mark.parametrize(
+    "value,dtype",
+    [(True, "?"), (42, "i8"), (2**63, "u8"), (2.5, "f8"), (1 - 2j, "c16")],
+)
+def test_spec_const_from_python_scalar(value, dtype):
+    sp = dpc.SpecializationConstant(0, value)
+    assert sp == dpc.SpecializationConstant(0, dtype, value)
+
+
+def test_spec_const_invalid_dtypes():
+    with pytest.raises(TypeError):
+        dpc.SpecializationConstant(0, object(), 42)
+    with pytest.raises(TypeError):
+        dpc.SpecializationConstant(0, "not_a_data_type", 42)
+    with pytest.raises(TypeError):
+        dpc.SpecializationConstant(0, "U4", "abc")
+
+
+def test_spirv_specializations_parser_bfloat16():
+    spirv_file = get_spirv_abspath("bfloat16_spec_const_kernel.spv")
+    with open(spirv_file, "rb") as spv:
+        spv_bytes = spv.read()
+    spec_consts = parse_spirv_specializations(spv_bytes)
+    assert len(spec_consts) == 1
+    # the parser reports the 16-bit member of the bfloat16
+    assert spec_consts[0].dtype == "u2"
+    assert spec_consts[0].itemsize == 2
+
+
 def test_specialization_constant_addressof_ref():
     sp = dpc.SpecializationConstant(0, "i4", 42)
     ref = sp.addressof_ref()

@@ -44,4 +44,27 @@ We can now use it from Python:
     # device descriptor
     print(dev.name)
 
+Type caster for ``bfloat16``
+----------------------------
+
+When the DPC++ compiler used to compile an extension provides the
+``sycl_ext_oneapi_bfloat16`` extension, ``dpctl4pybind11.hpp`` defines the macro
+``DPCTL_HAS_BFLOAT16`` and a type caster connecting
+``sycl::ext::oneapi::bfloat16`` to Python. A function taking such an argument
+accepts any Python object convertible to a :py:class:`float`, such as an
+``ml_dtypes.bfloat16`` scalar. Its value is rounded to C++ ``float`` and then
+to ``bfloat16``, so it is not always the nearest ``bfloat16``. A returned
+``bfloat16`` becomes a Python :py:class:`float`.
+
+Since the caster is only defined when the extension is available, code that has
+to build with compilers that do not provide it should guard its use:
+
+.. code-block:: c++
+
+    #ifdef DPCTL_HAS_BFLOAT16
+    sycl::ext::oneapi::bfloat16 round_trip(sycl::ext::oneapi::bfloat16 value) {
+        return value;
+    }
+    #endif
+
 .. _pybind11_url: https://pybind11.readthedocs.io/

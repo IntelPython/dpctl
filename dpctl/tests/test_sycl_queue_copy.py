@@ -223,7 +223,18 @@ def test_copy_with_invalid_dtype():
     src = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     dst = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
-    invalid_dtypes = ["i3", "f16", "u16", "x4", "42", "float", ""]
+    invalid_dtypes = [
+        "i3",
+        "f16",
+        "u16",
+        "x4",
+        "42",
+        "",
+        "U4",
+        "O",
+        None,
+        np.dtype("i4").newbyteorder(),
+    ]
 
     for bad_dtype in invalid_dtypes:
         with pytest.raises(ValueError) as cm:
@@ -296,3 +307,53 @@ def test_copy_without_dtype_backward_compat():
 
     dst_mv = memoryview(dst)
     assert dst_mv[:nbytes].tobytes() == src_mv[:nbytes].tobytes()
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    [
+        "float32",
+        np.float32,
+        np.dtype("f4"),
+        "f2",
+        "c8",
+        [("re", "f2"), ("im", "f2")],
+        [("a", "f4"), ("b", "i4"), ("c", "i4")],
+    ],
+)
+def test_copy_with_numpy_dtypes(dtype):
+    """Test typed copy with data types in any form numpy.dtype accepts."""
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    num_elements = 6
+    itemsize = np.dtype(dtype).itemsize
+    src = np.arange(num_elements * itemsize, dtype=np.uint8)
+    dst = np.zeros_like(src)
+
+    # only the first half of the elements is copied
+    q.copy(dst, src, num_elements // 2, dtype=dtype)
+    half = num_elements // 2 * itemsize
+    assert np.array_equal(dst[:half], src[:half])
+    assert not dst[half:].any()
+
+
+def test_copy_with_ml_dtypes():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    src = np.arange(8, dtype=np.uint16)
+    dtypes = [ml_dtypes.bfloat16, "bfloat16"]
+    # complex32 needs ml_dtypes 0.6
+    if hasattr(ml_dtypes, "complex32"):
+        dtypes.append(ml_dtypes.complex32)
+    for dtype in dtypes:
+        dst = np.zeros_like(src)
+        n = src.nbytes // np.dtype(dtype).itemsize
+        q.copy(dst, src, n, dtype=dtype)
+        assert np.array_equal(dst, src)

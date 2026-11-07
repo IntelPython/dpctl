@@ -263,7 +263,21 @@ def test_fill_with_invalid_dtype():
 
     mem = dpctl.memory.MemoryUSMShared(64, queue=q)
 
-    for bad_dtype in ["i3", "f16", "u16", "x4", "42", "float", ""]:
+    invalid_dtypes = [
+        "i3",
+        "f16",
+        "u16",
+        "x4",
+        "42",
+        "",
+        "U4",
+        "O",
+        "V12",
+        None,
+        np.dtype("i4").newbyteorder(),
+        np.dtype([("a", "i4")]).newbyteorder(),
+    ]
+    for bad_dtype in invalid_dtypes:
         with pytest.raises(ValueError) as cm:
             q.fill(mem, 0, 8, dtype=bad_dtype)
         assert (
@@ -330,3 +344,53 @@ def test_fill_count_out_of_bounds():
         q.fill(mem, 0, 9, dtype="i8")
     with pytest.raises(ValueError):
         q.fill_async(mem, 0, nbytes + 1)
+
+
+@pytest.mark.parametrize(
+    "dtype,value",
+    [
+        ("float32", 1.5),
+        (np.float32, 1.5),
+        ("f2", -2.5),
+        ("b1", True),
+        ("c8", 1 - 2j),
+        ([("re", "f2"), ("im", "f2")], (1.0, -2.0)),
+        ([("a", "i8"), ("b", "i8")], (3, -4)),
+    ],
+)
+def test_fill_with_numpy_dtypes(dtype, value):
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    num_elements = 8
+    np_dt = np.dtype(dtype)
+    nbytes = num_elements * np_dt.itemsize
+    mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
+    q.fill(mem, value, num_elements, dtype=dtype)
+
+    expected = np.array([value] * num_elements, dtype=np_dt).tobytes()
+    assert memoryview(mem)[:nbytes].tobytes() == expected
+
+
+def test_fill_with_ml_dtypes():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default constructor for SyclQueue failed")
+
+    num_elements = 8
+    cases = [(ml_dtypes.bfloat16, 1.5), ("bfloat16", 1.5)]
+    # complex32 and bcomplex32 need ml_dtypes 0.6
+    for name in ("complex32", "bcomplex32"):
+        if hasattr(ml_dtypes, name):
+            cases.append((getattr(ml_dtypes, name), 1 - 2j))
+    for dtype, value in cases:
+        np_dt = np.dtype(dtype)
+        nbytes = num_elements * np_dt.itemsize
+        mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
+        q.fill(mem, value, num_elements, dtype=dtype)
+        expected = np.array([value] * num_elements, dtype=np_dt).tobytes()
+        assert memoryview(mem)[:nbytes].tobytes() == expected

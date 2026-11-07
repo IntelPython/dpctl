@@ -17,9 +17,16 @@
 # coding: utf-8
 
 import numpy as np
+import pytest
 import use_queue_device as uqd
 
 import dpctl
+
+skip_no_bfloat16 = pytest.mark.skipif(
+    not uqd.has_bfloat16,
+    reason="The DPC++ compiler the extension was built with does not provide "
+    "the bfloat16 extension",
+)
 
 
 def test_compute_units():
@@ -71,3 +78,33 @@ def test_get_partition_max_sub_devices():
     assert type(mt) is int
     assert mt >= 0
     assert mt <= d.max_compute_units
+
+
+@skip_no_bfloat16
+def test_bfloat16_round_trip():
+    # a Python float is rounded to the nearest bfloat16, and comes back as the
+    # float that bfloat16 stands for
+    assert uqd.bfloat16_round_trip(1.5) == 1.5
+    assert uqd.bfloat16_round_trip(3.14) == 3.140625
+    assert type(uqd.bfloat16_round_trip(3.14)) is float
+    # an integer converts, too
+    assert uqd.bfloat16_round_trip(3) == 3.0
+
+
+@skip_no_bfloat16
+def test_bfloat16_round_trip_ml_dtypes_scalar():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    value = ml_dtypes.bfloat16(3.14)
+    assert uqd.bfloat16_round_trip(value) == float(value)
+
+
+@skip_no_bfloat16
+def test_offloaded_bfloat16_scale():
+    ml_dtypes = pytest.importorskip("ml_dtypes")
+    execution_queue = dpctl.SyclQueue()
+    X = np.arange(1, 11, dtype=np.float32)
+    factor = ml_dtypes.bfloat16(1.1)
+
+    Y = uqd.offloaded_bfloat16_scale(execution_queue, X, factor)
+
+    assert np.array_equal(Y, X * np.float32(factor))

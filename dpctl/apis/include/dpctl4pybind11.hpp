@@ -39,6 +39,12 @@
 #include <utility>
 #include <vector>
 
+#if defined(SYCL_EXT_ONEAPI_BFLOAT16) && __has_include(<sycl/ext/oneapi/bfloat16.hpp>)
+#include <sycl/ext/oneapi/bfloat16.hpp>
+// defined when the type caster for sycl::ext::oneapi::bfloat16 is available
+#define DPCTL_HAS_BFLOAT16 1
+#endif
+
 namespace py = pybind11;
 
 namespace dpctl
@@ -627,6 +633,58 @@ public:
 
     PYBIND11_TYPE_CASTER(sycl::half, _("float"));
 };
+
+#ifdef DPCTL_HAS_BFLOAT16
+/* This type caster associates the ``sycl::ext::oneapi::bfloat16`` C++ class
+ * with Python :class:`float` for the purposes of generation of Python bindings
+ * by pybind11. Any object convertible to :class:`float`, such as an
+ * ``ml_dtypes.bfloat16`` scalar, is accepted.
+ */
+template <> struct type_caster<sycl::ext::oneapi::bfloat16>
+{
+public:
+    bool load(handle src, bool convert)
+    {
+        using bfloat16_t = sycl::ext::oneapi::bfloat16;
+
+        double py_value;
+
+        if (!src) {
+            return false;
+        }
+
+        PyObject *source = src.ptr();
+
+        if (convert || PyFloat_Check(source)) {
+            py_value = PyFloat_AsDouble(source);
+        }
+        else {
+            return false;
+        }
+
+        bool py_err = (py_value == double(-1)) && PyErr_Occurred();
+
+        if (py_err) {
+            PyErr_Clear();
+            if (convert && (PyNumber_Check(source) != 0)) {
+                auto tmp = reinterpret_steal<object>(PyNumber_Float(source));
+                return load(tmp, false);
+            }
+            return false;
+        }
+        value = bfloat16_t(static_cast<float>(py_value));
+        return true;
+    }
+
+    static handle
+    cast(sycl::ext::oneapi::bfloat16 src, return_value_policy, handle)
+    {
+        return PyFloat_FromDouble(static_cast<double>(static_cast<float>(src)));
+    }
+
+    PYBIND11_TYPE_CASTER(sycl::ext::oneapi::bfloat16, _("float"));
+};
+#endif
 
 } // namespace detail
 } // namespace pybind11
