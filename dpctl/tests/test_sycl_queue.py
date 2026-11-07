@@ -212,6 +212,8 @@ def test_queue_submit_barrier_waits_for_prior_work():
         m2 = MemoryUSMDevice(nbytes, queue=q)
     except USMAllocationError:
         pytest.skip("Not enough memory")
+    # compile the barrier kernel first
+    q.submit_barrier().wait()
     ev = q.memcpy_async(m1, m2, nbytes)
     q.submit_barrier().wait()
     assert ev.execution_status == dpctl.event_status_type.complete
