@@ -287,6 +287,79 @@ TEST(TestDPCTLSyclQueueInterface, CheckIsInOrderInvalid)
     EXPECT_FALSE(ioq);
 }
 
+TEST(TestDPCTLSyclQueueInterface, CheckGetLastEventAvailable)
+{
+#ifdef SYCL_EXT_ONEAPI_IN_ORDER_QUEUE_EVENTS
+    EXPECT_TRUE(DPCTLQueue_GetLastEvent_Available());
+#else
+    EXPECT_FALSE(DPCTLQueue_GetLastEvent_Available());
+#endif
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckGetLastEvent)
+{
+    if (!DPCTLQueue_GetLastEvent_Available()) {
+        GTEST_SKIP() << "sycl_ext_oneapi_in_order_queue_events not available";
+    }
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+    DPCTLSyclEventRef LastERef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(
+        QRef = DPCTLQueue_CreateForDevice(DRef, nullptr, DPCTL_IN_ORDER));
+    ASSERT_TRUE(QRef);
+
+    // nothing submitted yet
+    EXPECT_NO_FATAL_FAILURE(LastERef = DPCTLQueue_GetLastEvent(QRef));
+    EXPECT_FALSE(LastERef);
+
+    constexpr size_t nbytes = 1024;
+    DPCTLSyclUSMRef ptr = nullptr;
+    EXPECT_NO_FATAL_FAILURE(ptr = DPCTLmalloc_device(nbytes, QRef));
+    ASSERT_TRUE(ptr);
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_Memset(QRef, ptr, 1, nbytes));
+    ASSERT_TRUE(ERef);
+
+    EXPECT_NO_FATAL_FAILURE(LastERef = DPCTLQueue_GetLastEvent(QRef));
+    ASSERT_TRUE(LastERef);
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Wait(LastERef));
+    EXPECT_TRUE(DPCTLEvent_GetCommandExecutionStatus(ERef) == DPCTL_COMPLETE);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(LastERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLEvent_Delete(ERef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLfree_with_queue(ptr, QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
+TEST(TestDPCTLSyclQueueInterface, CheckGetLastEventInvalid)
+{
+    DPCTLSyclDeviceSelectorRef DSRef = nullptr;
+    DPCTLSyclDeviceRef DRef = nullptr;
+    DPCTLSyclQueueRef QRef = nullptr;
+    DPCTLSyclEventRef ERef = nullptr;
+
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_GetLastEvent(nullptr));
+    EXPECT_FALSE(ERef);
+
+    EXPECT_NO_FATAL_FAILURE(DSRef = DPCTLDefaultSelector_Create());
+    EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDevice_CreateFromSelector(DSRef));
+    EXPECT_NO_FATAL_FAILURE(QRef = DPCTLQueue_CreateForDevice(
+                                DRef, nullptr, DPCTL_DEFAULT_PROPERTY));
+    ASSERT_TRUE(QRef);
+    EXPECT_NO_FATAL_FAILURE(ERef = DPCTLQueue_GetLastEvent(QRef));
+    EXPECT_FALSE(ERef);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLQueue_Delete(QRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceSelector_Delete(DSRef));
+}
+
 TEST(TestDPCTLSyclQueueInterface, CheckHasEnableProfiling)
 {
     bool ioq = true;

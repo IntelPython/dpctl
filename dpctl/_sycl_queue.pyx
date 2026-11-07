@@ -53,6 +53,8 @@ from ._backend cimport (  # noqa: E211
     DPCTLQueue_GetBackend,
     DPCTLQueue_GetContext,
     DPCTLQueue_GetDevice,
+    DPCTLQueue_GetLastEvent,
+    DPCTLQueue_GetLastEvent_Available,
     DPCTLQueue_HasEnableProfiling,
     DPCTLQueue_Hash,
     DPCTLQueue_IsInOrder,
@@ -2328,6 +2330,48 @@ cdef class SyclQueue(_SyclQueue):
                 "Barrier submission to Sycl queue failed."
             )
 
+        return SyclEvent._create(ERef)
+
+    @staticmethod
+    def is_get_last_event_available():
+        """Returns ``True`` if dpctl was built with a compiler that supports
+        the DPC++ ``sycl_ext_oneapi_in_order_queue_events`` extension used by
+        :meth:`dpctl.SyclQueue.get_last_event`.
+        """
+        return DPCTLQueue_GetLastEvent_Available()
+
+    def get_last_event(self):
+        """
+        get_last_event()
+
+        Returns the event of the last command submitted to an in-order queue.
+
+        Wraps ``sycl::queue::ext_oneapi_get_last_event()`` from the
+        experimental DPC++ ``sycl_ext_oneapi_in_order_queue_events``
+        extension.
+
+        Returns:
+            dpctl.SyclEvent | None:
+                Event of the last submitted command, or ``None`` if no
+                command was submitted to the queue.
+
+        Raises:
+            RuntimeError:
+                If the extension is not available, see
+                :meth:`dpctl.SyclQueue.is_get_last_event_available`.
+            ValueError:
+                If the queue is not in-order.
+        """
+        cdef DPCTLSyclEventRef ERef = NULL
+        if not DPCTLQueue_GetLastEvent_Available():
+            raise RuntimeError(
+                "sycl_ext_oneapi_in_order_queue_events extension not available"
+            )
+        if not DPCTLQueue_IsInOrder(self._queue_ref):
+            raise ValueError("get_last_event requires an in-order queue")
+        ERef = DPCTLQueue_GetLastEvent(self._queue_ref)
+        if ERef is NULL:
+            return None
         return SyclEvent._create(ERef)
 
     @property

@@ -24,6 +24,7 @@ import threading
 import time
 import warnings
 
+import numpy as np
 import pytest
 
 import dpctl
@@ -34,6 +35,7 @@ from dpctl._sycl_queue import (
     _start_deferred_release_watcher,
     _stop_deferred_release_watcher,
 )
+from dpctl.utils import _order_manager
 
 _free_threaded = bool(sysconfig.get_config_var("Py_GIL_DISABLED"))
 
@@ -503,3 +505,168 @@ if __name__ == "__main__":
         timeout=120,
     )
     assert out == "4"
+
+
+def _in_order_queue(*args, cls=dpctl.SyclQueue):
+    try:
+        return cls(*args, property="in_order")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Queue could not be created for default-selected device")
+
+
+@pytest.fixture(params=[True, False], ids=["last_event", "added_events"])
+def use_last_event(request, monkeypatch):
+    if request.param and not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
+    monkeypatch.setattr(_order_manager, "_use_last_event", request.param)
+    return request.param
+
+
+def test_in_order_order_manager():
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    assert _som[q] is _mngr
+    assert isinstance(_mngr, _order_manager._InOrderManager)
+    assert isinstance(_mngr.submitted_events, list)
+    assert isinstance(_mngr.cleanup_events, list)
+    _mngr.add_event(dpctl.SyclEvent())
+    _mngr.add_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
+    _mngr.add_cleanup_event(dpctl.SyclEvent())
+    _mngr.add_cleanup_event([dpctl.SyclEvent(), dpctl.SyclEvent()])
+    # complete events are not kept
+    assert _mngr.num_cleanup_events == 0
+    _mngr.wait()
+    cpy = _mngr.__copy__()
+    assert isinstance(cpy, _order_manager._InOrderManager)
+    assert cpy.num_cleanup_events == 0
+    _som.clear()
+    del cpy
+
+
+@pytest.mark.parametrize("in_order", [True, False])
+def test_order_manager_add_non_event(in_order):
+    q = _in_order_queue() if in_order else dpctl.SyclQueue()
+    _mngr = dpctl.utils.SequentialOrderManager[q]
+    with pytest.raises(TypeError):
+        _mngr.add_event(None)
+    with pytest.raises(TypeError):
+        _mngr.add_cleanup_event([None])
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+def test_in_order_order_manager_host_task_api():
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _mngr.add_event_pair(dpctl.SyclEvent(), dpctl.SyclEvent())
+        _mngr.add_event_pair([dpctl.SyclEvent()], dpctl.SyclEvent())
+        assert _mngr.host_task_events == []
+        assert _mngr.num_host_task_events == 0
+    _som.clear()
+
+
+def test_in_order_order_manager_wait_drops_references(stopped_release_watcher):
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+
+    released = []
+    args = (_Sentinel(released),)
+    ev = q.keep_args_alive(args)
+    del args
+    ev.wait()
+    assert not released, "dpctl's thread is stopped, so nothing has run it"
+
+    _mngr.wait()
+    assert released == [True]
+    _som.clear()
+
+
+def test_in_order_order_manager_submitted_events(use_last_event):
+    q = _in_order_queue()
+    _mngr = dpctl.utils.SequentialOrderManager[q]
+    buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
+    # work which is not added to the order manager
+    q.memset_async(buf, 1, 1024)
+    if use_last_event:
+        assert _mngr.num_submitted_events == 1
+    else:
+        assert _mngr.num_submitted_events == 0
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+def _fill_in_steps(q, buf, n_fills, mngr=None):
+    nbytes = buf.nbytes
+    ev = None
+    for v in range(1, n_fills + 1):
+        ev = q.memset_async(buf, v, nbytes, dEvents=[ev] if ev else None)
+        if mngr is not None:
+            mngr.add_event(ev)
+            mngr.add_cleanup_event(q.keep_args_alive((buf,), [ev]))
+    return ev
+
+
+def test_in_order_order_manager_other_queue_depends():
+    if not dpctl.SyclQueue.is_get_last_event_available():
+        pytest.skip("sycl_ext_oneapi_in_order_queue_events not available")
+    q_in = _in_order_queue()
+    q_other = dpctl.SyclQueue(q_in.sycl_context, q_in.sycl_device)
+    _mngr = dpctl.utils.SequentialOrderManager[q_in]
+    n_fills = 8
+    buf = dpctl.memory.MemoryUSMDevice(64 * 1024 * 1024, queue=q_in)
+    host = np.empty(buf.nbytes, dtype=np.uint8)
+    for _ in range(5):
+        q_in.memset(buf, 0, buf.nbytes)
+        _fill_in_steps(q_in, buf, n_fills - 1, _mngr)
+        # the last fill is not added to the order manager
+        q_in.memset_async(buf, n_fills, buf.nbytes)
+        q_other.memcpy_async(
+            host, buf, buf.nbytes, dEvents=_mngr.submitted_events
+        ).wait()
+        assert np.all(host == n_fills)
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+def test_in_order_order_manager_other_queue_event(use_last_event):
+    q_in = _in_order_queue()
+    q_other = dpctl.SyclQueue(q_in.sycl_context, q_in.sycl_device)
+    _mngr = dpctl.utils.SequentialOrderManager[q_in]
+    n_fills = 8
+    buf = dpctl.memory.MemoryUSMDevice(64 * 1024 * 1024, queue=q_in)
+    host = np.empty(buf.nbytes, dtype=np.uint8)
+    for _ in range(5):
+        q_in.memset(buf, 0, buf.nbytes)
+        _mngr.add_event(_fill_in_steps(q_other, buf, n_fills))
+        q_in.memcpy_async(
+            host, buf, buf.nbytes, dEvents=_mngr.submitted_events
+        ).wait()
+        assert np.all(host == n_fills)
+        q_other.wait()
+    dpctl.utils.SequentialOrderManager.clear()
+
+
+class _WaitCountingQueue(dpctl.SyclQueue):
+    def __init__(self, *args, **kwargs):
+        self.num_waits = 0
+
+    def wait(self):
+        self.num_waits += 1
+        super().wait()
+
+
+def test_in_order_order_manager_waits_on_queue():
+    q = _in_order_queue(cls=_WaitCountingQueue)
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
+    _mngr.wait()
+    assert q.num_waits == 1
+    cpy = _mngr.__copy__()
+    del cpy
+    assert q.num_waits == 2
+    del _mngr
+    # clear() runs at exit, and must wait on in-order queues as well
+    _som.clear()
+    assert q.num_waits > 2

@@ -415,6 +415,29 @@ DPCTL_API
 bool DPCTLQueue_IsInOrder(__dpctl_keep const DPCTLSyclQueueRef QRef);
 
 /*!
+ * @brief Check if ``DPCTLQueue_GetLastEvent`` is supported by this build,
+ * i.e. if the ``sycl_ext_oneapi_in_order_queue_events`` extension is
+ * available.
+ *
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+bool DPCTLQueue_GetLastEvent_Available(void);
+
+/*!
+ * @brief C-API wrapper for ``sycl::queue::ext_oneapi_get_last_event()``.
+ *
+ * @param    QRef    An opaque pointer to an in-order ``sycl::queue``.
+ * @return   An opaque pointer to the event of the last command submitted to
+ *           the queue, or ``nullptr`` if no command was submitted, the queue
+ *           is out-of-order, or the extension is not available.
+ * @ingroup QueueInterface
+ */
+DPCTL_API
+__dpctl_give DPCTLSyclEventRef
+DPCTLQueue_GetLastEvent(__dpctl_keep const DPCTLSyclQueueRef QRef);
+
+/*!
  * @brief C-API wrapper for
  * sycl::queue::has_property<sycl::property::queue::enable_profiling>() that
  * indicates whether the referenced queue was constructed with this property.
