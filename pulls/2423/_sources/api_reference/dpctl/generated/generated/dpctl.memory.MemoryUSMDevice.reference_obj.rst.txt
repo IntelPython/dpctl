@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMDevice.reference\_obj
+===========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMDevice.reference_obj
