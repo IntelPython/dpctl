@@ -1,0 +1,6 @@
+dpctl.SyclQueue.get\_last\_event
+================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.get_last_event
