@@ -31,6 +31,15 @@
     best-effort: references that thread is already dropping are left to it, so
     they may still be held when ``wait`` returns.
 
+    For an in-order queue, if
+    :meth:`dpctl.SyclQueue.is_get_last_event_available` is ``True``,
+    ``submitted_events`` also has the event of the last command submitted to
+    the queue. That covers tasks submitted to the queue without being added
+    to the order manager, e.g. by other threads, and may be the event of an
+    empty kernel submitted by :meth:`dpctl.SyclQueue.keep_args_alive`.
+    ``wait``, ``clear`` and thread exit wait for all work on the queue,
+    including work submitted by other threads.
+
     .. deprecated:: 0.24.0
         ``add_event_pair``, ``host_task_events`` and ``num_host_task_events``
         are deprecated. Tasks are no longer paired with a host task event, so
