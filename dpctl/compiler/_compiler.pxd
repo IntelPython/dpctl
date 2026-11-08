@@ -28,16 +28,26 @@ from .._sycl_device cimport SyclDevice
 from .._sycl_queue cimport SyclQueue
 
 
+cdef enum _kernel_origin:
+    # kernel from a bundle created outside of dpctl.compiler
+    _UNKNOWN_ORIGIN = 0
+    # kernel from an OpenCL C source or SPIR-V bundle
+    _INTEROP_ORIGIN = 1
+    # kernel from a SYCL source bundle
+    _SYCL_SOURCE_ORIGIN = 2
+
+
 cdef api class SyclKernel [object PySyclKernelObject, type PySyclKernelType]:
     ''' Wraps a sycl::kernel object created from an OpenCL interoperability
         kernel.
     '''
     cdef DPCTLSyclKernelRef _kernel_ref
     cdef str _function_name
+    cdef int _origin
     cdef DPCTLSyclKernelRef get_kernel_ref (self)
 
     @staticmethod
-    cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name)
+    cdef SyclKernel _create (DPCTLSyclKernelRef kref, str name, int origin=*)
 
 
 cdef api class SyclKernelBundle [
@@ -52,11 +62,10 @@ cdef api class SyclKernelBundle [
     binary file.
     """
     cdef DPCTLSyclKernelBundleRef _kernel_bundle_ref
-    cdef bint _is_sycl_source
+    cdef int _origin
 
     @staticmethod
-    cdef SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref,
-                                   bint _is_sycl_source)
+    cdef SyclKernelBundle _create (DPCTLSyclKernelBundleRef kbref, int origin)
     cdef DPCTLSyclKernelBundleRef get_kernel_bundle_ref (self)
     cpdef SyclKernel get_sycl_kernel(self, str kernel_name)
 

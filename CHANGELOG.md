@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `dpctl.SyclQueue.get_last_event` and `dpctl.SyclQueue.is_get_last_event_available`, and the `DPCTLQueue_GetLastEvent` and `DPCTLQueue_GetLastEvent_Available` C-API functions, wrapping the DPC++ `sycl_ext_oneapi_in_order_queue_events` extension [gh-2299](https://github.com/IntelPython/dpctl/pull/2299)
 
 ### Changed
+* `dpctl.SyclQueue.submit_async` and `dpctl.SyclQueue.submit` check the number of arguments only for kernels from kernel bundles created from OpenCL C source or SPIR-V, the only kernels whose number of arguments SYCL defines; `dpctl.compiler.SyclKernel` records the kind of kernel bundle it comes from [gh-2425](https://github.com/IntelPython/dpctl/pull/2425)
 * Object lifetime during offload is now managed by a list of releases deferred until the events that gate them have completed, rather than by a `host_task`. `dpctl` keeps one thread for looking over the list and running the releases that have come due, started by the first release deferred and again in the child of a `fork`, which takes the GIL to do so and lets a release call into the interpreter and free USM allocations [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `import_dpctl()` now returns 0 on success and -1 with a Python exception set on failure, and `dpctl4pybind11.hpp` raises that exception rather than failing on the first C-API call [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * The event returned by `dpctl.SyclQueue.keep_args_alive`, `dpctl::utils::keep_args_alive` and `dpctl.SyclQueue._submit_keep_args_alive` is now for an empty kernel that gates the deferred release rather than for a `host_task` that performs it, so its completion means that the objects are no longer in use rather than that they have been released [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed the deprecated `dpctl.program` submodule, use `dpctl.compiler` instead [gh-2407](https://github.com/IntelPython/dpctl/pull/2407)
 
 ### Fixed
+* `DPCTLKernel_GetNumArgs` returns -1 instead of aborting the process when the number of arguments can not be queried, and `dpctl.compiler.SyclKernel.get_num_args` raises `RuntimeError` [gh-2425](https://github.com/IntelPython/dpctl/pull/2425)
 * Removed stale `select_host_device` and `has_host_device` names from `dpctl.__all__`, which made `from dpctl import *` fail with `AttributeError` [gh-2410](https://github.com/IntelPython/dpctl/pull/2410)
 * A USM allocation that fails now drops the references held for offloaded tasks that have completed, and is attempted once more if that released anything, so that memory only waiting to be given up is not reported as unavailable [gh-2359](https://github.com/IntelPython/dpctl/pull/2359)
 * `dpctl.SyclPlatform.get_devices` no longer prints Unified Runtime warnings for `device_type="custom"` on non-OpenCL platforms, where custom devices are not supported [gh-2306](https://github.com/IntelPython/dpctl/pull/2306)

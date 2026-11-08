@@ -49,3 +49,24 @@ def get_queue_or_skip(args=()):
     except dpctl.SyclQueueCreationError:
         pytest.skip(f"Queue could not be created from {args}")
     return q
+
+
+def make_kernel_of_unknown_origin(krn):
+    """Wraps the ``sycl::kernel`` of ``krn`` with the ``SyclKernel_Make``
+    C-API function, as a kernel created outside of ``dpctl.compiler`` is.
+    """
+    import ctypes
+    import sys
+
+    mod = sys.modules[krn.__class__.__module__]
+    cap_ptr_fn = ctypes.pythonapi.PyCapsule_GetPointer
+    cap_ptr_fn.restype = ctypes.c_void_p
+    cap_ptr_fn.argtypes = [ctypes.py_object, ctypes.c_char_p]
+    make_fn_ptr = cap_ptr_fn(
+        mod.__pyx_capi__["SyclKernel_Make"],
+        b"struct PySyclKernelObject *(DPCTLSyclKernelRef, char const *)",
+    )
+    make_fn = ctypes.PYFUNCTYPE(
+        ctypes.py_object, ctypes.c_void_p, ctypes.c_char_p
+    )(make_fn_ptr)
+    return make_fn(krn.addressof_ref(), krn.get_function_name().encode())
