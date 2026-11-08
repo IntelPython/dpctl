@@ -447,6 +447,49 @@ def test_submit_wrong_number_of_args():
         )
 
 
+# The kernel in local-accessor-free-function-kernel.spv was generated with
+# `icpx -fsycl -save-offload-code=<dir>` (DPC++ 2026.2) from:
+#
+# #include <sycl/sycl.hpp>
+#
+# namespace syclexp = sycl::ext::oneapi::experimental;
+# namespace syclext = sycl::ext::oneapi;
+#
+# extern "C" SYCL_EXTERNAL
+# SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclexp::nd_range_kernel<1>))
+# void local_accessor_kernel(sycl::local_accessor<int, 1> lmem, int *x) {
+#     auto item = syclext::this_work_item::get_nd_item<1>();
+#     size_t lid = item.get_local_linear_id();
+#     lmem[lid] = x[item.get_global_linear_id()];
+#     sycl::group_barrier(item.get_group());
+#     x[item.get_global_linear_id()] =
+#         lmem[item.get_local_range(0) - 1 - lid];
+# }
+#
+# int main() { return 0; }
+def test_submit_local_accessor_arg_spirv_from_sycl():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    fn = get_spirv_abspath("local-accessor-free-function-kernel.spv")
+    with open(fn, "br") as f:
+        spirv_bytes = f.read()
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
+    krn = kb.get_sycl_kernel("__sycl_kernel_local_accessor_kernel")
+    # the local accessor takes several arguments in this SPIR-V
+    assert krn.num_args > 2
+
+    x_usm = dpm.MemoryUSMDevice(64, queue=q)
+    with pytest.raises(ValueError, match="dpctl.LocalAccessor documentation"):
+        q.submit_async(
+            krn, [dpctl.LocalAccessor("i4", (16,)), x_usm], [16], [16]
+        )
+    with pytest.raises(ValueError) as e:
+        q.submit_async(krn, [x_usm], [16], [16])
+    assert "LocalAccessor" not in str(e.value)
+
+
 def test_submit_wrong_number_of_args_opencl_source():
     try:
         q = dpctl.SyclQueue("opencl")
