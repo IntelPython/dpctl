@@ -1,0 +1,6 @@
+dpctl.SyclQueue.memset
+======================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.memset

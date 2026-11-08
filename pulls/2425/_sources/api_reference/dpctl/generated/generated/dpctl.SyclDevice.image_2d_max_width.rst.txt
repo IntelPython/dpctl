@@ -1,0 +1,6 @@
+dpctl.SyclDevice.image\_2d\_max\_width
+======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.image_2d_max_width
