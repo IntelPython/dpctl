@@ -477,17 +477,27 @@ def test_submit_local_accessor_arg_spirv_from_sycl():
         spirv_bytes = f.read()
     kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
     krn = kb.get_sycl_kernel("__sycl_kernel_local_accessor_kernel")
-    # the local accessor takes several arguments in this SPIR-V
-    assert krn.num_args > 2
+    # the local accessor is the pointer, access range, memory range and
+    # offset in this SPIR-V
+    assert krn.num_args == 5
 
-    x_usm = dpm.MemoryUSMDevice(64, queue=q)
+    lws = 16
+    gws = lws * 4
+    x = np.arange(gws, dtype="i4")
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+    q.memcpy(dest=x_usm, src=x, count=x.nbytes)
+    la = dpctl.LocalAccessor("i4", (lws,))
     with pytest.raises(ValueError, match="dpctl.LocalAccessor documentation"):
-        q.submit_async(
-            krn, [dpctl.LocalAccessor("i4", (16,)), x_usm], [16], [16]
-        )
+        q.submit_async(krn, [la, x_usm], [gws], [lws])
     with pytest.raises(ValueError) as e:
-        q.submit_async(krn, [x_usm], [16], [16])
+        q.submit_async(krn, [x_usm], [gws], [lws])
     assert "LocalAccessor" not in str(e.value)
+
+    sz = ctypes.c_size_t
+    q.submit(krn, [la, sz(lws), sz(lws), sz(0), x_usm], [gws], [lws]).wait()
+    res = np.empty_like(x)
+    q.memcpy(dest=res, src=x_usm, count=x.nbytes)
+    assert np.array_equal(res, x.reshape(-1, lws)[:, ::-1].ravel())
 
 
 def test_submit_wrong_number_of_args_opencl_source():

@@ -175,11 +175,15 @@ cdef class LocalAccessor:
     Python class for specifying the dimensionality and type of a
     ``sycl::local_accessor``, to be used as a kernel argument type.
 
-    A ``LocalAccessor`` is passed as a single kernel argument. A
-    ``sycl::local_accessor`` parameter of a kernel compiled from SYCL to
-    SPIR-V can take several arguments, so such a kernel can not be given a
-    ``LocalAccessor``; create it with
-    :func:`dpctl.compiler.create_kernel_bundle_from_sycl_source` instead.
+    A ``LocalAccessor`` is passed as a single kernel argument, the pointer to
+    the local memory. A kernel compiled from SYCL to SPIR-V may expect a
+    ``sycl::local_accessor`` parameter as several arguments instead: the
+    pointer, followed by the accessor's access range, memory range and
+    offset. Pass the ``LocalAccessor`` as the first of them and the others
+    explicitly, e.g. for a one-dimensional accessor of ``n`` elements::
+
+        [dpctl.LocalAccessor("i4", (n,)), ctypes.c_size_t(n),
+         ctypes.c_size_t(n), ctypes.c_size_t(0), ...]
 
     Args:
         dtype (str):
@@ -1588,9 +1592,10 @@ cdef class SyclQueue(_SyclQueue):
                     [isinstance(arg, LocalAccessor) for arg in args]
                 ):
                     msg += (
-                        " A sycl::local_accessor parameter of a kernel "
-                        "compiled from SYCL to SPIR-V can take several "
-                        "arguments, see the dpctl.LocalAccessor documentation."
+                        " A kernel compiled from SYCL to SPIR-V may expect a "
+                        "sycl::local_accessor parameter as several arguments, "
+                        "of which a dpctl.LocalAccessor is only the first; "
+                        "see the dpctl.LocalAccessor documentation."
                     )
                 raise ValueError(msg)
 
