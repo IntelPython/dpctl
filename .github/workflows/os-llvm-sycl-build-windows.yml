@@ -24,7 +24,6 @@ jobs:
     timeout-minutes: 120
 
     env:
-      GH_TOKEN: ${{ github.token }}
       PINS: .github/sycl-build-deps.env
 
     steps:
@@ -50,6 +49,7 @@ jobs:
       - name: Resolve nightly build
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           NIGHTLY_TAG: ${{ inputs.nightly-tag }}
         run: |
           set -euo pipefail
@@ -66,6 +66,8 @@ jobs:
 
       - name: Download and install nightly and components
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $true
