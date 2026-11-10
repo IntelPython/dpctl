@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.has\_aspect\_host\_debuggable
-================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.has_aspect_host_debuggable

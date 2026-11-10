@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.has\_aspect\_ext\_oneapi\_ipc\_memory
-========================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.has_aspect_ext_oneapi_ipc_memory
