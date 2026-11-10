@@ -49,3 +49,26 @@ def get_queue_or_skip(args=()):
     except dpctl.SyclQueueCreationError:
         pytest.skip(f"Queue could not be created from {args}")
     return q
+
+
+def skip_if_usm_unsupported(mem_cls, syclobj=None):
+    """Skips the test if the device of ``syclobj`` (a device or a queue,
+    the default device if ``None``) cannot allocate ``mem_cls`` memory.
+    """
+    import dpctl.memory as dpm
+
+    if syclobj is None:
+        try:
+            syclobj = dpctl.SyclDevice()
+        except dpctl.SyclDeviceCreationError:
+            pytest.skip("No SYCL devices available")
+    dev = (
+        syclobj.sycl_device if isinstance(syclobj, dpctl.SyclQueue) else syclobj
+    )
+    supported = {
+        dpm.MemoryUSMShared: dev.has_aspect_usm_shared_allocations,
+        dpm.MemoryUSMHost: dev.has_aspect_usm_host_allocations,
+        dpm.MemoryUSMDevice: dev.has_aspect_usm_device_allocations,
+    }
+    if not supported[mem_cls]:
+        pytest.skip(f"{mem_cls.__name__} is not supported on {dev.name}")

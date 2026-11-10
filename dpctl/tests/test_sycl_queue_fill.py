@@ -22,6 +22,8 @@ import pytest
 import dpctl
 import dpctl.memory
 
+from .helper import skip_if_usm_unsupported
+
 # Maps a dtype string to the NumPy dtype used to build the expected result.
 _dtype_to_np = {
     "i1": np.int8,
@@ -63,17 +65,6 @@ _MEMORY_CLASSES = [
 ]
 
 
-def _skip_if_usm_unsupported(q, mem_cls):
-    dev = q.sycl_device
-    supported = {
-        dpctl.memory.MemoryUSMShared: dev.has_aspect_usm_shared_allocations,
-        dpctl.memory.MemoryUSMHost: dev.has_aspect_usm_host_allocations,
-        dpctl.memory.MemoryUSMDevice: dev.has_aspect_usm_device_allocations,
-    }
-    if not supported[mem_cls]:
-        pytest.skip(f"{mem_cls.__name__} is not supported on this device")
-
-
 def _read_back(mem, nbytes):
     """Return the first ``nbytes`` bytes of a USM allocation as ``bytes``."""
     if isinstance(mem, dpctl.memory.MemoryUSMDevice):
@@ -92,7 +83,7 @@ def test_fill_with_dtype_valid(dtype, mem_cls):
         q = dpctl.SyclQueue()
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
-    _skip_if_usm_unsupported(q, mem_cls)
+    skip_if_usm_unsupported(mem_cls, q)
 
     np_dt = _dtype_to_np[dtype]
     value = _fill_values[dtype]
@@ -114,6 +105,7 @@ def test_fill_default_dtype_is_bytewise():
         pytest.skip("Default constructor for SyclQueue failed")
 
     nbytes = 64
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
     q.fill(mem, 0, nbytes)
@@ -130,6 +122,7 @@ def test_fill_signed_negative_value():
         pytest.skip("Default constructor for SyclQueue failed")
 
     num_elements = 8
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
 
     q.fill(mem, -1, num_elements, dtype="i1")
@@ -143,6 +136,7 @@ def test_fill_async():
         pytest.skip("Default constructor for SyclQueue failed")
 
     num_elements = 32
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
 
     e = q.fill_async(mem, 0xAB, num_elements)
@@ -162,6 +156,7 @@ def test_fill_async_with_dtype():
     num_elements = 10
     nbytes = num_elements * 8
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     e = q.fill_async(mem, value, num_elements, dtype="f8")
     e.wait()
@@ -178,6 +173,7 @@ def test_fill_async_with_dep_events():
 
     num_elements = 64
     half = num_elements // 2
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(num_elements, queue=q)
 
     e1 = q.fill_async(mem, 0x11, num_elements)
@@ -194,6 +190,7 @@ def test_fill_async_bad_dep_events():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(16, queue=q)
 
     with pytest.raises(TypeError):
@@ -211,6 +208,7 @@ def test_fill_complex_from_real_scalar(dtype):
     num_elements = 8
     nbytes = num_elements * np.dtype(np_dt).itemsize
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
     q.fill(mem, 2.0, num_elements, dtype=dtype)
 
@@ -236,6 +234,7 @@ def test_fill_count_is_in_elements(dtype, element_size):
     num_elements = 8
     nbytes = num_elements * element_size
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
     # Seed the whole allocation with a known sentinel to verify the untouched
@@ -261,6 +260,7 @@ def test_fill_with_invalid_dtype():
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(64, queue=q)
 
     for bad_dtype in ["i3", "f16", "u16", "x4", "42", "float", ""]:
@@ -291,6 +291,7 @@ def test_fill_value_out_of_range(dtype, value):
     except dpctl.SyclQueueCreationError:
         pytest.skip("Default constructor for SyclQueue failed")
 
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(64, queue=q)
 
     with pytest.raises(ValueError):
@@ -321,6 +322,7 @@ def test_fill_count_out_of_bounds():
         pytest.skip("Default constructor for SyclQueue failed")
 
     nbytes = 64
+    skip_if_usm_unsupported(dpctl.memory.MemoryUSMShared, q)
     mem = dpctl.memory.MemoryUSMShared(nbytes, queue=q)
 
     q.fill(mem, 0, nbytes, dtype="u1")
