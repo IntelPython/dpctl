@@ -1,6 +1,0 @@
-dpctl.SyclDevice.name
-=====================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.name

@@ -1,6 +1,0 @@
-dpctl.SyclQueue.addressof\_ref
-==============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.addressof_ref
