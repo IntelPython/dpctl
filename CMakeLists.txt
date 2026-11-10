@@ -35,9 +35,18 @@ option(DPCTL_GENERATE_COVERAGE_FOR_PYBIND11_EXTENSIONS
     OFF
 )
 
+# SYCL provider selection
+set(DPCTL_SYCL_PROVIDER "Intel" CACHE STRING "SYCL compiler provider (Intel or AdaptiveCpp)")
+set_property(CACHE DPCTL_SYCL_PROVIDER PROPERTY STRINGS Intel AdaptiveCpp)
+if(NOT DPCTL_SYCL_PROVIDER MATCHES "^(Intel|AdaptiveCpp)$")
+    message(FATAL_ERROR
+        "DPCTL_SYCL_PROVIDER must be Intel or AdaptiveCpp, not '${DPCTL_SYCL_PROVIDER}'"
+    )
+endif()
+
 set(DPCTL_TARGET_CUDA
-    ""
-    CACHE STRING
+   ""
+   CACHE STRING
     "Build DPCTL to target CUDA device. \
 Set to a truthy value (e.g., ON, TRUE) to use default architecture (sm_50), \
 or to a specific architecture like sm_80."
@@ -58,13 +67,10 @@ size of shared object with offloading sections"
      OFF
 )
 
-find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
-
-set(_dpctl_sycl_target_compile_options)
-set(_dpctl_sycl_target_link_options)
-
+# architecture mapping
 set(_dpctl_sycl_targets)
 set(_dpctl_cuda_arch)
+set(_acpp_targets_list) # Used strictly for AdaptiveCpp
 
 if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
    if (DPCTL_TARGET_CUDA)
@@ -78,15 +84,25 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
             "Expected 'ON', 'TRUE', 'YES', 'Y', '1', or a CUDA architecture like 'sm_80'."
          )
       endif()
-      set(_dpctl_sycl_targets "nvidia_gpu_${_dpctl_cuda_arch},spir64-unknown-unknown")
+
+      # Map to Provider Formats
+      if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+          set(_dpctl_sycl_targets "nvidia_gpu_${_dpctl_cuda_arch},spir64-unknown-unknown")
+      elseif(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+          list(APPEND _acpp_targets_list "cuda:${_dpctl_cuda_arch}")
+      endif()
    endif()
 
    if (DPCTL_TARGET_HIP)
       if(DPCTL_TARGET_HIP MATCHES "^gfx")
-         if(_dpctl_sycl_targets)
-            set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},${_dpctl_sycl_targets}")
-         else()
-            set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},spir64-unknown-unknown")
+         if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+             if(_dpctl_sycl_targets)
+                set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},${_dpctl_sycl_targets}")
+             else()
+                set(_dpctl_sycl_targets "amd_gpu_${DPCTL_TARGET_HIP},spir64-unknown-unknown")
+             endif()
+         elseif(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+             list(APPEND _acpp_targets_list "hip:${DPCTL_TARGET_HIP}")
          endif()
       else()
          message(FATAL_ERROR
@@ -94,6 +110,11 @@ if ("x${DPCTL_SYCL_TARGETS}" STREQUAL "x")
             "Expected something starting with 'gfx', e.g. 'gfx1030'."
          )
       endif()
+   endif()
+
+   if(_acpp_targets_list)
+      # generic runs dpctl's kernels on the OpenMP and OpenCL devices
+      list(PREPEND _acpp_targets_list generic)
    endif()
 else()
    if ("${DPCTL_SYCL_TARGETS}" MATCHES "amdgcn-amd-amdhsa")
@@ -103,12 +124,41 @@ else()
       )
    endif()
    set(_dpctl_sycl_targets ${DPCTL_SYCL_TARGETS})
+   if(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+       set(_acpp_targets_list ${DPCTL_SYCL_TARGETS})
+   endif()
 endif()
 
-if (_dpctl_sycl_targets)
-   message(STATUS "Compiling for -fsycl-targets=${_dpctl_sycl_targets}")
-   list(APPEND _dpctl_sycl_target_compile_options -fsycl-targets=${_dpctl_sycl_targets})
-   list(APPEND _dpctl_sycl_target_link_options -fsycl-targets=${_dpctl_sycl_targets})
+# Load the SYCL env
+set(_dpctl_sycl_target_compile_options)
+set(_dpctl_sycl_target_link_options)
+
+if(DPCTL_SYCL_PROVIDER STREQUAL "Intel")
+    message(STATUS "Using Intel DPC++ SYCL Provider")
+    find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/cmake NO_DEFAULT_PATH)
+
+    if (_dpctl_sycl_targets)
+       message(STATUS "Compiling for -fsycl-targets=${_dpctl_sycl_targets}")
+       list(APPEND _dpctl_sycl_target_compile_options -fsycl-targets=${_dpctl_sycl_targets})
+       list(APPEND _dpctl_sycl_target_link_options -fsycl-targets=${_dpctl_sycl_targets})
+    endif()
+
+elseif(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+    message(STATUS "Using AdaptiveCpp SYCL Provider")
+
+    # AdaptiveCpp reads ACPP_TARGETS during find_package. The empty cache entry
+    # keeps the derived targets below out of the cache.
+    set(ACPP_TARGETS "" CACHE STRING
+        "AdaptiveCpp targets, derived from DPCTL_TARGET_CUDA, DPCTL_TARGET_HIP or DPCTL_SYCL_TARGETS if empty"
+    )
+    if(_acpp_targets_list AND NOT ACPP_TARGETS AND "$ENV{ACPP_TARGETS}" STREQUAL "")
+        set(ACPP_TARGETS "${_acpp_targets_list}")
+        message(STATUS "Compiling for ACPP_TARGETS=${ACPP_TARGETS}")
+    endif()
+
+    # This automatically provides the add_sycl_to_target macro
+    find_package(AdaptiveCpp CONFIG REQUIRED)
+
 endif()
 
 add_subdirectory(libsyclinterface)

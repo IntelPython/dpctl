@@ -17,6 +17,9 @@ python -m pytest tests
 python example.py
 ```
 
+Intel DPC++ is required, as AdaptiveCpp cannot build a kernel bundle from
+OpenCL source or SPIR-V.
+
 # Sample output
 
 ```

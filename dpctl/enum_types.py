@@ -79,6 +79,7 @@ class backend_type(Enum):
         |  ``hip``
         |  ``level_zero``
         |  ``opencl``
+        |  ``openmp``
 
     :Example:
         .. code-block:: python
@@ -96,6 +97,7 @@ class backend_type(Enum):
     hip = auto()
     level_zero = auto()
     opencl = auto()
+    openmp = auto()
 
 
 class event_status_type(Enum):

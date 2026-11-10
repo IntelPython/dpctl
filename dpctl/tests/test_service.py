@@ -28,6 +28,9 @@ import sys
 import pytest
 
 import dpctl
+from dpctl._diagnostics import sycl_provider
+
+from .helper import is_adaptivecpp
 
 
 def _get_mkl_version_if_present():
@@ -81,6 +84,14 @@ def test_get_include():
     )
 
 
+def test_sycl_provider():
+    provider = sycl_provider()
+    assert provider in ("Intel", "AdaptiveCpp")
+    assert is_adaptivecpp() == (provider == "AdaptiveCpp")
+
+
+# AdaptiveCpp builds do not record a DPC++ version
+@pytest.mark.unsupported_on_acpp
 def test_get_dpcppversion():
     """Intent of this test is to verify that libraries from dpcpp_cpp_rt
     conda package used at run-time are not from an older oneAPI. Since these

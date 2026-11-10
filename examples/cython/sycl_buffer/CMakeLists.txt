@@ -5,7 +5,14 @@ project(example_cython_syclbuffer VERSION 0.1 LANGUAGES CXX
 set(DPCTL_CMAKE_MODULES_PATH "${CMAKE_SOURCE_DIR}/../../../cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DPCTL_CMAKE_MODULES_PATH})
 
-find_package(IntelSYCL REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
+set(DPCTL_SYCL_PROVIDER "Intel" CACHE STRING "SYCL compiler provider (Intel or AdaptiveCpp)")
+set_property(CACHE DPCTL_SYCL_PROVIDER PROPERTY STRINGS Intel AdaptiveCpp)
+
+if(DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+    find_package(AdaptiveCpp CONFIG REQUIRED)
+else()
+    find_package(IntelSYCL REQUIRED PATHS ${DPCTL_CMAKE_MODULES_PATH} NO_DEFAULT_PATH)
+endif()
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
@@ -41,6 +48,8 @@ foreach(_src_fn ${_sources})
         COMPILE_OPTIONS "${_combined_options}"
     )
 endforeach()
-target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
+if(NOT DPCTL_SYCL_PROVIDER STREQUAL "AdaptiveCpp")
+    target_link_options(${py_module_name} PRIVATE -fsycl-device-code-split=per_kernel)
+endif()
 
 set(ignoreMe "${SKBUILD}")

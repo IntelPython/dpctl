@@ -157,6 +157,8 @@ import collections
 import functools
 import warnings
 
+from ._diagnostics import sycl_provider
+
 __all__ = [
     "SyclDevice", "SyclDeviceCreationError", "SyclSubDeviceCreationError",
 ]
@@ -247,6 +249,8 @@ cdef str _backend_type_to_filter_string_part(_backend_type BTy):
         return "level_zero"
     elif BTy == _backend_type._OPENCL:
         return "opencl"
+    elif BTy == _backend_type._OPENMP:
+        return "openmp"
     else:
         return "unknown"
 
@@ -310,6 +314,8 @@ cdef inline void _raise_invalid_peer_access(
     """
     Check peer access ahead of time and raise errors for invalid cases.
     """
+    if sycl_provider() == "AdaptiveCpp":
+        raise ValueError("Peer access is not supported by AdaptiveCpp")
     cdef list _peer_access_backends = [
         _backend_type._CUDA,
         _backend_type._HIP,
@@ -560,6 +566,8 @@ cdef class SyclDevice(_SyclDevice):
             return backend_type.level_zero
         elif BTy == _backend_type._OPENCL:
             return backend_type.opencl
+        elif BTy == _backend_type._OPENMP:
+            return backend_type.openmp
         else:
             raise ValueError("Unknown backend type.")
 

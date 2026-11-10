@@ -25,13 +25,25 @@ def resolve_compilers(
     c_compiler: str,
     cxx_compiler: str,
     compiler_root: str,
+    sycl_provider: str = "Intel",
 ):
     is_linux = "linux" in sys.platform
+
+    if sycl_provider == "AdaptiveCpp":
+        if oneapi:
+            raise RuntimeError(
+                "--oneapi is specific to DPC++ and can not be used with the "
+                "AdaptiveCpp SYCL provider"
+            )
+        default_c_compiler, default_cxx_compiler = "clang", "acpp"
+    else:
+        default_c_compiler = "icx"
+        default_cxx_compiler = "icpx" if is_linux else "icx"
 
     if oneapi or (
         c_compiler is None and cxx_compiler is None and compiler_root is None
     ):
-        return "icx", ("icpx" if is_linux else "icx")
+        return default_c_compiler, default_cxx_compiler
 
     if (
         (c_compiler is None or not os.path.isabs(c_compiler))
@@ -45,9 +57,9 @@ def resolve_compilers(
 
     # default values
     if c_compiler is None:
-        c_compiler = "icx"
+        c_compiler = default_c_compiler
     if cxx_compiler is None:
-        cxx_compiler = "icpx" if is_linux else "icx"
+        cxx_compiler = default_cxx_compiler
 
     for name, opt_name in (
         (c_compiler, "--c-compiler"),
@@ -55,9 +67,12 @@ def resolve_compilers(
     ):
         if os.path.isabs(name):
             path = name
-        else:
+        elif compiler_root:
             path = os.path.join(compiler_root, name)
-        if not os.path.exists(path):
+        else:
+            # a default name with no compiler root is looked up in PATH
+            path = shutil.which(name)
+        if not path or not os.path.exists(path):
             raise RuntimeError(f"{opt_name} value {name} not found")
     return c_compiler, cxx_compiler
 
@@ -92,6 +107,7 @@ def make_cmake_args(
     level_zero: bool = True,
     glog: bool = False,
     verbose: bool = False,
+    sycl_provider: str = "Intel",
     other_opts: str = None,
 ):
     args = [
@@ -100,6 +116,7 @@ def make_cmake_args(
         "-DDPCTL_ENABLE_L0_KERNEL_BUNDLE_CREATION="
         f"{'ON' if level_zero else 'OFF'}",
         f"-DDPCTL_ENABLE_GLOG:BOOL={'ON' if glog else 'OFF'}",
+        f"-DDPCTL_SYCL_PROVIDER={sycl_provider}",
     ]
 
     if verbose:

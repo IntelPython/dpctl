@@ -42,8 +42,10 @@ using namespace sycl;
 
 namespace
 {
+#ifndef __ADAPTIVECPP__
 static_assert(__SYCL_COMPILER_VERSION >= __SYCL_COMPILER_VERSION_REQUIRED,
               "The compiler does not meet minimum version requirement");
+#endif
 
 using namespace dpctl::syclinterface;
 
@@ -74,7 +76,24 @@ std::string platform_print_info_impl(const platform &p, size_t verbosity)
            << p.get_info<info::platform::version>() << _endl << std::setw(4)
            << " " << std::left << std::setw(12) << "Vendor" << vendor << _endl
            << std::setw(4) << " " << std::left << std::setw(12) << "Backend";
+
+#ifndef __ADAPTIVECPP__
         ss << p.get_backend();
+#else
+        auto be = p.get_backend();
+        if (be == sycl::backend::cuda)
+            ss << "cuda";
+        else if (be == sycl::backend::hip)
+            ss << "hip";
+        else if (be == sycl::backend::level_zero)
+            ss << "level_zero";
+        else if (be == sycl::backend::ocl)
+            ss << "opencl";
+        else if (be == sycl::backend::omp)
+            ss << "openmp";
+        else
+            ss << static_cast<int>(be);
+#endif
         ss << _endl;
 
         // Get number of devices on the platform
