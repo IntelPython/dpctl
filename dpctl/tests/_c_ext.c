@@ -88,24 +88,28 @@ static PyMethodDef CExtMethods[] = {
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
+static int c_ext_module_exec(PyObject *m)
+{
+    (void)(m); // avoid unused arguments warning
+    return import_dpctl();
+}
+
+static PyModuleDef_Slot c_ext_module_slots[] = {
+    {Py_mod_exec, c_ext_module_exec},
+#if PY_VERSION_HEX >= 0x030D0000
+    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+#endif
+    {0, NULL}};
+
 static struct PyModuleDef c_ext_module = {
     PyModuleDef_HEAD_INIT,
     "_c_ext", /* name of module */
     "",       /* module documentation, may be NULL */
-    -1,       /* size of per-interpreter state of the module,
-                 or -1 if the module keeps state in global variables. */
+    0,        /* size of per-interpreter state of the module */
     CExtMethods,
-    NULL,
+    c_ext_module_slots,
     NULL,
     NULL,
     NULL};
 
-PyMODINIT_FUNC PyInit__c_ext(void)
-{
-    PyObject *m = NULL;
-
-    import_dpctl();
-
-    m = PyModule_Create(&c_ext_module);
-    return m;
-}
+PyMODINIT_FUNC PyInit__c_ext(void) { return PyModuleDef_Init(&c_ext_module); }
