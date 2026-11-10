@@ -112,6 +112,42 @@ def check_hash_in_dict(platform):
     assert map[platform] == 0
 
 
+list_of_platform_aspects = [
+    "cpu",
+    "gpu",
+    "accelerator",
+    "custom",
+    "fp16",
+    "fp64",
+    "atomic64",
+    "image",
+    "online_compiler",
+    "online_linker",
+    "queue_profiling",
+    "usm_device_allocations",
+    "usm_host_allocations",
+    "usm_shared_allocations",
+    "usm_system_allocations",
+    "usm_atomic_host_allocations",
+    "usm_atomic_shared_allocations",
+    "host_debuggable",
+    "emulated",
+    "is_component",
+    "is_composite",
+    "ext_oneapi_ipc_memory",
+]
+
+
+def check_has_aspect(platform):
+    for asp in list_of_platform_aspects:
+        attr = "has_aspect_" + asp
+        try:
+            res = getattr(platform, attr)
+        except Exception:
+            pytest.fail(f"Encountered an exception inside platform.{attr}.")
+        assert isinstance(res, bool)
+
+
 list_of_checks = [
     check_name,
     check_vendor,
@@ -122,6 +158,7 @@ list_of_checks = [
     check_default_context,
     check_equal_and_hash,
     check_hash_in_dict,
+    check_has_aspect,
 ]
 
 
@@ -276,6 +313,31 @@ def test_platform_get_devices_custom_non_opencl(dty, capfd):
     # e.g., the Level Zero adapter warns on device_type::custom
     assert out == ""
     assert err == ""
+
+
+def test_platform_has_aspect_agrees_with_devices():
+    """A platform has an aspect only if all of its devices have it."""
+    platforms = dpctl.get_platforms()
+    if not platforms:
+        pytest.skip("No platforms available")
+    for p in platforms:
+        devices = p.get_devices()
+        for asp in list_of_platform_aspects:
+            attr = "has_aspect_" + asp
+            assert getattr(p, attr) == all(
+                getattr(d, attr) for d in devices
+            ), f"platform.{attr} disagrees with its devices"
+
+
+def test_platform_and_device_aspects_match():
+    def aspects(cls):
+        return {n for n in dir(cls) if n.startswith("has_aspect_")}
+
+    platform_aspects = aspects(dpctl.SyclPlatform)
+    assert aspects(dpctl.SyclDevice) == platform_aspects
+    assert {"has_aspect_" + a for a in list_of_platform_aspects} == (
+        platform_aspects
+    )
 
 
 def test_platform_get_composite_devices():

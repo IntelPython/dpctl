@@ -135,6 +135,62 @@ void check_platform_get_composite_devices(
     EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(CDVRef));
 }
 
+const std::vector<DPCTLSyclAspectType> aspect_types = {
+    DPCTLSyclAspectType::cpu,
+    DPCTLSyclAspectType::gpu,
+    DPCTLSyclAspectType::accelerator,
+    DPCTLSyclAspectType::custom,
+    DPCTLSyclAspectType::fp16,
+    DPCTLSyclAspectType::fp64,
+    DPCTLSyclAspectType::atomic64,
+    DPCTLSyclAspectType::image,
+    DPCTLSyclAspectType::online_compiler,
+    DPCTLSyclAspectType::online_linker,
+    DPCTLSyclAspectType::queue_profiling,
+    DPCTLSyclAspectType::usm_device_allocations,
+    DPCTLSyclAspectType::usm_host_allocations,
+    DPCTLSyclAspectType::usm_shared_allocations,
+    DPCTLSyclAspectType::usm_system_allocations,
+    DPCTLSyclAspectType::usm_atomic_host_allocations,
+    DPCTLSyclAspectType::usm_atomic_shared_allocations,
+    DPCTLSyclAspectType::host_debuggable,
+    DPCTLSyclAspectType::emulated,
+    DPCTLSyclAspectType::is_component,
+    DPCTLSyclAspectType::is_composite,
+    DPCTLSyclAspectType::ext_oneapi_ipc_memory,
+};
+
+void check_platform_has_aspect(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                               DPCTLSyclAspectType AT)
+{
+    // A platform reports an aspect only if every one of its devices does,
+    // so cross-check the C API result against the devices themselves.
+    DPCTLDeviceVectorRef DVRef = nullptr;
+    size_t nDevices = 0;
+    bool hasAspect = false;
+
+    EXPECT_NO_FATAL_FAILURE(hasAspect = DPCTLPlatform_HasAspect(PRef, AT));
+
+    EXPECT_NO_FATAL_FAILURE(
+        DVRef = DPCTLPlatform_GetDevices(PRef, DPCTLSyclDeviceType::DPCTL_ALL));
+    ASSERT_TRUE(DVRef != nullptr);
+    EXPECT_NO_FATAL_FAILURE(nDevices = DPCTLDeviceVector_Size(DVRef));
+
+    bool allDevicesHaveAspect = true;
+    for (auto i = 0ul; i < nDevices; ++i) {
+        DPCTLSyclDeviceRef DRef = nullptr;
+        EXPECT_NO_FATAL_FAILURE(DRef = DPCTLDeviceVector_GetAt(DVRef, i));
+        ASSERT_TRUE(DRef != nullptr);
+        allDevicesHaveAspect =
+            allDevicesHaveAspect && DPCTLDevice_HasAspect(DRef, AT);
+        EXPECT_NO_FATAL_FAILURE(DPCTLDevice_Delete(DRef));
+    }
+    EXPECT_EQ(hasAspect, allDevicesHaveAspect);
+
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Clear(DVRef));
+    EXPECT_NO_FATAL_FAILURE(DPCTLDeviceVector_Delete(DVRef));
+}
+
 } // namespace
 
 struct TestDPCTLSyclPlatformInterface
@@ -218,6 +274,14 @@ TEST_F(TestDPCTLSyclPlatformNull, ChkGetVersion)
     const char *version = nullptr;
     EXPECT_NO_FATAL_FAILURE(version = DPCTLPlatform_GetVersion(NullPRef));
     ASSERT_TRUE(version == nullptr);
+}
+
+TEST_F(TestDPCTLSyclPlatformNull, ChkHasAspect)
+{
+    bool hasAspect = true;
+    EXPECT_NO_FATAL_FAILURE(hasAspect = DPCTLPlatform_HasAspect(
+                                NullPRef, DPCTLSyclAspectType::cpu));
+    ASSERT_FALSE(hasAspect);
 }
 
 TEST_F(TestDPCTLSyclPlatformNull, ChkGetDefaultConext)
@@ -335,6 +399,13 @@ TEST_P(TestDPCTLSyclPlatformInterface, ChkGetCompositeDevices)
     check_platform_get_composite_devices(PRef);
 }
 
+TEST_P(TestDPCTLSyclPlatformInterface, ChkHasAspect)
+{
+    for (auto AT : aspect_types) {
+        check_platform_has_aspect(PRef, AT);
+    }
+}
+
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetName) { check_platform_name(PRef); }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVendor)
@@ -350,6 +421,13 @@ TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetVersion)
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetBackend)
 {
     check_platform_backend(PRef);
+}
+
+TEST_F(TestDPCTLSyclDefaultPlatform, ChkHasAspect)
+{
+    for (auto AT : aspect_types) {
+        check_platform_has_aspect(PRef, AT);
+    }
 }
 
 TEST_F(TestDPCTLSyclDefaultPlatform, ChkGetInfo0)

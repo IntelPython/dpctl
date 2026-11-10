@@ -364,3 +364,22 @@ DPCTLPlatform_GetCompositeDevices(__dpctl_keep const DPCTLSyclPlatformRef PRef)
         return nullptr;
     }
 }
+
+bool DPCTLPlatform_HasAspect(__dpctl_keep const DPCTLSyclPlatformRef PRef,
+                             DPCTLSyclAspectType AT)
+{
+    bool hasAspect = false;
+    auto P = unwrap<platform>(PRef);
+    if (P) {
+        try {
+            hasAspect = P->has(DPCTL_DPCTLAspectTypeToSyclAspect(AT));
+        } catch (std::exception const &e) {
+            error_handler(e, __FILE__, __func__, __LINE__);
+        }
+    }
+    else {
+        error_handler("Aspect cannot be looked up for a NULL platform.",
+                      __FILE__, __func__, __LINE__);
+    }
+    return hasAspect;
+}
