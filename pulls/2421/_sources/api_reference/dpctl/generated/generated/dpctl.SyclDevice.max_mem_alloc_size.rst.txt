@@ -1,6 +1,0 @@
-dpctl.SyclDevice.max\_mem\_alloc\_size
-======================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.max_mem_alloc_size

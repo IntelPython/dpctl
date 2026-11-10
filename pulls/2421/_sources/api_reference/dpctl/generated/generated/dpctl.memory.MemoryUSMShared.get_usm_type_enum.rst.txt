@@ -1,6 +1,0 @@
-dpctl.memory.MemoryUSMShared.get\_usm\_type\_enum
-=================================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryUSMShared.get_usm_type_enum
