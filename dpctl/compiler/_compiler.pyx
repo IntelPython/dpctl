@@ -121,10 +121,13 @@ cdef class SyclKernel:
     """
     """
     @staticmethod
-    cdef SyclKernel _create(DPCTLSyclKernelRef kref, str name):
+    cdef SyclKernel _create(
+        DPCTLSyclKernelRef kref, str name, int origin=_UNKNOWN_ORIGIN
+    ):
         cdef SyclKernel ret = SyclKernel.__new__(SyclKernel)
         ret._kernel_ref = kref
         ret._function_name = name
+        ret._origin = origin
         return ret
 
     def __dealloc__(self):
@@ -137,8 +140,21 @@ cdef class SyclKernel:
 
     def get_num_args(self):
         """ Returns the number of arguments for this kernel function.
+
+        The number of arguments is defined by the backend only for kernels
+        from a kernel bundle created from OpenCL C source or SPIR-V.
+
+        Raises:
+            RuntimeError:
+                If the number of arguments can not be queried.
         """
-        return DPCTLKernel_GetNumArgs(self._kernel_ref)
+        cdef size_t n = DPCTLKernel_GetNumArgs(self._kernel_ref)
+        if n == <size_t>-1:
+            raise RuntimeError(
+                "The number of arguments of kernel "
+                f"'{self._function_name}' can not be queried."
+            )
+        return n
 
     cdef DPCTLSyclKernelRef get_kernel_ref(self):
         """ Returns the ``DPCTLSyclKernelRef`` pointer for this SyclKernel.
@@ -256,11 +272,10 @@ cdef class SyclKernelBundle:
     """
 
     @staticmethod
-    cdef SyclKernelBundle _create(DPCTLSyclKernelBundleRef KBRef,
-                                  bint is_sycl_source):
+    cdef SyclKernelBundle _create(DPCTLSyclKernelBundleRef KBRef, int origin):
         cdef SyclKernelBundle ret = SyclKernelBundle.__new__(SyclKernelBundle)
         ret._kernel_bundle_ref = KBRef
-        ret._is_sycl_source = is_sycl_source
+        ret._origin = origin
         return ret
 
     def __dealloc__(self):
@@ -293,7 +308,7 @@ cdef class SyclKernelBundle:
         cdef bytes name = kernel_name.encode("utf8")
         cdef DPCTLSyclKernelRef KRef = NULL
 
-        if self._is_sycl_source:
+        if self._origin == _SYCL_SOURCE_ORIGIN:
             KRef = DPCTLKernelBundle_GetSyclKernel(
                 self._kernel_bundle_ref, name
             )
@@ -308,11 +323,11 @@ cdef class SyclKernelBundle:
                 "name, or the module it was built from may require device "
                 "libraries that were not linked into it."
             )
-        return SyclKernel._create(KRef, kernel_name)
+        return SyclKernel._create(KRef, kernel_name, self._origin)
 
     def has_sycl_kernel(self, str kernel_name):
         name = kernel_name.encode("utf8")
-        if self._is_sycl_source:
+        if self._origin == _SYCL_SOURCE_ORIGIN:
             return DPCTLKernelBundle_HasSyclKernel(
                 self._kernel_bundle_ref, name
             )
@@ -346,7 +361,7 @@ cdef api SyclKernelBundle SyclKernelBundle_Make(DPCTLSyclKernelBundleRef KBRef):
     reference.
     """
     cdef DPCTLSyclKernelBundleRef copied_KBRef = DPCTLKernelBundle_Copy(KBRef)
-    return SyclKernelBundle._create(copied_KBRef, False)
+    return SyclKernelBundle._create(copied_KBRef, _UNKNOWN_ORIGIN)
 
 
 cdef class SpecializationConstant:
@@ -597,7 +612,7 @@ cpdef create_kernel_bundle_from_source(SyclQueue q, str src, str copts=""):
     if KBref is NULL:
         raise SyclKernelBundleCompilationError()
 
-    return SyclKernelBundle._create(KBref, False)
+    return SyclKernelBundle._create(KBref, _INTEROP_ORIGIN)
 
 
 cpdef create_kernel_bundle_from_spirv(
@@ -683,7 +698,7 @@ cpdef create_kernel_bundle_from_spirv(
         if spconsts != NULL:
             free(spconsts)
 
-    return SyclKernelBundle._create(KBref, False)
+    return SyclKernelBundle._create(KBref, _INTEROP_ORIGIN)
 
 
 cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
@@ -819,4 +834,4 @@ cpdef create_kernel_bundle_from_sycl_source(SyclQueue q,
         DPCTLVirtualHeaderList_Delete(VirtualHeaders)
         DPCTLKernelBuildLog_Delete(BuildLog)
 
-    return SyclKernelBundle._create(KBref, True)
+    return SyclKernelBundle._create(KBref, _SYCL_SOURCE_ORIGIN)

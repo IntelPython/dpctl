@@ -45,7 +45,8 @@ DPCTL_C_EXTERN_C_BEGIN
  * @param    KRef           DPCTLSyclKernelRef pointer to a SYCL
  *                          interoperability kernel.
  * @return   Returns the number of arguments for the interoperability
- *           kernel.
+ *           kernel, or -1 if KRef is NULL or the number of arguments can
+ *           not be queried.
  * @ingroup KernelInterface
  */
 DPCTL_API

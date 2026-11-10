@@ -27,6 +27,8 @@ import dpctl.compiler as dpc
 import dpctl.memory as dpm
 from dpctl._sycl_queue import kernel_arg_type
 
+from .helper import make_kernel_of_unknown_origin
+
 
 @pytest.mark.parametrize(
     "ctype_str,dtype,ctypes_ctor",
@@ -343,6 +345,82 @@ def test_submit_local_accessor_arg():
     expected = np.arange(1, x.size + 1, dtype=x.dtype) * (2 * lws)
     assert np.all(res == expected)
 
+    assert krn.num_args == 2
+    with pytest.raises(ValueError):
+        q.submit_async(krn, [x_usm], [gws], [lws])
+    q.submit(
+        make_kernel_of_unknown_origin(krn),
+        [x_usm, dpctl.LocalAccessor("i8", (lws,))],
+        [gws],
+        [lws],
+    ).wait()
+
+
+_local_accessor_sycl_source = """
+#include <sycl/sycl.hpp>
+
+namespace syclext = sycl::ext::oneapi;
+namespace syclexp = sycl::ext::oneapi::experimental;
+
+extern "C" SYCL_EXTERNAL
+SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclexp::nd_range_kernel<1>))
+void reverse_in_group(sycl::local_accessor<int, 1> lmem, int *x, int scale) {
+    auto item = syclext::this_work_item::get_nd_item<1>();
+    size_t lid = item.get_local_linear_id();
+    size_t lws = item.get_local_range(0);
+    lmem[lid] = x[item.get_global_linear_id()];
+    sycl::group_barrier(item.get_group());
+    x[item.get_global_linear_id()] = scale * lmem[lws - 1 - lid];
+}
+"""
+
+
+@pytest.mark.parametrize("backend", ["opencl", "level_zero"])
+def test_submit_local_accessor_arg_sycl_source(backend):
+    try:
+        q = dpctl.SyclQueue(backend)
+    except dpctl.SyclQueueCreationError:
+        pytest.skip(f"No {backend} queue is available")
+    if not dpc.is_sycl_source_compilation_available():
+        pytest.skip("SYCL source compilation extension not available")
+    if not q.get_sycl_device().can_compile("sycl"):
+        pytest.skip("SYCL source compilation not supported")
+    kb = dpc.create_kernel_bundle_from_sycl_source(
+        q, _local_accessor_sycl_source
+    )
+    krn = kb.get_sycl_kernel("reverse_in_group")
+
+    lws = 16
+    gws = lws * 4
+    x = np.arange(gws, dtype="i4")
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+    for k in (krn, make_kernel_of_unknown_origin(krn)):
+        q.memcpy(dest=x_usm, src=x, count=x.nbytes)
+        q.submit(
+            k,
+            [dpctl.LocalAccessor("i4", (lws,)), x_usm, ctypes.c_int(3)],
+            [gws],
+            [lws],
+        ).wait()
+        res = np.empty_like(x)
+        q.memcpy(dest=res, src=x_usm, count=x.nbytes)
+        expected = 3 * x.reshape(-1, lws)[:, ::-1].ravel()
+        assert np.array_equal(res, expected)
+
+        # not checked by dpctl; the backend rejects the extra argument
+        with pytest.raises(dpctl.SyclKernelSubmitError):
+            q.submit_async(
+                k,
+                [
+                    dpctl.LocalAccessor("i4", (lws,)),
+                    x_usm,
+                    ctypes.c_int(3),
+                    ctypes.c_int(3),
+                ],
+                [gws],
+                [lws],
+            )
+
 
 def test_submit_wrong_number_of_args():
     try:
@@ -367,3 +445,74 @@ def test_submit_wrong_number_of_args():
             [x_usm, x_usm, x_usm, ctypes.c_int(2), ctypes.c_int(3)],
             [n],
         )
+
+
+# The kernel in local-accessor-free-function-kernel.spv was generated with
+# `icpx -fsycl -save-offload-code=<dir>` (DPC++ 2026.2) from:
+#
+# #include <sycl/sycl.hpp>
+#
+# namespace syclexp = sycl::ext::oneapi::experimental;
+# namespace syclext = sycl::ext::oneapi;
+#
+# extern "C" SYCL_EXTERNAL
+# SYCL_EXT_ONEAPI_FUNCTION_PROPERTY((syclexp::nd_range_kernel<1>))
+# void local_accessor_kernel(sycl::local_accessor<int, 1> lmem, int *x) {
+#     auto item = syclext::this_work_item::get_nd_item<1>();
+#     size_t lid = item.get_local_linear_id();
+#     lmem[lid] = x[item.get_global_linear_id()];
+#     sycl::group_barrier(item.get_group());
+#     x[item.get_global_linear_id()] =
+#         lmem[item.get_local_range(0) - 1 - lid];
+# }
+#
+# int main() { return 0; }
+def test_submit_local_accessor_arg_spirv_from_sycl():
+    try:
+        q = dpctl.SyclQueue()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Could not create default queue")
+    fn = get_spirv_abspath("local-accessor-free-function-kernel.spv")
+    with open(fn, "br") as f:
+        spirv_bytes = f.read()
+    kb = dpc.create_kernel_bundle_from_spirv(q, spirv_bytes)
+    krn = kb.get_sycl_kernel("__sycl_kernel_local_accessor_kernel")
+    # the local accessor is the pointer, access range, memory range and
+    # offset in this SPIR-V
+    assert krn.num_args == 5
+
+    lws = 16
+    gws = lws * 4
+    x = np.arange(gws, dtype="i4")
+    x_usm = dpm.MemoryUSMDevice(x.nbytes, queue=q)
+    q.memcpy(dest=x_usm, src=x, count=x.nbytes)
+    la = dpctl.LocalAccessor("i4", (lws,))
+    with pytest.raises(ValueError, match="dpctl.LocalAccessor documentation"):
+        q.submit_async(krn, [la, x_usm], [gws], [lws])
+    with pytest.raises(ValueError) as e:
+        q.submit_async(krn, [x_usm], [gws], [lws])
+    assert "LocalAccessor" not in str(e.value)
+
+    sz = ctypes.c_size_t
+    q.submit(krn, [la, sz(lws), sz(lws), sz(0), x_usm], [gws], [lws]).wait()
+    res = np.empty_like(x)
+    q.memcpy(dest=res, src=x_usm, count=x.nbytes)
+    assert np.array_equal(res, x.reshape(-1, lws)[:, ::-1].ravel())
+
+
+def test_submit_wrong_number_of_args_opencl_source():
+    try:
+        q = dpctl.SyclQueue("opencl")
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("OpenCL queue could not be created")
+    kb = dpc.create_kernel_bundle_from_source(
+        q, "kernel void set(global int *a, int v) { a[0] = v; }"
+    )
+    krn = kb.get_sycl_kernel("set")
+    assert krn.num_args == 2
+
+    x_usm = dpm.MemoryUSMDevice(4, queue=q)
+    with pytest.raises(ValueError):
+        q.submit_async(krn, [x_usm], [1])
+    with pytest.raises(ValueError):
+        q.submit_async(krn, [x_usm, ctypes.c_int(1), ctypes.c_int(2)], [1])

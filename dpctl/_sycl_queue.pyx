@@ -82,6 +82,7 @@ from ._backend cimport (  # noqa: E211
     _md_local_accessor,
     _queue_property_type,
 )
+from .compiler._compiler cimport _INTEROP_ORIGIN
 from .memory._memory cimport _Memory
 
 import ctypes
@@ -173,6 +174,16 @@ cdef class LocalAccessor:
 
     Python class for specifying the dimensionality and type of a
     ``sycl::local_accessor``, to be used as a kernel argument type.
+
+    A ``LocalAccessor`` is passed as a single kernel argument, the pointer to
+    the local memory. A kernel compiled from SYCL to SPIR-V may expect a
+    ``sycl::local_accessor`` parameter as several arguments instead: the
+    pointer, followed by the accessor's access range, memory range and
+    offset. Pass the ``LocalAccessor`` as the first of them and the others
+    explicitly, e.g. for a one-dimensional accessor of ``n`` elements::
+
+        [dpctl.LocalAccessor("i4", (n,)), ctypes.c_size_t(n),
+         ctypes.c_size_t(n), ctypes.c_size_t(0), ...]
 
     Args:
         dtype (str):
@@ -1540,8 +1551,13 @@ cdef class SyclQueue(_SyclQueue):
 
         Raises:
             ValueError:
-                If the number of arguments in ``args`` differs from the number
-                of arguments the kernel takes.
+                If ``kernel`` is from a kernel bundle created from OpenCL C
+                source or SPIR-V, and the number of arguments in ``args``
+                differs from the number of arguments the kernel takes. The
+                arguments of other kernels are not checked: the backend may
+                reject a wrong number of arguments, raising
+                :class:`SyclKernelSubmitError`, or run the kernel with the
+                arguments that were not given left unset.
             SyclKernelSubmitError:
                 If ``kernel`` does not reference a ``sycl::kernel``, or if
                 submission to the queue fails.
@@ -1564,13 +1580,24 @@ cdef class SyclQueue(_SyclQueue):
                 "``sycl::kernel``."
             )
         # the backend can not detect that the correct number of arguments were
-        # provided, so check it here
-        nKA = kernel.num_args
-        if <size_t>len(args) != nKA:
-            raise ValueError(
-                f"Kernel '{kernel.get_function_name()}' takes {nKA} "
-                f"argument(s), got {len(args)}."
-            )
+        # provided, so check it here for the kernels it defines that number for
+        if kernel._origin == _INTEROP_ORIGIN:
+            nKA = kernel.num_args
+            if <size_t>len(args) != nKA:
+                msg = (
+                    f"Kernel '{kernel.get_function_name()}' takes {nKA} "
+                    f"argument(s), got {len(args)}."
+                )
+                if <size_t>len(args) < nKA and any(
+                    [isinstance(arg, LocalAccessor) for arg in args]
+                ):
+                    msg += (
+                        " A kernel compiled from SYCL to SPIR-V may expect a "
+                        "sycl::local_accessor parameter as several arguments, "
+                        "of which a dpctl.LocalAccessor is only the first; "
+                        "see the dpctl.LocalAccessor documentation."
+                    )
+                raise ValueError(msg)
 
         # Allocate the arrays to be sent to DPCTLQueue_Submit
         kargs = <void**>malloc(len(args) * sizeof(void*))
@@ -1718,8 +1745,13 @@ cdef class SyclQueue(_SyclQueue):
 
         Raises:
             ValueError:
-                If the number of arguments in ``args`` differs from the number
-                of arguments the kernel takes.
+                If ``kernel`` is from a kernel bundle created from OpenCL C
+                source or SPIR-V, and the number of arguments in ``args``
+                differs from the number of arguments the kernel takes. The
+                arguments of other kernels are not checked: the backend may
+                reject a wrong number of arguments, raising
+                :class:`SyclKernelSubmitError`, or run the kernel with the
+                arguments that were not given left unset.
             SyclKernelSubmitError:
                 If ``kernel`` does not reference a ``sycl::kernel``, or if
                 submission to the queue fails.

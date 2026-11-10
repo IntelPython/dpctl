@@ -53,8 +53,13 @@ size_t DPCTLKernel_GetNumArgs(__dpctl_keep const DPCTLSyclKernelRef KRef)
     }
 
     auto sycl_kernel = unwrap<kernel>(KRef);
-    auto num_args = sycl_kernel->get_info<info::kernel::num_args>();
-    return static_cast<size_t>(num_args);
+    try {
+        auto num_args = sycl_kernel->get_info<info::kernel::num_args>();
+        return static_cast<size_t>(num_args);
+    } catch (std::exception const &e) {
+        error_handler(e, __FILE__, __func__, __LINE__);
+        return -1;
+    }
 }
 
 void DPCTLKernel_Delete(__dpctl_take DPCTLSyclKernelRef KRef)

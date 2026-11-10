@@ -22,6 +22,7 @@ from ._helper import (
     has_cpu,
     has_gpu,
     has_sycl_platforms,
+    make_kernel_of_unknown_origin,
 )
 
 __all__ = [
@@ -30,4 +31,5 @@ __all__ = [
     "has_gpu",
     "has_sycl_platforms",
     "get_queue_or_skip",
+    "make_kernel_of_unknown_origin",
 ]
