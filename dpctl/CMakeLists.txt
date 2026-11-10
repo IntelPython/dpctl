@@ -6,8 +6,14 @@ set(CYTHON_FLAGS "-t -w \"${CMAKE_SOURCE_DIR}\"")
 find_package(Cython REQUIRED)
 
 if(WIN32)
+    # clang-cl reads -Wall as /Wall, i.e. -Weverything
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(_dpctl_wall_flag "/W3 ")
+    else()
+        set(_dpctl_wall_flag "-Wall ")
+    endif()
     string(CONCAT WARNING_FLAGS
-        "-Wall "
+        "${_dpctl_wall_flag}"
         "-Wextra "
         "-Winit-self "
         "-Wunused-function "
@@ -35,7 +41,7 @@ if(WIN32)
         "${CMAKE_CXX_FLAGS_DEBUG} ${WARNING_FLAGS} ${SDL_FLAGS} -O1 -g1 -DDEBUG"
     )
     set(CMAKE_MODULE_LINKER_FLAGS_COVERAGE "${CMAKE_MODULE_LINKER_FLAGS_DEBUG}")
-    set(DPCTL_LDFLAGS "/NXCompat;/DynamicBase")
+    set(DPCTL_LDFLAGS "/NXCompat,/DynamicBase")
     mark_as_advanced(
         CMAKE_CXX_FLAGS_COVERAGE
         CMAKE_C_FLAGS_COVERAGE
