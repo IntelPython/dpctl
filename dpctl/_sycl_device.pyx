@@ -155,6 +155,7 @@ from ._sycl_platform cimport SyclPlatform
 
 import collections
 import functools
+import pickle
 import warnings
 
 __all__ = [
@@ -369,6 +370,26 @@ def _cached_filter_string(d : SyclDevice):
     DTy = DPCTLDevice_GetDeviceType(cd._device_ref)
     dt_str = _device_type_to_filter_string_part(DTy)
     return ":".join((br_str, dt_str, str(relId)))
+
+
+def _rebuild_device(str filter_string, str name):
+    """Unpickles a :class:`dpctl.SyclDevice`.
+
+    Raises:
+        pickle.UnpicklingError: if no device matches ``filter_string``, or
+            the device it selects is not named ``name``.
+    """
+    try:
+        dev = SyclDevice(filter_string)
+    except SyclDeviceCreationError as e:
+        raise pickle.UnpicklingError(
+            f"Device '{filter_string}' ('{name}') is not available"
+        ) from e
+    if dev.name != name:
+        raise pickle.UnpicklingError(
+            f"Device '{filter_string}' is '{dev.name}', expected '{name}'"
+        )
+    return dev
 
 
 cdef class SyclDevice(_SyclDevice):
@@ -1651,6 +1672,35 @@ cdef class SyclDevice(_SyclDevice):
                 Hash value.
         """
         return DPCTLDevice_Hash(self._device_ref)
+
+    def __reduce__(self):
+        """Pickles a root device by its filter string and name.
+
+        The filter string's device id is relative to the devices visible
+        under ``ONEAPI_DEVICE_SELECTOR``. If the loading process sees a
+        different set of devices, the pickle may load onto another device
+        of the same name.
+
+        Raises:
+            pickle.PicklingError: if the device is not a root device, or its
+                filter string has an ``unknown`` backend or device type.
+        """
+        try:
+            filter_string = self.filter_string
+        except ValueError as e:
+            raise pickle.PicklingError(f"Cannot pickle {self!r}: {e}") from e
+        if "unknown" in filter_string.split(":")[:2]:
+            raise pickle.PicklingError(
+                f"Cannot pickle device '{self.name}': filter string "
+                f"'{filter_string}' can not select it"
+            )
+        return _rebuild_device, (filter_string, self.name)
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
 
     cdef tuple create_sub_devices_equally(self, size_t count):
         """ Returns a tuple of sub-devices partitioned from this SYCL device

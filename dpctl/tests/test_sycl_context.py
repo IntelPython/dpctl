@@ -16,11 +16,14 @@
 
 """Defines unit test cases for the :class:`dpctl.SyclContext` class."""
 
+import copy
+import pickle
+
 import pytest
 
 import dpctl
 
-from .helper import create_invalid_capsule
+from .helper import create_invalid_capsule, get_sub_device_or_skip
 
 list_of_valid_filter_selectors = [
     "opencl",
@@ -341,3 +344,42 @@ def test_context_atomic_fence_scope_capabilities(valid_filter):
     assert all(isinstance(m, dpctl.memory_scope) for m in caps)
     for d in ctx.get_devices():
         assert set(caps).issubset(set(d.atomic_fence_scope_capabilities))
+
+
+def test_context_pickling():
+    devs = dpctl.get_devices()
+    if not devs:
+        pytest.skip("No devices available")
+    for dev in devs:
+        ctx = dpctl.SyclContext(dev)
+        ctx2 = pickle.loads(pickle.dumps(ctx))
+        assert ctx2 == ctx
+        assert dev in ctx2.get_devices()
+
+
+def test_context_pickling_non_default():
+    try:
+        dev = dpctl.SyclDevice()
+    except dpctl.SyclDeviceCreationError:
+        pytest.skip("No default device available")
+    ctx = dpctl.SyclContext([dev])
+    if ctx == dpctl.SyclContext(dev):
+        pytest.skip("Context created from device list is the default context")
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(ctx)
+
+
+def test_context_pickling_sub_device():
+    sub_dev = get_sub_device_or_skip()
+    ctx = dpctl.SyclContext(sub_dev)
+    with pytest.raises(pickle.PicklingError):
+        pickle.dumps(ctx)
+
+
+def test_context_copy():
+    try:
+        ctx = dpctl.SyclContext()
+    except dpctl.SyclContextCreationError:
+        pytest.skip("Default context could not be created")
+    assert copy.copy(ctx) is ctx
+    assert copy.deepcopy(ctx) is ctx
