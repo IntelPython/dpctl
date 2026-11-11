@@ -984,6 +984,14 @@ cdef class SyclQueue(_SyclQueue):
                     "be renamed"
                 )
 
+    def __dealloc__(self):
+        # Nothing to release beyond what _SyclQueue does, but defining it
+        # makes Cython give SyclQueue a deallocator of its own, which clears
+        # the weak references to the queue. Cython does not count __weakref__
+        # as a field that needs one, and would use _SyclQueue's instead,
+        # leaving them pointing to freed memory.
+        pass
+
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue other):
         """ Copy data container _SyclQueue fields over.
         """

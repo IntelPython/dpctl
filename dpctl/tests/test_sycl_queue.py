@@ -18,6 +18,7 @@
 
 import ctypes
 import sys
+import weakref
 
 import pytest
 
@@ -130,6 +131,23 @@ def test_hashing_of_queue():
         pytest.skip("Default-constructed queue could not be created")
     queue_dict = {q: "default_queue"}
     assert queue_dict
+
+
+@pytest.mark.parametrize(
+    "cls", [dpctl.SyclQueue, type("Q", (dpctl.SyclQueue,), {})]
+)
+def test_weak_reference_to_queue(cls):
+    try:
+        q = cls()
+    except dpctl.SyclQueueCreationError:
+        pytest.skip("Default-constructed queue could not be created")
+    gone = []
+    r = weakref.ref(q, gone.append)
+    assert r() is q
+    del q
+    # the queue's deallocator has to clear its weak references
+    assert gone == [r]
+    assert r() is None
 
 
 def test_channeling_device_properties(capsys):
