@@ -59,8 +59,11 @@ class _SequentialOrderManager:
     dependencies of later tasks.
     """
 
-    def __init__(self):
+    def __init__(self, q=None):
         self._state = _OrderManager(16)
+        # the queue whose tasks are recorded, a copy of the one it is looked up
+        # by, so that the map never references the queue that is its key
+        self._queue = q
 
     def __del__(self):
         if sys.is_finalizing():
@@ -143,6 +146,7 @@ class _SequentialOrderManager:
     def __copy__(self):
         res = _SequentialOrderManager.__new__(_SequentialOrderManager)
         res._state = _OrderManager(self._state)
+        res._queue = self._queue
         return res
 
 
@@ -159,10 +163,6 @@ class _InOrderManager(_SequentialOrderManager):
     :meth:`dpctl.SyclQueue.get_last_event` is available. ``wait`` waits on
     the queue.
     """
-
-    def __init__(self, q: SyclQueue):
-        super().__init__()
-        self._queue = q
 
     def __del__(self):
         if sys.is_finalizing():
@@ -227,10 +227,13 @@ class SyclQueueToOrderManagerMap:
         _local = self._get_map()
         om = _local.get(q)
         if om is None:
+            # the same sycl::queue in a new object, so that the value does
+            # not keep its key alive
+            q_copy = SyclQueue(q._get_capsule())
             if q.is_in_order:
-                om = _InOrderManager(q)
+                om = _InOrderManager(q_copy)
             else:
-                om = _SequentialOrderManager()
+                om = _SequentialOrderManager(q_copy)
             _local[q] = om
         return om
 

@@ -659,14 +659,30 @@ class _WaitCountingQueue(dpctl.SyclQueue):
 
 def test_in_order_order_manager_waits_on_queue():
     q = _in_order_queue(cls=_WaitCountingQueue)
-    _som = dpctl.utils.SequentialOrderManager
-    _mngr = _som[q]
+    # the map gives its managers a copy of the queue, so the manager is made
+    # here to see its waits
+    _mngr = _order_manager._InOrderManager(q)
     _mngr.wait()
     assert q.num_waits == 1
     cpy = _mngr.__copy__()
     del cpy
     assert q.num_waits == 2
     del _mngr
+    assert q.num_waits == 3
+
+
+def test_order_manager_clear_waits_on_in_order_queues(monkeypatch):
+    waited = []
+    _wait = _order_manager._InOrderManager.wait
+
+    def wait(self):
+        waited.append(self)
+        return _wait(self)
+
+    monkeypatch.setattr(_order_manager._InOrderManager, "wait", wait)
+    q = _in_order_queue()
+    _som = dpctl.utils.SequentialOrderManager
+    _mngr = _som[q]
     # clear() runs at exit, and must wait on in-order queues as well
     _som.clear()
-    assert q.num_waits > 2
+    assert any(m is _mngr for m in waited)
