@@ -16,6 +16,14 @@
     Thread-local object mapping each :class:`dpctl.SyclQueue` to an order
     manager, used to ensure sequential ordering of offloaded tasks.
 
+    Queues are held by weak reference, so creating queues does not keep them
+    alive. Equal queues, which share a ``sycl::queue``, share an order manager,
+    which lives while the queue it was looked up by does. Once that queue is
+    gone, the order manager is dropped when the work recorded in it is
+    complete and nothing else holds it; until then, an equal queue is given
+    the same order manager, so that its tasks still follow that work. Nothing
+    waits when a queue is dropped.
+
     Record submitted tasks with ``add_event`` and use ``submitted_events``
     as the dependency list of subsequent submissions. To keep Python objects
     referenced by a task alive until it completes, use

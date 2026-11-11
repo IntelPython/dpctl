@@ -23,6 +23,7 @@ import textwrap
 import threading
 import time
 import warnings
+import weakref
 
 import numpy as np
 import pytest
@@ -686,3 +687,138 @@ def test_order_manager_clear_waits_on_in_order_queues(monkeypatch):
     # clear() runs at exit, and must wait on in-order queues as well
     _som.clear()
     assert any(m is _mngr for m in waited)
+
+
+def _thread_map():
+    return dpctl.utils.SequentialOrderManager._get_thread_map()
+
+
+@pytest.mark.parametrize("in_order", [False, True], ids=["ooo", "in_order"])
+def test_order_manager_does_not_keep_queues_alive(in_order):
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    refs = []
+    for _ in range(16):
+        q = _in_order_queue() if in_order else _queue()
+        _mngr = _som[q]
+        buf = dpctl.memory.MemoryUSMDevice(1024, queue=q)
+        _mngr.add_event(q.memset_async(buf, 1, buf.nbytes))
+        # holds nothing: buf would keep q alive until dpctl's thread drops it
+        _mngr.add_cleanup_event(q.keep_args_alive(()))
+        _mngr.wait()
+        refs.append(weakref.ref(q))
+        del q, _mngr, buf
+        # each lookup drops the managers of the queues gone before it
+        assert len(_thread_map().managers) <= 2
+    assert all(r() is None for r in refs)
+    m = _thread_map()
+    assert len(m.dead) == 1
+    q = _in_order_queue() if in_order else _queue()
+    _som[q]
+    assert len(m.managers) == 1 and len(m.owned) == 1
+    assert not m.retired and not m.dead and not m.dropped
+    _som.clear()
+
+
+def test_order_manager_hands_pending_work_to_equal_queue():
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    q1 = _queue()
+    # the same sycl::queue in another object
+    q2 = dpctl.SyclQueue(q1._get_capsule())
+    assert q1 == q2 and q1 is not q2
+    _mngr = _som[q1]
+    assert _som[q2] is _mngr
+    # as if the work recorded through q1 were not complete when q1 is gone
+    _mngr._is_idle = lambda: False
+    _mngr_ref = weakref.ref(_mngr)
+    del q1, _mngr
+    _som[_queue()]
+    # the map holds it, as its work is not complete
+    assert _mngr_ref() is not None
+    assert _som[q2] is _mngr_ref()
+    _som.clear()
+
+
+def test_order_manager_drops_idle_manager_of_queue_gone():
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    q1 = _queue()
+    q2 = dpctl.SyclQueue(q1._get_capsule())
+    _mngr = _som[q1]
+    _mngr.wait()
+    _mngr_ref = weakref.ref(_mngr)
+    del q1, _mngr
+    # nothing holds it once the map drops it
+    _som[q2]
+    assert _mngr_ref() is None
+    m = _thread_map()
+    assert len(m.owned) == 1 and not m.retired and not m.dropped
+    _som.clear()
+
+
+def test_order_manager_keeps_manager_held_for_equal_queue():
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    q1 = _queue()
+    q2 = dpctl.SyclQueue(q1._get_capsule())
+    _som[q1]
+    # looked up by q2, but the map has it under q1
+    _mngr = _som[q2]
+    _mngr.wait()
+    del q1
+    # the map drops it, its work being complete, while it is still in use
+    _som[_queue()]
+    assert _mngr._dropped
+    # work recorded in it now has to be ordered before the work on q2
+    assert _som[q2] is _mngr
+    assert not _mngr._dropped
+    _som.clear()
+
+
+def test_order_manager_orders_work_of_queue_gone():
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    q2 = _queue()
+    buf = dpctl.memory.MemoryUSMDevice(64 * 1024 * 1024, queue=q2)
+    host = np.empty(buf.nbytes, dtype=np.uint8)
+    for _ in range(5):
+        q2.memset(buf, 0, buf.nbytes)
+        _som.clear()
+        # the same sycl::queue in another object, which is the key
+        q1 = dpctl.SyclQueue(q2._get_capsule())
+        _mngr = _som[q1]
+        _fill_in_steps(q1, buf, 8, _mngr)
+        del _mngr
+        q1_ref = weakref.ref(q1)
+        del q1
+        assert q1_ref() is None
+        _mngr = _som[q2]
+        ev = q2.memset_async(buf, 9, buf.nbytes, _mngr.submitted_events)
+        _mngr.add_event(ev)
+        q2.memcpy_async(host, buf, buf.nbytes, [ev]).wait()
+        assert np.all(host == 9)
+        del _mngr
+    _som.clear()
+
+
+def test_order_manager_queue_gone_on_other_thread(monkeypatch):
+    _som = dpctl.utils.SequentialOrderManager
+    _som.clear()
+    q = _queue()
+    _mngr = _som[q]
+    monkeypatch.setattr(_mngr, "_is_idle", lambda: False)
+    holder = [q]
+    del q
+    # the last reference is dropped on another thread, which neither waits
+    # nor changes this thread's map
+    t = threading.Thread(target=holder.clear)
+    t.start()
+    t.join(timeout=60)
+    assert not t.is_alive()
+    m = _thread_map()
+    assert len(m.dead) == 1 and len(m.managers) == 1
+    _som[_queue()]
+    assert [om for om in m.retired.values()] == [_mngr]
+    _som.clear()
+    assert not m.retired
