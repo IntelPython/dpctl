@@ -50,6 +50,11 @@ cdef public api class SyclQueue (_SyclQueue) [
 ]:
     """ Python wrapper class for a sycl::queue.
     """
+    # lets dpctl.utils.SequentialOrderManager hold queues by weak reference;
+    # here rather than in _SyclQueue, so that it follows the vtable pointer and
+    # leaves the offsets that extensions built against earlier dpctl use as
+    # they were
+    cdef object __weakref__
     cdef int _init_queue_default(self, int)
     cdef int _init_queue_from__SyclQueue(self, _SyclQueue)
     cdef int _init_queue_from_DPCTLSyclDeviceRef(self, DPCTLSyclDeviceRef, int)
