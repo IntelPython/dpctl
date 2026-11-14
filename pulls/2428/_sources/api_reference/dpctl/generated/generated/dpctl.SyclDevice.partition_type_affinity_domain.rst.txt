@@ -1,0 +1,6 @@
+dpctl.SyclDevice.partition\_type\_affinity\_domain
+==================================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.partition_type_affinity_domain

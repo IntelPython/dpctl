@@ -1,0 +1,56 @@
+﻿dpctl.SyclPlatform
+==================
+
+.. currentmodule:: dpctl
+
+.. autoclass:: SyclPlatform
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclPlatform.get_composite_devices
+      ~SyclPlatform.get_devices
+      ~SyclPlatform.print_platform_info
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree: generated
+   
+      ~SyclPlatform.backend
+      ~SyclPlatform.default_context
+      ~SyclPlatform.has_aspect_accelerator
+      ~SyclPlatform.has_aspect_atomic64
+      ~SyclPlatform.has_aspect_cpu
+      ~SyclPlatform.has_aspect_custom
+      ~SyclPlatform.has_aspect_emulated
+      ~SyclPlatform.has_aspect_ext_oneapi_ipc_memory
+      ~SyclPlatform.has_aspect_fp16
+      ~SyclPlatform.has_aspect_fp64
+      ~SyclPlatform.has_aspect_gpu
+      ~SyclPlatform.has_aspect_host_debuggable
+      ~SyclPlatform.has_aspect_image
+      ~SyclPlatform.has_aspect_is_component
+      ~SyclPlatform.has_aspect_is_composite
+      ~SyclPlatform.has_aspect_online_compiler
+      ~SyclPlatform.has_aspect_online_linker
+      ~SyclPlatform.has_aspect_queue_profiling
+      ~SyclPlatform.has_aspect_usm_atomic_host_allocations
+      ~SyclPlatform.has_aspect_usm_atomic_shared_allocations
+      ~SyclPlatform.has_aspect_usm_device_allocations
+      ~SyclPlatform.has_aspect_usm_host_allocations
+      ~SyclPlatform.has_aspect_usm_shared_allocations
+      ~SyclPlatform.has_aspect_usm_system_allocations
+      ~SyclPlatform.name
+      ~SyclPlatform.vendor
+      ~SyclPlatform.version
+   
+   

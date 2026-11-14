@@ -1,0 +1,6 @@
+dpctl.SyclDevice.max\_samplers
+==============================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.max_samplers
