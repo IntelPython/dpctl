@@ -1,0 +1,6 @@
+dpctl.SyclQueue.is\_get\_last\_event\_available
+===============================================
+
+.. currentmodule:: dpctl
+
+.. automethod:: SyclQueue.is_get_last_event_available
