@@ -1,0 +1,6 @@
+dpctl.SyclEvent.profiling\_info\_submit
+=======================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclEvent.profiling_info_submit

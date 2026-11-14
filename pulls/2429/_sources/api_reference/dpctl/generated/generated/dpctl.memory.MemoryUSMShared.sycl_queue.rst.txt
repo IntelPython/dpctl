@@ -1,0 +1,6 @@
+dpctl.memory.MemoryUSMShared.sycl\_queue
+========================================
+
+.. currentmodule:: dpctl.memory
+
+.. autoattribute:: MemoryUSMShared.sycl_queue

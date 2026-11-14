@@ -1,0 +1,6 @@
+dpctl.SyclDevice.half\_fp\_config
+=================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclDevice.half_fp_config

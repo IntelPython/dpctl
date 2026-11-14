@@ -1,0 +1,6 @@
+dpctl.SyclPlatform.has\_aspect\_is\_component
+=============================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclPlatform.has_aspect_is_component

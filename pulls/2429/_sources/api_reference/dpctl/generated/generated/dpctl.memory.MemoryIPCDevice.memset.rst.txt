@@ -1,0 +1,6 @@
+dpctl.memory.MemoryIPCDevice.memset
+===================================
+
+.. currentmodule:: dpctl.memory
+
+.. automethod:: MemoryIPCDevice.memset

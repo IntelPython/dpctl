@@ -1,0 +1,23 @@
+.. index:: pair: struct; RawWorkGroupMemoryTy
+.. _doxid-db/d1d/struct_raw_work_group_memory_ty:
+
+struct RawWorkGroupMemoryTy
+===========================
+
+.. toctree::
+	:hidden:
+
+
+
+
+.. ref-code-block:: cpp
+	:class: doxyrest-overview-code-block
+
+	#include <dpctl_sycl_extension_interface.h>
+	
+	struct RawWorkGroupMemoryTy
+	{
+		// fields
+	
+		size_t :target:`nbytes<doxid-db/d1d/struct_raw_work_group_memory_ty_1a818f802d737030ba517ed2191ea9caa7>`;
+	};

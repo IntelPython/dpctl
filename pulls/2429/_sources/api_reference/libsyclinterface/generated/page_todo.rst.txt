@@ -1,0 +1,28 @@
+.. index:: pair: page; Todo List
+.. _doxid-dd/da0/todo:
+
+Todo List
+=========
+
+.. list-table::
+	:widths: 20 80
+
+	*
+		- Global :ref:`DPCTLKernelArgType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>`
+
+		- :target:`doxid-dd/da0/todo_1_todo000001` Add support for sycl::buffer
+
+	*
+		- Global :ref:`DPCTLQueue_SubmitNDRange <doxid-d2/d22/group___queue_interface_1ga94b6312555d533998e46c9ad312bda8e>` (\__dpctl_keep const :ref:`DPCTLSyclKernelRef <doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef, \__dpctl_keep const :ref:`DPCTLSyclQueueRef <doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const :ref:`DPCTLKernelArgType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>` \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t gRange[3], \__dpctl_keep const size_t lRange[3], size_t NDims, \__dpctl_keep const :ref:`DPCTLSyclEventRef <doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` \*DepEvents, size_t NDepEvents)
+
+		- :target:`doxid-dd/da0/todo_1_todo000003` sycl::buffer arguments are not supported yet.
+		  
+		  Add support for id<Dims> WorkItemOffset
+
+	*
+		- Global :ref:`DPCTLQueue_SubmitRange <doxid-d2/d22/group___queue_interface_1ga31ae37a405b585b26e10101d13283c62>` (\__dpctl_keep const :ref:`DPCTLSyclKernelRef <doxid-df/d57/dpctl__sycl__types_8h_1a3f6be07fdf695c015719ce0b0c237844>` KRef, \__dpctl_keep const :ref:`DPCTLSyclQueueRef <doxid-df/d57/dpctl__sycl__types_8h_1af23137a8bf20ff63b10db9f7f987799a>` QRef, \__dpctl_keep void \*\*Args, \__dpctl_keep const :ref:`DPCTLKernelArgType <doxid-d3/d94/dpctl__sycl__enum__types_8h_1a2b3d2dd8e0c358370eac0a59fb3fe089>` \*ArgTypes, size_t NArgs, \__dpctl_keep const size_t Range[3], size_t NRange, \__dpctl_keep const :ref:`DPCTLSyclEventRef <doxid-df/d57/dpctl__sycl__types_8h_1a42590892ae4324c54f6ddef34009ca03>` \*DepEvents, size_t NDepEvents)
+
+		- :target:`doxid-dd/da0/todo_1_todo000002` ``sycl::buffer`` arguments are not supported yet.
+		  
+		  Add support for id<Dims> WorkItemOffset
+
