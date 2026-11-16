@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.has\_aspect\_online\_linker
-==============================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.has_aspect_online_linker

@@ -1,6 +1,0 @@
-dpctl.SyclDevice.component\_devices
-===================================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclDevice.component_devices

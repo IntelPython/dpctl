@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.backend
-==========================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.backend
