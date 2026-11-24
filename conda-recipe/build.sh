@@ -10,9 +10,6 @@ export ICPXCFG
 ICXCFG="$(pwd)/icpx_for_conda.cfg"
 export ICXCFG
 
-read -r GLIBC_MAJOR GLIBC_MINOR <<<"$(conda list '^sysroot_linux-64$' \
-    | tail -n 1 | awk '{print $2}' | grep -oP '\d+' | head -n 2 | tr '\n' ' ')"
-
 if [ -e "_skbuild" ]; then
     ${PYTHON} setup.py clean --all
 fi
@@ -24,14 +21,13 @@ export CMAKE_GENERATOR=Ninja
 # Make CMake verbose
 export VERBOSE=1
 
+# one build job per CPU conda-build counts; set CPU_COUNT lower to save memory
+export CMAKE_BUILD_PARALLEL_LEVEL=${CPU_COUNT}
+
 CMAKE_ARGS="${CMAKE_ARGS} -DDPCTL_LEVEL_ZERO_INCLUDE_DIR=${PREFIX}/include/level_zero -DDPCTL_WITH_REDIST=ON"
 
 # -wnx flags mean: --wheel --no-isolation --skip-dependency-check
 ${PYTHON} -m build -w -n -x
-
-${PYTHON} -m wheel tags --remove --build "$GIT_DESCRIBE_NUMBER" \
-    --platform-tag "manylinux_${GLIBC_MAJOR}_${GLIBC_MINOR}_x86_64" \
-    dist/dpctl*.whl
 
 ${PYTHON} -m pip install dist/dpctl*.whl \
     --no-build-isolation \
@@ -40,8 +36,3 @@ ${PYTHON} -m pip install dist/dpctl*.whl \
     --no-index \
     --prefix "${PREFIX}" \
     -vv
-
-# Copy wheel package
-if [[ -d "${WHEELS_OUTPUT_FOLDER}" ]]; then
-    cp dist/dpctl*.whl "${WHEELS_OUTPUT_FOLDER[@]}"
-fi
