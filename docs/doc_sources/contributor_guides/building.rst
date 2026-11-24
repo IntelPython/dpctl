@@ -61,21 +61,19 @@ Build and Install Using Conda-Build
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can use the conda-recipe included with the sources to build the dpctl
-package. The advantage of this approach is that all oneAPI library dependencies are
-pulled in from oneAPI's local conda channel that is installed as a part of oneAPI.
+package. The advantage of this approach is that all dependencies are pulled in
+from the conda-forge channel.
 
 .. code-block:: bash
 
-    export ONEAPI_ROOT=/opt/intel/oneapi
-    conda build conda-recipe -c ${ONEAPI_ROOT}/conda_channel
+    conda build conda-recipe -c conda-forge --override-channels
 
 On Windows OS to cope with `long file names <https://github.com/IntelPython/dpctl/issues/15>`_,
 use ``croot`` with a short folder path:
 
 .. code-block:: bat
 
-    set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
-    conda build --croot=C:/tmp conda-recipe -c "%ONEAPI_ROOT%\conda_channel"
+    conda build --croot=C:/tmp conda-recipe -c conda-forge --override-channels
 
 After building the Conda package, install it by executing:
 
