@@ -79,10 +79,12 @@ target_link_libraries(dpctl_c_api_tests
     GTest::gtest_main
     GTest::GTest
     DPCTLSyclInterface
-    ${IntelSyclCompiler_OPENCL_LIBRARY}
     # Seems to work without it...
     ${CMAKE_DL_LIBS}
 )
+if(IntelSyclCompiler_OPENCL_LIBRARY)
+    target_link_libraries(dpctl_c_api_tests ${IntelSyclCompiler_OPENCL_LIBRARY})
+endif()
 target_include_directories(dpctl_c_api_tests
     PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/../helper/include"

@@ -30,7 +30,8 @@
 # IntelSyclCompiler_SYCL_INCLUDE_DIR
 # IntelSyclCompiler_LIBRARY_DIR
 # IntelSyclCompiler_SYCL_LIBRARY
-# IntelSyclCompiler_OPENCL_LIBRARY
+# IntelSyclCompiler_OPENCL_LIBRARY, if the toolchain bundles the OpenCL ICD
+# loader, which open source DPC++ builds don't
 
 include(FindPackageHandleStandardArgs)
 if(NOT DEFINED IntelSYCL_FOUND OR NOT IntelSYCL_FOUND)
@@ -172,5 +173,4 @@ find_package_handle_standard_args(IntelSyclCompiler DEFAULT_MSG
     IntelSyclCompiler_SYCL_INCLUDE_DIR
     IntelSyclCompiler_LIBRARY_DIR
     IntelSyclCompiler_SYCL_LIBRARY
-    IntelSyclCompiler_OPENCL_LIBRARY
 )
