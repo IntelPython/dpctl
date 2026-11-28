@@ -1,6 +1,0 @@
-dpctl.SyclDevice.is\_accelerator
-================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclDevice.is_accelerator

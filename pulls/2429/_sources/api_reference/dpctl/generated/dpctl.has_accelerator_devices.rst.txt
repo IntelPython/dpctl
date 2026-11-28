@@ -1,6 +1,0 @@
-﻿dpctl.has\_accelerator\_devices
-===============================
-
-.. currentmodule:: dpctl
-
-.. autofunction:: has_accelerator_devices

@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.has\_aspect\_image
-=====================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.has_aspect_image

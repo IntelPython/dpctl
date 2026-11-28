@@ -1,6 +1,0 @@
-dpctl.SyclQueue.memset\_async
-=============================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.memset_async

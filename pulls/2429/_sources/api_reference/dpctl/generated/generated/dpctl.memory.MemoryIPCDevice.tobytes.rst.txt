@@ -1,6 +1,0 @@
-dpctl.memory.MemoryIPCDevice.tobytes
-====================================
-
-.. currentmodule:: dpctl.memory
-
-.. automethod:: MemoryIPCDevice.tobytes

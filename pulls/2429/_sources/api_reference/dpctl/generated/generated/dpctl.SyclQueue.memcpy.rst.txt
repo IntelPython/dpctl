@@ -1,6 +1,0 @@
-dpctl.SyclQueue.memcpy
-======================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.memcpy

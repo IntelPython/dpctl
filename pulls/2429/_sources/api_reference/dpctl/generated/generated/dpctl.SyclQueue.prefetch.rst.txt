@@ -1,6 +1,0 @@
-dpctl.SyclQueue.prefetch
-========================
-
-.. currentmodule:: dpctl
-
-.. automethod:: SyclQueue.prefetch

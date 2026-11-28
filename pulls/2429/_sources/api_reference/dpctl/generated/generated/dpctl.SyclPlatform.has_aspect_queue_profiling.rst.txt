@@ -1,6 +1,0 @@
-dpctl.SyclPlatform.has\_aspect\_queue\_profiling
-================================================
-
-.. currentmodule:: dpctl
-
-.. autoattribute:: SyclPlatform.has_aspect_queue_profiling
