@@ -1,0 +1,6 @@
+dpctl.SyclContext.atomic\_memory\_scope\_capabilities
+=====================================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclContext.atomic_memory_scope_capabilities

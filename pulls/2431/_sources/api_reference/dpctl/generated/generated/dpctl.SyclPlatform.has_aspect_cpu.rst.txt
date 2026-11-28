@@ -1,0 +1,6 @@
+dpctl.SyclPlatform.has\_aspect\_cpu
+===================================
+
+.. currentmodule:: dpctl
+
+.. autoattribute:: SyclPlatform.has_aspect_cpu
